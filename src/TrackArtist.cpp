@@ -1492,8 +1492,10 @@ void TrackArtist::DrawClipWaveform(WaveTrack *track,
    // Calculate sample-based offset-corrected selection
 
    // Use the WaveTrack method to show what is selected and 'should' be copied, pasted etc.
-   sampleCount ssel0 = wxMax(0, track->TimeToLongSamples(sel0 - tOffset));
-   sampleCount ssel1 = wxMax(0, track->TimeToLongSamples(sel1 - tOffset));
+   sampleCount ssel0 =
+      wxMax(0, track->TimeToLongSamples(sel0) - track->TimeToLongSamples(tOffset));
+   sampleCount ssel1 =
+      wxMax(0, track->TimeToLongSamples(sel1) - track->TimeToLongSamples(tOffset));
 
    //trim selection so that it only contains the actual samples
    if (ssel0 != ssel1 && ssel1 > (sampleCount)(0.5 + trackLen * rate)) {

@@ -268,7 +268,8 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void DrawIndicator();
    /// draws the green line on the tracks to show playback position
    /// @param repairOld if true the playback position is not updated/erased, and simply redrawn
-   virtual void DoDrawIndicator(wxDC & dc, bool repairOld = false);
+   /// @param indicator if nonnegative, overrides the indicator value obtainable from AudioIO
+   virtual void DoDrawIndicator(wxDC & dc, bool repairOld = false, double indicator = -1);
    virtual void DrawCursor();
    virtual void DoDrawCursor(wxDC & dc);
 
@@ -312,7 +313,10 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void SelectionHandleDrag(wxMouseEvent &event, Track *pTrack);
    void StartOrJumpPlayback(wxMouseEvent &event);
 #ifdef EXPERIMENTAL_SCRUBBING
-   void StartScrubbing(double position);
+   bool MaybeStartScrubbing(wxMouseEvent &event);
+   double FindScrubSpeed(double timeAtMouse) const;
+   bool ContinueScrubbing(wxCoord position, bool maySkip);
+   bool StopScrubbing();
 #endif
    virtual void SelectionHandleClick(wxMouseEvent &event,
                                      Track* pTrack, wxRect r);
@@ -512,6 +516,7 @@ protected:
                            const wxRect panelRect, const wxRect clip);
    virtual void DrawOutside(Track *t, wxDC *dc, const wxRect rec,
                     const wxRect trackRect);
+   void DrawScrubSpeed(wxDC &dc);
    virtual void DrawZooming(wxDC* dc, const wxRect clip);
 
    virtual void HighlightFocusedTrack (wxDC* dc, const wxRect r);
@@ -739,7 +744,10 @@ protected:
 #ifdef USE_MIDI
       IsStretching,
 #endif
-      IsZooming
+      IsZooming,
+#ifdef EXPERIMENTAL_SCRUBBING_MIDDLE_MOUSE
+      IsMiddleButtonScrubbing,
+#endif
    };
 
    enum MouseCaptureEnum mMouseCapture;
@@ -756,9 +764,15 @@ protected:
    int mMoveDownThreshold;
 
 #ifdef EXPERIMENTAL_SCRUBBING
-   bool mScrubbing;
-   wxLongLong mLastScrubTime; // milliseconds
-   double mLastScrubPosition;
+   bool IsScrubbing();
+   int mScrubToken;
+   bool mScrubBySpeed;
+   wxLongLong mScrubStartClockTimeMillis;
+   wxCoord mScrubStartPosition;
+   int mLogMaxScrubSpeed;
+   enum { ScrubSpeedStepsPerOctave  = 4};
+   double mMaxScrubSpeed;
+   int mScrubSpeedDisplayCountdown;
 #endif
 
    wxCursor *mArrowCursor;
