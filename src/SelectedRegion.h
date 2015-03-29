@@ -27,6 +27,7 @@
 
 #include "Audacity.h"
 #include "Experimental.h"
+#include <math.h>
 
 #include <wx/defs.h>
 #include <wx/wxchar.h>

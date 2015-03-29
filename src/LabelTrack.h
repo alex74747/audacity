@@ -36,6 +36,7 @@ class TrackList;
 class AudacityProject;
 class DirManager;
 class TimeWarper;
+class ZoomInfo;
 
 
 class LabelStruct
@@ -125,15 +126,17 @@ class AUDACITY_DLL_API LabelTrack : public Track
 
    static void ResetFont();
 
-   void Draw(wxDC & dc, const wxRect & r, double h, double pps,
-             double sel0, double sel1);
+   void Draw(wxDC & dc, const wxRect & r,
+             const SelectedRegion &selectedRegion,
+             const ZoomInfo &zoomInfo);
 
    int getSelectedIndex() const { return mSelIndex; }
 
    virtual int GetKind() const { return Label; }
 
-   virtual double GetStartTime();
-   virtual double GetEndTime();
+   virtual double GetOffset() const;
+   virtual double GetStartTime() const;
+   virtual double GetEndTime() const;
 
    virtual Track *Duplicate() { return new LabelTrack(*this); }
 
@@ -176,7 +179,7 @@ class AUDACITY_DLL_API LabelTrack : public Track
    void SetWrongDragging(bool rightFlag) { mRightDragging = rightFlag; }
    void SetDrawCursor(bool drawCursorFlag) { mDrawCursor = drawCursorFlag; }
 
-   bool HandleMouse(const wxMouseEvent & evt, wxRect & r, double h, double pps,
+   bool HandleMouse(const wxMouseEvent & evt, wxRect & r, const ZoomInfo &zoomInfo,
                            SelectedRegion *newSel);
 
    bool CaptureKey(wxKeyEvent & event);
@@ -259,7 +262,7 @@ class AUDACITY_DLL_API LabelTrack : public Track
    // Set in copied label tracks
    double mClipLen;
 
-   void ComputeLayout(const wxRect & r, double h, double pps);
+   void ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo);
    void ComputeTextPosition(const wxRect & r, int index);
    void SetCurrentCursorPosition(wxDC & dc, int xPos);
 
