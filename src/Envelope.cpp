@@ -663,14 +663,24 @@ void Envelope::Paste(double t0, const Envelope *e)
    // JC: The old analysis of cases and the resulting code here is way more complex than needed.
    // TODO: simplify the analysis and simplify the code.
 
-   if (e->mEnv.Count() == 0 && wasEmpty && e->mDefaultValue == this->mDefaultValue)
-   {
-      // msmeyer: The envelope is empty and has the same default value, so
-      // there is nothing that must be inserted, just return. This avoids
-      // the creation of unnecessary duplicate control points
-      // MJS: but the envelope does get longer
-      mTrackLen += e->mTrackLen;
-      return;
+   if (wasEmpty) {
+      if (mTrackLen == 0) // creating a new envelope
+         /// PRL: Should we copy the default value?
+         mOffset = e->mOffset;
+
+      if (e->mEnv.Count() == 0 && e->mDefaultValue == this->mDefaultValue) {
+         // PRL:  When this envelope has no points, this is the ONLY sub-case that
+         // we can avoid all the rest below.  But even if this envelope has no points,
+         // we have work to do if the other has even one point, or has a different
+         // default level.
+
+         // msmeyer: The envelope is empty and has the same default value, so
+         // there is nothing that must be inserted, just return. This avoids
+         // the creation of unnecessary duplicate control points
+         // MJS: but the envelope does get longer
+         mTrackLen += e->mTrackLen;
+         return;
+      }
    }
 
    t0 = wxMin(t0 - mOffset, mTrackLen);   // t0 now has origin of zero
@@ -689,11 +699,11 @@ void Envelope::Paste(double t0, const Envelope *e)
    // get values to perform framing of the insertion
    double splitval = GetValue(t0 + mOffset);
 
-   if(len != 0) {   // Not case 10: there are point/s in the envelope
+   {
 
 
 /*
-Old analysis of cases:
+Old analysis of cases:  (Case 10 modified 16 Jan 2015 by PRL)
 (see discussions on audacity-devel around 19/8/7 - 23/8/7 and beyond, "Envelopes and 'Join'")
 1  9     11  2    3 5  7   8   6 4   13              12
 0-----0--0---0    -----0---0------       --(0)----
@@ -707,7 +717,7 @@ Old analysis of cases:
 7   The insert point is at a control point, and there is space either side.
 8   Same as 7.
 9   Same as 5.
-10  There are no points in the current envelope (commonly called by the 'undo' stuff, and not in the diagrams).
+10  The current env has zero length.
 11  As 7.
 12  Insert beyond the RH end of the current envelope (should not happen, at the moment)
 13  Insert beyond the LH end of the current envelope (should not happen, at the moment)
@@ -740,19 +750,24 @@ Old analysis of cases:
          }
       }
 
-      // In these statements, remember we subtracted mOffset from t0
-      if( t0 < mTrackEpsilon )
-         atStart = true;
-      if( (mTrackLen - t0) < mTrackEpsilon )
-         atEnd = true;
-      if(0 > t0)
-         beforeStart = true;  // Case 13
-      if(mTrackLen < t0)
-         afterEnd = true;  // Case 12
+      if (mTrackLen >= mTrackEpsilon) {
+         // In these statements, remember we subtracted mOffset from t0
+         if( t0 < mTrackEpsilon )
+            atStart = true;
+         if( (mTrackLen - t0) < mTrackEpsilon )
+            atEnd = true;
+         if(0 > t0)
+            beforeStart = true;  // Case 13
+         if(mTrackLen < t0)
+            afterEnd = true;  // Case 12
+      }
 
       // Now test for the various Cases, and try to do the right thing
-      if(atStart) {   // insertion at the beginning
-         if(onPoint) {  // first env point is at LH end
+      if (mTrackLen < mTrackEpsilon)
+         // Case 10
+         ;
+      else if (atStart) {   // insertion at the beginning
+         if (onPoint) {  // first env point is at LH end
             mEnv[0]->SetT(mEnv[0]->GetT() + mTrackEpsilon);   // Case 1: move it R slightly to avoid duplicate point
             someToShift = true;  // there is now, even if there wasn't before
             //wxLogDebug(wxT("Case 1"));
@@ -763,41 +778,33 @@ Old analysis of cases:
             //wxLogDebug(wxT("Case 3"));
          }
       }
-      else {
-         if(atEnd) { // insertion at the end
-            if(onPoint) {  // last env point is at RH end, Case 2:
-               mEnv[0]->SetT(mEnv[0]->GetT() - mTrackEpsilon);  // move it L slightly to avoid duplicate point
-               //wxLogDebug(wxT("Case 2"));
-            }
-            else {   // Case 4:
-               Insert(t0 - mTrackEpsilon, splitval);   // insert a point to maintain the envelope
-               //wxLogDebug(wxT("Case 4"));
-            }
+      else if (atEnd) { // insertion at the end
+         if (onPoint) {  // last env point is at RH end, Case 2:
+            mEnv[0]->SetT(mEnv[0]->GetT() - mTrackEpsilon);  // move it L slightly to avoid duplicate point
+            //wxLogDebug(wxT("Case 2"));
          }
-         else {
-            if(onPoint) {  // Case 7: move the point L and insert a new one to the R
-               mEnv[pos]->SetT(mEnv[pos]->GetT() - mTrackEpsilon);
-               Insert(t0 + mTrackEpsilon, splitval);
-               someToShift = true;
-               //wxLogDebug(wxT("Case 7"));
-            }
-            else {
-               if( !beforeStart && !afterEnd ) {// Case 5: Insert points to L and R
-                  Insert(t0 - mTrackEpsilon, splitval);
-                  Insert(t0 + mTrackEpsilon, splitval);
-                  someToShift = true;
-                  //wxLogDebug(wxT("Case 5"));
-               }
-               else {
-                  if( beforeStart ) {  // Case 13:
-                     //wxLogDebug(wxT("Case 13"));
-                  }
-                  else {   // Case 12:
-                     //wxLogDebug(wxT("Case 12"));
-                  }
-               }
-            }
+         else {   // Case 4:
+            Insert(t0 - mTrackEpsilon, splitval);   // insert a point to maintain the envelope
+            //wxLogDebug(wxT("Case 4"));
          }
+      }
+      else if (onPoint) {  // Case 7: move the point L and insert a new one to the R
+         mEnv[pos]->SetT(mEnv[pos]->GetT() - mTrackEpsilon);
+         Insert(t0 + mTrackEpsilon, splitval);
+         someToShift = true;
+         //wxLogDebug(wxT("Case 7"));
+      }
+      else if (!beforeStart && !afterEnd) {// Case 5: Insert points to L and R
+         Insert(t0 - mTrackEpsilon, splitval);
+         Insert(t0 + mTrackEpsilon, splitval);
+         someToShift = true;
+         //wxLogDebug(wxT("Case 5"));
+      }
+      else if (beforeStart) {  // Case 13:
+         //wxLogDebug(wxT("Case 13"));
+      }
+      else {   // Case 12:
+         //wxLogDebug(wxT("Case 12"));
       }
 
       // Now shift existing points to the right, if required
@@ -808,19 +815,6 @@ Old analysis of cases:
                mEnv[i]->SetT(mEnv[i]->GetT() + deltat);
       }
       mTrackLen += deltat;
-   }
-   else {   // Case 10:
-      if( mTrackLen == 0 ) // creating a new envelope
-      {
-         mTrackLen = e->mTrackLen;
-         mOffset = e->mOffset;
-         //wxLogDebug(wxT("Case 10, new env/clip: mTrackLen %f mOffset %f t0 %f"), mTrackLen, mOffset, t0);
-      }
-      else
-      {
-         mTrackLen += e->mTrackLen;
-         //wxLogDebug(wxT("Case 10, paste into current env: mTrackLen %f mOffset %f t0 %f"), mTrackLen, mOffset, t0);
-      }
    }
 
    // Copy points from inside the selection
