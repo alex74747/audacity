@@ -837,6 +837,9 @@
     <ClCompile Include="..\..\..\src\DeviceChange.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\SpectrumTransformer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\AboutDialog.h">
@@ -1668,6 +1671,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\AudioIOListener.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\SpectrumTransformer.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
