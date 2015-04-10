@@ -2860,6 +2860,8 @@ void AudioIO::FillBuffers()
             if( mWarpedTime + deltat > mWarpedLength )
             {
                deltat = mWarpedLength - mWarpedTime;
+               // Note mWarpedTime is often exactly 0 leaving
+               // deltat exactly equal to mWarpedLength
                mWarpedTime = mWarpedLength;
                if( deltat < 0.0 ) // this should never happen
                   deltat = 0.0;
@@ -2871,20 +2873,29 @@ void AudioIO::FillBuffers()
 
             secsAvail -= deltat;
 
+            int extraPeriods = 0;
+            // Floating point == comparison, it's all right, see comment above.
+            if (mPlayLooped && deltat == mWarpedLength)
+               extraPeriods = floor(secsAvail / deltat);
+
             for( i = 0; i < mPlaybackTracks.GetCount(); i++ )
             {
                // The mixer here isn't actually mixing: it's just doing
                // resampling, format conversion, and possibly time track
                // warping
                int processed = 0;
-               samplePtr warpedSamples;
                //don't do anything if we have no length.  In particular, Process() will fail an wxAssert
                //that causes a crash since this is not the GUI thread and wxASSERT is a GUI call.
                if(deltat > 0.0)
                {
                   processed = mPlaybackMixers[i]->Process(lrint(deltat * mRate));
-                  warpedSamples = mPlaybackMixers[i]->GetBuffer();
-                  mPlaybackBuffers[i]->Put(warpedSamples, floatSample, processed);
+                  const samplePtr warpedSamples = mPlaybackMixers[i]->GetBuffer();
+                  // If an entire period of the looped play fits in the available time,
+                  // append it as many more times as will fit.  This avoids a lot of costly
+                  // openings and closings of the block file (or maybe, two files)
+                  // holding our samples.
+                  for (int nn = 1 + extraPeriods; nn--;)
+                     mPlaybackBuffers[i]->Put(warpedSamples, floatSample, processed);
                }
                //if looping and processed is less than the full chunk/block/buffer that gets pulled from
                //other longer tracks, then we still need to advance the ring buffers or
@@ -2905,13 +2916,21 @@ void AudioIO::FillBuffers()
                }
             }
 
-            // msmeyer: If playing looped, check if we are at the end of the buffer
-            // and if yes, restart from the beginning.
-            if (mPlayLooped && mWarpedTime >= mWarpedLength)
+            if (mPlayLooped)
             {
-               for (i = 0; i < mPlaybackTracks.GetCount(); i++)
-                  mPlaybackMixers[i]->Restart();
-               mWarpedTime = 0.0;
+               if (extraPeriods > 0)
+               {
+                  secsAvail -= extraPeriods * deltat;
+                  mWarpedTime += extraPeriods * deltat;
+               }
+               // msmeyer: If playing looped, check if we are at the end of the buffer
+               // and if yes, restart from the beginning.
+               if (mWarpedTime >= mWarpedLength)
+               {
+                  for (i = 0; i < mPlaybackTracks.GetCount(); i++)
+                     mPlaybackMixers[i]->Restart();
+                  mWarpedTime = 0.0;
+               }
             }
 
          } while (mPlayLooped && secsAvail > 0 && deltat > 0);
