@@ -67,6 +67,8 @@ Track::Track(DirManager * projDirManager)
    mOffset = 0.0;
 
    mChannel = MonoChannel;
+
+   mController = NULL;
 }
 
 Track::Track(const Track &orig)
@@ -82,6 +84,8 @@ Track::Track(const Track &orig)
 #endif
    Init(orig);
    mOffset = orig.mOffset;
+
+   mController = NULL;
 }
 
 // Copy all the track properties except the actual contents
@@ -144,6 +148,12 @@ void Track::SetOwner(TrackList *list, TrackListNode *node)
 
    mList = list;
    mNode = node;
+}
+
+void Track::SetController(const Track *other)
+{
+   if (other != this)
+      mController = other;
 }
 
 int Track::GetMinimizedHeight() const

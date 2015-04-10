@@ -99,6 +99,8 @@ class TranscriptionToolBar:public ToolBar {
    void SetEnabled(bool enabled);
    void SetPlaying(bool down, bool looped, bool cutPreview);
 
+   bool PlayIsDown() const;
+
  private:
 
    void InitializeTranscriptionToolBar();
