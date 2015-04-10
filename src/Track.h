@@ -69,6 +69,9 @@ class AUDACITY_DLL_API Track: public XMLTagHandler
    bool           mLinked;
    bool           mMinimized;
 
+   // NULL or else other track from which mute, solo, etc. are really taken
+   const Track   *mController;
+
  public:
    wxSize vrulerSize;
 
@@ -102,6 +105,7 @@ class AUDACITY_DLL_API Track: public XMLTagHandler
 
    const TrackListNode *GetNode();
    void SetOwner(TrackList *list, TrackListNode *node);
+   void SetController(const Track *other);
 
  // Keep in Track
 
@@ -155,9 +159,9 @@ class AUDACITY_DLL_API Track: public XMLTagHandler
    void SetDefaultName( wxString n ) { mDefaultName = n; }
 
    bool GetSelected() const { return mSelected; }
-   bool GetMute    () const { return mMute;     }
+   bool GetMute    () const { return mController ? mController->GetMute() : mMute;     }
    bool GetLinked  () const { return mLinked;   }
-   bool GetSolo    () const { return mSolo;     }
+   bool GetSolo    () const { return mController ? mController->GetSolo() : mSolo;     }
 
    void SetSelected(bool s) { mSelected = s; }
    void SetMute    (bool m) { mMute     = m; }

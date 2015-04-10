@@ -27,6 +27,7 @@ class wxWindow;
 
 class AButton;
 class AudacityProject;
+class SelectedRegion;
 class TrackList;
 class TimeTrack;
 
@@ -60,11 +61,11 @@ class ControlToolBar:public ToolBar {
 
    bool IsRecordDown();
 
-   // Play currently selected region, or if nothing selected,
-   // play from current cursor.
+   // Play current play region (not always the same as the selection),
+   // or if there is none, play from current cursor.
    void PlayCurrentRegion(bool looped = false, bool cutpreview = false);
-   // Play the region [t0,t1]
-   void PlayPlayRegion(double t0, double t1,
+   // Play a specified region, which might include frequency bounds
+   void PlayPlayRegion(const SelectedRegion &region,
                        bool looped = false,
                        bool cutpreview = false,
                        TimeTrack *timetrack = NULL,
@@ -97,10 +98,14 @@ class ControlToolBar:public ToolBar {
                             teBmps eDisabled);
 
    void ArrangeButtons();
-   void SetupCutPreviewTracks(double playStart, double cutStart,
-                             double cutEnd, double playEnd);
-   void ClearCutPreviewTracks();
+   void ClearTemporaryTracks();
 
+   bool DoPlayPlayRegion(const SelectedRegion &region,
+      bool looped,
+      bool cutpreview,
+      TimeTrack *timetrack,
+      const double *pStartTime);
+   
    enum
    {
       ID_PLAY_BUTTON = 11000,
@@ -119,8 +124,6 @@ class ControlToolBar:public ToolBar {
    AButton *mStop;
    AButton *mFF;
 
-   static AudacityProject *mBusyProject;
-
    // Maybe button state values shouldn't be duplicated in this toolbar?
    bool mPaused;         //Play or record is paused or not paused?
 
@@ -131,7 +134,7 @@ class ControlToolBar:public ToolBar {
 
    wxBoxSizer *mSizer;
 
-   TrackList* mCutPreviewTracks;
+   TrackList *mTemporaryTracks;
 
  public:
 

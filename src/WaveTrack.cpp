@@ -208,7 +208,10 @@ void WaveTrack::SetRate(double newRate)
 
 float WaveTrack::GetGain() const
 {
-   return mGain;
+   if (mController && mController->GetKind() == Wave)
+      return static_cast<const WaveTrack*>(mController)->GetGain();
+   else
+      return mGain;
 }
 
 void WaveTrack::SetGain(float newGain)
@@ -218,7 +221,10 @@ void WaveTrack::SetGain(float newGain)
 
 float WaveTrack::GetPan() const
 {
-   return mPan;
+   if (mController && mController->GetKind() == Wave)
+      return static_cast<const WaveTrack*>(mController)->GetPan();
+   else
+      return mPan;
 }
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -320,15 +326,16 @@ float WaveTrack::GetChannelGain(int channel)
       channel = 3;
 #endif
 
-   if (mPan < 0)
-      right = (mPan + 1.0);
-   else if (mPan > 0)
-      left = 1.0 - mPan;
+   const double pan = GetPan(), gain = GetGain();
+   if (pan < 0)
+      right = (pan + 1.0);
+   else if (pan > 0)
+      left = 1.0 - pan;
 
    if ((channel%2) == 0)
-      return left*mGain;
+      return left*gain;
    else
-      return right*mGain;
+      return right*gain;
 }
 
 bool WaveTrack::ConvertToSampleFormat(sampleFormat format)

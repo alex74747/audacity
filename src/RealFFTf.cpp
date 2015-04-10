@@ -59,9 +59,9 @@ HFFT InitializeFFT(int fftlen)
    int i;
    int temp;
    int mask;
-   HFFT h;
+   FFTParam *h;
 
-   if((h=(HFFT)malloc(sizeof(FFTParam)))==NULL)
+   if ((h = (FFTParam *)malloc(sizeof(FFTParam))) == NULL)
    {
       fprintf(stderr,"Error allocating memory for FFT\n");
       exit(8);
@@ -119,8 +119,7 @@ void EndFFT(HFFT h)
       free(h->BitReversed);
       free(h->SinTable);
    }
-   h->Points=0;
-   free(h);
+   free(const_cast<FFTParam*>(h));
 }
 
 #define MAX_HFFT 10
@@ -290,7 +289,7 @@ void RealFFTf(fft_type *buffer,HFFT h)
 *        values would be similar in amplitude to the input values, which is
 *        good when using fixed point arithmetic)
 */
-void InverseRealFFTf(fft_type *buffer,HFFT h)
+void InverseRealFFTf(fft_type *buffer, HFFT h)
 {
    fft_type *A,*B;
    fft_type *sptr;

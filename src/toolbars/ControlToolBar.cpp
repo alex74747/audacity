@@ -36,6 +36,7 @@
 
 #include "../Audacity.h"
 #include "../Experimental.h"
+#include "../FFT.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -51,6 +52,7 @@
 #include <wx/tooltip.h>
 
 #include "ControlToolBar.h"
+#include "SpectralSelectionBar.h"
 #include "TranscriptionToolBar.h"
 #include "MeterToolBar.h"
 
@@ -60,15 +62,13 @@
 #include "../ImageManipulation.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../SpectrumTransformer.h"
 #include "../Theme.h"
 #include "../Track.h"
 #include "../widgets/AButton.h"
 #include "../widgets/Meter.h"
 
 IMPLEMENT_CLASS(ControlToolBar, ToolBar);
-
-//static
-AudacityProject *ControlToolBar::mBusyProject = NULL;
 
 ////////////////////////////////////////////////////////////
 /// Methods for ControlToolBar
@@ -98,11 +98,12 @@ ControlToolBar::ControlToolBar()
    mStrLocale = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
 
    mSizer = NULL;
-   mCutPreviewTracks = NULL;
+   mTemporaryTracks = NULL;
 }
 
 ControlToolBar::~ControlToolBar()
 {
+   ClearTemporaryTracks();
 }
 
 
@@ -381,11 +382,15 @@ void ControlToolBar::Repaint( wxDC *dc )
 void ControlToolBar::EnableDisableButtons()
 {
    //TIDY-ME: Button logic could be neater.
-   AudacityProject *p = GetActiveProject();
+   AudacityProject *const p = GetActiveProject();
    bool tracks = false;
-   bool playing = mPlay->IsDown();
-   bool recording = mRecord->IsDown();
-   bool busy = gAudioIO->IsBusy() || playing || recording;
+   const bool playing = mPlay->IsDown();
+   const bool recording = mRecord->IsDown();
+   const bool busy = gAudioIO->IsBusy() || playing || recording;
+   TranscriptionToolBar *const pttb = p ? p->GetTranscriptionToolBar() : 0;
+   const bool playingAtSpeed = pttb && pttb->PlayIsDown();
+   SpectralSelectionBar *const pssb = p ? p->GetSpectralSelectionBar() : 0;
+   const bool playingFrequencies = pssb && pssb->PlayIsDown();
 
    // Only interested in audio type tracks
    if (p) {
@@ -403,16 +408,14 @@ void ControlToolBar::EnableDisableButtons()
    }
 
    const bool enablePlay = (!recording) || (tracks && !busy);
-   mPlay->SetEnabled(enablePlay);
-   // Enable and disable the other play button 
-   if (p)
-   {
-      TranscriptionToolBar *const pttb = p->GetTranscriptionToolBar();
-      if (pttb)
-         pttb->SetEnabled(enablePlay);
-   }
 
-   mRecord->SetEnabled(!busy && !playing);
+   mPlay->SetEnabled(enablePlay);
+   if (pttb)
+      pttb->SetEnabled(enablePlay);
+   if (pssb)
+      pssb->SetEnabled(enablePlay);
+
+   mRecord->SetEnabled(!busy && !(playingAtSpeed || playingFrequencies || playing));
 
    mStop->SetEnabled(busy);
    mRewind->SetEnabled(!busy);
@@ -422,17 +425,37 @@ void ControlToolBar::EnableDisableButtons()
 
 void ControlToolBar::SetPlay(bool down, bool looped, bool cutPreview)
 {
-   AudacityProject *p = GetActiveProject();
-   if (down) {
+   // Slightly hairy interaction with transcription and spectral
+   // selection tool bars.  TIDY-ME
+   // When down is true, push one and only one of the three play
+   // buttons.  Else, pop all.
+
+   AudacityProject *const p = GetActiveProject();
+   TranscriptionToolBar *const pttb = p ? p->GetTranscriptionToolBar() : 0;
+   const bool playingAtSpeed = pttb && pttb->PlayIsDown();
+   SpectralSelectionBar *const pssb = p ? p->GetSpectralSelectionBar() : 0;
+   const bool playingFrequencies = pssb && pssb->PlayIsDown();
+
+   const bool thisUp = (!down || playingAtSpeed || playingFrequencies);
+   if (thisUp) {
+      mPlay->PopUp();
+      mPlay->SetAlternateIdx(0);
+   }
+   else {
       mPlay->SetShift(looped);
       mPlay->SetControl(cutPreview);
       mPlay->SetAlternateIdx(cutPreview ? 2 : looped ? 1 : 0);
       mPlay->PushDown();
    }
-   else {
-      mPlay->PopUp();
-      mPlay->SetAlternateIdx(0);
-   }
+
+   const bool transcriptionUp = !(down && playingAtSpeed);
+   if (pttb)
+      pttb->SetPlaying(!transcriptionUp, looped, cutPreview);
+
+   const bool spectralUp = !(down && playingFrequencies);
+   if (pssb)
+      pssb->SetPlaying(!spectralUp, looped);
+
    EnableDisableButtons();
 }
 
@@ -467,38 +490,193 @@ bool ControlToolBar::IsRecordDown()
 {
    return mRecord->IsDown();
 }
-void ControlToolBar::PlayPlayRegion(double t0, double t1,
-                                    bool looped /* = false */,
-                                    bool cutpreview /* = false */,
-                                    TimeTrack *timetrack /* = NULL */,
-                                    const double *pStartTime /* = NULL */)
+
+
+namespace
 {
-   SetPlay(true, looped, cutpreview);
 
-   if (gAudioIO->IsBusy()) {
-      SetPlay(false);
-      return;
+class TrackMaker {
+public:
+   virtual WaveTrack *makeTrack(Track *orig) = 0;
+   virtual void SetNTracks(int) {}
+};
+
+class CutPreviewTrackMaker : public TrackMaker {
+public:
+   CutPreviewTrackMaker(double cutStart, double cutEnd)
+      : mCutStart(cutStart), mCutEnd(cutEnd)
+   {}
+
+   WaveTrack *makeTrack(Track *orig) {
+      WaveTrack *track1 = static_cast<WaveTrack*>(orig->Duplicate());
+      track1->Clear(mCutStart, mCutEnd);
+      return track1;
    }
 
-   if (cutpreview && t0==t1) {
-      SetPlay(false);
-      return; /* msmeyer: makes no sense */
+   double mCutStart, mCutEnd;
+};
+
+enum { WindowSize = 2048, StepsPerWindow = 4 };
+
+class SpectralPlayTrackMaker : public TrackMaker {
+public:
+   SpectralPlayTrackMaker(TrackFactory *factory,
+      double selStart, double selEnd,
+      double f0, double f1)
+      : mProgress(_("Play spectral selection"), _("Preparing Output"), pdlgHideStopButton)
+      , mFactory(factory)
+      , mSelStart(selStart)
+      , mSelEnd(selEnd)
+      , mF0(f0)
+      , mF1(f1)
+      , mCount(-1)
+      , mNTracks(1)
+      , mNWindows(0)
+      , mLen(0)
+   {}
+
+   WaveTrack *makeTrack(Track *orig);
+   void SetNTracks(int nTracks)
+   {
+      mNTracks = std::max(1, nTracks);
    }
+
+   void NextTrack(sampleCount len)
+   {
+      ++mCount;
+      mNWindows = 0;
+      mLen = len;
+   }
+
+   bool TrackProgress()
+   { 
+      return eProgressCancelled != mProgress.Update(
+         (mCount +
+          (++mNWindows * (WindowSize / StepsPerWindow)) / double(mLen))
+         / double(mNTracks)
+      );
+   }
+
+   ProgressDialog mProgress;
+   TrackFactory *mFactory;
+   double mSelStart, mSelEnd, mF0, mF1;
+   int mCount, mNTracks, mNWindows, mLen;
+};
+
+class BandPasser : public SpectrumTransformer
+{
+public:
+   BandPasser(SpectralPlayTrackMaker &maker,
+              TrackFactory *factory, double rate, sampleCount len,
+              double freqLo, double freqHi)
+      : SpectrumTransformer(WFCHann, WFCHann, factory,
+                            WindowSize, StepsPerWindow, true, true)
+      , mMaker(maker)
+   {
+      double bin = rate / WindowSize;
+      mBinLo = freqLo < 0 ? 0 : floor(freqLo / bin);
+      mBinHi = freqHi < 0 ? (1 + WindowSize / 2) : ceil(freqHi / bin);
+      mMaker.NextTrack(len);
+   }
+
+   virtual bool ProcessWindow()
+   {
+      int spectrumSize = (1 + WindowSize / 2);
+      Window &window = Latest();
+      if (0 < mBinLo)
+         window.mRealFFTs[0] = 0;
+      for (int ii = 1; ii < mBinLo; ++ii)
+         window.mRealFFTs[ii] = window.mImagFFTs[ii] = 0;
+      for (int ii = mBinHi; ii < spectrumSize - 1; ++ii)
+         window.mRealFFTs[ii] = window.mImagFFTs[ii] = 0;
+      if (mBinHi < spectrumSize)
+         window.mImagFFTs[0] = 0;
+      return true;
+   }
+
+   virtual bool TrackProgress()
+   {
+      return mMaker.TrackProgress();
+   }
+
+   SpectralPlayTrackMaker &mMaker;
+   int mBinLo, mBinHi;
+};
+
+WaveTrack *SpectralPlayTrackMaker::makeTrack(Track *orig)
+{
+   std::auto_ptr<WaveTrack> track1(static_cast<WaveTrack*>(orig->Duplicate()));
+   const sampleCount start = track1->TimeToLongSamples(mSelStart);
+   const sampleCount end = track1->TimeToLongSamples(mSelEnd);
+   BandPasser bp(*this, mFactory, track1->GetRate(), end - start, mF0, mF1);
+   if (!bp.ProcessTrack(track1.get(), 1, start, end - start))
+      track1.reset();
+   return track1.release();
+}
+
+bool SetupTemporaryTracks(TrackList *trackList, TrackMaker &maker)
+{
+   int nTracks = 0;
+   AudacityProject *p = GetActiveProject();
+   if (p) {
+      TrackListIterator it(p->GetTracks());
+      for (Track *t = it.First(); t; t = it.Next())
+      {
+         if (t->GetKind() == Track::Wave)
+            ++nTracks;
+      }
+   }
+   maker.SetNTracks(nTracks);
+   if (p) {
+      TrackListIterator it(p->GetTracks());
+      for (Track *t = it.First(); t; t = it.Next())
+      {
+         if (t->GetKind() == Track::Wave)
+         {
+            // Duplicate and change tracks
+            WaveTrack *track1 = maker.makeTrack(t);
+            if (track1) {
+               track1->SetController(t);
+               trackList->Add(track1);
+            }
+            else
+               return false;
+         }
+      }
+   }
+   return true;
+}
+
+}
+
+bool ControlToolBar::DoPlayPlayRegion(const SelectedRegion &region,
+   bool looped,
+   bool cutpreview,
+   TimeTrack *timetrack,
+   const double *pStartTime)
+{
+   ClearTemporaryTracks();
+
+   // We may change these later
+   double t0 = region.t0();
+   double t1 = region.t1();
+
+   if (gAudioIO->IsBusy())
+      return false;
+
+   if (cutpreview && t0==t1)
+      return false; /* msmeyer: makes no sense */
 
    AudacityProject *p = GetActiveProject();
-   if (!p) {
-      SetPlay(false);
-      return;  // Should never happen, but...
-   }
+   if (!p)
+      return false;  // Should never happen, but...
 
-   TrackList *t = p->GetTracks();
-   if (!t) {
-      mPlay->PopUp();
-      return;  // Should never happen, but...
-   }
+   TrackList *trackList = p->GetTracks();
+   if (!trackList)
+      return false;  // Should never happen, but...
 
    bool hasaudio = false;
-   TrackListIterator iter(t);
+   TrackListIterator iter(trackList);
    for (Track *trk = iter.First(); trk; trk = iter.Next()) {
       if (trk->GetKind() == Track::Wave
 #ifdef EXPERIMENTAL_MIDI_OUT
@@ -510,10 +688,8 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
       }
    }
 
-   if (!hasaudio) {
-      SetPlay(false);
-      return;  // No need to continue without audio tracks
-   }
+   if (!hasaudio)
+      return false;  // No need to continue without audio tracks
 
    double maxofmins,minofmaxs;
 #if defined(EXPERIMENTAL_SEEK_BEHIND_CURSOR)
@@ -526,14 +702,14 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
       // no range is selected. Otherwise, we play from t0 to end
       if (looped) {
          // msmeyer: always play from start
-         t0 = t->GetStartTime();
+         t0 = trackList->GetStartTime();
       } else {
          // move t0 to valid range
          if (t0 < 0) {
-            t0 = t->GetStartTime();
+            t0 = trackList->GetStartTime();
          }
-         else if (t0 > t->GetEndTime()) {
-            t0 = t->GetEndTime();
+         else if (t0 > trackList->GetEndTime()) {
+            t0 = trackList->GetEndTime();
          }
 #if defined(EXPERIMENTAL_SEEK_BEHIND_CURSOR)
          else {
@@ -544,29 +720,28 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
       }
 
       // always play to end
-      t1 = t->GetEndTime();
+      t1 = trackList->GetEndTime();
    }
    else {
       // always t0 < t1 right?
 
       // the set intersection between the play region and the
       // valid range maximum of lower bounds
-      if (t0 < t->GetStartTime())
-         maxofmins = t->GetStartTime();
+      if (t0 < trackList->GetStartTime())
+         maxofmins = trackList->GetStartTime();
       else
          maxofmins = t0;
 
       // minimum of upper bounds
-      if (t1 > t->GetEndTime())
-         minofmaxs = t->GetEndTime();
+      if (t1 > trackList->GetEndTime())
+         minofmaxs = trackList->GetEndTime();
       else
          minofmaxs = t1;
 
       // we test if the intersection has no volume
-      if (minofmaxs <= maxofmins) {
+      if (minofmaxs <= maxofmins)
          // no volume; play nothing
-         return;
-      }
+         return false;
       else {
          t0 = maxofmins;
          t1 = minofmaxs;
@@ -587,11 +762,12 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
          gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
          double tcp0 = t0-beforeLen;
          double tcp1 = (t1+afterLen) - (t1-t0);
-         SetupCutPreviewTracks(tcp0, t0, t1, tcp1);
-         if (mCutPreviewTracks)
+         mTemporaryTracks = new TrackList();
+         CutPreviewTrackMaker maker(t0, t1);
+         if (mTemporaryTracks)
          {
             token = gAudioIO->StartStream(
-               mCutPreviewTracks->GetWaveTrackArray(false),
+               mTemporaryTracks->GetWaveTrackArray(false),
                WaveTrackArray(),
 #ifdef EXPERIMENTAL_MIDI_OUT
                NoteTrackArray(),
@@ -599,19 +775,26 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
                timetrack, p->GetRate(), tcp0, tcp1, p, false,
                t0, t1-t0,
                pStartTime);
-         } else
-         {
+         }
+         else
             // Cannot create cut preview tracks, clean up and exit
-            SetPlay(false);
-            SetStop(false);
-            SetRecord(false);
-            return;
+            return false;
+      }
+      else {
+         if (!timetrack)
+            timetrack = trackList->GetTimeTrack();
+         if (!(region.f0() < 0.0 && region.f1() < 0.0)) {
+            // Prepare to play the spectral selection only
+            mTemporaryTracks = new TrackList();
+            SpectralPlayTrackMaker maker
+               (p->GetTrackFactory(), t0, t1, region.f0(), region.f1());
+            if (!SetupTemporaryTracks(mTemporaryTracks, maker)) {
+               ClearTemporaryTracks();
+               return false;
+            }
+            trackList = mTemporaryTracks;
          }
-      } else {
-         if (!timetrack) {
-            timetrack = t->GetTimeTrack();
-         }
-         token = gAudioIO->StartStream(t->GetWaveTrackArray(false),
+         token = gAudioIO->StartStream(trackList->GetWaveTrackArray(false),
                                        WaveTrackArray(),
 #ifdef EXPERIMENTAL_MIDI_OUT
                                        t->GetNoteTrackArray(false),
@@ -624,9 +807,10 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
       if (token != 0) {
          success = true;
          p->SetAudioIOToken(token);
-         mBusyProject = p;
 #if defined(EXPERIMENTAL_SEEK_BEHIND_CURSOR)
          //AC: If init_seek was set, now's the time to make it happen.
+         // PRL:  isn't SeekStream supposed to take a difference of times,
+         // not an absolute time?
          gAudioIO->SeekStream(init_seek);
 #endif
       }
@@ -644,8 +828,19 @@ void ControlToolBar::PlayPlayRegion(double t0, double t1,
       }
    }
 
-   if (!success) {
+   return success;
+}
+
+void ControlToolBar::PlayPlayRegion(const SelectedRegion &region,
+   bool looped /* = false */,
+   bool cutpreview /* = false */,
+   TimeTrack *timetrack /* = NULL */,
+   const double *pStartTime /* = NULL */)
+{
+   SetPlay(true, looped, cutpreview);
+   if (!DoPlayPlayRegion(region, looped, cutpreview, timetrack, pStartTime)) {
       SetPlay(false);
+      // Do we really need the following?
       SetStop(false);
       SetRecord(false);
    }
@@ -666,8 +861,7 @@ void ControlToolBar::PlayCurrentRegion(bool looped /* = false */,
       double playRegionStart, playRegionEnd;
       p->GetPlayRegion(&playRegionStart, &playRegionEnd);
 
-      PlayPlayRegion(playRegionStart,
-                     playRegionEnd,
+      PlayPlayRegion(SelectedRegion(playRegionStart, playRegionEnd),
                      looped, cutpreview);
    }
 }
@@ -738,9 +932,8 @@ void ControlToolBar::StopPlaying(bool stopStream /* = true*/)
    //Make sure you tell gAudioIO to unpause
    gAudioIO->SetPaused(mPaused);
 
-   ClearCutPreviewTracks();
+   ClearTemporaryTracks();
 
-   mBusyProject = NULL;
    // So that we continue monitoring after playing or recording.
    // also clean the MeterQueues
    AudacityProject *project = GetActiveProject();
@@ -911,7 +1104,6 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 
       if (success) {
          p->SetAudioIOToken(token);
-         mBusyProject = p;
       }
       else {
          // msmeyer: Delete recently added tracks if opening stream fails
@@ -973,51 +1165,13 @@ void ControlToolBar::OnFF(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void ControlToolBar::SetupCutPreviewTracks(double WXUNUSED(playStart), double cutStart,
-                                           double cutEnd, double  WXUNUSED(playEnd))
+void ControlToolBar::ClearTemporaryTracks()
 {
-   ClearCutPreviewTracks();
-   AudacityProject *p = GetActiveProject();
-   if (p) {
-      // Find first selected track (stereo or mono) and duplicate it
-      Track *track1 = NULL, *track2 = NULL;
-      TrackListIterator it(p->GetTracks());
-      for (Track *t = it.First(); t; t = it.Next())
-      {
-         if (t->GetKind() == Track::Wave && t->GetSelected())
-         {
-            track1 = t;
-            track2 = t->GetLink();
-            break;
-         }
-      }
-
-      if (track1)
-      {
-         // Duplicate and change tracks
-         track1 = track1->Duplicate();
-         track1->Clear(cutStart, cutEnd);
-         if (track2)
-         {
-            track2 = track2->Duplicate();
-            track2->Clear(cutStart, cutEnd);
-         }
-
-         mCutPreviewTracks = new TrackList();
-         mCutPreviewTracks->Add(track1);
-         if (track2)
-            mCutPreviewTracks->Add(track2);
-      }
-   }
-}
-
-void ControlToolBar::ClearCutPreviewTracks()
-{
-   if (mCutPreviewTracks)
+   if (mTemporaryTracks)
    {
-      mCutPreviewTracks->Clear(true); /* delete track contents too */
-      delete mCutPreviewTracks;
-      mCutPreviewTracks = NULL;
+      mTemporaryTracks->Clear(true); /* delete track contents too */
+      delete mTemporaryTracks;
+      mTemporaryTracks = NULL;
    }
 }
 

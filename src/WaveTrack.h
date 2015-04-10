@@ -20,7 +20,6 @@
 
 #include <wx/gdicmn.h>
 #include <wx/longlong.h>
-#include <wx/thread.h>
 
 class TimeWarper;
 

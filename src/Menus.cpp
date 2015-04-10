@@ -99,6 +99,7 @@ simplifies construction of menu items.
 #include "toolbars/DeviceToolBar.h"
 #include "toolbars/MixerToolBar.h"
 #include "toolbars/TranscriptionToolBar.h"
+#include "toolbars/SpectralSelectionBar.h"
 
 #include "Experimental.h"
 #include "PlatformCompatibility.h"
@@ -1311,6 +1312,9 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
    c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
 
+   c->AddCommand(wxT("PlayFrequencies"), _("Play selected frequencies"), FN(OnPlayFrequencies));
+   c->AddCommand(wxT("PlayFrequenciesLooped"), _("Loop Play selected frequencies"), FN(OnPlayFrequenciesLooped));
+
    mLastFlags = 0;
 
 #if defined(__WXDEBUG__)
@@ -2206,7 +2210,7 @@ void AudacityProject::OnPlayOneSecond()
 
    double pos = mTrackPanel->GetMostRecentXPos();
    mLastPlayMode = oneSecondPlay;
-   GetControlToolBar()->PlayPlayRegion(pos - 0.5, pos + 0.5);
+   GetControlToolBar()->PlayPlayRegion(SelectedRegion(pos - 0.5, pos + 0.5));
 }
 
 
@@ -2249,7 +2253,7 @@ void AudacityProject::OnPlayToSelection()
    // only when playing a short region, less than or equal to a second.
 //   mLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
 
-   GetControlToolBar()->PlayPlayRegion(t0, t1);
+   GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t1));
 }
 
 void AudacityProject::OnPlayLooped()
@@ -3084,6 +3088,20 @@ void AudacityProject::OnPlaySpeedDec()
    if (tb) {
       tb->AdjustPlaySpeed(-0.1f);
    }
+}
+
+void AudacityProject::OnPlayFrequencies()
+{
+   SpectralSelectionBar *sb = GetSpectralSelectionBar();
+   if (sb)
+      sb->Play(false);
+}
+
+void AudacityProject::OnPlayFrequenciesLooped()
+{
+   SpectralSelectionBar *sb = GetSpectralSelectionBar();
+   if (sb)
+      sb->Play(true);
 }
 
 double AudacityProject::NearestZeroCrossing(double t0)
