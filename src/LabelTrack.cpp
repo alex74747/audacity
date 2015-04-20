@@ -1382,7 +1382,7 @@ static int Constrain( int value, int min, int max )
 /// HandleMouse gets called with every mouse move or click.
 ///
 bool LabelTrack::HandleMouse(const wxMouseEvent & evt,
-                             wxRect & r, double h, double pps,
+                             wxRect & r, const ZoomInfo &zoomInfo,
                              SelectedRegion *newSel)
 {
    if(evt.LeftUp())
@@ -1454,7 +1454,7 @@ bool LabelTrack::HandleMouse(const wxMouseEvent & evt,
          bool bLabelMoving = mbIsMoving;
          bLabelMoving ^= evt.ShiftDown();
          bLabelMoving |= mMouseOverLabelLeft==mMouseOverLabelRight;
-         double fNewX = h + x / pps;
+         double fNewX = zoomInfo.PositionToTime(x, 0);
          if( bLabelMoving )
          {
             MayMoveLabel( mMouseOverLabelLeft,  -1, fNewX );
@@ -1552,7 +1552,7 @@ bool LabelTrack::HandleMouse(const wxMouseEvent & evt,
          {
             t = mLabels[mMouseOverLabelLeft]->getT0();
          }
-         mxMouseDisplacement = (int)((((t-h) * pps) + r.x )-evt.m_x);
+         mxMouseDisplacement = zoomInfo.TimeToPosition(t, r.x) - evt.m_x;
          return false;
       }
 
