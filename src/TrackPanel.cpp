@@ -3811,7 +3811,7 @@ void TrackPanel::ForwardEventToTimeTrackEnvelope(wxMouseEvent & event)
    bool needUpdate =
       pspeedenvelope->MouseEvent(
          event, envRect,
-         mViewInfo->h, mViewInfo->zoom,
+         *mViewInfo,
          ptimetrack->GetDisplayLog(), lower, upper);
    if (needUpdate) {
       RefreshTrack(mCapturedTrack);
@@ -3849,7 +3849,7 @@ void TrackPanel::ForwardEventToWaveTrackEnvelope(wxMouseEvent & event)
       pwavetrack->GetDisplayBounds(&zoomMin, &zoomMax);
       needUpdate = penvelope->MouseEvent(
          event, envRect,
-         mViewInfo->h, mViewInfo->zoom,
+         *mViewInfo,
          dB, zoomMin, zoomMax);
 
       // If this track is linked to another track, make the identical
@@ -3867,8 +3867,8 @@ void TrackPanel::ForwardEventToWaveTrackEnvelope(wxMouseEvent & event)
             float zoomMin, zoomMax;
             pwavetrack->GetDisplayBounds(&zoomMin, &zoomMax);
             updateNeeded = e2->MouseEvent(event, envRect,
-                                         mViewInfo->h, mViewInfo->zoom, dB,
-                                         zoomMin, zoomMax);
+                                          *mViewInfo, dB,
+                                          zoomMin, zoomMax);
             needUpdate |= updateNeeded;
          }
          if(!e2 || !updateNeeded)   // no envelope found at this x point, or found but not updated
@@ -3881,7 +3881,7 @@ void TrackPanel::ForwardEventToWaveTrackEnvelope(wxMouseEvent & event)
                float zoomMin, zoomMax;
                pwavetrack->GetDisplayBounds(&zoomMin, &zoomMax);
                needUpdate |= e2->MouseEvent(event, envRect,
-                                            mViewInfo->h, mViewInfo->zoom, dB,
+                                            *mViewInfo, dB,
                                             zoomMin, zoomMax);
             }
          }
