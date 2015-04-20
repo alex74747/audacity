@@ -2746,7 +2746,7 @@ void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
    {
       LabelTrack *lt = (LabelTrack *) pTrack;
       if (lt->HandleMouse(event, r,//mCapturedRect,
-                          mViewInfo->h, mViewInfo->zoom,
+                          *mViewInfo,
                           &mViewInfo->selectedRegion)) {
          MakeParentPushState(_("Modified Label"),
                              _("Label Edit"),
@@ -6704,7 +6704,7 @@ bool TrackPanel::HandleLabelTrackMouseEvent(LabelTrack * lTrack, wxRect &r, wxMo
    }
 
    if (lTrack->HandleMouse(event, mCapturedRect,
-      mViewInfo->h, mViewInfo->zoom, &mViewInfo->selectedRegion)) {
+      *mViewInfo, &mViewInfo->selectedRegion)) {
 
       MakeParentPushState(_("Modified Label"),
                           _("Label Edit"),
