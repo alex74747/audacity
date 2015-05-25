@@ -74,7 +74,7 @@ typedef std::vector<float> FloatVector;
 // #define ATTACK_AND_RELEASE
 
 // Define to expose other advanced, experimental dialog controls
-//#define ADVANCED_SETTINGS
+#define ADVANCED_SETTINGS
 
 // Define to make the old statistical methods an available choice
 //#define OLD_METHOD_AVAILABLE
@@ -93,9 +93,26 @@ enum DiscriminationMethod {
 const struct DiscriminationMethodInfo {
    const wxChar *name;
 } discriminationMethodInfo[DM_N_METHODS] = {
-      { _("Median") },
-      { _("Second greatest") },
-      { _("Old") },
+   { _("Median") },
+   { _("Second greatest") },
+   { _("Old") },
+};
+
+enum FrequencySmoothingMethod {
+   FSM_AVERAGE,
+   FSM_ONE_SIDED,
+   FSM_TWO_SIDED,
+
+   FSM_N_METHODS,
+   FSM_DEFAULT_METHOD = FSM_AVERAGE,
+};
+
+const struct FrequencySmoothingMethodInfo {
+   const wxChar *name;
+} frequencySmoothingMethodInfo[FSM_N_METHODS] = {
+   { _("Average (old)") },
+   { _("One sided decay") },
+   { _("Two sided decay") },
 };
 
 // magic number used only in the old statistics
@@ -227,6 +244,7 @@ public:
    int        mWindowSizeChoice;
    int        mStepsPerWindowChoice;
    int        mMethod;
+   int        mFrequencySmoothingMethod;
 };
 
 EffectNoiseReduction::Settings::Settings()
@@ -303,6 +321,7 @@ private:
    const int mStepsPerWindow;
    const int mStepSize;
    const int mMethod;
+   const int mFrequencySmoothingMethod;
    const double mNewSensitivity;
 
 
@@ -532,6 +551,7 @@ bool EffectNoiseReduction::Settings::PrefsIO(bool read)
          { &Settings::mWindowSizeChoice, wxT("WindowSize"), DEFAULT_WINDOW_SIZE_CHOICE },
          { &Settings::mStepsPerWindowChoice, wxT("StepsPerWindow"), DEFAULT_STEPS_PER_WINDOW_CHOICE },
          { &Settings::mMethod, wxT("Method"), DM_DEFAULT_METHOD },
+         { &Settings::mFrequencySmoothingMethod, wxT("FrequencySmoothingMethod"), FSM_DEFAULT_METHOD },
    };
    static int intTableSize = sizeof(intTable) / sizeof(intTable[0]);
 
@@ -553,6 +573,7 @@ bool EffectNoiseReduction::Settings::PrefsIO(bool read)
       mWindowSizeChoice = DEFAULT_WINDOW_SIZE_CHOICE;
       mStepsPerWindowChoice = DEFAULT_STEPS_PER_WINDOW_CHOICE;
       mMethod = DM_DEFAULT_METHOD;
+      mFrequencySmoothingMethod = FSM_DEFAULT_METHOD;
       mOldSensitivity = DEFAULT_OLD_SENSITIVITY;
 #endif
 
@@ -693,25 +714,118 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
    if (mFreqSmoothingBins == 0)
       return;
 
-   {
-      float *pScratch = &mFreqSmoothingScratch[0];
-      std::fill(pScratch, pScratch + mSpectrumSize, 0.0f);
-   }
-
+   // Common part
    for (int ii = 0; ii < mSpectrumSize; ++ii)
       gains[ii] = log(gains[ii]);
 
-   for (int ii = 0; ii < mSpectrumSize; ++ii) {
-      const int j0 = std::max(0, ii - mFreqSmoothingBins);
-      const int j1 = std::min(mSpectrumSize - 1, ii + mFreqSmoothingBins);
-      for(int jj = j0; jj <= j1; ++jj) {
-         mFreqSmoothingScratch[ii] += gains[jj];
-      }
-      mFreqSmoothingScratch[ii] /= (j1 - j0 + 1);
-   }
+   switch (mFrequencySmoothingMethod)
+   {
 
-   for (int ii = 0; ii < mSpectrumSize; ++ii)
-      gains[ii] = exp(mFreqSmoothingScratch[ii]);
+   case FSM_AVERAGE:
+   {
+      // This is the old inherited frequency smoothing.
+
+      // Average at most 2 * mFreqSmoothingBins + 1 bins, centered about
+      // each bin, into temp.  This is arithmetic averaging of logs, which means
+      // geometric averaging of the gain factors.  This means a "tinkle" that
+      // sticks up above other frequencies for a given time slice is muted while
+      // neighboring bins are raised.
+
+      // But as we found out after correcting the big problem of the rectangular
+      // analysis window and instead using a window with less spectral leakage --
+      // Now a narrow band sound might get muted too much.
+
+      {
+         float *pScratch = &mFreqSmoothingScratch[0];
+         std::fill(pScratch, pScratch + mSpectrumSize, 0.0f);
+      }
+
+      for (int ii = 0; ii < mSpectrumSize; ++ii) {
+         const int j0 = std::max(0, ii - mFreqSmoothingBins);
+         const int j1 = std::min(mSpectrumSize - 1, ii + mFreqSmoothingBins);
+         for (int jj = j0; jj <= j1; ++jj) {
+            mFreqSmoothingScratch[ii] += gains[jj];
+         }
+         mFreqSmoothingScratch[ii] /= (j1 - j0 + 1);
+      }
+
+      for (int ii = 0; ii < mSpectrumSize; ++ii)
+         gains[ii] = exp(mFreqSmoothingScratch[ii]);
+   }
+   break;
+
+   case FSM_ONE_SIDED:
+   {
+      // This alternative is like the attack/decay algorithm except working
+      // along the frequency axis instead of the time axis.  Never lower any gains.
+      // Raise gains only.  And this version raises gains only above the frequency
+      // of a non-noise bin.
+
+      // If a bin is non-noise, with unity gain, then decay the gain
+      // exponentially with frequency bin so that it drops to the noise reduction
+      // gain after the chosen number of bins.
+
+      const double logReduction = log(mNoiseAttenFactor);
+      const double step = logReduction / mFreqSmoothingBins;
+      wxASSERT(step <= 0.0);
+
+      for (int ii = 0; ii < mSpectrumSize;)
+      {
+         double gain = gains[ii];
+         while (
+            ++ii < mSpectrumSize &&
+            (gain += step) > logReduction &&
+            gains[ii] < gain
+         )
+            // Raise this one
+            gains[ii] = gain;
+      }
+
+      for (int ii = 0; ii < mSpectrumSize; ++ii)
+         gains[ii] = exp(gains[ii]);
+   }
+   break;
+
+   case FSM_TWO_SIDED:
+   {
+      // Do the exponential decay both up and down.
+
+      const double logReduction = log(mNoiseAttenFactor);
+      const double step = logReduction / mFreqSmoothingBins;
+      wxASSERT(step <= 0.0);
+
+      for (int ii = 0; ii < mSpectrumSize;)
+      {
+         double gain = gains[ii];
+         while (
+            ++ii < mSpectrumSize &&
+            (gain += step) > logReduction &&
+            gains[ii] < gain
+            )
+            // Raise this one
+            gains[ii] = gain;
+      }
+
+      for (int ii = mSpectrumSize - 1; ii >= 0;)
+      {
+         double gain = gains[ii];
+         while (
+            --ii >= 0 &&
+            (gain += step) > logReduction &&
+            gains[ii] < gain
+            )
+            // Raise this one
+            gains[ii] = gain;
+      }
+
+      for (int ii = 0; ii < mSpectrumSize; ++ii)
+         gains[ii] = exp(gains[ii]);
+   }
+   break;
+
+   default:
+      wxASSERT(false);
+   }
 }
 
 EffectNoiseReduction::Worker::Worker
@@ -742,6 +856,7 @@ EffectNoiseReduction::Worker::Worker
 , mStepsPerWindow(settings.StepsPerWindow())
 , mStepSize(mWindowSize / mStepsPerWindow)
 , mMethod(settings.mMethod)
+, mFrequencySmoothingMethod(settings.mFrequencySmoothingMethod)
 
 // Sensitivity setting is a base 10 log, turn it into a natural log
 , mNewSensitivity(settings.mNewSensitivity * log(10.0))
@@ -1464,7 +1579,7 @@ const ControlInfo *controlInfo() {
          XO("R&elease time (secs):"), XO("Release time")),
 #endif
          ControlInfo(&EffectNoiseReduction::Settings::mFreqSmoothingBands,
-         0, 6, 6, wxT("%d"), true,
+         0, 50, 50, wxT("%d"), true,
          XO("&Frequency smoothing (bands):"), XO("Frequency smoothing")),
 
 #ifdef ADVANCED_SETTINGS
@@ -1804,6 +1919,16 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
                mTempSettings.mMethod,
                &methodChoices);
          }
+
+         {
+            wxArrayString methodChoices;
+            int nn = FSM_N_METHODS;
+            for (int ii = 0; ii < nn; ++ii)
+               methodChoices.Add(frequencySmoothingMethodInfo[ii].name);
+            S.TieChoice(_("Frequency smoothing method") + wxString(wxT(":")),
+               mTempSettings.mFrequencySmoothingMethod,
+               &methodChoices);
+         }
       }
       S.EndMultiColumn();
 
@@ -1812,7 +1937,7 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
       {
          wxTextValidator vld(wxFILTER_NUMERIC);
          for (int id = END_OF_BASIC_SLIDERS; id < END_OF_ADVANCED_SLIDERS; id += 2) {
-            const ControlInfo &info = controlInfo[(id - FIRST_SLIDER) / 2];
+            const ControlInfo &info = controlInfo()[(id - FIRST_SLIDER) / 2];
             info.CreateControls(id, vld, S);
          }
       }
