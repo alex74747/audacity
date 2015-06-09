@@ -196,4 +196,11 @@
 // interpolating in frequency domain.
 #define EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
 
+// Paul Licameli (PRL) 10 May 2016
+// Time ruler accepts focus, buttons can be reached with TAB
+//#define EXPERIMENTAL_TIME_RULER_NAVIGATION
+
+// PRL 22 Feb 2015
+#define EXPERIMENTAL_FISHEYE
+
 #endif

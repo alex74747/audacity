@@ -14,14 +14,25 @@
 #include <vector>
 #include <wx/event.h>
 #include "SelectedRegion.h"
+#include "Experimental.h"
 
+#include <vector>
+#include <utility>
+#include <wx/defs.h>
 
 class Track;
+class ZoomInfo;
+class wxArrayString;
+class XMLWriter;
 
 #ifdef __GNUC__
 #define CONST
 #else
 #define CONST const
+#endif
+
+#ifdef EXPERIMENTAL_FISHEYE
+struct FisheyeInfo;
 #endif
 
 // The subset of ViewInfo information (other than selection)
@@ -117,21 +128,60 @@ public:
 
       NUM_STATES,
    };
-   FisheyeState GetFisheyeState() const
-   { return HIDDEN; } // stub
+
+   FisheyeState GetFisheyeState() const;
 
    // Return true if the mouse position is anywhere in the fisheye
    // origin specifies the pixel corresponding to time h
-   bool InFisheye(wxInt64 /*position*/, wxInt64 WXUNUSED(origin = 0)) const
-   {return false;} // stub
+   bool InFisheye(wxInt64 position, wxInt64 origin = 0) const;
 
    // These accessors ignore the fisheye hiding state.
    // Inclusive:
-   wxInt64 GetFisheyeLeftBoundary(wxInt64 WXUNUSED(origin = 0)) const
-   {return 0;} // stub
+   wxInt64 GetFisheyeLeftBoundary(wxInt64 origin = 0) const;
    // Exclusive:
-   wxInt64 GetFisheyeRightBoundary(wxInt64 WXUNUSED(origin = 0)) const
-   {return 0;} // stub
+   wxInt64 GetFisheyeRightBoundary(wxInt64 origin = 0) const;
+
+#ifdef EXPERIMENTAL_FISHEYE
+   static wxArrayString GetFisheyeStyleChoices();
+   static int GetFisheyeDefaultWidth() { return 300; }
+   static int GetFisheyeDefaultMagnification() { return 2; }
+
+   SelectedRegion GetFisheyeFocusRegion() const;
+
+
+   // Return true if the mouse position is in the center portion of the
+   // fisheye, which has a constant and maximal zoom
+   // origin specifies the pixel corresponding to time h
+   bool InFisheyeFocus(wxInt64 position, wxInt64 origin = 0) const;
+
+   // These accessors ignore the fisheye hiding state.
+   // Inclusive:
+   wxInt64 GetFisheyeFocusLeftBoundary(wxInt64 origin = 0) const;
+   wxInt64 GetFisheyeCenterPosition(wxInt64 origin = 0) const;
+   // Exclusive:
+   wxInt64 GetFisheyeFocusRightBoundary(wxInt64 origin = 0) const;
+
+   // level indicates a multiplier of the background zoom that the fisheye
+   // will maintain (except when maximum zoom is limited)
+   // and must be at least 1.0
+   double GetFisheyeTotalZoom() const;
+
+   bool ZoomFisheyeBy(wxCoord position, wxCoord origin, double multiplier);
+   bool DefaultFisheyeZoom(wxCoord position, wxCoord origin);
+
+   void SetFisheyeState(FisheyeState state);
+
+   void ChangeFisheyeStyle();
+   void AdjustFisheyePixelWidth(int delta, int maximum);
+
+   double GetFisheyeCenterTime() const;
+   void SetFisheyeCenterTime(double time);
+
+protected:
+   void UpdateFisheye();
+   FisheyeInfo *fisheye;
+
+#endif
 };
 
 class AUDACITY_DLL_API ViewInfo final

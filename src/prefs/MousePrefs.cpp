@@ -154,10 +154,19 @@ void MousePrefs::CreateList()
    // AddItem(_("ESC"),              _("Select"),    _("Toggle center snapping in spectrogram"), _("same as select tool"));
 #endif
 
+#ifdef EXPERIMENTAL_FISHEYE
+   AddItem(_("Right-Double-Click"),      _("Any"), _("Recenter pinned fisheye"));
+   AddItem(_("Right-Click"),             _("Any"), _("Coarse-adjust fisheye"));
+   AddItem(_("Right-Drag"),              _("Any"), _("Fine-adjust fisheye"));
+   AddItem(_("Right-Double-Click-Drag"), _("Any"), _("Ultrafine-adjust fisheye"));
+#endif
    AddItem(_("Wheel-Rotate"),                _("Any"),   _("Scroll tracks up or down"));
    AddItem(_("Shift-Wheel-Rotate"),          _("Any"),   _("Scroll waveform"));
    AddItem(CTRL + _("-Wheel-Rotate"),        _("Any"),   _("Zoom waveform in or out"));
    AddItem(CTRL + _("-Shift-Wheel-Rotate"),  _("Any"),   _("Vertical Scale Waveform (dB) range"));
+#ifdef EXPERIMENTAL_FISHEYE
+   AddItem(CTRL + _("-Shift-Wheel-Rotate"), _("Any"), _("Adjust fisheye width"));
+#endif
 
    mList->SetColumnWidth(BlankColumn, 0);
    mList->SetColumnWidth(ToolColumn, wxLIST_AUTOSIZE);

@@ -1274,6 +1274,13 @@ void AudacityProject::CreateMenusAndCommands()
                  AlwaysEnabledFlag, AlwaysEnabledFlag);
 #endif
 
+#ifdef EXPERIMENTAL_FISHEYE
+   c->AddCommand(wxT("ShowHideFisheye"), _("Show/Hide Fisheye"), FN(OnShowHideFisheye),
+      wxT("F"), AlwaysEnabledFlag, AlwaysEnabledFlag);
+   c->AddCommand(wxT("PlayFisheye"), _("Play Fisheye"), FN(OnPlayFisheye),
+      wxT("G"), AlwaysEnabledFlag, AlwaysEnabledFlag);
+#endif
+
    mLastFlags = AlwaysEnabledFlag;
 
 #if defined(__WXDEBUG__)
@@ -5267,6 +5274,17 @@ void AudacityProject::ZoomInByFactor( double ZoomFactor )
       return;
    }
 
+#ifdef EXPERIMENTAL_FISHEYE
+   wxPoint position(mTrackPanel->ScreenToClient(::wxGetMousePosition()));
+   if (mTrackPanel->InFisheyeFocus(position)) {
+      // Don't zoom the background, just change the fisheye magnification
+      if (mViewInfo.ZoomFisheyeBy(position.x, mTrackPanel->GetLeftOffset(),
+                                  ZoomFactor))
+         mTrackPanel->Refresh(false);
+      return;
+   }
+#endif
+
    // DMM: Here's my attempt to get logical zooming behavior
    // when there's a selection that's currently at least
    // partially on-screen
@@ -5337,6 +5355,17 @@ void AudacityProject::OnZoomOut()
 
 void AudacityProject::ZoomOutByFactor( double ZoomFactor )
 {
+#ifdef EXPERIMENTAL_FISHEYE
+   wxPoint position(mTrackPanel->ScreenToClient(::wxGetMousePosition()));
+   if (mTrackPanel->InFisheyeFocus(position)) {
+      // Don't zoom the background, just change the fisheye magnification
+      if (mViewInfo.ZoomFisheyeBy(position.x, mTrackPanel->GetLeftOffset(),
+                                  ZoomFactor))
+         mTrackPanel->Refresh(false);
+      return;
+   }
+#endif
+
    //Zoom() may change these, so record original values:
    const double origLeft = mViewInfo.h;
    const double origWidth = GetScreenEndTime() - origLeft;
@@ -5376,6 +5405,15 @@ void AudacityProject::OnZoomToggle()
 
 void AudacityProject::OnZoomNormal()
 {
+#ifdef EXPERIMENTAL_FISHEYE
+   wxPoint position(mTrackPanel->ScreenToClient(::wxGetMousePosition()));
+   if (mTrackPanel->InFisheyeFocus(position)) {
+      if(mViewInfo.DefaultFisheyeZoom(position.x, mTrackPanel->GetLeftOffset()))
+         mTrackPanel->Refresh(false);
+      return;
+   }
+#endif
+
    Zoom(ZoomInfo::GetDefaultZoom());
    mTrackPanel->Refresh(false);
 }
@@ -5653,6 +5691,41 @@ void AudacityProject::OnResetToolBars()
    mToolManager->Reset();
    ModifyToolbarMenus();
 }
+
+#ifdef EXPERIMENTAL_FISHEYE
+void AudacityProject::OnShowHideFisheye()
+{
+   ZoomInfo::FisheyeState state = mViewInfo.GetFisheyeState();
+   switch (state) {
+   case ZoomInfo::HIDDEN:
+      // show, pin, recenter
+      mViewInfo.SetFisheyeState(ZoomInfo::PINNED);
+      GetTrackPanel()->MoveFisheye();
+      break;
+
+   default:
+      // hide
+      mViewInfo.SetFisheyeState(ZoomInfo::HIDDEN);
+      break;
+   };
+
+   // Either way, redraw panel and time ruler
+   GetTrackPanel()->RefreshFisheye();
+}
+
+void AudacityProject::OnPlayFisheye()
+{
+   if (mViewInfo.GetFisheyeState() == ZoomInfo::HIDDEN)
+      return;
+
+   if (!MakeReadyToPlay())
+      return;
+
+   const SelectedRegion selectedRegion(mViewInfo.GetFisheyeFocusRegion());
+   GetControlToolBar()->PlayPlayRegion(
+      selectedRegion, GetDefaultPlayOptions(), PlayMode::normalPlay);
+}
+#endif
 
 //
 // Project Menu

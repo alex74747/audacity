@@ -338,6 +338,26 @@ protected:
    virtual void SetCursorAndTipWhenInLabelTrack( LabelTrack * pLT, const wxMouseEvent & event, wxString &tip );
    virtual void SetCursorAndTipWhenSelectTool
       ( Track * t, const wxMouseEvent & event, wxRect &rect, bool bMultiToolMode, wxString &tip, const wxCursor ** ppCursor );
+
+   bool RecenterAt(wxCoord position);
+
+#ifdef EXPERIMENTAL_FISHEYE
+public:
+   bool InFisheyeFocus(wxPoint position) const;
+
+protected:
+   // If ignoreFisheye is true, figure new center time from mouse position without fisheye.
+   // Return true if really moved
+   bool MoveFisheyeTo(wxCoord xx, bool ignoreFisheye);
+   wxCoord mFisheyeCursorOffset;
+   wxCoord mFisheyeClickPosition;
+
+public:
+   // Return true if really moved
+   bool MoveFisheye();
+   void RefreshFisheye();
+protected:
+#endif
    virtual void SetCursorAndTipByTool( int tool, const wxMouseEvent & event, wxString &tip );
 
 public:
@@ -741,6 +761,13 @@ protected:
 #endif
       IsZooming,
 
+#ifdef EXPERIMENTAL_FISHEYE
+      IsAdjustingFisheye,
+      IsCoarseAdjustingFisheye,
+      IsFineAdjustingFisheye,
+      IsRecenteringFisheye,
+      IsUltraFineAdjustingFisheye,
+#endif
    };
 
    enum MouseCaptureEnum mMouseCapture;
