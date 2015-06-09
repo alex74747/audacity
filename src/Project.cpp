@@ -1827,12 +1827,19 @@ void AudacityProject::OnScroll(wxScrollEvent & WXUNUSED(event))
       mViewInfo.SetBeforeScreenWidth(mViewInfo.sbarH, lowerBound);
 
    if (mScrollBeyondZero) {
-      enum { SCROLL_PIXEL_TOLERANCE = 10 };
-      if (abs(mViewInfo.TimeToPosition(0.0, 0
-                                   )) < SCROLL_PIXEL_TOLERANCE) {
-         // Snap the scrollbar to 0
-         mViewInfo.h = 0;
-         SetHorizontalThumb(0.0);
+      // Snapping the scroll to zero is not so nice when fine-adjusting
+      // the fisheye.  This test, however, disables the snap
+      // whenever fisheye is visible.
+      if (ZoomInfo::HIDDEN == mViewInfo.GetFisheyeState())
+      {
+         enum { SCROLL_PIXEL_TOLERANCE = 10 };
+         if (abs(mViewInfo.TimeToPosition(0.0, 0
+            , true
+         )) < SCROLL_PIXEL_TOLERANCE) {
+            // Snap the scrollbar to 0
+            mViewInfo.h = 0;
+            SetHorizontalThumb(0.0);
+         }
       }
    }
 
@@ -2995,6 +3002,9 @@ bool AudacityProject::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       else if (!wxStrcmp(attr, wxT("bandwidthformat")))
          SetBandwidthSelectionFormatName(value);
    } // while
+
+   // For fisheye
+   mViewInfo.UpdatePrefs();
 
    if (longVpos != 0) {
       // PRL: It seems this must happen after SetSnapTo

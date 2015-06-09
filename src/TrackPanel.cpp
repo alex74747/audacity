@@ -6,7 +6,6 @@
 
   Dominic Mazzoni
   and lots of other contributors
-
   Implements TrackPanel and TrackInfo.
 
 ********************************************************************//*!
@@ -557,6 +556,7 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mTrackArtist->SetInset(1, kTopInset + 1, kLeftInset + 2, 2);
 
    mCapturedTrack = NULL;
+   mCapturedEnvelope = NULL;
    mPopupMenuTarget = NULL;
 
    mTimeCount = 0;
@@ -626,6 +626,11 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 #endif
 
    mInitialTrackSelection = new std::vector<bool>;
+
+#ifdef EXPERIMENTAL_FISHEYE
+   mFisheyeCursorOffset = 0;
+   mFisheyeClickPosition = 0;
+#endif
 }
 
 TrackPanel::~TrackPanel()
@@ -868,6 +873,11 @@ void TrackPanel::UpdatePrefs()
       UpdateVirtualStereoOrder();
 #endif
 
+   mViewInfo->UpdatePrefs();
+#ifdef EXPERIMENTAL_FISHEYE
+   RefreshFisheye();
+#endif
+
    if (mTrackArtist) {
       mTrackArtist->UpdatePrefs();
    }
@@ -1011,6 +1021,34 @@ void TrackPanel::OnTimer()
    if ((mMouseCapture==IsSelecting) && mCapturedTrack) {
       ScrollDuringDrag();
    }
+
+#ifdef EXPERIMENTAL_FISHEYE
+   if (mMouseCapture == IsUltraFineAdjustingFisheye &&
+         mViewInfo->GetFisheyeState() == ZoomInfo::PINNED) {
+      wxMouseState state(::wxGetMouseState());
+      wxCoord xx = state.GetX();
+      ScreenToClient(&xx, NULL);
+
+      int leftOffset = GetLeftOffset();
+      int fisheyePosition(mViewInfo->GetFisheyeCenterPosition(leftOffset));
+      int diff = xx + mFisheyeCursorOffset - fisheyePosition;
+
+      if (diff != 0) {
+         int width = 0, height = 0;
+         GetTracksUsableArea(&width, &height);
+
+         // Move the fisheye at a rate dependent on the distance between the
+         // cursor and the center.
+         // Map 1/2 screen width difference or more, to movement as if at
+         // playback speed (ignoring the warp).  Less distance, slower movement
+         // of the fisheye.
+         const double fraction = 2 * std::min(0.5, double(abs(diff)) / width);
+         double delta = (fraction * kTimerInterval / 1000.0) * (diff < 0 ? -1 : 1);
+         mViewInfo->SetFisheyeCenterTime(mViewInfo->GetFisheyeCenterTime() + delta);
+         RefreshFisheye();
+      }
+   }
+#endif
 
    wxCommandEvent dummyEvent;
    AudacityProject *p = GetProject();
@@ -1580,6 +1618,16 @@ void TrackPanel::HandleEscapeKey(bool down)
    if (!down)
       return;
 
+#if 0
+#ifdef EXPERIMENTAL_FISHEYE
+   if (mViewInfo->GetFisheyeState() != ZoomInfo::HIDDEN) {
+      mViewInfo->SetFisheyeState(ZoomInfo::HIDDEN);
+      RefreshFisheye();
+      return;
+   }
+#endif
+#endif
+
    switch (mMouseCapture)
    {
    case IsSelecting:
@@ -1696,6 +1744,22 @@ bool TrackPanel::SetCursorByActivity( )
 
    switch( mMouseCapture )
    {
+
+#ifdef EXPERIMENTAL_FISHEYE
+      // Don't care about "safety" during playback for these modes which
+      // are only for navigation.
+      // To do:  make distinct images.  One, or maybe three.  And maybe tips too.
+   case IsCoarseAdjustingFisheye:
+      SetCursor(*mSlideCursor);
+      return true;
+   case IsFineAdjustingFisheye:
+      SetCursor(*mSlideCursor);
+      return true;
+   case IsUltraFineAdjustingFisheye:
+      SetCursor(*mSlideCursor);
+      return true;
+#endif
+
    case IsSelecting:
       SetCursor(*mSelectCursor);
       return true;
@@ -2057,6 +2121,82 @@ void TrackPanel::SetCursorAndTipByTool( int tool,
    // doesn't actually change the tip itself, but it could (should?) do at some
    // future date.
 }
+
+bool TrackPanel::RecenterAt(wxCoord position)
+{
+   // If position is in the fisheye focus, re-center it.
+   const int leftOffset = GetLeftOffset();
+#ifdef EXPERIMENTAL_FISHEYE
+   if (mViewInfo->InFisheyeFocus(position, leftOffset))
+   {
+      if (MoveFisheyeTo(position, false)) {
+         // Now scroll to (try to) keep the same time at the mouse
+         // (but may refuse to scroll when near time zero)
+         const double time = mViewInfo->GetFisheyeCenterTime();
+         const double newPosition =
+            int(mViewInfo->TimeToPosition(time, leftOffset));
+         const double newLeftTime =
+            mViewInfo->PositionToTime(newPosition - position, 0, true);
+         mListener->TP_ScrollWindow(newLeftTime);
+         return true;
+      }
+   }
+   else
+#endif
+
+   {
+#if 0
+      // Recenter at a point not in the fisheye
+      const double oldLeftTime = mViewInfo->PositionToTime(0);
+      const double oldCenter =
+         mViewInfo->PositionToTime(mViewInfo->GetScreenWidth() / 2);
+      if (time != oldCenter) {
+         mListener->TP_ScrollWindow(oldLeftTime + time - oldCenter);
+         return true;
+      }
+#endif
+   }
+
+   return false;
+}
+
+#ifdef EXPERIMENTAL_FISHEYE
+
+bool TrackPanel::MoveFisheyeTo(wxCoord xx, bool ignoreFisheye)
+{
+   double newTime =
+      mViewInfo->PositionToTime(xx, GetLeftOffset(), ignoreFisheye);
+   if (newTime != mViewInfo->GetFisheyeCenterTime()) {
+      mViewInfo->SetFisheyeCenterTime(newTime);
+      return true;
+   }
+   return false;
+}
+
+bool TrackPanel::InFisheyeFocus(wxPoint position) const
+{
+   return
+      (HasCapture() || (position.y >= 0 && position.y < GetSize().y))
+      &&
+      (mViewInfo->InFisheyeFocus(position.x, GetLeftOffset()));
+}
+
+void TrackPanel::RefreshFisheye()
+{
+   // The adorned ruler panel, which is not part of this track panel,
+   // must also be told to redraw its tick marks.
+   mRuler->InvalidateRuler();
+   mRuler->Refresh(false);
+   Refresh(false);
+}
+
+bool TrackPanel::MoveFisheye()
+{
+   wxCoord xx = ::wxGetMouseState().GetX();
+   ScreenToClient(&xx, NULL);
+   return MoveFisheyeTo(xx, true);
+}
+#endif
 
 ///  TrackPanel::HandleCursor( ) sets the cursor drawn at the mouse location.
 ///  As this procedure checks which region the mouse is over, it is
@@ -6270,6 +6410,19 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
    double steps = event.m_wheelRotation /
       (event.m_wheelDelta > 0 ? (double)event.m_wheelDelta : 120.0);
 
+#ifdef EXPERIMENTAL_FISHEYE
+   if (event.ShiftDown() && event.ControlDown() && InFisheyeFocus(event.GetPosition()))
+   {
+      if (mViewInfo->GetFisheyeState() != ZoomInfo::HIDDEN) {
+         // Change fisheye pixel width
+         int width;
+         GetSize(&width, NULL);
+         mViewInfo->AdjustFisheyePixelWidth(int(0.5 + 10 * steps), width);
+         RefreshFisheye();
+      }
+   }
+   else
+#endif
    if (event.ShiftDown()
 #ifdef EXPERIMENTAL_SCRUBBING_SMOOTH_SCROLL
        // Don't pan during smooth scrolling.  That would conflict with keeping
@@ -6283,6 +6436,15 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
          mViewInfo->OffsetTimeByPixels(
             mViewInfo->PositionToTime(0), 50.0 * -steps));
    }
+#ifdef EXPERIMENTAL_FISHEYE
+   else if (event.CmdDown() && InFisheyeFocus(event.GetPosition()))
+   {
+      // Change the fisheye zoom
+      const double multiplier = pow(2.0, steps * 0.1);
+      if (mViewInfo->ZoomFisheyeBy(event.m_x, GetLeftOffset(), multiplier))
+         RefreshFisheye();
+   }
+#endif
    else if (event.CmdDown())
    {
 #if 0
@@ -6511,7 +6673,13 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
          ReleaseMouse();
    }
 
-   if (event.Leaving() && !event.ButtonIsDown(wxMOUSE_BTN_ANY))
+   if (event.Leaving() &&
+       !event.ButtonIsDown(wxMOUSE_BTN_ANY)
+#ifdef EXPERIMENTAL_FISHEYE
+       && mMouseCapture != IsAdjustingFisheye
+       && mMouseCapture != IsCoarseAdjustingFisheye
+#endif
+   )
    {
       SetCapturedTrack(NULL);
 #if defined(__WXMAC__)
@@ -6884,6 +7052,96 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
    if( pTtb == NULL )
       return;
 
+#ifdef EXPERIMENTAL_FISHEYE
+   static const int PIXEL_TOLERANCE = 10;
+   if (event.RightDown() &&
+      mMouseCapture != IsCoarseAdjustingFisheye &&
+      mViewInfo->GetFisheyeState() == ZoomInfo::PINNED &&
+      InFisheyeFocus(event.GetPosition())) {
+      // Right click begins coarse or fine adjustment,
+      // overriding what the tool might otherwise do.
+      mFisheyeClickPosition = event.m_x;
+      mFisheyeCursorOffset =
+         mViewInfo->GetFisheyeCenterPosition(GetLeftOffset()) - event.m_x;
+      CaptureMouse();
+      mMouseCapture = IsAdjustingFisheye;
+      mCapturedTrack = pTrack;
+   }
+   else if (event.RightDClick() &&
+      mViewInfo->GetFisheyeState() == ZoomInfo::PINNED &&
+      InFisheyeFocus(event.GetPosition())) {
+      // Right double click begins recentering or ultrafine adjustment,
+      // overriding what the tool might otherwise do.
+      mFisheyeClickPosition = event.m_x;
+      mFisheyeCursorOffset =
+         mViewInfo->GetFisheyeCenterPosition(GetLeftOffset()) - event.m_x;
+      CaptureMouse();
+      mMouseCapture = IsRecenteringFisheye;
+      mCapturedTrack = pTrack;
+   }
+   else if (mMouseCapture == IsAdjustingFisheye &&
+      event.RightUp()) {
+      // Don't give this event to HandleSelect()
+   }
+   else if (mMouseCapture == IsAdjustingFisheye &&
+      abs(event.m_x - mFisheyeClickPosition) > PIXEL_TOLERANCE) {
+      if (event.RightIsDown()) {
+         // Drag starts fine adjustment
+         mMouseCapture = IsFineAdjustingFisheye;
+         HandleCursor(event);
+      }
+      else {
+         // Movement while button up starts coarse adjustment
+         mMouseCapture = IsCoarseAdjustingFisheye;
+         HandleCursor(event);
+      }
+   }
+   else if (mMouseCapture == IsRecenteringFisheye &&
+      abs(event.m_x - mFisheyeClickPosition) > PIXEL_TOLERANCE &&
+      event.RightIsDown()) {
+      // Drag starts ultrafine adjustment
+      mMouseCapture = IsUltraFineAdjustingFisheye;
+      HandleCursor(event);
+   }
+   else if (mMouseCapture == IsRecenteringFisheye &&
+      event.RightUp()) {
+      // Double click without drag recenters
+      RecenterAt(event.m_x);
+      if (HasCapture())
+         ReleaseMouse();
+      mMouseCapture = IsUncaptured;
+      mCapturedTrack = NULL;
+   }
+   else if (
+      (event.RightDown() &&
+      mMouseCapture == IsCoarseAdjustingFisheye)
+      // End coarse adjustment (right-click, move, right-click)
+      // at the second click
+      ||
+      (event.RightUp() &&
+      (mMouseCapture == IsFineAdjustingFisheye ||
+      mMouseCapture == IsUltraFineAdjustingFisheye))
+      // End other adjustments at button up
+      ) {
+      if (HasCapture())
+         ReleaseMouse();
+      mMouseCapture = IsUncaptured;
+      mCapturedTrack = NULL;
+      HandleCursor(event);
+   }
+   else if (mMouseCapture == IsCoarseAdjustingFisheye) {
+      // Do coarse adjustment
+      if (MoveFisheyeTo(event.m_x + mFisheyeCursorOffset, true))
+         RefreshFisheye();
+   }
+   else if (mMouseCapture == IsFineAdjustingFisheye) {
+      // Do fine adjustment
+      if (RecenterAt(event.m_x + mFisheyeCursorOffset))
+         RefreshFisheye();
+   }
+   // "ultrafine" adjustment is done without mouse movement, in OnTimer()
+   else
+#endif
    {
       int toolToUse = DetermineToolToUse(pTtb, event);
 
@@ -6907,18 +7165,18 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
             HandleSampleEditing(event);
          break;
       }
-   }
 
-   if ((event.Moving() || event.LeftUp())  &&
-       (mMouseCapture == IsUncaptured ))
-//       (mMouseCapture != IsSelecting ) &&
-//       (mMouseCapture != IsEnveloping) &&
-//       (mMouseCapture != IsSliding) )
-   {
-      HandleCursor(event);
-   }
-   if (event.LeftUp()) {
-      mCapturedTrack = NULL;
+      if ((event.Moving() || event.LeftUp()) &&
+         (mMouseCapture == IsUncaptured))
+         //       (mMouseCapture != IsSelecting ) &&
+         //       (mMouseCapture != IsEnveloping) &&
+         //       (mMouseCapture != IsSliding) )
+      {
+         HandleCursor(event);
+      }
+      if (event.LeftUp()) {
+         mCapturedTrack = NULL;
+      }
    }
 }
 
@@ -6955,7 +7213,14 @@ int TrackPanel::DetermineToolToUse( ToolsToolBar * pTtb, wxMouseEvent & event)
    int trackKind = pTrack->GetKind();
    currentTool = selectTool; // the default.
 
-   if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT) || event.RightUp()){
+#ifdef EXPERIMENTAL_FISHEYE
+   if (InFisheyeFocus(event.GetPosition()) &&
+       (event.ButtonIsDown(wxMOUSE_BTN_RIGHT) || event.RightUp())) {
+      currentTool = selectTool;
+   }
+   else
+#endif
+   if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT) || event.RightUp()) {
       currentTool = zoomTool;
    }
    else if (trackKind == Track::Time){
@@ -7097,6 +7362,9 @@ bool TrackPanel::HitTestSamples(Track *track, wxRect &r, wxMouseEvent & event)
       return false;  // Not a wave, so return.
 
    const double tt = mViewInfo->PositionToTime(event.m_x, r.x);
+   if (!SampleResolutionTest(*mViewInfo, wavetrack, tt, rate))
+      return false;
+
    if (!SampleResolutionTest(*mViewInfo, wavetrack, tt, rate))
       return false;
 
@@ -7358,6 +7626,32 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
                         trackRect.width,
                         clip.height - trackRect.y);
    }
+
+#ifdef EXPERIMENTAL_FISHEYE
+   // Draw lines indicating the boundaries of the fisheye.
+   // Draw this before the yellow outline of the highlighted track.
+   if (mViewInfo->GetFisheyeState() != ZoomInfo::HIDDEN) {
+      // This might become part of theming
+      wxPen fisheyePen(wxColour(255, 255, 255), 1);
+      dc->SetPen(fisheyePen);
+      int leftOffset = GetLeftOffset();
+      const int left = int(mViewInfo->GetFisheyeFocusLeftBoundary());
+      const int right = int(mViewInfo->GetFisheyeFocusRightBoundary());
+      if (left >= 0)
+         AColor::Line(*dc, leftOffset + left, 0, leftOffset + left, 30000);
+      if (right >= 0)
+         AColor::Line(*dc, leftOffset + right, 0, leftOffset + right, 30000);
+
+      fisheyePen.SetStyle(wxDOT);
+      dc->SetPen(fisheyePen);
+      const int furtherLeft = int(mViewInfo->GetFisheyeLeftBoundary());
+      const int furtherRight = int(mViewInfo->GetFisheyeRightBoundary());
+      if (furtherLeft < left && furtherLeft >= 0)
+         AColor::Line(*dc, leftOffset + furtherLeft, 0, leftOffset + furtherLeft, 30000);
+      if (furtherRight > right && furtherRight >= 0)
+         AColor::Line(*dc, leftOffset + furtherRight, 0, leftOffset + furtherRight, 30000);
+   }
+#endif
 
    // Sometimes highlight is not drawn on backing bitmap. I thought
    // it was because FindFocus did not return "this" on Mac, but

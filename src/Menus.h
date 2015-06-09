@@ -298,6 +298,10 @@ void OnShowSpectralSelectionToolBar();
 void OnShowToolsToolBar();
 void OnShowTranscriptionToolBar();
 void OnResetToolBars();
+#ifdef EXPERIMENTAL_FISHEYE
+void OnShowHideFisheye();
+void OnPlayFisheye();
+#endif
 void OnSimplifiedView();
 
         // Transport Menu
