@@ -31,7 +31,6 @@
 #include "xml/XMLTagHandler.h"
 #include "toolbars/SelectionBarListener.h"
 #include "toolbars/SpectralSelectionBarListener.h"
-#include "widgets/Meter.h"
 
 #include <wx/defs.h>
 #include <wx/event.h>
@@ -63,6 +62,7 @@ class EffectPlugs;
 class TrackPanel;
 class FreqWindow;
 class ContrastDialog;
+class Meter;
 
 // toolbar classes
 class ControlToolBar;
@@ -156,6 +156,7 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    bool ZoomOutAvailable() const { return mViewInfo.ZoomOutAvailable(); }
    double GetSel0() { return mViewInfo.selectedRegion.t0(); }
    double GetSel1() { return mViewInfo.selectedRegion.t1(); }
+   const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();
