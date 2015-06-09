@@ -18,6 +18,8 @@
 #include <wx/arrstr.h>
 #include <wx/window.h>
 
+#include "../Experimental.h"
+
 #include "PrefsPanel.h"
 
 class ShuttleGui;
@@ -43,6 +45,11 @@ class GUIPrefs :public PrefsPanel
 
    wxArrayString mRangeCodes;
    wxArrayString mRangeChoices;
+
+#ifdef EXPERIMENTAL_FISHEYE
+   wxArrayInt mFisheyeStyleCodes;
+   wxArrayString mFisheyeStyleChoices;
+#endif
 };
 
 class GUIPrefsFactory : public PrefsPanelFactory
