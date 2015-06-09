@@ -1455,8 +1455,14 @@ wxInt64 AudacityProject::PixelWidthBeforeTime(double scrollto) const
    const double lowerBound = ScrollingLowerBoundTime();
    return
       mViewInfo.TimeToPosition(scrollto, 0
+#ifdef EXPERIMENTAL_FISHEYE
+      , true
+#endif
       ) -
       mViewInfo.TimeToPosition(lowerBound, 0
+#ifdef EXPERIMENTAL_FISHEYE
+      , true
+#endif
       );
 }
 
@@ -1826,6 +1832,9 @@ void AudacityProject::OnScroll(wxScrollEvent & WXUNUSED(event))
    if (mScrollBeyondZero) {
       enum { SCROLL_PIXEL_TOLERANCE = 10 };
       if (abs(mViewInfo.TimeToPosition(0.0, 0
+#ifdef EXPERIMENTAL_FISHEYE
+                                   , true
+#endif
                                    )) < SCROLL_PIXEL_TOLERANCE) {
          // Snap the scrollbar to 0
          mViewInfo.h = 0;

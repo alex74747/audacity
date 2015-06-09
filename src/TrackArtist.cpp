@@ -1670,14 +1670,15 @@ void TrackArtist::DrawClipWaveform(WaveTrack *track,
    // in the display, and use these to compute the height of the
    // track at each pixel
 
-   double *envValues = new double[mid.width];
-   clip->GetEnvelope()->GetValues(envValues, mid.width, t0 + tOffset, tstep);
+   std::vector<double> vEnv(mid.width);
+   double *const env = &vEnv[0];
+   clip->GetEnvelope()->GetValues(env, mid.width, mid.x - rect.x, zoomInfo);
 
    // Draw the background of the track, outlining the shape of
    // the envelope and using a colored pen for the selected
    // part of the waveform
    DrawWaveformBackground(dc, mid.x - rect.x, mid,
-      envValues,
+      env,
       zoomMin, zoomMax, dB,
       selectedRegion, zoomInfo, drawEnvelope,
       !track->GetSelected());
@@ -1695,7 +1696,7 @@ void TrackArtist::DrawClipWaveform(WaveTrack *track,
          return;
       }
 
-      DrawMinMaxRMS(dc, mid, envValues,
+      DrawMinMaxRMS(dc, mid, env,
                     zoomMin, zoomMax, dB,
                     display.min, display.max, display.rms, display.bl,
                     isLoadingOD, muted
@@ -1711,11 +1712,9 @@ void TrackArtist::DrawClipWaveform(WaveTrack *track,
    }
 
    if (drawEnvelope) {
-      DrawEnvelope(dc, mid, envValues, zoomMin, zoomMax, dB);
+      DrawEnvelope(dc, mid, env, zoomMin, zoomMax, dB);
       clip->GetEnvelope()->DrawPoints(dc, rect, zoomInfo, dB, zoomMin, zoomMax);
    }
-
-   delete[] envValues;
 
    // Draw arrows on the left side if the track extends to the left of the
    // beginning of time.  :)
