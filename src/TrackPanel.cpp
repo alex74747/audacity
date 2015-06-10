@@ -2148,7 +2148,7 @@ bool TrackPanel::RecenterAt(wxCoord position)
          const double newPosition =
             int(mViewInfo->TimeToPosition(time, leftOffset));
          const double newLeftTime =
-            mViewInfo->PositionToTime(newPosition - position, 0);
+            mViewInfo->PositionToTime(newPosition - position, 0, true);
          mListener->TP_ScrollWindow(newLeftTime);
          return true;
       }
