@@ -1023,7 +1023,11 @@ void TrackPanel::OnTimer()
    }
 
 #ifdef EXPERIMENTAL_FISHEYE
-   if (mMouseCapture == IsUltraFineAdjustingFisheye &&
+   if (
+#ifdef EXPERIMENTAL_SCRUBBING_BASIC
+       !IsScrubbing() &&
+#endif
+         mMouseCapture == IsUltraFineAdjustingFisheye &&
          mViewInfo->GetFisheyeState() == ZoomInfo::PINNED) {
       wxMouseState state(::wxGetMouseState());
       wxCoord xx = state.GetX();
@@ -1101,6 +1105,7 @@ void TrackPanel::OnTimer()
 #ifdef EXPERIMENTAL_SCRUBBING_SMOOTH_SCROLL
       if (mSmoothScrollingScrub)
          // Redraw with every timer tick, to keep the indicator centered.
+         // Update fisheye in OnPaint, not here, to keep it precisely centered.
          Refresh(false);
       else
 #endif
@@ -1112,6 +1117,12 @@ void TrackPanel::OnTimer()
                // Show or hide the maximum speed.
                Refresh(false);
          }
+#ifdef EXPERIMENTAL_FISHEYE
+         if (mViewInfo->GetFisheyeState() != ZoomInfo::HIDDEN) {
+            mViewInfo->SetFisheyeCenterTime(gAudioIO->GetStreamTime());
+            RefreshFisheye();
+         }
+#endif
       }
    }
 #endif
@@ -1543,6 +1554,10 @@ void TrackPanel::OnPaint(wxPaintEvent & /* event */)
          // at higher magnifications, and keeps the green line still in the middle.
          indicator = gAudioIO->GetStreamTime();
          mViewInfo->h = indicator - mViewInfo->screen / 2.0;
+#ifdef EXPERIMENTAL_FISHEYE
+         if (mViewInfo->GetFisheyeState() != ZoomInfo::HIDDEN)
+            mViewInfo->SetFisheyeCenterTime(indicator);
+#endif
          if (!mScrollBeyondZero)
             // Can't scroll too far left
             mViewInfo->h = std::max(0.0, mViewInfo->h);
