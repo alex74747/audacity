@@ -5703,6 +5703,10 @@ void AudacityProject::PlaybackScroller::OnTimer(wxCommandEvent &event)
       }
       viewInfo.h =
          viewInfo.OffsetTimeByPixels(viewInfo.h, deltaX, true);
+#ifdef EXPERIMENTAL_FISHEYE
+      if (viewInfo.GetFisheyeState() != ZoomInfo::HIDDEN)
+         viewInfo.SetFisheyeCenterTime(viewInfo.mRecentStreamTime);
+#endif
       if (!mProject->MayScrollBeyondZero())
          // Can't scroll too far left
          viewInfo.h = std::max(0.0, viewInfo.h);

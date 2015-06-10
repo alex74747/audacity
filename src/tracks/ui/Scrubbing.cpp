@@ -520,6 +520,13 @@ void Scrubber::ContinueScrubbingUI()
    else {
       if (mScrubSpeedDisplayCountdown > 0)
          --mScrubSpeedDisplayCountdown;
+#ifdef EXPERIMENTAL_FISHEYE
+      ViewInfo &viewInfo = mProject->GetViewInfo();
+      if (viewInfo.GetFisheyeState() != ZoomInfo::HIDDEN) {
+         viewInfo.SetFisheyeCenterTime(gAudioIO->GetStreamTime());
+         mProject->GetTrackPanel()->RefreshFisheye();
+      }
+#endif
    }
 }
 

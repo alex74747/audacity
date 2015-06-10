@@ -983,8 +983,12 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    }
 
 #ifdef EXPERIMENTAL_FISHEYE
-   if (mMouseCapture == IsUltraFineAdjustingFisheye &&
-       mViewInfo->GetFisheyeState() == ZoomInfo::PINNED) {
+   if (
+#ifdef EXPERIMENTAL_SCRUBBING_BASIC
+       !GetProject()->GetScrubber().IsScrubbing() &&
+#endif
+         mMouseCapture == IsUltraFineAdjustingFisheye &&
+         mViewInfo->GetFisheyeState() == ZoomInfo::PINNED) {
       wxMouseState state(::wxGetMouseState());
       wxCoord xx = state.GetX();
       ScreenToClient(&xx, NULL);
