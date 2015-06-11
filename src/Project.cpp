@@ -1455,8 +1455,10 @@ wxInt64 AudacityProject::PixelWidthBeforeTime(double scrollto) const
    const double lowerBound = ScrollingLowerBoundTime();
    return
       mViewInfo.TimeToPosition(scrollto, 0
+      , true
       ) -
       mViewInfo.TimeToPosition(lowerBound, 0
+      , true
       );
 }
 
