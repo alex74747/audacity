@@ -199,5 +199,7 @@
 // interpolating in frequency domain.
 #define EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
 
+// PRL 22 Feb 2015
+#define EXPERIMENTAL_FISHEYE
 
 #endif
