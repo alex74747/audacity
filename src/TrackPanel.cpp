@@ -1337,7 +1337,6 @@ void TrackPanel::HandleEscapeKey(bool down)
       mViewInfo->selectedRegion = mInitialSelection;
    }
       break;
-   case IsZooming:
    case IsVZooming:
    //case IsAdjustingSample:
       break;
@@ -1825,9 +1824,6 @@ void TrackPanel::SetCursorAndTipByTool( int tool,
       break;
    case slideTool:
       SetCursor(unsafe ? *mDisabledCursor : *mSlideCursor);
-      break;
-   case zoomTool:
-      SetCursor(event.ShiftDown()? *mZoomOutCursor : *mZoomInCursor);
       break;
    case drawTool:
       if (unsafe)
@@ -3913,87 +3909,6 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
 }
 
 
-///  This method takes care of our different zoom
-///  possibilities.  It is possible for a user to just
-///  "zoom in" or "zoom out," but it is also possible
-///  for a user to drag and select an area that he
-///  or she wants to be zoomed in on.  We use mZoomStart
-///  and mZoomEnd to track the beggining and end of such
-///  a zoom area.  Note that the ViewInfo member
-///  mViewInfo actually keeps track of our zoom constant,
-///  so we achieve zooming by altering the zoom constant
-///  and forcing a refresh.
-void TrackPanel::HandleZoom(wxMouseEvent & event)
-{
-   if (event.ButtonDown() || event.LeftDClick()) {
-      HandleZoomClick(event);
-   }
-   else if (mMouseCapture == IsZooming) {
-      if (event.Dragging()) {
-         HandleZoomDrag(event);
-      }
-      else if (event.ButtonUp()) {
-         HandleZoomButtonUp(event);
-      }
-   }
-}
-
-/// Zoom button down, record the position.
-void TrackPanel::HandleZoomClick(wxMouseEvent & event)
-{
-   if (mCapturedTrack)
-      return;
-
-   mCapturedTrack = FindTrack(event.m_x, event.m_y, false, false,
-                              &mCapturedRect);
-   if (!mCapturedTrack)
-      return;
-
-   SetCapturedTrack(mCapturedTrack, IsZooming);
-
-   mZoomStart = event.m_x;
-   mZoomEnd = event.m_x;
-}
-
-/// Zoom drag
-void TrackPanel::HandleZoomDrag(wxMouseEvent & event)
-{
-   const int left = GetLeftOffset();
-   const int right = GetSize().x - kRightMargin - 1;
-
-   mZoomEnd = event.m_x;
-
-   if (event.m_x < left) {
-      mZoomEnd = left;
-   }
-   else if (event.m_x > right) {
-      mZoomEnd = right;
-   }
-
-   if (IsDragZooming()) {
-      Refresh(false);
-   }
-}
-
-/// Zoom button up
-void TrackPanel::HandleZoomButtonUp(wxMouseEvent & event)
-{
-   if (mZoomEnd < mZoomStart)
-      std::swap(mZoomStart, mZoomEnd);
-
-   if (IsDragZooming())
-      DragZoom(event, GetLeftOffset());
-   else
-      DoZoomInOut(event, GetLeftOffset());
-
-   mZoomEnd = mZoomStart = 0;
-
-   SetCapturedTrack(NULL);
-
-   MakeParentRedrawScrollbars();
-   Refresh(false);
-}
-
 /// Determines if drag zooming is active
 bool TrackPanel::IsDragZooming(int zoomStart, int zoomEnd)
 {
@@ -4007,41 +3922,6 @@ bool TrackPanel::IsMouseCaptured()
       || mUIHandle != NULL);
 }
 
-
-///  This actually sets the Zoom value when you're done doing
-///  a drag zoom.
-void TrackPanel::DragZoom(wxMouseEvent & event, int trackLeftEdge)
-{
-   double left = mViewInfo->PositionToTime(mZoomStart, trackLeftEdge);
-   double right = mViewInfo->PositionToTime(mZoomEnd, trackLeftEdge);
-   double multiplier = (GetScreenEndTime() - mViewInfo->h) / (right - left);
-   if (event.ShiftDown())
-      multiplier = 1.0 / multiplier;
-
-   mViewInfo->ZoomBy(multiplier);
-
-   mViewInfo->h = left;
-}
-
-/// This handles normal Zoom In/Out, if you just clicked;
-/// IOW, if you were NOT dragging to zoom an area.
-/// \todo MAGIC NUMBER: We've got several in this method.
-void TrackPanel::DoZoomInOut(wxMouseEvent & event, int trackLeftEdge)
-{
-   double center_h = mViewInfo->PositionToTime(event.m_x, trackLeftEdge);
-
-   const double multiplier =
-      (event.RightUp() || event.RightDClick() || event.ShiftDown())
-      ? 0.5 : 2.0;
-   mViewInfo->ZoomBy(multiplier);
-
-   if (event.MiddleUp() || event.MiddleDClick())
-      mViewInfo->SetZoom(ZoomInfo::GetDefaultZoom()); // AS: Reset zoom.
-
-   double new_center_h = mViewInfo->PositionToTime(event.m_x, trackLeftEdge);
-
-   mViewInfo->h += (center_h - new_center_h);
-}
 
 /// Vertical zooming (triggered by clicking in the
 /// vertical ruler)
@@ -6187,9 +6067,6 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
    case IsMinimizing:
       HandleMinimizing(event);
       break;
-   case IsZooming:
-      HandleZoom(event);
-      break;
    case IsAdjustingLabel:
       HandleGlyphDragRelease(static_cast<LabelTrack *>(mCapturedTrack), event);
       break;
@@ -6601,9 +6478,6 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
             if (!unsafe)
                HandleSlide(event);
             break;
-         case zoomTool:
-            HandleZoom(event);
-            break;
          case drawTool:
             if (!unsafe)
                HandleSampleEditing(event);
@@ -6658,10 +6532,7 @@ int TrackPanel::DetermineToolToUse( ToolsToolBar * pTtb, wxMouseEvent & event)
    int trackKind = pTrack->GetKind();
    currentTool = selectTool; // the default.
 
-   if (event.ButtonIsDown(wxMOUSE_BTN_RIGHT) || event.RightUp()){
-      currentTool = zoomTool;
-   }
-   else if (trackKind == Track::Time){
+   if (trackKind == Track::Time){
       currentTool = envelopeTool;
    } else if( trackKind == Track::Label ){
       currentTool = selectTool;
@@ -7050,8 +6921,7 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
    if (mUIHandle)
       mUIHandle->DrawExtras(UIHandle::Cells, dc, region, clip);
 
-   if ((mMouseCapture == IsZooming || mMouseCapture == IsVZooming) &&
-       IsDragZooming()
+   if (mMouseCapture == IsVZooming && IsDragZooming()
        // note track zooming now works like audio track
        //#ifdef USE_MIDI
        //       && mCapturedTrack && mCapturedTrack->GetKind() != Track::Note
