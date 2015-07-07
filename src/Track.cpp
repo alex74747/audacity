@@ -15,12 +15,13 @@ and TimeTrack.
 
 *//*******************************************************************/
 
+#include "Track.h"
+
 #include <float.h>
 #include <wx/file.h>
 #include <wx/textfile.h>
 #include <wx/log.h>
 
-#include "Track.h"
 #include "WaveTrack.h"
 #include "NoteTrack.h"
 #include "Project.h"
@@ -326,6 +327,11 @@ bool Track::SyncLockAdjust(double oldT1, double newT1)
 
    // fall-through: no change
    return true;
+}
+
+Track *Track::FindTrack()
+{
+   return this;
 }
 
 // TrackListIterator
@@ -1353,4 +1359,3 @@ double TrackList::GetEndTime() const
 
    return max;
 }
-

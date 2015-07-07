@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -179,6 +179,7 @@
     <ClCompile Include="..\..\..\src\PlatformCompatibility.cpp" />
     <ClCompile Include="..\..\..\src\PluginManager.cpp" />
     <ClCompile Include="..\..\..\src\Prefs.cpp" />
+    <ClCompile Include="..\..\..\src\prefs\BatchPrefs.cpp" />
     <ClCompile Include="..\..\..\src\prefs\SpectrogramSettings.cpp" />
     <ClCompile Include="..\..\..\src\prefs\WaveformPrefs.cpp" />
     <ClCompile Include="..\..\..\src\prefs\WaveformSettings.cpp" />
@@ -216,9 +217,26 @@
     <ClCompile Include="..\..\..\src\TrackPanel.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelAx.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelOverlay.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackUI.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\notetrack\ui\NoteTrackControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\notetrack\ui\NoteTrackUI.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\notetrack\ui\NoteTrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackUI.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\EditCursorOverlay.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\PlayIndicatorOverlay.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\Scrubbing.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\ui\TrackControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\ui\TrackUI.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\ui\TrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\wavetrack\ui\WaveTrackControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\wavetrack\ui\WaveTrackUI.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\wavetrack\ui\WaveTrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\UIHandle.cpp" />
     <ClCompile Include="..\..\..\src\UndoManager.cpp" />
     <ClCompile Include="..\..\..\src\ViewInfo.cpp" />
     <ClCompile Include="..\..\..\src\VoiceKey.cpp" />
@@ -290,7 +308,6 @@
     <ClCompile Include="..\..\..\src\import\ImportPCM.cpp" />
     <ClCompile Include="..\..\..\src\import\ImportRaw.cpp" />
     <ClCompile Include="..\..\..\src\import\RawAudioGuess.cpp" />
-    <ClCompile Include="..\..\..\src\prefs\BatchPrefs.cpp" />
     <ClCompile Include="..\..\..\src\prefs\DevicePrefs.cpp" />
     <ClCompile Include="..\..\..\src\prefs\DirectoriesPrefs.cpp" />
     <ClCompile Include="..\..\..\src\prefs\EffectsPrefs.cpp" />
@@ -423,6 +440,7 @@
     <ClInclude Include="..\..\..\src\effects\NoiseReduction.h" />
     <ClInclude Include="..\..\..\src\effects\Phaser.h" />
     <ClInclude Include="..\..\..\src\effects\VST\VSTControlMSW.h" />
+    <ClInclude Include="..\..\..\src\HitTestResult.h" />
     <ClInclude Include="..\..\..\src\import\FormatClassifier.h" />
     <ClInclude Include="..\..\..\src\import\ImportGStreamer.h" />
     <ClInclude Include="..\..\..\src\import\MultiFormatReader.h" />
@@ -433,6 +451,7 @@
     <ClInclude Include="..\..\..\src\prefs\SpectrogramSettings.h" />
     <ClInclude Include="..\..\..\src\prefs\WaveformPrefs.h" />
     <ClInclude Include="..\..\..\src\prefs\WaveformSettings.h" />
+    <ClInclude Include="..\..\..\src\RefreshCode.h" />
     <ClInclude Include="..\..\..\src\RevisionIdent.h" />
     <ClInclude Include="..\..\..\src\SelectedRegion.h" />
     <ClInclude Include="..\..\..\src\SseMathFuncs.h" />
@@ -441,11 +460,24 @@
     <ClInclude Include="..\..\..\src\TrackPanelCell.h" />
     <ClInclude Include="..\..\..\src\TrackPanelCellIterator.h" />
     <ClInclude Include="..\..\..\src\TrackPanelListener.h" />
+    <ClInclude Include="..\..\..\src\TrackPanelMouseEvent.h" />
     <ClInclude Include="..\..\..\src\TrackPanelOverlay.h" />
+    <ClInclude Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.h" />
+    <ClInclude Include="..\..\..\src\TranslatableStringArray.h" />
+    <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackVRulerControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackVRulerControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\timetrack\ui\TimeTrackControls.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\EditCursorOverlay.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\PlayIndicatorOverlay.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\Scrubbing.h" />
-    <ClInclude Include="..\..\..\src\TranslatableStringArray.h" />
+    <ClInclude Include="..\..\..\src\tracks\ui\TrackControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\wavetrack\ui\WaveTrackControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\timetrack\ui\TimeTrackVRulerControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\ui\TrackVRulerControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\wavetrack\ui\WaveTrackVRulerControls.h" />
+    <ClInclude Include="..\..\..\src\UIHandle.h" />
     <ClInclude Include="..\..\..\src\WaveTrackLocation.h" />
     <ClInclude Include="..\..\..\src\widgets\HelpSystem.h" />
     <ClInclude Include="..\..\..\src\widgets\NumericTextCtrl.h" />

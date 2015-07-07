@@ -13,9 +13,7 @@ Paul Licameli
 
 #include "Track.h"
 
-// This will change to a new abstract base class of Track and of others
-class Track;
-typedef Track TrackPanelCell;
+class TrackPanelCell;
 
 class TrackPanel;
 

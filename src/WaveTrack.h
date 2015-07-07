@@ -84,6 +84,11 @@ class AUDACITY_DLL_API WaveTrack : public Track {
    typedef WaveTrackLocation Location;
 
    virtual ~WaveTrack();
+
+   virtual HitTestResult HitTest
+      (const TrackPanelMouseEvent &event,
+       const AudacityProject *pProject);
+
    virtual double GetOffset() const;
    virtual void SetOffset (double o);
 
@@ -493,6 +498,10 @@ class AUDACITY_DLL_API WaveTrack : public Track {
 
    SpectrogramSettings *mpSpectrumSettings;
    WaveformSettings *mpWaveformSettings;
+
+protected:
+   virtual TrackControls *GetControls();
+   virtual TrackVRulerControls *GetVRulerControls();
 };
 
 // This is meant to be a short-lived object, during whose lifetime,

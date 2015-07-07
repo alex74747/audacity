@@ -57,6 +57,10 @@ class AUDACITY_DLL_API NoteTrack:public Track {
    NoteTrack(DirManager * projDirManager);
    virtual ~NoteTrack();
 
+   virtual HitTestResult HitTest
+      (const TrackPanelMouseEvent &event,
+       const AudacityProject *pProject);
+
    virtual Track *Duplicate();
 
    virtual int GetKind() const { return Note; }
@@ -214,6 +218,10 @@ class AUDACITY_DLL_API NoteTrack:public Track {
    int mVisibleChannels; // bit set of visible channels
    int mLastMidiPosition;
    wxRect mGainPlacementRect;
+
+protected:
+   virtual TrackControls *GetControls();
+   virtual TrackVRulerControls *GetVRulerControls();
 };
 
 #endif // USE_MIDI

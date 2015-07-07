@@ -122,6 +122,11 @@ class AUDACITY_DLL_API LabelTrack : public Track
    LabelTrack(const LabelTrack &orig);
 
    virtual ~ LabelTrack();
+
+   virtual HitTestResult HitTest
+      (const TrackPanelMouseEvent &event,
+       const AudacityProject *pProject);
+
    virtual void SetOffset(double dOffset);
 
    static void ResetFont();
@@ -282,6 +287,10 @@ class AUDACITY_DLL_API LabelTrack : public Track
    bool mbIsMoving;
 
    static wxFont msFont;
+
+protected:
+   virtual TrackControls *GetControls();
+   virtual TrackVRulerControls *GetVRulerControls();
 };
 
 #endif
