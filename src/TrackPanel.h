@@ -26,9 +26,6 @@
 
 #include "WaveTrackLocation.h"
 
-#include "Snap.h"
-#include "Track.h"
-
 class wxMenu;
 class wxRect;
 
@@ -258,7 +255,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    // Working out where to dispatch the event to.
    virtual int DetermineToolToUse( ToolsToolBar * pTtb, wxMouseEvent & event);
    virtual bool HitTestEnvelope(Track *track, wxRect &rect, wxMouseEvent & event);
-   virtual bool HitTestSlide(Track *track, wxRect &rect, wxMouseEvent & event);
 #ifdef USE_MIDI
    // data for NoteTrack interactive stretch operations:
    // Stretching applies to a selected region after quantizing the
@@ -342,13 +338,6 @@ protected:
    virtual void ForwardEventToTimeTrackEnvelope(wxMouseEvent & event);
    virtual void ForwardEventToWaveTrackEnvelope(wxMouseEvent & event);
    virtual void ForwardEventToEnvelope(wxMouseEvent &event);
-
-   // AS: Track sliding handlers
-   virtual void HandleSlide(wxMouseEvent & event);
-   virtual void StartSlide(wxMouseEvent &event);
-   virtual void DoSlide(wxMouseEvent &event);
-   virtual void AddClipsToCaptured(Track *t, bool withinSelection);
-   virtual void AddClipsToCaptured(Track *t, double t0, double t1);
 
    static bool IsDragZooming(int zoomStart, int zoomEnd);
    virtual bool IsDragZooming() { return IsDragZooming(mZoomStart, mZoomEnd); }
@@ -520,8 +509,6 @@ protected:
 
    virtual wxString TrackSubText(Track *t);
 
-   virtual bool MoveClipToTrack(WaveClip *clip, WaveTrack* dst);
-
    TrackInfo mTrackInfo;
  public:
     TrackInfo *GetTrackInfo() { return &mTrackInfo; }
@@ -603,25 +590,14 @@ protected:
 
    Track *mCapturedTrack;
    Envelope *mCapturedEnvelope;
-   WaveClip *mCapturedClip;
-   TrackClipArray mCapturedClipArray;
-   TrackArray mTrackExclusions;
-   bool mCapturedClipIsSelection;
    WaveTrackLocation mCapturedTrackLocation;
    wxRect mCapturedTrackLocationRect;
    wxRect mCapturedRect;
-
-   // The amount that clips are sliding horizontally; this allows
-   // us to undo the slide and then slide it by another amount
-   double mHSlideAmount;
-
-   bool mDidSlideVertically;
 
    bool mRedrawAfterStop;
 
    wxMouseEvent mLastMouseEvent;
 
-   int mMouseClickX;
    int mMouseClickY;
 
    int mMouseMostRecentX;
@@ -637,7 +613,6 @@ protected:
    SnapManager *mSnapManager;
    wxInt64 mSnapLeft;
    wxInt64 mSnapRight;
-   bool mSnapPreferRightEdge;
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
    void HandleCenterFrequencyCursor
@@ -693,7 +668,6 @@ protected:
       IsResizingBetweenLinkedTracks,
       IsResizingBelowLinkedTracks,
       IsRearranging,
-      IsSliding,
       IsEnveloping,
       IsMuting,
       IsSoloing,
@@ -707,7 +681,6 @@ protected:
    enum MouseCaptureEnum mMouseCapture;
    virtual void SetCapturedTrack( Track * t, enum MouseCaptureEnum MouseCapture=IsUncaptured );
 
-   bool mSlideUpDownOnly;
    bool mCircularTrackNavigation;
 
    // JH: if the user is dragging a track, at what y
@@ -719,7 +692,6 @@ protected:
    wxCursor *mArrowCursor;
    wxCursor *mSelectCursor;
    wxCursor *mResizeCursor;
-   wxCursor *mSlideCursor;
    wxCursor *mEnvelopeCursor; // doubles as the center frequency cursor
                               // for spectral selection
    wxCursor *mZoomInCursor;

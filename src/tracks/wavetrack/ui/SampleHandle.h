@@ -18,6 +18,7 @@ Paul Licameli
 
 struct HitTestResult;
 class Track;
+class ViewInfo;
 class WaveTrack;
 
 class SampleHandle : public UIHandle

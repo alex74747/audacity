@@ -18,6 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../toolbars/ToolsToolBar.h"
 
 #include "SampleHandle.h"
+#include "../../ui/TimeShiftHandle.h"
 
 HitTestResult WaveTrack::HitTest
 (const TrackPanelMouseEvent &event,
@@ -31,10 +32,18 @@ HitTestResult WaveTrack::HitTest
    if (pTtb->IsDown(multiTool)) {
       // Replicate some of the logic of TrackPanel::DetermineToolToUse
       int currentTool = -1;
-
       if (NULL != (result =
          SampleHandle::HitTest(event.event, event.rect, pProject, this)).preview.cursor)
          currentTool = drawTool;
+      else if (event.event.CmdDown()) {
+         // msmeyer: If control is down, slide single clip
+         // msmeyer: If control and shift are down, slide all clips
+         currentTool = slideTool;
+         result = TimeShiftHandle::HitAnywhere(pProject);
+      }
+      else if (NULL != (result =
+         TimeShiftHandle::HitTest(event.event, event.rect, pProject)).preview.cursor)
+         currentTool = slideTool;
 
       if (currentTool >= 0) {
          // Side-effect on the toolbar
