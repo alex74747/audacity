@@ -103,6 +103,7 @@ ToolsToolBar::ToolsToolBar()
 #endif
    }
 
+   // TODO: this message isn't appropriate for time track
    mMessageOfTool[envelopeTool] = _("Click and drag to edit the amplitude envelope");
 
    // TODO:  message should also mention the brush.  Describing the modifier key

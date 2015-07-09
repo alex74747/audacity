@@ -254,7 +254,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
 
    // Working out where to dispatch the event to.
    virtual int DetermineToolToUse( ToolsToolBar * pTtb, wxMouseEvent & event);
-   virtual bool HitTestEnvelope(Track *track, wxRect &rect, wxMouseEvent & event);
 #ifdef USE_MIDI
    // data for NoteTrack interactive stretch operations:
    // Stretching applies to a selected region after quantizing the
@@ -332,12 +331,6 @@ protected:
    virtual void MaySetOnDemandTip( Track * t, wxString &tip );
 
    void FindCell(const wxMouseEvent &event, wxRect &inner, TrackPanelCell *& pCell, Track *& pTrack);
-
-   // AS: Envelope editing handlers
-   virtual void HandleEnvelope(wxMouseEvent & event);
-   virtual void ForwardEventToTimeTrackEnvelope(wxMouseEvent & event);
-   virtual void ForwardEventToWaveTrackEnvelope(wxMouseEvent & event);
-   virtual void ForwardEventToEnvelope(wxMouseEvent &event);
 
    static bool IsDragZooming(int zoomStart, int zoomEnd);
    virtual bool IsDragZooming() { return IsDragZooming(mZoomStart, mZoomEnd); }
@@ -589,7 +582,6 @@ protected:
 #endif
 
    Track *mCapturedTrack;
-   Envelope *mCapturedEnvelope;
    WaveTrackLocation mCapturedTrackLocation;
    wxRect mCapturedTrackLocationRect;
    wxRect mCapturedRect;
@@ -668,7 +660,6 @@ protected:
       IsResizingBetweenLinkedTracks,
       IsResizingBelowLinkedTracks,
       IsRearranging,
-      IsEnveloping,
       IsMuting,
       IsSoloing,
       IsGainSliding,
