@@ -596,6 +596,8 @@ audacity_SOURCES = \
 	widgets/NumericTextCtrl.h \
 	widgets/numformatter.cpp \
 	widgets/numformatter.h \
+	widgets/PopupMenuTable.cpp \
+	widgets/PopupMenuTable.h \
 	widgets/ProgressDialog.cpp \
 	widgets/ProgressDialog.h \
 	widgets/Ruler.cpp \

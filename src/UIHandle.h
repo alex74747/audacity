@@ -81,5 +81,4 @@ public:
       (DrawingPass pass,
        wxDC * dc, const wxRegion &updateRegion, const wxRect &panelRect);
 };
-
 #endif

@@ -244,6 +244,7 @@
     <ClCompile Include="..\..\..\src\WaveTrack.cpp" />
     <ClCompile Include="..\..\..\src\widgets\HelpSystem.cpp" />
     <ClCompile Include="..\..\..\src\widgets\NumericTextCtrl.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\PopupMenuTable.cpp" />
     <ClCompile Include="..\..\..\src\WrappedType.cpp" />
     <ClCompile Include="..\..\..\src\effects\Amplify.cpp" />
     <ClCompile Include="..\..\..\src\effects\AutoDuck.cpp" />
@@ -481,6 +482,7 @@
     <ClInclude Include="..\..\..\src\WaveTrackLocation.h" />
     <ClInclude Include="..\..\..\src\widgets\HelpSystem.h" />
     <ClInclude Include="..\..\..\src\widgets\NumericTextCtrl.h" />
+    <ClInclude Include="..\..\..\src\widgets\PopupMenuTable.h" />
     <ClInclude Include="..\..\configwin.h" />
     <ClInclude Include="..\..\..\src\Dependencies.h" />
     <ClInclude Include="..\..\..\src\DeviceManager.h" />

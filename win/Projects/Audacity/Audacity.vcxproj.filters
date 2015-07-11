@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
@@ -944,6 +944,9 @@
     <ClCompile Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.cpp">
       <Filter>src\tracks\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\PopupMenuTable.cpp">
+      <Filter>src\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\AboutDialog.h">
@@ -1872,6 +1875,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.h">
       <Filter>src\tracks\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\PopupMenuTable.h">
+      <Filter>src\widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
