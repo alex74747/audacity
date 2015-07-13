@@ -24,8 +24,6 @@
 #include "UndoManager.h" //JKC: Included for PUSH_XXX definitions.
 #include "widgets/NumericTextCtrl.h"
 
-#include "WaveTrackLocation.h"
-
 class wxMenu;
 class wxRect;
 
@@ -246,8 +244,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual bool HandleLabelTrackClick(LabelTrack * lTrack, wxRect &rect, wxMouseEvent & event);
    virtual void HandleGlyphDragRelease(LabelTrack * lTrack, wxMouseEvent & event);
    virtual void HandleTextDragRelease(LabelTrack * lTrack, wxMouseEvent & event);
-   virtual bool HandleTrackLocationMouseEvent(WaveTrack * track, wxRect &rect, wxMouseEvent &event);
-   virtual bool IsOverCutline(WaveTrack * track, wxRect &rect, wxMouseEvent &event);
    virtual void HandleTrackSpecificMouseEvent(wxMouseEvent & event);
 
    virtual void ScrollDuringDrag();
@@ -319,7 +315,6 @@ protected:
 
    // AS: Cursor handling
    virtual bool SetCursorByActivity( );
-   virtual bool SetCursorForCutline(WaveTrack * track, wxRect &rect, wxMouseEvent &event);
    virtual void SetCursorAndTipWhenInLabel( Track * t, wxMouseEvent &event, wxString &tip );
    virtual void SetCursorAndTipWhenInVResizeArea( bool blinked, wxString &tip );
    virtual void SetCursorAndTipWhenInLabelTrack( LabelTrack * pLT, wxMouseEvent & event, wxString &tip );
@@ -582,8 +577,6 @@ protected:
 #endif
 
    Track *mCapturedTrack;
-   WaveTrackLocation mCapturedTrackLocation;
-   wxRect mCapturedTrackLocationRect;
    wxRect mCapturedRect;
 
    bool mRedrawAfterStop;
@@ -665,7 +658,6 @@ protected:
       IsGainSliding,
       IsPanSliding,
       IsMinimizing,
-      WasOverCutLine,
       IsPopping,
    };
 
