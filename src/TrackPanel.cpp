@@ -5616,6 +5616,9 @@ void TrackPanel::DrawZooming(wxDC * dc, const wxRect & clip)
 }
 
 
+// Make this #include go away!
+#include "tracks/ui/TrackControls.h"
+
 void TrackPanel::DrawOutside(Track * t, wxDC * dc, const wxRect & rec,
                              const wxRect & trackRect)
 {
@@ -5654,11 +5657,21 @@ void TrackPanel::DrawOutside(Track * t, wxDC * dc, const wxRect & rec,
    DrawShadow(t, dc, rect);
 
    rect.width = mTrackInfo.GetTrackInfoWidth();
-   bool captured = (t == mCapturedTrack);
-   mTrackInfo.DrawCloseBox(dc, rect, (captured && mMouseCapture==IsClosing));
-   mTrackInfo.DrawTitleBar(dc, rect, t, (captured && mMouseCapture==IsPopping));
 
-   mTrackInfo.DrawMinimize(dc, rect, t, (captured && mMouseCapture==IsMinimizing));
+   // Need to know which button, if any, to draw as pressed.
+   const MouseCaptureEnum mouseCapture =
+      mMouseCapture ? mMouseCapture
+      // This public global variable is a hack for now, which should go away
+      // when TrackPanelCell gets a virtual function into which we move this
+      // drawing code.  It's enough work for 2.1.2 just to move all the click and
+      // drag code out of TrackPanel.  -- PRL
+      : MouseCaptureEnum(TrackControls::gCaptureState);
+   const bool captured = (t == mCapturedTrack || t == mpClickedTrack);
+
+   mTrackInfo.DrawCloseBox(dc, rect, (captured && mouseCapture == IsClosing));
+   mTrackInfo.DrawTitleBar(dc, rect, t, (captured && mouseCapture == IsPopping));
+
+   mTrackInfo.DrawMinimize(dc, rect, t, (captured && mouseCapture == IsMinimizing));
 
    // Draw the sync-lock indicator if this track is in a sync-lock selected group.
    if (t->IsSyncLockSelected())
@@ -5676,8 +5689,8 @@ void TrackPanel::DrawOutside(Track * t, wxDC * dc, const wxRect & rec,
    mTrackInfo.DrawBordersWithin( dc, rect, bIsWave );
 
    if (bIsWave) {
-      mTrackInfo.DrawMuteSolo(dc, rect, t, (captured && mMouseCapture == IsMuting), false, HasSoloButton());
-      mTrackInfo.DrawMuteSolo(dc, rect, t, (captured && mMouseCapture == IsSoloing), true, HasSoloButton());
+      mTrackInfo.DrawMuteSolo(dc, rect, t, (captured && mouseCapture == IsMuting), false, HasSoloButton());
+      mTrackInfo.DrawMuteSolo(dc, rect, t, (captured && mouseCapture == IsSoloing), true, HasSoloButton());
 
       mTrackInfo.DrawSliders(dc, (WaveTrack *)t, rect);
       if (!t->GetMinimized()) {
@@ -5720,9 +5733,9 @@ void TrackPanel::DrawOutside(Track * t, wxDC * dc, const wxRect & rec,
             AColor::Line(*dc, rect.x, rect.y + 66, mTrackInfo.GetTrackInfoWidth(), rect.y + 66);
          }
          mTrackInfo.DrawMuteSolo(dc, rect, t,
-               (captured && mMouseCapture == IsMuting), false, HasSoloButton());
+               (captured && mouseCapture == IsMuting), false, HasSoloButton());
          mTrackInfo.DrawMuteSolo(dc, rect, t,
-               (captured && mMouseCapture == IsSoloing), true, HasSoloButton());
+               (captured && mouseCapture == IsSoloing), true, HasSoloButton());
 
          // place a volume control below channel buttons (this will
          // control an offset to midi velocity).
