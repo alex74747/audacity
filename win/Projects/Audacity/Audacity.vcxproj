@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -226,6 +226,7 @@
     <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackControls.cpp" />
     <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackUI.cpp" />
     <ClCompile Include="..\..\..\src\tracks\timetrack\ui\TimeTrackVRulerControls.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\ui\ButtonHandle.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\EditCursorOverlay.cpp" />
     <ClCompile Include="..\..\..\src\tracks\ui\EnvelopeHandle.cpp" />
@@ -475,6 +476,7 @@
     <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackControls.h" />
     <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackVRulerControls.h" />
     <ClInclude Include="..\..\..\src\tracks\timetrack\ui\TimeTrackControls.h" />
+    <ClInclude Include="..\..\..\src\tracks\ui\ButtonHandle.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\EditCursorOverlay.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\EnvelopeHandle.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\PlayIndicatorOverlay.h" />
