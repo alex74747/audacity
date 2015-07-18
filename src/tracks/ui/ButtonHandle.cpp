@@ -9,6 +9,9 @@ Paul Licameli
 **********************************************************************/
 
 #include "ButtonHandle.h"
+
+#include <memory>
+
 #include "../../HitTestResult.h"
 #include "../../RefreshCode.h"
 #include "../../Track.h"
@@ -28,8 +31,14 @@ ButtonHandle::~ButtonHandle()
 
 HitTestPreview ButtonHandle::Preview()
 {
-   // No special message or cursor
-   return HitTestPreview();
+   static std::auto_ptr<wxCursor> arrowCursor(
+      new wxCursor(wxCURSOR_ARROW)
+   );
+
+   return HitTestPreview(
+      wxString(),
+      &*arrowCursor
+   );
 }
 
 UIHandle::Result ButtonHandle::Click
