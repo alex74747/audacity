@@ -230,14 +230,7 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
 
  protected:
    virtual MixerBoard* GetMixerBoard();
-   /** @brief Populates the track pop-down menu with the common set of
-    * initial items.
-    *
-    * Ensures that all pop-down menus start with Name, and the commands for moving
-    * the track around, via a single set of c ode.
-    * @param menu the menu to add the commands to.
-    */
-   virtual void BuildCommonDropMenuItems(wxMenu * menu);
+
    static void BuildVRulerMenuItems(wxMenu * menu, int firstId, const wxArrayString &names);
    virtual bool IsAudioActive();
    virtual bool IsUnsafe();
@@ -366,11 +359,8 @@ protected:
    virtual void MakeParentModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                                                // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
 protected:
-   virtual void OnSetName(wxCommandEvent &event);
-
    virtual void OnSetFont(wxCommandEvent &event);
 
-   virtual void OnMoveTrack    (wxCommandEvent &event);
    virtual void OnChangeOctave (wxCommandEvent &event);
    virtual void OnChannelChange(wxCommandEvent &event);
    virtual void OnSpectrogramSettings(wxCommandEvent &event);
