@@ -359,7 +359,6 @@ protected:
    virtual void MakeParentModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                                                // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
 protected:
-   virtual void OnChangeOctave (wxCommandEvent &event);
    virtual void OnChannelChange(wxCommandEvent &event);
    virtual void OnSpectrogramSettings(wxCommandEvent &event);
    virtual void OnSetDisplay   (wxCommandEvent &event);
@@ -667,7 +666,6 @@ protected:
    size_t mChannelItemsInsertionPoint;
    bool mShowMono;
 
-   wxMenu *mNoteTrackMenu;
    wxMenu *mRateMenu;
    wxMenu *mFormatMenu;
 
