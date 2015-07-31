@@ -162,10 +162,6 @@ is time to refresh some aspect of the screen.
 //#define DEBUG_DRAW_TIMING 1
 // #define SPECTRAL_EDITING_ESC_KEY
 
-#include <wx/fontenum.h>
-#include <wx/numdlg.h>
-#include <wx/spinctrl.h>
-
 #include "FreqWindow.h" // for SpectrumAnalyst
 
 #include "AColor.h"
@@ -295,7 +291,6 @@ template < class CLIPPEE, class CLIPVAL >
 
 enum {
    TrackPanelFirstID = 2000,
-   OnSetFontID,
 
    OnUpOctaveID,
    OnDownOctaveID,
@@ -357,7 +352,6 @@ BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
     EVT_SET_FOCUS(TrackPanel::OnSetFocus)
     EVT_KILL_FOCUS(TrackPanel::OnKillFocus)
     EVT_CONTEXT_MENU(TrackPanel::OnContextMenu)
-    EVT_MENU(OnSetFontID, TrackPanel::OnSetFont)
 
     EVT_MENU_RANGE(OnUpOctaveID, OnDownOctaveID, TrackPanel::OnChangeOctave)
     EVT_MENU_RANGE(OnChannelLeftID, OnChannelMonoID,
@@ -497,7 +491,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mShowMono = false;
    
    mNoteTrackMenu = NULL;
-   mLabelTrackMenu = NULL;
 
    mRulerWaveformMenu = mRulerSpectrumMenu = NULL;
 
@@ -700,10 +693,6 @@ void TrackPanel::BuildMenus(void)
    mNoteTrackMenu->Append(OnUpOctaveID, _("Up &Octave"));
    mNoteTrackMenu->Append(OnDownOctaveID, _("Down Octa&ve"));
 
-   /* build the pop-down menu used on label tracks */
-   mLabelTrackMenu = new wxMenu();
-   mLabelTrackMenu->Append(OnSetFontID, _("&Font..."));
-
    mRulerWaveformMenu = new wxMenu();
    BuildVRulerMenuItems
       (mRulerWaveformMenu, OnFirstWaveformScaleID,
@@ -740,11 +729,6 @@ void TrackPanel::DeleteMenus(void)
    if (mNoteTrackMenu) {
       delete mNoteTrackMenu;
       mNoteTrackMenu = NULL;
-   }
-
-   if (mLabelTrackMenu) {
-      delete mLabelTrackMenu;
-      mLabelTrackMenu = NULL;
    }
 
    delete mRulerWaveformMenu;
@@ -5930,10 +5914,6 @@ void TrackPanel::OnTrackMenu(Track *t)
       theMenu = mNoteTrackMenu;
 #endif
 
-   if (t->GetKind() == Track::Label){
-       theMenu = mLabelTrackMenu;
-   }
-
    if (theMenu) {
       //We need to find the location of the menu rectangle.
       wxRect rect = FindTrackRect(t,true);
@@ -6712,92 +6692,6 @@ void TrackPanel::OnChangeOctave(wxCommandEvent & event)
    MakeParentModifyState(true);
    Refresh(false);
 #endif
-}
-
-// Small helper class to enumerate all fonts in the system
-// We use this because the default implementation of
-// wxFontEnumerator::GetFacenames() has changed between wx2.6 and 2.8
-class TrackPanelFontEnumerator : public wxFontEnumerator
-{
-public:
-   TrackPanelFontEnumerator(wxArrayString* fontNames) :
-      mFontNames(fontNames) {}
-
-   virtual bool OnFacename(const wxString& font)
-   {
-      mFontNames->Add(font);
-      return true;
-   }
-
-private:
-   wxArrayString* mFontNames;
-};
-
-void TrackPanel::OnSetFont(wxCommandEvent & WXUNUSED(event))
-{
-   wxArrayString facenames;
-   TrackPanelFontEnumerator fontEnumerator(&facenames);
-   fontEnumerator.EnumerateFacenames(wxFONTENCODING_SYSTEM, false);
-
-   wxString facename = gPrefs->Read(wxT("/GUI/LabelFontFacename"), wxT(""));
-   long fontsize = gPrefs->Read(wxT("/GUI/LabelFontSize"), 12);
-
-   /* i18n-hint: (noun) This is the font for the label track.*/
-   wxDialog dlg(this, wxID_ANY, wxString(_("Label Track Font")));
-   dlg.SetName(dlg.GetTitle());
-   ShuttleGui S(&dlg, eIsCreating);
-   wxListBox *lb;
-   wxSpinCtrl *sc;
-
-   S.StartVerticalLay(true);
-   {
-      S.StartMultiColumn(2, wxEXPAND);
-      {
-         S.SetStretchyRow(0);
-         S.SetStretchyCol(1);
-
-         /* i18n-hint: (noun) The name of the typeface*/
-         S.AddPrompt(_("Face name"));
-         lb = new wxListBox(&dlg, wxID_ANY,
-                            wxDefaultPosition,
-                            wxDefaultSize,
-                            facenames,
-                            wxLB_SINGLE);
-
-         lb->SetName(_("Face name"));
-         lb->SetSelection(facenames.Index(facename));
-         S.AddWindow(lb, wxALIGN_LEFT | wxEXPAND | wxALL);
-
-         /* i18n-hint: (noun) The size of the typeface*/
-         S.AddPrompt(_("Face size"));
-         sc = new wxSpinCtrl(&dlg, wxID_ANY,
-                             wxString::Format(wxT("%ld"), fontsize),
-                             wxDefaultPosition,
-                             wxDefaultSize,
-                             wxSP_ARROW_KEYS,
-                             8, 48, fontsize);
-         sc->SetName(_("Face size"));
-         S.AddWindow(sc, wxALIGN_LEFT | wxALL);
-      }
-      S.EndMultiColumn();
-      S.AddStandardButtons();
-   }
-   S.EndVerticalLay();
-
-   dlg.Layout();
-   dlg.Fit();
-   dlg.CenterOnParent();
-   if (dlg.ShowModal() == wxID_CANCEL) {
-      return;
-   }
-
-   gPrefs->Write(wxT("/GUI/LabelFontFacename"), lb->GetStringSelection());
-   gPrefs->Write(wxT("/GUI/LabelFontSize"), sc->GetValue());
-   gPrefs->Flush();
-
-   LabelTrack::ResetFont();
-
-   Refresh(false);
 }
 
 /// Determines which track is under the mouse
