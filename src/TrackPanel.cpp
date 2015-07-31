@@ -181,7 +181,6 @@ is time to refresh some aspect of the screen.
 #include "RefreshCode.h"
 #include "Snap.h"
 #include "ShuttleGui.h"
-#include "TimeTrack.h"
 #include "TrackArtist.h"
 #include "TrackPanelAx.h"
 #include "UIHandle.h"
@@ -333,12 +332,6 @@ enum {
    OnMergeStereoID,
    OnSwapChannelsID,
 
-   OnSetTimeTrackRangeID,
-
-   OnTimeTrackLinID,
-   OnTimeTrackLogID,
-   OnTimeTrackLogIntID,
-
    // Reserve an ample block of ids for waveform scale types
    OnFirstWaveformScaleID,
    OnLastWaveformScaleID = OnFirstWaveformScaleID + 9,
@@ -365,7 +358,6 @@ BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
     EVT_KILL_FOCUS(TrackPanel::OnKillFocus)
     EVT_CONTEXT_MENU(TrackPanel::OnContextMenu)
     EVT_MENU(OnSetFontID, TrackPanel::OnSetFont)
-    EVT_MENU(OnSetTimeTrackRangeID, TrackPanel::OnSetTimeTrackRange)
 
     EVT_MENU_RANGE(OnUpOctaveID, OnDownOctaveID, TrackPanel::OnChangeOctave)
     EVT_MENU_RANGE(OnChannelLeftID, OnChannelMonoID,
@@ -379,10 +371,6 @@ BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
     EVT_MENU(OnSplitStereoID, TrackPanel::OnSplitStereo)
     EVT_MENU(OnSplitStereoMonoID, TrackPanel::OnSplitStereoMono)
     EVT_MENU(OnMergeStereoID, TrackPanel::OnMergeStereo)
-
-    EVT_MENU(OnTimeTrackLinID, TrackPanel::OnTimeTrackLin)
-    EVT_MENU(OnTimeTrackLogID, TrackPanel::OnTimeTrackLog)
-    EVT_MENU(OnTimeTrackLogIntID, TrackPanel::OnTimeTrackLogInt)
 
     EVT_MENU_RANGE(OnFirstWaveformScaleID, OnLastWaveformScaleID, TrackPanel::OnWaveformScaleType)
     EVT_MENU_RANGE(OnFirstSpectrumScaleID, OnLastSpectrumScaleID, TrackPanel::OnSpectrumScaleType)
@@ -510,7 +498,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    
    mNoteTrackMenu = NULL;
    mLabelTrackMenu = NULL;
-   mTimeTrackMenu = NULL;
 
    mRulerWaveformMenu = mRulerSpectrumMenu = NULL;
 
@@ -717,14 +704,6 @@ void TrackPanel::BuildMenus(void)
    mLabelTrackMenu = new wxMenu();
    mLabelTrackMenu->Append(OnSetFontID, _("&Font..."));
 
-   /* build the pop-down menu used on time warping tracks */
-   mTimeTrackMenu = new wxMenu();
-   mTimeTrackMenu->Append(OnTimeTrackLinID, _("&Linear"));
-   mTimeTrackMenu->Append(OnTimeTrackLogID, _("L&ogarithmic"));
-   mTimeTrackMenu->AppendSeparator();
-   mTimeTrackMenu->Append(OnSetTimeTrackRangeID, _("&Range..."));
-   mTimeTrackMenu->AppendCheckItem(OnTimeTrackLogIntID, _("Logarithmic &Interpolation"));
-
    mRulerWaveformMenu = new wxMenu();
    BuildVRulerMenuItems
       (mRulerWaveformMenu, OnFirstWaveformScaleID,
@@ -766,11 +745,6 @@ void TrackPanel::DeleteMenus(void)
    if (mLabelTrackMenu) {
       delete mLabelTrackMenu;
       mLabelTrackMenu = NULL;
-   }
-
-   if (mTimeTrackMenu) {
-      delete mTimeTrackMenu;
-      mTimeTrackMenu = NULL;
    }
 
    delete mRulerWaveformMenu;
@@ -5896,15 +5870,6 @@ void TrackPanel::OnTrackMenu(Track *t)
    Track *next = mTracks->GetNext(t);
 
    wxMenu *theMenu = NULL;
-   if (t->GetKind() == Track::Time) {
-      theMenu = mTimeTrackMenu;
-
-      TimeTrack *tt = (TimeTrack*) t;
-
-      theMenu->Enable(OnTimeTrackLinID, tt->GetDisplayLog());
-      theMenu->Enable(OnTimeTrackLogID, !tt->GetDisplayLog());
-      theMenu->Check(OnTimeTrackLogIntID, tt->GetInterpolateLog());
-   }
 
    if (t->GetKind() == Track::Wave) {
       theMenu = mWaveTrackMenu;
@@ -6673,75 +6638,6 @@ void TrackPanel::OnRateOther(wxCommandEvent &event)
    SetRate(mPopupMenuTarget, newRate);
 
    MakeParentRedrawScrollbars();
-   Refresh(false);
-}
-
-void TrackPanel::OnSetTimeTrackRange(wxCommandEvent & /*event*/)
-{
-   TimeTrack *t = (TimeTrack*)mPopupMenuTarget;
-
-   if (t) {
-      long lower = (long) (t->GetRangeLower() * 100.0 + 0.5);
-      long upper = (long) (t->GetRangeUpper() * 100.0 + 0.5);
-
-      // MB: these lower/upper limits match the maximum allowed range of the time track
-      // envelope, but this is not strictly required
-      lower = wxGetNumberFromUser(_("Change lower speed limit (%) to:"),
-                                  _("Lower speed limit"),
-                                  _("Lower speed limit"),
-                                  lower,
-                                  10,
-                                  1000);
-
-      upper = wxGetNumberFromUser(_("Change upper speed limit (%) to:"),
-                                  _("Upper speed limit"),
-                                  _("Upper speed limit"),
-                                  upper,
-                                  lower+1,
-                                  1000);
-
-      if( lower >= 10 && upper <= 1000 && lower < upper ) {
-         t->SetRangeLower((double)lower / 100.0);
-         t->SetRangeUpper((double)upper / 100.0);
-         MakeParentPushState(wxString::Format(_("Set range to '%ld' - '%ld'"),
-                                              lower,
-                                              upper),
-      /* i18n-hint: (verb)*/
-
-                             _("Set Range"));
-         Refresh(false);
-      }
-   }
-}
-
-void TrackPanel::OnTimeTrackLin(wxCommandEvent & /*event*/)
-{
-   TimeTrack *t = (TimeTrack*)mPopupMenuTarget;
-   t->SetDisplayLog(false);
-   UpdateVRuler(t);
-   MakeParentPushState(_("Set time track display to linear"), _("Set Display"));
-   Refresh(false);
-}
-
-void TrackPanel::OnTimeTrackLog(wxCommandEvent & /*event*/)
-{
-   TimeTrack *t = (TimeTrack*)mPopupMenuTarget;
-   t->SetDisplayLog(true);
-   UpdateVRuler(t);
-   MakeParentPushState(_("Set time track display to logarithmic"), _("Set Display"));
-   Refresh(false);
-}
-
-void TrackPanel::OnTimeTrackLogInt(wxCommandEvent & /*event*/)
-{
-   TimeTrack *t = (TimeTrack*)mPopupMenuTarget;
-   if(t->GetInterpolateLog()) {
-      t->SetInterpolateLog(false);
-      MakeParentPushState(_("Set time track interpolation to linear"), _("Set Interpolation"));
-   } else {
-      t->SetInterpolateLog(true);
-      MakeParentPushState(_("Set time track interpolation to logarithmic"), _("Set Interpolation"));
-   }
    Refresh(false);
 }
 
