@@ -359,29 +359,12 @@ protected:
    virtual void MakeParentModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                                                // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
 protected:
-   virtual void OnChannelChange(wxCommandEvent &event);
-   virtual void OnSpectrogramSettings(wxCommandEvent &event);
-   virtual void OnSetDisplay   (wxCommandEvent &event);
-
    virtual void OnWaveformScaleType(wxCommandEvent &event);
    virtual void OnSpectrumScaleType(wxCommandEvent &event);
 
    virtual void OnZoomInVertical(wxCommandEvent &event);
    virtual void OnZoomOutVertical(wxCommandEvent &event);
    virtual void OnZoomFitVertical(wxCommandEvent &event);
-
-   virtual void SetMenuCheck( wxMenu & menu, int newId );
-   virtual void SetRate(Track *pTrack, double rate);
-   virtual void OnRateChange(wxCommandEvent &event);
-   virtual void OnRateOther(wxCommandEvent &event);
-
-   virtual void OnFormatChange(wxCommandEvent &event);
-
-   virtual void OnSwapChannels(wxCommandEvent &event);
-   virtual void OnSplitStereo(wxCommandEvent &event);
-   virtual void OnSplitStereoMono(wxCommandEvent &event);
-   virtual void SplitStereo(bool stereo);
-   virtual void OnMergeStereo(wxCommandEvent &event);
 
    // Find track info by coordinate
    virtual Track *FindTrack(int mouseX, int mouseY, bool label, bool link,
@@ -443,10 +426,6 @@ public:
    // Erase and redraw things like the cursor, cheaply and directly to the
    // client area, without full refresh.
    virtual void DrawOverlays(bool repaint);
-
-protected:
-   virtual int IdOfRate( int rate );
-   virtual int IdOfFormat( int format );
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
    void UpdateVirtualStereoOrder();
@@ -661,13 +640,6 @@ protected:
    wxCursor *mStretchLeftCursor;
    wxCursor *mStretchRightCursor;
 #endif
-
-   wxMenu *mWaveTrackMenu;
-   size_t mChannelItemsInsertionPoint;
-   bool mShowMono;
-
-   wxMenu *mRateMenu;
-   wxMenu *mFormatMenu;
 
    wxMenu *mRulerWaveformMenu;
    wxMenu *mRulerSpectrumMenu;
