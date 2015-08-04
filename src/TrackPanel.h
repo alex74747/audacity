@@ -143,10 +143,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
 
    virtual ~ TrackPanel();
 
-   virtual void BuildMenus(void);
-
-   virtual void DeleteMenus(void);
-
    virtual void UpdatePrefs();
 
    virtual void OnSize(wxSizeEvent & event);

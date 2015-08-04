@@ -284,10 +284,6 @@ template < class CLIPPEE, class CLIPVAL >
       clippee = val;
 }
 
-enum {
-   TrackPanelFirstID = 2000,
-};
-
 BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
     EVT_MOUSE_EVENTS(TrackPanel::OnMouseEvent)
     EVT_MOUSE_CAPTURE_LOST(TrackPanel::OnCaptureLost)
@@ -504,8 +500,6 @@ TrackPanel::~TrackPanel()
 
    delete mSnapManager;
 
-   DeleteMenus();
-
 #if !wxUSE_ACCESSIBILITY
    delete mAx;
 #endif
@@ -513,16 +507,6 @@ TrackPanel::~TrackPanel()
    delete mInitialTrackSelection;
 
    delete mOverlays;
-}
-
-void TrackPanel::BuildMenus(void)
-{
-   // Get rid of existing menus
-   DeleteMenus();
-}
-
-void TrackPanel::DeleteMenus(void)
-{
 }
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY

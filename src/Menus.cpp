@@ -1634,9 +1634,6 @@ void AudacityProject::RebuildMenuBar()
 
 void AudacityProject::RebuildOtherMenus()
 {
-   if (mTrackPanel) {
-      mTrackPanel->BuildMenus();
-   }
 }
 
 int AudacityProject::GetFocusedFrame()
