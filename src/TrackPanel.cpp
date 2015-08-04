@@ -187,15 +187,12 @@ is time to refresh some aspect of the screen.
 #include "ondemand/ODManager.h"
 
 #include "prefs/SpectrogramSettings.h"
-#include "prefs/WaveformSettings.h"
 
 #include "toolbars/ControlToolBar.h"
 #include "toolbars/ToolsToolBar.h"
 
 // To do:  eliminate this!
 #include "tracks/ui/Scrubbing.h"
-
-#define ZOOMLIMIT 0.001f
 
 //This loads the appropriate set of cursors, depending on platform.
 #include "../images/Cursors.h"
@@ -289,18 +286,6 @@ template < class CLIPPEE, class CLIPVAL >
 
 enum {
    TrackPanelFirstID = 2000,
-
-   // Reserve an ample block of ids for waveform scale types
-   OnFirstWaveformScaleID,
-   OnLastWaveformScaleID = OnFirstWaveformScaleID + 9,
-
-   // Reserve an ample block of ids for spectrum scale types
-   OnFirstSpectrumScaleID,
-   OnLastSpectrumScaleID = OnFirstSpectrumScaleID + 19,
-
-   OnZoomInVerticalID,
-   OnZoomOutVerticalID,
-   OnZoomFitVerticalID,
 };
 
 BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
@@ -315,13 +300,6 @@ BEGIN_EVENT_TABLE(TrackPanel, wxWindow)
     EVT_SET_FOCUS(TrackPanel::OnSetFocus)
     EVT_KILL_FOCUS(TrackPanel::OnKillFocus)
     EVT_CONTEXT_MENU(TrackPanel::OnContextMenu)
-
-    EVT_MENU_RANGE(OnFirstWaveformScaleID, OnLastWaveformScaleID, TrackPanel::OnWaveformScaleType)
-    EVT_MENU_RANGE(OnFirstSpectrumScaleID, OnLastSpectrumScaleID, TrackPanel::OnSpectrumScaleType)
-
-    EVT_MENU(OnZoomInVerticalID, TrackPanel::OnZoomInVertical)
-    EVT_MENU(OnZoomOutVerticalID, TrackPanel::OnZoomOutVertical)
-    EVT_MENU(OnZoomFitVerticalID, TrackPanel::OnZoomFitVertical)
 
     EVT_TIMER(wxID_ANY, TrackPanel::OnTimer)
 END_EVENT_TABLE()
@@ -407,8 +385,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mSelectCursor  = MakeCursor( wxCURSOR_IBEAM,     IBeamCursorXpm,   17, 16);
    mEnvelopeCursor= MakeCursor( wxCURSOR_ARROW,     EnvCursorXpm,     16, 16);
    mDisabledCursor= MakeCursor( wxCURSOR_NO_ENTRY,  DisabledCursorXpm,16, 16);
-   mZoomInCursor  = MakeCursor( wxCURSOR_MAGNIFIER, ZoomInCursorXpm,  19, 15);
-   mZoomOutCursor = MakeCursor( wxCURSOR_MAGNIFIER, ZoomOutCursorXpm, 19, 15);
    
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
    mBottomFrequencyCursor =
@@ -436,15 +412,10 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mAdjustLeftSelectionCursor = new wxCursor(wxCURSOR_POINT_LEFT);
    mAdjustRightSelectionCursor = new wxCursor(wxCURSOR_POINT_RIGHT);
 
-   mRulerWaveformMenu = mRulerSpectrumMenu = NULL;
-
-   BuildMenus();
-
    mTrackArtist = new TrackArtist();
    mTrackArtist->SetInset(1, kTopMargin, kRightMargin, kBottomMargin);
 
    mCapturedTrack = NULL;
-   mPopupMenuTarget = NULL;
 
    mTimeCount = 0;
    mTimer.parent = this;
@@ -452,8 +423,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
    //More initializations, some of these for no other reason than
    //to prevent runtime memory check warnings
-   mZoomStart = -1;
-   mZoomEnd = -1;
    mPrevWidth = -1;
    mPrevHeight = -1;
 
@@ -520,8 +489,6 @@ TrackPanel::~TrackPanel()
    delete mEnvelopeCursor;
    delete mDisabledCursor;
    delete mResizeCursor;
-   delete mZoomInCursor;
-   delete mZoomOutCursor;
    delete mRearrangeCursor;
    delete mAdjustLeftSelectionCursor;
    delete mAdjustRightSelectionCursor;
@@ -553,35 +520,10 @@ void TrackPanel::BuildMenus(void)
 {
    // Get rid of existing menus
    DeleteMenus();
-
-   mRulerWaveformMenu = new wxMenu();
-   BuildVRulerMenuItems
-      (mRulerWaveformMenu, OnFirstWaveformScaleID,
-       WaveformSettings::GetScaleNames());
-
-   mRulerSpectrumMenu = new wxMenu();
-   BuildVRulerMenuItems
-      (mRulerSpectrumMenu, OnFirstSpectrumScaleID,
-       SpectrogramSettings::GetScaleNames());
-}
-
-// static
-void TrackPanel::BuildVRulerMenuItems
-(wxMenu * menu, int firstId, const wxArrayString &names)
-{
-   int id = firstId;
-   for (int ii = 0, nn = names.size(); ii < nn; ++ii)
-      menu->AppendRadioItem(id++, names[ii]);
-   menu->AppendSeparator();
-   menu->Append(OnZoomInVerticalID, _("Zoom In\tLeft-Click/Left-Drag"));
-   menu->Append(OnZoomOutVerticalID, _("Zoom Out\tShift-Left-Click"));
-   menu->Append(OnZoomFitVerticalID, _("Zoom to Fit\tShift-Right-Click"));
 }
 
 void TrackPanel::DeleteMenus(void)
 {
-   delete mRulerWaveformMenu;
-   delete mRulerSpectrumMenu;
 }
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -1106,9 +1048,6 @@ void TrackPanel::HandleEscapeKey(bool down)
       mViewInfo->selectedRegion = mInitialSelection;
    }
       break;
-   case IsVZooming:
-   //case IsAdjustingSample:
-      break;
    case IsResizing:
       mCapturedTrack->SetHeight(mInitialActualHeight);
       mCapturedTrack->SetMinimized(mInitialMinimized);
@@ -1230,21 +1169,10 @@ bool TrackPanel::SetCursorByActivity( )
 
 /// When in the "label" (TrackInfo or vertical ruler), we can either vertical zoom or re-order tracks.
 /// Dont't change cursor/tip to zoom if display is not waveform (either linear of dB) or Spectrum
-void TrackPanel::SetCursorAndTipWhenInLabel( Track * t,
-         wxMouseEvent &event, wxString &tip )
+void TrackPanel::SetCursorAndTipWhenInLabel( Track * ,
+         wxMouseEvent &, wxString &tip )
 {
-   if (event.m_x >= GetVRulerOffset() && (t->GetKind() == Track::Wave) )
    {
-      tip = _("Click to vertically zoom in. Shift-click to zoom out. Drag to specify a zoom region.");
-      SetCursor(event.ShiftDown()? *mZoomOutCursor : *mZoomInCursor);
-   }
-#ifdef USE_MIDI
-   else if (event.m_x >= GetVRulerOffset() && t->GetKind() == Track::Note) {
-      tip = _("Click to verticaly zoom in, Shift-click to zoom out, Drag to create a particular zoom region.");
-      SetCursor(event.ShiftDown() ? *mZoomOutCursor : *mZoomInCursor);
-   }
-#endif
-   else {
       // Set a status message if over TrackInfo.
       tip = _("Drag the track vertically to change the order of the tracks.");
       SetCursor(*mArrowCursor);
@@ -2918,347 +2846,11 @@ bool mayDragWidth, bool onlyWithinSnapDistance,
    }
 }
 
-/// Determines if drag zooming is active
-bool TrackPanel::IsDragZooming(int zoomStart, int zoomEnd)
-{
-   return (abs(zoomEnd - zoomStart) > DragThreshold);
-}
-
 /// Determines if the a modal tool is active
 bool TrackPanel::IsMouseCaptured()
 {
    return (mMouseCapture != IsUncaptured || mCapturedTrack != NULL
       || mUIHandle != NULL);
-}
-
-
-/// Vertical zooming (triggered by clicking in the
-/// vertical ruler)
-void TrackPanel::HandleVZoom(wxMouseEvent & event)
-{
-   if (event.ButtonDown() || event.ButtonDClick()) {
-      HandleVZoomClick( event );
-   }
-   else if (event.Dragging()) {
-      HandleVZoomDrag( event );
-   }
-   else if (event.ButtonUp()) {
-      HandleVZoomButtonUp( event );
-   }
-   //TODO-MB: add timetrack zooming here!
-}
-
-/// VZoom click
-void TrackPanel::HandleVZoomClick( wxMouseEvent & event )
-{
-   if (mCapturedTrack)
-      return;
-   mCapturedTrack = FindTrack(event.m_x, event.m_y, true, false,
-                              &mCapturedRect);
-   if (!mCapturedTrack)
-      return;
-
-   if (mCapturedTrack->GetKind() == Track::Wave
-#ifdef USE_MIDI
-            || mCapturedTrack->GetKind() == Track::Note
-#endif
-         )
-   {
-      mMouseCapture = IsVZooming;
-      mZoomStart = event.m_y;
-      mZoomEnd = event.m_y;
-      // change note track to zoom like audio track
-      //#ifdef USE_MIDI
-      //      if (mCapturedTrack->GetKind() == Track::Note) {
-      //          ((NoteTrack *) mCapturedTrack)->StartVScroll();
-      //      }
-      //#endif
-   }
-}
-
-/// VZoom drag
-void TrackPanel::HandleVZoomDrag( wxMouseEvent & event )
-{
-   mZoomEnd = event.m_y;
-   if (IsDragZooming()){
-      // changed Note track to work like audio track
-      //#ifdef USE_MIDI
-      //      if (mCapturedTrack && mCapturedTrack->GetKind() == Track::Note) {
-      //         ((NoteTrack *) mCapturedTrack)->VScroll(mZoomStart, mZoomEnd);
-      //      }
-      //#endif
-      Refresh(false);
-   }
-}
-
-/// VZoom Button up.
-/// There are three cases:
-///   - Drag-zooming; we already have a min and max
-///   - Zoom out; ensure we don't go too small.
-///   - Zoom in; ensure we don't go too large.
-void TrackPanel::HandleVZoomButtonUp( wxMouseEvent & event )
-{
-   if (!mCapturedTrack)
-      return;
-
-   mMouseCapture = IsUncaptured;
-
-#ifdef USE_MIDI
-   // handle vertical scrolling in Note Track. This is so different from
-   // zooming in audio tracks that it is handled as a special case from
-   // which we then return
-   if (mCapturedTrack->GetKind() == Track::Note) {
-      NoteTrack *nt = (NoteTrack *) mCapturedTrack;
-      if (IsDragZooming()) {
-         nt->ZoomTo(mZoomStart, mZoomEnd);
-      } else if (event.ShiftDown() || event.RightUp()) {
-         nt->ZoomOut(mZoomEnd);
-      } else {
-         nt->ZoomIn(mZoomEnd);
-      }
-      mZoomEnd = mZoomStart = 0;
-      Refresh(false);
-      mCapturedTrack = NULL;
-      MakeParentModifyState(true);
-      return;
-   }
-#endif
-
-
-   // don't do anything if track is not wave
-   if (mCapturedTrack->GetKind() != Track::Wave)
-      return;
-
-   /*
-   if (event.RightUp() &&
-       !(event.ShiftDown() || event.CmdDown())) {
-      OnVRulerMenu(mCapturedTrack, &event);
-      return;
-   }
-   */
-
-   HandleWaveTrackVZoom(static_cast<WaveTrack*>(mCapturedTrack),
-      event.ShiftDown(), event.RightUp());
-   mCapturedTrack = NULL;
-}
-
-void TrackPanel::HandleWaveTrackVZoom(WaveTrack *track, bool shiftDown, bool rightUp)
-{
-   HandleWaveTrackVZoom(mTracks, mCapturedRect, mZoomStart, mZoomEnd,
-      track, shiftDown, rightUp, false);
-   mZoomEnd = mZoomStart = 0;
-   UpdateVRuler(track);
-   Refresh(false);
-   MakeParentModifyState(true);
-}
-
-//static
-void TrackPanel::HandleWaveTrackVZoom
-(TrackList *tracks, const wxRect &rect,
- int zoomStart, int zoomEnd,
- WaveTrack *track, bool shiftDown, bool rightUp,
- bool fixedMousePoint)
-{
-   WaveTrack *const partner = static_cast<WaveTrack *>(tracks->GetLink(track));
-   int height = track->GetHeight() - (kTopMargin + kBottomMargin);
-   int ypos = rect.y + kBorderThickness;
-
-   // Ensure start and end are in order (swap if not).
-   if (zoomEnd < zoomStart)
-      std::swap(zoomStart, zoomEnd);
-
-   float min, max, minBand = 0;
-   const double rate = track->GetRate();
-   const float halfrate = rate / 2;
-   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
-   NumberScale scale;
-   const bool spectral = (track->GetDisplay() == WaveTrack::Spectrum);
-   const bool spectrumLinear = spectral &&
-      (track->GetSpectrogramSettings().scaleType == SpectrogramSettings::stLinear);
-
-   if (spectral) {
-      track->GetSpectrumBounds(&min, &max);
-      scale = (settings.GetScale(min, max, rate, false));
-      const int fftLength = settings.GetFFTLength();
-      const float binSize = rate / fftLength;
-      const int minBins =
-         std::min(10, fftLength / 2); //minimum 10 freq bins, unless there are less
-      minBand = minBins * binSize;
-   }
-   else
-      track->GetDisplayBounds(&min, &max);
-
-   if (IsDragZooming(zoomStart, zoomEnd)) {
-      // Drag Zoom
-      const float tmin = min, tmax = max;
-
-      if (spectral) {
-         double xmin = 1 - (zoomEnd - ypos) / (float)height;
-         double xmax = 1 - (zoomStart - ypos) / (float)height;
-         const float middle = (xmin + xmax) / 2;
-         const float middleValue = scale.PositionToValue(middle);
-
-         min = std::max(spectrumLinear ? 0.0f : 1.0f,
-            std::min(middleValue - minBand / 2,
-               scale.PositionToValue(xmin)
-         ));
-         max = std::min(halfrate,
-            std::max(middleValue + minBand / 2,
-               scale.PositionToValue(xmax)
-         ));
-      }
-      else {
-         const float p1 = (zoomStart - ypos) / (float)height;
-         const float p2 = (zoomEnd - ypos) / (float)height;
-         max = (tmax * (1.0-p1) + tmin * p1);
-         min = (tmax * (1.0-p2) + tmin * p2);
-
-         // Waveform view - allow zooming down to a range of ZOOMLIMIT
-         if (max - min < ZOOMLIMIT) {     // if user attempts to go smaller...
-            const float c = (min+max)/2;  // ...set centre of view to centre of dragged area and top/bottom to ZOOMLIMIT/2 above/below
-            min = c - ZOOMLIMIT/2.0;
-            max = c + ZOOMLIMIT/2.0;
-         }
-      }
-   }
-   else if (shiftDown || rightUp) {
-      // Zoom OUT
-      if (spectral) {
-         if (shiftDown && rightUp) {
-            // Zoom out full
-            min = spectrumLinear ? 0.0f : 1.0f;
-            max = halfrate;
-         }
-         else {
-            // Zoom out
-
-            const float p1 = (zoomStart - ypos) / (float)height;
-            // (Used to zoom out centered at midline, ignoring the click, if linear view.
-            //  I think it is better to be consistent.  PRL)
-            // Center zoom-out at the midline
-            const float middle = // spectrumLinear ? 0.5f :
-               1.0f - p1;
-
-            if (fixedMousePoint) {
-               min = std::max(spectrumLinear ? 0.0f : 1.0f, scale.PositionToValue(-middle));
-               max = std::min(halfrate, scale.PositionToValue(1.0f + p1));
-            }
-            else {
-               min = std::max(spectrumLinear ? 0.0f : 1.0f, scale.PositionToValue(middle - 1.0f));
-               max = std::min(halfrate, scale.PositionToValue(middle + 1.0f));
-            }
-         }
-      }
-      else {
-         // Zoom out to -1.0...1.0 first, then, and only
-         // then, if they click again, allow one more
-         // zoom out.
-         if (shiftDown && rightUp) {
-            // Zoom out full
-            min = -1.0;
-            max = 1.0;
-         }
-         else {
-            // Zoom out
-            const WaveformSettings &settings = track->GetWaveformSettings();
-            const bool linear = settings.isLinear();
-            const float top = linear
-               ? 2.0
-               : (LINEAR_TO_DB(2.0) + settings.dBRange) / settings.dBRange;
-            if (min <= -1.0 && max >= 1.0) {
-               // Go to the maximal zoom-out
-               min = -top;
-               max = top;
-            }
-            else {
-               // limit to +/- 1 range unless already outside that range...
-               float minRange = (min < -1) ? -top : -1.0;
-               float maxRange = (max > 1) ? top : 1.0;
-               // and enforce vertical zoom limits.
-               const float p1 = (zoomStart - ypos) / (float)height;
-               if (fixedMousePoint) {
-                  const float oldRange = max - min;
-                  const float c = (max * (1.0 - p1) + min * p1);
-                  min = std::min(maxRange - ZOOMLIMIT,
-                     std::max(minRange, c - 2 * (1.0f - p1) * oldRange));
-                  max = std::max(minRange + ZOOMLIMIT,
-                     std::min(maxRange, c + 2 * p1 * oldRange));
-               }
-               else {
-                  const float c = p1 * min + (1 - p1) * max;
-                  const float l = (max - min);
-                  min = std::min(maxRange - ZOOMLIMIT,
-                     std::max(minRange, c - l));
-                  max = std::max(minRange + ZOOMLIMIT,
-                     std::min(maxRange, c + l));
-               }
-            }
-         }
-      }
-   }
-   else {
-      // Zoom IN
-      if (spectral) {
-         // Center the zoom-in at the click
-         const float p1 = (zoomStart - ypos) / (float)height;
-         const float middle = 1.0f - p1;
-         const float middleValue = scale.PositionToValue(middle);
-
-         if (fixedMousePoint) {
-            min = std::max(spectrumLinear ? 0.0f : 1.0f,
-               std::min(middleValue - minBand * middle,
-               scale.PositionToValue(0.5f * middle)
-            ));
-            max = std::min(halfrate,
-               std::max(middleValue + minBand * p1,
-               scale.PositionToValue(middle + 0.5f * p1)
-            ));
-         }
-         else {
-            min = std::max(spectrumLinear ? 0.0f : 1.0f,
-               std::min(middleValue - minBand / 2,
-               scale.PositionToValue(middle - 0.25f)
-            ));
-            max = std::min(halfrate,
-               std::max(middleValue + minBand / 2,
-               scale.PositionToValue(middle + 0.25f)
-            ));
-         }
-      }
-      else {
-         // Zoom in centered on cursor
-         if (min < -1.0 || max > 1.0) {
-            min = -1.0;
-            max = 1.0;
-         }
-         else {
-            // Enforce maximum vertical zoom
-            const float oldRange = max - min;
-            const float l = std::max(ZOOMLIMIT, 0.5f * oldRange);
-            const float ratio = l / (max - min);
-
-            const float p1 = (zoomStart - ypos) / (float)height;
-            const float c = (max * (1.0 - p1) + min * p1);
-            if (fixedMousePoint)
-               min = c - ratio * (1.0f - p1) * oldRange,
-               max = c + ratio * p1 * oldRange;
-            else
-               min = c - 0.5 * l,
-               max = c + 0.5 * l;
-         }
-      }
-   }
-
-   if (spectral) {
-      track->SetSpectrumBounds(min, max);
-      if (partner)
-         partner->SetSpectrumBounds(min, max);
-   }
-   else {
-      track->SetDisplayBounds(min, max);
-      if (partner)
-         partner->SetDisplayBounds(min, max);
-   }
 }
 
 void TrackPanel::UpdateViewIfNoTracks()
@@ -3892,16 +3484,6 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
       // you do see changes in the time ruler.
       return;
 
-   // Special case of pointer in the vertical ruler
-   {
-      wxRect rect;
-      Track *const pTrack = FindTrack(event.m_x, event.m_y, true, false, &rect);
-      if (pTrack && event.m_x >= GetVRulerOffset()) {
-         HandleWheelRotationInVRuler(event, pTrack, rect);
-         return;
-      }
-   }
-
    double steps = event.m_wheelRotation /
       (event.m_wheelDelta > 0 ? (double)event.m_wheelDelta : 120.0);
 
@@ -3990,124 +3572,6 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
          mListener->TP_ScrollUpDown((int)-lines);
       }
    }
-}
-
-void TrackPanel::HandleWheelRotationInVRuler
-   (wxMouseEvent &event, Track *pTrack, const wxRect &rect)
-{
-   double steps = event.m_wheelRotation /
-      (event.m_wheelDelta > 0 ? (double)event.m_wheelDelta : 120.0);
-
-   if (pTrack->GetKind() == Track::Wave) {
-      WaveTrack *const wt = static_cast<WaveTrack*>(pTrack);
-      WaveTrack *const partner = static_cast<WaveTrack*>(wt->GetLink());
-      const bool isDB =
-         wt->GetDisplay() == WaveTrack::Waveform &&
-         wt->GetWaveformSettings().scaleType == WaveformSettings::stLogarithmic;
-      if (isDB && event.ShiftDown()) {
-         // Special cases for Waveform dB only
-
-         // Vary the bottom of the dB scale, but only if the midline is visible
-         float min, max;
-         wt->GetDisplayBounds(&min, &max);
-         if (!(min < 0.0 && max > 0.0))
-            return;
-
-         WaveformSettings &settings = wt->GetIndependentWaveformSettings();
-         float olddBRange = settings.dBRange;
-         if (event.m_wheelRotation < 0)
-            // Zoom out
-            settings.NextLowerDBRange();
-         else
-            settings.NextHigherDBRange();
-         float newdBRange = settings.dBRange;
-
-         if (partner) {
-            WaveformSettings &settings = partner->GetIndependentWaveformSettings();
-            if (event.m_wheelRotation < 0)
-               // Zoom out
-               settings.NextLowerDBRange();
-            else
-               settings.NextHigherDBRange();
-         }
-
-         if (!event.CmdDown()) {
-            // extra-special case that varies the db limit without changing
-            // magnification
-            const float extreme = (LINEAR_TO_DB(2) + newdBRange) / newdBRange;
-            max = std::min(extreme, max * olddBRange / newdBRange);
-            min = std::max(-extreme, min * olddBRange / newdBRange);
-            wt->SetLastdBRange();
-            wt->SetDisplayBounds(min, max);
-            if (partner) {
-               partner->SetLastdBRange();
-               partner->SetDisplayBounds(min, max);
-            }
-         }
-      }
-      else if (event.CmdDown() && !event.ShiftDown()) {
-         HandleWaveTrackVZoom(
-            mTracks, rect, event.m_y, event.m_y,
-            wt, false, (event.m_wheelRotation < 0),
-            true);
-      }
-      else if (!(event.CmdDown() || event.ShiftDown())) {
-         // Scroll some fixed number of pixels, independent of zoom level or track height:
-         static const float movement = 10.0f;
-         const int height = wt->GetHeight() - (kTopMargin + kBottomMargin);
-         const bool spectral = (wt->GetDisplay() == WaveTrack::Spectrum);
-         if (spectral) {
-            const float delta = steps * movement / height;
-            SpectrogramSettings &settings = wt->GetIndependentSpectrogramSettings();
-            const bool isLinear = settings.scaleType == SpectrogramSettings::stLinear;
-            float bottom, top;
-            wt->GetSpectrumBounds(&bottom, &top);
-            const double rate = wt->GetRate();
-            const float bound = rate / 2;
-            const NumberScale numberScale(settings.GetScale(bottom, top, rate, false));
-            float newTop =
-               std::min(bound, numberScale.PositionToValue(1.0f + delta));
-            const float newBottom =
-               std::max((isLinear ? 0.0f : 1.0f),
-                        numberScale.PositionToValue(numberScale.ValueToPosition(newTop) - 1.0f));
-            newTop =
-               std::min(bound,
-                        numberScale.PositionToValue(numberScale.ValueToPosition(newBottom) + 1.0f));
-
-            wt->SetSpectrumBounds(newBottom, newTop);
-            if (partner)
-               partner->SetSpectrumBounds(newBottom, newTop);
-         }
-         else {
-            float topLimit = 2.0;
-            if (isDB) {
-               const float dBRange = wt->GetWaveformSettings().dBRange;
-               topLimit = (LINEAR_TO_DB(topLimit) + dBRange) / dBRange;
-            }
-            const float bottomLimit = -topLimit;
-            float top, bottom;
-            wt->GetDisplayBounds(&bottom, &top);
-            const float range = top - bottom;
-            const float delta = range * steps * movement / height;
-            float newTop = std::min(topLimit, top + delta);
-            const float newBottom = std::max(bottomLimit, newTop - range);
-            newTop = std::min(topLimit, newBottom + range);
-            wt->SetDisplayBounds(newBottom, newTop);
-            if (partner)
-               partner->SetDisplayBounds(newBottom, newTop);
-         }
-      }
-      else
-         return;
-
-      UpdateVRuler(pTrack);
-      Refresh(false);
-      MakeParentModifyState(true);
-   }
-   else {
-      // To do: time track?  Note track?
-   }
-   return;
 }
 
 /// Filter captured keys typed into LabelTracks.
@@ -4378,9 +3842,6 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
       }
    }
    else switch( mMouseCapture ) {
-   case IsVZooming:
-      HandleVZoom(event);
-      break;
    case IsResizing:
    case IsResizingBetweenLinkedTracks:
    case IsResizingBelowLinkedTracks:
@@ -4606,8 +4067,6 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
 
       else {
          if (event.m_x >= GetVRulerOffset()) {
-            if (!event.Dragging()) // JKC: Only want the mouse down event.
-               HandleVZoom(event);
          }
          else
             HandleLabelClick(event);
@@ -4952,15 +4411,6 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
    if (mUIHandle)
       mUIHandle->DrawExtras(UIHandle::Cells, dc, region, clip);
 
-   if (mMouseCapture == IsVZooming && IsDragZooming()
-       // note track zooming now works like audio track
-       //#ifdef USE_MIDI
-       //       && mCapturedTrack && mCapturedTrack->GetKind() != Track::Note
-       //#endif
-       ) {
-      DrawZooming(dc, clip);
-   }
-
    // Paint over the part below the tracks
    trackRect.y += trackRect.height;
    if (trackRect.y < clip.GetBottom()) {
@@ -4995,36 +4445,6 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
       }
    }
 }
-
-/// Draw zooming indicator that shows the region that will
-/// be zoomed into when the user clicks and drags with a
-/// zoom cursor.  Handles both vertical and horizontal
-/// zooming.
-void TrackPanel::DrawZooming(wxDC * dc, const wxRect & clip)
-{
-   wxRect rect;
-
-   dc->SetBrush(*wxTRANSPARENT_BRUSH);
-   dc->SetPen(*wxBLACK_DASHED_PEN);
-
-   if (mMouseCapture==IsVZooming) {
-      rect.y = std::min(mZoomStart, mZoomEnd);
-      rect.height = 1 + abs(mZoomEnd - mZoomStart);
-
-      rect.x = GetVRulerOffset();
-      rect.SetRight(GetSize().x - kRightMargin); // extends into border rect
-   }
-   else {
-      rect.x = std::min(mZoomStart, mZoomEnd);
-      rect.width = 1 + abs(mZoomEnd - mZoomStart);
-
-      rect.y = -1;
-      rect.height = clip.height + 2;
-   }
-
-   dc->DrawRectangle(rect);
-}
-
 
 // Make this #include go away!
 #include "tracks/ui/TrackControls.h"
@@ -5678,56 +5098,6 @@ void TrackPanel::OnTrackMenu(Track *t)
    ProcessUIHandleResult(this, t, t, refreshResult);
 }
 
-void TrackPanel::OnVRulerMenu(Track *t, wxMouseEvent *pEvent)
-{
-   if (!t) {
-      t = GetFocusedTrack();
-      if (!t)
-         return;
-   }
-
-   if (t->GetKind() != Track::Wave)
-      return;
-
-   WaveTrack *const wt = static_cast<WaveTrack*>(t);
-
-   const int display = wt->GetDisplay();
-   wxMenu *theMenu;
-   if (display == WaveTrack::Waveform) {
-      theMenu = mRulerWaveformMenu;
-      const int id =
-         OnFirstWaveformScaleID + int(wt->GetWaveformSettings().scaleType);
-      theMenu->Check(id, true);
-   }
-   else {
-      theMenu = mRulerSpectrumMenu;
-      const int id =
-         OnFirstSpectrumScaleID + int(wt->GetSpectrogramSettings().scaleType);
-      theMenu->Check(id, true);
-   }
-
-   int x, y;
-   if (pEvent)
-      x = pEvent->m_x, y = pEvent->m_y;
-   else {
-      // If no event given, pop up the menu at the same height
-      // as for the track control menu
-      const wxRect rect = FindTrackRect(wt, true);
-      wxRect titleRect;
-      mTrackInfo.GetTitleBarRect(rect, titleRect);
-      x = GetVRulerOffset(), y = titleRect.y + titleRect.height + 1;
-   }
-
-   // So that IsDragZooming() returns false, and if we zoom in, we do so
-   // centered where the mouse is now:
-   mZoomStart = mZoomEnd = pEvent->m_y;
-
-   mPopupMenuTarget = wt;
-   PopupMenu(theMenu, x, y);
-   mPopupMenuTarget = NULL;
-}
-
-
 Track * TrackPanel::GetFirstSelectedTrack()
 {
 
@@ -5883,61 +5253,6 @@ wxString TrackPanel::TrackSubText(Track * t)
    }
 
    return s;
-}
-
-void TrackPanel::OnWaveformScaleType(wxCommandEvent &evt)
-{
-   WaveTrack *const wt = static_cast<WaveTrack *>(mPopupMenuTarget);
-   WaveTrack *const partner = static_cast<WaveTrack*>(wt->GetLink());
-   const WaveformSettings::ScaleType newScaleType =
-      WaveformSettings::ScaleType(
-         std::max(0,
-            std::min(int(WaveformSettings::stNumScaleTypes) - 1,
-               evt.GetId() - OnFirstWaveformScaleID
-      )));
-   if (wt->GetWaveformSettings().scaleType != newScaleType) {
-      wt->GetIndependentWaveformSettings().scaleType = newScaleType;
-      if (partner)
-         partner->GetIndependentWaveformSettings().scaleType = newScaleType;
-      UpdateVRuler(wt); // Is this really needed?
-      MakeParentModifyState(true);
-      Refresh(false);
-   }
-}
-
-void TrackPanel::OnSpectrumScaleType(wxCommandEvent &evt)
-{
-   WaveTrack *const wt = static_cast<WaveTrack *>(mPopupMenuTarget);
-   WaveTrack *const partner = static_cast<WaveTrack*>(wt->GetLink());
-   const SpectrogramSettings::ScaleType newScaleType =
-      SpectrogramSettings::ScaleType(
-         std::max(0,
-            std::min(int(SpectrogramSettings::stNumScaleTypes) - 1,
-               evt.GetId() - OnFirstSpectrumScaleID
-      )));
-   if (wt->GetSpectrogramSettings().scaleType != newScaleType) {
-      wt->GetIndependentSpectrogramSettings().scaleType = newScaleType;
-      if (partner)
-         partner->GetIndependentSpectrogramSettings().scaleType = newScaleType;
-      UpdateVRuler(wt); // Is this really needed?
-      MakeParentModifyState(true);
-      Refresh(false);
-   }
-}
-
-void TrackPanel::OnZoomInVertical(wxCommandEvent &)
-{
-   HandleWaveTrackVZoom(static_cast<WaveTrack*>(mPopupMenuTarget), false, false);
-}
-
-void TrackPanel::OnZoomOutVertical(wxCommandEvent &)
-{
-   HandleWaveTrackVZoom(static_cast<WaveTrack*>(mPopupMenuTarget), true, false);
-}
-
-void TrackPanel::OnZoomFitVertical(wxCommandEvent &)
-{
-   HandleWaveTrackVZoom(static_cast<WaveTrack*>(mPopupMenuTarget), true, true);
 }
 
 /// Determines which track is under the mouse

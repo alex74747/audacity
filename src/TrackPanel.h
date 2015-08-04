@@ -208,7 +208,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void ScrollIntoView(int x);
 
    virtual void OnTrackMenu(Track *t = NULL);
-   virtual void OnVRulerMenu(Track *t, wxMouseEvent *pEvent = NULL);
    virtual Track * GetFirstSelectedTrack();
    virtual bool IsMouseCaptured();
 
@@ -231,7 +230,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
  protected:
    virtual MixerBoard* GetMixerBoard();
 
-   static void BuildVRulerMenuItems(wxMenu * menu, int firstId, const wxArrayString &names);
    virtual bool IsAudioActive();
    virtual bool IsUnsafe();
    virtual bool HandleLabelTrackClick(LabelTrack * lTrack, wxRect &rect, wxMouseEvent & event);
@@ -320,24 +318,8 @@ protected:
 
    void FindCell(const wxMouseEvent &event, wxRect &inner, TrackPanelCell *& pCell, Track *& pTrack);
 
-   static bool IsDragZooming(int zoomStart, int zoomEnd);
-   virtual bool IsDragZooming() { return IsDragZooming(mZoomStart, mZoomEnd); }
-
-   virtual void HandleVZoom(wxMouseEvent & event);
-   virtual void HandleVZoomClick(wxMouseEvent & event);
-   virtual void HandleVZoomDrag(wxMouseEvent & event);
-   virtual void HandleVZoomButtonUp(wxMouseEvent & event);
-   virtual void HandleWaveTrackVZoom(WaveTrack *track, bool shiftDown, bool rightUp);
-   static void HandleWaveTrackVZoom
-      (TrackList *tracks, const wxRect &rect,
-       int zoomStart, int zoomEnd,
-       WaveTrack *track, bool shiftDown, bool rightUp,
-       bool fixedMousePoint);
-
    // MM: Handle mouse wheel rotation
    virtual void HandleWheelRotation(wxMouseEvent & event);
-   virtual void HandleWheelRotationInVRuler
-      (wxMouseEvent &event, Track *pTrack, const wxRect &rect);
 
    // Handle resizing.
    virtual void HandleResizeClick(wxMouseEvent & event);
@@ -359,13 +341,6 @@ protected:
    virtual void MakeParentModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                                                // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
 protected:
-   virtual void OnWaveformScaleType(wxCommandEvent &event);
-   virtual void OnSpectrumScaleType(wxCommandEvent &event);
-
-   virtual void OnZoomInVertical(wxCommandEvent &event);
-   virtual void OnZoomOutVertical(wxCommandEvent &event);
-   virtual void OnZoomFitVertical(wxCommandEvent &event);
-
    // Find track info by coordinate
    virtual Track *FindTrack(int mouseX, int mouseY, bool label, bool link,
                      wxRect * trackRect = NULL);
@@ -401,7 +376,6 @@ protected:
                            const wxRect & clip);
    virtual void DrawOutside(Track *t, wxDC *dc, const wxRect & rec,
                     const wxRect &trackRect);
-   virtual void DrawZooming(wxDC* dc, const wxRect & clip);
 
    virtual void HighlightFocusedTrack (wxDC* dc, const wxRect &rect);
    virtual void DrawShadow            (Track *t, wxDC* dc, const wxRect & rect);
@@ -530,9 +504,6 @@ protected:
    int mMouseMostRecentX;
    int mMouseMostRecentY;
 
-   int mZoomStart;
-   int mZoomEnd;
-
    // Handles snapping the selection boundaries or track boundaries to
    // line up with existing tracks or labels.  mSnapLeft and mSnapRight
    // are the horizontal index of pixels to display user feedback
@@ -589,7 +560,6 @@ public:
    enum   MouseCaptureEnum
    {
       IsUncaptured=0,   // This is the normal state for the mouse
-      IsVZooming,
       IsClosing,
       IsSelecting,
       IsAdjustingLabel,
@@ -624,8 +594,6 @@ protected:
    wxCursor *mResizeCursor;
    wxCursor *mEnvelopeCursor; // doubles as the center frequency cursor
                               // for spectral selection
-   wxCursor *mZoomInCursor;
-   wxCursor *mZoomOutCursor;
    wxCursor *mRearrangeCursor;
    wxCursor *mDisabledCursor;
    wxCursor *mAdjustLeftSelectionCursor;
@@ -640,11 +608,6 @@ protected:
    wxCursor *mStretchLeftCursor;
    wxCursor *mStretchRightCursor;
 #endif
-
-   wxMenu *mRulerWaveformMenu;
-   wxMenu *mRulerSpectrumMenu;
-
-   Track *mPopupMenuTarget;
 
    friend class TrackPanelAx;
 
