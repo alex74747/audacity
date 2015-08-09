@@ -11,6 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../Audacity.h"
 #include "TrackControls.h"
 #include "TrackButtonHandles.h"
+#include "TrackSelectHandle.h"
 #include "../../HitTestResult.h"
 #include "../../RefreshCode.h"
 #include "../../MixerBoard.h"
@@ -61,7 +62,7 @@ HitTestResult TrackControls::HitTest2
 (const TrackPanelMouseEvent &,
  const AudacityProject *)
 {
-   return HitTestResult();
+   return TrackSelectHandle::HitAnywhere();
 }
 
 HitTestResult TrackControls::HitTest

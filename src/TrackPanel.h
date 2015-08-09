@@ -39,7 +39,6 @@ class AdornedRulerPanel;
 class LWSlider;
 class ControlToolBar; //Needed because state of controls can affect what gets drawn.
 class ToolsToolBar; //Needed because state of controls can affect what gets drawn.
-class MixerBoard;
 class AudacityProject;
 
 class TrackPanelAx;
@@ -224,8 +223,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual double GetScreenEndTime() const;
 
  protected:
-   virtual MixerBoard* GetMixerBoard();
-
    virtual bool IsAudioActive();
    virtual bool IsUnsafe();
    virtual bool HandleLabelTrackClick(LabelTrack * lTrack, wxRect &rect, wxMouseEvent & event);
@@ -298,11 +295,13 @@ protected:
 #endif
 
    virtual void SelectTracksByLabel( LabelTrack *t );
+
+public:
    virtual void SelectTrackLength(Track *t);
 
+protected:
    // AS: Cursor handling
    virtual bool SetCursorByActivity( );
-   virtual void SetCursorAndTipWhenInLabel( Track * t, wxMouseEvent &event, wxString &tip );
    virtual void SetCursorAndTipWhenInVResizeArea( bool blinked, wxString &tip );
    virtual void SetCursorAndTipWhenInLabelTrack( LabelTrack * pLT, wxMouseEvent & event, wxString &tip );
    virtual void SetCursorAndTipWhenSelectTool
@@ -322,10 +321,6 @@ protected:
    virtual void HandleResizeDrag(wxMouseEvent & event);
    virtual void HandleResizeButtonUp(wxMouseEvent & event);
    virtual void HandleResize(wxMouseEvent & event);
-
-   virtual void HandleLabelClick(wxMouseEvent & event);
-   virtual void HandleRearrange(wxMouseEvent & event);
-   virtual void CalculateRearrangingThresholds(wxMouseEvent & event);
 
 public:
    virtual void MakeParentRedrawScrollbars();
@@ -563,7 +558,6 @@ public:
       IsResizing,
       IsResizingBetweenLinkedTracks,
       IsResizingBelowLinkedTracks,
-      IsRearranging,
       IsMuting,
       IsSoloing,
       IsMinimizing,
@@ -579,18 +573,11 @@ public:
 protected:
    bool mCircularTrackNavigation;
 
-   // JH: if the user is dragging a track, at what y
-   //   coordinate should the dragging track move up or down?
-   int mMoveUpThreshold;
-   int mMoveDownThreshold;
-   int mRearrangeCount;
-
    wxCursor *mArrowCursor;
    wxCursor *mSelectCursor;
    wxCursor *mResizeCursor;
    wxCursor *mEnvelopeCursor; // doubles as the center frequency cursor
                               // for spectral selection
-   wxCursor *mRearrangeCursor;
    wxCursor *mDisabledCursor;
    wxCursor *mAdjustLeftSelectionCursor;
    wxCursor *mAdjustRightSelectionCursor;

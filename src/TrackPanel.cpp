@@ -169,7 +169,6 @@ is time to refresh some aspect of the screen.
 #include "AudioIO.h"
 #include "float_cast.h"
 #include "LabelTrack.h"
-#include "MixerBoard.h"
 
 #include "NoteTrack.h"
 #include "NumberScale.h"
@@ -196,6 +195,8 @@ is time to refresh some aspect of the screen.
 
 //This loads the appropriate set of cursors, depending on platform.
 #include "../images/Cursors.h"
+
+#include "widgets/ASlider.h"
 
 DEFINE_EVENT_TYPE(EVT_TRACK_PANEL_TIMER)
 
@@ -403,7 +404,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
    mArrowCursor = new wxCursor(wxCURSOR_ARROW);
    mResizeCursor = new wxCursor(wxCURSOR_SIZENS);
-   mRearrangeCursor = new wxCursor(wxCURSOR_HAND);
    mAdjustLeftSelectionCursor = new wxCursor(wxCURSOR_POINT_LEFT);
    mAdjustRightSelectionCursor = new wxCursor(wxCURSOR_POINT_RIGHT);
 
@@ -484,7 +484,6 @@ TrackPanel::~TrackPanel()
    delete mEnvelopeCursor;
    delete mDisabledCursor;
    delete mResizeCursor;
-   delete mRearrangeCursor;
    delete mAdjustLeftSelectionCursor;
    delete mAdjustRightSelectionCursor;
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
@@ -1099,13 +1098,6 @@ void TrackPanel::HandleCursorForLastMouseEvent()
    HandleCursor(mLastMouseEvent);
 }
 
-MixerBoard* TrackPanel::GetMixerBoard()
-{
-   AudacityProject *p = GetProject();
-   wxASSERT(p);
-   return p->GetMixerBoard();
-}
-
 /// Used to determine whether it is safe or not to perform certain
 /// edits at the moment.
 /// @return true if audio is being recorded or is playing.
@@ -1133,9 +1125,6 @@ bool TrackPanel::SetCursorByActivity( )
    case IsSelecting:
       SetCursor(*mSelectCursor);
       return true;
-   case IsRearranging:
-      SetCursor( unsafe ? *mDisabledCursor : *mRearrangeCursor);
-      return true;
    case IsAdjustingLabel:
    case IsSelectingLabelText:
       return true;
@@ -1148,18 +1137,6 @@ bool TrackPanel::SetCursorByActivity( )
       break;
    }
    return false;
-}
-
-/// When in the "label" (TrackInfo or vertical ruler), we can either vertical zoom or re-order tracks.
-/// Dont't change cursor/tip to zoom if display is not waveform (either linear of dB) or Spectrum
-void TrackPanel::SetCursorAndTipWhenInLabel( Track * ,
-         wxMouseEvent &, wxString &tip )
-{
-   {
-      // Set a status message if over TrackInfo.
-      tip = _("Drag the track vertically to change the order of the tracks.");
-      SetCursor(*mArrowCursor);
-   }
 }
 
 /// When in the resize area we can adjust size or relative size.
@@ -1528,8 +1505,6 @@ void TrackPanel::HandleCursor(wxMouseEvent & event)
       pCursor = hitTest.preview.cursor;
       if (pCursor)
          SetCursor(*pCursor);
-      else if (inLabel)
-         SetCursorAndTipWhenInLabel(pTrack, event, tip);
    }
 
    // Is it a label track?
@@ -2894,151 +2869,6 @@ void TrackPanel::OnContextMenu(wxContextMenuEvent & WXUNUSED(event))
    OnTrackMenu();
 }
 
-/// This handles when the user clicks on the "Label" area
-/// of a track, ie the part with all the buttons and the drop
-/// down menu, etc.
-// That is, TrackInfo and vertical ruler rect.
-void TrackPanel::HandleLabelClick(wxMouseEvent & event)
-{
-   // AS: If not a click, ignore the mouse event.
-   if (!event.ButtonDown() && !event.ButtonDClick()) {
-      return;
-   }
-
-   // MIDI tracks use the right mouse button, but other tracks get confused
-   // if they see anything other than a left click.
-   bool isleft = event.Button(wxMOUSE_BTN_LEFT);
-
-   bool unsafe = IsUnsafe();
-
-   wxRect rect;
-
-   Track *t = FindTrack(event.m_x, event.m_y, true, true, &rect);
-
-   if (!isleft) {
-      return;
-   }
-
-   // DM: If they weren't clicking on a particular part of a track label,
-   //  deselect other tracks and select this one.
-
-   // JH: also, capture the current track for rearranging, so the user
-   //  can drag the track up or down to swap it with others
-   if (!unsafe) {
-      mRearrangeCount = 0;
-      SetCapturedTrack( t, IsRearranging );
-      TrackPanel::CalculateRearrangingThresholds(event);
-   }
-
-   // AS: If the shift button is being held down, invert
-   //  the selection on this track.
-   if (event.ShiftDown()) {
-      mTracks->Select(t, !t->GetSelected());
-      Refresh(false);
-      MixerBoard* pMixerBoard = this->GetMixerBoard();
-      if (pMixerBoard && (t->GetKind() == Track::Wave))
-         pMixerBoard->RefreshTrackCluster((WaveTrack*)t);
-      return;
-   }
-
-   SelectNone();
-   mTracks->Select(t);
-   SetFocusedTrack(t);
-   SelectTrackLength(t);
-
-   this->Refresh(false);
-   MixerBoard* pMixerBoard = this->GetMixerBoard();
-   if (pMixerBoard)
-      pMixerBoard->RefreshTrackClusters();
-
-   if (!unsafe)
-      MakeParentModifyState(true);
-}
-
-/// The user is dragging one of the tracks: change the track order
-/// accordingly
-void TrackPanel::HandleRearrange(wxMouseEvent & event)
-{
-   // are we finishing the drag?
-   if (event.LeftUp()) {
-      if (mRearrangeCount != 0) {
-         wxString dir;
-         dir = mRearrangeCount < 0 ? _("up") : _("down");
-         MakeParentPushState(wxString::Format(_("Moved '%s' %s"),
-            mCapturedTrack->GetName().c_str(),
-            dir.c_str()),
-            _("Move Track"));
-      }
-
-      SetCapturedTrack(NULL);
-      SetCursor(*mArrowCursor);
-      return;
-   }
-
-   // probably harmless during play?  However, we do disallow the click, so check this too.
-   bool unsafe = IsUnsafe();
-   if (unsafe)
-      return;
-
-   MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board, too.
-   if (event.m_y < mMoveUpThreshold || event.m_y < 0) {
-      mTracks->MoveUp(mCapturedTrack);
-      --mRearrangeCount;
-#ifdef EXPERIMENTAL_MIDI_OUT
-      if (pMixerBoard && (mCapturedTrack->GetKind() == Track::Wave ||
-                          mCapturedTrack->GetKind() == Track::Note))
-         pMixerBoard->MoveTrackCluster(mCapturedTrack, true /* up */);
-#else
-      if (pMixerBoard && (mCapturedTrack->GetKind() == Track::Wave))
-         pMixerBoard->MoveTrackCluster((WaveTrack*)mCapturedTrack, true /* up */);
-#endif
-   }
-   else if (event.m_y > mMoveDownThreshold || event.m_y > GetRect().GetHeight()) {
-      mTracks->MoveDown(mCapturedTrack);
-      ++mRearrangeCount;
-      /* i18n-hint: a direction as in up or down.*/
-#ifdef EXPERIMENTAL_MIDI_OUT
-      if (pMixerBoard && (mCapturedTrack->GetKind() == Track::Wave ||
-                          mCapturedTrack->GetKind() == Track::Note))
-         pMixerBoard->MoveTrackCluster(mCapturedTrack, false /* down */);
-#else
-      if (pMixerBoard && (mCapturedTrack->GetKind() == Track::Wave))
-         pMixerBoard->MoveTrackCluster((WaveTrack*)mCapturedTrack, false /* down */);
-#endif
-   }
-   else
-   {
-      return;
-   }
-
-   // JH: if we moved up or down, recalculate the thresholds and make sure the
-   // track is fully on-screen.
-   TrackPanel::CalculateRearrangingThresholds(event);
-   EnsureVisible(mCapturedTrack);
-}
-
-/// Figure out how far the user must drag the mouse up or down
-/// before the track will swap with the one above or below
-void TrackPanel::CalculateRearrangingThresholds(wxMouseEvent & event)
-{
-   wxASSERT(mCapturedTrack);
-
-   // JH: this will probably need to be tweaked a bit, I'm just
-   //   not sure what formula will have the best feel for the
-   //   user.
-   if (mTracks->CanMoveUp(mCapturedTrack))
-      mMoveUpThreshold =
-          event.m_y - mTracks->GetGroupHeight( mTracks->GetPrev(mCapturedTrack,true) );
-   else
-      mMoveUpThreshold = INT_MIN;
-
-   if (mTracks->CanMoveDown(mCapturedTrack))
-      mMoveDownThreshold =
-          event.m_y + mTracks->GetGroupHeight( mTracks->GetNext(mCapturedTrack,true) );
-   else
-      mMoveDownThreshold = INT_MAX;
-}
-
 bool TrackInfo::TrackSelFunc(Track * WXUNUSED(t), wxRect rect, int x, int y)
 {
    // First check the blank space to left of minimize button.
@@ -3692,9 +3522,6 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
       HandleResize(event);
       HandleCursor(event);
       break;
-   case IsRearranging:
-      HandleRearrange(event);
-      break;
    case IsAdjustingLabel:
       HandleGlyphDragRelease(static_cast<LabelTrack *>(mCapturedTrack), event);
       break;
@@ -3909,12 +3736,6 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
          ProcessUIHandleResult(this, pTrack, pTrack, refreshResult);
       }
 
-      else {
-         if (event.m_x >= GetVRulerOffset()) {
-         }
-         else
-            HandleLabelClick(event);
-      }
       HandleCursor(event);
       return;
    }
