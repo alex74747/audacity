@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -217,6 +217,7 @@
     <ClCompile Include="..\..\..\src\TrackPanel.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelAx.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelOverlay.cpp" />
+    <ClCompile Include="..\..\..\src\TrackPanelResizeHandle.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackControls.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackUI.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackVRulerControls.cpp" />
@@ -475,15 +476,17 @@
     <ClInclude Include="..\..\..\src\TrackPanelListener.h" />
     <ClInclude Include="..\..\..\src\TrackPanelMouseEvent.h" />
     <ClInclude Include="..\..\..\src\TrackPanelOverlay.h" />
+    <ClInclude Include="..\..\..\src\TrackPanelResizeHandle.h" />
+    <ClInclude Include="..\..\..\src\TranslatableStringArray.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\BackgroundCell.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.h" />
-    <ClInclude Include="..\..\..\src\TranslatableStringArray.h" />
     <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackControls.h" />
     <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackVRulerControls.h" />
     <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackControls.h" />
     <ClInclude Include="..\..\..\src\tracks\notetrack\ui\NoteTrackVRulerControls.h" />
     <ClInclude Include="..\..\..\src\tracks\timetrack\ui\TimeTrackControls.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\ButtonHandle.h" />
+    <ClInclude Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\EditCursorOverlay.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\EnvelopeHandle.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\PlayIndicatorOverlay.h" />

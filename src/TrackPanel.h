@@ -302,7 +302,6 @@ public:
 protected:
    // AS: Cursor handling
    virtual bool SetCursorByActivity( );
-   virtual void SetCursorAndTipWhenInVResizeArea( bool blinked, wxString &tip );
    virtual void SetCursorAndTipWhenInLabelTrack( LabelTrack * pLT, wxMouseEvent & event, wxString &tip );
    virtual void SetCursorAndTipWhenSelectTool
       ( Track * t, wxMouseEvent & event, wxRect &rect, bool bMultiToolMode, wxString &tip, const wxCursor ** ppCursor );
@@ -315,12 +314,6 @@ protected:
 
    // MM: Handle mouse wheel rotation
    virtual void HandleWheelRotation(wxMouseEvent & event);
-
-   // Handle resizing.
-   virtual void HandleResizeClick(wxMouseEvent & event);
-   virtual void HandleResizeDrag(wxMouseEvent & event);
-   virtual void HandleResizeButtonUp(wxMouseEvent & event);
-   virtual void HandleResize(wxMouseEvent & event);
 
 public:
    virtual void MakeParentRedrawScrollbars();
@@ -490,8 +483,6 @@ protected:
 
    wxMouseEvent mLastMouseEvent;
 
-   int mMouseClickY;
-
    int mMouseMostRecentX;
    int mMouseMostRecentY;
 
@@ -538,11 +529,6 @@ protected:
        bool onlyWithinSnapDistance,
        double *pPinValue = NULL) const;
 
-   bool mInitialMinimized;
-   int mInitialTrackHeight;
-   int mInitialActualHeight;
-   int mInitialUpperTrackHeight;
-   int mInitialUpperActualHeight;
    bool mAutoScrolling;
 
 public:
@@ -555,9 +541,6 @@ public:
       IsSelecting,
       IsAdjustingLabel,
       IsSelectingLabelText,
-      IsResizing,
-      IsResizingBetweenLinkedTracks,
-      IsResizingBelowLinkedTracks,
       IsMuting,
       IsSoloing,
       IsMinimizing,
@@ -575,7 +558,6 @@ protected:
 
    wxCursor *mArrowCursor;
    wxCursor *mSelectCursor;
-   wxCursor *mResizeCursor;
    wxCursor *mEnvelopeCursor; // doubles as the center frequency cursor
                               // for spectral selection
    wxCursor *mDisabledCursor;

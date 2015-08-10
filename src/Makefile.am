@@ -239,6 +239,8 @@ audacity_SOURCES = \
 	TrackPanelMouseEvent.h \
 	TrackPanelOverlay.cpp \
 	TrackPanelOverlay.h \
+	TrackPanelResizeHandle.cpp \
+	TrackPanelResizeHandle.h \
 	TranslatableStringArray.h \
 	UIHandle.h \
 	UIHandle.cpp \
