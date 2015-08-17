@@ -127,6 +127,16 @@ class AUDACITY_DLL_API LabelTrack : public Track
       (const TrackPanelMouseEvent &event,
        const AudacityProject *pProject);
 
+   bool DoCaptureKey(wxKeyEvent &event);
+   virtual unsigned CaptureKey
+     (wxKeyEvent &event, ViewInfo &viewInfo, wxWindow *pParent);
+
+   virtual unsigned KeyDown
+      (wxKeyEvent &event, ViewInfo &viewInfo, wxWindow *pParent);
+
+   virtual unsigned Char
+      (wxKeyEvent &event, ViewInfo &viewInfo, wxWindow *pParent);
+
    virtual void SetOffset(double dOffset);
 
    static void ResetFont();
@@ -136,6 +146,7 @@ class AUDACITY_DLL_API LabelTrack : public Track
              const ZoomInfo &zoomInfo);
 
    int getSelectedIndex() const { return mSelIndex; }
+   void SetSelectedIndex(int index) { mSelIndex = index; }
    bool IsAdjustingLabel() const { return mIsAdjustingLabel; }
 
    virtual int GetKind() const { return Label; }
@@ -194,7 +205,6 @@ class AUDACITY_DLL_API LabelTrack : public Track
       SelectedRegion *newSel);
    void HandleTextDragRelease(const wxMouseEvent & evt);
 
-   bool CaptureKey(wxKeyEvent & event);
    bool OnKeyDown(SelectedRegion &sel, wxKeyEvent & event);
    bool OnChar(SelectedRegion &sel, wxKeyEvent & event);
 

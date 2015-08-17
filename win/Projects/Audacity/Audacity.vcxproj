@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -218,6 +218,9 @@
     <ClCompile Include="..\..\..\src\TrackPanelAx.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelOverlay.cpp" />
     <ClCompile Include="..\..\..\src\TrackPanelResizeHandle.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelDefaultClickHandle.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelGlyphHandle.cpp" />
+    <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTextHandle.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackControls.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackUI.cpp" />
     <ClCompile Include="..\..\..\src\tracks\labeltrack\ui\LabelTrackVRulerControls.cpp" />
@@ -477,6 +480,9 @@
     <ClInclude Include="..\..\..\src\TrackPanelMouseEvent.h" />
     <ClInclude Include="..\..\..\src\TrackPanelOverlay.h" />
     <ClInclude Include="..\..\..\src\TrackPanelResizeHandle.h" />
+    <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelDefaultClickHandle.h" />
+    <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelGlyphHandle.h" />
+    <ClInclude Include="..\..\..\src\tracks\labeltrack\ui\LabelTextHandle.h" />
     <ClInclude Include="..\..\..\src\TranslatableStringArray.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\BackgroundCell.h" />
     <ClInclude Include="..\..\..\src\tracks\ui\CommonTrackPanelCell.h" />
