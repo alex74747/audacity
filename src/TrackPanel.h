@@ -223,8 +223,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void UpdateTrackVRuler(Track *t);
    virtual void UpdateVRulerSize();
 
-   virtual void DrawQuickPlayIndicator(int x, bool snapped = false);
-
    // Returns the time corresponding to the pixel column one past the track area
    // (ignoring any fisheye)
    virtual double GetScreenEndTime() const;
@@ -559,9 +557,6 @@ protected:
      }
      TrackPanel *parent;
    } mTimer;
-
-   // Quick-Play indicator postion
-   int mOldQPIndicatorPos;
 
    int mTimeCount;
 
