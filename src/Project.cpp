@@ -154,6 +154,10 @@ scroll information.  It also has some status flags.
 #include "toolbars/ToolsToolBar.h"
 #include "toolbars/TranscriptionToolBar.h"
 
+#include "tracks/ui/EditCursorOverlay.h"
+#include "tracks/ui/PlayIndicatorOverlay.h"
+#include "tracks/ui/Scrubbing.h"
+
 #include "commands/ScriptCommandRelay.h"
 #include "commands/CommandDirectory.h"
 #include "commands/CommandTargets.h"
@@ -957,6 +961,32 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
                                              this,
                                              mRuler);
 
+   mIndicatorOverlay = new PlayIndicatorOverlay(this);
+
+   mCursorOverlay = new EditCursorOverlay(this);
+
+#ifdef EXPERIMENTAL_SCRUBBING_BASIC
+   // This must follow construction of *mIndicatorOverlay, because it must
+   // attach its timer event handler later (so that its handler is invoked
+   // earlier)
+   mScrubOverlay = new ScrubbingOverlay(this);
+#else
+   mScrubOverlay = NULL;
+#endif
+
+   // This must follow construction of *mScrubOverlay, because it must
+   // attach its timer event handler later (so that its handler is invoked
+   // earlier)
+   this->Connect(EVT_TRACK_PANEL_TIMER,
+      wxCommandEventHandler(ViewInfo::OnTimer),
+      NULL,
+      &mViewInfo);
+
+   // Add the overlays, in the sequence in which they will be painted
+   mTrackPanel->AddOverlay(mIndicatorOverlay);
+   mTrackPanel->AddOverlay(mCursorOverlay);
+   mTrackPanel->AddOverlay(mScrubOverlay);
+
    // LLL: When Audacity starts or becomes active after returning from
    //      another application, the first window that can accept focus
    //      will be given the focus even if we try to SetFocus().  By
@@ -1084,6 +1114,10 @@ AudacityProject::~AudacityProject()
                      wxCommandEventHandler(AudacityProject::OnCapture),
                      NULL,
                      this);
+
+   delete mIndicatorOverlay;
+   delete mCursorOverlay;
+   delete mScrubOverlay;
 }
 
 AudioIOStartStreamOptions AudacityProject::GetDefaultPlayOptions()
@@ -2337,6 +2371,11 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
       }
 #endif
    }
+
+   this->Disconnect(EVT_TRACK_PANEL_TIMER,
+      wxCommandEventHandler(ViewInfo::OnTimer),
+      NULL,
+      &mViewInfo);
 
    Destroy();
 
