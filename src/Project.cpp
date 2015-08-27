@@ -934,8 +934,10 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
    // attach its timer event handler later (so that its handler is invoked
    // earlier)
    mScrubOverlay = new ScrubbingOverlay(this);
+   mScrubber = new Scrubber(this);
 #else
    mScrubOverlay = NULL;
+   mScrubber = NULL;
 #endif
 
    // This must follow construction of *mScrubOverlay, because it must
@@ -1082,6 +1084,7 @@ AudacityProject::~AudacityProject()
    delete mIndicatorOverlay;
    delete mCursorOverlay;
    delete mScrubOverlay;
+   delete mScrubber;
 }
 
 AudioIOStartStreamOptions AudacityProject::GetDefaultPlayOptions()
