@@ -71,6 +71,7 @@ class DeviceToolBar;
 class EditToolBar;
 class MeterToolBar;
 class MixerToolBar;
+class Scrubber;
 class SelectionBar;
 class SpectralSelectionBar;
 class Toolbar;
@@ -686,6 +687,11 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    TrackPanelOverlay *mIndicatorOverlay;
    TrackPanelOverlay *mCursorOverlay;
    TrackPanelOverlay *mScrubOverlay;
+
+   Scrubber *mScrubber;
+public:
+   Scrubber &GetScrubber() { return *mScrubber; }
+   const Scrubber &GetScrubber() const { return *mScrubber; }
 
    DECLARE_EVENT_TABLE()
 };
