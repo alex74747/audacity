@@ -24,13 +24,102 @@
 
 #include "audacity/Types.h"
 
-class AUDACITY_DLL_API CommandFunctor
+class CommandFunctor
 {
 public:
    CommandFunctor(){};
    virtual ~CommandFunctor(){};
    virtual void operator()(int index = 0, const wxEvent *e = NULL) = 0;
 };
+
+template<typename Object>
+class ObjectCommandFunctor : public CommandFunctor
+{
+public:
+   typedef void (Object::*CommandFunction)();
+   typedef void (Object::*CommandKeyFunction)(const wxEvent *);
+   typedef void (Object::*CommandListFunction)(int);
+   typedef bool (Object::*CommandPluginFunction)(const PluginID &, int);
+
+   ObjectCommandFunctor(Object *object,
+      CommandFunction commandFunction);
+   ObjectCommandFunctor(Object *object,
+      CommandKeyFunction commandFunction);
+   ObjectCommandFunctor(Object *object,
+      CommandListFunction commandFunction);
+   ObjectCommandFunctor(Object *object,
+      CommandPluginFunction commandFunction,
+      const PluginID & pluginID);
+
+   virtual void operator()(int index = 0, const wxEvent *evt = NULL);
+
+private:
+   Object *mObject;
+   CommandFunction mCommandFunction;
+   CommandKeyFunction mCommandKeyFunction;
+   CommandListFunction mCommandListFunction;
+   CommandPluginFunction mCommandPluginFunction;
+   PluginID mPluginID;
+};
+
+template<typename Object> inline
+ObjectCommandFunctor<Object>::ObjectCommandFunctor(Object *object,
+CommandFunction commandFunction)
+{
+   mObject = object;
+   mCommandFunction = commandFunction;
+   mCommandKeyFunction = NULL;
+   mCommandListFunction = NULL;
+   mCommandPluginFunction = NULL;
+}
+
+template<typename Object> inline
+ObjectCommandFunctor<Object>::ObjectCommandFunctor(Object *object,
+CommandKeyFunction commandFunction)
+{
+   mObject = object;
+   mCommandFunction = NULL;
+   mCommandKeyFunction = commandFunction;
+   mCommandListFunction = NULL;
+   mCommandPluginFunction = NULL;
+}
+
+template<typename Object> inline
+ObjectCommandFunctor<Object>::ObjectCommandFunctor(Object *object,
+CommandListFunction commandFunction)
+{
+   mObject = object;
+   mCommandFunction = NULL;
+   mCommandKeyFunction = NULL;
+   mCommandListFunction = commandFunction;
+   mCommandPluginFunction = NULL;
+}
+
+template<typename Object> inline
+ObjectCommandFunctor<Object>::ObjectCommandFunctor(Object *object,
+CommandPluginFunction commandFunction,
+const PluginID & pluginID)
+{
+   mObject = object;
+   mCommandFunction = NULL;
+   mCommandKeyFunction = NULL;
+   mCommandListFunction = NULL;
+   mCommandPluginFunction = commandFunction;
+   mPluginID = pluginID;
+}
+
+template<typename Object> inline
+void ObjectCommandFunctor<Object>::operator()(int index, const wxEvent * evt)
+{
+   if (mCommandPluginFunction)
+      (mObject->*(mCommandPluginFunction)) (mPluginID, OnEffectFlagsNone);
+   else if (mCommandListFunction)
+      (mObject->*(mCommandListFunction)) (index);
+   else if (mCommandKeyFunction)
+      (mObject->*(mCommandKeyFunction)) (evt);
+   else
+      (mObject->*(mCommandFunction)) ();
+}
 
 struct MenuBarListEntry
 {

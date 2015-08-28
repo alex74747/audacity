@@ -26,7 +26,6 @@
 #include "ViewInfo.h"
 #include "TrackPanelListener.h"
 #include "AudioIOListener.h"
-#include "commands/CommandManager.h"
 #include "effects/EffectManager.h"
 #include "xml/XMLTagHandler.h"
 #include "toolbars/SelectionBarListener.h"
@@ -49,9 +48,12 @@ class wxBoxSizer;
 class wxScrollEvent;
 class wxScrollBar;
 class wxPanel;
+class wxTimer;
+class wxTimerEvent;
 
 class AudacityProject;
 class AutoSaveFile;
+class CommandManager;
 class Importer;
 class ODLock;
 class RecordingRecoveryHandler;
@@ -279,7 +281,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
 #include "Menus.h"
 
-   CommandManager *GetCommandManager() { return &mCommandManager; }
+   CommandManager *GetCommandManager();
 
    // Keyboard capture
    static bool HasKeyboardCapture(const wxWindow *handler);
@@ -556,7 +558,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
    // Commands
 
-   CommandManager mCommandManager;
+   CommandManager *mCommandManager;
 
    wxUint32 mLastFlags;
 
@@ -688,37 +690,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    friend class CommandManager;
 
    DECLARE_EVENT_TABLE()
-};
-
-typedef void (AudacityProject::*audCommandFunction)();
-typedef void (AudacityProject::*audCommandKeyFunction)(const wxEvent *);
-typedef void (AudacityProject::*audCommandListFunction)(int);
-typedef bool (AudacityProject::*audCommandPluginFunction)(const PluginID &, int);
-
-// Previously this was in menus.cpp, and the declaration of the
-// command functor was not visible anywhere else.
-class AUDACITY_DLL_API AudacityProjectCommandFunctor : public CommandFunctor
-{
-public:
-   AudacityProjectCommandFunctor(AudacityProject *project,
-      audCommandFunction commandFunction);
-   AudacityProjectCommandFunctor(AudacityProject *project,
-      audCommandKeyFunction commandFunction);
-   AudacityProjectCommandFunctor(AudacityProject *project,
-      audCommandListFunction commandFunction);
-   AudacityProjectCommandFunctor(AudacityProject *project,
-      audCommandPluginFunction commandFunction,
-      const PluginID & pluginID);
-
-   virtual void operator()(int index = 0, const wxEvent *evt = NULL);
-
-private:
-   AudacityProject *mProject;
-   audCommandFunction mCommandFunction;
-   audCommandKeyFunction mCommandKeyFunction;
-   audCommandListFunction mCommandListFunction;
-   audCommandPluginFunction mCommandPluginFunction;
-   PluginID mPluginID;
 };
 
 #endif

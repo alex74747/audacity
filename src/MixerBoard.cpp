@@ -13,6 +13,8 @@
 #include "Experimental.h"
 #include "MixerBoard.h"
 
+#include "commands/CommandManager.h"
+
 #include <math.h>
 
 #include <wx/dcmemory.h>

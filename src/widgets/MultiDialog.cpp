@@ -19,9 +19,10 @@ for each problem encountered, since there can be many orphans.
 *//*******************************************************************/
 
 #include "../Audacity.h"
-#include "../Project.h"
-
 #include "MultiDialog.h"
+
+#include "../AudacityApp.h"
+#include "../Project.h"
 
 #include <wx/button.h>
 #include <wx/dialog.h>

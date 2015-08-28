@@ -183,6 +183,7 @@ is time to refresh some aspect of the screen.
 #include "TrackPanelAx.h"
 #include "WaveTrack.h"
 
+#include "commands/CommandManager.h"
 #include "commands/Keyboard.h"
 
 #include "ondemand/ODManager.h"
