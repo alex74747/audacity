@@ -51,7 +51,9 @@ scroll information.  It also has some status flags.
 
 #include "Audacity.h"
 #include "Project.h"
+
 #include "commands/CommandManager.h"
+#include "menus/HelpMenuCommands.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -836,6 +838,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mIsBeingDeleted(false)
 {
    mCommandManager = new CommandManager();
+   mHelpMenuCommands = new HelpMenuCommands(this);
 
    // Note that the first field of the status bar is a dummy, and it's width is set
    // to zero latter in the code. This field is needed for wxWidgets 2.8.12 because
@@ -1088,6 +1091,7 @@ AudacityProject::~AudacityProject()
                      this);
 
    delete mCommandManager;
+   delete mHelpMenuCommands;
 }
 
 AudioIOStartStreamOptions AudacityProject::GetDefaultPlayOptions()

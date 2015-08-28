@@ -33,6 +33,8 @@ simplifies construction of menu items.
 #include "Audacity.h"
 #include "Project.h"
 
+#include "menus/HelpMenuCommands.h"
+
 #include <iterator>
 #include <limits>
 #include <math.h>
@@ -1004,6 +1006,9 @@ void AudacityProject::CreateMenusAndCommands()
    #endif
 
    c->BeginMenu(_("&Help"));
+
+   mHelpMenuCommands->Create(c);
+
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
