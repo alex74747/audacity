@@ -69,6 +69,9 @@
     <Filter Include="src\effects\VST">
       <UniqueIdentifier>{99325e00-3930-4e03-a599-999f275db78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\menus">
+      <UniqueIdentifier>{3743816f-f57f-4796-81b5-8047dd57a601}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\AboutDialog.cpp">
