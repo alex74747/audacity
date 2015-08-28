@@ -1215,6 +1215,7 @@
 		5ED1D0AE1CDE55BD00471E3C /* OverlayPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED1D0AB1CDE55BD00471E3C /* OverlayPanel.cpp */; };
 		5ED1D0B11CDE560C00471E3C /* BackedPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED1D0AF1CDE560C00471E3C /* BackedPanel.cpp */; };
 		5EF17C231D1F0A690090A642 /* ScrubbingToolBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EF17C211D1F0A690090A642 /* ScrubbingToolBar.cpp */; };
+		5E6B19F21F2CD1A2009A2CB0 /* HelpMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
 		ED15214D163C22F000451B5F /* lsr.c in Sources */ = {isa = PBXBuildFile; fileRef = ED152123163C220300451B5F /* lsr.c */; };
@@ -3003,6 +3004,8 @@
 		5ED1D0B01CDE560C00471E3C /* BackedPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackedPanel.h; sourceTree = "<group>"; };
 		5EF17C211D1F0A690090A642 /* ScrubbingToolBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScrubbingToolBar.cpp; sourceTree = "<group>"; };
 		5EF17C221D1F0A690090A642 /* ScrubbingToolBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrubbingToolBar.h; sourceTree = "<group>"; };
+		5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelpMenuCommands.cpp; path = menus/HelpMenuCommands.cpp; sourceTree = "<group>"; };
+		5E6B19F11F2CD1A2009A2CB0 /* HelpMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpMenuCommands.h; path = menus/HelpMenuCommands.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
 		82FF184E13CF01A600C1B664 /* dBTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dBTable.h; path = sbsms/src/dBTable.h; sourceTree = "<group>"; };
 		82FF184F13CF01A600C1B664 /* slide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = slide.cpp; path = sbsms/src/slide.cpp; sourceTree = "<group>"; };
@@ -5576,6 +5579,8 @@
 		5EE752D51F351F4D00E71292 /* menus */ = {
 			isa = PBXGroup;
 			children = (
+				5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */,
+				5E6B19F11F2CD1A2009A2CB0 /* HelpMenuCommands.h */,
 			);
 			name = menus;
 			sourceTree = "<group>";
@@ -7547,6 +7552,7 @@
 				28DABFBE0FF19DB100AC7848 /* RealFFTf.cpp in Sources */,
 				2800FE370FF32566005CA9E5 /* MidiIOPrefs.cpp in Sources */,
 				1818559A0FFE916C0026D190 /* ScreenshotCommand.cpp in Sources */,
+				5E6B19F21F2CD1A2009A2CB0 /* HelpMenuCommands.cpp in Sources */,
 				1865A9B81004490500946EE6 /* Lyrics.cpp in Sources */,
 				1865A9B91004490500946EE6 /* LyricsWindow.cpp in Sources */,
 				289E750A1006D0BD00CEF79B /* MixerBoard.cpp in Sources */,
