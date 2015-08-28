@@ -47,6 +47,7 @@
 
 #include "../AllThemeResources.h"
 #include "../AudioIO.h"
+#include "../commands/CommandManager.h"
 #include "../ImageManipulation.h"
 #include "../Internat.h"
 #include "../Prefs.h"

@@ -20,6 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../TrackPanelCellIterator.h"
 #include "../../commands/CommandFunctors.h"
 #include "../../prefs/TracksPrefs.h"
+#include "../../commands/CommandManager.h"
 #include "../../toolbars/ControlToolBar.h"
 #include "../../toolbars/ScrubbingToolBar.h"
 #include "../../toolbars/ToolManager.h"
@@ -33,6 +34,7 @@ Paul Licameli split from TrackPanel.cpp
 
 #include <algorithm>
 
+#include <wx/app.h>
 #include <wx/dc.h>
 
 // Yet another experimental scrub would drag the track under a

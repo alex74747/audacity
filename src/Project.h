@@ -27,7 +27,6 @@
 #include "ViewInfo.h"
 #include "TrackPanelListener.h"
 #include "AudioIOListener.h"
-#include "commands/CommandManager.h"
 #include "effects/EffectManager.h"
 #include "xml/XMLTagHandler.h"
 #include "toolbars/SelectionBarListener.h"
@@ -53,9 +52,12 @@ class wxBoxSizer;
 class wxScrollEvent;
 class wxScrollBar;
 class wxPanel;
+class wxTimer;
+class wxTimerEvent;
 
 class AudacityProject;
 class AutoSaveFile;
+class CommandManager;
 class Importer;
 class ODLock;
 class RecordingRecoveryHandler;
@@ -130,6 +132,8 @@ enum StatusBarField {
    mainStatusBarField = 2,
    rateStatusBarField = 3
 };
+
+enum CommandFlag : unsigned long long;
 
 ////////////////////////////////////////////////////////////
 /// Custom events
@@ -309,7 +313,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
 #include "Menus.h"
 
-   CommandManager *GetCommandManager() { return &mCommandManager; }
+   CommandManager *GetCommandManager();
 
    // Keyboard capture
    static bool HasKeyboardCapture(const wxWindow *handler);
@@ -608,7 +612,7 @@ private:
 
    // Commands
 
-   CommandManager mCommandManager;
+   CommandManager *mCommandManager;
 
    CommandFlag mLastFlags;
 

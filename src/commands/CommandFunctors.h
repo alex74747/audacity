@@ -146,7 +146,4 @@ inline CommandFunctorPointer MakeFunctor(OBJ *This, const PluginID &id,
 #define FNT(OBJ, This, X) (MakeFunctor<OBJ>(This, X ))
 #define FNTS(OBJ, This, X, S) (MakeFunctor<OBJ>(This, (S), X ))
 
-#define FN(X) FNT(AudacityProject, this, & AudacityProject :: X)
-#define FNS(X, S) FNTS(AudacityProject, this, & AudacityProject :: X, S)
-
 #endif

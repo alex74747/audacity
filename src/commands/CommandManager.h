@@ -24,6 +24,7 @@
 #include <wx/hashmap.h>
 
 #include "../AudacityApp.h"
+#include "../Project.h" // Remove this
 #include "../xml/XMLTagHandler.h"
 
 #include "audacity/Types.h"

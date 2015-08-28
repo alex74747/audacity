@@ -32,12 +32,15 @@
 
 *//*******************************************************************/
 
-#include <algorithm>
 #include <cfloat>
 
 #include "../Audacity.h"
 #include "../Experimental.h"
 #include "ControlToolBar.h"
+
+#include <algorithm>
+
+#include "../commands/CommandManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>

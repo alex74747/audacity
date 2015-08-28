@@ -14,6 +14,8 @@
 #include "MixerBoard.h"
 
 #include <cfloat>
+#include "commands/CommandManager.h"
+
 #include <math.h>
 
 #include <wx/dcmemory.h>

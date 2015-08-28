@@ -11,6 +11,7 @@
 #include "../Audacity.h"
 #include "PCMAliasBlockFile.h"
 
+#include <wx/app.h>
 #include <wx/file.h>
 #include <wx/utils.h>
 #include <wx/wxchar.h>
@@ -18,6 +19,7 @@
 
 #include <sndfile.h>
 
+#include "../AudacityApp.h"
 #include "../FileFormats.h"
 #include "../Internat.h"
 #include "../MemoryX.h"

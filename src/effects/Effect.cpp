@@ -23,6 +23,7 @@ greater use in future.
 
 #include "../Audacity.h"
 #include "Effect.h"
+#include "../AudacityApp.h"
 
 #include <algorithm>
 

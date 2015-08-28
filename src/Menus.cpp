@@ -96,6 +96,8 @@ simplifies construction of menu items.
 #include "BatchCommands.h"
 #include "prefs/BatchPrefs.h"
 
+#include "commands/CommandManager.h"
+
 #include "toolbars/ToolManager.h"
 #include "toolbars/ControlToolBar.h"
 #include "toolbars/ToolsToolBar.h"
@@ -284,9 +286,12 @@ static int SortEffectsByType(const PluginDescriptor **a, const PluginDescriptor 
 /// changes in configured preferences - for example changes in key-bindings
 /// affect the short-cut key legend that appears beside each command,
 
+#define FN(X) FNT(AudacityProject, this, & AudacityProject :: X)
+#define FNS(X, S) FNTS(AudacityProject, this, & AudacityProject :: X, S)
+
 void AudacityProject::CreateMenusAndCommands()
 {
-   CommandManager *c = &mCommandManager;
+   CommandManager *c = mCommandManager;
    wxArrayString names;
    wxArrayInt indices;
 
@@ -638,8 +643,8 @@ void AudacityProject::CreateMenusAndCommands()
 #endif
 
       c->AddItem(wxT("Preferences"), _("Pre&ferences..."), FN(OnPreferences), key,
-         AudioIONotBusyFlag,
-         AudioIONotBusyFlag);
+                 AudioIONotBusyFlag,
+                 AudioIONotBusyFlag);
 
       c->EndMenu();
 
@@ -651,12 +656,12 @@ void AudacityProject::CreateMenusAndCommands()
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
       c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
-         ZoomInAvailableFlag,
-         ZoomInAvailableFlag);
+                 ZoomInAvailableFlag,
+                 ZoomInAvailableFlag);
       c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
       c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
-         ZoomOutAvailableFlag,
-         ZoomOutAvailableFlag);
+                 ZoomOutAvailableFlag,
+                 ZoomOutAvailableFlag);
       c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
 
       c->AddSeparator();
@@ -673,7 +678,7 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->AddSeparator();
       c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
-         gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
+                  gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
 
       c->AddSeparator();
 
@@ -695,14 +700,14 @@ void AudacityProject::CreateMenusAndCommands()
       //    // to show the Redo's on stack.
       //    // "UndoHistory" might already be enabled, but add this check for RedoAvailableFlag.
       //    if (flags & RedoAvailableFlag)
-      //       mCommandManager.Enable(wxT("UndoHistory"), true);
+      //       GetCommandManager()->Enable(wxT("UndoHistory"), true);
       // So for now, enable the command regardless of stack. It will just show empty sometimes.
       // FOR REDESIGN, clearly there are some limitations with the flags/mask bitmaps.
 
       /* i18n-hint: Clicking this menu item shows the various editing steps that have been taken.*/
       c->AddItem(wxT("UndoHistory"), _("&History..."), FN(OnHistory),
-         AudioIONotBusyFlag,
-         AudioIONotBusyFlag);
+                 AudioIONotBusyFlag,
+                 AudioIONotBusyFlag);
 
       c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
       c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
@@ -1610,26 +1615,26 @@ void AudacityProject::ModifyUndoMenuItems()
 
    if (GetUndoManager()->UndoAvailable()) {
       GetUndoManager()->GetShortDescription(cur, &desc);
-      mCommandManager.Modify(wxT("Undo"),
+      GetCommandManager()->Modify(wxT("Undo"),
                              wxString::Format(_("&Undo %s"),
                                               desc.c_str()));
    }
    else {
-      mCommandManager.Modify(wxT("Undo"),
+      GetCommandManager()->Modify(wxT("Undo"),
                              wxString::Format(_("&Undo")));
    }
 
    if (GetUndoManager()->RedoAvailable()) {
       GetUndoManager()->GetShortDescription(cur+1, &desc);
-      mCommandManager.Modify(wxT("Redo"),
+      GetCommandManager()->Modify(wxT("Redo"),
                              wxString::Format(_("&Redo %s"),
                                               desc.c_str()));
-      mCommandManager.Enable(wxT("Redo"), true);
+      GetCommandManager()->Enable(wxT("Redo"), true);
    }
    else {
-      mCommandManager.Modify(wxT("Redo"),
+      GetCommandManager()->Modify(wxT("Redo"),
                              wxString::Format(_("&Redo")));
-      mCommandManager.Enable(wxT("Redo"), false);
+      GetCommandManager()->Enable(wxT("Redo"), false);
    }
 }
 
@@ -1656,7 +1661,7 @@ void AudacityProject::RebuildMenuBar()
       // menuBar gets deleted here
    }
 
-   mCommandManager.PurgeData();
+   GetCommandManager()->PurgeData();
 
    CreateMenusAndCommands();
 
@@ -1885,31 +1890,31 @@ void AudacityProject::ModifyToolbarMenus()
       return;
    }
 
-   mCommandManager.Check(wxT("ShowScrubbingTB"),
+   GetCommandManager()->Check(wxT("ShowScrubbingTB"),
                          mToolManager->IsVisible(ScrubbingBarID));
-   mCommandManager.Check(wxT("ShowDeviceTB"),
+   GetCommandManager()->Check(wxT("ShowDeviceTB"),
                          mToolManager->IsVisible(DeviceBarID));
-   mCommandManager.Check(wxT("ShowEditTB"),
+   GetCommandManager()->Check(wxT("ShowEditTB"),
                          mToolManager->IsVisible(EditBarID));
-   mCommandManager.Check(wxT("ShowMeterTB"),
+   GetCommandManager()->Check(wxT("ShowMeterTB"),
                          mToolManager->IsVisible(MeterBarID));
-   mCommandManager.Check(wxT("ShowRecordMeterTB"),
+   GetCommandManager()->Check(wxT("ShowRecordMeterTB"),
                          mToolManager->IsVisible(RecordMeterBarID));
-   mCommandManager.Check(wxT("ShowPlayMeterTB"),
+   GetCommandManager()->Check(wxT("ShowPlayMeterTB"),
                          mToolManager->IsVisible(PlayMeterBarID));
-   mCommandManager.Check(wxT("ShowMixerTB"),
+   GetCommandManager()->Check(wxT("ShowMixerTB"),
                          mToolManager->IsVisible(MixerBarID));
-   mCommandManager.Check(wxT("ShowSelectionTB"),
+   GetCommandManager()->Check(wxT("ShowSelectionTB"),
                          mToolManager->IsVisible(SelectionBarID));
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   mCommandManager.Check(wxT("ShowSpectralSelectionTB"),
+   GetCommandManager()->Check(wxT("ShowSpectralSelectionTB"),
                          mToolManager->IsVisible(SpectralSelectionBarID));
 #endif
-   mCommandManager.Check(wxT("ShowToolsTB"),
+   GetCommandManager()->Check(wxT("ShowToolsTB"),
                          mToolManager->IsVisible(ToolsBarID));
-   mCommandManager.Check(wxT("ShowTranscriptionTB"),
+   GetCommandManager()->Check(wxT("ShowTranscriptionTB"),
                          mToolManager->IsVisible(TranscriptionBarID));
-   mCommandManager.Check(wxT("ShowTransportTB"),
+   GetCommandManager()->Check(wxT("ShowTransportTB"),
                          mToolManager->IsVisible(TransportBarID));
 
    // Now, go through each toolbar, and call EnableDisableButtons()
@@ -1921,24 +1926,24 @@ void AudacityProject::ModifyToolbarMenus()
    // the Edit toolbar and the sync-lock menu item.
    bool active;
    gPrefs->Read(wxT("/AudioIO/SoundActivatedRecord"),&active, false);
-   mCommandManager.Check(wxT("SoundActivation"), active);
+   GetCommandManager()->Check(wxT("SoundActivation"), active);
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    gPrefs->Read(wxT("/AudioIO/AutomatedInputLevelAdjustment"),&active, false);
-   mCommandManager.Check(wxT("AutomatedInputLevelAdjustmentOnOff"), active);
+   GetCommandManager()->Check(wxT("AutomatedInputLevelAdjustmentOnOff"), active);
 #endif
 
    active = TracksPrefs::GetPinnedHeadPreference();
-   mCommandManager.Check(wxT("PinnedHead"), active);
+   GetCommandManager()->Check(wxT("PinnedHead"), active);
 
    gPrefs->Read(wxT("/AudioIO/Duplex"),&active, true);
-   mCommandManager.Check(wxT("Duplex"), active);
+   GetCommandManager()->Check(wxT("Duplex"), active);
    gPrefs->Read(wxT("/AudioIO/SWPlaythrough"),&active, false);
-   mCommandManager.Check(wxT("SWPlaythrough"), active);
+   GetCommandManager()->Check(wxT("SWPlaythrough"), active);
    gPrefs->Read(wxT("/GUI/SyncLockTracks"), &active, false);
    SetSyncLock(active);
-   mCommandManager.Check(wxT("SyncLock"), active);
+   GetCommandManager()->Check(wxT("SyncLock"), active);
    gPrefs->Read(wxT("/GUI/TypeToCreateLabel"),&active, true);
-   mCommandManager.Check(wxT("TypeToCreateLabel"), active);
+   GetCommandManager()->Check(wxT("TypeToCreateLabel"), active);
 }
 
 // checkActive is a temporary hack that should be removed as soon as we
@@ -1986,7 +1991,7 @@ void AudacityProject::UpdateMenus(bool checkActive)
       return;
    mLastFlags = flags;
 
-   mCommandManager.EnableUsingFlags(flags2 , NoFlagsSpecifed);
+   GetCommandManager()->EnableUsingFlags(flags2 , NoFlagsSpecifed);
 
    // With select-all-on-none, some items that we don't want enabled may have
    // been enabled, since we changed the flags.  Here we manually disable them.
@@ -1994,25 +1999,30 @@ void AudacityProject::UpdateMenus(bool checkActive)
    {
       if (!(flags & TimeSelectedFlag) | !(flags & TracksSelectedFlag))
       {
-         mCommandManager.Enable(wxT("SplitCut"), false);
+         GetCommandManager()->Enable(wxT("SplitCut"), false);
       }
+
+      // FIXME: This Can't be right. We can only
+      // FIXME: get here if no tracks selected, so
+      // FIXME: there can't be a Wave track selected.
+      // wxASSERT(!(flags & WaveTracksSelectedFlag));
       if (!(flags & WaveTracksSelectedFlag))
       {
-         mCommandManager.Enable(wxT("Split"), false);
+         GetCommandManager()->Enable(wxT("Split"), false);
       }
-      if (!(flags & TimeSelectedFlag) | !(flags & WaveTracksSelectedFlag))
+      if (!(flags & TimeSelectedFlag))
       {
-         mCommandManager.Enable(wxT("ExportSel"), false);
-         mCommandManager.Enable(wxT("SplitNew"), false);
-         mCommandManager.Enable(wxT("Trim"), false);
-         mCommandManager.Enable(wxT("SplitDelete"), false);
+         GetCommandManager()->Enable(wxT("ExportSel"), false);
+         GetCommandManager()->Enable(wxT("SplitNew"), false);
+         GetCommandManager()->Enable(wxT("Trim"), false);
+         GetCommandManager()->Enable(wxT("SplitDelete"), false);
       }
    }
 
 #if 0
    if (flags & CutCopyAvailableFlag) {
-      mCommandManager.Enable(wxT("Copy"), true);
-      mCommandManager.Enable(wxT("Cut"), true);
+      GetCommandManager()->Enable(wxT("Copy"), true);
+      GetCommandManager()->Enable(wxT("Cut"), true);
    }
 #endif
 
@@ -3625,7 +3635,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
          /* i18n-hint: %s will be the name of the effect which will be
           * repeated if this menu item is chosen */
          lastEffectDesc.Printf(_("Repeat %s"), shortDesc.c_str());
-         mCommandManager.Modify(wxT("RepeatLastEffect"), lastEffectDesc);
+         GetCommandManager()->Modify(wxT("RepeatLastEffect"), lastEffectDesc);
       }
    }
 
@@ -5494,7 +5504,7 @@ void AudacityProject::OnShowClipping()
    bool checked = !gPrefs->Read(wxT("/GUI/ShowClipping"), 0L);
    gPrefs->Write(wxT("/GUI/ShowClipping"), checked);
    gPrefs->Flush();
-   mCommandManager.Check(wxT("ShowClipping"), checked);
+   GetCommandManager()->Check(wxT("ShowClipping"), checked);
    mTrackPanel->UpdatePrefs();
    mTrackPanel->Refresh(false);
 }

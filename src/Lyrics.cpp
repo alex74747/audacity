@@ -9,13 +9,16 @@
 
 **********************************************************************/
 
+#include "Lyrics.h"
+
 #include <math.h>
 
 #include <wx/defs.h>
 #include <wx/dcmemory.h>
 #include <wx/mimetype.h>
 
-#include "Lyrics.h"
+#include "commands/CommandManager.h"
+
 #include "Internat.h"
 #include "Project.h" // for GetActiveProject
 #include "LabelTrack.h"

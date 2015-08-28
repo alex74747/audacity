@@ -51,6 +51,7 @@ scroll information.  It also has some status flags.
 
 #include "Audacity.h"
 #include "Project.h"
+#include "commands/CommandManager.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -909,6 +910,8 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mViewInfo(0.0, 1.0, ZoomInfo::GetDefaultZoom()),
      mbLoadedFromAup( false )
 {
+   mCommandManager = new CommandManager();
+
    // Note that the first field of the status bar is a dummy, and it's width is set
    // to zero latter in the code. This field is needed for wxWidgets 2.8.12 because
    // if you move to the menu bar, the first field of the menu bar is cleared, which
@@ -1203,7 +1206,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
    //Initialize the last selection adjustment time.
    mLastSelectionAdjustment = ::wxGetLocalTimeMillis();
-
 }
 
 AudacityProject::~AudacityProject()
@@ -1229,6 +1231,8 @@ AudacityProject::~AudacityProject()
                      wxCommandEventHandler(AudacityProject::OnCapture),
                      NULL,
                      this);
+
+   delete mCommandManager;
 }
 
 AudioIOStartStreamOptions AudacityProject::GetDefaultPlayOptions()
@@ -1480,7 +1484,7 @@ void AudacityProject::AS_SetSnapTo(int snap)
    mSnapTo = snap;
 
 // LLL: TODO - what should this be changed to???
-// mCommandManager.Check(wxT("Snap"), mSnapTo);
+// GetCommandManager()->Check(wxT("Snap"), mSnapTo);
    gPrefs->Write(wxT("/SnapTo"), mSnapTo);
    gPrefs->Flush();
 
@@ -2283,7 +2287,7 @@ bool AudacityProject::TryToMakeActionAllowed
 void AudacityProject::OnMenu(wxCommandEvent & event)
 {
 
-   bool handled = mCommandManager.HandleMenuID(event.GetId(),
+   bool handled = GetCommandManager()->HandleMenuID(event.GetId(),
                                                GetUpdateFlags(),
                                                NoFlagsSpecifed);
 
@@ -5475,6 +5479,11 @@ void AudacityProject::HandleTrackSolo(Track *t, const bool alternate)
       }
    }
    ModifyState(true);
+}
+
+CommandManager *AudacityProject::GetCommandManager()
+{
+   return mCommandManager;
 }
 
 // Keyboard capture

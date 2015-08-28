@@ -58,6 +58,7 @@ array of Ruler::Label.
 
 #include <math.h>
 
+#include <wx/app.h>
 #include <wx/dcscreen.h>
 #include <wx/dcmemory.h>
 #include <wx/dcbuffer.h>
@@ -82,6 +83,7 @@ array of Ruler::Label.
 #include "../NumberScale.h"
 #include "../Prefs.h"
 #include "../Snap.h"
+#include "../commands/CommandManager.h"
 #include "../tracks/ui/Scrubbing.h"
 #include "../prefs/PlaybackPrefs.h"
 #include "../prefs/TracksPrefs.h"

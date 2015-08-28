@@ -14,6 +14,7 @@
 
 #include "../Experimental.h"
 
+class CommandManager;
 class ShuttleGui;
 
 #if defined(EXPERIMENTAL_KEY_VIEW)
@@ -27,11 +28,11 @@ class ShuttleGui;
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 
-#include "../commands/CommandManager.h"
 #include "../widgets/KeyView.h"
 
 #include "PrefsPanel.h"
 
+class wxButton;
 class wxStaticText;
 
 class KeyConfigPrefs final : public PrefsPanel
@@ -97,8 +98,6 @@ private:
 #include <wx/listctrl.h>
 #include <wx/textctrl.h>
 #include <wx/string.h>
-
-#include "../commands/CommandManager.h"
 
 #include "PrefsPanel.h"
 
