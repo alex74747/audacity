@@ -4014,6 +4014,7 @@
 				1790AFFD09883BFD008A330A /* effects */,
 				1790B06209883BFD008A330A /* export */,
 				1790B07D09883BFD008A330A /* import */,
+				5EE752D51F351F4D00E71292 /* menus */,
 				1841B4FD0E00AD3D00F386E9 /* ondemand */,
 				1790B0B509883BFD008A330A /* prefs */,
 				2897F6DB0AB3DB5A003C20C5 /* toolbars */,
@@ -5570,6 +5571,13 @@
 			);
 			name = lib;
 			path = expat/lib;
+			sourceTree = "<group>";
+		};
+		5EE752D51F351F4D00E71292 /* menus */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = menus;
 			sourceTree = "<group>";
 		};
 		5E74D2DB1CC4429700D88B0B /* tracks */ = {
