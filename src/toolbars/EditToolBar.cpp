@@ -54,6 +54,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/ViewMenuCommands.h"
 #include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
 
@@ -258,7 +259,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          return;//avoiding the call to SetButton()
 #endif
       case ETBZoomInID:
-         p->OnZoomIn();
+         ViewMenuCommands(p).OnZoomIn();
          break;
       case ETBZoomOutID:
          p->OnZoomOut();
