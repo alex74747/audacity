@@ -38,6 +38,8 @@ void ViewMenuCommands::Create(CommandManager *c)
 
    c->AddSeparator();
    c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
+
+   c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -137,6 +139,21 @@ void ViewMenuCommands::OnCollapseAllTracks()
    while (t)
    {
       t->SetMinimized(true);
+      t = iter.Next();
+   }
+
+   mProject->ModifyState(true);
+   mProject->RedrawProject();
+}
+
+void ViewMenuCommands::OnExpandAllTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t)
+   {
+      t->SetMinimized(false);
       t = iter.Next();
    }
 

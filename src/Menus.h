@@ -192,7 +192,6 @@ void OnSelectAllTracks();
 // void OnZoomToggle();
 void DoZoomFitV();
 
-void OnExpandAllTracks();
 
 void OnShowClipping();
 

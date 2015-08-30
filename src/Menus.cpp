@@ -612,8 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
-
    c->AddSeparator();
    c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
                gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
@@ -4356,22 +4354,6 @@ void AudacityProject::OnSeparator()
 {
 
 }
-
-void AudacityProject::OnExpandAllTracks()
-{
-   TrackListIterator iter(mTracks);
-   Track *t = iter.First();
-
-   while (t)
-   {
-      t->SetMinimized(false);
-      t = iter.Next();
-   }
-
-   ModifyState(true);
-   RedrawProject();
-}
-
 
 void AudacityProject::OnLockPlayRegion()
 {
