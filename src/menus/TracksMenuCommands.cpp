@@ -152,6 +152,21 @@ void TracksMenuCommands::Create(CommandManager *c)
 
    c->AddCheck(wxT("TypeToCreateLabel"), _("&Type to Create a Label (on/off)"),
       FN(OnToggleTypeToCreateLabel), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddSeparator();
+
+   //////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("S&ort Tracks"));
+   {
+      c->AddItem(wxT("SortByTime"), _("by &Start time"), FN(OnSortTime),
+         TracksExistFlag,
+         TracksExistFlag);
+      c->AddItem(wxT("SortByName"), _("by &Name"), FN(OnSortName),
+         TracksExistFlag,
+         TracksExistFlag);
+   }
+   c->EndSubMenu();
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1096,4 +1111,128 @@ void TracksMenuCommands::OnToggleTypeToCreateLabel()
    gPrefs->Write(wxT("/GUI/TypeToCreateLabel"), !typeToCreateLabel);
    gPrefs->Flush();
    mProject->ModifyAllProjectToolbarMenus();
+}
+
+void TracksMenuCommands::OnSortTime()
+{
+   SortTracks(kAudacitySortByTime);
+
+   mProject->PushState(_("Tracks sorted by time"), _("Sort by Time"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void TracksMenuCommands::OnSortName()
+{
+   SortTracks(kAudacitySortByName);
+
+   mProject->PushState(_("Tracks sorted by name"), _("Sort by Name"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+double TracksMenuCommands::GetTime(const Track *t)
+{
+   double stime = 0.0;
+
+   if (t->GetKind() == Track::Wave) {
+      WaveTrack *w = (WaveTrack *)t;
+      stime = w->GetEndTime();
+
+      WaveClip *c;
+      int ndx;
+      for (ndx = 0; ndx < w->GetNumClips(); ndx++) {
+         c = w->GetClipByIndex(ndx);
+         if (c->GetNumSamples() == 0)
+            continue;
+         if (c->GetStartTime() < stime) {
+            stime = c->GetStartTime();
+         }
+      }
+   }
+   else if (t->GetKind() == Track::Label) {
+      LabelTrack *l = (LabelTrack *)t;
+      stime = l->GetStartTime();
+   }
+
+   return stime;
+}
+
+//sort based on flags.  see Project.h for sort flags
+void TracksMenuCommands::SortTracks(int flags)
+{
+   size_t ndx = 0;
+   int cmpValue;
+   std::vector<ListOfTracks::iterator> arr;
+   auto tracks = mProject->GetTracks();
+   arr.reserve(tracks->GetCount());
+   bool lastTrackLinked = false;
+   //sort by linked tracks. Assumes linked track follows owner in list.
+
+   // First find the permutation.
+   for (auto iter = tracks->begin(), end = tracks->end(); iter != end; ++iter) {
+      const auto &track = *iter;
+      if(lastTrackLinked) {
+         //insert after the last track since this track should be linked to it.
+         ndx++;
+      }
+      else {
+         for (ndx = 0; ndx < arr.size(); ++ndx) {
+            Track &arrTrack = **arr[ndx];
+            if(flags & kAudacitySortByName) {
+               //do case insensitive sort - cmpNoCase returns less than zero if the string is 'less than' its argument
+               //also if we have case insensitive equality, then we need to sort by case as well
+               //We sort 'b' before 'B' accordingly.  We uncharacteristically use greater than for the case sensitive
+               //compare because 'b' is greater than 'B' in ascii.
+               cmpValue = track->GetName().CmpNoCase(arrTrack.GetName());
+               if (cmpValue < 0 ||
+                   (0 == cmpValue && track->GetName().CompareTo(arrTrack.GetName()) > 0) )
+                  break;
+            }
+            //sort by time otherwise
+            else if(flags & kAudacitySortByTime) {
+               //we have to search each track and all its linked ones to fine the minimum start time.
+               double time1, time2, tempTime;
+               const Track* tempTrack;
+               size_t candidatesLookedAt;
+
+               candidatesLookedAt = 0;
+               tempTrack = &*track;
+               time1 = time2 = std::numeric_limits<double>::max(); //TODO: find max time value. (I don't think we have one yet)
+               while(tempTrack) {
+                  tempTime = GetTime(tempTrack);
+                  time1 = std::min(time1, tempTime);
+                  if(tempTrack->GetLinked())
+                     tempTrack = tempTrack->GetLink();
+                  else
+                     tempTrack = NULL;
+               }
+
+               //get candidate's (from sorted array) time
+               tempTrack = &arrTrack;
+               while(tempTrack) {
+                  tempTime = GetTime(tempTrack);
+                  time2 = std::min(time2, tempTime);
+                  if(tempTrack->GetLinked() && (ndx+candidatesLookedAt < arr.size()-1) ) {
+                     candidatesLookedAt++;
+                     tempTrack = &**arr[ndx+candidatesLookedAt];
+                  }
+                  else
+                     tempTrack = NULL;
+               }
+               
+               if (time1 < time2)
+                  break;
+               
+               ndx+=candidatesLookedAt;
+            }
+         }
+      }
+      arr.insert(arr.begin() + ndx, iter);
+      
+      lastTrackLinked = track->GetLinked();
+   }
+   
+   // Now apply the permutation
+   tracks->Permute(arr);
 }

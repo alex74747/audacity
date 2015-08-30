@@ -5,6 +5,7 @@ class AudacityProject;
 class CommandManager;
 class LabelTrack;
 class SelectedRegion;
+class Track;
 
 #include <stddef.h>
 
@@ -56,6 +57,15 @@ public:
 private:
    void OnEditLabels();
    void OnToggleTypeToCreateLabel();
+
+   void OnSortTime();
+   void OnSortName();
+   double GetTime(const Track *t);
+   enum {
+      kAudacitySortByTime = (1 << 1),
+      kAudacitySortByName = (1 << 2)
+   };
+   void SortTracks(int flags);
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
