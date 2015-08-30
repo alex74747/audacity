@@ -1011,13 +1011,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-#if IS_ALPHA
-   // TODO: What should we do here?  Make benchmark a plug-in?
-   // Easy enough to do.  We'd call it mod-self-test.
-
-   c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
-#endif
-
    c->AddSeparator();
    c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
    c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
@@ -6418,11 +6411,6 @@ void AudacityProject::OnShowLog()
    if (logger) {
       logger->Show();
    }
-}
-
-void AudacityProject::OnBenchmark()
-{
-   ::RunBenchmark(this);
 }
 
 #if defined(EXPERIMENTAL_CRASH_REPORT)

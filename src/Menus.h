@@ -376,7 +376,6 @@ void OnAbout();
 void OnCheckForUpdates();
 void OnShowLog();
 void OnHelpWelcome();
-void OnBenchmark();
 #if defined(EXPERIMENTAL_CRASH_REPORT)
 void OnCrashReport();
 #endif
