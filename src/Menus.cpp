@@ -627,8 +627,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddSeparator();
-      c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
       c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
 
       c->AddSeparator();
@@ -4101,14 +4099,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnGoSelStart()
-{
-   if (mViewInfo.selectedRegion.isPoint())
-      return;
-
-   TP_ScrollWindow(mViewInfo.selectedRegion.t0() - ((GetScreenEndTime() - mViewInfo.h) / 2));
 }
 
 void AudacityProject::OnGoSelEnd()
