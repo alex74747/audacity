@@ -62,6 +62,7 @@ void TransportMenuCommands::Create(CommandManager *c)
                AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
+   c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -353,6 +354,15 @@ void TransportMenuCommands::OnTogglePlayRecording()
    bool Duplex;
    gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, true);
    gPrefs->Write(wxT("/AudioIO/Duplex"), !Duplex);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
+}
+
+void TransportMenuCommands::OnToggleSWPlaythrough()
+{
+   bool SWPlaythrough;
+   gPrefs->Read(wxT("/AudioIO/SWPlaythrough"), &SWPlaythrough, false);
+   gPrefs->Write(wxT("/AudioIO/SWPlaythrough"), !SWPlaythrough);
    gPrefs->Flush();
    mProject->ModifyAllProjectToolbarMenus();
 }
