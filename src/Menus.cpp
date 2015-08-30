@@ -612,8 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
-
    c->AddSeparator();
    c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
    c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
@@ -3952,31 +3950,6 @@ void AudacityProject::OnZoomFitV()
    RedrawProject();
    ModifyState(true);
 }
-
-void AudacityProject::OnZoomSel()
-{
-   const double lowerBound =
-      std::max(mViewInfo.selectedRegion.t0(), ScrollingLowerBoundTime());
-   const double denom =
-      mViewInfo.selectedRegion.t1() - lowerBound;
-   if (denom <= 0.0)
-      return;
-
-   // LL:  The "-1" is just a hack to get around an issue where zooming to
-   //      selection doesn't actually get the entire selected region within the
-   //      visible area.  This causes a problem with scrolling at end of playback
-   //      where the selected region may be scrolled off the left of the screen.
-   //      I know this isn't right, but until the real rounding or 1-off issue is
-   //      found, this will have to work.
-   // PRL:  Did I fix this?  I am not sure, so I leave the hack in place.
-   //      Fixes might have resulted from commits
-   //      1b8f44d0537d987c59653b11ed75a842b48896ea and
-   //      e7c7bb84a966c3b3cc4b3a9717d5f247f25e7296
-   int width;
-   mTrackPanel->GetTracksUsableArea(&width, NULL);
-   Zoom((width - 1) / denom);
-   TP_ScrollWindow(mViewInfo.selectedRegion.t0());
-}  
 
 void AudacityProject::OnGoSelStart()
 {
