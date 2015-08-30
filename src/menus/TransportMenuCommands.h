@@ -19,6 +19,7 @@ private:
    void OnPlayLooped();
    void OnPause();
    void OnSkipStart();
+   void OnSkipEnd();
 
    AudacityProject *const mProject;
 };

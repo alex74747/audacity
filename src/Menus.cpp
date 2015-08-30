@@ -720,10 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
-              WaveTracksExistFlag | AudioIONotBusyFlag,
-              WaveTracksExistFlag | AudioIONotBusyFlag);
-
    c->AddSeparator();
 
    /* i18n-hint: (verb)*/
@@ -2021,14 +2017,6 @@ void AudacityProject::OnToogleAutomatedInputLevelAdjustment()
    ModifyAllProjectToolbarMenus();
 }
 #endif
-
-void AudacityProject::OnSkipEnd()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnFF(evt);
-   ModifyState(false);
-}
 
 void AudacityProject::OnSeekLeftShort()
 {

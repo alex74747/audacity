@@ -32,6 +32,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
+      WaveTracksExistFlag | AudioIONotBusyFlag,
+      WaveTracksExistFlag | AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -142,5 +145,13 @@ void TransportMenuCommands::OnSkipStart()
    wxCommandEvent evt;
 
    mProject->GetControlToolBar()->OnRewind(evt);
+   mProject->ModifyState(false);
+}
+
+void TransportMenuCommands::OnSkipEnd()
+{
+   wxCommandEvent evt;
+
+   mProject->GetControlToolBar()->OnFF(evt);
    mProject->ModifyState(false);
 }
