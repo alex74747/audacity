@@ -23,6 +23,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("Shift+A"),
       AlwaysEnabledFlag,
       AlwaysEnabledFlag);
+   c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
+      WaveTracksExistFlag | AudioIONotBusyFlag,
+      WaveTracksExistFlag | AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -109,4 +112,14 @@ void TransportMenuCommands::OnPlayStopSelect()
       // Will automatically set mLastPlayMode
       toolbar->PlayCurrentRegion(false);
    }
+}
+
+void TransportMenuCommands::OnPlayLooped()
+{
+   if (!mProject->MakeReadyToPlay(true))
+      return;
+
+   // Now play in a loop
+   // Will automatically set mLastPlayMode
+   mProject->GetControlToolBar()->PlayCurrentRegion(true);
 }

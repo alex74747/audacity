@@ -720,9 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
-              WaveTracksExistFlag | AudioIONotBusyFlag,
-              WaveTracksExistFlag | AudioIONotBusyFlag);
    c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"),
               AlwaysEnabledFlag,
               AlwaysEnabledFlag);
@@ -1948,16 +1945,6 @@ void AudacityProject::OnPlayBeforeAndAfterSelectionEnd()
       GetControlToolBar()->PlayPlayRegion(SelectedRegion(t1 - beforeLen, t1 + afterLen), GetDefaultPlayOptions());
 }
 
-
-void AudacityProject::OnPlayLooped()
-{
-   if( !MakeReadyToPlay(true) )
-      return;
-
-   // Now play in a loop
-   // Will automatically set mLastPlayMode
-   GetControlToolBar()->PlayCurrentRegion(true);
-}
 
 void AudacityProject::OnPlayCutPreview()
 {
