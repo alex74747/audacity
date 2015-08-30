@@ -818,12 +818,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->AddSeparator();
 
-      c->AddItem(wxT("RemoveTracks"), _("Remo&ve Tracks"), FN(OnRemoveTracks),
-         AudioIONotBusyFlag | TracksSelectedFlag,
-         AudioIONotBusyFlag | TracksSelectedFlag);
-
-      c->AddSeparator();
-
       c->AddItem(wxT("MuteAllTracks"), _("&Mute All Tracks"), FN(OnMuteAllTracks), wxT("Ctrl+U"));
       c->AddItem(wxT("UnMuteAllTracks"), _("&Unmute All Tracks"), FN(OnUnMuteAllTracks), wxT("Ctrl+Shift+U"));
 
@@ -6545,52 +6539,6 @@ void AudacityProject::OnEditChains()
 {
    EditChainsDialog dlg(this);
    dlg.ShowModal();
-}
-
-void AudacityProject::OnRemoveTracks()
-{
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-   Track *f = NULL;
-   Track *l = NULL;
-
-   while (t) {
-      if (t->GetSelected()) {
-         if (mMixerBoard && (t->GetKind() == Track::Wave))
-            mMixerBoard->RemoveTrackCluster((WaveTrack*)t);
-         if (!f)
-            f = l;         // Capture the track preceeding the first removed track
-         t = iter.RemoveCurrent();
-      }
-      else {
-         l = t;
-         t = iter.Next();
-      }
-   }
-
-   // All tracks but the last were removed...try to use the last track
-   if (!f)
-      f = l;
-
-   // Try to use the first track after the removal or, if none,
-   // the track preceeding the removal
-   if (f) {
-      t = mTracks->GetNext(f, true);
-      if (t)
-         f = t;
-   }
-
-   // If we actually have something left, then make sure it's seen
-   if (f)
-      mTrackPanel->EnsureVisible(f);
-
-   PushState(_("Removed audio track(s)"), _("Remove Track"));
-
-   mTrackPanel->UpdateViewIfNoTracks();
-   mTrackPanel->Refresh(false);
-
-   if (mMixerBoard)
-      mMixerBoard->Refresh(true);
 }
 
 //

@@ -24,6 +24,9 @@ private:
    void HandleMixAndRender(bool toNewTrack);
 
    void OnResample();
+public:
+   void OnRemoveTracks();
+private:
 
    AudacityProject *const mProject;
 };
