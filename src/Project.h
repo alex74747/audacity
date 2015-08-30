@@ -283,6 +283,9 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    wxPanel *GetTopPanel() { return mTopPanel; }
    TrackPanel * GetTrackPanel() {return mTrackPanel;}
 
+   // Creates the window as needed on demand:
+   HistoryWindow *GetHistoryWindow();
+
    bool GetIsEmpty();
 
    bool GetTracksFitVerticallyZoomed() { return mTracksFitVerticallyZoomed; } //lda
