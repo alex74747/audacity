@@ -50,6 +50,7 @@ public:
    //Adds label and returns index of label in labeltrack.
    int DoAddLabel(const SelectedRegion& region);
 private:
+   void OnEditLabels();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

@@ -4,6 +4,7 @@
 #include <wx/combobox.h>
 
 #include "../AudioIO.h"
+#include "../LabelDialog.h"
 #include "../LabelTrack.h"
 #include "../Mix.h"
 #include "../MixerBoard.h"
@@ -135,6 +136,8 @@ void TracksMenuCommands::Create(CommandManager *c)
               wxT("Ctrl+M"),
 #endif
               0, AudioIONotBusyFlag);
+
+   c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1038,4 +1041,17 @@ int TracksMenuCommands::DoAddLabel(const SelectedRegion &region)
    mProject->GetTrackPanel()->SetFocus();
 
    return index;
+}
+
+void TracksMenuCommands::OnEditLabels()
+{
+   wxString format = mProject->GetSelectionFormat();
+
+   LabelDialog dlg(mProject, mProject->GetDirManager(), mProject->GetTracks(),
+      mProject->GetViewInfo(), mProject->GetRate(), format);
+
+   if (dlg.ShowModal() == wxID_OK) {
+      mProject->PushState(_("Edited labels"), _("Label"));
+      mProject->RedrawProject();
+   }
 }

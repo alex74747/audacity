@@ -330,7 +330,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void OnEditLabels();
 
         // Effect Menu
 

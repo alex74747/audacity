@@ -771,8 +771,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
-
    c->AddSeparator();
 
    //////////////////////////////////////////////////////////////////////////
@@ -5452,18 +5450,6 @@ void AudacityProject::OnSoundActivated()
 void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
-}
-
-void AudacityProject::OnEditLabels()
-{
-   wxString format = GetSelectionFormat();
-
-   LabelDialog dlg(this, mDirManager, mTracks, mViewInfo, mRate, format);
-
-   if (dlg.ShowModal() == wxID_OK) {
-      PushState(_("Edited labels"), _("Label"));
-      RedrawProject();
-   }
 }
 
 void AudacityProject::OnApplyChain()
