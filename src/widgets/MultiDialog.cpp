@@ -24,6 +24,8 @@ for each problem encountered, since there can be many orphans.
 #include "../AudacityApp.h"
 #include "../Project.h"
 
+#include "../menus/HelpMenuCommands.h"
+
 #include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/intl.h>
@@ -153,7 +155,7 @@ void MultiDialog::OnOK(wxCommandEvent & WXUNUSED(event))
 
 void MultiDialog::OnShowLog(wxCommandEvent & WXUNUSED(event))
 {
-   GetActiveProject()->OnShowLog();
+   HelpMenuCommands(GetActiveProject()).OnShowLog();
 }
 
 

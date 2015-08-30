@@ -1080,8 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-      c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
-
 #if defined(EXPERIMENTAL_CRASH_REPORT)
       c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
 #endif
@@ -6826,14 +6824,6 @@ void AudacityProject::OnAbout()
 void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
-}
-
-void AudacityProject::OnShowLog()
-{
-   AudacityLogger *logger = wxGetApp().GetLogger();
-   if (logger) {
-      logger->Show();
-   }
 }
 
 #if defined(EXPERIMENTAL_CRASH_REPORT)
