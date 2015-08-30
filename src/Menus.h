@@ -378,7 +378,6 @@ void OnHelpWelcome();
 #if defined(EXPERIMENTAL_CRASH_REPORT)
 void OnCrashReport();
 #endif
-void OnAudioDeviceInfo();
 
        //
 

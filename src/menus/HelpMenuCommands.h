@@ -18,6 +18,7 @@ private:
    void OnScreenshot();
    void OnBenchmark();
    void OnCheckForUpdates();
+   void OnAudioDeviceInfo();
 
    AudacityProject *const mProject;
 };
