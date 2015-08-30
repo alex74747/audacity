@@ -1080,10 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-#if defined(EXPERIMENTAL_CRASH_REPORT)
-      c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
-#endif
-
 #ifndef __WXMAC__
       c->AddSeparator();
 #endif
@@ -6825,18 +6821,6 @@ void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
 }
-
-#if defined(EXPERIMENTAL_CRASH_REPORT)
-void AudacityProject::OnCrashReport()
-{
-// Change to "1" to test a real crash
-#if 0
-   char *p = 0;
-   *p = 1234;
-#endif
-   wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
-}
-#endif
 
 void AudacityProject::OnSeparator()
 {
