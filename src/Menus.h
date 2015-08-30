@@ -344,10 +344,6 @@ void OnImportRaw();
 void OnEditMetadata();
 bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool force);
 
-void OnMixAndRender();
-void OnMixAndRenderToNewTrack();
-void HandleMixAndRender(bool toNewTrack);
-
 private:
    SelectedRegion mRegionSave{};
    bool mCursorPositionHasBeenStored{false};
