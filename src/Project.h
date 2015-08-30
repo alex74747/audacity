@@ -202,6 +202,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
    const ViewInfo &GetViewInfo() const { return mViewInfo; }
    ViewInfo &GetViewInfo() { return mViewInfo; }
+   wxScrollBar *GetVerticalScrollBar() { return mVsbar; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();

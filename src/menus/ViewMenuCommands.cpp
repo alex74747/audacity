@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <wx/scrolbar.h>
+
 #include "../Project.h"
 #include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
@@ -29,6 +31,7 @@ void ViewMenuCommands::Create(CommandManager *c)
 
    c->AddSeparator();
    c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
+   c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -89,4 +92,13 @@ void ViewMenuCommands::OnZoomFit()
 
    mProject->Zoom(w / len);
    mProject->TP_ScrollWindow(start);
+}
+
+void ViewMenuCommands::OnZoomFitV()
+{
+   mProject->DoZoomFitV();
+
+   mProject->GetVerticalScrollBar()->SetThumbPosition(0);
+   mProject->RedrawProject();
+   mProject->ModifyState(true);
 }

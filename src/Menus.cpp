@@ -627,8 +627,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
-
       c->AddSeparator();
       c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
       c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
@@ -4103,15 +4101,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnZoomFitV()
-{
-   this->DoZoomFitV();
-
-   mVsbar->SetThumbPosition(0);
-   RedrawProject();
-   ModifyState(true);
 }
 
 void AudacityProject::OnGoSelStart()
