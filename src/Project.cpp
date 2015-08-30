@@ -53,6 +53,7 @@ scroll information.  It also has some status flags.
 #include "Project.h"
 
 #include "commands/CommandManager.h"
+#include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
 
 #include <stdio.h>
@@ -838,6 +839,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mIsBeingDeleted(false)
 {
    mCommandManager = new CommandManager();
+   mTracksMenuCommands = new TracksMenuCommands(this);
    mHelpMenuCommands = new HelpMenuCommands(this);
 
    // Note that the first field of the status bar is a dummy, and it's width is set
@@ -1091,6 +1093,8 @@ AudacityProject::~AudacityProject()
                      this);
 
    delete mCommandManager;
+
+   delete mTracksMenuCommands;
    delete mHelpMenuCommands;
 }
 

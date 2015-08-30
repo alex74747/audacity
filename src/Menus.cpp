@@ -33,6 +33,7 @@ simplifies construction of menu items.
 #include "Audacity.h"
 #include "Project.h"
 
+#include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
 
 #include <iterator>
@@ -777,6 +778,9 @@ void AudacityProject::CreateMenusAndCommands()
    //////////////////////////////////////////////////////////////////////////
 
    c->BeginMenu(_("&Tracks"));
+
+   mTracksMenuCommands->Create(c);
+
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
    //////////////////////////////////////////////////////////////////////////

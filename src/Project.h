@@ -92,6 +92,8 @@ class WaveTrackArray;
 class Regions;
 
 class LWSlider;
+
+class TracksMenuCommands;
 class HelpMenuCommands;
 
 AudacityProject *CreateNewAudacityProject();
@@ -687,6 +689,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 
    // CommandManager needs to use private methods

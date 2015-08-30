@@ -857,6 +857,9 @@
     <ClCompile Include="..\..\..\src\menus\HelpMenuCommands.cpp">
       <Filter>src\menus</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\menus\TracksMenuCommands.cpp">
+      <Filter>src\menus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\AboutDialog.h">
@@ -1721,6 +1724,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\menus\HelpMenuCommands.h">
+      <Filter>src\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\menus\TracksMenuCommands.h">
       <Filter>src\menus</Filter>
     </ClInclude>
   </ItemGroup>
