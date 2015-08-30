@@ -783,12 +783,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("MixAndRender"), _("Mi&x and Render"), FN(OnMixAndRender),
-              AudioIONotBusyFlag | WaveTracksSelectedFlag,
-              AudioIONotBusyFlag | WaveTracksSelectedFlag);
-   c->AddItem(wxT("MixAndRenderToNewTrack"), _("Mix and Render to Ne&w Track"), FN(OnMixAndRenderToNewTrack), wxT("Ctrl+Shift+M"),
-                 AudioIONotBusyFlag | WaveTracksSelectedFlag,
-                 AudioIONotBusyFlag | WaveTracksSelectedFlag);
    c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
               AudioIONotBusyFlag | WaveTracksSelectedFlag,
               AudioIONotBusyFlag | WaveTracksSelectedFlag);
@@ -5438,92 +5432,6 @@ void AudacityProject::OnEditMetadata()
 {
    if (mTags->ShowEditDialog(this, _("Edit Metadata Tags"), true))
       PushState(_("Edit Metadata Tags"), _("Edit Metadata"));
-}
-
-void AudacityProject::HandleMixAndRender(bool toNewTrack)
-{
-   WaveTrack *newLeft = NULL;
-   WaveTrack *newRight = NULL;
-
-   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
-
-   if (::MixAndRender(mTracks, mTrackFactory, mRate, mDefaultFormat, 0.0, 0.0,
-                      &newLeft, &newRight)) {
-
-      // Remove originals, get stats on what tracks were mixed
-
-      TrackListIterator iter(mTracks);
-      Track *t = iter.First();
-      int selectedCount = 0;
-      wxString firstName;
-
-      while (t) {
-         if (t->GetSelected() && (t->GetKind() == Track::Wave)) {
-            if (selectedCount==0)
-               firstName = t->GetName();
-
-            // Add one to the count if it's an unlinked track, or if it's the first
-            // in a stereo pair
-            if (t->GetLinked() || !t->GetLink())
-                selectedCount++;
-
-                if (!toNewTrack) {
-                   t = iter.RemoveCurrent(true);
-                } else {
-                   t = iter.Next();
-                };
-         }
-         else
-            t = iter.Next();
-      }
-
-      // Add new tracks
-
-      mTracks->Add(newLeft);
-      if (newRight)
-         mTracks->Add(newRight);
-
-      // If we're just rendering (not mixing), keep the track name the same
-      if (selectedCount==1) {
-         newLeft->SetName(firstName);
-         if (newRight)
-            newRight->SetName(firstName);
-      }
-
-      // Smart history/undo message
-      if (selectedCount==1) {
-         wxString msg;
-         msg.Printf(_("Rendered all audio in track '%s'"), firstName.c_str());
-         /* i18n-hint: Convert the audio into a more usable form, so apply
-          * panning and amplification and write to some external file.*/
-         PushState(msg, _("Render"));
-      }
-      else {
-         wxString msg;
-         if (newRight)
-            msg.Printf(_("Mixed and rendered %d tracks into one new stereo track"),
-                       selectedCount);
-         else
-            msg.Printf(_("Mixed and rendered %d tracks into one new mono track"),
-                       selectedCount);
-         PushState(msg, _("Mix and Render"));
-      }
-
-      mTrackPanel->SetFocus();
-      mTrackPanel->SetFocusedTrack(newLeft);
-      mTrackPanel->EnsureVisible(newLeft);
-      RedrawProject();
-   }
-}
-
-void AudacityProject::OnMixAndRender()
-{
-   HandleMixAndRender(false);
-}
-
-void AudacityProject::OnMixAndRenderToNewTrack()
-{
-   HandleMixAndRender(true);
 }
 
 void AudacityProject::OnSelectionSave()

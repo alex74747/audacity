@@ -19,6 +19,10 @@ private:
    void OnNewTimeTrack();
    void OnStereoToMono(int index);
 
+   void OnMixAndRender();
+   void OnMixAndRenderToNewTrack();
+   void HandleMixAndRender(bool toNewTrack);
+
    AudacityProject *const mProject;
 };
 

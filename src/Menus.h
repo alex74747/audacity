@@ -321,10 +321,6 @@ void OnImportRaw();
 
 void OnEditMetadata();
 
-void OnMixAndRender();
-void OnMixAndRenderToNewTrack();
-void HandleMixAndRender(bool toNewTrack);
-
 private:
 SelectedRegion mRegionSave;
 public:
