@@ -785,11 +785,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->AddSeparator();
 
-   c->AddItem(wxT("MuteAllTracks"), _("&Mute All Tracks"), FN(OnMuteAllTracks), wxT("Ctrl+U"));
-   c->AddItem(wxT("UnMuteAllTracks"), _("&Unmute All Tracks"), FN(OnUnMuteAllTracks), wxT("Ctrl+Shift+U"));
-
-   c->AddSeparator();
-
    wxArrayString alignLabelsNoSync;
    alignLabelsNoSync.Add(_("&Align End to End"));
    alignLabelsNoSync.Add(_("Align &Together"));
@@ -6159,42 +6154,6 @@ void AudacityProject::OnExpandAllTracks()
    RedrawProject();
 }
 
-
-void AudacityProject::OnMuteAllTracks()
-{
-   TrackListIterator iter(mTracks);
-   Track *t = iter.First();
-
-   while (t)
-   {
-      if (t->GetKind() == Track::Wave)
-         t->SetMute(true);
-
-      t = iter.Next();
-   }
-
-   ModifyState(true);
-   RedrawProject();
-   if (mMixerBoard)
-      mMixerBoard->UpdateMute();
-}
-
-void AudacityProject::OnUnMuteAllTracks()
-{
-   TrackListIterator iter(mTracks);
-   Track *t = iter.First();
-
-   while (t)
-   {
-      t->SetMute(false);
-      t = iter.Next();
-   }
-
-   ModifyState(true);
-   RedrawProject();
-   if (mMixerBoard)
-      mMixerBoard->UpdateMute();
-}
 
 void AudacityProject::OnLockPlayRegion()
 {

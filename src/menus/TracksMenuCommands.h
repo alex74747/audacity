@@ -27,6 +27,8 @@ private:
 public:
    void OnRemoveTracks();
 private:
+   void OnMuteAllTracks();
+   void OnUnMuteAllTracks();
 
    AudacityProject *const mProject;
 };

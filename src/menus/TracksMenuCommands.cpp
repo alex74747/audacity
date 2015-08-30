@@ -56,6 +56,11 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("RemoveTracks"), _("Remo&ve Tracks"), FN(OnRemoveTracks),
       AudioIONotBusyFlag | TracksSelectedFlag,
       AudioIONotBusyFlag | TracksSelectedFlag);
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("MuteAllTracks"), _("&Mute All Tracks"), FN(OnMuteAllTracks), wxT("Ctrl+U"));
+   c->AddItem(wxT("UnMuteAllTracks"), _("&Unmute All Tracks"), FN(OnUnMuteAllTracks), wxT("Ctrl+Shift+U"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -362,4 +367,40 @@ void TracksMenuCommands::OnRemoveTracks()
 
    if (mProject->GetMixerBoard())
       mProject->GetMixerBoard()->Refresh(true);
+}
+
+void TracksMenuCommands::OnMuteAllTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t)
+   {
+      if (t->GetKind() == Track::Wave)
+         t->SetMute(true);
+
+      t = iter.Next();
+   }
+
+   mProject->ModifyState(true);
+   mProject->RedrawProject();
+   if (mProject->GetMixerBoard())
+      mProject->GetMixerBoard()->UpdateMute();
+}
+
+void TracksMenuCommands::OnUnMuteAllTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t)
+   {
+      t->SetMute(false);
+      t = iter.Next();
+   }
+
+   mProject->ModifyState(true);
+   mProject->RedrawProject();
+   if (mProject->GetMixerBoard())
+      mProject->GetMixerBoard()->UpdateMute();
 }
