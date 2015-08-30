@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>7C6CA4B5-D294-4726-BF0A-7D496B25AE01</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Audacity</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>588F0B84D340FD4E21376F4E3A5A36C9920230D4</key>
+		<string>https://github.com/Paul-Licameli/audacity.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>mac/Audacity.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>588F0B84D340FD4E21376F4E3A5A36C9920230D4</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Paul-Licameli/audacity.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>588F0B84D340FD4E21376F4E3A5A36C9920230D4</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>588F0B84D340FD4E21376F4E3A5A36C9920230D4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>audacity</string>
+		</dict>
+	</array>
+</dict>
+</plist>

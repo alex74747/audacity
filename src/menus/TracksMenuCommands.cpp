@@ -3,6 +3,7 @@
 
 #include <wx/combobox.h>
 
+#include "ViewMenuCommands.h"
 #include "../AudioIO.h"
 #include "../LabelDialog.h"
 #include "../LabelTrack.h"
@@ -697,7 +698,7 @@ void TracksMenuCommands::HandleAlign(int index, bool moveSel)
          t = iter.Next();
       }
       if (index == kAlignEndToEnd) {
-         mProject->OnZoomFit();
+         ViewMenuCommands(mProject).OnZoomFit();
       }
    }
 

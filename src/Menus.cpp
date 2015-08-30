@@ -612,8 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddSeparator();
-   c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
    c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
 
    c->AddSeparator();
@@ -2186,7 +2184,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    if (type == EffectTypeGenerate)
    {
       if (count == 0 || (clean && mViewInfo.selectedRegion.t0() == 0.0))
-         OnZoomFit();
+         ViewMenuCommands(this).OnZoomFit();
          //  mTrackPanel->Refresh(false);
    }
    RedrawProject();
@@ -3883,25 +3881,6 @@ void AudacityProject::OnZoomToggle()
 }
 #endif
 
-
-void AudacityProject::OnZoomFit()
-{
-   const double end = mTracks->GetEndTime();
-   const double start = mViewInfo.bScrollBeyondZero
-      ? std::min(mTracks->GetStartTime(), 0.0)
-      : 0;
-   const double len = end - start;
-
-   if (len <= 0.0)
-      return;
-
-   int w;
-   mTrackPanel->GetTracksUsableArea(&w, NULL);
-   w -= 10;
-
-   Zoom(w / len);
-   TP_ScrollWindow(start);
-}
 
 void AudacityProject::DoZoomFitV()
 {
