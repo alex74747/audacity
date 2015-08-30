@@ -29,6 +29,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"),
       AlwaysEnabledFlag,
       AlwaysEnabledFlag);
+   c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -132,4 +135,12 @@ void TransportMenuCommands::OnPause()
    wxCommandEvent evt;
 
    mProject->GetControlToolBar()->OnPause(evt);
+}
+
+void TransportMenuCommands::OnSkipStart()
+{
+   wxCommandEvent evt;
+
+   mProject->GetControlToolBar()->OnRewind(evt);
+   mProject->ModifyState(false);
 }

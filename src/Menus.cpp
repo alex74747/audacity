@@ -720,9 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
-              AudioIONotBusyFlag,
-              AudioIONotBusyFlag);
    c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
               WaveTracksExistFlag | AudioIONotBusyFlag,
               WaveTracksExistFlag | AudioIONotBusyFlag);
@@ -2024,14 +2021,6 @@ void AudacityProject::OnToogleAutomatedInputLevelAdjustment()
    ModifyAllProjectToolbarMenus();
 }
 #endif
-
-void AudacityProject::OnSkipStart()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnRewind(evt);
-   ModifyState(false);
-}
 
 void AudacityProject::OnSkipEnd()
 {
