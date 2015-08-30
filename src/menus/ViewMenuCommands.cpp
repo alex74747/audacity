@@ -36,6 +36,9 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddSeparator();
    c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
    c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
+
+   c->AddSeparator();
+   c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -125,4 +128,19 @@ void ViewMenuCommands::OnGoSelEnd()
 
    mProject->TP_ScrollWindow(viewInfo.selectedRegion.t1() -
       ((mProject->GetScreenEndTime() - viewInfo.h) / 2));
+}
+
+void ViewMenuCommands::OnCollapseAllTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t)
+   {
+      t->SetMinimized(true);
+      t = iter.Next();
+   }
+
+   mProject->ModifyState(true);
+   mProject->RedrawProject();
 }

@@ -627,8 +627,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddSeparator();
-      c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
       c->AddItem(wxT("ExpandAllTracks"), _("E&xpand Collapsed Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
 
       c->AddSeparator();
@@ -4558,21 +4556,6 @@ void AudacityProject::OnHelpWelcome()
 void AudacityProject::OnSeparator()
 {
 
-}
-
-void AudacityProject::OnCollapseAllTracks()
-{
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-
-   while (t)
-   {
-      t->SetMinimized(true);
-      t = iter.Next();
-   }
-
-   ModifyState(true);
-   RedrawProject();
 }
 
 void AudacityProject::OnExpandAllTracks()
