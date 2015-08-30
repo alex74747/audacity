@@ -91,6 +91,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "BlockFile.h"
 #include "ondemand/ODManager.h"
 #include "commands/Keyboard.h"
+#include "menus/HelpMenuCommands.h"
 #include "widgets/ErrorDialog.h"
 #include "prefs/DirectoriesPrefs.h"
 #include "tracks/ui/Scrubbing.h"
@@ -1523,7 +1524,7 @@ bool AudacityApp::OnInit()
       // This may do a check-for-updates at every start up.
       // Mainly this is to tell users of ALPHAS who don't know that they have an ALPHA.
       // Disabled for now, after discussion.
-      // project->MayCheckForUpdates();
+      // HelpMenuCommands{project}.MayCheckForUpdates();
       project->OnHelpWelcome();
    }
 

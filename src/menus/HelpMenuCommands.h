@@ -17,7 +17,11 @@ private:
    void OnManual();
    void OnScreenshot();
    void OnBenchmark();
+   void OnCheckForUpdates();
+public:
+   void MayCheckForUpdates();
 
+private:
    AudacityProject *const mProject;
 };
 

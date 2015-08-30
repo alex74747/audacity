@@ -1080,8 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-      c->AddSeparator();
-      c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
       c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
                  AudioIONotBusyFlag,
                  AudioIONotBusyFlag);
@@ -6832,19 +6830,6 @@ void AudacityProject::OnAbout()
 void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
-}
-
-void AudacityProject::OnCheckForUpdates()
-{
-   ::OpenInDefaultBrowser( VerCheckUrl());
-}
-
-// Only does the update checks if it's an ALPHA build and not disabled by preferences.
-void AudacityProject::MayCheckForUpdates()
-{
-#if IS_ALPHA
-   OnCheckForUpdates();
-#endif
 }
 
 void AudacityProject::OnShowLog()

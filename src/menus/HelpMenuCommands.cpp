@@ -1,11 +1,13 @@
 #include "../Audacity.h"
 #include "HelpMenuCommands.h"
 
+#include "../AboutDialog.h"
 #include "../Benchmark.h"
 #include "../Project.h"
 #include "../Screenshot.h"
 #include "../commands/CommandManager.h"
 #include "../widgets/HelpSystem.h"
+#include "../widgets/LinkingHtmlWindow.h"
 
 #define FN(X) FNT(HelpMenuCommands, this, & HelpMenuCommands :: X)
 
@@ -29,6 +31,10 @@ void HelpMenuCommands::Create(CommandManager *c)
    // Easy enough to do.  We'd call it mod-self-test.
    c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
 #endif
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -53,4 +59,17 @@ void HelpMenuCommands::OnScreenshot()
 void HelpMenuCommands::OnBenchmark()
 {
    ::RunBenchmark(mProject);
+}
+
+void HelpMenuCommands::OnCheckForUpdates()
+{
+   ::OpenInDefaultBrowser( VerCheckUrl());
+}
+
+// Only does the update checks if it's an ALPHA build and not disabled by preferences.
+void HelpMenuCommands::MayCheckForUpdates()
+{
+#if IS_ALPHA
+   OnCheckForUpdates();
+#endif
 }
