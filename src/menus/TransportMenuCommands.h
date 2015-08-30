@@ -32,6 +32,7 @@ private:
 public:
    void OnTogglePinnedHead();
 private:
+   void OnTogglePlayRecording();
 
    AudacityProject *const mProject;
 };

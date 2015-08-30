@@ -2,6 +2,7 @@
 #include "TransportMenuCommands.h"
 
 #include "../AudioIO.h"
+#include "../Prefs.h"
 #include "../Project.h"
 #include "../TimerRecordDialog.h"
 #include "../UndoManager.h"
@@ -59,6 +60,8 @@ void TransportMenuCommands::Create(CommandManager *c)
                FN(OnTogglePinnedHead), 0,
                // Switching of scrolling on and off is permitted even during transport
                AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -343,4 +346,13 @@ void TransportMenuCommands::OnTogglePinnedHead()
    auto &scrubber = mProject->GetScrubber();
    if (scrubber.HasStartedScrubbing())
       scrubber.SetScrollScrubbing(value);
+}
+
+void TransportMenuCommands::OnTogglePlayRecording()
+{
+   bool Duplex;
+   gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, true);
+   gPrefs->Write(wxT("/AudioIO/Duplex"), !Duplex);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
 }
