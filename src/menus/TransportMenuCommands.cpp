@@ -20,6 +20,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"),
       AlwaysEnabledFlag,
       AlwaysEnabledFlag);
+   c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("Shift+A"),
+      AlwaysEnabledFlag,
+      AlwaysEnabledFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -77,6 +80,30 @@ void TransportMenuCommands::OnPlayStop()
    else if (!gAudioIO->IsBusy()) {
       //Otherwise, start playing (assuming audio I/O isn't busy)
       //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
+      toolbar->SetStop(false);
+
+      // Will automatically set mLastPlayMode
+      toolbar->PlayCurrentRegion(false);
+   }
+}
+
+// The code for "OnPlayStopSelect" is simply the code of "OnPlayStop" and "OnStopSelect" merged.
+void TransportMenuCommands::OnPlayStopSelect()
+{
+   wxCommandEvent evt;
+   ControlToolBar *toolbar = mProject->GetControlToolBar();
+
+   //If busy, stop playing, make sure everything is unpaused.
+   if (gAudioIO->IsStreamActive(mProject->GetAudioIOToken())) {
+      toolbar->SetPlay(false);        //Pops
+      toolbar->SetStop(true);         //Pushes stop down
+      mProject->GetViewInfo().selectedRegion.setT0(gAudioIO->GetStreamTime(), false);
+      mProject->ModifyState(false);           // without bWantsAutoSave
+      toolbar->OnStop(evt);
+   }
+   else if (!gAudioIO->IsBusy()) {
+      //Otherwise, start playing (assuming audio I/O isn't busy)
+      //toolbar->SetPlay(true); // Not needed as set in PlayPlayRegion()
       toolbar->SetStop(false);
 
       // Will automatically set mLastPlayMode
