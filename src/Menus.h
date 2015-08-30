@@ -293,9 +293,6 @@ void OnGoSelEnd();
 void OnExpandAllTracks();
 void OnCollapseAllTracks();
 
-void OnMuteAllTracks();
-void OnUnMuteAllTracks();
-
 void OnShowClipping();
 
 void OnHistory();
