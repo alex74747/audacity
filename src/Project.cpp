@@ -4055,7 +4055,7 @@ void AudacityProject::AddImportedTracks(const wxString &fileName,
    wxEventLoopBase::GetActive()->YieldFor(wxEVT_CATEGORY_UI | wxEVT_CATEGORY_USER_INPUT);
 #endif
 
-   OnZoomFit();
+   ViewMenuCommands(this).OnZoomFit();
 
    mTrackPanel->SetFocus();
    mTrackPanel->EnsureVisible(mTrackPanel->GetFirstSelectedTrack());

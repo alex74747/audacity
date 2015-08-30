@@ -26,6 +26,9 @@ void ViewMenuCommands::Create(CommandManager *c)
       ZoomOutAvailableFlag,
       ZoomOutAvailableFlag);
    c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
+
+   c->AddSeparator();
+   c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -67,4 +70,23 @@ void ViewMenuCommands::OnZoomSel()
    mProject->GetTrackPanel()->GetTracksUsableArea(&width, NULL);
    mProject->Zoom((width - 1) / denom);
    mProject->TP_ScrollWindow(mProject->GetViewInfo().selectedRegion.t0());
+}
+
+void ViewMenuCommands::OnZoomFit()
+{
+   const double end = mProject->GetTracks()->GetEndTime();
+   const double start = mProject->GetViewInfo().bScrollBeyondZero
+      ? std::min(mProject->GetTracks()->GetStartTime(), 0.0)
+      : 0;
+   const double len = end - start;
+
+   if (len <= 0.0)
+      return;
+
+   int w;
+   mProject->GetTrackPanel()->GetTracksUsableArea(&w, NULL);
+   w -= 10;
+
+   mProject->Zoom(w / len);
+   mProject->TP_ScrollWindow(start);
 }

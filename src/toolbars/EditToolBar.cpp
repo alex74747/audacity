@@ -294,7 +294,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          ViewMenuCommands(p).OnZoomSel();
          break;
       case ETBZoomFitID:
-         p->OnZoomFit();
+         ViewMenuCommands(p).OnZoomFit();
          break;
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
       case ETBEffectsID:
