@@ -138,6 +138,21 @@ void TracksMenuCommands::Create(CommandManager *c)
               0, AudioIONotBusyFlag);
 
    c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
+
+   c->AddSeparator();
+
+   //////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("S&ort Tracks"));
+   {
+      c->AddItem(wxT("SortByTime"), _("by &Start time"), FN(OnSortTime),
+         TracksExistFlag,
+         TracksExistFlag);
+      c->AddItem(wxT("SortByName"), _("by &Name"), FN(OnSortName),
+         TracksExistFlag,
+         TracksExistFlag);
+   }
+   c->EndSubMenu();
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1053,5 +1068,126 @@ void TracksMenuCommands::OnEditLabels()
    if (dlg.ShowModal() == wxID_OK) {
       mProject->PushState(_("Edited labels"), _("Label"));
       mProject->RedrawProject();
+   }
+}
+
+void TracksMenuCommands::OnSortTime()
+{
+   SortTracks(kAudacitySortByTime);
+
+   mProject->PushState(_("Tracks sorted by time"), _("Sort by Time"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void TracksMenuCommands::OnSortName()
+{
+   SortTracks(kAudacitySortByName);
+
+   mProject->PushState(_("Tracks sorted by name"), _("Sort by Name"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+double TracksMenuCommands::GetTime(Track *t)
+{
+   double stime = 0.0;
+
+   if (t->GetKind() == Track::Wave) {
+      WaveTrack *w = (WaveTrack *)t;
+      stime = w->GetEndTime();
+
+      WaveClip *c;
+      int ndx;
+      for (ndx = 0; ndx < w->GetNumClips(); ndx++) {
+         c = w->GetClipByIndex(ndx);
+         if (c->GetNumSamples() == 0)
+            continue;
+         if (c->GetStartTime() < stime) {
+            stime = c->GetStartTime();
+         }
+      }
+   }
+   else if (t->GetKind() == Track::Label) {
+      LabelTrack *l = (LabelTrack *)t;
+      stime = l->GetStartTime();
+   }
+
+   return stime;
+}
+
+void TracksMenuCommands::SortTracks(int flags)
+{
+   int ndx = 0;
+   int cmpValue;
+   wxArrayPtrVoid arr;
+   TrackListIterator iter(mProject->GetTracks());
+   Track *track = iter.First();
+   bool lastTrackLinked = false;
+   //sort by linked tracks. Assumes linked track follows owner in list.
+   while (track) {
+      if(lastTrackLinked) {
+         //insert after the last track since this track should be linked to it.
+         ndx++;
+      }
+      else {
+         for (ndx = 0; ndx < (int)arr.GetCount(); ndx++) {
+            if(flags & kAudacitySortByName){
+               //do case insensitive sort - cmpNoCase returns less than zero if the string is 'less than' its argument
+               //also if we have case insensitive equality, then we need to sort by case as well
+               //We sort 'b' before 'B' accordingly.  We uncharacteristically use greater than for the case sensitive
+               //compare because 'b' is greater than 'B' in ascii.
+               cmpValue = track->GetName().CmpNoCase(((Track *) arr[ndx])->GetName());
+               if (cmpValue < 0 ||
+                   (0 == cmpValue && track->GetName().CompareTo(((Track *) arr[ndx])->GetName()) > 0) )
+                  break;
+            }
+            //sort by time otherwise
+            else if(flags & kAudacitySortByTime){
+               //we have to search each track and all its linked ones to fine the minimum start time.
+               double time1,time2,tempTime;
+               Track* tempTrack;
+               int    candidatesLookedAt;
+
+               candidatesLookedAt = 0;
+               tempTrack = track;
+               time1=time2=std::numeric_limits<double>::max(); //TODO: find max time value. (I don't think we have one yet)
+               while(tempTrack){
+                  tempTime = GetTime(tempTrack);
+                  time1 = time1<tempTime? time1:tempTime;
+                  if(tempTrack->GetLinked())
+                     tempTrack = tempTrack->GetLink();
+                  else
+                     tempTrack = NULL;
+               }
+
+               //get candidate's (from sorted array) time
+               tempTrack = (Track *) arr[ndx];
+               while(tempTrack){
+                  tempTime = GetTime(tempTrack);
+                  time2 = time2<tempTime? time2:tempTime;
+                  if(tempTrack->GetLinked() && (ndx+candidatesLookedAt <  (int)arr.GetCount()-1) ) {
+                     candidatesLookedAt++;
+                     tempTrack = (Track*) arr[ndx+candidatesLookedAt];
+                  }
+                  else
+                     tempTrack = NULL;
+               }
+
+               if (time1 < time2)
+                  break;
+
+               ndx+=candidatesLookedAt;
+            }
+         }
+      }
+      arr.Insert(track, ndx);
+
+      lastTrackLinked = track->GetLinked();
+      track = iter.RemoveCurrent();
+   }
+
+   for (ndx = 0; ndx < (int)arr.GetCount(); ndx++) {
+      mProject->GetTracks()->Add((Track *)arr[ndx]);
    }
 }

@@ -4,6 +4,7 @@
 class AudacityProject;
 class CommandManager;
 class SelectedRegion;
+class Track;
 
 class TracksMenuCommands
 {
@@ -51,6 +52,15 @@ public:
    int DoAddLabel(const SelectedRegion& region);
 private:
    void OnEditLabels();
+
+   void OnSortTime();
+   void OnSortName();
+   double GetTime(Track *t);
+   enum {
+      kAudacitySortByTime = (1 << 1),
+      kAudacitySortByName = (1 << 2)
+   };
+   void SortTracks(int flags);
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

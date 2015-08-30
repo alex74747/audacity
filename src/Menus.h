@@ -169,10 +169,6 @@ void OnZeroCrossing();
 void OnLockPlayRegion();
 void OnUnlockPlayRegion();
 
-double GetTime(Track *t);
-void OnSortTime();
-void OnSortName();
-
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
