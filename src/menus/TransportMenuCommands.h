@@ -14,7 +14,10 @@ public:
    void CreateNonMenuCommands(CommandManager *c);
 
    void OnPlayStop();
+   bool DoPlayStopSelect(bool click, bool shift);
+
 private:
+   void OnPlayStopSelect();
 
    AudacityProject *const mProject;
 };

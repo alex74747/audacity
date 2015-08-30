@@ -5,6 +5,7 @@
 #include "../Project.h"
 #include "../commands/CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
+#include "../tracks/ui/Scrubbing.h"
 
 #define FN(X) FNT(TransportMenuCommands, this, & TransportMenuCommands :: X)
 
@@ -19,6 +20,7 @@ void TransportMenuCommands::Create(CommandManager *c)
 
    /* i18n-hint: (verb) Start or Stop audio playback*/
    c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"));
+   c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("X"));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -81,4 +83,68 @@ void TransportMenuCommands::OnPlayStop()
       // Will automatically set mLastPlayMode
       toolbar->PlayCurrentRegion(false);
    }
+}
+
+// The code for "OnPlayStopSelect" is simply the code of "OnPlayStop" and "OnStopSelect" merged.
+void TransportMenuCommands::OnPlayStopSelect()
+{
+   ControlToolBar *toolbar = mProject->GetControlToolBar();
+   wxCommandEvent evt;
+   if (DoPlayStopSelect(false, false))
+      toolbar->OnStop(evt);
+   else if (!gAudioIO->IsBusy()) {
+      //Otherwise, start playing (assuming audio I/O isn't busy)
+      //toolbar->SetPlay(true); // Not needed as set in PlayPlayRegion()
+      toolbar->SetStop(false);
+
+      // Will automatically set mLastPlayMode
+      toolbar->PlayCurrentRegion(false);
+   }
+}
+
+bool TransportMenuCommands::DoPlayStopSelect(bool click, bool shift)
+{
+   ControlToolBar *toolbar = mProject->GetControlToolBar();
+
+   //If busy, stop playing, make sure everything is unpaused.
+   if (mProject->GetScrubber().HasStartedScrubbing() ||
+       gAudioIO->IsStreamActive(mProject->GetAudioIOToken())) {
+      toolbar->SetPlay(false);        //Pops
+      toolbar->SetStop(true);         //Pushes stop down
+
+      // change the selection
+      auto time = gAudioIO->GetStreamTime();
+      auto &selection = mProject->GetViewInfo().selectedRegion;
+      if (shift && click) {
+         // Change the region selection, as if by shift-click at the play head
+         auto t0 = selection.t0(), t1 = selection.t1();
+         if (time < t0)
+            // Grow selection
+            t0 = time;
+         else if (time > t1)
+            // Grow selection
+            t1 = time;
+         else {
+            // Shrink selection, changing the nearer boundary
+            if (fabs(t0 - time) < fabs(t1 - time))
+               t0 = time;
+            else
+               t1 = time;
+         }
+         selection.setTimes(t0, t1);
+      }
+      else if (click) {
+         // avoid a point at negative time.
+         time = wxMax( time, 0 );
+         // Set a point selection, as if by a click at the play head
+         selection.setTimes(time, time);
+      } else
+         // How stop and set cursor always worked
+         // -- change t0, collapsing to point only if t1 was greater
+         selection.setT0(time, false);
+
+      mProject->ModifyState(false);           // without bWantsAutoSave
+      return true;
+   }
+   return false;
 }

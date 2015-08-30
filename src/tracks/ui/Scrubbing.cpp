@@ -21,6 +21,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../commands/CommandFunctors.h"
 #include "../../prefs/TracksPrefs.h"
 #include "../../commands/CommandManager.h"
+#include "../../menus/TransportMenuCommands.h"
 #include "../../toolbars/ControlToolBar.h"
 #include "../../toolbars/ScrubbingToolBar.h"
 #include "../../toolbars/ToolManager.h"
@@ -496,7 +497,7 @@ void Scrubber::ContinueScrubbingUI()
    if (mDragging && !state.LeftIsDown()) {
       // Dragging scrub can stop with mouse up
       // Stop and set cursor
-      mProject->DoPlayStopSelect(true, state.ShiftDown());
+      TransportMenuCommands{mProject}.DoPlayStopSelect(true, state.ShiftDown());
       wxCommandEvent evt;
       mProject->GetControlToolBar()->OnStop(evt);
       return;
@@ -539,7 +540,7 @@ void Scrubber::StopScrubbing()
    if (HasStartedScrubbing() && !mCancelled) {
       const wxMouseState state(::wxGetMouseState());
       // Stop and set cursor
-      mProject->DoPlayStopSelect(true, state.ShiftDown());
+      TransportMenuCommands{mProject}.DoPlayStopSelect(true, state.ShiftDown());
    }
 
    mScrubStartPosition = -1;
