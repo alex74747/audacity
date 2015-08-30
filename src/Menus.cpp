@@ -108,11 +108,8 @@ simplifies construction of menu items.
 #include "PlatformCompatibility.h"
 #include "FileNames.h"
 #include "TimeDialog.h"
-#include "TimerRecordDialog.h"
-#include "SoundActivatedRecord.h"
 
 #include "SplashDialog.h"
-#include "DeviceManager.h"
 
 #include "Snap.h"
 
@@ -712,15 +709,7 @@ void AudacityProject::CreateMenusAndCommands()
    // Transport Menu
    /////////////////////////////////////////////////////////////////////////////
 
-   /*i18n-hint: 'Transport' is the name given to the set of controls that
-   play, record, pause etc. */
-   c->BeginMenu(_("T&ransport"));
-
    mTransportMenuCommands->Create(c);
-
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
-
-   c->EndMenu();
 
    //////////////////////////////////////////////////////////////////////////
    // Tracks Menu (formerly Project Menu)

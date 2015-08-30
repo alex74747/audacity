@@ -19,49 +19,55 @@ TransportMenuCommands::TransportMenuCommands(AudacityProject *project)
 
 void TransportMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
+   /*i18n-hint: 'Transport' is the name given to the set of controls that
+   play, record, pause etc. */
+   c->BeginMenu(_("T&ransport"));
+   {
+      c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   /* i18n-hint: (verb) Start or Stop audio playback*/
-   c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"),
-      AlwaysEnabledFlag,
-      AlwaysEnabledFlag);
-   c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("Shift+A"),
-      AlwaysEnabledFlag,
-      AlwaysEnabledFlag);
-   c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
-      WaveTracksExistFlag | AudioIONotBusyFlag,
-      WaveTracksExistFlag | AudioIONotBusyFlag);
-   c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"),
-      AlwaysEnabledFlag,
-      AlwaysEnabledFlag);
-   c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
-   c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
-      WaveTracksExistFlag | AudioIONotBusyFlag,
-      WaveTracksExistFlag | AudioIONotBusyFlag);
+      /* i18n-hint: (verb) Start or Stop audio playback*/
+      c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"),
+         AlwaysEnabledFlag,
+         AlwaysEnabledFlag);
+      c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("Shift+A"),
+         AlwaysEnabledFlag,
+         AlwaysEnabledFlag);
+      c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
+         WaveTracksExistFlag | AudioIONotBusyFlag,
+         WaveTracksExistFlag | AudioIONotBusyFlag);
+      c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"),
+         AlwaysEnabledFlag,
+         AlwaysEnabledFlag);
+      c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
+      c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
+         WaveTracksExistFlag | AudioIONotBusyFlag,
+         WaveTracksExistFlag | AudioIONotBusyFlag);
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
-   c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
-   c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
+      c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
+      c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
-   c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
+      c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
+      c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
 
-   // Sound Activated recording options
-   c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
-   c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
+      // Sound Activated recording options
+      c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
+      c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
 
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-   c->AddCheck(wxT("AutomatedInputLevelAdjustmentOnOff"), _("A&utomated Recording Level Adjustment (on/off)"), FN(OnToggleAutomatedInputLevelAdjustment), 0);
+      c->AddCheck(wxT("AutomatedInputLevelAdjustmentOnOff"), _("A&utomated Recording Level Adjustment (on/off)"), FN(OnToggleAutomatedInputLevelAdjustment), 0);
 #endif
 
-   c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
+      c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
+   }
+   c->EndMenu();
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
