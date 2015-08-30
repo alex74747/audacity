@@ -401,7 +401,6 @@ void OnManageAnalyzers();
         // Help Menu
 
 void OnAbout();
-void OnManual();
 void OnCheckForUpdates();
 void MayCheckForUpdates();
 void OnShowLog();

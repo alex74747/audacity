@@ -17,6 +17,7 @@ void HelpMenuCommands::Create(CommandManager *c)
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
+   c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -24,4 +25,11 @@ void HelpMenuCommands::OnQuickHelp()
    HelpSystem::ShowHelpDialog(
       mProject,
       wxT("Quick_Help"));
+}
+
+void HelpMenuCommands::OnManual()
+{
+   HelpSystem::ShowHelpDialog(
+      mProject,
+      wxT("Main_Page"));
 }
