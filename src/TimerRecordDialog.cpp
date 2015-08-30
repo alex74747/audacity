@@ -63,7 +63,7 @@ enum {
 };
 
 // Post Timer Recording Actions
-// Ensure this matches the enum in Menus.cpp
+// Ensure this matches the enum in TransportMenuCommands.cpp
 enum {
    POST_TIMER_RECORD_STOPPED = -3,
    POST_TIMER_RECORD_CANCEL_WAIT,

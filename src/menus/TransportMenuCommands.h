@@ -27,6 +27,7 @@ private:
 public:
    void OnRecord();
 private:
+   void OnTimerRecord();
 
    AudacityProject *const mProject;
 };
