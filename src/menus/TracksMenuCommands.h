@@ -17,6 +17,7 @@ private:
    void OnNewStereoTrack();
    void OnNewLabelTrack();
    void OnNewTimeTrack();
+   void OnStereoToMono(int index);
 
    AudacityProject *const mProject;
 };

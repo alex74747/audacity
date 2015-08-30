@@ -30,6 +30,12 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->EndSubMenu();
 
    //////////////////////////////////////////////////////////////////////////
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
+      AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
+      AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -106,4 +112,10 @@ void TracksMenuCommands::OnNewTimeTrack()
 
    mProject->RedrawProject();
    mProject->GetTrackPanel()->EnsureVisible(t);
+}
+
+void TracksMenuCommands::OnStereoToMono(int WXUNUSED(index))
+{
+   mProject->OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
+      OnEffectFlagsConfigured);
 }

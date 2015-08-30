@@ -783,11 +783,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddSeparator();
-
-   c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
-              AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
-              AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
    c->AddItem(wxT("MixAndRender"), _("Mi&x and Render"), FN(OnMixAndRender),
               AudioIONotBusyFlag | WaveTracksSelectedFlag,
               AudioIONotBusyFlag | WaveTracksSelectedFlag);
@@ -3349,12 +3344,6 @@ void AudacityProject::OnManageAnalyzers()
 }
 
 
-
-void AudacityProject::OnStereoToMono(int WXUNUSED(index))
-{
-   OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
-            OnEffectFlagsConfigured);
-}
 
 //
 // File Menu
