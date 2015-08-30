@@ -35,6 +35,7 @@ void ViewMenuCommands::Create(CommandManager *c)
 
    c->AddSeparator();
    c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
+   c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -113,5 +114,15 @@ void ViewMenuCommands::OnGoSelStart()
       return;
 
    mProject->TP_ScrollWindow(viewInfo.selectedRegion.t0() -
+      ((mProject->GetScreenEndTime() - viewInfo.h) / 2));
+}
+
+void ViewMenuCommands::OnGoSelEnd()
+{
+   const ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   mProject->TP_ScrollWindow(viewInfo.selectedRegion.t1() -
       ((mProject->GetScreenEndTime() - viewInfo.h) / 2));
 }
