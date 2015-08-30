@@ -720,8 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
-
    // Sound Activated recording options
    c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
    c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
@@ -1959,15 +1957,6 @@ void AudacityProject::OnToggleSoundActivated()
    bool pause;
    gPrefs->Read(wxT("/AudioIO/SoundActivatedRecord"), &pause, false);
    gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-
-void AudacityProject::OnToggleSWPlaythrough()
-{
-   bool SWPlaythrough;
-   gPrefs->Read(wxT("/AudioIO/SWPlaythrough"), &SWPlaythrough, false);
-   gPrefs->Write(wxT("/AudioIO/SWPlaythrough"), !SWPlaythrough);
    gPrefs->Flush();
    ModifyAllProjectToolbarMenus();
 }

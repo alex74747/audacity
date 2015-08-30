@@ -272,7 +272,6 @@ void OnResetToolBars();
 
 void OnSoundActivated();
 void OnToggleSoundActivated();
-void OnToggleSWPlaythrough();
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    void OnToogleAutomatedInputLevelAdjustment();
 #endif
