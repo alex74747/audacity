@@ -4,6 +4,7 @@
 
 #include <wx/scrolbar.h>
 
+#include "../Prefs.h"
 #include "../Project.h"
 #include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
@@ -40,6 +41,10 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
 
    c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
+
+   c->AddSeparator();
+   c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
+      gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -159,4 +164,14 @@ void ViewMenuCommands::OnExpandAllTracks()
 
    mProject->ModifyState(true);
    mProject->RedrawProject();
+}
+
+void ViewMenuCommands::OnShowClipping()
+{
+   bool checked = !gPrefs->Read(wxT("/GUI/ShowClipping"), 0L);
+   gPrefs->Write(wxT("/GUI/ShowClipping"), checked);
+   gPrefs->Flush();
+   mProject->GetCommandManager()->Check(wxT("ShowClipping"), checked);
+   mProject->GetTrackPanel()->UpdatePrefs();
+   mProject->GetTrackPanel()->Refresh(false);
 }
