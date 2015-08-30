@@ -34,6 +34,8 @@ public:
 private:
    void OnTogglePlayRecording();
    void OnToggleSWPlaythrough();
+   void OnToggleSoundActivated();
+   void OnSoundActivated();
 
    AudacityProject *const mProject;
 };

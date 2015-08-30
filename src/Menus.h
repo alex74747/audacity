@@ -289,8 +289,6 @@ void OnResetToolBars();
 
         // Transport Menu
 
-void OnSoundActivated();
-void OnToggleSoundActivated();
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    void OnToogleAutomatedInputLevelAdjustment();
 #endif

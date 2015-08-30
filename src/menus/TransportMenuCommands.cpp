@@ -4,6 +4,7 @@
 #include "../AudioIO.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../SoundActivatedRecord.h"
 #include "../TimerRecordDialog.h"
 #include "../UndoManager.h"
 #include "../commands/CommandManager.h"
@@ -63,6 +64,10 @@ void TransportMenuCommands::Create(CommandManager *c)
 
    c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
    c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
+
+   // Sound Activated recording options
+   c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
+   c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -365,4 +370,19 @@ void TransportMenuCommands::OnToggleSWPlaythrough()
    gPrefs->Write(wxT("/AudioIO/SWPlaythrough"), !SWPlaythrough);
    gPrefs->Flush();
    mProject->ModifyAllProjectToolbarMenus();
+}
+
+void TransportMenuCommands::OnToggleSoundActivated()
+{
+   bool pause;
+   gPrefs->Read(wxT("/AudioIO/SoundActivatedRecord"), &pause, false);
+   gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
+}
+
+void TransportMenuCommands::OnSoundActivated()
+{
+   SoundActivatedRecord dialog(mProject /* parent */);
+   dialog.ShowModal();
 }
