@@ -388,7 +388,6 @@ bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
 void OnApplyChain();
 void OnEditChains();
-void OnStereoToMono(int index);
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
 void OnManageEffects();

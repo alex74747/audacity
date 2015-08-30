@@ -31,6 +31,19 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->EndSubMenu();
 
    //////////////////////////////////////////////////////////////////////////
+
+   c->AddSeparator();
+
+   {
+      // Stereo to Mono is an oddball command that is also subject to control by the
+      // plug-in manager, as if an effect.  Decide whether to show or hide it.
+      const PluginID ID = EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono"));
+      const PluginDescriptor *plug = PluginManager::Get().GetPlugin(ID);
+      if (plug && plug->IsEnabled())
+         c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
+            AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
+            AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
+   }
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -105,4 +118,10 @@ void TracksMenuCommands::OnNewTimeTrack()
 
    mProject->RedrawProject();
    mProject->GetTrackPanel()->EnsureVisible(t);
+}
+
+void TracksMenuCommands::OnStereoToMono(int WXUNUSED(index))
+{
+   mProject->OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
+      OnEffectFlagsConfigured);
 }

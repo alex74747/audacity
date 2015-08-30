@@ -816,27 +816,15 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddSeparator();
-
-      {
-         // Stereo to Mono is an oddball command that is also subject to control by the
-         // plug-in manager, as if an effect.  Decide whether to show or hide it.
-         const PluginID ID = EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono"));
-         const PluginDescriptor *plug = PluginManager::Get().GetPlugin(ID);
-         if (plug && plug->IsEnabled())
-            c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
-            AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
-            AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
-      }
       c->AddItem(wxT("MixAndRender"), _("Mi&x and Render"), FN(OnMixAndRender),
-         AudioIONotBusyFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | WaveTracksSelectedFlag);
+                 AudioIONotBusyFlag | WaveTracksSelectedFlag,
+                 AudioIONotBusyFlag | WaveTracksSelectedFlag);
       c->AddItem(wxT("MixAndRenderToNewTrack"), _("Mix and Render to Ne&w Track"), FN(OnMixAndRenderToNewTrack), wxT("Ctrl+Shift+M"),
-         AudioIONotBusyFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | WaveTracksSelectedFlag);
+                    AudioIONotBusyFlag | WaveTracksSelectedFlag,
+                    AudioIONotBusyFlag | WaveTracksSelectedFlag);
       c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
-         AudioIONotBusyFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | WaveTracksSelectedFlag);
+                 AudioIONotBusyFlag | WaveTracksSelectedFlag,
+                 AudioIONotBusyFlag | WaveTracksSelectedFlag);
 
       c->AddSeparator();
 
@@ -3660,12 +3648,6 @@ void AudacityProject::OnManageAnalyzers()
 }
 
 
-
-void AudacityProject::OnStereoToMono(int WXUNUSED(index))
-{
-   OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
-            OnEffectFlagsConfigured);
-}
 
 //
 // File Menu
