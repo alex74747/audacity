@@ -49,6 +49,7 @@ void TransportMenuCommands::Create(CommandManager *c)
    /* i18n-hint: (verb)*/
    c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
    c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
+   c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -304,4 +305,12 @@ void TransportMenuCommands::OnTimerRecord()
       break;
       }
    }
+}
+
+void TransportMenuCommands::OnRecordAppend()
+{
+   wxCommandEvent evt;
+   evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
+
+   mProject->GetControlToolBar()->OnRecord(evt);
 }

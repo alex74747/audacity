@@ -740,8 +740,6 @@ void AudacityProject::CreateMenusAndCommands()
       c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
                          AudioIONotBusyFlag | CanStopAudioStreamFlag);
 
-      c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
-
       c->AddSeparator();
 
       c->AddCheck(wxT("PinnedHead"), _("Pinned Recording/Playback &Head"),
@@ -2066,14 +2064,6 @@ void AudacityProject::OnStop()
    wxCommandEvent evt;
 
    GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnRecordAppend()
-{
-   wxCommandEvent evt;
-   evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
-
-   GetControlToolBar()->OnRecord(evt);
 }
 
 void AudacityProject::OnStopSelect()
