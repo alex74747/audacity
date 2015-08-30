@@ -99,6 +99,7 @@ class Regions;
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class TransportMenuCommands;
 class TracksMenuCommands;
 class HelpMenuCommands;
 
@@ -740,6 +741,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 
