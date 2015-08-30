@@ -1,6 +1,7 @@
 #include "TransportMenuCommands.h"
 
 #include "../AudioIO.h"
+#include "../Prefs.h"
 #include "../Project.h"
 #include "../TimerRecordDialog.h"
 #include "../commands/CommandManager.h"
@@ -43,6 +44,10 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
    c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
    c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
+
+   c->AddSeparator();
+
+   c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -201,4 +206,13 @@ void TransportMenuCommands::OnRecordAppend()
    evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
 
    mProject->GetControlToolBar()->OnRecord(evt);
+}
+
+void TransportMenuCommands::OnTogglePlayRecording()
+{
+   bool Duplex;
+   gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, true);
+   gPrefs->Write(wxT("/AudioIO/Duplex"), !Duplex);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
 }
