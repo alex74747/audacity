@@ -356,8 +356,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);
-void OnEditLabels();
 void OnToggleTypeToCreateLabel();
 
         // Effect Menu

@@ -3,6 +3,7 @@
 
 class AudacityProject;
 class CommandManager;
+class LabelTrack;
 class SelectedRegion;
 
 #include <stddef.h>
@@ -51,7 +52,9 @@ private:
 public:
    //Adds label and returns index of label in labeltrack.
    int DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
+   void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);
 private:
+   void OnEditLabels();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

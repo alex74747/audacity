@@ -805,8 +805,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
-
       c->AddCheck(wxT("TypeToCreateLabel"), _("&Type to Create a Label (on/off)"),
                   FN(OnToggleTypeToCreateLabel), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
 
@@ -5848,27 +5846,6 @@ void AudacityProject::OnSoundActivated()
 void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
-}
-
-void AudacityProject::DoEditLabels(LabelTrack *lt, int index)
-{
-   wxString format = GetSelectionFormat(),
-      freqFormat = GetFrequencySelectionFormatName();
-
-   LabelDialog dlg(this, *GetTrackFactory(), GetTracks(),
-                   lt, index,
-                   mViewInfo, mRate,
-                   format, freqFormat);
-
-   if (dlg.ShowModal() == wxID_OK) {
-      PushState(_("Edited labels"), _("Label"));
-      RedrawProject();
-   }
-}
-
-void AudacityProject::OnEditLabels()
-{
-   DoEditLabels();
 }
 
 void AudacityProject::OnToggleTypeToCreateLabel()
