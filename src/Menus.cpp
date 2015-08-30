@@ -627,9 +627,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
-                 ZoomInAvailableFlag,
-                 ZoomInAvailableFlag);
       c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
       c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
                  ZoomOutAvailableFlag,
@@ -3960,11 +3957,6 @@ void AudacityProject::OnSelectAllTracks()
 //
 // View Menu
 //
-
-void AudacityProject::OnZoomIn()
-{
-   ZoomInByFactor( 2.0 );
-}
 
 double AudacityProject::GetScreenEndTime() const
 {

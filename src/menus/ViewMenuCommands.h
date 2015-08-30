@@ -12,6 +12,7 @@ public:
    ViewMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
 
+   void OnZoomIn();
 private:
 
    AudacityProject *const mProject;
