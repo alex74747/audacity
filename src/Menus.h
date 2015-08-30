@@ -67,7 +67,6 @@ public:
         // Audio I/O Commands
 
 void OnStop();
-void OnPause();
 void OnRecord();
 void OnRecordAppend();
 void OnStopSelect();

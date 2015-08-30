@@ -84,6 +84,7 @@ array of Ruler::Label.
 #include "../Prefs.h"
 #include "../Snap.h"
 #include "../commands/CommandManager.h"
+#include "../menus/TransportMenuCommands.h"
 #include "../tracks/ui/Scrubbing.h"
 #include "../prefs/PlaybackPrefs.h"
 #include "../prefs/TracksPrefs.h"
@@ -2401,7 +2402,7 @@ void AdornedRulerPanel::OnMouseEvents(wxMouseEvent &evt)
          bool switchToQP = (zone == StatusChoice::EnteringQP && mQuickPlayEnabled);
          if (switchToQP && evt.LeftDown()) {
             // We can't stop scrubbing yet (see comments in Bug 1391), but we can pause it.
-            mProject->OnPause();
+            TransportMenuCommands{mProject}.OnPause();
             // Don't return, fall through
          }
          else if (scrubber.IsPaused())

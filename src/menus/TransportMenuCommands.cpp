@@ -30,6 +30,8 @@ void TransportMenuCommands::Create(CommandManager *c)
 
    // Scrubbing sub-menu
    mProject->GetScrubber().AddMenuItems();
+
+   c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -166,4 +168,11 @@ void TransportMenuCommands::OnPlayLooped()
    // Now play in a loop
    // Will automatically set mLastPlayMode
    mProject->GetControlToolBar()->PlayCurrentRegion(true);
+}
+
+void TransportMenuCommands::OnPause()
+{
+   wxCommandEvent evt;
+
+   mProject->GetControlToolBar()->OnPause(evt);
 }

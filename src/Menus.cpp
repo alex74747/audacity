@@ -750,7 +750,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(CanStopAudioStreamFlag, CanStopAudioStreamFlag);
 
-      c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"));
       c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
                  AudioIONotBusyFlag, AudioIONotBusyFlag);
       c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
@@ -2091,13 +2090,6 @@ void AudacityProject::OnStop()
    wxCommandEvent evt;
 
    GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnPause()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnPause(evt);
 }
 
 void AudacityProject::OnRecord()

@@ -19,6 +19,9 @@ public:
 private:
    void OnPlayStopSelect();
    void OnPlayLooped();
+public:
+   void OnPause();
+private:
 
    AudacityProject *const mProject;
 };
