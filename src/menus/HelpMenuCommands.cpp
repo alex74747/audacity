@@ -25,36 +25,42 @@ HelpMenuCommands::HelpMenuCommands(AudacityProject *project)
 
 void HelpMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+   c->BeginMenu(_("&Help"));
+   {
+      c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
-   c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
+      c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddSeparator();
+      c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
+      c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
 
-   c->AddItem(wxT("Screenshot"), _("&Screenshot Tools..."), FN(OnScreenshot));
+      c->AddSeparator();
+
+      c->AddItem(wxT("Screenshot"), _("&Screenshot Tools..."), FN(OnScreenshot));
 #if IS_ALPHA
-   // TODO: What should we do here?  Make benchmark a plug-in?
-   // Easy enough to do.  We'd call it mod-self-test.
-   c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
+      // TODO: What should we do here?  Make benchmark a plug-in?
+      // Easy enough to do.  We'd call it mod-self-test.
+      c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
 #endif
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
-   c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
-   c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
+      c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
+      c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
+      c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
 #if defined(EXPERIMENTAL_CRASH_REPORT)
-   c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
+      c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
 #endif
 
 #ifndef __WXMAC__
-   c->AddSeparator();
+      c->AddSeparator();
 #endif
 
-   c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
+      c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
+   }
+   c->EndMenu();
 }
 
 void HelpMenuCommands::OnQuickHelp()
