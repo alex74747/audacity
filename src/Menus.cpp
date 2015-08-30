@@ -720,8 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
-
    c->EndMenu();
 
    //////////////////////////////////////////////////////////////////////////
@@ -4832,11 +4830,6 @@ void AudacityProject::OnCursorSelEnd()
    ModifyState(false);
    mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t1());
    mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnRescanDevices()
-{
-   DeviceManager::Instance()->Rescan();
 }
 
 void AudacityProject::OnApplyChain()

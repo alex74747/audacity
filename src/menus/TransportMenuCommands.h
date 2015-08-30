@@ -34,6 +34,7 @@ private:
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    void OnToggleAutomatedInputLevelAdjustment();
 #endif
+   void OnRescanDevices();
 
    AudacityProject *const mProject;
 };
