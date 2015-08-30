@@ -287,9 +287,6 @@ void OnShowToolsToolBar();
 void OnShowTranscriptionToolBar();
 void OnResetToolBars();
 
-        // Transport Menu
-
-void OnRescanDevices();
 
 // Import Submenu
 void OnImport();
