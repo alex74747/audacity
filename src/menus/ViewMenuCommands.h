@@ -26,6 +26,7 @@ private:
    void OnCollapseAllTracks();
    void OnExpandAllTracks();
    void OnShowClipping();
+   void OnHistory();
 
    AudacityProject *const mProject;
 };

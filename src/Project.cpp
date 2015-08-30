@@ -1290,6 +1290,13 @@ void AudacityProject::SetProjectTitle()
    SetName(name);       // to make the nvda screen reader read the correct title
 }
 
+HistoryWindow *AudacityProject::GetHistoryWindow()
+{
+   if (!mHistoryWindow)
+      mHistoryWindow = new HistoryWindow(this, &mUndoManager);
+   return mHistoryWindow;
+}
+
 bool AudacityProject::GetIsEmpty()
 {
    return mTracks->IsEmpty();

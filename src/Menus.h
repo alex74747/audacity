@@ -193,8 +193,6 @@ void OnSelectAllTracks();
 void DoZoomFitV();
 
 
-void OnHistory();
-
 void OnKaraoke();
 void OnMixerBoard();
 

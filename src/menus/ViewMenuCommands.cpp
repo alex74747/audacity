@@ -4,6 +4,7 @@
 
 #include <wx/scrolbar.h>
 
+#include "../HistoryWindow.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../TrackPanel.h"
@@ -45,6 +46,35 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddSeparator();
    c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
       gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   //c->AddSeparator();
+
+   // History window should be available either for UndoAvailableFlag or RedoAvailableFlag,
+   // but we can't make the AddItem flags and mask have both, because they'd both have to be true for the
+   // command to be enabled.
+   //    If user has Undone the entire stack, RedoAvailableFlag is on but UndoAvailableFlag is off.
+   //    If user has done things but not Undone anything, RedoAvailableFlag is off but UndoAvailableFlag is on.
+   // So in either of those cases, (AudioIONotBusyFlag | UndoAvailableFlag | RedoAvailableFlag) mask
+   // would fail.
+   // The only way to fix this in the current architecture is to hack in special cases for RedoAvailableFlag
+   // in AudacityProject::UpdateMenus() (ugly) and CommandManager::HandleCommandEntry() (*really* ugly --
+   // shouldn't know about particular command names and flags).
+   // Here's the hack that would be necessary in AudacityProject::UpdateMenus(), if somebody decides to do it:
+   //    // Because EnableUsingFlags requires all the flag bits match the corresponding mask bits,
+   //    // "UndoHistory" specifies only AudioIONotBusyFlag | UndoAvailableFlag, because that
+   //    // covers the majority of cases where it should be enabled.
+   //    // If history is not empty but we've Undone the whole stack, we also want to enable,
+   //    // to show the Redo's on stack.
+   //    // "UndoHistory" might already be enabled, but add this check for RedoAvailableFlag.
+   //    if (flags & RedoAvailableFlag)
+   //       GetCommandManager()->Enable(wxT("UndoHistory"), true);
+   // So for now, enable the command regardless of stack. It will just show empty sometimes.
+   // FOR REDESIGN, clearly there are some limitations with the flags/mask bitmaps.
+
+   /* i18n-hint: Clicking this menu item shows the various editing steps that have been taken.*/
+   c->AddItem(wxT("UndoHistory"), _("&History..."), FN(OnHistory),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -174,4 +204,13 @@ void ViewMenuCommands::OnShowClipping()
    mProject->GetCommandManager()->Check(wxT("ShowClipping"), checked);
    mProject->GetTrackPanel()->UpdatePrefs();
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void ViewMenuCommands::OnHistory()
+{
+   HistoryWindow *historyWindow = mProject->GetHistoryWindow();
+
+   historyWindow->Show();
+   historyWindow->Raise();
+   historyWindow->UpdateDisplay();
 }
