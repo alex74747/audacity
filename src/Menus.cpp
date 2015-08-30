@@ -1080,7 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-      c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
       c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
 
       c->AddSeparator();
@@ -6846,13 +6845,6 @@ void AudacityProject::OnAbout()
 void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
-}
-
-void AudacityProject::OnQuickHelp()
-{
-   HelpSystem::ShowHelpDialog(
-      this,
-      wxT("Quick_Help"));
 }
 
 void AudacityProject::OnManual()
