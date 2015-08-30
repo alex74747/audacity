@@ -406,8 +406,6 @@ void NextFrame();
 void PrevWindow();
 void NextWindow();
 
-void OnResample();
-
 private:
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);

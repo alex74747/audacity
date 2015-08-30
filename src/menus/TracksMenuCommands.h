@@ -23,6 +23,8 @@ private:
    void OnMixAndRenderToNewTrack();
    void HandleMixAndRender(bool toNewTrack);
 
+   void OnResample();
+
    AudacityProject *const mProject;
 };
 

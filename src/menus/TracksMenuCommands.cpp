@@ -1,9 +1,12 @@
 #include "../Audacity.h"
 #include "TracksMenuCommands.h"
 
+#include <wx/combobox.h>
+
 #include "../LabelTrack.h"
 #include "../Mix.h"
 #include "../Project.h"
+#include "../ShuttleGui.h"
 #include "../TimeTrack.h"
 #include "../TrackPanel.h"
 #include "../WaveTrack.h"
@@ -50,6 +53,9 @@ void TracksMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | WaveTracksSelectedFlag,
       AudioIONotBusyFlag | WaveTracksSelectedFlag);
    c->AddItem(wxT("MixAndRenderToNewTrack"), _("Mix and Render to Ne&w Track"), FN(OnMixAndRenderToNewTrack), wxT("Ctrl+Shift+M"),
+      AudioIONotBusyFlag | WaveTracksSelectedFlag,
+      AudioIONotBusyFlag | WaveTracksSelectedFlag);
+   c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
       AudioIONotBusyFlag | WaveTracksSelectedFlag,
       AudioIONotBusyFlag | WaveTracksSelectedFlag);
 }
@@ -219,4 +225,94 @@ void TracksMenuCommands::HandleMixAndRender(bool toNewTrack)
       mProject->GetTrackPanel()->EnsureVisible(pNewLeft);
       mProject->RedrawProject();
    }
+}
+
+void TracksMenuCommands::OnResample()
+{
+   TrackListIterator iter(mProject->GetTracks());
+
+   int newRate;
+
+   while (true)
+   {
+      wxDialogWrapper dlg(mProject, wxID_ANY, wxString(_("Resample")));
+      dlg.SetName(dlg.GetTitle());
+      ShuttleGui S(&dlg, eIsCreating);
+      wxString rate;
+      wxArrayString rates;
+      wxComboBox *cb;
+
+      rate.Printf(wxT("%ld"), lrint(mProject->GetRate()));
+
+      rates.Add(wxT("8000"));
+      rates.Add(wxT("11025"));
+      rates.Add(wxT("16000"));
+      rates.Add(wxT("22050"));
+      rates.Add(wxT("32000"));
+      rates.Add(wxT("44100"));
+      rates.Add(wxT("48000"));
+      rates.Add(wxT("88200"));
+      rates.Add(wxT("96000"));
+      rates.Add(wxT("176400"));
+      rates.Add(wxT("192000"));
+      rates.Add(wxT("352800"));
+      rates.Add(wxT("384000"));
+
+      S.StartVerticalLay(true);
+      {
+         S.AddSpace(-1, 15);
+
+         S.StartHorizontalLay(wxCENTER, false);
+         {
+            cb = S.AddCombo(_("New sample rate (Hz):"),
+               rate,
+               &rates);
+         }
+         S.EndHorizontalLay();
+
+         S.AddSpace(-1, 15);
+
+         S.AddStandardButtons();
+      }
+      S.EndVerticalLay();
+
+      dlg.Layout();
+      dlg.Fit();
+      dlg.Center();
+
+      if (dlg.ShowModal() != wxID_OK)
+      {
+         return;  // user cancelled dialog
+      }
+
+      long lrate;
+      if (cb->GetValue().ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
+      {
+         newRate = (int)lrate;
+         break;
+      }
+
+      wxMessageBox(_("The entered value is invalid"), _("Error"),
+         wxICON_ERROR, mProject);
+   }
+
+   int ndx = 0;
+   for (Track *t = iter.First(); t; t = iter.Next())
+   {
+      wxString msg;
+
+      msg.Printf(_("Resampling track %d"), ++ndx);
+
+      ProgressDialog progress(_("Resample"), msg);
+
+      if (t->GetSelected() && t->GetKind() == Track::Wave)
+         if (!((WaveTrack*)t)->Resample(newRate, &progress))
+            break;
+   }
+
+   mProject->PushState(_("Resampled audio track(s)"), _("Resample Track"));
+   mProject->RedrawProject();
+
+   // Need to reset
+   mProject->FinishAutoScroll();
 }
