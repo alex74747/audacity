@@ -270,9 +270,6 @@ void OnResetToolBars();
 
         // Transport Menu
 
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-   void OnToogleAutomatedInputLevelAdjustment();
-#endif
 void OnRescanDevices();
 
 // Import Submenu

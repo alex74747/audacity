@@ -1,6 +1,8 @@
 #ifndef __AUDACITY_TRANSPORT_MENU_COMMANDS__
 #define __AUDACITY_TRANSPORT_MENU_COMMANDS__
 
+#include "../Experimental.h"
+
 class AudacityProject;
 class CommandManager;
 
@@ -29,6 +31,9 @@ private:
    void OnToggleSWPlaythrough();
    void OnToggleSoundActivated();
    void OnSoundActivated();
+#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
+   void OnToggleAutomatedInputLevelAdjustment();
+#endif
 
    AudacityProject *const mProject;
 };

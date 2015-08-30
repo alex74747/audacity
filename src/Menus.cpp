@@ -720,9 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-   c->AddCheck(wxT("AutomatedInputLevelAdjustmentOnOff"), _("A&utomated Recording Level Adjustment (on/off)"), FN(OnToogleAutomatedInputLevelAdjustment), 0);
-#endif
    c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
 
    c->EndMenu();
@@ -1947,17 +1944,6 @@ void AudacityProject::OnStopSelect()
       ModifyState(false);           // without bWantsAutoSave
    }
 }
-
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-void AudacityProject::OnToogleAutomatedInputLevelAdjustment()
-{
-   bool AVEnabled;
-   gPrefs->Read(wxT("/AudioIO/AutomatedInputLevelAdjustment"), &AVEnabled, false);
-   gPrefs->Write(wxT("/AudioIO/AutomatedInputLevelAdjustment"), !AVEnabled);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-#endif
 
 void AudacityProject::OnSeekLeftShort()
 {
