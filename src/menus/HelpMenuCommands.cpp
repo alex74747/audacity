@@ -1,4 +1,5 @@
 #include "../Audacity.h"
+#include "../Experimental.h"
 #include "HelpMenuCommands.h"
 
 #include <wx/msgdlg.h>
@@ -44,6 +45,10 @@ void HelpMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
    c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
+#if defined(EXPERIMENTAL_CRASH_REPORT)
+   c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
+#endif
+
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -121,3 +126,15 @@ void HelpMenuCommands::OnShowLog()
       logger->Show();
    }
 }
+
+#if defined(EXPERIMENTAL_CRASH_REPORT)
+void HelpMenuCommands::OnCrashReport()
+{
+   // Change to "1" to test a real crash
+#if 0
+   char *p = 0;
+   *p = 1234;
+#endif
+   wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
+}
+#endif

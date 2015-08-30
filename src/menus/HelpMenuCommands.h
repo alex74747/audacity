@@ -24,6 +24,10 @@ public:
    void OnShowLog();
 
 private:
+#if defined(EXPERIMENTAL_CRASH_REPORT)
+   void OnCrashReport();
+#endif
+
    AudacityProject *const mProject;
 };
 
