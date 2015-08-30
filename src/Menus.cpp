@@ -807,17 +807,10 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->AddSeparator();
 
-#ifdef EXPERIMENTAL_SYNC_LOCK
-      c->AddCheck(wxT("SyncLock"), _("Sync-&Lock Tracks (on/off)"), FN(OnSyncLock), 0,
-         AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-      c->AddSeparator();
-#endif
-
-      c->AddItem(wxT("AddLabel"), _("Add Label at &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
-         AlwaysEnabledFlag, AlwaysEnabledFlag);
-      c->AddItem(wxT("AddLabelPlaying"), _("Add Label at &Playback Position"),
-         FN(OnAddLabelPlaying),
+      c->AddItem(wxT("AddLabel"), _("Add Label At &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
+                 AlwaysEnabledFlag, AlwaysEnabledFlag);
+      c->AddItem(wxT("AddLabelPlaying"), _("Add Label At &Playback Position"),
+                 FN(OnAddLabelPlaying),
 #ifdef __WXMAC__
          wxT("Ctrl+."),
 #else
@@ -5936,19 +5929,6 @@ int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus
    mTrackPanel->SetFocus();
 
    return index;
-}
-
-void AudacityProject::OnSyncLock()
-{
-   bool bSyncLockTracks;
-   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &bSyncLockTracks, false);
-   gPrefs->Write(wxT("/GUI/SyncLockTracks"), !bSyncLockTracks);
-   gPrefs->Flush();
-
-   // Toolbar, project sync-lock handled within
-   ModifyAllProjectToolbarMenus();
-
-   mTrackPanel->Refresh(false);
 }
 
 void AudacityProject::OnAddLabel()

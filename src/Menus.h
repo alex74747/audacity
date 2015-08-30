@@ -34,9 +34,12 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names,
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 void ModifyToolbarMenus();
+
+public:
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
+private:
 CommandFlag GetFocusedFrame();
 
 // If checkActive, do not do complete flags testing on an
@@ -357,7 +360,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void OnSyncLock();
 void OnAddLabel();
 void OnAddLabelPlaying();
 void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);

@@ -55,6 +55,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
 
 #include "../Experimental.h"
@@ -272,7 +273,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          break;
 #ifdef EXPERIMENTAL_SYNC_LOCK
       case ETBSyncLockID:
-         p->OnSyncLock();
+         TracksMenuCommands(p).OnSyncLock();
          return;//avoiding the call to SetButton()
 #endif
       case ETBZoomInID:
