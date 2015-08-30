@@ -612,8 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
-
    c->AddSeparator();
    c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
    c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
@@ -3915,14 +3913,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnGoSelEnd()
-{
-   if (mViewInfo.selectedRegion.isPoint())
-      return;
-
-   TP_ScrollWindow(mViewInfo.selectedRegion.t1() - ((GetScreenEndTime() - mViewInfo.h) / 2));
 }
 
 void AudacityProject::OnShowClipping()

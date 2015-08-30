@@ -22,6 +22,7 @@ public:
 private:
    void OnZoomFitV();
    void OnGoSelStart();
+   void OnGoSelEnd();
 
    AudacityProject *const mProject;
 };
