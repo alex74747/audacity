@@ -30,9 +30,12 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, cons
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 void ModifyToolbarMenus();
+
+public:
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
+private:
 int GetFocusedFrame();
 wxUint32 GetUpdateFlags();
 
@@ -331,7 +334,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void OnSyncLock();
 void OnAddLabel();
 void OnAddLabelPlaying();
 void OnEditLabels();

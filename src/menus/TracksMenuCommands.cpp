@@ -6,6 +6,7 @@
 #include "../LabelTrack.h"
 #include "../Mix.h"
 #include "../MixerBoard.h"
+#include "../Prefs.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"
 #include "../TimeTrack.h"
@@ -113,6 +114,13 @@ void TracksMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag,
       AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag);
 #endif // EXPERIMENTAL_SCOREALIGN
+
+#ifdef EXPERIMENTAL_SYNC_LOCK
+   c->AddSeparator();
+
+   c->AddCheck(wxT("SyncLock"), _("Sync-&Lock Tracks"), FN(OnSyncLock), 0,
+      AlwaysEnabledFlag, AlwaysEnabledFlag);
+#endif
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -939,3 +947,16 @@ void AudacityProject::OnScoreAlign()
    }
 }
 #endif /* EXPERIMENTAL_SCOREALIGN */
+
+void TracksMenuCommands::OnSyncLock()
+{
+   bool bSyncLockTracks;
+   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &bSyncLockTracks, false);
+   gPrefs->Write(wxT("/GUI/SyncLockTracks"), !bSyncLockTracks);
+   gPrefs->Flush();
+
+   // Toolbar, project sync-lock handled within
+   mProject->ModifyAllProjectToolbarMenus();
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
