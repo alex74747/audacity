@@ -3,6 +3,7 @@
 
 #include <wx/msgdlg.h>
 
+#include "../AudacityLogger.h"
 #include "../AudioIO.h"
 #include "../Benchmark.h"
 #include "../FileDialog.h"
@@ -42,6 +43,7 @@ void HelpMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -109,5 +111,13 @@ void HelpMenuCommands::OnAudioDeviceInfo()
             wxMessageBox(_("Unable to save device info"), _("Save Device Info"));
          }
       }
+   }
+}
+
+void HelpMenuCommands::OnShowLog()
+{
+   AudacityLogger *logger = wxGetApp().GetLogger();
+   if (logger) {
+      logger->Show();
    }
 }

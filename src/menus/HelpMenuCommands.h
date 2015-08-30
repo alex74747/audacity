@@ -20,6 +20,10 @@ private:
    void OnCheckForUpdates();
    void OnAudioDeviceInfo();
 
+public:
+   void OnShowLog();
+
+private:
    AudacityProject *const mProject;
 };
 
