@@ -4,6 +4,7 @@
 
 #include "../LabelTrack.h"
 #include "../Mix.h"
+#include "../MixerBoard.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"
 #include "../TimeTrack.h"
@@ -49,6 +50,12 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
       AudioIONotBusyFlag | WaveTracksSelectedFlag,
       AudioIONotBusyFlag | WaveTracksSelectedFlag);
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("RemoveTracks"), _("Remo&ve Tracks"), FN(OnRemoveTracks),
+      AudioIONotBusyFlag | TracksSelectedFlag,
+      AudioIONotBusyFlag | TracksSelectedFlag);
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -309,4 +316,50 @@ void TracksMenuCommands::OnResample()
 
    // Need to reset
    mProject->FinishAutoScroll();
+}
+
+void TracksMenuCommands::OnRemoveTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+   Track *f = NULL;
+   Track *l = NULL;
+
+   while (t) {
+      if (t->GetSelected()) {
+         if (mProject->GetMixerBoard() && (t->GetKind() == Track::Wave))
+            mProject->GetMixerBoard()->RemoveTrackCluster((WaveTrack*)t);
+         if (!f)
+            f = l;         // Capture the track preceeding the first removed track
+         t = iter.RemoveCurrent(true);
+      }
+      else {
+         l = t;
+         t = iter.Next();
+      }
+   }
+
+   // All tracks but the last were removed...try to use the last track
+   if (!f)
+      f = l;
+
+   // Try to use the first track after the removal or, if none,
+   // the track preceeding the removal
+   if (f) {
+      t = mProject->GetTracks()->GetNext(f, true);
+      if (t)
+         f = t;
+   }
+
+   // If we actually have something left, then make sure it's seen
+   if (f)
+      mProject->GetTrackPanel()->EnsureVisible(f);
+
+   mProject->PushState(_("Removed audio track(s)"), _("Remove Track"));
+
+   mProject->GetTrackPanel()->UpdateViewIfNoTracks();
+   mProject->GetTrackPanel()->Refresh(false);
+
+   if (mProject->GetMixerBoard())
+      mProject->GetMixerBoard()->Refresh(true);
 }

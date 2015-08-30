@@ -344,7 +344,6 @@ void OnScoreAlign();
 
 // Tracks menu
 void OnTimerRecord();
-void OnRemoveTracks();
 void OnSyncLock();
 void OnAddLabel();
 void OnAddLabelPlaying();
