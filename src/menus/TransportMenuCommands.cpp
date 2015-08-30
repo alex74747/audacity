@@ -2,6 +2,7 @@
 
 #include "../AudioIO.h"
 #include "../Project.h"
+#include "../TimerRecordDialog.h"
 #include "../commands/CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
 
@@ -40,6 +41,7 @@ void TransportMenuCommands::Create(CommandManager *c)
 
    /* i18n-hint: (verb)*/
    c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
+   c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -167,4 +169,27 @@ void TransportMenuCommands::OnRecord()
    evt.SetInt(2); // 0 is default, use 1 to set shift on, 2 to clear it
 
    mProject->GetControlToolBar()->OnRecord(evt);
+}
+
+void TransportMenuCommands::OnTimerRecord()
+{
+   //we break the prompting and waiting dialogs into two sections
+   //because they both give the user a chance to click cancel
+   //and therefore remove the newly inserted track.
+
+   TimerRecordDialog dialog(mProject /* parent */);
+   int modalResult = dialog.ShowModal();
+   if (modalResult == wxID_CANCEL)
+   {
+      // Cancelled before recording - don't need to do anyting.
+   }
+   else if (!dialog.RunWaitDialog())
+   {
+      //RunWaitDialog() shows the "wait for start" as well as "recording" dialog
+      //if it returned false it means the user cancelled while the recording, so throw out the fresh track.
+      //However, we can't undo it here because the PushState() is called in TrackPanel::OnTimer(),
+      //which is blocked by this function.
+      //so instead we mark a flag to undo it there.
+      mProject->SetTimerRecordFlag();
+   }
 }

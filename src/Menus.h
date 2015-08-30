@@ -299,10 +299,7 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-// Tracks menu
-void OnTimerRecord();
-
-        // Effect Menu
+// Effect Menu
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);

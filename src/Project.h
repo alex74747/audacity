@@ -610,7 +610,8 @@ private:
    wxRect GetNormalizedWindowState() const { return mNormalizedWindowState;   }
 
    bool IsTimerRecordCancelled(){return mTimerRecordCanceled;}
-   void ResetTimerRecordFlag(){mTimerRecordCanceled=false;}
+   void SetTimerRecordFlag(){ mTimerRecordCanceled = true; }
+   void ResetTimerRecordFlag(){ mTimerRecordCanceled = false; }
  private:
    //sort method used by OnSortName and OnSortTime
    //currently only supported flags are kAudacitySortByName and kAudacitySortByName

@@ -720,7 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
    c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
 
    c->AddSeparator();
@@ -4893,29 +4892,6 @@ void AudacityProject::OnCursorSelEnd()
    ModifyState(false);
    mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t1());
    mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnTimerRecord()
-{
-   //we break the prompting and waiting dialogs into two sections
-   //because they both give the user a chance to click cancel
-   //and therefore remove the newly inserted track.
-
-   TimerRecordDialog dialog(this /* parent */ );
-   int modalResult = dialog.ShowModal();
-   if (modalResult == wxID_CANCEL)
-   {
-      // Cancelled before recording - don't need to do anyting.
-   }
-   else if(!dialog.RunWaitDialog())
-   {
-      //RunWaitDialog() shows the "wait for start" as well as "recording" dialog
-      //if it returned false it means the user cancelled while the recording, so throw out the fresh track.
-      //However, we can't undo it here because the PushState() is called in TrackPanel::OnTimer(),
-      //which is blocked by this function.
-      //so instead we mark a flag to undo it there.
-      mTimerRecordCanceled = true;
-   }
 }
 
 void AudacityProject::OnSoundActivated()
