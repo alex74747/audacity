@@ -11,8 +11,11 @@ class TransportMenuCommands
 public:
    TransportMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
+   void CreateNonMenuCommands(CommandManager *c);
 
+   void OnPlayStop();
 private:
+
    AudacityProject *const mProject;
 };
 

@@ -750,8 +750,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(CanStopAudioStreamFlag, CanStopAudioStreamFlag);
 
-      /* i18n-hint: (verb) Start or Stop audio playback*/
-      c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"));
       c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("X"));
       c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
          WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag,
@@ -927,6 +925,7 @@ void AudacityProject::CreateMenusAndCommands()
       SetMenuBar(menubar.release());
    }
 
+   mTransportMenuCommands->CreateNonMenuCommands(c);
    mTracksMenuCommands->CreateNonMenuCommands(c);
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
@@ -946,10 +945,7 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
-   /* i18n-hint: (verb) Start playing audio*/
-   c->AddCommand(wxT("Play"), _("Play"), FN(OnPlayStop),
-                 WaveTracksExistFlag | AudioIONotBusyFlag,
-                 WaveTracksExistFlag | AudioIONotBusyFlag);
+
    /* i18n-hint: (verb) Stop playing audio*/
    c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
                  AudioIOBusyFlag,
@@ -2108,58 +2104,6 @@ void AudacityProject::OnPlayCutPreview()
    GetControlToolBar()->PlayCurrentRegion(false, true);
 }
 
-void AudacityProject::OnPlayStop()
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-
-   //If this project is playing, stop playing, make sure everything is unpaused.
-   if (gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      toolbar->SetPlay(false);        //Pops
-      toolbar->SetStop(true);         //Pushes stop down
-      toolbar->StopPlaying();
-   }
-   else if (gAudioIO->IsStreamActive()) {
-      //If this project isn't playing, but another one is, stop playing the old and start the NEW.
-
-      //find out which project we need;
-      AudacityProject* otherProject = NULL;
-      for(unsigned i=0; i<gAudacityProjects.size(); i++) {
-         if(gAudioIO->IsStreamActive(gAudacityProjects[i]->GetAudioIOToken())) {
-            otherProject=gAudacityProjects[i].get();
-            break;
-         }
-      }
-
-      //stop playing the other project
-      if(otherProject) {
-         ControlToolBar *otherToolbar = otherProject->GetControlToolBar();
-         otherToolbar->SetPlay(false);        //Pops
-         otherToolbar->SetStop(true);         //Pushes stop down
-         otherToolbar->StopPlaying();
-      }
-
-      //play the front project
-      if (!gAudioIO->IsBusy()) {
-         //update the playing area
-         TP_DisplaySelection();
-         //Otherwise, start playing (assuming audio I/O isn't busy)
-         //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
-         toolbar->SetStop(false);
-
-         // Will automatically set mLastPlayMode
-         toolbar->PlayCurrentRegion(false);
-      }
-   }
-   else if (!gAudioIO->IsBusy()) {
-      //Otherwise, start playing (assuming audio I/O isn't busy)
-      //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
-      toolbar->SetStop(false);
-
-      // Will automatically set mLastPlayMode
-      toolbar->PlayCurrentRegion(false);
-   }
-}
-
 void AudacityProject::OnStop()
 {
    wxCommandEvent evt;
@@ -2418,10 +2362,10 @@ void AudacityProject::OnMoveToLabel(bool next)
       if (i >= 0) {
          const LabelStruct* label = lt->GetLabel(i);
          if (IsAudioActive()) {
-            OnPlayStop();     // stop
+            TransportMenuCommands{this}.OnPlayStop();     // stop
             GetViewInfo().selectedRegion = label->selectedRegion;
             RedrawProject();
-            OnPlayStop();     // play
+            TransportMenuCommands{this}.OnPlayStop();     // play
          }
          else {
             GetViewInfo().selectedRegion = label->selectedRegion;
