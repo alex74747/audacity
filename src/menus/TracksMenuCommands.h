@@ -30,7 +30,13 @@ private:
    void OnMuteAllTracks();
    void OnUnMuteAllTracks();
 
+   void OnAlignNoSync(int index);
+   void OnAlign(int index);
+   void OnAlignMoveSel(int index);
+   void HandleAlign(int index, bool moveSel);
+
    AudacityProject *const mProject;
+   size_t mAlignLabelsCount;
 };
 
 #endif

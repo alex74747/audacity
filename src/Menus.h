@@ -329,12 +329,6 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-void OnAlignNoSync(int index);
-void OnAlign(int index);
-void OnAlignMoveSel(int index);
-void HandleAlign(int index, bool moveSel);
-size_t mAlignLabelsCount;
-
 #ifdef EXPERIMENTAL_SCOREALIGN
 void OnScoreAlign();
 #endif // EXPERIMENTAL_SCOREALIGN
