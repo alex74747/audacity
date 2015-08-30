@@ -373,10 +373,6 @@ void OnScoreAlign();
 #endif // EXPERIMENTAL_SCOREALIGN
 
 // Tracks menu
-void OnNewWaveTrack();
-void OnNewStereoTrack();
-void OnNewLabelTrack();
-void OnNewTimeTrack();
 void OnTimerRecord();
 void OnRemoveTracks();
 void OnSyncLock();
