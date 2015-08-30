@@ -805,19 +805,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddSeparator();
-
-      c->AddItem(wxT("AddLabel"), _("Add Label At &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
-                 AlwaysEnabledFlag, AlwaysEnabledFlag);
-      c->AddItem(wxT("AddLabelPlaying"), _("Add Label At &Playback Position"),
-                 FN(OnAddLabelPlaying),
-#ifdef __WXMAC__
-         wxT("Ctrl+."),
-#else
-         wxT("Ctrl+M"),
-#endif
-         AudioIOBusyFlag, 
-         AudioIOBusyFlag);
       c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
 
       c->AddCheck(wxT("TypeToCreateLabel"), _("&Type to Create a Label (on/off)"),
@@ -5861,88 +5848,6 @@ void AudacityProject::OnSoundActivated()
 void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
-}
-
-int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus)
-{
-   LabelTrack *lt = NULL;
-
-   // If the focused track is a label track, use that
-   Track *const pFocusedTrack = mTrackPanel->GetFocusedTrack();
-   Track *t = pFocusedTrack;
-   if (t && t->GetKind() == Track::Label) {
-      lt = (LabelTrack *) t;
-   }
-
-   // Otherwise look for a label track after the focused track
-   if (!lt) {
-      TrackListIterator iter(GetTracks());
-      if (t)
-         iter.StartWith(t);
-      else
-         t = iter.First();
-
-      while (t && !lt) {
-         if (t->GetKind() == Track::Label)
-            lt = (LabelTrack *) t;
-
-         t = iter.Next();
-      }
-   }
-
-   // If none found, start a NEW label track and use it
-   if (!lt) {
-      lt = static_cast<LabelTrack*>
-         (mTracks->Add(GetTrackFactory()->NewLabelTrack()));
-   }
-
-// LLL: Commented as it seemed a little forceful to remove users
-//      selection when adding the label.  This does not happen if
-//      you select several tracks and the last one of those is a
-//      label track...typing a label will not clear the selections.
-//
-//   SelectNone();
-   lt->SetSelected(true);
-
-   int focusTrackNumber = -1;
-   if (pFocusedTrack && preserveFocus) {
-      // Must remember the track to re-focus after finishing a label edit.
-      // do NOT identify it by a pointer, which might dangle!  Identify
-      // by position.
-      TrackListIterator iter(GetTracks());
-      Track *track = iter.First();
-      do
-         ++focusTrackNumber;
-      while (track != pFocusedTrack &&
-             NULL != (track = iter.Next()));
-      if (!track)
-         // How could we not find it?
-         focusTrackNumber = -1;
-   }
-
-   int index = lt->AddLabel(region, wxString(), focusTrackNumber);
-
-   PushState(_("Added label"), _("Label"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible((Track *)lt);
-   mTrackPanel->SetFocus();
-
-   return index;
-}
-
-void AudacityProject::OnAddLabel()
-{
-   DoAddLabel(mViewInfo.selectedRegion);
-}
-
-void AudacityProject::OnAddLabelPlaying()
-{
-   if (GetAudioIOToken()>0 &&
-       gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      double indicator = gAudioIO->GetStreamTime();
-      DoAddLabel(SelectedRegion(indicator, indicator), true);
-   }
 }
 
 void AudacityProject::DoEditLabels(LabelTrack *lt, int index)

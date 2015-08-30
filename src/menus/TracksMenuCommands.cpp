@@ -5,6 +5,7 @@
 #include <cfloat>
 #include <wx/combobox.h>
 
+#include "../AudioIO.h"
 #include "../LabelTrack.h"
 #include "../Mix.h"
 #include "../MixerBoard.h"
@@ -131,6 +132,20 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->AddCheck(wxT("SyncLock"), _("Sync-&Lock Tracks (on/off)"), FN(OnSyncLock), 0,
       AlwaysEnabledFlag, AlwaysEnabledFlag);
 #endif
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("AddLabel"), _("Add Label at &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
+      AlwaysEnabledFlag, AlwaysEnabledFlag);
+   c->AddItem(wxT("AddLabelPlaying"), _("Add Label at &Playback Position"),
+              FN(OnAddLabelPlaying),
+#ifdef __WXMAC__
+              wxT("Ctrl+."),
+#else
+              wxT("Ctrl+M"),
+#endif
+         AudioIOBusyFlag,
+         AudioIOBusyFlag);
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -963,4 +978,86 @@ void TracksMenuCommands::OnSyncLock()
    mProject->ModifyAllProjectToolbarMenus();
 
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void TracksMenuCommands::OnAddLabel()
+{
+   DoAddLabel(mProject->mViewInfo.selectedRegion);
+}
+
+void TracksMenuCommands::OnAddLabelPlaying()
+{
+   if (mProject->GetAudioIOToken()>0 &&
+       gAudioIO->IsStreamActive(mProject->GetAudioIOToken())) {
+      double indicator = gAudioIO->GetStreamTime();
+      DoAddLabel(SelectedRegion(indicator, indicator), true);
+   }
+}
+
+int TracksMenuCommands::DoAddLabel(const SelectedRegion &region, bool preserveFocus)
+{
+   LabelTrack *lt = NULL;
+
+   // If the focused track is a label track, use that
+   Track *const pFocusedTrack = mProject->GetTrackPanel()->GetFocusedTrack();
+   Track *t = pFocusedTrack;
+   if (t && t->GetKind() == Track::Label) {
+      lt = (LabelTrack *) t;
+   }
+
+   // Otherwise look for a label track after the focused track
+   if (!lt) {
+      TrackListIterator iter(mProject->GetTracks());
+      if (t)
+         iter.StartWith(t);
+      else
+         t = iter.First();
+
+      while (t && !lt) {
+         if (t->GetKind() == Track::Label)
+            lt = (LabelTrack *) t;
+
+         t = iter.Next();
+      }
+   }
+
+   // If none found, start a NEW label track and use it
+   if (!lt) {
+      lt = static_cast<LabelTrack*>(
+         mProject->GetTracks()->Add(mProject->GetTrackFactory()->NewLabelTrack()));
+   }
+
+// LLL: Commented as it seemed a little forceful to remove users
+//      selection when adding the label.  This does not happen if
+//      you select several tracks and the last one of those is a
+//      label track...typing a label will not clear the selections.
+//
+//   SelectNone();
+   lt->SetSelected(true);
+
+   int focusTrackNumber = -1;
+   if (pFocusedTrack && preserveFocus) {
+      // Must remember the track to re-focus after finishing a label edit.
+      // do NOT identify it by a pointer, which might dangle!  Identify
+      // by position.
+      TrackListIterator iter(mProject->GetTracks());
+      Track *track = iter.First();
+      do
+         ++focusTrackNumber;
+      while (track != pFocusedTrack &&
+             NULL != (track = iter.Next()));
+      if (!track)
+         // How could we not find it?
+         focusTrackNumber = -1;
+   }
+
+   int index = lt->AddLabel(region, wxString(), focusTrackNumber);
+
+   mProject->PushState(_("Added label"), _("Label"));
+
+   mProject->RedrawProject();
+   mProject->GetTrackPanel()->EnsureVisible((Track *)lt);
+   mProject->GetTrackPanel()->SetFocus();
+
+   return index;
 }

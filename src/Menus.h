@@ -48,10 +48,6 @@ CommandFlag GetUpdateFlags(bool checkActive = false);
 
 double NearestZeroCrossing(double t0);
 
-public:
-//Adds label and returns index of label in labeltrack.
-int DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
-
 private:
 
         // Selecting a tool from the keyboard
@@ -360,8 +356,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void OnAddLabel();
-void OnAddLabelPlaying();
 void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);
 void OnEditLabels();
 void OnToggleTypeToCreateLabel();

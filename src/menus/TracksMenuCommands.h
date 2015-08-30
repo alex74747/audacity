@@ -3,6 +3,7 @@
 
 class AudacityProject;
 class CommandManager;
+class SelectedRegion;
 
 #include <stddef.h>
 
@@ -43,6 +44,13 @@ private:
 
 public:
    void OnSyncLock();
+
+private:
+   void OnAddLabel();
+   void OnAddLabelPlaying();
+public:
+   //Adds label and returns index of label in labeltrack.
+   int DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
 private:
 
    AudacityProject *const mProject;
