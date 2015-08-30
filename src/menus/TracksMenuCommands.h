@@ -13,6 +13,10 @@ public:
    void Create(CommandManager *c);
 
 private:
+   void OnNewWaveTrack();
+   void OnNewStereoTrack();
+   void OnNewLabelTrack();
+   void OnNewTimeTrack();
 
    AudacityProject *const mProject;
 };

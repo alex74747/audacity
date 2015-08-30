@@ -783,19 +783,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   //////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("Add &New"));
-
-   c->AddItem(wxT("NewMonoTrack"),  _("&Mono Track"), FN(OnNewWaveTrack), wxT("Ctrl+Shift+N"));
-   c->AddItem(wxT("NewStereoTrack"), _("&Stereo Track"), FN(OnNewStereoTrack));
-   c->AddItem(wxT("NewLabelTrack"),  _("&Label Track"), FN(OnNewLabelTrack));
-   c->AddItem(wxT("NewTimeTrack"),   _("&Time Track"), FN(OnNewTimeTrack));
-
-   c->EndSubMenu();
-
-   //////////////////////////////////////////////////////////////////////////
-
    c->AddSeparator();
 
    c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
@@ -6103,77 +6090,6 @@ void AudacityProject::OnScoreAlign()
 }
 #endif /* EXPERIMENTAL_SCOREALIGN */
 
-
-void AudacityProject::OnNewWaveTrack()
-{
-   WaveTrack *t = mTrackFactory->NewWaveTrack(mDefaultFormat, mRate);
-   SelectNone();
-
-   mTracks->Add(t);
-   t->SetSelected(true);
-
-   PushState(_("Created new audio track"), _("New Track"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible(t);
-}
-
-void AudacityProject::OnNewStereoTrack()
-{
-   WaveTrack *t = mTrackFactory->NewWaveTrack(mDefaultFormat, mRate);
-   t->SetChannel(Track::LeftChannel);
-   SelectNone();
-
-   mTracks->Add(t);
-   t->SetSelected(true);
-   t->SetLinked (true);
-
-   t = mTrackFactory->NewWaveTrack(mDefaultFormat, mRate);
-   t->SetChannel(Track::RightChannel);
-
-   mTracks->Add(t);
-   t->SetSelected(true);
-
-   PushState(_("Created new stereo audio track"), _("New Track"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible(t);
-}
-
-void AudacityProject::OnNewLabelTrack()
-{
-   LabelTrack *t = new LabelTrack(mDirManager);
-
-   SelectNone();
-
-   mTracks->Add(t);
-   t->SetSelected(true);
-
-   PushState(_("Created new label track"), _("New Track"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible(t);
-}
-
-void AudacityProject::OnNewTimeTrack()
-{
-   if (mTracks->GetTimeTrack()) {
-      wxMessageBox(_("This version of Audacity only allows one time track for each project window."));
-      return;
-   }
-
-   TimeTrack *t = new TimeTrack(mDirManager);
-
-   SelectNone();
-
-   mTracks->AddToHead(t);
-   t->SetSelected(true);
-
-   PushState(_("Created new time track"), _("New Track"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible(t);
-}
 
 void AudacityProject::OnTimerRecord()
 {
