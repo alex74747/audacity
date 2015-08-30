@@ -37,6 +37,7 @@
 #include "Project.h"
 #include "Internat.h"
 #include "Prefs.h"
+#include "menus/TransportMenuCommands.h"
 #include "widgets/NumericTextCtrl.h"
 #include "widgets/HelpSystem.h"
 
@@ -515,7 +516,7 @@ int TimerRecordDialog::RunWaitDialog()
       return POST_TIMER_RECORD_CANCEL_WAIT;
    } else {
       // Record for specified time.
-      pProject->OnRecord();
+      TransportMenuCommands(pProject).OnRecord();
       bool bIsRecording = true;
 
       wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString(m_pTimerAfterCompleteChoiceCtrl->GetSelection());

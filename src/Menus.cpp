@@ -750,13 +750,9 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(CanStopAudioStreamFlag, CanStopAudioStreamFlag);
 
-      c->AddSeparator();
-
       c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
                          AudioIONotBusyFlag | CanStopAudioStreamFlag);
 
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
       c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
       c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
 
@@ -2084,14 +2080,6 @@ void AudacityProject::OnStop()
    wxCommandEvent evt;
 
    GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnRecord()
-{
-   wxCommandEvent evt;
-   evt.SetInt(2); // 0 is default, use 1 to set shift on, 2 to clear it
-
-   GetControlToolBar()->OnRecord(evt);
 }
 
 void AudacityProject::OnRecordAppend()

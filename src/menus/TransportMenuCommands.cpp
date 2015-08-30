@@ -38,6 +38,14 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
       WaveTracksExistFlag | AudioIONotBusyFlag,
       WaveTracksExistFlag | AudioIONotBusyFlag);
+
+   c->AddSeparator();
+
+   c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
+                      AudioIONotBusyFlag | CanStopAudioStreamFlag);
+
+   /* i18n-hint: (verb)*/
+   c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -197,4 +205,12 @@ void TransportMenuCommands::OnSkipEnd()
 
    mProject->GetControlToolBar()->OnFF(evt);
    mProject->ModifyState(false);
+}
+
+void TransportMenuCommands::OnRecord()
+{
+   wxCommandEvent evt;
+   evt.SetInt(2); // 0 is default, use 1 to set shift on, 2 to clear it
+
+   mProject->GetControlToolBar()->OnRecord(evt);
 }
