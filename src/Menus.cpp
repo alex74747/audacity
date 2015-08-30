@@ -720,9 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"),
-              AlwaysEnabledFlag,
-              AlwaysEnabledFlag);
    c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
               AudioIONotBusyFlag,
               AudioIONotBusyFlag);
@@ -1961,13 +1958,6 @@ void AudacityProject::OnStop()
 
    if (gAudioIO->IsStreamActive())
       GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnPause()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnPause(evt);
 }
 
 void AudacityProject::OnRecord()
