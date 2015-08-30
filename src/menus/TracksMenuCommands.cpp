@@ -26,133 +26,137 @@ TracksMenuCommands::TracksMenuCommands(AudacityProject *project)
 
 void TracksMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
-
-   //////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("Add &New"));
+   c->BeginMenu(_("&Tracks"));
    {
-      c->AddItem(wxT("NewMonoTrack"), _("&Mono Track"), FN(OnNewWaveTrack), wxT("Ctrl+Shift+N"));
-      c->AddItem(wxT("NewStereoTrack"), _("&Stereo Track"), FN(OnNewStereoTrack));
-      c->AddItem(wxT("NewLabelTrack"), _("&Label Track"), FN(OnNewLabelTrack));
-      c->AddItem(wxT("NewTimeTrack"), _("&Time Track"), FN(OnNewTimeTrack));
-   }
-   c->EndSubMenu();
+      c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   //////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
 
-   c->AddSeparator();
+      c->BeginSubMenu(_("Add &New"));
+      {
+         c->AddItem(wxT("NewMonoTrack"), _("&Mono Track"), FN(OnNewWaveTrack), wxT("Ctrl+Shift+N"));
+         c->AddItem(wxT("NewStereoTrack"), _("&Stereo Track"), FN(OnNewStereoTrack));
+         c->AddItem(wxT("NewLabelTrack"), _("&Label Track"), FN(OnNewLabelTrack));
+         c->AddItem(wxT("NewTimeTrack"), _("&Time Track"), FN(OnNewTimeTrack));
+      }
+      c->EndSubMenu();
 
-   c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
-      AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
-   c->AddItem(wxT("MixAndRender"), _("Mi&x and Render"), FN(OnMixAndRender),
-      AudioIONotBusyFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | WaveTracksSelectedFlag);
-   c->AddItem(wxT("MixAndRenderToNewTrack"), _("Mix and Render to Ne&w Track"), FN(OnMixAndRenderToNewTrack), wxT("Ctrl+Shift+M"),
-      AudioIONotBusyFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | WaveTracksSelectedFlag);
-   c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
-      AudioIONotBusyFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | WaveTracksSelectedFlag);
+      //////////////////////////////////////////////////////////////////////////
 
-   c->AddSeparator();
-
-   c->AddItem(wxT("RemoveTracks"), _("Remo&ve Tracks"), FN(OnRemoveTracks),
-      AudioIONotBusyFlag | TracksSelectedFlag,
-      AudioIONotBusyFlag | TracksSelectedFlag);
-
-   c->AddSeparator();
-
-   c->AddItem(wxT("MuteAllTracks"), _("&Mute All Tracks"), FN(OnMuteAllTracks), wxT("Ctrl+U"));
-   c->AddItem(wxT("UnMuteAllTracks"), _("&Unmute All Tracks"), FN(OnUnMuteAllTracks), wxT("Ctrl+Shift+U"));
-
-   c->AddSeparator();
-
-   wxArrayString alignLabelsNoSync;
-   alignLabelsNoSync.Add(_("&Align End to End"));
-   alignLabelsNoSync.Add(_("Align &Together"));
-
-   wxArrayString alignLabels;
-   alignLabels.Add(_("Start to &Zero"));
-   alignLabels.Add(_("Start to &Cursor/Selection Start"));
-   alignLabels.Add(_("Start to Selection &End"));
-   alignLabels.Add(_("End to Cu&rsor/Selection Start"));
-   alignLabels.Add(_("End to Selection En&d"));
-   mAlignLabelsCount = alignLabels.GetCount();
-
-   // Calling c->SetCommandFlags() after AddItemList for "Align" and "AlignMove"
-   // does not correctly set flags for submenus, so do it this way.
-   c->SetDefaultFlags(AudioIONotBusyFlag | TracksSelectedFlag,
-      AudioIONotBusyFlag | TracksSelectedFlag);
-
-   c->BeginSubMenu(_("&Align Tracks"));
-   {
-      c->AddItemList(wxT("Align"), alignLabelsNoSync, FN(OnAlignNoSync));
       c->AddSeparator();
-      c->AddItemList(wxT("Align"), alignLabels, FN(OnAlign));
-   }
-   c->EndSubMenu();
 
-   //////////////////////////////////////////////////////////////////////////
+      c->AddItem(wxT("Stereo to Mono"), _("Stereo Trac&k to Mono"), FN(OnStereoToMono),
+         AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | StereoRequiredFlag | WaveTracksSelectedFlag);
+      c->AddItem(wxT("MixAndRender"), _("Mi&x and Render"), FN(OnMixAndRender),
+         AudioIONotBusyFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | WaveTracksSelectedFlag);
+      c->AddItem(wxT("MixAndRenderToNewTrack"), _("Mix and Render to Ne&w Track"), FN(OnMixAndRenderToNewTrack), wxT("Ctrl+Shift+M"),
+         AudioIONotBusyFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | WaveTracksSelectedFlag);
+      c->AddItem(wxT("Resample"), _("&Resample..."), FN(OnResample),
+         AudioIONotBusyFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | WaveTracksSelectedFlag);
 
-   // TODO: Can these labels be made clearer? Do we need this sub-menu at all?
-   c->BeginSubMenu(_("Move Sele&ction when Aligning"));
-   {
-      c->AddItemList(wxT("AlignMove"), alignLabels, FN(OnAlignMoveSel));
-      c->SetCommandFlags(wxT("AlignMove"),
+      c->AddSeparator();
+
+      c->AddItem(wxT("RemoveTracks"), _("Remo&ve Tracks"), FN(OnRemoveTracks),
          AudioIONotBusyFlag | TracksSelectedFlag,
          AudioIONotBusyFlag | TracksSelectedFlag);
-   }
-   c->EndSubMenu();
 
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
+      c->AddSeparator();
 
-   //////////////////////////////////////////////////////////////////////////
+      c->AddItem(wxT("MuteAllTracks"), _("&Mute All Tracks"), FN(OnMuteAllTracks), wxT("Ctrl+U"));
+      c->AddItem(wxT("UnMuteAllTracks"), _("&Unmute All Tracks"), FN(OnUnMuteAllTracks), wxT("Ctrl+Shift+U"));
+
+      c->AddSeparator();
+
+      wxArrayString alignLabelsNoSync;
+      alignLabelsNoSync.Add(_("&Align End to End"));
+      alignLabelsNoSync.Add(_("Align &Together"));
+
+      wxArrayString alignLabels;
+      alignLabels.Add(_("Start to &Zero"));
+      alignLabels.Add(_("Start to &Cursor/Selection Start"));
+      alignLabels.Add(_("Start to Selection &End"));
+      alignLabels.Add(_("End to Cu&rsor/Selection Start"));
+      alignLabels.Add(_("End to Selection En&d"));
+      mAlignLabelsCount = alignLabels.GetCount();
+
+      // Calling c->SetCommandFlags() after AddItemList for "Align" and "AlignMove"
+      // does not correctly set flags for submenus, so do it this way.
+      c->SetDefaultFlags(AudioIONotBusyFlag | TracksSelectedFlag,
+         AudioIONotBusyFlag | TracksSelectedFlag);
+
+      c->BeginSubMenu(_("&Align Tracks"));
+      {
+         c->AddItemList(wxT("Align"), alignLabelsNoSync, FN(OnAlignNoSync));
+         c->AddSeparator();
+         c->AddItemList(wxT("Align"), alignLabels, FN(OnAlign));
+      }
+      c->EndSubMenu();
+
+      //////////////////////////////////////////////////////////////////////////
+
+      // TODO: Can these labels be made clearer? Do we need this sub-menu at all?
+      c->BeginSubMenu(_("Move Sele&ction when Aligning"));
+      {
+         c->AddItemList(wxT("AlignMove"), alignLabels, FN(OnAlignMoveSel));
+         c->SetCommandFlags(wxT("AlignMove"),
+            AudioIONotBusyFlag | TracksSelectedFlag,
+            AudioIONotBusyFlag | TracksSelectedFlag);
+      }
+      c->EndSubMenu();
+
+      c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
+
+      //////////////////////////////////////////////////////////////////////////
 
 #ifdef EXPERIMENTAL_SCOREALIGN
 #error
-   c->AddItem(wxT("ScoreAlign"), _("Synchronize MIDI with Audio"), FN(OnScoreAlign),
-      AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag);
+      c->AddItem(wxT("ScoreAlign"), _("Synchronize MIDI with Audio"), FN(OnScoreAlign),
+         AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | NoteTracksSelectedFlag | WaveTracksSelectedFlag);
 #endif // EXPERIMENTAL_SCOREALIGN
 
 #ifdef EXPERIMENTAL_SYNC_LOCK
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddCheck(wxT("SyncLock"), _("Sync-&Lock Tracks"), FN(OnSyncLock), 0,
-      AlwaysEnabledFlag, AlwaysEnabledFlag);
+      c->AddCheck(wxT("SyncLock"), _("Sync-&Lock Tracks"), FN(OnSyncLock), 0,
+         AlwaysEnabledFlag, AlwaysEnabledFlag);
 #endif
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddItem(wxT("AddLabel"), _("Add Label At &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
-      AlwaysEnabledFlag, AlwaysEnabledFlag);
-   c->AddItem(wxT("AddLabelPlaying"), _("Add Label At &Playback Position"),
-              FN(OnAddLabelPlaying),
+      c->AddItem(wxT("AddLabel"), _("Add Label At &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
+         AlwaysEnabledFlag, AlwaysEnabledFlag);
+      c->AddItem(wxT("AddLabelPlaying"), _("Add Label At &Playback Position"),
+         FN(OnAddLabelPlaying),
 #ifdef __WXMAC__
-              wxT("Ctrl+."),
+         wxT("Ctrl+."),
 #else
-              wxT("Ctrl+M"),
+         wxT("Ctrl+M"),
 #endif
-              0, AudioIONotBusyFlag);
+         0, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
+      c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   //////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
 
-   c->BeginSubMenu(_("S&ort Tracks"));
-   {
-      c->AddItem(wxT("SortByTime"), _("by &Start time"), FN(OnSortTime),
-         TracksExistFlag,
-         TracksExistFlag);
-      c->AddItem(wxT("SortByName"), _("by &Name"), FN(OnSortName),
-         TracksExistFlag,
-         TracksExistFlag);
+      c->BeginSubMenu(_("S&ort Tracks"));
+      {
+         c->AddItem(wxT("SortByTime"), _("by &Start time"), FN(OnSortTime),
+            TracksExistFlag,
+            TracksExistFlag);
+         c->AddItem(wxT("SortByName"), _("by &Name"), FN(OnSortName),
+            TracksExistFlag,
+            TracksExistFlag);
+      }
+      c->EndSubMenu();
    }
-   c->EndSubMenu();
+   c->EndMenu();
 }
 
 void TracksMenuCommands::OnNewWaveTrack()

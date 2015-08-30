@@ -36,6 +36,7 @@ simplifies construction of menu items.
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <math.h>
@@ -71,7 +72,6 @@ simplifies construction of menu items.
 #include "export/Export.h"
 #include "export/ExportMultiple.h"
 #include "prefs/PrefsDialog.h"
-#include "ShuttleGui.h"
 #include "HistoryWindow.h"
 #include "LyricsWindow.h"
 #include "MixerBoard.h"
@@ -86,7 +86,6 @@ simplifies construction of menu items.
 #endif // USE_MIDI
 #include "Tags.h"
 #include "TimeTrack.h"
-#include "Mix.h"
 #include "ondemand/ODManager.h"
 
 #include "Resample.h"
@@ -110,7 +109,6 @@ simplifies construction of menu items.
 #include "TimeDialog.h"
 #include "TimerRecordDialog.h"
 #include "SoundActivatedRecord.h"
-#include "LabelDialog.h"
 
 #include "SplashDialog.h"
 #include "DeviceManager.h"
@@ -765,15 +763,7 @@ void AudacityProject::CreateMenusAndCommands()
    // Tracks Menu (formerly Project Menu)
    //////////////////////////////////////////////////////////////////////////
 
-   c->BeginMenu(_("&Tracks"));
-
    mTracksMenuCommands->Create(c);
-
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
-
-   //////////////////////////////////////////////////////////////////////////
-
-   c->EndMenu();
 
    // All of this is a bit hacky until we can get more things connected into
    // the plugin manager...sorry! :-(
