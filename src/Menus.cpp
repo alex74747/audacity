@@ -1011,8 +1011,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
-
    c->AddSeparator();
 
    c->AddItem(wxT("Screenshot"), _("&Screenshot Tools..."), FN(OnScreenshot));
@@ -6411,13 +6409,6 @@ void AudacityProject::OnAbout()
 void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
-}
-
-void AudacityProject::OnManual()
-{
-   HelpSystem::ShowHelpDialog(
-      this,
-      wxT("Main_Page"));
 }
 
 void AudacityProject::OnCheckForUpdates()

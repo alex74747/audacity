@@ -373,7 +373,6 @@ void OnManageAnalyzers();
         // Help Menu
 
 void OnAbout();
-void OnManual();
 void OnCheckForUpdates();
 void OnShowLog();
 void OnHelpWelcome();
