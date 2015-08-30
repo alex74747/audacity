@@ -329,10 +329,6 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-#ifdef EXPERIMENTAL_SCOREALIGN
-void OnScoreAlign();
-#endif // EXPERIMENTAL_SCOREALIGN
-
 // Tracks menu
 void OnTimerRecord();
 void OnSyncLock();
