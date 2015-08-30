@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\..\src\Menus.cpp" />
     <ClCompile Include="..\..\..\src\menus\HelpMenuCommands.cpp" />
     <ClCompile Include="..\..\..\src\menus\TracksMenuCommands.cpp" />
+    <ClCompile Include="..\..\..\src\menus\TransportMenuCommands.cpp" />
     <ClCompile Include="..\..\..\src\Mix.cpp" />
     <ClCompile Include="..\..\..\src\MixerBoard.cpp" />
     <ClCompile Include="..\..\..\lib-src\lib-widget-extra\NonGuiThread.cpp" />
@@ -427,6 +428,7 @@
     <ClInclude Include="..\..\..\src\import\SpecPowerMeter.h" />
     <ClInclude Include="..\..\..\src\menus\HelpMenuCommands.h" />
     <ClInclude Include="..\..\..\src\menus\TracksMenuCommands.h" />
+    <ClInclude Include="..\..\..\src\menus\TransportMenuCommands.h" />
     <ClInclude Include="..\..\..\src\ModuleManager.h" />
     <ClInclude Include="..\..\..\src\NumberScale.h" />
     <ClInclude Include="..\..\..\src\prefs\GUISettings.h" />

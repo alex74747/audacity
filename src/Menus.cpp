@@ -33,6 +33,7 @@ simplifies construction of menu items.
 #include "Audacity.h"
 #include "Project.h"
 
+#include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
 
@@ -714,6 +715,9 @@ void AudacityProject::CreateMenusAndCommands()
    /*i18n-hint: 'Transport' is the name given to the set of controls that
    play, record, pause etc. */
    c->BeginMenu(_("T&ransport"));
+
+   mTransportMenuCommands->Create(c);
+
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
    /* i18n-hint: (verb) Start or Stop audio playback*/
