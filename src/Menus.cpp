@@ -60,7 +60,6 @@ simplifies construction of menu items.
 #include "effects/EffectManager.h"
 
 #include "AudacityApp.h"
-#include "AudacityLogger.h"
 #include "AudioIO.h"
 #include "Dependencies.h"
 #include "float_cast.h"
@@ -89,9 +88,6 @@ simplifies construction of menu items.
 #include "Tags.h"
 #include "TimeTrack.h"
 #include "Mix.h"
-#include "AboutDialog.h"
-#include "Benchmark.h"
-#include "Screenshot.h"
 #include "ondemand/ODManager.h"
 
 #include "BatchProcessDialog.h"
@@ -107,7 +103,6 @@ simplifies construction of menu items.
 #include "toolbars/DeviceToolBar.h"
 #include "toolbars/MixerToolBar.h"
 #include "toolbars/TranscriptionToolBar.h"
-#include "widgets/LinkingHtmlWindow.h"
 
 #include "Experimental.h"
 #include "PlatformCompatibility.h"
@@ -117,9 +112,7 @@ simplifies construction of menu items.
 #include "SoundActivatedRecord.h"
 #include "LabelDialog.h"
 
-#include "FileDialog.h"
 #include "SplashDialog.h"
-#include "widgets/HelpSystem.h"
 #include "DeviceManager.h"
 
 #include "Snap.h"
@@ -1074,13 +1067,7 @@ void AudacityProject::CreateMenusAndCommands()
       wxGetApp().s_macHelpMenuTitleName = _("&Help");
 #endif
 
-      c->BeginMenu(_("&Help"));
-
       mHelpMenuCommands->Create(c);
-
-      c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-      c->EndMenu();
 
       /////////////////////////////////////////////////////////////////////////////
 
