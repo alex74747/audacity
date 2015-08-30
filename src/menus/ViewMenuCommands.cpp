@@ -31,6 +31,9 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddSeparator();
    c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
    c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
+
+   c->AddSeparator();
+   c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -100,4 +103,14 @@ void ViewMenuCommands::OnZoomFitV()
    mProject->GetVerticalScrollBar()->SetThumbPosition(0);
    mProject->RedrawProject();
    mProject->ModifyState(true);
+}
+
+void ViewMenuCommands::OnGoSelStart()
+{
+   const ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   mProject->TP_ScrollWindow(viewInfo.selectedRegion.t0() -
+      ((mProject->GetScreenEndTime() - viewInfo.h) / 2));
 }
