@@ -4,6 +4,7 @@
 
 #include <wx/msgdlg.h>
 
+#include "../AboutDialog.h"
 #include "../AudacityLogger.h"
 #include "../AudioIO.h"
 #include "../AboutDialog.h"
@@ -50,6 +51,11 @@ void HelpMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
 #endif
 
+#ifndef __WXMAC__
+   c->AddSeparator();
+#endif
+
+   c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -147,3 +153,16 @@ void HelpMenuCommands::OnCrashReport()
    wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
 }
 #endif
+
+void HelpMenuCommands::OnAbout()
+{
+#ifdef __WXMAC__
+   // Modeless dialog, consistent with other Mac applications
+   wxCommandEvent dummy;
+   wxGetApp().OnMenuAbout(dummy);
+#else
+   // Windows and Linux still modal.
+   AboutDialog dlog(this);
+   dlog.ShowModal();
+#endif
+}

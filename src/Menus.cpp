@@ -1080,12 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-#ifndef __WXMAC__
-      c->AddSeparator();
-#endif
-
-      c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
-
       c->EndMenu();
 
       /////////////////////////////////////////////////////////////////////////////
@@ -6803,19 +6797,6 @@ void AudacityProject::OnRemoveTracks()
 //
 // Help Menu
 //
-
-void AudacityProject::OnAbout()
-{
-#ifdef __WXMAC__
-   // Modeless dialog, consistent with other Mac applications
-   wxCommandEvent dummy;
-   wxGetApp().OnMenuAbout(dummy);
-#else
-   // Windows and Linux still modal.
-   AboutDialog dlog(this);
-   dlog.ShowModal();
-#endif
-}
 
 void AudacityProject::OnHelpWelcome()
 {
