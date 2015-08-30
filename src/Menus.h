@@ -41,10 +41,6 @@ wxUint32 GetUpdateFlags();
 
 double NearestZeroCrossing(double t0);
 
-public:
-//Adds label and returns index of label in labeltrack.
-int DoAddLabel(const SelectedRegion& region);
-
 private:
 
         // Selecting a tool from the keyboard
@@ -334,8 +330,6 @@ void OnCursorSelEnd();
 
 // Tracks menu
 void OnTimerRecord();
-void OnAddLabel();
-void OnAddLabelPlaying();
 void OnEditLabels();
 
         // Effect Menu

@@ -771,18 +771,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddSeparator();
-
-   c->AddItem(wxT("AddLabel"), _("Add Label At &Selection"), FN(OnAddLabel), wxT("Ctrl+B"),
-              AlwaysEnabledFlag, AlwaysEnabledFlag);
-   c->AddItem(wxT("AddLabelPlaying"), _("Add Label At &Playback Position"),
-              FN(OnAddLabelPlaying),
-#ifdef __WXMAC__
-              wxT("Ctrl+."),
-#else
-              wxT("Ctrl+M"),
-#endif
-              0, AudioIONotBusyFlag);
    c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
 
    c->AddSeparator();
@@ -5464,71 +5452,6 @@ void AudacityProject::OnSoundActivated()
 void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
-}
-
-int AudacityProject::DoAddLabel(const SelectedRegion &region)
-{
-   LabelTrack *lt = NULL;
-
-   // If the focused track is a label track, use that
-   Track *t = mTrackPanel->GetFocusedTrack();
-   if (t && t->GetKind() == Track::Label) {
-      lt = (LabelTrack *) t;
-   }
-
-   // Otherwise look for a label track after the focused track
-   if (!lt) {
-      TrackListIterator iter(mTracks);
-      if (t)
-         iter.StartWith(t);
-      else
-         t = iter.First();
-
-      while (t && !lt) {
-         if (t->GetKind() == Track::Label)
-            lt = (LabelTrack *) t;
-
-         t = iter.Next();
-      }
-   }
-
-   // If none found, start a new label track and use it
-   if (!lt) {
-      lt = new LabelTrack(mDirManager);
-      mTracks->Add(lt);
-   }
-
-// LLL: Commented as it seemed a little forceful to remove users
-//      selection when adding the label.  This does not happen if
-//      you select several tracks and the last one of those is a
-//      label track...typing a label will not clear the selections.
-//
-//   SelectNone();
-   lt->SetSelected(true);
-
-   int index = lt->AddLabel(region);
-
-   PushState(_("Added label"), _("Label"));
-
-   RedrawProject();
-   mTrackPanel->EnsureVisible((Track *)lt);
-   mTrackPanel->SetFocus();
-
-   return index;
-}
-
-void AudacityProject::OnAddLabel()
-{
-   DoAddLabel(mViewInfo.selectedRegion);
-}
-
-void AudacityProject::OnAddLabelPlaying()
-{
-   if (GetAudioIOToken()>0 &&
-       gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      double indicator = gAudioIO->GetStreamTime();
-      DoAddLabel(SelectedRegion(indicator, indicator));
-   }
 }
 
 void AudacityProject::OnEditLabels()
