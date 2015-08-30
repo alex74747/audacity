@@ -1,4 +1,5 @@
 #include "../Audacity.h"
+#include "../Experimental.h"
 #include "TransportMenuCommands.h"
 
 #include "../AudioIO.h"
@@ -68,6 +69,10 @@ void TransportMenuCommands::Create(CommandManager *c)
    // Sound Activated recording options
    c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
    c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
+
+#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
+   c->AddCheck(wxT("AutomatedInputLevelAdjustmentOnOff"), _("A&utomated Recording Level Adjustment (on/off)"), FN(OnToggleAutomatedInputLevelAdjustment), 0);
+#endif
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -386,3 +391,14 @@ void TransportMenuCommands::OnSoundActivated()
    SoundActivatedRecord dialog(mProject /* parent */);
    dialog.ShowModal();
 }
+
+#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
+void TransportMenuCommands::OnToggleAutomatedInputLevelAdjustment()
+{
+   bool AVEnabled;
+   gPrefs->Read(wxT("/AudioIO/AutomatedInputLevelAdjustment"), &AVEnabled, false);
+   gPrefs->Write(wxT("/AudioIO/AutomatedInputLevelAdjustment"), !AVEnabled);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
+}
+#endif
