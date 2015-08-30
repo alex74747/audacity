@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
@@ -861,6 +861,9 @@
       <Filter>src\menus</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\menus\TransportMenuCommands.cpp">
+      <Filter>src\menus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\menus\ViewMenuCommands.cpp">
       <Filter>src\menus</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1733,6 +1736,9 @@
       <Filter>src\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\menus\TransportMenuCommands.h">
+      <Filter>src\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\menus\ViewMenuCommands.h">
       <Filter>src\menus</Filter>
     </ClInclude>
   </ItemGroup>

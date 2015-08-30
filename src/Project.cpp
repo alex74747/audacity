@@ -53,6 +53,7 @@ scroll information.  It also has some status flags.
 #include "Project.h"
 
 #include "commands/CommandManager.h"
+#include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
@@ -840,6 +841,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mIsBeingDeleted(false)
 {
    mCommandManager = new CommandManager();
+   mViewMenuCommands = new ViewMenuCommands(this);
    mTransportMenuCommands = new TransportMenuCommands(this);
    mTracksMenuCommands = new TracksMenuCommands(this);
    mHelpMenuCommands = new HelpMenuCommands(this);
@@ -1096,6 +1098,7 @@ AudacityProject::~AudacityProject()
 
    delete mCommandManager;
 
+   delete mViewMenuCommands;
    delete mTransportMenuCommands;
    delete mTracksMenuCommands;
    delete mHelpMenuCommands;
