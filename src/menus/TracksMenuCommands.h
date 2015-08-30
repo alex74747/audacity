@@ -36,6 +36,9 @@ private:
    void OnAlign(int index);
    void OnAlignMoveSel(int index);
    void HandleAlign(int index, bool moveSel);
+#ifdef EXPERIMENTAL_SCOREALIGN
+   void OnScoreAlign();
+#endif // EXPERIMENTAL_SCOREALIGN
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
