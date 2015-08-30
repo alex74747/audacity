@@ -440,6 +440,8 @@ audacity_SOURCES = \
 	import/SpecPowerMeter.h \
 	menus/HelpMenuCommands.cpp \
 	menus/HelpMenuCommands.h \
+	menus/TracksMenuCommands.cpp \
+	menus/TracksMenuCommands.h \
 	ondemand/ODComputeSummaryTask.cpp \
 	ondemand/ODComputeSummaryTask.h \
 	ondemand/ODDecodeFFmpegTask.cpp \
