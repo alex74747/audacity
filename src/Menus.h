@@ -189,7 +189,6 @@ void OnSelectAllTracks();
 
         // View Menu
 
-void OnZoomOut();
 // void OnZoomToggle();
 void OnZoomFit();
 void OnZoomFitV();

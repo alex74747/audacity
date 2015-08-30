@@ -19,6 +19,9 @@ void ViewMenuCommands::Create(CommandManager *c)
       ZoomInAvailableFlag,
       ZoomInAvailableFlag);
    c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
+   c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
+      ZoomOutAvailableFlag,
+      ZoomOutAvailableFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -30,4 +33,9 @@ void ViewMenuCommands::OnZoomNormal()
 {
    mProject->Zoom(ZoomInfo::GetDefaultZoom());
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void ViewMenuCommands::OnZoomOut()
+{
+   mProject->ZoomOutByFactor(1 / 2.0);
 }

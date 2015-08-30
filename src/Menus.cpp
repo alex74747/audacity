@@ -612,9 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
-              ZoomOutAvailableFlag,
-              ZoomOutAvailableFlag);
    c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
 
    c->AddSeparator();
@@ -3849,12 +3846,6 @@ void AudacityProject::ZoomInByFactor( double ZoomFactor )
 
    TP_ScrollWindow(newh);
 }
-
-void AudacityProject::OnZoomOut()
-{
-   ZoomOutByFactor( 1 /2.0 );
-}
-
 
 void AudacityProject::ZoomOutByFactor( double ZoomFactor )
 {

@@ -262,7 +262,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          ViewMenuCommands(p).OnZoomIn();
          break;
       case ETBZoomOutID:
-         p->OnZoomOut();
+         ViewMenuCommands(p).OnZoomOut();
          break;
 
 #if 0 // Disabled for version 1.2.0 since it doesn't work quite right...

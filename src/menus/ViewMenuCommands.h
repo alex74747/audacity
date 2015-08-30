@@ -15,6 +15,9 @@ public:
    void OnZoomIn();
 private:
    void OnZoomNormal();
+public:
+   void OnZoomOut();
+private:
 
    AudacityProject *const mProject;
 };
