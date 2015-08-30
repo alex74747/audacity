@@ -23,6 +23,7 @@ private:
    void OnZoomFitV();
    void OnGoSelStart();
    void OnGoSelEnd();
+   void OnCollapseAllTracks();
 
    AudacityProject *const mProject;
 };
