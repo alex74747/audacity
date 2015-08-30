@@ -1,6 +1,7 @@
 #include "ViewMenuCommands.h"
 
 #include "../Project.h"
+#include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
 
 #define FN(X) new ObjectCommandFunctor<ViewMenuCommands>(this, &ViewMenuCommands:: X )
@@ -17,9 +18,16 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
       ZoomInAvailableFlag,
       ZoomInAvailableFlag);
+   c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
 }
 
 void ViewMenuCommands::OnZoomIn()
 {
    mProject->ZoomInByFactor(2.0);
+}
+
+void ViewMenuCommands::OnZoomNormal()
+{
+   mProject->Zoom(ZoomInfo::GetDefaultZoom());
+   mProject->GetTrackPanel()->Refresh(false);
 }

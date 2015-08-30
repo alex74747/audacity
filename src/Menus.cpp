@@ -612,7 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
    c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
               ZoomOutAvailableFlag,
               ZoomOutAvailableFlag);
@@ -3895,12 +3894,6 @@ void AudacityProject::OnZoomToggle()
 }
 #endif
 
-
-void AudacityProject::OnZoomNormal()
-{
-   Zoom(ZoomInfo::GetDefaultZoom());
-   mTrackPanel->Refresh(false);
-}
 
 void AudacityProject::OnZoomFit()
 {
