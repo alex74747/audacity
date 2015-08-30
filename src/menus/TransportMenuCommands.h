@@ -22,6 +22,7 @@ private:
 public:
    void OnPause();
 private:
+   void OnSkipStart();
 
    AudacityProject *const mProject;
 };

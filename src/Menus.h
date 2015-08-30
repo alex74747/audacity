@@ -70,7 +70,6 @@ void OnStop();
 void OnRecord();
 void OnRecordAppend();
 void OnStopSelect();
-void OnSkipStart();
 void OnSkipEnd();
 void OnSeekLeftShort();
 void OnSeekRightShort();
