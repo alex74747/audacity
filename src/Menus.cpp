@@ -750,10 +750,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(CanStopAudioStreamFlag, CanStopAudioStreamFlag);
 
-      c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
-                 WaveTracksExistFlag | AudioIONotBusyFlag,
-                 WaveTracksExistFlag | AudioIONotBusyFlag);
-
       c->AddSeparator();
 
       c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
@@ -2175,14 +2171,6 @@ void AudacityProject::OnToogleAutomatedInputLevelAdjustment()
    ModifyAllProjectToolbarMenus();
 }
 #endif
-
-void AudacityProject::OnSkipEnd()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnFF(evt);
-   ModifyState(false);
-}
 
 void AudacityProject::OnSeekLeftShort()
 {
