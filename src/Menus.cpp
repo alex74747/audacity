@@ -34,6 +34,7 @@ simplifies construction of menu items.
 #include "Project.h"
 
 #include <cfloat>
+#include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
@@ -621,6 +622,9 @@ void AudacityProject::CreateMenusAndCommands()
       /////////////////////////////////////////////////////////////////////////////
 
       c->BeginMenu(_("&View"));
+
+      mViewMenuCommands->Create(c);
+
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
       c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
