@@ -21,6 +21,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    /* i18n-hint: (verb) Start or Stop audio playback*/
    c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"));
    c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("X"));
+   c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
+      WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag,
+      WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -147,4 +150,14 @@ bool TransportMenuCommands::DoPlayStopSelect(bool click, bool shift)
       return true;
    }
    return false;
+}
+
+void TransportMenuCommands::OnPlayLooped()
+{
+   if (!mProject->MakeReadyToPlay(true))
+      return;
+
+   // Now play in a loop
+   // Will automatically set mLastPlayMode
+   mProject->GetControlToolBar()->PlayCurrentRegion(true);
 }
