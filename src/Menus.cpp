@@ -720,8 +720,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
-
    c->AddSeparator();
 
    c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
@@ -1946,14 +1944,6 @@ void AudacityProject::OnStop()
 
    if (gAudioIO->IsStreamActive())
       GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnRecordAppend()
-{
-   wxCommandEvent evt;
-   evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
-
-   GetControlToolBar()->OnRecord(evt);
 }
 
 void AudacityProject::OnStopSelect()
