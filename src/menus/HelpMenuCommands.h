@@ -15,6 +15,7 @@ public:
 private:
    void OnQuickHelp();
    void OnManual();
+   void OnScreenshot();
 
    AudacityProject *const mProject;
 };

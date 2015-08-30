@@ -1080,10 +1080,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-      c->AddSeparator();
-
-      c->AddItem(wxT("Screenshot"), _("&Screenshot Tools..."), FN(OnScreenshot));
-
 #if IS_ALPHA
       // TODO: What should we do here?  Make benchmark a plug-in?
       // Easy enough to do.  We'd call it mod-self-test.
@@ -6882,11 +6878,6 @@ void AudacityProject::OnCrashReport()
    wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
 }
 #endif
-
-void AudacityProject::OnScreenshot()
-{
-   ::OpenScreenshotTools();
-}
 
 void AudacityProject::OnAudioDeviceInfo()
 {
