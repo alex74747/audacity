@@ -22,6 +22,9 @@ public:
    void MayCheckForUpdates();
 
 private:
+   void OnAudioDeviceInfo();
+
+private:
    AudacityProject *const mProject;
 };
 

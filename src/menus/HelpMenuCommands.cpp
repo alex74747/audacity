@@ -1,10 +1,15 @@
 #include "../Audacity.h"
 #include "HelpMenuCommands.h"
 
+#include <wx/msgdlg.h>
+
+#include "../AudioIO.h"
 #include "../AboutDialog.h"
 #include "../Benchmark.h"
+#include "../lib-src/FileDialog/FileDialog.h"
 #include "../Project.h"
 #include "../Screenshot.h"
+#include "../ShuttleGUI.h"
 #include "../commands/CommandManager.h"
 #include "../widgets/HelpSystem.h"
 #include "../widgets/LinkingHtmlWindow.h"
@@ -35,6 +40,9 @@ void HelpMenuCommands::Create(CommandManager *c)
    c->AddSeparator();
 
    c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
+   c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -72,4 +80,43 @@ void HelpMenuCommands::MayCheckForUpdates()
 #if IS_ALPHA
    OnCheckForUpdates();
 #endif
+}
+
+void HelpMenuCommands::OnAudioDeviceInfo()
+{
+   wxString info = gAudioIO->GetDeviceInfo();
+
+   wxDialogWrapper dlg(mProject, wxID_ANY, wxString(_("Audio Device Info")));
+   dlg.SetName(dlg.GetTitle());
+   ShuttleGui S(&dlg, eIsCreating);
+
+   wxTextCtrl *text;
+   S.StartVerticalLay();
+   {
+      S.SetStyle(wxTE_MULTILINE | wxTE_READONLY);
+      text = S.Id(wxID_STATIC).AddTextWindow(info);
+      S.AddStandardButtons(eOkButton | eCancelButton);
+   }
+   S.EndVerticalLay();
+
+   dlg.FindWindowById(wxID_OK)->SetLabel(_("&Save"));
+   dlg.SetSize(350, 450);
+
+   if (dlg.ShowModal() == wxID_OK)
+   {
+      wxString fName = FileSelector(_("Save Device Info"),
+         wxEmptyString,
+         wxT("deviceinfo.txt"),
+         wxT("txt"),
+         wxT("*.txt"),
+         wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
+         mProject);
+      if (!fName.IsEmpty())
+      {
+         if (!text->SaveFile(fName))
+         {
+            wxMessageBox(_("Unable to save device info"), _("Save Device Info"));
+         }
+      }
+   }
 }
