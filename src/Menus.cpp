@@ -627,11 +627,7 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddSeparator();
-      c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
-                  gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-      c->AddSeparator();
+      //c->AddSeparator();
 
       // History window should be available either for UndoAvailableFlag or RedoAvailableFlag,
       // but we can't make the AddItem flags and mask have both, because they'd both have to be true for the
@@ -4093,16 +4089,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnShowClipping()
-{
-   bool checked = !gPrefs->Read(wxT("/GUI/ShowClipping"), 0L);
-   gPrefs->Write(wxT("/GUI/ShowClipping"), checked);
-   gPrefs->Flush();
-   GetCommandManager()->Check(wxT("ShowClipping"), checked);
-   mTrackPanel->UpdatePrefs();
-   mTrackPanel->Refresh(false);
 }
 
 void AudacityProject::OnHistory()

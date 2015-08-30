@@ -207,8 +207,6 @@ void OnSelectAllTracks();
 void DoZoomFitV();
 
 
-void OnShowClipping();
-
 void OnHistory();
 
 void OnKaraoke();
