@@ -35,6 +35,7 @@
 #include "Project.h"
 #include "Internat.h"
 #include "Prefs.h"
+#include "menus/TransportMenuCommands.h"
 #include "widgets/NumericTextCtrl.h"
 
 #define TIMER_ID 7000
@@ -247,7 +248,7 @@ bool TimerRecordDialog::RunWaitDialog()
    else
    {
       // Record for specified time.
-      pProject->OnRecord();
+      TransportMenuCommands(pProject).OnRecord();
       bool bIsRecording = true;
 
       wxString strMsg =

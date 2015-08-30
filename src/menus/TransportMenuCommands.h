@@ -20,6 +20,9 @@ private:
    void OnPause();
    void OnSkipStart();
    void OnSkipEnd();
+public:
+   void OnRecord();
+private:
 
    AudacityProject *const mProject;
 };
