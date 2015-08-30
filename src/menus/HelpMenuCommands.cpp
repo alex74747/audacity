@@ -6,6 +6,7 @@
 #include "../Screenshot.h"
 #include "../commands/CommandManager.h"
 #include "../widgets/HelpSystem.h"
+#include "../widgets/LinkingHtmlWindow.h"
 
 #define FN(X) new ObjectCommandFunctor<HelpMenuCommands>(this, &HelpMenuCommands:: X )
 
@@ -29,6 +30,10 @@ void HelpMenuCommands::Create(CommandManager *c)
    // Easy enough to do.  We'd call it mod-self-test.
    c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
 #endif
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -53,4 +58,9 @@ void HelpMenuCommands::OnScreenshot()
 void HelpMenuCommands::OnBenchmark()
 {
    ::RunBenchmark(mProject);
+}
+
+void HelpMenuCommands::OnCheckForUpdates()
+{
+   ::OpenInDefaultBrowser(wxString(wxT("http://audacityteam.org/download/?from_ver=")) + AUDACITY_VERSION_STRING);
 }

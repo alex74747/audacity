@@ -373,7 +373,6 @@ void OnManageAnalyzers();
         // Help Menu
 
 void OnAbout();
-void OnCheckForUpdates();
 void OnShowLog();
 void OnHelpWelcome();
 #if defined(EXPERIMENTAL_CRASH_REPORT)
