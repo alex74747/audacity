@@ -4,6 +4,7 @@
 
 #include <wx/msgdlg.h>
 
+#include "../AboutDialog.h"
 #include "../AudacityLogger.h"
 #include "../AudioIO.h"
 #include "../Benchmark.h"
@@ -49,6 +50,11 @@ void HelpMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
 #endif
 
+#ifndef __WXMAC__
+   c->AddSeparator();
+#endif
+
+   c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
 }
 
 void HelpMenuCommands::OnQuickHelp()
@@ -138,3 +144,9 @@ void HelpMenuCommands::OnCrashReport()
    wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
 }
 #endif
+
+void HelpMenuCommands::OnAbout()
+{
+   AboutDialog dlog(mProject);
+   dlog.ShowModal();
+}

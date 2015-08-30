@@ -1011,12 +1011,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-#ifndef __WXMAC__
-   c->AddSeparator();
-#endif
-
-   c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
-
    c->EndMenu();
 
    /////////////////////////////////////////////////////////////////////////////
@@ -6376,12 +6370,6 @@ void AudacityProject::OnRemoveTracks()
 //
 // Help Menu
 //
-
-void AudacityProject::OnAbout()
-{
-   AboutDialog dlog(this);
-   dlog.ShowModal();
-}
 
 void AudacityProject::OnHelpWelcome()
 {

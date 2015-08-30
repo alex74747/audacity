@@ -372,7 +372,6 @@ void OnManageAnalyzers();
 
         // Help Menu
 
-void OnAbout();
 void OnHelpWelcome();
 
        //

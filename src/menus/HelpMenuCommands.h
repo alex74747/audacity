@@ -28,6 +28,8 @@ private:
    void OnCrashReport();
 #endif
 
+   void OnAbout();
+
    AudacityProject *const mProject;
 };
 
