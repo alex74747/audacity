@@ -491,6 +491,10 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    // Creates the window as needed on demand:
    LyricsWindow* GetLyricsWindow();
+
+   // Creates the window as needed on demand:
+   MixerBoardFrame* GetMixerBoardFrame();
+
    MixerBoard* GetMixerBoard() { return mMixerBoard; }
 
    wxStatusBar* GetStatusBar() { return mStatusBar; }
