@@ -1,6 +1,8 @@
 #ifndef __AUDACITY_VIEW_MENU_COMMANDS__
 #define __AUDACITY_VIEW_MENU_COMMANDS__
 
+#include "../Experimental.h"
+
 class AudacityProject;
 class CommandManager;
 
@@ -29,6 +31,20 @@ private:
    void OnHistory();
    void OnKaraoke();
    void OnMixerBoard();
+   void OnShowDeviceToolBar();
+   void OnShowEditToolBar();
+   void OnShowMeterToolBar();
+   void OnShowRecordMeterToolBar();
+   void OnShowPlayMeterToolBar();
+   void OnShowMixerToolBar();
+   void OnShowSelectionToolBar();
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+   void OnShowSpectralSelectionToolBar();
+#endif
+   void OnShowToolsToolBar();
+   void OnShowTranscriptionToolBar();
+   void OnShowTransportToolBar();
+   void OnResetToolBars();
 
    AudacityProject *const mProject;
 };

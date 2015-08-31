@@ -29,9 +29,9 @@ void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs, int batchflags, 
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, const PluginIDList & plugs, const wxArrayInt & flags, bool isDefault);
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
-void ModifyToolbarMenus();
 
 public:
+void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
@@ -195,21 +195,6 @@ void DoZoomFitV();
 
 void OnPlotSpectrum();
 void OnContrast();
-
-void OnShowTransportToolBar();
-void OnShowDeviceToolBar();
-void OnShowEditToolBar();
-void OnShowMeterToolBar();
-void OnShowRecordMeterToolBar();
-void OnShowPlayMeterToolBar();
-void OnShowMixerToolBar();
-void OnShowSelectionToolBar();
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-void OnShowSpectralSelectionToolBar();
-#endif
-void OnShowToolsToolBar();
-void OnShowTranscriptionToolBar();
-void OnResetToolBars();
 
 // Import Submenu
 void OnImport();
