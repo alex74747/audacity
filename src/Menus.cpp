@@ -627,7 +627,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-      c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
       c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
 
       c->AddSeparator();
@@ -4060,15 +4059,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnKaraoke()
-{
-   if (!mLyricsWindow)
-      mLyricsWindow = safenew LyricsWindow(this);
-   mLyricsWindow->Show();
-   UpdateLyrics();
-   mLyricsWindow->Raise();
 }
 
 void AudacityProject::OnMixerBoard()

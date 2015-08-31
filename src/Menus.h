@@ -207,7 +207,6 @@ void OnSelectAllTracks();
 void DoZoomFitV();
 
 
-void OnKaraoke();
 void OnMixerBoard();
 
 void OnPlotSpectrum();
