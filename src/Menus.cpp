@@ -77,7 +77,6 @@ simplifies construction of menu items.
 #include "prefs/PrefsDialog.h"
 #include "prefs/PlaybackPrefs.h"
 #include "HistoryWindow.h"
-#include "LyricsWindow.h"
 #include "MixerBoard.h"
 #include "Internat.h"
 #include "FileFormats.h"
@@ -621,13 +620,7 @@ void AudacityProject::CreateMenusAndCommands()
       // View Menu
       /////////////////////////////////////////////////////////////////////////////
 
-      c->BeginMenu(_("&View"));
-
       mViewMenuCommands->Create(c);
-
-      c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
-
-      c->EndMenu();
 
       /////////////////////////////////////////////////////////////////////////////
       // Transport Menu
