@@ -6,6 +6,7 @@
 
 #include "../HistoryWindow.h"
 #include "../LyricsWindow.h"
+#include "../MixerBoard.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../TrackPanel.h"
@@ -77,6 +78,7 @@ void ViewMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
    c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
+   c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -224,4 +226,12 @@ void ViewMenuCommands::OnKaraoke()
    lyricsWindow->Show();
    mProject->UpdateLyrics();
    lyricsWindow->Raise();
+}
+
+void ViewMenuCommands::OnMixerBoard()
+{
+   MixerBoardFrame *mixerBoardFrame = mProject->GetMixerBoardFrame();
+   mixerBoardFrame->Show();
+   mixerBoardFrame->Raise();
+   mixerBoardFrame->SetFocus();
 }

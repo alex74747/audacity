@@ -193,8 +193,6 @@ void OnSelectAllTracks();
 void DoZoomFitV();
 
 
-void OnMixerBoard();
-
 void OnPlotSpectrum();
 void OnContrast();
 

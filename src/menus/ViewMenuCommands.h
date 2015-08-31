@@ -28,6 +28,7 @@ private:
    void OnShowClipping();
    void OnHistory();
    void OnKaraoke();
+   void OnMixerBoard();
 
    AudacityProject *const mProject;
 };

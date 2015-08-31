@@ -4379,6 +4379,13 @@ LyricsWindow *AudacityProject::GetLyricsWindow()
    return mLyricsWindow;
 }
 
+MixerBoardFrame *AudacityProject::GetMixerBoardFrame()
+{
+   if (!mMixerBoardFrame)
+      mMixerBoardFrame = new MixerBoardFrame(this);
+   return mMixerBoardFrame;
+}
+
 void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
 {
    MixerToolBar *mixerToolBar = GetMixerToolBar();

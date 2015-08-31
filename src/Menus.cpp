@@ -612,8 +612,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
-
    c->AddSeparator();
 
    /////////////////////////////////////////////////////////////////////////////
@@ -3875,18 +3873,6 @@ void AudacityProject::DoZoomFitV()
          t->SetHeight(height);
       t = iter2.Next();
    }
-}
-
-void AudacityProject::OnMixerBoard()
-{
-   if (!mMixerBoardFrame)
-   {
-      mMixerBoardFrame = new MixerBoardFrame(this);
-      mMixerBoard = mMixerBoardFrame->mMixerBoard;
-   }
-   mMixerBoardFrame->Show();
-   mMixerBoardFrame->Raise();
-   mMixerBoardFrame->SetFocus();
 }
 
 void AudacityProject::OnPlotSpectrum()
