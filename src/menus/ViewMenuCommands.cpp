@@ -5,6 +5,7 @@
 #include <wx/scrolbar.h>
 
 #include "../HistoryWindow.h"
+#include "../LyricsWindow.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../TrackPanel.h"
@@ -75,6 +76,7 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("UndoHistory"), _("&History..."), FN(OnHistory),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -213,4 +215,13 @@ void ViewMenuCommands::OnHistory()
    historyWindow->Show();
    historyWindow->Raise();
    historyWindow->UpdateDisplay();
+}
+
+void ViewMenuCommands::OnKaraoke()
+{
+   LyricsWindow *lyricsWindow = mProject->GetLyricsWindow();
+
+   lyricsWindow->Show();
+   mProject->UpdateLyrics();
+   lyricsWindow->Raise();
 }

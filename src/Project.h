@@ -446,7 +446,8 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    Meter *GetCaptureMeter();
    void SetCaptureMeter(Meter *capture);
 
-   LyricsWindow* GetLyricsWindow() { return mLyricsWindow; }
+   // Creates the window as needed on demand:
+   LyricsWindow* GetLyricsWindow();
    MixerBoard* GetMixerBoard() { return mMixerBoard; }
 
    wxStatusBar* GetStatusBar() { return mStatusBar; }
@@ -514,7 +515,10 @@ public:
 private:
    void PopState(TrackList * l);
 
+public:
    void UpdateLyrics();
+
+private:
    void UpdateMixerBoard();
 
    void GetRegionsByLabel( Regions &regions );

@@ -27,6 +27,7 @@ private:
    void OnExpandAllTracks();
    void OnShowClipping();
    void OnHistory();
+   void OnKaraoke();
 
    AudacityProject *const mProject;
 };

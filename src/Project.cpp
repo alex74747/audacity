@@ -4372,6 +4372,13 @@ void AudacityProject::SetCaptureMeter(Meter *capture)
    }
 }
 
+LyricsWindow *AudacityProject::GetLyricsWindow()
+{
+   if (!mLyricsWindow)
+      mLyricsWindow = new LyricsWindow(this);
+   return mLyricsWindow;
+}
+
 void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
 {
    MixerToolBar *mixerToolBar = GetMixerToolBar();
