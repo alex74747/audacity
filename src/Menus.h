@@ -33,9 +33,9 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names,
                             const std::vector<CommandFlag> & flags, bool isDefault);
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
-void ModifyToolbarMenus();
 
 public:
+void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
@@ -209,22 +209,6 @@ void DoZoomFitV();
 
 void OnPlotSpectrum();
 void OnContrast();
-
-void OnShowTransportToolBar();
-void OnShowDeviceToolBar();
-void OnShowEditToolBar();
-void OnShowMeterToolBar();
-void OnShowRecordMeterToolBar();
-void OnShowPlayMeterToolBar();
-void OnShowMixerToolBar();
-void OnShowSelectionToolBar();
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-void OnShowSpectralSelectionToolBar();
-#endif
-void OnShowScrubbingToolBar();
-void OnShowToolsToolBar();
-void OnShowTranscriptionToolBar();
-void OnResetToolBars();
 
 
 // Import Submenu

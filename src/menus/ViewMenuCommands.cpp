@@ -1,4 +1,5 @@
 #include "../Audacity.h"
+#include "../Experimental.h"
 #include "ViewMenuCommands.h"
 
 #include <algorithm>
@@ -12,6 +13,7 @@
 #include "../Project.h"
 #include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
+#include "../toolbars/ToolManager.h"
 
 #define FN(X) FNT(ViewMenuCommands, this, & ViewMenuCommands :: X)
 
@@ -80,6 +82,46 @@ void ViewMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag);
    c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
    c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
+
+   c->AddSeparator();
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("&Toolbars"));
+   {
+      /* i18n-hint: Clicking this menu item shows the toolbar that manages devices*/
+      c->AddCheck(wxT("ShowDeviceTB"), _("&Device Toolbar"), FN(OnShowDeviceToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar for editing*/
+      c->AddCheck(wxT("ShowEditTB"), _("&Edit Toolbar"), FN(OnShowEditToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar which has sound level meters*/
+      c->AddCheck(wxT("ShowMeterTB"), _("Co&mbined Meter Toolbar"), FN(OnShowMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar with the recording level meters*/
+      c->AddCheck(wxT("ShowRecordMeterTB"), _("&Recording Meter Toolbar"), FN(OnShowRecordMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar with the playback level meter*/
+      c->AddCheck(wxT("ShowPlayMeterTB"), _("&Playback Meter Toolbar"), FN(OnShowPlayMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar with the mixer*/
+      c->AddCheck(wxT("ShowMixerTB"), _("Mi&xer Toolbar"), FN(OnShowMixerToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar for selecting a time range of audio*/
+      c->AddCheck(wxT("ShowSelectionTB"), _("&Selection Toolbar"), FN(OnShowSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+      /* i18n-hint: Clicking this menu item shows the toolbar for selecting a frequency range of audio*/
+      c->AddCheck(wxT("ShowSpectralSelectionTB"), _("Spe&ctral Selection Toolbar"), FN(OnShowSpectralSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+#endif
+      /* i18n-hint: Clicking this menu item shows a toolbar that has some tools in it*/
+      c->AddCheck(wxT("ShowToolsTB"), _("T&ools Toolbar"), FN(OnShowToolsToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar for transcription (currently just vary play speed)*/
+      c->AddCheck(wxT("ShowTranscriptionTB"), _("Tra&nscription Toolbar"), FN(OnShowTranscriptionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar with the big buttons on it (play record etc)*/
+      c->AddCheck(wxT("ShowTransportTB"), _("&Transport Toolbar"), FN(OnShowTransportToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /* i18n-hint: Clicking this menu item shows the toolbar that enables Scrub or Seek playback and Scrub Ruler*/
+      c->AddCheck(wxT("ShowScrubbingTB"), _("Scru&b Toolbar"), FN(OnShowScrubbingToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+      c->AddSeparator();
+
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("ResetToolbars"), _("Reset Toolb&ars"), FN(OnResetToolBars), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+   }
+   c->EndSubMenu();
 }
 
 void ViewMenuCommands::OnZoomIn()
@@ -235,4 +277,97 @@ void ViewMenuCommands::OnMixerBoard()
    mixerBoardFrame->Show();
    mixerBoardFrame->Raise();
    mixerBoardFrame->SetFocus();
+}
+
+void ViewMenuCommands::OnShowDeviceToolBar()
+{
+   mProject->GetToolManager()->ShowHide(DeviceBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowEditToolBar()
+{
+   mProject->GetToolManager()->ShowHide(EditBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowMeterToolBar()
+{
+   if (!mProject->GetToolManager()->IsVisible(MeterBarID))
+   {
+      mProject->GetToolManager()->Expose(PlayMeterBarID, false);
+      mProject->GetToolManager()->Expose(RecordMeterBarID, false);
+   }
+   mProject->GetToolManager()->ShowHide(MeterBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowRecordMeterToolBar()
+{
+   if (!mProject->GetToolManager()->IsVisible(RecordMeterBarID))
+   {
+      mProject->GetToolManager()->Expose(MeterBarID, false);
+   }
+   mProject->GetToolManager()->ShowHide(RecordMeterBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowPlayMeterToolBar()
+{
+   if (!mProject->GetToolManager()->IsVisible(PlayMeterBarID))
+   {
+      mProject->GetToolManager()->Expose(MeterBarID, false);
+   }
+   mProject->GetToolManager()->ShowHide(PlayMeterBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowMixerToolBar()
+{
+   mProject->GetToolManager()->ShowHide(MixerBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowSelectionToolBar()
+{
+   mProject->GetToolManager()->ShowHide(SelectionBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+void ViewMenuCommands::OnShowSpectralSelectionToolBar()
+{
+   mProject->GetToolManager()->ShowHide(SpectralSelectionBarID);
+   mProject->ModifyToolbarMenus();
+}
+#endif
+
+void ViewMenuCommands::OnShowToolsToolBar()
+{
+   mProject->GetToolManager()->ShowHide(ToolsBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowTranscriptionToolBar()
+{
+   mProject->GetToolManager()->ShowHide(TranscriptionBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowTransportToolBar()
+{
+   mProject->GetToolManager()->ShowHide(TransportBarID);
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnShowScrubbingToolBar()
+{
+   mProject->GetToolManager()->ShowHide( ScrubbingBarID );
+   mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnResetToolBars()
+{
+   mProject->GetToolManager()->Reset();
+   mProject->ModifyToolbarMenus();
 }
