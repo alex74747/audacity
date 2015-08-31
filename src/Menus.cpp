@@ -34,6 +34,7 @@ simplifies construction of menu items.
 #include "Project.h"
 
 #include <cfloat>
+#include "menus/EditMenuCommands.h"
 #include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
@@ -383,8 +384,10 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->BeginMenu(_("&Edit"));
 
+      mEditMenuCommands->Create(c);
+
       c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
+                         AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
       c->AddItem(wxT("Undo"), _("&Undo"), FN(OnUndo), wxT("Ctrl+Z"),
          AudioIONotBusyFlag | UndoAvailableFlag,
