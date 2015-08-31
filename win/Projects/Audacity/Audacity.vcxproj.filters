@@ -866,6 +866,9 @@
     <ClCompile Include="..\..\..\src\menus\ViewMenuCommands.cpp">
       <Filter>src\menus</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\menus\EditMenuCommands.cpp">
+      <Filter>src\menus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\AboutDialog.h">
@@ -1739,6 +1742,9 @@
       <Filter>src\menus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\menus\ViewMenuCommands.h">
+      <Filter>src\menus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\menus\EditMenuCommands.h">
       <Filter>src\menus</Filter>
     </ClInclude>
   </ItemGroup>

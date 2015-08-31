@@ -91,6 +91,7 @@ struct AudioIOStartStreamOptions;
 class WaveTrackArray;
 class Regions;
 
+class EditMenuCommands;
 class ViewMenuCommands;
 class TransportMenuCommands;
 class TracksMenuCommands;
@@ -700,6 +701,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   EditMenuCommands *mEditMenuCommands;
    ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
