@@ -23,102 +23,106 @@ ViewMenuCommands::ViewMenuCommands(AudacityProject *project)
 
 void ViewMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
-
-   c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
-      ZoomInAvailableFlag,
-      ZoomInAvailableFlag);
-   c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
-   c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
-      ZoomOutAvailableFlag,
-      ZoomOutAvailableFlag);
-   c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
-
-   c->AddSeparator();
-   c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
-   c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
-
-   c->AddSeparator();
-   c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
-   c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
-
-   c->AddSeparator();
-   c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
-
-   c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
-
-   c->AddSeparator();
-   c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
-      gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-   //c->AddSeparator();
-
-   // History window should be available either for UndoAvailableFlag or RedoAvailableFlag,
-   // but we can't make the AddItem flags and mask have both, because they'd both have to be true for the
-   // command to be enabled.
-   //    If user has Undone the entire stack, RedoAvailableFlag is on but UndoAvailableFlag is off.
-   //    If user has done things but not Undone anything, RedoAvailableFlag is off but UndoAvailableFlag is on.
-   // So in either of those cases, (AudioIONotBusyFlag | UndoAvailableFlag | RedoAvailableFlag) mask
-   // would fail.
-   // The only way to fix this in the current architecture is to hack in special cases for RedoAvailableFlag
-   // in AudacityProject::UpdateMenus() (ugly) and CommandManager::HandleCommandEntry() (*really* ugly --
-   // shouldn't know about particular command names and flags).
-   // Here's the hack that would be necessary in AudacityProject::UpdateMenus(), if somebody decides to do it:
-   //    // Because EnableUsingFlags requires all the flag bits match the corresponding mask bits,
-   //    // "UndoHistory" specifies only AudioIONotBusyFlag | UndoAvailableFlag, because that
-   //    // covers the majority of cases where it should be enabled.
-   //    // If history is not empty but we've Undone the whole stack, we also want to enable,
-   //    // to show the Redo's on stack.
-   //    // "UndoHistory" might already be enabled, but add this check for RedoAvailableFlag.
-   //    if (flags & RedoAvailableFlag)
-   //       GetCommandManager()->Enable(wxT("UndoHistory"), true);
-   // So for now, enable the command regardless of stack. It will just show empty sometimes.
-   // FOR REDESIGN, clearly there are some limitations with the flags/mask bitmaps.
-
-   /* i18n-hint: Clicking this menu item shows the various editing steps that have been taken.*/
-   c->AddItem(wxT("UndoHistory"), _("&History..."), FN(OnHistory),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
-   c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
-   c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
-
-   c->AddSeparator();
-
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("&Toolbars"));
+   c->BeginMenu(_("&View"));
    {
-      /* i18n-hint: Clicking this menu item shows the toolbar that manages devices*/
-      c->AddCheck(wxT("ShowDeviceTB"), _("&Device Toolbar"), FN(OnShowDeviceToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar for editing*/
-      c->AddCheck(wxT("ShowEditTB"), _("&Edit Toolbar"), FN(OnShowEditToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar which has sound level meters*/
-      c->AddCheck(wxT("ShowMeterTB"), _("&Combined Meter Toolbar"), FN(OnShowMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar with the recording level meters*/
-      c->AddCheck(wxT("ShowRecordMeterTB"), _("&Recording Meter Toolbar"), FN(OnShowRecordMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar with the playback level meter*/
-      c->AddCheck(wxT("ShowPlayMeterTB"), _("&Playback Meter Toolbar"), FN(OnShowPlayMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar with the mixer*/
-      c->AddCheck(wxT("ShowMixerTB"), _("Mi&xer Toolbar"), FN(OnShowMixerToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar for selecting a time range of audio*/
-      c->AddCheck(wxT("ShowSelectionTB"), _("&Selection Toolbar"), FN(OnShowSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-      /* i18n-hint: Clicking this menu item shows the toolbar for selecting a frequency range of audio*/
-      c->AddCheck(wxT("ShowSpectralSelectionTB"), _("&Spectral Selection Toolbar"), FN(OnShowSpectralSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-#endif
-      /* i18n-hint: Clicking this menu item shows a toolbar that has some tools in it*/
-      c->AddCheck(wxT("ShowToolsTB"), _("T&ools Toolbar"), FN(OnShowToolsToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar for transcription (currently just vary play speed)*/
-      c->AddCheck(wxT("ShowTranscriptionTB"), _("Transcri&ption Toolbar"), FN(OnShowTranscriptionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-      /* i18n-hint: Clicking this menu item shows the toolbar with the big buttons on it (play record etc)*/
-      c->AddCheck(wxT("ShowTransportTB"), _("&Transport Toolbar"), FN(OnShowTransportToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
+
+      c->AddItem(wxT("ZoomIn"), _("Zoom &In"), FN(OnZoomIn), wxT("Ctrl+1"),
+         ZoomInAvailableFlag,
+         ZoomInAvailableFlag);
+      c->AddItem(wxT("ZoomNormal"), _("Zoom &Normal"), FN(OnZoomNormal), wxT("Ctrl+2"));
+      c->AddItem(wxT("ZoomOut"), _("Zoom &Out"), FN(OnZoomOut), wxT("Ctrl+3"),
+         ZoomOutAvailableFlag,
+         ZoomOutAvailableFlag);
+      c->AddItem(wxT("ZoomSel"), _("&Zoom to Selection"), FN(OnZoomSel), wxT("Ctrl+E"), TimeSelectedFlag, TimeSelectedFlag);
+
+      c->AddSeparator();
+      c->AddItem(wxT("FitInWindow"), _("&Fit in Window"), FN(OnZoomFit), wxT("Ctrl+F"));
+      c->AddItem(wxT("FitV"), _("Fit &Vertically"), FN(OnZoomFitV), wxT("Ctrl+Shift+F"));
+
+      c->AddSeparator();
+      c->AddItem(wxT("GoSelStart"), _("Go to Selection Sta&rt"), FN(OnGoSelStart), wxT("Ctrl+["), TimeSelectedFlag, TimeSelectedFlag);
+      c->AddItem(wxT("GoSelEnd"), _("Go to Selection En&d"), FN(OnGoSelEnd), wxT("Ctrl+]"), TimeSelectedFlag, TimeSelectedFlag);
+
+      c->AddSeparator();
+      c->AddItem(wxT("CollapseAllTracks"), _("&Collapse All Tracks"), FN(OnCollapseAllTracks), wxT("Ctrl+Shift+C"));
+
+      c->AddItem(wxT("ExpandAllTracks"), _("E&xpand All Tracks"), FN(OnExpandAllTracks), wxT("Ctrl+Shift+X"));
+
+      c->AddSeparator();
+      c->AddCheck(wxT("ShowClipping"), _("&Show Clipping"), FN(OnShowClipping),
+         gPrefs->Read(wxT("/GUI/ShowClipping"), 0L), AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+      //c->AddSeparator();
+
+      // History window should be available either for UndoAvailableFlag or RedoAvailableFlag,
+      // but we can't make the AddItem flags and mask have both, because they'd both have to be true for the
+      // command to be enabled.
+      //    If user has Undone the entire stack, RedoAvailableFlag is on but UndoAvailableFlag is off.
+      //    If user has done things but not Undone anything, RedoAvailableFlag is off but UndoAvailableFlag is on.
+      // So in either of those cases, (AudioIONotBusyFlag | UndoAvailableFlag | RedoAvailableFlag) mask
+      // would fail.
+      // The only way to fix this in the current architecture is to hack in special cases for RedoAvailableFlag
+      // in AudacityProject::UpdateMenus() (ugly) and CommandManager::HandleCommandEntry() (*really* ugly --
+      // shouldn't know about particular command names and flags).
+      // Here's the hack that would be necessary in AudacityProject::UpdateMenus(), if somebody decides to do it:
+      //    // Because EnableUsingFlags requires all the flag bits match the corresponding mask bits,
+      //    // "UndoHistory" specifies only AudioIONotBusyFlag | UndoAvailableFlag, because that
+      //    // covers the majority of cases where it should be enabled.
+      //    // If history is not empty but we've Undone the whole stack, we also want to enable,
+      //    // to show the Redo's on stack.
+      //    // "UndoHistory" might already be enabled, but add this check for RedoAvailableFlag.
+      //    if (flags & RedoAvailableFlag)
+      //       GetCommandManager()->Enable(wxT("UndoHistory"), true);
+      // So for now, enable the command regardless of stack. It will just show empty sometimes.
+      // FOR REDESIGN, clearly there are some limitations with the flags/mask bitmaps.
+
+      /* i18n-hint: Clicking this menu item shows the various editing steps that have been taken.*/
+      c->AddItem(wxT("UndoHistory"), _("&History..."), FN(OnHistory),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
+      c->AddItem(wxT("Karaoke"), _("&Karaoke..."), FN(OnKaraoke), LabelTracksExistFlag, LabelTracksExistFlag);
+      c->AddItem(wxT("MixerBoard"), _("&Mixer Board..."), FN(OnMixerBoard), WaveTracksExistFlag, WaveTracksExistFlag);
 
       c->AddSeparator();
 
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("ResetToolbars"), _("&Reset Toolbars"), FN(OnResetToolBars), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      /////////////////////////////////////////////////////////////////////////////
+
+      c->BeginSubMenu(_("&Toolbars"));
+      {
+         /* i18n-hint: Clicking this menu item shows the toolbar that manages devices*/
+         c->AddCheck(wxT("ShowDeviceTB"), _("&Device Toolbar"), FN(OnShowDeviceToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar for editing*/
+         c->AddCheck(wxT("ShowEditTB"), _("&Edit Toolbar"), FN(OnShowEditToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar which has sound level meters*/
+         c->AddCheck(wxT("ShowMeterTB"), _("&Combined Meter Toolbar"), FN(OnShowMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar with the recording level meters*/
+         c->AddCheck(wxT("ShowRecordMeterTB"), _("&Recording Meter Toolbar"), FN(OnShowRecordMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar with the playback level meter*/
+         c->AddCheck(wxT("ShowPlayMeterTB"), _("&Playback Meter Toolbar"), FN(OnShowPlayMeterToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar with the mixer*/
+         c->AddCheck(wxT("ShowMixerTB"), _("Mi&xer Toolbar"), FN(OnShowMixerToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar for selecting a time range of audio*/
+         c->AddCheck(wxT("ShowSelectionTB"), _("&Selection Toolbar"), FN(OnShowSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+         /* i18n-hint: Clicking this menu item shows the toolbar for selecting a frequency range of audio*/
+         c->AddCheck(wxT("ShowSpectralSelectionTB"), _("&Spectral Selection Toolbar"), FN(OnShowSpectralSelectionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+#endif
+         /* i18n-hint: Clicking this menu item shows a toolbar that has some tools in it*/
+         c->AddCheck(wxT("ShowToolsTB"), _("T&ools Toolbar"), FN(OnShowToolsToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar for transcription (currently just vary play speed)*/
+         c->AddCheck(wxT("ShowTranscriptionTB"), _("Transcri&ption Toolbar"), FN(OnShowTranscriptionToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+         /* i18n-hint: Clicking this menu item shows the toolbar with the big buttons on it (play record etc)*/
+         c->AddCheck(wxT("ShowTransportTB"), _("&Transport Toolbar"), FN(OnShowTransportToolBar), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+         c->AddSeparator();
+
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("ResetToolbars"), _("&Reset Toolbars"), FN(OnResetToolBars), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
+      }
+      c->EndSubMenu();
    }
-   c->EndSubMenu();
+   c->EndMenu();
 }
 
 void ViewMenuCommands::OnZoomIn()
