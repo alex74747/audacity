@@ -15,6 +15,7 @@
 #include "../TrackPanel.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandManager.h"
+#include "../prefs/PrefsDialog.h"
 
 #include <wx/msgdlg.h>
 
@@ -240,6 +241,26 @@ void EditMenuCommands::Create(CommandManager *c)
          PlayRegionLockedFlag);
    }
    c->EndSubMenu();
+
+
+   /////////////////////////////////////////////////////////////////////////////
+
+#ifndef __WXMAC__
+   c->AddSeparator();
+#endif
+
+   // The default shortcut key for Preferences is different on different platforms.
+   key =
+#ifdef __WXMAC__
+      wxT("Ctrl+,");
+#else
+      wxT("Ctrl+P");
+#endif
+
+   c->AddItem(wxT("Preferences"), _("Pre&ferences..."), FN(OnPreferences), key,
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
+
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -2041,4 +2062,34 @@ void EditMenuCommands::OnUnlockPlayRegion()
 {
    mProject->SetPlayRegionLocked(false);
    mProject->GetRulerPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnPreferences()
+{
+   GlobalPrefsDialog dialog(mProject /* parent */);
+
+   if (!dialog.ShowModal()) {
+      // Canceled
+      return;
+   }
+
+   // LL:  Moved from PrefsDialog since wxWidgets on OSX can't deal with
+   //      rebuilding the menus while the PrefsDialog is still in the modal
+   //      state.
+   for (size_t i = 0; i < gAudacityProjects.GetCount(); i++) {
+      AudacityProject *p = gAudacityProjects[i];
+
+      p->RebuildMenuBar();
+      p->RebuildOtherMenus();
+#if defined(__WXGTK__)
+      // Workaround for:
+      //
+      //   http://bugzilla.audacityteam.org/show_bug.cgi?id=458
+      //
+      // This workaround should be removed when Audacity updates to wxWidgets 3.x which has a fix.
+      wxRect r = p->GetRect();
+      p->SetSize(wxSize(1, 1));
+      p->SetSize(r.GetSize());
+#endif
+   }
 }

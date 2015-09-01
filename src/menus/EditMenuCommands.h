@@ -97,6 +97,7 @@ private:
 public:
    void OnLockPlayRegion();
    void OnUnlockPlayRegion();
+   void OnPreferences();
 
 private:
 
