@@ -12,6 +12,7 @@
 #include "../toolbars/ControlToolBar.h"
 #include "../toolbars/DeviceToolBar.h"
 #include "../toolbars/MixerToolBar.h"
+#include "../toolbars/TranscriptionToolBar.h"
 
 #define FN(X) new ObjectCommandFunctor<TransportMenuCommands>(this, &TransportMenuCommands:: X )
 
@@ -125,6 +126,10 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
    c->AddCommand(wxT("InputGainInc"), _("Increase recording volume"), FN(OnInputGainInc));
    c->AddCommand(wxT("InputGainDec"), _("Decrease recording volume"), FN(OnInputGainDec));
+
+   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
+
+   c->AddCommand(wxT("PlayAtSpeed"), _("Play at speed"), FN(OnPlayAtSpeed));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -625,5 +630,13 @@ void TransportMenuCommands::OnInputGainDec()
    MixerToolBar *tb = mProject->GetMixerToolBar();
    if (tb) {
       tb->AdjustInputGain(-1);
+   }
+}
+
+void TransportMenuCommands::OnPlayAtSpeed()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->PlayAtSpeed(false, false);
    }
 }
