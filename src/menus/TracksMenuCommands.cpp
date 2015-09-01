@@ -184,6 +184,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
    c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
    c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
+   c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1326,7 +1327,7 @@ void TracksMenuCommands::OnTrackGain()
 
    LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider(wt);
    if (slider->ShowDialog()) {
-      mProject->SetTrackGain(wt, slider);
+      SetTrackGain(wt, slider);
    }
 }
 
@@ -1341,5 +1342,35 @@ void TracksMenuCommands::OnTrackGainInc()
 
    LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider(wt);
    slider->Increase(1);
-   mProject->SetTrackGain(wt, slider);
+   SetTrackGain(wt, slider);
+}
+
+void TracksMenuCommands::OnTrackGainDec()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+   const auto wt = static_cast<WaveTrack*>(track);
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider(wt);
+   slider->Decrease(1);
+   SetTrackGain(wt, slider);
+}
+
+void TracksMenuCommands::SetTrackGain(WaveTrack * wt, LWSlider * slider)
+{
+   wxASSERT(wt);
+   float newValue = slider->Get();
+
+   // Assume linked track is wave or null
+   const auto link = static_cast<WaveTrack*>(mProject->GetTracks()->GetLink(wt));
+   wt->SetGain(newValue);
+   if (link)
+      link->SetGain(newValue);
+
+   mProject->PushState(_("Adjusted gain"), _("Gain"), UndoPush::CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(wt);
 }
