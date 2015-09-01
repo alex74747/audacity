@@ -10,6 +10,7 @@
 #include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
 #include "../export/Export.h"
+#include "../export/ExportMultiple.h"
 #include "../import/ImportMIDI.h"
 #include "../import/ImportRaw.h"
 #include "../ondemand/ODManager.h"
@@ -91,6 +92,11 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
       AudioIONotBusyFlag | LabelTracksExistFlag,
       AudioIONotBusyFlag | LabelTracksExistFlag);
+
+   // Enable Export audio commands only when there are audio tracks.
+   c->AddItem(wxT("ExportMultiple"), _("Export &Multiple..."), FN(OnExportMultiple), wxT("Ctrl+Shift+L"),
+      AudioIONotBusyFlag | WaveTracksExistFlag,
+      AudioIONotBusyFlag | WaveTracksExistFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -372,4 +378,12 @@ void FileMenuCommands::OnExportLabels()
 
    f.Write();
    f.Close();
+}
+
+void FileMenuCommands::OnExportMultiple()
+{
+   ExportMultiple em(mProject);
+
+   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
+   em.ShowModal();
 }
