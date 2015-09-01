@@ -243,10 +243,10 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          if (!busy) EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
-         if (!busy) p->OnTrim();
+         if (!busy) EditMenuCommands(p).OnTrim();
          break;
       case ETBSilenceID:
-         if (!busy) p->OnSilence();
+         if (!busy) EditMenuCommands(p).OnSilence();
          break;
       case ETBUndoID:
          if (!busy) EditMenuCommands(p).OnUndo();

@@ -60,6 +60,28 @@ void EditMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | ClipboardFlag);
    /* i18n-hint: (verb)*/
    c->AddItem(wxT("Duplicate"), _("Duplic&ate"), FN(OnDuplicate), wxT("Ctrl+D"));
+
+   c->AddSeparator();
+
+   c->BeginSubMenu(_("R&emove Special"));
+   {
+      /* i18n-hint: (verb) Do a special kind of cut*/
+      c->AddItem(wxT("SplitCut"), _("Spl&it Cut"), FN(OnSplitCut), wxT("Ctrl+Alt+X"));
+      /* i18n-hint: (verb) Do a special kind of delete*/
+      c->AddItem(wxT("SplitDelete"), _("Split D&elete"), FN(OnSplitDelete), wxT("Ctrl+Alt+K"));
+
+      c->AddSeparator();
+
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("Silence"), _("Silence Audi&o"), FN(OnSilence), wxT("Ctrl+L"),
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("Trim"), _("Tri&m Audio"), FN(OnTrim), wxT("Ctrl+T"),
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+   }
+   c->EndSubMenu();
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -685,6 +707,140 @@ void EditMenuCommands::OnDuplicate()
    }
 
    mProject->PushState(_("Duplicated"), _("Duplicate"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSplitCut()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *n = iter.First();
+   Track *dest;
+
+   mProject->ClearClipboard();
+   while (n) {
+      if (n->GetSelected()) {
+         dest = NULL;
+         if (n->GetKind() == Track::Wave)
+         {
+            ((WaveTrack*)n)->SplitCut(
+               viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1(), &dest);
+         }
+         else
+         {
+            n->Copy(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1(), &dest);
+            n->Silence(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1());
+         }
+         if (dest) {
+            dest->SetChannel(n->GetChannel());
+            dest->SetLinked(n->GetLinked());
+            dest->SetName(n->GetName());
+            AudacityProject::msClipboard->Add(dest);
+         }
+      }
+      n = iter.Next();
+   }
+
+   AudacityProject::msClipT0 = viewInfo.selectedRegion.t0();
+   AudacityProject::msClipT1 = viewInfo.selectedRegion.t1();
+   AudacityProject::msClipProject = mProject;
+
+   mProject->PushState(_("Split-cut to the clipboard"), _("Split Cut"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSplitDelete()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   TrackListIterator iter(mProject->GetTracks());
+
+   Track *n = iter.First();
+
+   while (n) {
+      if (n->GetSelected()) {
+         if (n->GetKind() == Track::Wave)
+         {
+            ((WaveTrack*)n)->SplitDelete(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1());
+         }
+         else {
+            n->Silence(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1());
+         }
+      }
+      n = iter.Next();
+   }
+
+   mProject->PushState(wxString::Format(_("Split-deleted %.2f seconds at t=%.2f"),
+      viewInfo.selectedRegion.duration(),
+      viewInfo.selectedRegion.t0()),
+      _("Split Delete"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSilence()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   SelectedTrackListOfKindIterator iter(Track::Wave, mProject->GetTracks());
+
+   for (Track *n = iter.First(); n; n = iter.Next())
+      n->Silence(viewInfo.selectedRegion.t0(), viewInfo.selectedRegion.t1());
+
+   mProject->PushState(wxString::
+      Format(_("Silenced selected tracks for %.2f seconds at %.2f"),
+      viewInfo.selectedRegion.duration(),
+      viewInfo.selectedRegion.t0()),
+      _("Silence"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnTrim()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *n = iter.First();
+
+   while (n) {
+      if (n->GetSelected()) {
+         switch (n->GetKind())
+         {
+#if defined(USE_MIDI)
+         case Track::Note:
+            ((NoteTrack*)n)->Trim(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1());
+            break;
+#endif
+
+         case Track::Wave:
+            //Delete the section before the left selector
+            ((WaveTrack*)n)->Trim(viewInfo.selectedRegion.t0(),
+               viewInfo.selectedRegion.t1());
+            break;
+
+         default:
+            break;
+         }
+      }
+      n = iter.Next();
+   }
+
+   mProject->PushState(wxString::Format(_("Trim selected audio tracks from %.2f seconds to %.2f seconds"),
+      viewInfo.selectedRegion.t0(), viewInfo.selectedRegion.t1()),
+      _("Trim Audio"));
 
    mProject->RedrawProject();
 }
