@@ -27,9 +27,9 @@ void CreateMenusAndCommands();
 void PopulateEffectsMenu(CommandManager *c, EffectType type, int batchflags, int realflags);
 void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs, int batchflags, int realflags, bool isDefault);
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, const PluginIDList & plugs, const wxArrayInt & flags, bool isDefault);
-void CreateRecentFilesMenu(CommandManager *c);
 
 public:
+void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 
 void ModifyToolbarMenus();

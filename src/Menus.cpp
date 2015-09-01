@@ -268,12 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   /////////////////////////////////////////////////////////////////////////////
-
-   CreateRecentFilesMenu(c);
-
-   /////////////////////////////////////////////////////////////////////////////
-
    c->AddSeparator();
 
    c->AddItem(wxT("Close"), _("&Close"), FN(OnClose), wxT("Ctrl+W"));
