@@ -36,6 +36,39 @@ private:
 #endif
    void OnRescanDevices();
 
+   // non-menu commands
+public:
+   void OnStop();
+private:
+
+   void OnPlayOneSecond();
+   void OnPlayToSelection();
+   void OnPlayBeforeSelectionStart();
+   void OnPlayAfterSelectionStart();
+   void OnPlayBeforeSelectionEnd();
+   void OnPlayAfterSelectionEnd();
+   void OnPlayBeforeAndAfterSelectionStart();
+   void OnPlayBeforeAndAfterSelectionEnd();
+   void OnPlayCutPreview();
+   bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
+
+   void OnInputDevice();
+   void OnOutputDevice();
+   void OnAudioHost();
+   void OnInputChannels();
+   void OnOutputGain();
+   void OnOutputGainInc();
+   void OnOutputGainDec();
+   void OnInputGain();
+   void OnInputGainInc();
+   void OnInputGainDec();
+   void OnPlayAtSpeed();
+   void OnPlayAtSpeedLooped();
+   void OnPlayAtSpeedCutPreview();
+   void OnSetPlaySpeed();
+   void OnPlaySpeedInc();
+   void OnPlaySpeedDec();
+
    AudacityProject *const mProject;
 };
 
