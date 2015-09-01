@@ -99,6 +99,8 @@ class Regions;
 class LWSlider;
 class UndoManager;
 enum class UndoPush : unsigned char;
+
+class TracksMenuCommands;
 class HelpMenuCommands;
 
 class Track;
@@ -547,8 +549,10 @@ public:
 
    void OnCapture(wxCommandEvent & evt);
    void InitialState();
+public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                              // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
+private:
    void PopState(const UndoState &state);
 
    void UpdateLyrics();
@@ -670,9 +674,6 @@ private:
    //sort method used by OnSortName and OnSortTime
    //currently only supported flags are kAudacitySortByName and kAudacitySortByName
    //in the future we might have 0x01 as sort ascending and we can bit or it
-#define kAudacitySortByTime (1 << 1)
-#define kAudacitySortByName (1 << 2)
-   void SortTracks(int flags);
 
    int  mAudioIOToken{ -1 };
 
@@ -742,6 +743,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 
    // CommandManager needs to use private methods

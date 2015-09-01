@@ -64,6 +64,7 @@ for drawing different aspects of the label and its text box.
 #include "commands/CommandManager.h"
 
 #include "effects/TimeWarper.h"
+#include "menus/TracksMenuCommands.h"
 
 enum
 {
@@ -2104,7 +2105,7 @@ void LabelTrack::OnContextMenu(wxCommandEvent & evt)
    case OnEditSelectedLabelID: {
       int ndx = GetLabelIndex(p->GetSel0(), p->GetSel1());
       if (ndx != -1)
-         p->DoEditLabels(this, ndx);
+         TracksMenuCommands{p}.DoEditLabels(this, ndx);
    }
       break;
    }

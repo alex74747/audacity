@@ -34,9 +34,12 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names,
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 void ModifyToolbarMenus();
+
+public:
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
+private:
 CommandFlag GetFocusedFrame();
 
 // If checkActive, do not do complete flags testing on an
@@ -44,10 +47,6 @@ CommandFlag GetFocusedFrame();
 CommandFlag GetUpdateFlags(bool checkActive = false);
 
 double NearestZeroCrossing(double t0);
-
-public:
-//Adds label and returns index of label in labeltrack.
-int DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
 
 private:
 
@@ -182,10 +181,6 @@ void OnZeroCrossing();
 void OnLockPlayRegion();
 void OnUnlockPlayRegion();
 
-double GetTime(const Track *t);
-void OnSortTime();
-void OnSortName();
-
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
@@ -293,9 +288,6 @@ void OnGoSelEnd();
 void OnExpandAllTracks();
 void OnCollapseAllTracks();
 
-void OnMuteAllTracks();
-void OnUnMuteAllTracks();
-
 void OnShowClipping();
 
 void OnHistory();
@@ -344,10 +336,6 @@ void OnImportRaw();
 void OnEditMetadata();
 bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool force);
 
-void OnMixAndRender();
-void OnMixAndRenderToNewTrack();
-void HandleMixAndRender(bool toNewTrack);
-
 private:
    SelectedRegion mRegionSave{};
    bool mCursorPositionHasBeenStored{false};
@@ -362,29 +350,8 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-void OnAlignNoSync(int index);
-void OnAlign(int index);
-void OnAlignMoveSel(int index);
-void HandleAlign(int index, bool moveSel);
-size_t mAlignLabelsCount;
-
-#ifdef EXPERIMENTAL_SCOREALIGN
-void OnScoreAlign();
-#endif // EXPERIMENTAL_SCOREALIGN
-
 // Tracks menu
-void OnNewWaveTrack();
-void OnNewStereoTrack();
-void OnNewLabelTrack();
-void OnNewTimeTrack();
 void OnTimerRecord();
-void OnRemoveTracks();
-void OnSyncLock();
-void OnAddLabel();
-void OnAddLabelPlaying();
-void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);
-void OnEditLabels();
-void OnToggleTypeToCreateLabel();
 
         // Effect Menu
 
@@ -392,7 +359,6 @@ bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
 void OnApplyChain();
 void OnEditChains();
-void OnStereoToMono(int index);
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
 void OnManageEffects();
@@ -414,8 +380,6 @@ void NextFrame();
 
 void PrevWindow();
 void NextWindow();
-
-void OnResample();
 
 private:
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);

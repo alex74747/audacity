@@ -98,14 +98,6 @@ class TranscriptionToolBar final : public ToolBar {
    void OnAutomateSelection(wxCommandEvent & event);
    void OnSensitivitySlider(wxCommandEvent & event);
 
-   //void Populate() override;
-   //void Repaint(wxDC * WXUNUSED(dc)) override {}
-   //void EnableDisableButtons() override;
-   //void UpdatePrefs() override;
-
-   //void OnFocus(wxFocusEvent &event);
-   //void OnCaptureKey(wxCommandEvent &event);
-
    double GetSensitivity();
    void SetKeyType(wxCommandEvent & event);
 #endif
