@@ -159,6 +159,14 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->EndMenu();
 }
 
+void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
+{
+   c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
+      TracksExistFlag | TrackPanelHasFocus);
+
+   c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
+}
+
 void TracksMenuCommands::OnNewWaveTrack()
 {
    WaveTrack *const t =
@@ -1193,5 +1201,21 @@ void TracksMenuCommands::SortTracks(int flags)
 
    for (ndx = 0; ndx < (int)arr.GetCount(); ndx++) {
       mProject->GetTracks()->Add((Track *)arr[ndx]);
+   }
+}
+
+//This will pop up the track panning dialog for specified track
+void TracksMenuCommands::OnTrackPan()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
+      (static_cast<WaveTrack*>(track));
+   if (slider->ShowDialog()) {
+      mProject->SetTrackPan(track, slider);
    }
 }
