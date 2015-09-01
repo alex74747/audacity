@@ -4,8 +4,10 @@
 class AudacityProject;
 class CommandManager;
 class LabelTrack;
+class LWSlider;
 class SelectedRegion;
 class Track;
+class WaveTrack;
 
 #include <stddef.h>
 
@@ -71,6 +73,8 @@ private:
    // non-menu commands
    void OnTrackPan();
    void OnTrackPanLeft();
+   void OnTrackPanRight();
+   void SetTrackPan(WaveTrack *wt, LWSlider * slider);
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

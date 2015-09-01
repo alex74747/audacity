@@ -15,6 +15,7 @@
 #include "../ShuttleGui.h"
 #include "../TimeTrack.h"
 #include "../TrackPanel.h"
+#include "../UndoManager.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandManager.h"
 
@@ -180,6 +181,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
    c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
+   c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1262,7 +1264,7 @@ void TracksMenuCommands::OnTrackPan()
 
    LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider(wt);
    if (slider->ShowDialog()) {
-      mProject->SetTrackPan(wt, slider);
+      SetTrackPan(wt, slider);
    }
 }
 
@@ -1277,5 +1279,35 @@ void TracksMenuCommands::OnTrackPanLeft()
 
    LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider(wt);
    slider->Decrease(1);
-   mProject->SetTrackPan(wt, slider);
+   SetTrackPan(wt, slider);
+}
+
+void TracksMenuCommands::OnTrackPanRight()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+   const auto wt = static_cast<WaveTrack*>(track);
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider(wt);
+   slider->Increase(1);
+   SetTrackPan(wt, slider);
+}
+
+void TracksMenuCommands::SetTrackPan(WaveTrack * wt, LWSlider * slider)
+{
+   wxASSERT(wt);
+   float newValue = slider->Get();
+
+   // Assume linked track is wave or null
+   const auto link = static_cast<WaveTrack*>(mProject->GetTracks()->GetLink(wt));
+   wt->SetPan(newValue);
+   if (link)
+      link->SetPan(newValue);
+
+   mProject->PushState(_("Adjusted Pan"), _("Pan"), UndoPush::CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(wt);
 }
