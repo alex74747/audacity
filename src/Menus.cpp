@@ -901,7 +901,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
    c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
 
    mLastFlags = 0;
@@ -2002,14 +2001,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnPlaySpeedInc()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->AdjustPlaySpeed(0.1f);
-   }
 }
 
 void AudacityProject::OnPlaySpeedDec()
