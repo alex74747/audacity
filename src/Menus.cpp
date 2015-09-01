@@ -2474,64 +2474,6 @@ void AudacityProject::PrevWindow()
    w->Raise();
 }
 
-/// Move a track up, down, to top or to bottom.
-
-void AudacityProject::MoveTrack(Track* target, MoveChoice choice)
-{
-   wxString direction;
-
-   switch (choice)
-   {
-   case OnMoveTopID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Top");
-
-      while (mTracks->CanMoveUp(target)) {
-         if (mTracks->Move(target, true)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && (target->GetKind() == Track::Wave))
-               pMixerBoard->MoveTrackCluster((WaveTrack*)target, true);
-         }
-      }
-      break;
-   case OnMoveBottomID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Bottom");
-
-      while (mTracks->CanMoveDown(target)) {
-         if (mTracks->Move(target, false)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && (target->GetKind() == Track::Wave))
-               pMixerBoard->MoveTrackCluster((WaveTrack*)target, false);
-         }
-      }
-      break;
-   default:
-      bool bUp = (OnMoveUpID == choice);
-      /* i18n-hint: a direction.*/
-      direction = bUp ? _("Up") : _("Down");
-
-      if (mTracks->Move(target, bUp)) {
-         MixerBoard* pMixerBoard = this->GetMixerBoard();
-         if (pMixerBoard && (target->GetKind() == Track::Wave)) {
-            pMixerBoard->MoveTrackCluster((WaveTrack*)target, bUp);
-         }
-      }
-   }
-
-   /* i18n-hint: Past tense of 'to move', as in 'moved audio track up'.*/
-   wxString longDesc = (_("Moved"));
-   /* i18n-hint: The direction of movement will be up, down, to top or to bottom.. */
-   wxString shortDesc = (_("Move Track"));
-
-   longDesc = (wxString::Format(wxT("%s '%s' %s"), longDesc.c_str(),
-      target->GetName().c_str(), direction.c_str()));
-   shortDesc = (wxString::Format(wxT("%s %s"), shortDesc.c_str(), direction.c_str()));
-
-   PushState(longDesc, shortDesc);
-   GetTrackPanel()->Refresh(false);
-}
-
 void AudacityProject::OnInputDevice()
 {
    DeviceToolBar *tb = GetDeviceToolBar();
