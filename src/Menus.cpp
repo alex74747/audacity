@@ -946,7 +946,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
    c->AddCommand(wxT("InputGainInc"), _("Increase recording volume"), FN(OnInputGainInc));
    c->AddCommand(wxT("InputGainDec"), _("Decrease recording volume"), FN(OnInputGainDec));
 
@@ -2235,14 +2234,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-void AudacityProject::OnInputGain()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->ShowInputGainDialog();
-   }
 }
 
 void AudacityProject::OnInputGainInc()
