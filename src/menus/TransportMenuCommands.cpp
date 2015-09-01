@@ -105,6 +105,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayBeforeSelectionStart"), _("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
    c->AddCommand(wxT("PlayAfterSelectionStart"), _("Play After Selection Start"), FN(OnPlayAfterSelectionStart), wxT("Shift+F6"));
    c->AddCommand(wxT("PlayBeforeSelectionEnd"), _("Play Before Selection End"), FN(OnPlayBeforeSelectionEnd), wxT("Shift+F7"));
+   c->AddCommand(wxT("PlayAfterSelectionEnd"), _("Play After Selection End"), FN(OnPlayAfterSelectionEnd), wxT("Shift+F8"));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -549,5 +550,20 @@ void TransportMenuCommands::OnPlayBeforeSelectionEnd()
    else
       mProject->GetControlToolBar()->PlayPlayRegion
       (SelectedRegion(t1 - beforeLen, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayAfterSelectionEnd()
+{
+   if (!mProject->MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t1 = viewInfo.selectedRegion.t1();
+   double afterLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t1, t1 + afterLen), mProject->GetDefaultPlayOptions(),
        PlayMode::oneSecondPlay);
 }

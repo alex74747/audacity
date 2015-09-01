@@ -52,6 +52,7 @@ private:
    void OnPlayBeforeSelectionStart();
    void OnPlayAfterSelectionStart();
    void OnPlayBeforeSelectionEnd();
+   void OnPlayAfterSelectionEnd();
 
    AudacityProject *const mProject;
 };
