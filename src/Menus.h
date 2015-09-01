@@ -65,10 +65,6 @@ void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
 
-        // Transcription control
-
-void OnPlaySpeedDec();
-
         // Moving track focus commands
 
 void OnCursorUp();
