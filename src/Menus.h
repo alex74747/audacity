@@ -65,11 +65,6 @@ void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
 
-        // Wave track control
-
-        // Device control
-void OnInputChannels();
-
         // Mixer control
 
 void OnOutputGain();

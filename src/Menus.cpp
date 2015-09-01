@@ -899,10 +899,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("InputChannels"), _("Change recording channels"), FN(OnInputChannels), wxT("Shift+N"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-
    c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
    c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
    c->AddCommand(wxT("OutputGainDec"), _("Decrease playback volume"), FN(OnOutputGainDec));
@@ -2017,14 +2013,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnInputChannels()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowChannelsDialog();
-   }
 }
 
 void AudacityProject::OnOutputGain()
