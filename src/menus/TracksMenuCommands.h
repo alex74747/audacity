@@ -89,6 +89,10 @@ private:
    void OnTrackMoveDown();
    void OnTrackMoveTop();
    void OnTrackMoveBottom();
+public:
+   enum MoveChoice { OnMoveUpID, OnMoveDownID, OnMoveTopID, OnMoveBottomID };
+   void MoveTrack(Track* target, MoveChoice choice);
+private:
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

@@ -1436,7 +1436,7 @@ void TracksMenuCommands::OnTrackMoveUp()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    Track *const focusedTrack = trackPanel->GetFocusedTrack();
    if (mProject->GetTracks()->CanMoveUp(focusedTrack)) {
-      mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveUpID);
+      MoveTrack(focusedTrack, OnMoveUpID);
       trackPanel->Refresh(false);
    }
 }
@@ -1446,7 +1446,7 @@ void TracksMenuCommands::OnTrackMoveDown()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    Track *const focusedTrack = trackPanel->GetFocusedTrack();
    if (mProject->GetTracks()->CanMoveDown(focusedTrack)) {
-      mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveDownID);
+      MoveTrack(focusedTrack, OnMoveDownID);
       trackPanel->Refresh(false);
    }
 }
@@ -1456,7 +1456,7 @@ void TracksMenuCommands::OnTrackMoveTop()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    Track *const focusedTrack = trackPanel->GetFocusedTrack();
    if (mProject->GetTracks()->CanMoveUp(focusedTrack)) {
-      mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveTopID);
+      MoveTrack(focusedTrack, OnMoveTopID);
       trackPanel->Refresh(false);
    }
 }
@@ -1466,7 +1466,64 @@ void TracksMenuCommands::OnTrackMoveBottom()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    Track *const focusedTrack = trackPanel->GetFocusedTrack();
    if (trackPanel->GetTracks()->CanMoveDown(focusedTrack)) {
-      mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveBottomID);
+      MoveTrack(focusedTrack, OnMoveBottomID);
       trackPanel->Refresh(false);
    }
+}
+
+void TracksMenuCommands::MoveTrack(Track* target, MoveChoice choice)
+{
+   TrackList *const trackList = mProject->GetTracks();
+   wxString direction;
+
+   switch (choice)
+   {
+   case OnMoveTopID:
+      /* i18n-hint: where the track is moving to.*/
+      direction = _("to Top");
+
+      while (trackList->CanMoveUp(target)) {
+         if (trackList->Move(target, true)) {
+            MixerBoard* pMixerBoard = mProject->GetMixerBoard(); // Update mixer board.
+            if (pMixerBoard && (target->GetKind() == Track::Wave))
+               pMixerBoard->MoveTrackCluster((WaveTrack*)target, true);
+         }
+      }
+      break;
+   case OnMoveBottomID:
+      /* i18n-hint: where the track is moving to.*/
+      direction = _("to Bottom");
+
+      while (trackList->CanMoveDown(target)) {
+         if (trackList->Move(target, false)) {
+            MixerBoard* pMixerBoard = mProject->GetMixerBoard(); // Update mixer board.
+            if (pMixerBoard && (target->GetKind() == Track::Wave))
+               pMixerBoard->MoveTrackCluster((WaveTrack*)target, false);
+         }
+      }
+      break;
+   default:
+      bool bUp = (OnMoveUpID == choice);
+      /* i18n-hint: a direction.*/
+      direction = bUp ? _("Up") : _("Down");
+
+      if (trackList->Move(target, bUp)) {
+         MixerBoard* pMixerBoard = mProject->GetMixerBoard();
+         if (pMixerBoard && (target->GetKind() == Track::Wave)) {
+            pMixerBoard->MoveTrackCluster((WaveTrack*)target, bUp);
+         }
+      }
+   }
+
+   /* i18n-hint: Past tense of 'to move', as in 'moved audio track up'.*/
+   wxString longDesc = (_("Moved"));
+   /* i18n-hint: The direction of movement will be up, down, to top or to bottom.. */
+   wxString shortDesc = (_("Move Track"));
+
+   longDesc = (wxString::Format(wxT("%s '%s' %s"), longDesc.c_str(),
+      target->GetName().c_str(), direction.c_str()));
+   shortDesc = (wxString::Format(wxT("%s %s"), shortDesc.c_str(), direction.c_str()));
+
+   mProject->PushState(longDesc, shortDesc);
+   mProject->GetTrackPanel()->Refresh(false);
 }
