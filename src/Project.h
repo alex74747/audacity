@@ -99,6 +99,7 @@ class Regions;
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class ViewMenuCommands;
 class TransportMenuCommands;
 class TracksMenuCommands;
 class HelpMenuCommands;
@@ -201,6 +202,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
    const ViewInfo &GetViewInfo() const { return mViewInfo; }
    ViewInfo &GetViewInfo() { return mViewInfo; }
+   wxScrollBar *GetVerticalScrollBar() { return mVsbar; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();
@@ -280,6 +282,9 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    wxPanel *GetTopPanel() { return mTopPanel; }
    TrackPanel * GetTrackPanel() {return mTrackPanel;}
+
+   // Creates the window as needed on demand:
+   HistoryWindow *GetHistoryWindow();
 
    bool GetIsEmpty();
 
@@ -484,7 +489,12 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    Meter *GetCaptureMeter();
    void SetCaptureMeter(Meter *capture);
 
-   LyricsWindow* GetLyricsWindow() { return mLyricsWindow; }
+   // Creates the window as needed on demand:
+   LyricsWindow* GetLyricsWindow();
+
+   // Creates the window as needed on demand:
+   MixerBoardFrame* GetMixerBoardFrame();
+
    MixerBoard* GetMixerBoard() { return mMixerBoard; }
 
    wxStatusBar* GetStatusBar() { return mStatusBar; }
@@ -553,7 +563,10 @@ public:
 private:
    void PopState(const UndoState &state);
 
+public:
    void UpdateLyrics();
+
+private:
    void UpdateMixerBoard();
 
    void GetRegionsByLabel( Regions &regions );
@@ -745,6 +758,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;

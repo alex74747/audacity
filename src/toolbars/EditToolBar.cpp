@@ -55,6 +55,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/ViewMenuCommands.h"
 #include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
 
@@ -277,10 +278,10 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          return;//avoiding the call to SetButton()
 #endif
       case ETBZoomInID:
-         p->OnZoomIn();
+         ViewMenuCommands(p).OnZoomIn();
          break;
       case ETBZoomOutID:
-         p->OnZoomOut();
+         ViewMenuCommands(p).OnZoomOut();
          break;
 
 #if 0 // Disabled for version 1.2.0 since it doesn't work quite right...
@@ -290,10 +291,10 @@ void EditToolBar::OnButton(wxCommandEvent &event)
 #endif
 
       case ETBZoomSelID:
-         p->OnZoomSel();
+         ViewMenuCommands(p).OnZoomSel();
          break;
       case ETBZoomFitID:
-         p->OnZoomFit();
+         ViewMenuCommands(p).OnZoomFit();
          break;
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
       case ETBEffectsID:

@@ -53,6 +53,7 @@ scroll information.  It also has some status flags.
 #include "Project.h"
 
 #include "commands/CommandManager.h"
+#include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
@@ -915,6 +916,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mbLoadedFromAup( false )
 {
    mCommandManager = new CommandManager();
+   mViewMenuCommands = new ViewMenuCommands(this);
    mTransportMenuCommands = new TransportMenuCommands(this);
    mTracksMenuCommands = new TracksMenuCommands(this);
    mHelpMenuCommands = new HelpMenuCommands(this);
@@ -1241,6 +1243,7 @@ AudacityProject::~AudacityProject()
 
    delete mCommandManager;
 
+   delete mViewMenuCommands;
    delete mTransportMenuCommands;
    delete mTracksMenuCommands;
    delete mHelpMenuCommands;
@@ -1440,6 +1443,13 @@ void AudacityProject::SetProjectTitle( int number)
 
    SetTitle( name );
    SetName(name);       // to make the nvda screen reader read the correct title
+}
+
+HistoryWindow *AudacityProject::GetHistoryWindow()
+{
+   if (!mHistoryWindow)
+      mHistoryWindow = safenew HistoryWindow(this, GetUndoManager());
+   return mHistoryWindow;
 }
 
 bool AudacityProject::GetIsEmpty()
@@ -4052,7 +4062,7 @@ void AudacityProject::AddImportedTracks(const wxString &fileName,
    wxEventLoopBase::GetActive()->YieldFor(wxEVT_CATEGORY_UI | wxEVT_CATEGORY_USER_INPUT);
 #endif
 
-   OnZoomFit();
+   ViewMenuCommands(this).OnZoomFit();
 
    mTrackPanel->SetFocus();
    mTrackPanel->EnsureVisible(mTrackPanel->GetFirstSelectedTrack());
@@ -4727,6 +4737,20 @@ void AudacityProject::SetCaptureMeter(Meter *capture)
    {
       gAudioIO->SetCaptureMeter(this, mCaptureMeter);
    }
+}
+
+LyricsWindow *AudacityProject::GetLyricsWindow()
+{
+   if (!mLyricsWindow)
+      mLyricsWindow = safenew LyricsWindow(this);
+   return mLyricsWindow;
+}
+
+MixerBoardFrame *AudacityProject::GetMixerBoardFrame()
+{
+   if (!mMixerBoardFrame)
+      mMixerBoardFrame = safenew MixerBoardFrame(this);
+   return mMixerBoardFrame;
 }
 
 void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))

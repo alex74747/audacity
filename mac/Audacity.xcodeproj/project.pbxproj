@@ -1218,6 +1218,7 @@
 		5E6B19F21F2CD1A2009A2CB0 /* HelpMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */; };
 		5E5DC4841F2CD28B00E8CDA9 /* TracksMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4821F2CD28B00E8CDA9 /* TracksMenuCommands.cpp */; };
 		5E5DC4871F2CD42100E8CDA9 /* TransportMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */; };
+		5E5DC48A1F2CD51D00E8CDA9 /* ViewMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4881F2CD51D00E8CDA9 /* ViewMenuCommands.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
 		ED15214D163C22F000451B5F /* lsr.c in Sources */ = {isa = PBXBuildFile; fileRef = ED152123163C220300451B5F /* lsr.c */; };
@@ -3012,6 +3013,8 @@
 		5E5DC4831F2CD28B00E8CDA9 /* TracksMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TracksMenuCommands.h; path = menus/TracksMenuCommands.h; sourceTree = "<group>"; };
 		5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransportMenuCommands.cpp; path = menus/TransportMenuCommands.cpp; sourceTree = "<group>"; };
 		5E5DC4861F2CD42100E8CDA9 /* TransportMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransportMenuCommands.h; path = menus/TransportMenuCommands.h; sourceTree = "<group>"; };
+		5E5DC4881F2CD51D00E8CDA9 /* ViewMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ViewMenuCommands.cpp; path = menus/ViewMenuCommands.cpp; sourceTree = "<group>"; };
+		5E5DC4891F2CD51D00E8CDA9 /* ViewMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewMenuCommands.h; path = menus/ViewMenuCommands.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
 		82FF184E13CF01A600C1B664 /* dBTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dBTable.h; path = sbsms/src/dBTable.h; sourceTree = "<group>"; };
 		82FF184F13CF01A600C1B664 /* slide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = slide.cpp; path = sbsms/src/slide.cpp; sourceTree = "<group>"; };
@@ -5591,6 +5594,8 @@
 				5E5DC4831F2CD28B00E8CDA9 /* TracksMenuCommands.h */,
 				5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */,
 				5E5DC4861F2CD42100E8CDA9 /* TransportMenuCommands.h */,
+				5E5DC4881F2CD51D00E8CDA9 /* ViewMenuCommands.cpp */,
+				5E5DC4891F2CD51D00E8CDA9 /* ViewMenuCommands.h */,
 			);
 			name = menus;
 			sourceTree = "<group>";
@@ -7570,6 +7575,7 @@
 				28BD8AB1101DF4C700686679 /* BatchEvalCommand.cpp in Sources */,
 				28BD8AB2101DF4C700686679 /* CommandDirectory.cpp in Sources */,
 				28BD8AB3101DF4C700686679 /* ExecMenuCommand.cpp in Sources */,
+				5E5DC48A1F2CD51D00E8CDA9 /* ViewMenuCommands.cpp in Sources */,
 				28BD8AB4101DF4C700686679 /* GetAllMenuCommands.cpp in Sources */,
 				28948427101DF8FC005B0713 /* EffectsPrefs.cpp in Sources */,
 				287E207F102561F300BF47A2 /* PluginManager.cpp in Sources */,
