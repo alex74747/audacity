@@ -68,7 +68,6 @@ void OnSeekRightLong();
         // Wave track control
 
         // Device control
-void OnOutputDevice();
 void OnAudioHost();
 void OnInputChannels();
 

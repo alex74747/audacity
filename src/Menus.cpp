@@ -899,9 +899,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
    c->AddCommand(wxT("AudioHost"), _("Change audio host"), FN(OnAudioHost), wxT("Shift+H"),
                  AudioIONotBusyFlag,
                  AudioIONotBusyFlag);
@@ -2023,14 +2020,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnOutputDevice()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowOutputDialog();
-   }
 }
 
 void AudacityProject::OnAudioHost()
