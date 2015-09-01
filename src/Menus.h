@@ -372,18 +372,7 @@ void OnManageAnalyzers();
 
         // Help Menu
 
-void OnAbout();
-void OnQuickHelp();
-void OnManual();
-void OnCheckForUpdates();
-void OnShowLog();
 void OnHelpWelcome();
-void OnBenchmark();
-#if defined(EXPERIMENTAL_CRASH_REPORT)
-void OnCrashReport();
-#endif
-void OnScreenshot();
-void OnAudioDeviceInfo();
 
        //
 

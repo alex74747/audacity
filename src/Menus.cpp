@@ -33,6 +33,8 @@ simplifies construction of menu items.
 #include "Audacity.h"
 #include "Project.h"
 
+#include "menus/HelpMenuCommands.h"
+
 #include <iterator>
 #include <limits>
 #include <math.h>
@@ -57,7 +59,6 @@ simplifies construction of menu items.
 #include "effects/EffectManager.h"
 
 #include "AudacityApp.h"
-#include "AudacityLogger.h"
 #include "AudioIO.h"
 #include "Dependencies.h"
 #include "float_cast.h"
@@ -85,9 +86,6 @@ simplifies construction of menu items.
 #include "Tags.h"
 #include "TimeTrack.h"
 #include "Mix.h"
-#include "AboutDialog.h"
-#include "Benchmark.h"
-#include "Screenshot.h"
 #include "ondemand/ODManager.h"
 
 #include "Resample.h"
@@ -104,7 +102,6 @@ simplifies construction of menu items.
 #include "toolbars/DeviceToolBar.h"
 #include "toolbars/MixerToolBar.h"
 #include "toolbars/TranscriptionToolBar.h"
-#include "widgets/LinkingHtmlWindow.h"
 
 #include "Experimental.h"
 #include "PlatformCompatibility.h"
@@ -114,9 +111,7 @@ simplifies construction of menu items.
 #include "SoundActivatedRecord.h"
 #include "LabelDialog.h"
 
-#include "FileDialog.h"
 #include "SplashDialog.h"
-#include "widgets/HelpSystem.h"
 #include "DeviceManager.h"
 
 #include "Snap.h"
@@ -1003,42 +998,7 @@ void AudacityProject::CreateMenusAndCommands()
    wxGetApp().s_macHelpMenuTitleName = _("&Help");
    #endif
 
-   c->BeginMenu(_("&Help"));
-   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-   c->AddItem(wxT("QuickHelp"), _("&Quick Help"), FN(OnQuickHelp));
-   c->AddItem(wxT("Manual"), _("&Manual"), FN(OnManual));
-
-   c->AddSeparator();
-
-   c->AddItem(wxT("Screenshot"), _("&Screenshot Tools..."), FN(OnScreenshot));
-
-#if IS_ALPHA
-   // TODO: What should we do here?  Make benchmark a plug-in?
-   // Easy enough to do.  We'd call it mod-self-test.
-
-   c->AddItem(wxT("Benchmark"), _("&Run Benchmark..."), FN(OnBenchmark));
-#endif
-
-   c->AddSeparator();
-   c->AddItem(wxT("Updates"), _("&Check for Updates..."), FN(OnCheckForUpdates));
-   c->AddItem(wxT("DeviceInfo"), _("Au&dio Device Info..."), FN(OnAudioDeviceInfo),
-              AudioIONotBusyFlag,
-              AudioIONotBusyFlag);
-
-   c->AddItem(wxT("Log"), _("Show &Log..."), FN(OnShowLog));
-
-#if defined(EXPERIMENTAL_CRASH_REPORT)
-   c->AddItem(wxT("CrashReport"), _("&Generate Support Data..."), FN(OnCrashReport));
-#endif
-
-#ifndef __WXMAC__
-   c->AddSeparator();
-#endif
-
-   c->AddItem(wxT("About"), _("&About Audacity..."), FN(OnAbout));
-
-   c->EndMenu();
+   mHelpMenuCommands->Create(c);
 
    /////////////////////////////////////////////////////////////////////////////
 
@@ -6398,103 +6358,9 @@ void AudacityProject::OnRemoveTracks()
 // Help Menu
 //
 
-void AudacityProject::OnAbout()
-{
-   AboutDialog dlog(this);
-   dlog.ShowModal();
-}
-
 void AudacityProject::OnHelpWelcome()
 {
    SplashDialog::Show2( this );
-}
-
-void AudacityProject::OnQuickHelp()
-{
-   HelpSystem::ShowHelpDialog(
-      this,
-      wxT("Quick_Help"));
-}
-
-void AudacityProject::OnManual()
-{
-   HelpSystem::ShowHelpDialog(
-      this,
-      wxT("Main_Page"));
-}
-
-void AudacityProject::OnCheckForUpdates()
-{
-   ::OpenInDefaultBrowser( wxString( wxT("http://audacityteam.org/download/?from_ver=")) + AUDACITY_VERSION_STRING );
-}
-
-void AudacityProject::OnShowLog()
-{
-   AudacityLogger *logger = wxGetApp().GetLogger();
-   if (logger) {
-      logger->Show();
-   }
-}
-
-void AudacityProject::OnBenchmark()
-{
-   ::RunBenchmark(this);
-}
-
-#if defined(EXPERIMENTAL_CRASH_REPORT)
-void AudacityProject::OnCrashReport()
-{
-// Change to "1" to test a real crash
-#if 0
-   char *p = 0;
-   *p = 1234;
-#endif
-   wxGetApp().GenerateCrashReport(wxDebugReport::Context_Current);
-}
-#endif
-
-void AudacityProject::OnScreenshot()
-{
-   ::OpenScreenshotTools();
-}
-
-void AudacityProject::OnAudioDeviceInfo()
-{
-   wxString info = gAudioIO->GetDeviceInfo();
-
-   wxDialog dlg(this, wxID_ANY, wxString(_("Audio Device Info")));
-   dlg.SetName(dlg.GetTitle());
-   ShuttleGui S(&dlg, eIsCreating);
-
-   wxTextCtrl *text;
-   S.StartVerticalLay();
-   {
-      S.SetStyle(wxTE_MULTILINE | wxTE_READONLY);
-      text = S.Id(wxID_STATIC).AddTextWindow(info);
-      S.AddStandardButtons(eOkButton | eCancelButton);
-   }
-   S.EndVerticalLay();
-
-   dlg.FindWindowById(wxID_OK)->SetLabel(_("&Save"));
-   dlg.SetSize(350, 450);
-
-   if (dlg.ShowModal() == wxID_OK)
-   {
-      wxString fName = FileSelector(_("Save Device Info"),
-                                    wxEmptyString,
-                                    wxT("deviceinfo.txt"),
-                                    wxT("txt"),
-                                    wxT("*.txt"),
-                                    wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-                                    this);
-      if (!fName.IsEmpty())
-      {
-         if (!text->SaveFile(fName))
-         {
-            wxMessageBox(_("Unable to save device info"), _("Save Device Info"));
-         }
-      }
-   }
 }
 
 void AudacityProject::OnSeparator()
