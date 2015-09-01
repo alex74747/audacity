@@ -205,6 +205,18 @@ void EditMenuCommands::Create(CommandManager *c)
    /////////////////////////////////////////////////////////////////////////////
 
    c->AddItem(wxT("ZeroCross"), _("Find &Zero Crossings"), FN(OnZeroCrossing), wxT("Z"));
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("Mo&ve Cursor"));
+   {
+      c->AddItem(wxT("CursSelStart"), _("to Selection Star&t"), FN(OnCursorSelStart));
+      c->AddItem(wxT("CursSelEnd"), _("to Selection En&d"), FN(OnCursorSelEnd));
+
+      c->AddItem(wxT("CursTrackStart"), _("to Track &Start"), FN(OnCursorTrackStart), wxT("J"));
+      c->AddItem(wxT("CursTrackEnd"), _("to Track &End"), FN(OnCursorTrackEnd), wxT("K"));
+   }
+   c->EndSubMenu();
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -1894,4 +1906,75 @@ double EditMenuCommands::NearestZeroCrossing(double t0)
    delete[] dist;
 
    return t0 + (argmin - windowSize / 2) / rate;
+}
+
+void EditMenuCommands::OnCursorSelStart()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   TrackPanel *const trackPanel =  mProject->GetTrackPanel();
+   viewInfo.selectedRegion.collapseToT0();
+   mProject->ModifyState(false);
+   trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+   trackPanel->Refresh(false);
+}
+
+void EditMenuCommands::OnCursorSelEnd()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   viewInfo.selectedRegion.collapseToT1();
+   mProject->ModifyState(false);
+   trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+   trackPanel->Refresh(false);
+}
+
+void EditMenuCommands::OnCursorTrackStart()
+{
+   double minOffset = 1000000.0;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t) {
+      if (t->GetSelected()) {
+         if (t->GetOffset() < minOffset)
+            minOffset = t->GetOffset();
+      }
+
+      t = iter.Next();
+   }
+
+   if (minOffset < 0.0) minOffset = 0.0;
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   viewInfo.selectedRegion.setTimes(minOffset, minOffset);
+   mProject->ModifyState(false);
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+   trackPanel->Refresh(false);
+}
+
+void EditMenuCommands::OnCursorTrackEnd()
+{
+   double maxEndOffset = -1000000.0;
+   double thisEndOffset = 0.0;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t) {
+      if (t->GetSelected()) {
+         thisEndOffset = t->GetEndTime();
+         if (thisEndOffset > maxEndOffset)
+            maxEndOffset = thisEndOffset;
+      }
+
+      t = iter.Next();
+   }
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   viewInfo.selectedRegion.setTimes(maxEndOffset, maxEndOffset);
+   mProject->ModifyState(false);
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+   trackPanel->Refresh(false);
 }

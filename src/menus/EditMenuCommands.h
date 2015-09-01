@@ -88,6 +88,11 @@ private:
    void OnZeroCrossing();
    double NearestZeroCrossing(double t0);
 
+   void OnCursorSelStart();
+   void OnCursorSelEnd();
+   void OnCursorTrackStart();
+   void OnCursorTrackEnd();
+
    AudacityProject *const mProject;
 };
 #endif

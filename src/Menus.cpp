@@ -388,18 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->BeginSubMenu(_("Mo&ve Cursor"));
-
-      c->AddItem(wxT("CursSelStart"), _("to Selection Star&t"), FN(OnCursorSelStart));
-      c->AddItem(wxT("CursSelEnd"), _("to Selection En&d"), FN(OnCursorSelEnd));
-
-      c->AddItem(wxT("CursTrackStart"), _("to Track &Start"), FN(OnCursorTrackStart), wxT("J"));
-      c->AddItem(wxT("CursTrackEnd"), _("to Track &End"), FN(OnCursorTrackEnd), wxT("K"));
-
-      c->EndSubMenu();
-
-      /////////////////////////////////////////////////////////////////////////////
-
       c->AddSeparator();
 
       c->AddItem(wxT("SelSave"), _("Store Re&gion"), FN(OnSelectionSave),
@@ -2627,69 +2615,6 @@ void AudacityProject::OnSelectionRestore()
 
    ModifyState(false);
 
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnCursorTrackStart()
-{
-   double minOffset = 1000000.0;
-
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-
-   while (t) {
-      if (t->GetSelected()) {
-         if (t->GetOffset() < minOffset)
-            minOffset = t->GetOffset();
-      }
-
-      t = iter.Next();
-   }
-
-   if (minOffset < 0.0) minOffset = 0.0;
-   mViewInfo.selectedRegion.setTimes(minOffset, minOffset);
-   ModifyState(false);
-   mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t0());
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnCursorTrackEnd()
-{
-   double maxEndOffset = -1000000.0;
-   double thisEndOffset = 0.0;
-
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-
-   while (t) {
-      if (t->GetSelected()) {
-         thisEndOffset = t->GetEndTime();
-         if (thisEndOffset > maxEndOffset)
-            maxEndOffset = thisEndOffset;
-      }
-
-      t = iter.Next();
-   }
-
-   mViewInfo.selectedRegion.setTimes(maxEndOffset, maxEndOffset);
-   ModifyState(false);
-   mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t1());
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnCursorSelStart()
-{
-   mViewInfo.selectedRegion.collapseToT0();
-   ModifyState(false);
-   mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t0());
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnCursorSelEnd()
-{
-   mViewInfo.selectedRegion.collapseToT1();
-   ModifyState(false);
-   mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t1());
    mTrackPanel->Refresh(false);
 }
 

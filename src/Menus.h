@@ -184,11 +184,6 @@ void OnSelectionSave();
 void OnSelectionRestore();
 void OnCursorPositionStore();
 
-void OnCursorTrackStart();
-void OnCursorTrackEnd();
-void OnCursorSelStart();
-void OnCursorSelEnd();
-
 // Effect Menu
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
