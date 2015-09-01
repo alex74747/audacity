@@ -74,7 +74,6 @@ void OnSeekRightLong();
 
         // Transcription control
 
-void OnSetPlaySpeed();
 void OnPlaySpeedInc();
 void OnPlaySpeedDec();
 
