@@ -150,7 +150,6 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnCut();
 void OnSplitCut();
 void OnCopy();
 

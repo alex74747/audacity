@@ -250,7 +250,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
    switch (id) {
       case ETBCutID:
          p->SelectAllIfNone();
-         p->OnCut();
+         EditMenuCommands(p).OnCut();
          break;
       case ETBCopyID:
          p->SelectAllIfNone();

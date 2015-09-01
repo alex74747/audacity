@@ -294,7 +294,7 @@ void ODManager::Start()
       }
 
       mCurrentThreadsMutex.Unlock();
-      //use a conditon variable to block here instead of a sleep.
+      //GetaAuse a conditon variable to block here instead of a sleep.
 
       // JKC: If there are no tasks ready to run, or we're paused then
       // we wait for there to be tasks in the queue.

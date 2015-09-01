@@ -609,8 +609,10 @@ private:
 
    std::unique_ptr<TrackList> mLastSavedTracks;
 
+public:
    // Clipboard (static because it is shared by all projects)
    static std::unique_ptr<TrackList> msClipboard;
+
    static AudacityProject *msClipProject;
    static double msClipT0;
    static double msClipT1;
