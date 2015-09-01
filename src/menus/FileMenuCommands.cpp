@@ -118,6 +118,11 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
       AudioIONotBusyFlag | TracksExistFlag,
       AudioIONotBusyFlag | TracksExistFlag);
+
+   /* i18n-hint: (verb) It's item on a menu. */
+   c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
+      AudioIONotBusyFlag | TracksExistFlag,
+      AudioIONotBusyFlag | TracksExistFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -511,4 +516,9 @@ void FileMenuCommands::OnEditChains()
 void FileMenuCommands::OnPageSetup()
 {
    ::HandlePageSetup(mProject);
+}
+
+void FileMenuCommands::OnPrint()
+{
+   ::HandlePrint(mProject, mProject->GetName(), mProject->GetTracks());
 }

@@ -64,8 +64,6 @@ void OnStopSelect();
 
 void OnClose();
 
-void OnPrint();
-
 void OnExit();
 
 public:

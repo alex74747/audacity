@@ -268,11 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   /* i18n-hint: (verb) It's item on a menu. */
-   c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
-              AudioIONotBusyFlag | TracksExistFlag,
-              AudioIONotBusyFlag | TracksExistFlag);
-
    c->AddSeparator();
 
    // On the Mac, the Exit item doesn't actually go here...wxMac will pull it out
@@ -1360,11 +1355,6 @@ void AudacityProject::OnClose()
 void AudacityProject::OnExit()
 {
    QuitAudacity();
-}
-
-void AudacityProject::OnPrint()
-{
-   HandlePrint(this, GetName(), mTracks);
 }
 
 //

@@ -42,6 +42,7 @@ private:
    void OnApplyChain();
    void OnEditChains();
    void OnPageSetup();
+   void OnPrint();
 
    AudacityProject *const mProject;
 };
