@@ -435,6 +435,8 @@ audacity_SOURCES = \
 	menus/CursorAndFocesCommands.h \
 	menus/EditMenuCommands.cpp \
 	menus/EditMenuCommands.h \
+	menus/FileMenuCommands.cpp \
+	menus/FileMenuCommands.h \
 	menus/HelpMenuCommands.cpp \
 	menus/HelpMenuCommands.h \
 	menus/TracksMenuCommands.cpp \

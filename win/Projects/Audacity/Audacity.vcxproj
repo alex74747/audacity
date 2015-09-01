@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\..\src\Menus.cpp" />
     <ClCompile Include="..\..\..\src\menus\CursorAndFocusCommands.cpp" />
     <ClCompile Include="..\..\..\src\menus\EditMenuCommands.cpp" />
+    <ClCompile Include="..\..\..\src\menus\FileMenuCommands.cpp" />
     <ClCompile Include="..\..\..\src\menus\HelpMenuCommands.cpp" />
     <ClCompile Include="..\..\..\src\menus\TracksMenuCommands.cpp" />
     <ClCompile Include="..\..\..\src\menus\TransportMenuCommands.cpp" />
@@ -431,6 +432,7 @@
     <ClInclude Include="..\..\..\src\import\SpecPowerMeter.h" />
     <ClInclude Include="..\..\..\src\menus\CursorAndFocusCommands.h" />
     <ClInclude Include="..\..\..\src\menus\EditMenuCommands.h" />
+    <ClInclude Include="..\..\..\src\menus\FileMenuCommands.h" />
     <ClInclude Include="..\..\..\src\menus\HelpMenuCommands.h" />
     <ClInclude Include="..\..\..\src\menus\TracksMenuCommands.h" />
     <ClInclude Include="..\..\..\src\menus\TransportMenuCommands.h" />

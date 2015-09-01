@@ -27,9 +27,9 @@ void CreateMenusAndCommands();
 void PopulateEffectsMenu(CommandManager *c, EffectType type, int batchflags, int realflags);
 void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs, int batchflags, int realflags, bool isDefault);
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, const PluginIDList & plugs, const wxArrayInt & flags, bool isDefault);
-void CreateRecentFilesMenu(CommandManager *c);
 
 public:
+void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 
 void ModifyToolbarMenus();
@@ -62,27 +62,7 @@ void OnStopSelect();
 
         // File Menu
 
-void OnNew();
-void OnOpen();
 void OnClose();
-void OnSave();
-void OnSaveAs();
-#ifdef USE_LIBVORBIS
-   void OnSaveCompressed();
-#endif
-
-void OnCheckDependencies();
-
-void OnExport();
-void OnExportSelection();
-void OnExportMultiple();
-void OnExportLabels();
-void OnExportMIDI();
-
-void OnPageSetup();
-void OnPrint();
-
-void OnExit();
 
 public:
 
@@ -95,22 +75,12 @@ void DoZoomFitV();
 void OnPlotSpectrum();
 void OnContrast();
 
-// Import Submenu
-void OnImport();
-void OnImportLabels();
-void OnImportMIDI();
-void OnImportRaw();
-
-void OnEditMetadata();
-
 public:
 
 // Effect Menu
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
-void OnApplyChain();
-void OnEditChains();
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
 void OnManageEffects();
