@@ -78,7 +78,6 @@ void OnMacBringAllToFront();
 
 void OnClose();
 
-void OnExportMultiple();
 void OnExportMIDI();
 
 void OnPageSetup();

@@ -275,10 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      // Enable Export audio commands only when there are audio tracks.
-      c->AddItem(wxT("ExportMultiple"), _("Export &Multiple..."), FN(OnExportMultiple), wxT("Ctrl+Shift+L"),
-         AudioIONotBusyFlag | WaveTracksExistFlag,
-         AudioIONotBusyFlag | WaveTracksExistFlag);
 #if defined(USE_MIDI)
       c->AddItem(wxT("ExportMIDI"), _("Export MI&DI..."), FN(OnExportMIDI),
          AudioIONotBusyFlag | NoteTracksSelectedFlag,
@@ -1577,15 +1573,6 @@ void AudacityProject::OnExportMIDI(){
    }
 }
 #endif // USE_MIDI
-
-
-void AudacityProject::OnExportMultiple()
-{
-   ExportMultiple em(this);
-
-   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
-   em.ShowModal();
-}
 
 void AudacityProject::OnPageSetup()
 {

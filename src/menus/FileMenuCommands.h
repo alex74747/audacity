@@ -47,6 +47,7 @@ private:
    void OnExport();
    void OnExportSelection();
    void OnExportLabels();
+   void OnExportMultiple();
 
    AudacityProject *const mProject;
 };
