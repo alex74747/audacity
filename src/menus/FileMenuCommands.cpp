@@ -81,6 +81,11 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Export"), _("&Export Audio..."), FN(OnExport), wxT("Ctrl+Shift+E"),
       AudioIONotBusyFlag | WaveTracksExistFlag,
       AudioIONotBusyFlag | WaveTracksExistFlag);
+
+   // Enable Export Selection commands only when there's a selection.
+   c->AddItem(wxT("ExportSel"), _("Expo&rt Selected Audio..."), FN(OnExportSelection),
+      AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+      AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -303,4 +308,14 @@ void FileMenuCommands::OnExport()
 
    wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
    e.Process(mProject, false, 0.0, mProject->GetTracks()->GetEndTime());
+}
+
+void FileMenuCommands::OnExportSelection()
+{
+   Exporter e;
+
+   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
+   e.SetFileDialogTitle(_("Export Selected Audio"));
+   e.Process(mProject, true, mProject->GetViewInfo().selectedRegion.t0(),
+      mProject->GetViewInfo().selectedRegion.t1());
 }
