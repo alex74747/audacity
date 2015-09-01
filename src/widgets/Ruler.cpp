@@ -90,6 +90,7 @@ array of Ruler::Label.
 #include "../prefs/PlaybackPrefs.h"
 #include "../prefs/TracksPrefs.h"
 #include "../widgets/Grabber.h"
+#include "../menus/EditMenuCommands.h"
 
 //#define SCRUB_ABOVE
 
@@ -2542,7 +2543,7 @@ void AdornedRulerPanel::HandleQPClick(wxMouseEvent &evt, wxCoord mousePosX)
    // Temporarily unlock locked play region
    if (mPlayRegionLock && evt.LeftDown()) {
       //mPlayRegionLock = true;
-      mProject->OnUnlockPlayRegion();
+      EditMenuCommands{mProject}.OnUnlockPlayRegion();
    }
 
    mLeftDownClick = mQuickPlayPos;
@@ -2720,7 +2721,7 @@ void AdornedRulerPanel::HandleQPRelease(wxMouseEvent &evt)
    if (mPlayRegionLock) {
       // Restore Locked Play region
       SetPlayRegion(mOldPlayRegionStart, mOldPlayRegionEnd);
-      mProject->OnLockPlayRegion();
+      EditMenuCommands{mProject}.OnLockPlayRegion();
       // and release local lock
       mPlayRegionLock = false;
    }
@@ -3023,9 +3024,9 @@ void AdornedRulerPanel::OnAutoScroll(wxCommandEvent&)
 void AdornedRulerPanel::OnLockPlayRegion(wxCommandEvent&)
 {
    if (mProject->IsPlayRegionLocked())
-      mProject->OnUnlockPlayRegion();
+      EditMenuCommands(mProject).OnUnlockPlayRegion();
    else
-      mProject->OnLockPlayRegion();
+      EditMenuCommands(mProject).OnLockPlayRegion();
 }
 
 

@@ -94,11 +94,10 @@ class MixerBoardFrame;
 struct AudioIOStartStreamOptions;
 struct UndoState;
 
-class Regions;
-
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class EditMenuCommands;
 class ViewMenuCommands;
 class TransportMenuCommands;
 class TracksMenuCommands;
@@ -209,6 +208,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    void GetPlayRegion(double* playRegionStart, double *playRegionEnd);
    bool IsPlayRegionLocked() { return mLockPlayRegion; }
+   void SetPlayRegionLocked(bool locked) { mLockPlayRegion = locked; }
 
    void SetSel0(double);        //Added by STM
    void SetSel1(double);        //Added by STM
@@ -283,8 +283,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    wxPanel *GetTopPanel() { return mTopPanel; }
    TrackPanel * GetTrackPanel() {return mTrackPanel;}
 
-   // Creates the window as needed on demand:
-   HistoryWindow *GetHistoryWindow();
+   HistoryWindow *GetHistoryWindow(bool createAsNeeded = false);
 
    bool GetIsEmpty();
 
@@ -365,7 +364,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    // Other commands
    static TrackList *GetClipboardTracks();
-   static void ClearClipboard();
    static void DeleteClipboard();
 
    int GetProjectNumber(){ return mProjectNo;};
@@ -379,19 +377,12 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    void RedrawProject(const bool bForceWaveTracks = false);
    void RefreshCursor();
    void SelectNone();
-   void SelectAllIfNone();
    void StopIfPaused();
    void Zoom(double level);
    void ZoomBy(double multiplier);
    void Rewind(bool shift);
    void SkipEnd(bool shift);
 
-
-   typedef bool (WaveTrack::* EditFunction)(double, double);
-   typedef std::unique_ptr<Track> (WaveTrack::* EditDestFunction)(double, double);
-
-   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
-   void EditClipboardByLabel(EditDestFunction action );
 
    bool IsSyncLocked();
    void SetSyncLock(bool flag);
@@ -560,7 +551,6 @@ public:
 public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                              // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
-private:
    void PopState(const UndoState &state);
 
 public:
@@ -568,8 +558,6 @@ public:
 
 private:
    void UpdateMixerBoard();
-
-   void GetRegionsByLabel( Regions &regions );
 
    void AutoSave();
    void DeleteCurrentAutoSaveFile();
@@ -610,8 +598,10 @@ private:
 
    std::unique_ptr<TrackList> mLastSavedTracks;
 
+public:
    // Clipboard (static because it is shared by all projects)
    static std::unique_ptr<TrackList> msClipboard;
+
    static AudacityProject *msClipProject;
    static double msClipT0;
    static double msClipT1;
@@ -758,6 +748,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   EditMenuCommands *mEditMenuCommands;
    ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;

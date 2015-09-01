@@ -271,7 +271,7 @@ void ViewMenuCommands::OnShowClipping()
 
 void ViewMenuCommands::OnHistory()
 {
-   HistoryWindow *historyWindow = mProject->GetHistoryWindow();
+   HistoryWindow *historyWindow = mProject->GetHistoryWindow(true);
 
    historyWindow->Show();
    historyWindow->Raise();

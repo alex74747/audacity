@@ -186,6 +186,7 @@ is time to refresh some aspect of the screen.
 #include "UndoManager.h"
 #include "WaveTrack.h"
 
+#include "menus/EditMenuCommands.h"
 #include "commands/CommandManager.h"
 #include "commands/Keyboard.h"
 
@@ -2775,7 +2776,7 @@ void TrackPanel::Stretch(int mouseXCoordinate, int trackLeftEdge,
       int capturedTrackIndex =
          (mCapturedTrack ? mCapturedTrack->GetIndex() : 0);
 
-      GetProject()->OnUndo();
+      EditMenuCommands(GetProject()).OnUndo();
 
       // Undo brings us back to the pre-click state, but we want to
       // quantize selected region to integer beat boundaries. These

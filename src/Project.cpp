@@ -53,6 +53,7 @@ scroll information.  It also has some status flags.
 #include "Project.h"
 
 #include "commands/CommandManager.h"
+#include "menus/EditMenuCommands.h"
 #include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
@@ -124,11 +125,9 @@ scroll information.  It also has some status flags.
 #include "WaveTrack.h"
 #include "DirManager.h"
 #include "effects/Effect.h"
-#include "prefs/PrefsDialog.h"
 #include "widgets/LinkingHtmlWindow.h"
 #include "widgets/ASlider.h"
 #include "widgets/ErrorDialog.h"
-#include "widgets/Ruler.h"
 #include "widgets/Warning.h"
 #include "xml/XMLFileReader.h"
 #include "PlatformCompatibility.h"
@@ -916,6 +915,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mbLoadedFromAup( false )
 {
    mCommandManager = new CommandManager();
+   mEditMenuCommands = new EditMenuCommands(this);
    mViewMenuCommands = new ViewMenuCommands(this);
    mTransportMenuCommands = new TransportMenuCommands(this);
    mTracksMenuCommands = new TracksMenuCommands(this);
@@ -1243,6 +1243,7 @@ AudacityProject::~AudacityProject()
 
    delete mCommandManager;
 
+   delete mEditMenuCommands;
    delete mViewMenuCommands;
    delete mTransportMenuCommands;
    delete mTracksMenuCommands;
@@ -1445,9 +1446,9 @@ void AudacityProject::SetProjectTitle( int number)
    SetName(name);       // to make the nvda screen reader read the correct title
 }
 
-HistoryWindow *AudacityProject::GetHistoryWindow()
+HistoryWindow *AudacityProject::GetHistoryWindow(bool createAsNeeded)
 {
-   if (!mHistoryWindow)
+   if (!mHistoryWindow && createAsNeeded)
       mHistoryWindow = safenew HistoryWindow(this, GetUndoManager());
    return mHistoryWindow;
 }
@@ -2299,7 +2300,7 @@ bool AudacityProject::TryToMakeActionAllowed
    if( (MissingFlags & ~( TimeSelectedFlag | WaveTracksSelectedFlag)) )
       return false;
 
-   OnSelectAll();
+   EditMenuCommands(this).OnSelectAll();
    flags = GetUpdateFlags();
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    return bAllowed;
@@ -4165,7 +4166,7 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
    if (mode == 1) {
       //TODO: All we want is a SelectAll()
       SelectNone();
-      SelectAllIfNone();
+      EditMenuCommands(this).SelectAllIfNone();
       OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("Normalize")),
                OnEffectFlagsConfigured);
    }
@@ -4525,16 +4526,6 @@ void AudacityProject::DeleteClipboard()
    msClipboard.reset();
 }
 
-void AudacityProject::ClearClipboard()
-{
-   msClipT0 = 0.0;
-   msClipT1 = 0.0;
-   msClipProject = NULL;
-   if (msClipboard) {
-      msClipboard->Clear();
-   }
-}
-
 void AudacityProject::Clear()
 {
    TrackListIterator iter(GetTracks());
@@ -4809,177 +4800,6 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
    }
 }
 
-//get regions selected by selected labels
-//removes unnecessary regions, overlapping regions are merged
-//regions memory need to be deleted by the caller
-void AudacityProject::GetRegionsByLabel( Regions &regions )
-{
-   TrackListIterator iter(GetTracks());
-   Track *n;
-
-   //determine labelled regions
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Label && n->GetSelected() )
-      {
-         LabelTrack *lt = ( LabelTrack* )n;
-         for( int i = 0; i < lt->GetNumLabels(); i++ )
-         {
-            const LabelStruct *ls = lt->GetLabel( i );
-            if( ls->selectedRegion.t0() >= mViewInfo.selectedRegion.t0() &&
-                ls->selectedRegion.t1() <= mViewInfo.selectedRegion.t1() )
-               regions.push_back(Region(ls->getT0(), ls->getT1()));
-         }
-      }
-
-   //anything to do ?
-   if( regions.size() == 0 )
-      return;
-
-   //sort and remove unnecessary regions
-   std::sort(regions.begin(), regions.end());
-   unsigned int selected = 1;
-   while( selected < regions.size() )
-   {
-      const Region &cur = regions.at( selected );
-      Region &last = regions.at( selected - 1 );
-      if( cur.start < last.end )
-      {
-         if( cur.end > last.end )
-            last.end = cur.end;
-         regions.erase( regions.begin() + selected );
-      }
-      else
-         selected++;
-   }
-}
-
-//Executes the edit function on all selected wave tracks with
-//regions specified by selected labels
-//If No tracks selected, function is applied on all tracks
-//If the function replaces the selection with audio of a different length,
-// bSyncLockedTracks should be set true to perform the same action on sync-lock selected
-// tracks.
-void AudacityProject::EditByLabel( EditFunction action,
-                                   bool bSyncLockedTracks )
-{
-   Regions regions;
-
-   GetRegionsByLabel( regions );
-   if( regions.size() == 0 )
-      return;
-
-   TrackListIterator iter(GetTracks());
-   Track *n;
-   bool allTracks = true;
-
-   // if at least one wave track is selected
-   // apply only on the selected track
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Wave && n->GetSelected() )
-      {
-         allTracks = false;
-         break;
-      }
-
-   //Apply action on wavetracks starting from
-   //labeled regions in the end. This is to correctly perform
-   //actions like 'Delete' which collapse the track area.
-   n = iter.First();
-   while (n)
-   {
-      if ((n->GetKind() == Track::Wave) &&
-            (allTracks || n->GetSelected() || (bSyncLockedTracks && n->IsSyncLockSelected())))
-      {
-         WaveTrack *wt = ( WaveTrack* )n;
-         for (int i = (int)regions.size() - 1; i >= 0; i--) {
-            const Region &region = regions.at(i);
-            (wt->*action)(region.start, region.end);
-         }
-      }
-      n = iter.Next();
-   }
-}
-
-//Executes the edit function on all selected wave tracks with
-//regions specified by selected labels
-//If No tracks selected, function is applied on all tracks
-//Functions copy the edited regions to clipboard, possibly in multiple tracks
-//This probably should not be called if *action() changes the timeline, because
-// the copy needs to happen by track, and the timeline change by group.
-void AudacityProject::EditClipboardByLabel( EditDestFunction action )
-{
-   Regions regions;
-
-   GetRegionsByLabel( regions );
-   if( regions.size() == 0 )
-      return;
-
-   TrackListIterator iter(GetTracks());
-   Track *n;
-   bool allTracks = true;
-
-   // if at least one wave track is selected
-   // apply only on the selected track
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Wave && n->GetSelected() )
-      {
-         allTracks = false;
-         break;
-      }
-
-   ClearClipboard();
-   //Apply action on wavetracks starting from
-   //labeled regions in the end. This is to correctly perform
-   //actions like 'Cut' which collapse the track area.
-   for( n = iter.First(); n; n = iter.Next() )
-   {
-      if( n->GetKind() == Track::Wave && ( allTracks || n->GetSelected() ) )
-      {
-         WaveTrack *wt = ( WaveTrack* )n;
-         Track::Holder merged;
-         for( int i = (int)regions.size() - 1; i >= 0; i-- )
-         {
-            const Region &region = regions.at(i);
-            auto dest = ( wt->*action )( region.start, region.end );
-            if( dest )
-            {
-               dest->SetChannel( wt->GetChannel() );
-               dest->SetLinked( wt->GetLinked() );
-               dest->SetName( wt->GetName() );
-               if( !merged )
-                  merged = std::move(dest);
-               else
-               {
-                  // Paste to the beginning; unless this is the first region,
-                  // offset the track to account for time between the regions
-                  if (i < (int)regions.size() - 1)
-                     merged->Offset(
-                        regions.at(i + 1).start - region.end);
-
-                  bool bResult = merged->Paste( 0.0 , dest.get() );
-                  wxASSERT(bResult); // TO DO: Actually handle this.
-                  wxUnusedVar(bResult);
-               }
-            }
-            else  // nothing copied but there is a 'region', so the 'region' must be a 'point label' so offset
-               if (i < (int)regions.size() - 1)
-                  if (merged)
-                     merged->Offset(
-                        regions.at(i + 1).start - region.end);
-         }
-         if( merged )
-            msClipboard->Add( std::move(merged) );
-      }
-   }
-
-   msClipT0 = regions.front().start;
-   msClipT1 = regions.back().end;
-
-   if (mHistoryWindow)
-      mHistoryWindow->UpdateDisplay();
-}
-
-
 // TrackPanel callback method
 void AudacityProject::TP_DisplayStatusMessage(const wxString &msg)
 {
@@ -5224,7 +5044,7 @@ void AudacityProject::OnAudioIOStopRecording()
       // Reset timer record 
       if (IsTimerRecordCancelled())
       {
-         OnUndo();
+         EditMenuCommands(this).OnUndo();
          ResetTimerRecordFlag();
       }
 

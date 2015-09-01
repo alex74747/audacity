@@ -55,6 +55,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/EditMenuCommands.h"
 #include "../menus/ViewMenuCommands.h"
 #include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
@@ -248,29 +249,29 @@ void EditToolBar::OnButton(wxCommandEvent &event)
    // due to bugs elsewhere (see: AudacityProject::UpdateMenus() )
    switch (id) {
       case ETBCutID:
-         p->SelectAllIfNone();
-         p->OnCut();
+         EditMenuCommands(p).SelectAllIfNone();
+         EditMenuCommands(p).OnCut();
          break;
       case ETBCopyID:
-         p->SelectAllIfNone();
-         p->OnCopy();
+         EditMenuCommands(p).SelectAllIfNone();
+         EditMenuCommands(p).OnCopy();
          break;
       case ETBPasteID:
-         p->OnPaste();
+         EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
-         p->SelectAllIfNone();
-         p->OnTrim();
+         EditMenuCommands(p).SelectAllIfNone();
+         EditMenuCommands(p).OnTrim();
          break;
       case ETBSilenceID:
-         p->SelectAllIfNone();
-         p->OnSilence();
+         EditMenuCommands(p).SelectAllIfNone();
+         EditMenuCommands(p).OnSilence();
          break;
       case ETBUndoID:
-         p->OnUndo();
+         EditMenuCommands(p).OnUndo();
          break;
       case ETBRedoID:
-         p->OnRedo();
+         EditMenuCommands(p).OnRedo();
          break;
 #ifdef EXPERIMENTAL_SYNC_LOCK
       case ETBSyncLockID:
