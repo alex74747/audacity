@@ -89,6 +89,9 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
       CaptureNotBusyFlag,
       CaptureNotBusyFlag);
+   c->AddCommand(wxT("PlayToSelection"), _("Play To Selection"), FN(OnPlayToSelection), wxT("B"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -305,4 +308,49 @@ void TransportMenuCommands::OnPlayOneSecond()
    mProject->mLastPlayMode = oneSecondPlay;
    mProject->GetControlToolBar()->PlayPlayRegion
       (SelectedRegion(pos - 0.5, pos + 0.5), mProject->GetDefaultPlayOptions());
+}
+
+/// The idea for this function (and first implementation)
+/// was from Juhana Sadeharju.  The function plays the
+/// sound between the current mouse position and the
+/// nearest selection boundary.  This gives four possible
+/// play regions depending on where the current mouse
+/// position is relative to the left and right boundaries
+/// of the selection region.
+void TransportMenuCommands::OnPlayToSelection()
+{
+   if (!mProject->MakeReadyToPlay())
+      return;
+
+   double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0, t1;
+   // check region between pointer and the nearest selection edge
+   if (fabs(pos - viewInfo.selectedRegion.t0()) <
+      fabs(pos - viewInfo.selectedRegion.t1())) {
+      t0 = t1 = viewInfo.selectedRegion.t0();
+   }
+   else {
+      t0 = t1 = viewInfo.selectedRegion.t1();
+   }
+   if (pos < t1)
+      t0 = pos;
+   else
+      t1 = pos;
+
+   // JKC: oneSecondPlay mode disables auto scrolling
+   // On balance I think we should always do this in this function
+   // since you are typically interested in the sound EXACTLY
+   // where the cursor is.
+   // TODO: have 'playing attributes' such as 'with_autoscroll'
+   // rather than modes, since that's how we're now using the modes.
+   mProject->mLastPlayMode = oneSecondPlay;
+
+   // An alternative, commented out below, is to disable autoscroll
+   // only when playing a short region, less than or equal to a second.
+   //   mLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions());
 }
