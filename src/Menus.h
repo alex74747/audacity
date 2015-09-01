@@ -79,7 +79,6 @@ void OnMacBringAllToFront();
 void OnClose();
 
 void OnExportMultiple();
-void OnExportLabels();
 void OnExportMIDI();
 
 void OnPageSetup();

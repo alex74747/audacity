@@ -86,6 +86,10 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("ExportSel"), _("Expo&rt Selected Audio..."), FN(OnExportSelection),
       AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
       AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+
+   c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
+      AudioIONotBusyFlag | LabelTracksExistFlag,
+      AudioIONotBusyFlag | LabelTracksExistFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -318,4 +322,74 @@ void FileMenuCommands::OnExportSelection()
    e.SetFileDialogTitle(_("Export Selected Audio"));
    e.Process(mProject, true, mProject->GetViewInfo().selectedRegion.t0(),
       mProject->GetViewInfo().selectedRegion.t1());
+}
+
+void FileMenuCommands::OnExportLabels()
+{
+   Track *t;
+   int numLabelTracks = 0;
+
+   TrackListIterator iter(mProject->GetTracks());
+
+   wxString fName = _("labels.txt");
+   t = iter.First();
+   while (t) {
+      if (t->GetKind() == Track::Label)
+      {
+         numLabelTracks++;
+         fName = t->GetName();
+      }
+      t = iter.Next();
+   }
+
+   if (numLabelTracks == 0) {
+      wxMessageBox(_("There are no label tracks to export."));
+      return;
+   }
+
+   fName = FileSelector(_("Export Labels As:"),
+               wxEmptyString,
+               fName,
+               wxT("txt"),
+               wxT("*.txt"),
+               wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
+               mProject);
+
+   if (fName == wxT(""))
+      return;
+
+   // Move existing files out of the way.  Otherwise wxTextFile will
+   // append to (rather than replace) the current file.
+
+   if (wxFileExists(fName)) {
+#ifdef __WXGTK__
+      wxString safetyFileName = fName + wxT("~");
+#else
+      wxString safetyFileName = fName + wxT(".bak");
+#endif
+
+      if (wxFileExists(safetyFileName))
+         wxRemoveFile(safetyFileName);
+
+      wxRename(fName, safetyFileName);
+   }
+
+   wxTextFile f(fName);
+   f.Create();
+   f.Open();
+   if (!f.IsOpened()) {
+      wxMessageBox(_("Couldn't write to file: ") + fName);
+      return;
+   }
+
+   t = iter.First();
+   while (t) {
+      if (t->GetKind() == Track::Label)
+         ((LabelTrack *)t)->Export(f);
+
+      t = iter.Next();
+   }
+
+   f.Write();
+   f.Close();
 }

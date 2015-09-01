@@ -275,9 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
-         AudioIONotBusyFlag | LabelTracksExistFlag,
-         AudioIONotBusyFlag | LabelTracksExistFlag);
       // Enable Export audio commands only when there are audio tracks.
       c->AddItem(wxT("ExportMultiple"), _("Export &Multiple..."), FN(OnExportMultiple), wxT("Ctrl+Shift+L"),
          AudioIONotBusyFlag | WaveTracksExistFlag,
@@ -1497,77 +1494,6 @@ void AudacityProject::OnExit()
 {
    QuitAudacity();
 }
-
-void AudacityProject::OnExportLabels()
-{
-   Track *t;
-   int numLabelTracks = 0;
-
-   TrackListIterator iter(GetTracks());
-
-   wxString fName = _("labels.txt");
-   t = iter.First();
-   while (t) {
-      if (t->GetKind() == Track::Label)
-      {
-         numLabelTracks++;
-         fName = t->GetName();
-      }
-      t = iter.Next();
-   }
-
-   if (numLabelTracks == 0) {
-      wxMessageBox(_("There are no label tracks to export."));
-      return;
-   }
-
-   fName = FileSelector(_("Export Labels As:"),
-                        wxEmptyString,
-                        fName,
-                        wxT("txt"),
-                        wxT("*.txt"),
-                        wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-                        this);
-
-   if (fName == wxT(""))
-      return;
-
-   // Move existing files out of the way.  Otherwise wxTextFile will
-   // append to (rather than replace) the current file.
-
-   if (wxFileExists(fName)) {
-#ifdef __WXGTK__
-      wxString safetyFileName = fName + wxT("~");
-#else
-      wxString safetyFileName = fName + wxT(".bak");
-#endif
-
-      if (wxFileExists(safetyFileName))
-         wxRemoveFile(safetyFileName);
-
-      wxRename(fName, safetyFileName);
-   }
-
-   wxTextFile f(fName);
-   f.Create();
-   f.Open();
-   if (!f.IsOpened()) {
-      wxMessageBox(_("Couldn't write to file: ") + fName);
-      return;
-   }
-
-   t = iter.First();
-   while (t) {
-      if (t->GetKind() == Track::Label)
-         ((LabelTrack *) t)->Export(f);
-
-      t = iter.Next();
-   }
-
-   f.Write();
-   f.Close();
-}
-
 
 #ifdef USE_MIDI
 void AudacityProject::OnExportMIDI(){
