@@ -62,7 +62,6 @@ void OnStopSelect();
 
         // File Menu
 
-void OnOpen();
 void OnClose();
 void OnSave();
 void OnSaveAs();

@@ -16,6 +16,7 @@
 #include "OpenSaveCommands.h"
 #include "../Project.h"
 #include "../export/Export.h"
+#include "../menus/FileMenuCommands.h"
 
 // OpenProject
 
@@ -44,7 +45,7 @@ bool OpenProjectCommand::Apply(CommandExecutionContext context)
    wxString oldFileName = context.GetProject()->GetFileName();
    if(fileName == wxEmptyString)
    {
-      context.GetProject()->OnOpen();
+      FileMenuCommands(context.GetProject()).OnOpen();
    }
    else
    {
