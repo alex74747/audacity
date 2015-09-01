@@ -437,6 +437,8 @@ audacity_SOURCES = \
 	menus/TracksMenuCommands.h \
 	menus/TransportMenuCommands.cpp \
 	menus/TransportMenuCommands.h \
+	menus/ViewMenuCommands.cpp \
+	menus/ViewMenuCommands.h \
 	ondemand/ODComputeSummaryTask.cpp \
 	ondemand/ODComputeSummaryTask.h \
 	ondemand/ODDecodeFFmpegTask.cpp \

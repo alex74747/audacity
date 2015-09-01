@@ -91,6 +91,7 @@ struct AudioIOStartStreamOptions;
 class WaveTrackArray;
 class Regions;
 
+class ViewMenuCommands;
 class TransportMenuCommands;
 class TracksMenuCommands;
 class HelpMenuCommands;
@@ -182,6 +183,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    double GetSel1() { return mViewInfo.selectedRegion.t1(); }
    const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
    ViewInfo &GetViewInfo() { return mViewInfo; }
+   wxScrollBar *GetVerticalScrollBar() { return mVsbar; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();
@@ -261,6 +263,9 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    void SetProjectTitle();
 
    TrackPanel * GetTrackPanel(){return mTrackPanel;}
+
+   // Creates the window as needed on demand:
+   HistoryWindow *GetHistoryWindow();
 
    bool GetIsEmpty();
 
@@ -441,7 +446,12 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    Meter *GetCaptureMeter();
    void SetCaptureMeter(Meter *capture);
 
-   LyricsWindow* GetLyricsWindow() { return mLyricsWindow; }
+   // Creates the window as needed on demand:
+   LyricsWindow* GetLyricsWindow();
+
+   // Creates the window as needed on demand:
+   MixerBoardFrame* GetMixerBoardFrame();
+
    MixerBoard* GetMixerBoard() { return mMixerBoard; }
 
    wxStatusBar* GetStatusBar() { return mStatusBar; }
@@ -509,7 +519,10 @@ public:
 private:
    void PopState(TrackList * l);
 
+public:
    void UpdateLyrics();
+
+private:
    void UpdateMixerBoard();
 
    void GetRegionsByLabel( Regions &regions );
@@ -687,6 +700,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
