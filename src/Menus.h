@@ -32,9 +32,10 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names,
                             const PluginIDList & plugs,
                             const std::vector<CommandFlag> & flags, bool isDefault);
 void CreateRecentFilesMenu(CommandManager *c);
-void ModifyUndoMenuItems();
 
 public:
+void ModifyUndoMenuItems();
+
 void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
@@ -149,7 +150,6 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnUndo();
 void OnRedo();
 
 void OnCut();

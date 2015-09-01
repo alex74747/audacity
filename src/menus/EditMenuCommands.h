@@ -12,6 +12,7 @@ public:
    EditMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
 
+   void OnUndo();
 private:
    AudacityProject *const mProject;
 };

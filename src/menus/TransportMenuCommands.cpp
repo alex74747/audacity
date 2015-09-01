@@ -12,6 +12,7 @@
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "../commands/CommandManager.h"
+#include "../menus/EditMenuCommands.h"
 #include "../toolbars/ControlToolBar.h"
 #include "../tracks/ui/Scrubbing.h"
 #include "../toolbars/DeviceToolBar.h"

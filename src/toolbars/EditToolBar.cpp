@@ -55,6 +55,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/EditMenuCommands.h"
 #include "../menus/ViewMenuCommands.h"
 #include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
@@ -267,7 +268,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          p->OnSilence();
          break;
       case ETBUndoID:
-         p->OnUndo();
+         EditMenuCommands(p).OnUndo();
          break;
       case ETBRedoID:
          p->OnRedo();
