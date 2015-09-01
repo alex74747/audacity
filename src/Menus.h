@@ -67,7 +67,6 @@ void OnSeekRightLong();
 
         // Mixer control
 
-void OnInputGainInc();
 void OnInputGainDec();
 
         // Transcription control

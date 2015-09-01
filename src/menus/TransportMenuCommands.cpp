@@ -123,6 +123,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
    c->AddCommand(wxT("OutputGainDec"), _("Decrease playback volume"), FN(OnOutputGainDec));
    c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
+   c->AddCommand(wxT("InputGainInc"), _("Increase recording volume"), FN(OnInputGainInc));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -607,5 +608,13 @@ void TransportMenuCommands::OnInputGain()
    MixerToolBar *tb = mProject->GetMixerToolBar();
    if (tb) {
       tb->ShowInputGainDialog();
+   }
+}
+
+void TransportMenuCommands::OnInputGainInc()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustInputGain(1);
    }
 }
