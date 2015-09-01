@@ -101,13 +101,6 @@ void OnPlotSpectrum();
 void OnContrast();
 
 
-// Import Submenu
-void OnImport();
-void OnImportLabels();
-void OnImportMIDI();
-void DoImportMIDI(const wxString &fileName);
-void OnImportRaw();
-
 public:
 bool CursorPositionHasBeenStored() const
 { return mCursorPositionHasBeenStored; }

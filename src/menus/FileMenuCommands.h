@@ -33,6 +33,17 @@ public:
    bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool  force);
 
 private:
+   // Import Submenu
+   void OnImport();
+   void OnImportLabels();
+   void OnImportMIDI();
+
+public:
+   void DoImportMIDI(const wxString &fileName);
+
+private:
+   void OnImportRaw();
+
    AudacityProject *const mProject;
 };
 
