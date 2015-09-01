@@ -86,7 +86,6 @@ public:
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
-void OnApplyChain();
 void OnEditChains();
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
