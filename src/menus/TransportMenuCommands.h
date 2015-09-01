@@ -48,6 +48,7 @@ public:
    void OnStop();
 private:
    void OnPlayOneSecond();
+   void OnPlayToSelection();
 
    AudacityProject *const mProject;
 };
