@@ -880,12 +880,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
-
-   c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
-                 CaptureNotBusyFlag,
-                 CaptureNotBusyFlag);
-
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
 
@@ -1815,51 +1809,6 @@ void AudacityProject::OnPrevTool()
 
 // TODO: Should all these functions which involve
 // the toolbar actually move into ControlToolBar?
-
-/// MakeReadyToPlay stops whatever is currently playing
-/// and pops the play button up.  Then, if nothing is now
-/// playing, it pushes the play button down and enables
-/// the stop button.
-bool AudacityProject::MakeReadyToPlay(bool loop, bool cutpreview)
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-   wxCommandEvent evt;
-
-   // If this project is playing, stop playing
-   if (gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      toolbar->SetPlay(false);        //Pops
-      toolbar->SetStop(true);         //Pushes stop down
-      toolbar->OnStop(evt);
-
-      ::wxMilliSleep(100);
-   }
-
-   // If it didn't stop playing quickly, or if some other
-   // project is playing, return
-   if (gAudioIO->IsBusy())
-      return false;
-
-   ControlToolBar::PlayAppearance appearance =
-      cutpreview ? ControlToolBar::PlayAppearance::CutPreview
-      : loop ? ControlToolBar::PlayAppearance::Looped
-      : ControlToolBar::PlayAppearance::Straight;
-   toolbar->SetPlay(true, appearance);
-   toolbar->SetStop(false);
-
-   return true;
-}
-
-// The next functions provide a limited version of the
-// functionality of OnPlayToSelection() for keyboard users
-
-void AudacityProject::OnPlayCutPreview()
-{
-   if ( !MakeReadyToPlay(false, true) )
-      return;
-
-   // Play with cut preview
-   GetControlToolBar()->PlayCurrentRegion(false, true);
-}
 
 void AudacityProject::OnStopSelect()
 {

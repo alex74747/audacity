@@ -72,11 +72,6 @@ void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
 
-        // Different posibilities for playing sound
-
-bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
-void OnPlayCutPreview();
-
         // Wave track control
 
         // Device control

@@ -108,6 +108,9 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayAfterSelectionEnd"), _("Play After Selection End"), FN(OnPlayAfterSelectionEnd), wxT("Shift+F8"));
    c->AddCommand(wxT("PlayBeforeAndAfterSelectionStart"), _("Play Before and After Selection Start"), FN(OnPlayBeforeAndAfterSelectionStart), wxT("Ctrl+Shift+F5"));
    c->AddCommand(wxT("PlayBeforeAndAfterSelectionEnd"), _("Play Before and After Selection End"), FN(OnPlayBeforeAndAfterSelectionEnd), wxT("Ctrl+Shift+F7"));
+   c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -228,7 +231,7 @@ bool TransportMenuCommands::DoPlayStopSelect(bool click, bool shift)
 
 void TransportMenuCommands::OnPlayLooped()
 {
-   if (!mProject->MakeReadyToPlay(true))
+   if (!MakeReadyToPlay(true))
       return;
 
    // Now play in a loop
@@ -442,7 +445,7 @@ void TransportMenuCommands::OnStop()
 
 void TransportMenuCommands::OnPlayOneSecond()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
@@ -460,7 +463,7 @@ void TransportMenuCommands::OnPlayOneSecond()
 /// of the selection region.
 void TransportMenuCommands::OnPlayToSelection()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
@@ -501,7 +504,7 @@ void TransportMenuCommands::OnPlayToSelection()
 
 void TransportMenuCommands::OnPlayBeforeSelectionStart()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    double t0 = mProject->GetViewInfo().selectedRegion.t0();
@@ -515,7 +518,7 @@ void TransportMenuCommands::OnPlayBeforeSelectionStart()
 
 void TransportMenuCommands::OnPlayAfterSelectionStart()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    ViewInfo &viewInfo = mProject->GetViewInfo();
@@ -536,7 +539,7 @@ void TransportMenuCommands::OnPlayAfterSelectionStart()
 
 void TransportMenuCommands::OnPlayBeforeSelectionEnd()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    ViewInfo &viewInfo = mProject->GetViewInfo();
@@ -557,7 +560,7 @@ void TransportMenuCommands::OnPlayBeforeSelectionEnd()
 
 void TransportMenuCommands::OnPlayAfterSelectionEnd()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    ViewInfo &viewInfo = mProject->GetViewInfo();
@@ -572,7 +575,7 @@ void TransportMenuCommands::OnPlayAfterSelectionEnd()
 
 void TransportMenuCommands::OnPlayBeforeAndAfterSelectionStart()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    ViewInfo &viewInfo = mProject->GetViewInfo();
@@ -595,7 +598,7 @@ void TransportMenuCommands::OnPlayBeforeAndAfterSelectionStart()
 
 void TransportMenuCommands::OnPlayBeforeAndAfterSelectionEnd()
 {
-   if (!mProject->MakeReadyToPlay())
+   if (!MakeReadyToPlay())
       return;
 
    ViewInfo &viewInfo = mProject->GetViewInfo();
@@ -614,4 +617,46 @@ void TransportMenuCommands::OnPlayBeforeAndAfterSelectionEnd()
       mProject->GetControlToolBar()->PlayPlayRegion
       (SelectedRegion(t1 - beforeLen, t1 + afterLen), mProject->GetDefaultPlayOptions(),
        PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayCutPreview()
+{
+   if (!MakeReadyToPlay(false, true))
+      return;
+
+   // Play with cut preview
+   mProject->GetControlToolBar()->PlayCurrentRegion(false, true);
+}
+
+/// MakeReadyToPlay stops whatever is currently playing
+/// and pops the play button up.  Then, if nothing is now
+/// playing, it pushes the play button down and enables
+/// the stop button.
+bool TransportMenuCommands::MakeReadyToPlay(bool loop, bool cutpreview)
+{
+   ControlToolBar *toolbar = mProject->GetControlToolBar();
+   wxCommandEvent evt;
+
+   // If this project is playing, stop playing
+   if (gAudioIO->IsStreamActive(mProject->GetAudioIOToken())) {
+      toolbar->SetPlay(false);        //Pops
+      toolbar->SetStop(true);         //Pushes stop down
+      toolbar->OnStop(evt);
+
+      ::wxMilliSleep(100);
+   }
+
+   // If it didn't stop playing quickly, or if some other
+   // project is playing, return
+   if (gAudioIO->IsBusy())
+      return false;
+
+   ControlToolBar::PlayAppearance appearance =
+      cutpreview ? ControlToolBar::PlayAppearance::CutPreview
+      : loop ? ControlToolBar::PlayAppearance::Looped
+      : ControlToolBar::PlayAppearance::Straight;
+   toolbar->SetPlay(true, appearance);
+   toolbar->SetStop(false);
+
+   return true;
 }
