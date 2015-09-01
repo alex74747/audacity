@@ -17,9 +17,18 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("New"), _("&New"), FN(OnNew), wxT("Ctrl+N"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   /*i18n-hint: (verb)*/
+   c->AddItem(wxT("Open"), _("&Open..."), FN(OnOpen), wxT("Ctrl+O"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void FileMenuCommands::OnNew()
 {
    ::CreateNewAudacityProject();
+}
+
+void FileMenuCommands::OnOpen()
+{
+   AudacityProject::OpenFiles(mProject);
 }

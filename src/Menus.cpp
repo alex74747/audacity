@@ -275,11 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      /*i18n-hint: (verb)*/
-      c->AddItem(wxT("Open"), _("&Open..."), FN(OnOpen), wxT("Ctrl+O"),
-         AudioIONotBusyFlag,
-         AudioIONotBusyFlag);
-
       /////////////////////////////////////////////////////////////////////////////
 
       CreateRecentFilesMenu(c);
@@ -1544,11 +1539,6 @@ void AudacityProject::OnManageAnalyzers()
 //
 // File Menu
 //
-
-void AudacityProject::OnOpen()
-{
-   OpenFiles(this);
-}
 
 void AudacityProject::OnClose()
 {
