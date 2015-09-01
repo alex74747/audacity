@@ -118,6 +118,9 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("InputDevice"), _("Change recording device"), FN(OnInputDevice), wxT("Shift+I"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -673,5 +676,13 @@ void TransportMenuCommands::OnInputDevice()
    DeviceToolBar *tb = mProject->GetDeviceToolBar();
    if (tb) {
       tb->ShowInputDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputDevice()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowOutputDialog();
    }
 }
