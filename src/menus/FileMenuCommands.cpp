@@ -36,6 +36,10 @@ void FileMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | UnsavedChangesFlag,
       AudioIONotBusyFlag | UnsavedChangesFlag);
    c->AddItem(wxT("SaveAs"), _("Save Project &As..."), FN(OnSaveAs));
+
+#ifdef USE_LIBVORBIS
+   c->AddItem(wxT("SaveCompressed"), _("Sa&ve Compressed Copy of Project..."), FN(OnSaveCompressed));
+#endif
 }
 
 void FileMenuCommands::OnNew()
@@ -62,3 +66,10 @@ void FileMenuCommands::OnSaveAs()
 {
    mProject->SaveAs();
 }
+
+#ifdef USE_LIBVORBIS
+void FileMenuCommands::OnSaveCompressed()
+{
+   mProject->SaveAs(true);
+}
+#endif

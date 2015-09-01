@@ -77,9 +77,6 @@ void OnMacBringAllToFront();
         // File Menu
 
 void OnClose();
-#ifdef USE_LIBVORBIS
-   void OnSaveCompressed();
-#endif
 
 void OnCheckDependencies();
 
