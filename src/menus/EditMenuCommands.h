@@ -13,7 +13,9 @@ public:
    void Create(CommandManager *c);
 
    void OnUndo();
+   void OnRedo();
 private:
+
    AudacityProject *const mProject;
 };
 #endif

@@ -389,20 +389,6 @@ void AudacityProject::CreateMenusAndCommands()
       c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
                          AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-      // The default shortcut key for Redo is different on different platforms.
-      wxString key =
-#ifdef __WXMSW__
-         wxT("Ctrl+Y");
-#else
-         wxT("Ctrl+Shift+Z");
-#endif
-
-      c->AddItem(wxT("Redo"), _("&Redo"), FN(OnRedo), key,
-         AudioIONotBusyFlag | RedoAvailableFlag,
-         AudioIONotBusyFlag | RedoAvailableFlag);
-
-      ModifyUndoMenuItems();
-
       c->AddSeparator();
 
       // Basic Edit coomands
@@ -602,7 +588,7 @@ void AudacityProject::CreateMenusAndCommands()
 #endif
 
       // The default shortcut key for Preferences is different on different platforms.
-      key =
+      wxString key =
 #ifdef __WXMAC__
          wxT("Ctrl+,");
 #else
@@ -2579,35 +2565,6 @@ void AudacityProject::OnPrint()
 //
 // Edit Menu
 //
-
-void AudacityProject::OnRedo()
-{
-   if (!GetUndoManager()->RedoAvailable()) {
-      wxMessageBox(_("Nothing to redo"));
-      return;
-   }
-   // Can't redo whilst dragging
-   if (mTrackPanel->IsMouseCaptured()) {
-      return;
-   }
-
-   const UndoState &state = GetUndoManager()->Redo(&mViewInfo.selectedRegion);
-   PopState(state);
-
-   mTrackPanel->SetFocusedTrack(NULL);
-   mTrackPanel->EnsureVisible(mTrackPanel->GetFirstSelectedTrack());
-
-   RedrawProject();
-
-   if (mHistoryWindow)
-      mHistoryWindow->UpdateDisplay();
-
-   if (mMixerBoard)
-      // Mixer board may need to change for selection state and pan/gain
-      mMixerBoard->Refresh();
-
-   ModifyUndoMenuItems();
-}
 
 void AudacityProject::OnCut()
 {

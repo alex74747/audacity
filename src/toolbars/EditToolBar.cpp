@@ -271,7 +271,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          EditMenuCommands(p).OnUndo();
          break;
       case ETBRedoID:
-         p->OnRedo();
+         EditMenuCommands(p).OnRedo();
          break;
 #ifdef EXPERIMENTAL_SYNC_LOCK
       case ETBSyncLockID:
