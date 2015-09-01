@@ -28,6 +28,10 @@ void FileMenuCommands::Create(CommandManager *c)
    mProject->CreateRecentFilesMenu(c);
 
    /////////////////////////////////////////////////////////////////////////////
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("Close"), _("&Close"), FN(OnClose), wxT("Ctrl+W"));
 }
 
 void FileMenuCommands::OnNew()
@@ -38,4 +42,9 @@ void FileMenuCommands::OnNew()
 void FileMenuCommands::OnOpen()
 {
    AudacityProject::OpenFiles(mProject);
+}
+
+void FileMenuCommands::OnClose()
+{
+   mProject->OnClose();
 }
