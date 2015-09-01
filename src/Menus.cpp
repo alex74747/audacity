@@ -34,6 +34,7 @@ simplifies construction of menu items.
 #include "Project.h"
 
 #include <cfloat>
+#include "menus/FileMenuCommands.h"
 #include "menus/EditMenuCommands.h"
 #include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
@@ -269,6 +270,9 @@ void AudacityProject::CreateMenusAndCommands()
       /////////////////////////////////////////////////////////////////////////////
 
       c->BeginMenu(_("&File"));
+
+      mFileMenuCommands->Create(c);
+
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
       /*i18n-hint: "New" is an action (verb) to create a NEW project*/

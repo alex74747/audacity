@@ -97,6 +97,7 @@ struct UndoState;
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class FileMenuCommands;
 class EditMenuCommands;
 class ViewMenuCommands;
 class TransportMenuCommands;
@@ -743,6 +744,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   FileMenuCommands *mFileMenuCommands;
    EditMenuCommands *mEditMenuCommands;
    ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
