@@ -34,6 +34,8 @@ private:
    void OnImportMIDI();
    void OnImportRaw();
 
+   void OnExport();
+
    AudacityProject *const mProject;
 };
 

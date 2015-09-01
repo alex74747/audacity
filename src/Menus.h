@@ -64,7 +64,6 @@ void OnStopSelect();
 
 void OnClose();
 
-void OnExport();
 void OnExportSelection();
 void OnExportMultiple();
 void OnExportLabels();
