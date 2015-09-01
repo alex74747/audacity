@@ -21,6 +21,12 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Open"), _("&Open..."), FN(OnOpen), wxT("Ctrl+O"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   mProject->CreateRecentFilesMenu(c);
+
+   /////////////////////////////////////////////////////////////////////////////
 }
 
 void FileMenuCommands::OnNew()

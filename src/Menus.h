@@ -31,9 +31,10 @@ void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs,
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names,
                             const PluginIDList & plugs,
                             const std::vector<CommandFlag> & flags, bool isDefault);
-void CreateRecentFilesMenu(CommandManager *c);
 
 public:
+void CreateRecentFilesMenu(CommandManager *c);
+
 void ModifyUndoMenuItems();
 
 void ModifyToolbarMenus();
