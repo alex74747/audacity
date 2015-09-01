@@ -275,12 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-#if defined(USE_MIDI)
-      c->AddItem(wxT("ExportMIDI"), _("Export MI&DI..."), FN(OnExportMIDI),
-         AudioIONotBusyFlag | NoteTracksSelectedFlag,
-         AudioIONotBusyFlag | NoteTracksSelectedFlag);
-#endif
-
       c->AddSeparator();
       c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
          AudioIONotBusyFlag,
@@ -1490,89 +1484,6 @@ void AudacityProject::OnExit()
 {
    QuitAudacity();
 }
-
-#ifdef USE_MIDI
-void AudacityProject::OnExportMIDI(){
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-   int numNoteTracksSelected = 0;
-   NoteTrack *nt = NULL;
-
-   // Iterate through once to make sure that there is
-   // exactly one NoteTrack selected.
-   while (t) {
-      if (t->GetSelected()) {
-         if(t->GetKind() == Track::Note) {
-            numNoteTracksSelected++;
-            nt = (NoteTrack *) t;
-         }
-      }
-      t = iter.Next();
-   }
-
-   if(numNoteTracksSelected > 1){
-      wxMessageBox(wxString::Format(wxT(
-         "Please select only one MIDI track at a time.")));
-      return;
-   }
-
-   wxASSERT(nt);
-   if (!nt)
-      return;
-
-   while(true){
-
-      wxString fName = wxT("");
-
-      fName = FileSelector(_("Export MIDI As:"),
-         wxEmptyString,
-         fName,
-         wxT(".mid|.gro"),
-         _("MIDI file (*.mid)|*.mid|Allegro file (*.gro)|*.gro"),
-         wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-         this);
-
-      if (fName == wxT(""))
-         return;
-
-      if(!fName.Contains(wxT("."))) {
-         fName = fName + wxT(".mid");
-      }
-
-      // Move existing files out of the way.  Otherwise wxTextFile will
-      // append to (rather than replace) the current file.
-
-      if (wxFileExists(fName)) {
-#ifdef __WXGTK__
-         wxString safetyFileName = fName + wxT("~");
-#else
-         wxString safetyFileName = fName + wxT(".bak");
-#endif
-
-         if (wxFileExists(safetyFileName))
-            wxRemoveFile(safetyFileName);
-
-         wxRename(fName, safetyFileName);
-      }
-
-      if(fName.EndsWith(wxT(".mid")) || fName.EndsWith(wxT(".midi"))) {
-         nt->ExportMIDI(fName);
-      } else if(fName.EndsWith(wxT(".gro"))) {
-         nt->ExportAllegro(fName);
-      } else {
-         wxString msg = _("You have selected a filename with an unrecognized file extension.\nDo you want to continue?");
-         wxString title = _("Export MIDI");
-         int id = wxMessageBox(msg, title, wxYES_NO);
-         if (id == wxNO) {
-            continue;
-         } else if (id == wxYES) {
-            nt->ExportMIDI(fName);
-         }
-      }
-      break;
-   }
-}
-#endif // USE_MIDI
 
 void AudacityProject::OnPageSetup()
 {
