@@ -64,8 +64,6 @@ void OnStopSelect();
 
 void OnClose();
 
-void OnCheckDependencies();
-
 void OnExport();
 void OnExportSelection();
 void OnExportMultiple();

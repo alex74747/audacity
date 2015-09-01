@@ -268,8 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
-
    c->AddSeparator();
 
    c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata..."), FN(OnEditMetadata));
@@ -1414,11 +1412,6 @@ void AudacityProject::OnClose()
 {
    mMenuClose = true;
    Close();
-}
-
-void AudacityProject::OnCheckDependencies()
-{
-   ShowDependencyDialogIfNeeded(this, false);
 }
 
 void AudacityProject::OnExit()

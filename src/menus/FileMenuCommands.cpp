@@ -1,5 +1,6 @@
 #include "FileMenuCommands.h"
 
+#include "../Dependencies.h"
 #include "../Project.h"
 #include "../commands/CommandManager.h"
 
@@ -41,6 +42,8 @@ void FileMenuCommands::Create(CommandManager *c)
 #ifdef USE_LIBVORBIS
    c->AddItem(wxT("SaveCompressed"), _("Save Compressed Copy of Project..."), FN(OnSaveCompressed));
 #endif
+
+   c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
 }
 
 void FileMenuCommands::OnNew()
@@ -74,3 +77,8 @@ void FileMenuCommands::OnSaveCompressed()
    mProject->SaveAs(true);
 }
 #endif
+
+void FileMenuCommands::OnCheckDependencies()
+{
+   ::ShowDependencyDialogIfNeeded(mProject, false);
+}
