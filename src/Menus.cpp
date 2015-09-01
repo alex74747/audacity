@@ -66,30 +66,19 @@ simplifies construction of menu items.
 
 #include "AudacityApp.h"
 #include "AudioIO.h"
-#include "Dependencies.h"
 #include "float_cast.h"
 #include "LabelTrack.h"
-#ifdef USE_MIDI
-#include "import/ImportMIDI.h"
-#endif // USE_MIDI
-#include "import/ImportRaw.h"
-#include "export/Export.h"
-#include "export/ExportMultiple.h"
 #include "MixerBoard.h"
 #include "Internat.h"
 #include "FileFormats.h"
 #include "ModuleManager.h"
 #include "PluginManager.h"
 #include "Prefs.h"
-#include "Printing.h"
 #ifdef USE_MIDI
 #include "NoteTrack.h"
 #endif // USE_MIDI
-#include "Tags.h"
-#include "ondemand/ODManager.h"
 
 #include "Resample.h"
-#include "BatchProcessDialog.h"
 #include "BatchCommands.h"
 #include "prefs/BatchPrefs.h"
 
@@ -262,13 +251,9 @@ void AudacityProject::CreateMenusAndCommands()
    // File menu
    /////////////////////////////////////////////////////////////////////////////
 
-   c->BeginMenu(_("&File"));
-
    mFileMenuCommands->Create(c);
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
-
-   c->EndMenu();
 
    /////////////////////////////////////////////////////////////////////////////
    // Edit Menu
