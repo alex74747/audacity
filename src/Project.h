@@ -91,6 +91,7 @@ struct AudioIOStartStreamOptions;
 class WaveTrackArray;
 class Regions;
 
+class TransportMenuCommands;
 class TracksMenuCommands;
 class HelpMenuCommands;
 
@@ -609,7 +610,8 @@ private:
    wxRect GetNormalizedWindowState() const { return mNormalizedWindowState;   }
 
    bool IsTimerRecordCancelled(){return mTimerRecordCanceled;}
-   void ResetTimerRecordFlag(){mTimerRecordCanceled=false;}
+   void SetTimerRecordFlag(){ mTimerRecordCanceled = true; }
+   void ResetTimerRecordFlag(){ mTimerRecordCanceled = false; }
  private:
    //sort method used by OnSortName and OnSortTime
    //currently only supported flags are kAudacitySortByName and kAudacitySortByName
@@ -685,6 +687,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 
