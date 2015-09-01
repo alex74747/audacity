@@ -179,6 +179,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
       TracksExistFlag | TrackPanelHasFocus);
 
    c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
+   c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1263,4 +1264,18 @@ void TracksMenuCommands::OnTrackPan()
    if (slider->ShowDialog()) {
       mProject->SetTrackPan(wt, slider);
    }
+}
+
+void TracksMenuCommands::OnTrackPanLeft()
+{
+   auto trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+   const auto wt = static_cast<WaveTrack*>(track);
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider(wt);
+   slider->Decrease(1);
+   mProject->SetTrackPan(wt, slider);
 }

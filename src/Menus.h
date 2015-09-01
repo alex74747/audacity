@@ -97,7 +97,6 @@ void OnPlayCutPreview();
 
         // Wave track control
 
-void OnTrackPanLeft();
 void OnTrackPanRight();
 void OnTrackGain();
 void OnTrackGainInc();
