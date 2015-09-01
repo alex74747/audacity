@@ -40,6 +40,7 @@ private:
    void OnExportMultiple();
    void OnExportMIDI();
    void OnApplyChain();
+   void OnEditChains();
 
    AudacityProject *const mProject;
 };

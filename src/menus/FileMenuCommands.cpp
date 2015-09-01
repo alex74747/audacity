@@ -109,6 +109,8 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+
+   c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
 }
 
 void FileMenuCommands::OnNew()
@@ -491,4 +493,10 @@ void FileMenuCommands::OnApplyChain()
    BatchProcessDialog dlg(mProject);
    dlg.ShowModal();
    mProject->ModifyUndoMenuItems();
+}
+
+void FileMenuCommands::OnEditChains()
+{
+   EditChainsDialog dlg(mProject);
+   dlg.ShowModal();
 }

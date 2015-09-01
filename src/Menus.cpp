@@ -268,8 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
-
    c->AddSeparator();
 
    c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
@@ -1586,16 +1584,6 @@ void AudacityProject::OnContrast()
    mContrastDialog->Show();
 }
 
-
-//
-// Project Menu
-//
-
-void AudacityProject::OnEditChains()
-{
-   EditChainsDialog dlg(this);
-   dlg.ShowModal();
-}
 
 //
 // Help Menu
