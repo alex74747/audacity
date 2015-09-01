@@ -187,6 +187,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
    c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
    c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
+   c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1391,4 +1392,16 @@ void TracksMenuCommands::OnTrackMute()
          return;
    }
    mProject->DoTrackMute(t, false);
+}
+
+void TracksMenuCommands::OnTrackSolo()
+{
+   Track *t = NULL;
+   if (!t)
+   {
+      t = mProject->GetTrackPanel()->GetFocusedTrack();
+      if (!t || (t->GetKind() != Track::Wave))
+         return;
+   }
+   mProject->DoTrackSolo(t, false);
 }

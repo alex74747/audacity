@@ -83,6 +83,7 @@ private:
 
    void OnTrackMenu();
    void OnTrackMute();
+   void OnTrackSolo();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
