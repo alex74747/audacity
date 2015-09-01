@@ -40,6 +40,7 @@ private:
 public:
    void OnStop();
 private:
+   void OnPlayOneSecond();
 
    AudacityProject *const mProject;
 };

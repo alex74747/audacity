@@ -7,6 +7,7 @@
 #include "../Project.h"
 #include "../SoundActivatedRecord.h"
 #include "../TimerRecordDialog.h"
+#include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
 
@@ -82,6 +83,12 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
       AudioIOBusyFlag,
       AudioIOBusyFlag);
+
+   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
+
+   c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -287,4 +294,15 @@ void TransportMenuCommands::OnStop()
 
    if (gAudioIO->IsStreamActive())
       mProject->GetControlToolBar()->OnStop(evt);
+}
+
+void TransportMenuCommands::OnPlayOneSecond()
+{
+   if (!mProject->MakeReadyToPlay())
+      return;
+
+   double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
+   mProject->mLastPlayMode = oneSecondPlay;
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(pos - 0.5, pos + 0.5), mProject->GetDefaultPlayOptions());
 }
