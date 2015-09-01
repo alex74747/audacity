@@ -74,8 +74,6 @@ simplifies construction of menu items.
 #include "import/ImportRaw.h"
 #include "export/Export.h"
 #include "export/ExportMultiple.h"
-#include "prefs/PrefsDialog.h"
-#include "HistoryWindow.h"
 #include "MixerBoard.h"
 #include "Internat.h"
 #include "FileFormats.h"
@@ -87,7 +85,6 @@ simplifies construction of menu items.
 #include "NoteTrack.h"
 #endif // USE_MIDI
 #include "Tags.h"
-#include "TimeTrack.h"
 #include "ondemand/ODManager.h"
 
 #include "Resample.h"
@@ -108,7 +105,6 @@ simplifies construction of menu items.
 #include "Experimental.h"
 #include "PlatformCompatibility.h"
 #include "FileNames.h"
-#include "TimeDialog.h"
 
 #include "SplashDialog.h"
 
@@ -375,11 +371,7 @@ void AudacityProject::CreateMenusAndCommands()
    // Edit Menu
    /////////////////////////////////////////////////////////////////////////////
 
-   c->BeginMenu(_("&Edit"));
-
    mEditMenuCommands->Create(c);
-
-   c->EndMenu();
 
    /////////////////////////////////////////////////////////////////////////////
    // View Menu

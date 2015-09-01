@@ -29,238 +29,241 @@ EditMenuCommands::EditMenuCommands(AudacityProject *project)
 
 void EditMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
-      AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
+   c->BeginMenu(_("&Edit"));
+   {
+      c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
+         AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-   c->AddItem(wxT("Undo"), _("&Undo"), FN(OnUndo), wxT("Ctrl+Z"),
-      AudioIONotBusyFlag | UndoAvailableFlag,
-      AudioIONotBusyFlag | UndoAvailableFlag);
+      c->AddItem(wxT("Undo"), _("&Undo"), FN(OnUndo), wxT("Ctrl+Z"),
+         AudioIONotBusyFlag | UndoAvailableFlag,
+         AudioIONotBusyFlag | UndoAvailableFlag);
 
-   // The default shortcut key for Redo is different on different platforms.
-   wxString key =
+      // The default shortcut key for Redo is different on different platforms.
+      wxString key =
 #ifdef __WXMSW__
-      wxT("Ctrl+Y");
+         wxT("Ctrl+Y");
 #else
-      wxT("Ctrl+Shift+Z");
+         wxT("Ctrl+Shift+Z");
 #endif
 
-   c->AddItem(wxT("Redo"), _("&Redo"), FN(OnRedo), key,
-      AudioIONotBusyFlag | RedoAvailableFlag,
-      AudioIONotBusyFlag | RedoAvailableFlag);
+      c->AddItem(wxT("Redo"), _("&Redo"), FN(OnRedo), key,
+         AudioIONotBusyFlag | RedoAvailableFlag,
+         AudioIONotBusyFlag | RedoAvailableFlag);
 
-   mProject->ModifyUndoMenuItems();
-
-   c->AddSeparator();
-
-   // Basic Edit coomands
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Cut"), _("Cu&t"), FN(OnCut), wxT("Ctrl+X"),
-      AudioIONotBusyFlag | CutCopyAvailableFlag,
-      AudioIONotBusyFlag | CutCopyAvailableFlag);
-   c->AddItem(wxT("Delete"), _("&Delete"), FN(OnDelete), wxT("Ctrl+K"));
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Copy"), _("&Copy"), FN(OnCopy), wxT("Ctrl+C"),
-      AudioIONotBusyFlag | CutCopyAvailableFlag,
-      AudioIONotBusyFlag | CutCopyAvailableFlag);
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Paste"), _("&Paste"), FN(OnPaste), wxT("Ctrl+V"),
-      AudioIONotBusyFlag | ClipboardFlag,
-      AudioIONotBusyFlag | ClipboardFlag);
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Duplicate"), _("Duplic&ate"), FN(OnDuplicate), wxT("Ctrl+D"));
-
-   c->AddSeparator();
-
-   c->BeginSubMenu(_("R&emove Special"));
-   {
-      /* i18n-hint: (verb) Do a special kind of cut*/
-      c->AddItem(wxT("SplitCut"), _("Spl&it Cut"), FN(OnSplitCut), wxT("Ctrl+Alt+X"));
-      /* i18n-hint: (verb) Do a special kind of delete*/
-      c->AddItem(wxT("SplitDelete"), _("Split D&elete"), FN(OnSplitDelete), wxT("Ctrl+Alt+K"));
+      mProject->ModifyUndoMenuItems();
 
       c->AddSeparator();
 
+      // Basic Edit coomands
       /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Silence"), _("Silence Audi&o"), FN(OnSilence), wxT("Ctrl+L"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+      c->AddItem(wxT("Cut"), _("Cu&t"), FN(OnCut), wxT("Ctrl+X"),
+         AudioIONotBusyFlag | CutCopyAvailableFlag,
+         AudioIONotBusyFlag | CutCopyAvailableFlag);
+      c->AddItem(wxT("Delete"), _("&Delete"), FN(OnDelete), wxT("Ctrl+K"));
       /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Trim"), _("Tri&m Audio"), FN(OnTrim), wxT("Ctrl+T"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-   }
-   c->EndSubMenu();
+      c->AddItem(wxT("Copy"), _("&Copy"), FN(OnCopy), wxT("Ctrl+C"),
+         AudioIONotBusyFlag | CutCopyAvailableFlag,
+         AudioIONotBusyFlag | CutCopyAvailableFlag);
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("Paste"), _("&Paste"), FN(OnPaste), wxT("Ctrl+V"),
+         AudioIONotBusyFlag | ClipboardFlag,
+         AudioIONotBusyFlag | ClipboardFlag);
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("Duplicate"), _("Duplic&ate"), FN(OnDuplicate), wxT("Ctrl+D"));
 
-   c->AddItem(wxT("PasteNewLabel"), _("Paste Te&xt to New Label"), FN(OnPasteNewLabel), wxT("Ctrl+Alt+V"),
-      AudioIONotBusyFlag, AudioIONotBusyFlag);
+      c->AddSeparator();
 
-   c->AddSeparator();
+      c->BeginSubMenu(_("R&emove Special"));
+      {
+         /* i18n-hint: (verb) Do a special kind of cut*/
+         c->AddItem(wxT("SplitCut"), _("Spl&it Cut"), FN(OnSplitCut), wxT("Ctrl+Alt+X"));
+         /* i18n-hint: (verb) Do a special kind of delete*/
+         c->AddItem(wxT("SplitDelete"), _("Split D&elete"), FN(OnSplitDelete), wxT("Ctrl+Alt+K"));
 
-   /////////////////////////////////////////////////////////////////////////////
+         c->AddSeparator();
 
-   c->BeginSubMenu(_("Clip B&oundaries"));
-   {
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("Silence"), _("Silence Audi&o"), FN(OnSilence), wxT("Ctrl+L"),
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("Trim"), _("Tri&m Audio"), FN(OnTrim), wxT("Ctrl+T"),
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+      }
+      c->EndSubMenu();
+
+      c->AddItem(wxT("PasteNewLabel"), _("Paste Te&xt to New Label"), FN(OnPasteNewLabel), wxT("Ctrl+Alt+V"),
+         AudioIONotBusyFlag, AudioIONotBusyFlag);
+
+      c->AddSeparator();
+
+      /////////////////////////////////////////////////////////////////////////////
+
+      c->BeginSubMenu(_("Clip B&oundaries"));
+      {
+         /* i18n-hint: (verb) It's an item on a menu. */
+         c->AddItem(wxT("Split"), _("Sp&lit"), FN(OnSplit), wxT("Ctrl+I"),
+            AudioIONotBusyFlag | WaveTracksSelectedFlag,
+            AudioIONotBusyFlag | WaveTracksSelectedFlag);
+         c->AddItem(wxT("SplitNew"), _("Split Ne&w"), FN(OnSplitNew), wxT("Ctrl+Alt+I"),
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+            AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+         c->AddSeparator();
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("Join"), _("&Join"), FN(OnJoin), wxT("Ctrl+J"));
+         c->AddItem(wxT("Disjoin"), _("Detac&h at Silences"), FN(OnDisjoin), wxT("Ctrl+Alt+J"));
+      }
+      c->EndSubMenu();
+
+      c->AddSeparator();
+
+      /////////////////////////////////////////////////////////////////////////////
+
+      c->BeginSubMenu(_("La&beled Audio"));
+      {
+         c->SetDefaultFlags(AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag,
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag);
+
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("CutLabels"), _("&Cut"), FN(OnCutLabels), wxT("Alt+X"),
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
+         c->AddItem(wxT("DeleteLabels"), _("&Delete"), FN(OnDeleteLabels), wxT("Alt+K"),
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
+
+         c->AddSeparator();
+
+         /* i18n-hint: (verb) A special way to cut out a piece of audio*/
+         c->AddItem(wxT("SplitCutLabels"), _("&Split Cut"), FN(OnSplitCutLabels), wxT("Alt+Shift+X"));
+         c->AddItem(wxT("SplitDeleteLabels"), _("Sp&lit Delete"), FN(OnSplitDeleteLabels), wxT("Alt+Shift+K"));
+
+         c->AddSeparator();
+
+
+         c->AddItem(wxT("SilenceLabels"), _("Silence &Audio"), FN(OnSilenceLabels), wxT("Alt+L"));
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("CopyLabels"), _("Co&py"), FN(OnCopyLabels), wxT("Alt+Shift+C"));
+
+         c->AddSeparator();
+
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("SplitLabels"), _("Spli&t"), FN(OnSplitLabels), wxT("Alt+I"),
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag,
+            AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag);
+         /* i18n-hint: (verb)*/
+         c->AddItem(wxT("JoinLabels"), _("&Join"), FN(OnJoinLabels), wxT("Alt+J"));
+         c->AddItem(wxT("DisjoinLabels"), _("Detac&h at Silences"), FN(OnDisjoinLabels), wxT("Alt+Shift+J"));
+      }
+      c->EndSubMenu();
+
+      /////////////////////////////////////////////////////////////////////////////
+
       /* i18n-hint: (verb) It's an item on a menu. */
-      c->AddItem(wxT("Split"), _("Sp&lit"), FN(OnSplit), wxT("Ctrl+I"),
-         AudioIONotBusyFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | WaveTracksSelectedFlag);
-      c->AddItem(wxT("SplitNew"), _("Split Ne&w"), FN(OnSplitNew), wxT("Ctrl+Alt+I"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-      c->AddSeparator();
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Join"), _("&Join"), FN(OnJoin), wxT("Ctrl+J"));
-      c->AddItem(wxT("Disjoin"), _("Detac&h at Silences"), FN(OnDisjoin), wxT("Ctrl+Alt+J"));
-   }
-   c->EndSubMenu();
+      c->BeginSubMenu(_("&Select"));
+      {
+         c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
 
-   c->AddSeparator();
-
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("La&beled Audio"));
-   {
-      c->SetDefaultFlags(AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag,
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag);
-
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("CutLabels"), _("&Cut"), FN(OnCutLabels), wxT("Alt+X"),
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
-      c->AddItem(wxT("DeleteLabels"), _("&Delete"), FN(OnDeleteLabels), wxT("Alt+K"),
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
-
-      c->AddSeparator();
-
-      /* i18n-hint: (verb) A special way to cut out a piece of audio*/
-      c->AddItem(wxT("SplitCutLabels"), _("&Split Cut"), FN(OnSplitCutLabels), wxT("Alt+Shift+X"));
-      c->AddItem(wxT("SplitDeleteLabels"), _("Sp&lit Delete"), FN(OnSplitDeleteLabels), wxT("Alt+Shift+K"));
-
-      c->AddSeparator();
-
-
-      c->AddItem(wxT("SilenceLabels"), _("Silence &Audio"), FN(OnSilenceLabels), wxT("Alt+L"));
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("CopyLabels"), _("Co&py"), FN(OnCopyLabels), wxT("Alt+Shift+C"));
-
-      c->AddSeparator();
-
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("SplitLabels"), _("Spli&t"), FN(OnSplitLabels), wxT("Alt+I"),
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag,
-         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag);
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("JoinLabels"), _("&Join"), FN(OnJoinLabels), wxT("Alt+J"));
-      c->AddItem(wxT("DisjoinLabels"), _("Detac&h at Silences"), FN(OnDisjoinLabels), wxT("Alt+Shift+J"));
-   }
-   c->EndSubMenu();
-
-   /////////////////////////////////////////////////////////////////////////////
-
-   /* i18n-hint: (verb) It's an item on a menu. */
-   c->BeginSubMenu(_("&Select"));
-   {
-      c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
-
-      c->AddItem(wxT("SelectAll"), _("&All"), FN(OnSelectAll), wxT("Ctrl+A"));
-      c->AddItem(wxT("SelectNone"), _("&None"), FN(OnSelectNone), wxT("Ctrl+Shift+A"));
+         c->AddItem(wxT("SelectAll"), _("&All"), FN(OnSelectAll), wxT("Ctrl+A"));
+         c->AddItem(wxT("SelectNone"), _("&None"), FN(OnSelectNone), wxT("Ctrl+Shift+A"));
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-      c->BeginSubMenu(_("S&pectral"));
-      c->AddItem(wxT("ToggleSpectralSelection"), _("To&ggle spectral selection"), FN(OnToggleSpectralSelection), wxT("Q"));
-      c->AddItem(wxT("NextHigherPeakFrequency"), _("Next Higher Peak Frequency"), FN(OnNextHigherPeakFrequency));
-      c->AddItem(wxT("NextLowerPeakFrequency"), _("Next Lower Peak Frequency"), FN(OnNextLowerPeakFrequency));
-      c->EndSubMenu();
+         c->BeginSubMenu(_("S&pectral"));
+         c->AddItem(wxT("ToggleSpectralSelection"), _("To&ggle spectral selection"), FN(OnToggleSpectralSelection), wxT("Q"));
+         c->AddItem(wxT("NextHigherPeakFrequency"), _("Next Higher Peak Frequency"), FN(OnNextHigherPeakFrequency));
+         c->AddItem(wxT("NextLowerPeakFrequency"), _("Next Lower Peak Frequency"), FN(OnNextLowerPeakFrequency));
+         c->EndSubMenu();
 #endif
 
-      c->AddItem(wxT("SetLeftSelection"), _("&Left at Playback Position"), FN(OnSetLeftSelection), wxT("["));
-      c->AddItem(wxT("SetRightSelection"), _("&Right at Playback Position"), FN(OnSetRightSelection), wxT("]"));
+         c->AddItem(wxT("SetLeftSelection"), _("&Left at Playback Position"), FN(OnSetLeftSelection), wxT("["));
+         c->AddItem(wxT("SetRightSelection"), _("&Right at Playback Position"), FN(OnSetRightSelection), wxT("]"));
 
-      c->SetDefaultFlags(TracksSelectedFlag, TracksSelectedFlag);
+         c->SetDefaultFlags(TracksSelectedFlag, TracksSelectedFlag);
 
-      c->AddItem(wxT("SelStartCursor"), _("Track &Start to Cursor"), FN(OnSelectStartCursor), wxT("Shift+J"));
-      c->AddItem(wxT("SelCursorEnd"), _("Cursor to Track &End"), FN(OnSelectCursorEnd), wxT("Shift+K"));
+         c->AddItem(wxT("SelStartCursor"), _("Track &Start to Cursor"), FN(OnSelectStartCursor), wxT("Shift+J"));
+         c->AddItem(wxT("SelCursorEnd"), _("Cursor to Track &End"), FN(OnSelectCursorEnd), wxT("Shift+K"));
+
+         c->AddSeparator();
+
+         c->AddItem(wxT("SelAllTracks"), _("In All &Tracks"), FN(OnSelectAllTracks),
+            wxT("Ctrl+Shift+K"),
+            TracksExistFlag, TracksExistFlag);
+
+#ifdef EXPERIMENTAL_SYNC_LOCK
+         c->AddItem(wxT("SelSyncLockTracks"), _("In All S&ync-Locked Tracks"),
+            FN(OnSelectSyncLockSel), wxT("Ctrl+Shift+Y"),
+            TracksSelectedFlag | IsSyncLockedFlag,
+            TracksSelectedFlag | IsSyncLockedFlag);
+#endif
+      }
+      c->EndSubMenu();
+
+
+      /////////////////////////////////////////////////////////////////////////////
+
+      c->AddItem(wxT("ZeroCross"), _("Find &Zero Crossings"), FN(OnZeroCrossing), wxT("Z"));
+
+      /////////////////////////////////////////////////////////////////////////////
+
+      c->BeginSubMenu(_("Mo&ve Cursor"));
+      {
+         c->AddItem(wxT("CursSelStart"), _("to Selection Star&t"), FN(OnCursorSelStart));
+         c->AddItem(wxT("CursSelEnd"), _("to Selection En&d"), FN(OnCursorSelEnd));
+
+         c->AddItem(wxT("CursTrackStart"), _("to Track &Start"), FN(OnCursorTrackStart), wxT("J"));
+         c->AddItem(wxT("CursTrackEnd"), _("to Track &End"), FN(OnCursorTrackEnd), wxT("K"));
+      }
+      c->EndSubMenu();
+
+
+      /////////////////////////////////////////////////////////////////////////////
 
       c->AddSeparator();
 
-      c->AddItem(wxT("SelAllTracks"), _("In All &Tracks"), FN(OnSelectAllTracks),
-         wxT("Ctrl+Shift+K"),
-         TracksExistFlag, TracksExistFlag);
-
-#ifdef EXPERIMENTAL_SYNC_LOCK
-      c->AddItem(wxT("SelSyncLockTracks"), _("In All S&ync-Locked Tracks"),
-         FN(OnSelectSyncLockSel), wxT("Ctrl+Shift+Y"),
-         TracksSelectedFlag | IsSyncLockedFlag,
-         TracksSelectedFlag | IsSyncLockedFlag);
-#endif
-   }
-   c->EndSubMenu();
+      c->AddItem(wxT("SelSave"), _("Re&gion Save"), FN(OnSelectionSave),
+         WaveTracksSelectedFlag,
+         WaveTracksSelectedFlag);
+      c->AddItem(wxT("SelRestore"), _("Regio&n Restore"), FN(OnSelectionRestore),
+         TracksExistFlag,
+         TracksExistFlag);
 
 
-   /////////////////////////////////////////////////////////////////////////////
+      c->AddSeparator();
 
-   c->AddItem(wxT("ZeroCross"), _("Find &Zero Crossings"), FN(OnZeroCrossing), wxT("Z"));
+      /////////////////////////////////////////////////////////////////////////////
 
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("Mo&ve Cursor"));
-   {
-      c->AddItem(wxT("CursSelStart"), _("to Selection Star&t"), FN(OnCursorSelStart));
-      c->AddItem(wxT("CursSelEnd"), _("to Selection En&d"), FN(OnCursorSelEnd));
-
-      c->AddItem(wxT("CursTrackStart"), _("to Track &Start"), FN(OnCursorTrackStart), wxT("J"));
-      c->AddItem(wxT("CursTrackEnd"), _("to Track &End"), FN(OnCursorTrackEnd), wxT("K"));
-   }
-   c->EndSubMenu();
-
-
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->AddSeparator();
-
-   c->AddItem(wxT("SelSave"), _("Re&gion Save"), FN(OnSelectionSave),
-      WaveTracksSelectedFlag,
-      WaveTracksSelectedFlag);
-   c->AddItem(wxT("SelRestore"), _("Regio&n Restore"), FN(OnSelectionRestore),
-      TracksExistFlag,
-      TracksExistFlag);
+      c->BeginSubMenu(_("Pla&y Region"));
+      {
+         c->AddItem(wxT("LockPlayRegion"), _("&Lock"), FN(OnLockPlayRegion),
+            PlayRegionNotLockedFlag,
+            PlayRegionNotLockedFlag);
+         c->AddItem(wxT("UnlockPlayRegion"), _("&Unlock"), FN(OnUnlockPlayRegion),
+            PlayRegionLockedFlag,
+            PlayRegionLockedFlag);
+      }
+      c->EndSubMenu();
 
 
-   c->AddSeparator();
-
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->BeginSubMenu(_("Pla&y Region"));
-   {
-      c->AddItem(wxT("LockPlayRegion"), _("&Lock"), FN(OnLockPlayRegion),
-         PlayRegionNotLockedFlag,
-         PlayRegionNotLockedFlag);
-      c->AddItem(wxT("UnlockPlayRegion"), _("&Unlock"), FN(OnUnlockPlayRegion),
-         PlayRegionLockedFlag,
-         PlayRegionLockedFlag);
-   }
-   c->EndSubMenu();
-
-
-   /////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
 
 #ifndef __WXMAC__
-   c->AddSeparator();
+      c->AddSeparator();
 #endif
 
-   // The default shortcut key for Preferences is different on different platforms.
-   key =
+      // The default shortcut key for Preferences is different on different platforms.
+      key =
 #ifdef __WXMAC__
-      wxT("Ctrl+,");
+         wxT("Ctrl+,");
 #else
-      wxT("Ctrl+P");
+         wxT("Ctrl+P");
 #endif
 
-   c->AddItem(wxT("Preferences"), _("Pre&ferences..."), FN(OnPreferences), key,
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
-
+      c->AddItem(wxT("Preferences"), _("Pre&ferences..."), FN(OnPreferences), key,
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
+   }
+   c->EndMenu();
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
