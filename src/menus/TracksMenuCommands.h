@@ -71,6 +71,7 @@ private:
    void SetTrackPan(Track * track, LWSlider * slider);
 
    void OnTrackGain();
+   void OnTrackGainInc();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
