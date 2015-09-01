@@ -171,6 +171,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
    c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
    c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
+   c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1337,4 +1338,15 @@ void TracksMenuCommands::SetTrackGain(Track * track, LWSlider * slider)
 void TracksMenuCommands::OnTrackMenu()
 {
    mProject->GetTrackPanel()->OnTrackMenu();
+}
+
+void TracksMenuCommands::OnTrackMute()
+{
+   Track *t = NULL;
+   if (!t) {
+      t = mProject->GetTrackPanel()->GetFocusedTrack();
+      if (!t || (t->GetKind() != Track::Wave))
+         return;
+   }
+   mProject->DoTrackMute(t, false);
 }
