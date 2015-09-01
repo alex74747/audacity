@@ -166,6 +166,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
    c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
+   c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1217,7 +1218,7 @@ void TracksMenuCommands::OnTrackPan()
    LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
       (static_cast<WaveTrack*>(track));
    if (slider->ShowDialog()) {
-      mProject->SetTrackPan(track, slider);
+      SetTrackPan(track, slider);
    }
 }
 
@@ -1232,5 +1233,37 @@ void TracksMenuCommands::OnTrackPanLeft()
    LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
       (static_cast<WaveTrack*>(track));
    slider->Decrease(1);
-   mProject->SetTrackPan(track, slider);
+   SetTrackPan(track, slider);
+}
+
+void TracksMenuCommands::OnTrackPanRight()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Increase(1);
+   SetTrackPan(track, slider);
+}
+
+void TracksMenuCommands::SetTrackPan(Track * track, LWSlider * slider)
+{
+   wxASSERT(track);
+   if (track->GetKind() != Track::Wave)
+      return;
+   float newValue = slider->Get();
+
+   WaveTrack *const link = static_cast<WaveTrack*>
+      (mProject->GetTracks()->GetLink(track));
+   static_cast<WaveTrack*>(track)->SetPan(newValue);
+   if (link)
+      link->SetPan(newValue);
+
+   mProject->PushState(_("Adjusted Pan"), _("Pan"), PUSH_CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(track);
 }

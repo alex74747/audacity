@@ -3,6 +3,7 @@
 
 class AudacityProject;
 class CommandManager;
+class LWSlider;
 class SelectedRegion;
 class Track;
 
@@ -66,6 +67,8 @@ private:
    // non-menu commands
    void OnTrackPan();
    void OnTrackPanLeft();
+   void OnTrackPanRight();
+   void SetTrackPan(Track * track, LWSlider * slider);
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
