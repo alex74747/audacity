@@ -21,6 +21,7 @@
 
 EditMenuCommands::EditMenuCommands(AudacityProject *project)
    : mProject(project)
+   , mRegionSave()
 {
 }
 
@@ -210,6 +211,18 @@ void EditMenuCommands::Create(CommandManager *c)
       c->AddItem(wxT("CursTrackEnd"), _("to Track &End"), FN(OnCursorTrackEnd), wxT("K"));
    }
    c->EndSubMenu();
+
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("SelSave"), _("Re&gion Save"), FN(OnSelectionSave),
+      WaveTracksSelectedFlag,
+      WaveTracksSelectedFlag);
+   c->AddItem(wxT("SelRestore"), _("Regio&n Restore"), FN(OnSelectionRestore),
+      TracksExistFlag,
+      TracksExistFlag);
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -1973,4 +1986,22 @@ void EditMenuCommands::OnCursorTrackEnd()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
    trackPanel->Refresh(false);
+}
+
+void EditMenuCommands::OnSelectionSave()
+{
+   mRegionSave = mProject->GetViewInfo().selectedRegion;
+}
+
+void EditMenuCommands::OnSelectionRestore()
+{
+   if ((mRegionSave.t0() == 0.0) &&
+      (mRegionSave.t1() == 0.0))
+      return;
+
+   mProject->GetViewInfo().selectedRegion = mRegionSave;
+
+   mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
 }

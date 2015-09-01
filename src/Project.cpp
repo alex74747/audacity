@@ -794,7 +794,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
                                  const wxPoint & pos,
                                  const wxSize & size)
    : wxFrame(parent, id, wxT("Audacity"), pos, size),
-     mRegionSave(),
      mLastPlayMode(normalPlay),
      mRate((double) gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleRate"), AudioIO::GetOptimalSupportedSampleRate())),
      mDefaultFormat((sampleFormat) gPrefs->

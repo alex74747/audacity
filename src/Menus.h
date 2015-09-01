@@ -147,11 +147,7 @@ void OnImportRaw();
 
 void OnEditMetadata();
 
-private:
-SelectedRegion mRegionSave;
 public:
-void OnSelectionSave();
-void OnSelectionRestore();
 
 // Effect Menu
 

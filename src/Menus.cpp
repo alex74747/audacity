@@ -379,17 +379,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    mEditMenuCommands->Create(c);
 
-   /////////////////////////////////////////////////////////////////////////////
-
-   c->AddSeparator();
-
-   c->AddItem(wxT("SelSave"), _("Re&gion Save"), FN(OnSelectionSave),
-              WaveTracksSelectedFlag,
-              WaveTracksSelectedFlag);
-   c->AddItem(wxT("SelRestore"), _("Regio&n Restore"), FN(OnSelectionRestore),
-              TracksExistFlag,
-              TracksExistFlag);
-
    c->AddSeparator();
 
    /////////////////////////////////////////////////////////////////////////////
@@ -2434,24 +2423,6 @@ void AudacityProject::OnEditMetadata()
 {
    if (mTags->ShowEditDialog(this, _("Edit Metadata Tags"), true))
       PushState(_("Edit Metadata Tags"), _("Edit Metadata"));
-}
-
-void AudacityProject::OnSelectionSave()
-{
-   mRegionSave =  mViewInfo.selectedRegion;
-}
-
-void AudacityProject::OnSelectionRestore()
-{
-   if ((mRegionSave.t0() == 0.0) &&
-       (mRegionSave.t1() == 0.0))
-      return;
-
-   mViewInfo.selectedRegion = mRegionSave;
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
 }
 
 void AudacityProject::OnApplyChain()
