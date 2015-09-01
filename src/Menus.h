@@ -137,8 +137,6 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnPasteNewLabel();
-
 void OnSplit();
 void OnSplitNew();
 void OnJoin();

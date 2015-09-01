@@ -82,6 +82,9 @@ void EditMenuCommands::Create(CommandManager *c)
          AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
    }
    c->EndSubMenu();
+
+   c->AddItem(wxT("PasteNewLabel"), _("Paste Te&xt to New Label"), FN(OnPasteNewLabel), wxT("Ctrl+Alt+V"),
+      AudioIONotBusyFlag, AudioIONotBusyFlag);
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -843,4 +846,79 @@ void EditMenuCommands::OnTrim()
       _("Trim Audio"));
 
    mProject->RedrawProject();
+}
+
+// Creates a new label in each selected label track with text from the system
+// clipboard
+void EditMenuCommands::OnPasteNewLabel()
+{
+   bool bPastedSomething = false;
+
+   TrackList *const trackList = mProject->GetTracks();
+   SelectedTrackListOfKindIterator iter(Track::Label, trackList);
+   Track *t = iter.First();
+   if (!t)
+   {
+      // If there are no selected label tracks, try to choose the first label
+      // track after some other selected track
+      TrackListIterator iter1(trackList);
+      for (Track *t1 = iter1.First(); t1; t1 = iter1.Next()) {
+         if (t1->GetSelected()) {
+            // Look for a label track
+            while (0 != (t1 = iter1.Next())) {
+               if (t1->GetKind() == Track::Label) {
+                  t = t1;
+                  break;
+               }
+            }
+            if (t) break;
+         }
+      }
+
+      // If no match found, add one
+      if (!t) {
+         t = new LabelTrack(mProject->GetDirManager());
+         trackList->Add(t);
+      }
+
+      // Select this track so the loop picks it up
+      t->SetSelected(true);
+   }
+
+   LabelTrack *plt = NULL; // the previous track
+   for (Track *t = iter.First(); t; t = iter.Next())
+   {
+      LabelTrack *lt = (LabelTrack *)t;
+
+      // Unselect the last label, so we'll have just one active label when
+      // we're done
+      if (plt)
+         plt->Unselect();
+
+      // Add a new label, paste into it
+      // Paul L:  copy whatever defines the selected region, not just times
+      ViewInfo &viewInfo = mProject->GetViewInfo();
+      lt->AddLabel(viewInfo.selectedRegion);
+      if (lt->PasteSelectedText(viewInfo.selectedRegion.t0(),
+         viewInfo.selectedRegion.t1()))
+         bPastedSomething = true;
+
+      // Set previous track
+      plt = lt;
+   }
+
+   // plt should point to the last label track pasted to -- ensure it's visible
+   // and set focus
+   if (plt) {
+      TrackPanel *const trackPanel = mProject->GetTrackPanel();
+      trackPanel->EnsureVisible(plt);
+      trackPanel->SetFocus();
+   }
+
+   if (bPastedSomething) {
+      mProject->PushState(_("Pasted from the clipboard"), _("Paste Text to New Label"));
+
+      // Is this necessary? (carried over from former logic in OnPaste())
+      mProject->RedrawProject();
+   }
 }
