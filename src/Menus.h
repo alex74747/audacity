@@ -78,8 +78,6 @@ void OnMacBringAllToFront();
 
 void OnClose();
 
-void OnExit();
-
 public:
 
         // View Menu
