@@ -78,8 +78,6 @@ void OnMacBringAllToFront();
 
 void OnClose();
 
-void OnPrint();
-
 void OnExit();
 
 public:
