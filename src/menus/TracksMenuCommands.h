@@ -65,6 +65,7 @@ private:
 
    // non-menu commands
    void OnTrackPan();
+   void OnTrackPanLeft();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
