@@ -27,112 +27,116 @@ FileMenuCommands::FileMenuCommands(AudacityProject *project)
 
 void FileMenuCommands::Create(CommandManager *c)
 {
-   c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
+   c->BeginMenu(_("&File"));
+   {
+      c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   /*i18n-hint: "New" is an action (verb) to create a NEW project*/
-   c->AddItem(wxT("New"), _("&New"), FN(OnNew), wxT("Ctrl+N"),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
-   /*i18n-hint: (verb)*/
-   c->AddItem(wxT("Open"), _("&Open..."), FN(OnOpen), wxT("Ctrl+O"),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
+      /*i18n-hint: "New" is an action (verb) to create a NEW project*/
+      c->AddItem(wxT("New"), _("&New"), FN(OnNew), wxT("Ctrl+N"),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
+      /*i18n-hint: (verb)*/
+      c->AddItem(wxT("Open"), _("&Open..."), FN(OnOpen), wxT("Ctrl+O"),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
 
-   /////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
 
-   mProject->CreateRecentFilesMenu(c);
+      mProject->CreateRecentFilesMenu(c);
 
-   /////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddItem(wxT("Close"), _("&Close"), FN(OnClose), wxT("Ctrl+W"));
+      c->AddItem(wxT("Close"), _("&Close"), FN(OnClose), wxT("Ctrl+W"));
 
-   c->AddItem(wxT("Save"), _("&Save Project"), FN(OnSave), wxT("Ctrl+S"),
-      AudioIONotBusyFlag | UnsavedChangesFlag,
-      AudioIONotBusyFlag | UnsavedChangesFlag);
-   c->AddItem(wxT("SaveAs"), _("Save Project &As..."), FN(OnSaveAs));
+      c->AddItem(wxT("Save"), _("&Save Project"), FN(OnSave), wxT("Ctrl+S"),
+         AudioIONotBusyFlag | UnsavedChangesFlag,
+         AudioIONotBusyFlag | UnsavedChangesFlag);
+      c->AddItem(wxT("SaveAs"), _("Save Project &As..."), FN(OnSaveAs));
 
 #ifdef USE_LIBVORBIS
-   c->AddItem(wxT("SaveCompressed"), _("Sa&ve Compressed Copy of Project..."), FN(OnSaveCompressed));
+      c->AddItem(wxT("SaveCompressed"), _("Sa&ve Compressed Copy of Project..."), FN(OnSaveCompressed));
 #endif
 
-   c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
+      c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata Tags..."), FN(OnEditMetadata));
+      c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata Tags..."), FN(OnEditMetadata));
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   /////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
 
-   c->BeginSubMenu(_("&Import"));
-   {
-      c->AddItem(wxT("ImportAudio"), _("&Audio..."), FN(OnImport), wxT("Ctrl+Shift+I"));
-      c->AddItem(wxT("ImportLabels"), _("&Labels..."), FN(OnImportLabels));
+      c->BeginSubMenu(_("&Import"));
+      {
+         c->AddItem(wxT("ImportAudio"), _("&Audio..."), FN(OnImport), wxT("Ctrl+Shift+I"));
+         c->AddItem(wxT("ImportLabels"), _("&Labels..."), FN(OnImportLabels));
 #ifdef USE_MIDI
-      c->AddItem(wxT("ImportMIDI"), _("&MIDI..."), FN(OnImportMIDI));
+         c->AddItem(wxT("ImportMIDI"), _("&MIDI..."), FN(OnImportMIDI));
 #endif // USE_MIDI
-      c->AddItem(wxT("ImportRaw"), _("&Raw Data..."), FN(OnImportRaw));
-   }
-   c->EndSubMenu();
+         c->AddItem(wxT("ImportRaw"), _("&Raw Data..."), FN(OnImportRaw));
+      }
+      c->EndSubMenu();
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   /////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
 
-   // Enable Export audio commands only when there are audio tracks.
-   c->AddItem(wxT("Export"), _("&Export Audio..."), FN(OnExport), wxT("Ctrl+Shift+E"),
-      AudioIONotBusyFlag | WaveTracksExistFlag,
-      AudioIONotBusyFlag | WaveTracksExistFlag);
+      // Enable Export audio commands only when there are audio tracks.
+      c->AddItem(wxT("Export"), _("&Export Audio..."), FN(OnExport), wxT("Ctrl+Shift+E"),
+         AudioIONotBusyFlag | WaveTracksExistFlag,
+         AudioIONotBusyFlag | WaveTracksExistFlag);
 
-   // Enable Export Selection commands only when there's a selection.
-   c->AddItem(wxT("ExportSel"), _("Expo&rt Selected Audio..."), FN(OnExportSelection),
-      AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-      AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
+      // Enable Export Selection commands only when there's a selection.
+      c->AddItem(wxT("ExportSel"), _("Expo&rt Selected Audio..."), FN(OnExportSelection),
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
+         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
 
-   c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
-      AudioIONotBusyFlag | LabelTracksExistFlag,
-      AudioIONotBusyFlag | LabelTracksExistFlag);
+      c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
+         AudioIONotBusyFlag | LabelTracksExistFlag,
+         AudioIONotBusyFlag | LabelTracksExistFlag);
 
-   // Enable Export audio commands only when there are audio tracks.
-   c->AddItem(wxT("ExportMultiple"), _("Export &Multiple..."), FN(OnExportMultiple), wxT("Ctrl+Shift+L"),
-      AudioIONotBusyFlag | WaveTracksExistFlag,
-      AudioIONotBusyFlag | WaveTracksExistFlag);
+      // Enable Export audio commands only when there are audio tracks.
+      c->AddItem(wxT("ExportMultiple"), _("Export &Multiple..."), FN(OnExportMultiple), wxT("Ctrl+Shift+L"),
+         AudioIONotBusyFlag | WaveTracksExistFlag,
+         AudioIONotBusyFlag | WaveTracksExistFlag);
 
 #if defined(USE_MIDI)
-   c->AddItem(wxT("ExportMIDI"), _("Export MI&DI..."), FN(OnExportMIDI),
-      AudioIONotBusyFlag | NoteTracksSelectedFlag,
-      AudioIONotBusyFlag | NoteTracksSelectedFlag);
+      c->AddItem(wxT("ExportMIDI"), _("Export MI&DI..."), FN(OnExportMIDI),
+         AudioIONotBusyFlag | NoteTracksSelectedFlag,
+         AudioIONotBusyFlag | NoteTracksSelectedFlag);
 #endif
 
-   c->AddSeparator();
-   c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
-      AudioIONotBusyFlag,
-      AudioIONotBusyFlag);
+      c->AddSeparator();
+      c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
+         AudioIONotBusyFlag,
+         AudioIONotBusyFlag);
 
-   c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
+      c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
-      AudioIONotBusyFlag | TracksExistFlag,
-      AudioIONotBusyFlag | TracksExistFlag);
+      c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
+         AudioIONotBusyFlag | TracksExistFlag,
+         AudioIONotBusyFlag | TracksExistFlag);
 
-   /* i18n-hint: (verb) It's item on a menu. */
-   c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
-      AudioIONotBusyFlag | TracksExistFlag,
-      AudioIONotBusyFlag | TracksExistFlag);
+      /* i18n-hint: (verb) It's item on a menu. */
+      c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
+         AudioIONotBusyFlag | TracksExistFlag,
+         AudioIONotBusyFlag | TracksExistFlag);
 
-   c->AddSeparator();
+      c->AddSeparator();
 
-   // On the Mac, the Exit item doesn't actually go here...wxMac will pull it out
-   // and put it in the Audacity menu for us based on its ID.
-   /* i18n-hint: (verb) It's item on a menu. */
-   c->AddItem(wxT("Exit"), _("E&xit"), FN(OnExit), wxT("Ctrl+Q"),
-      AlwaysEnabledFlag,
-      AlwaysEnabledFlag);
+      // On the Mac, the Exit item doesn't actually go here...wxMac will pull it out
+      // and put it in the Audacity menu for us based on its ID.
+      /* i18n-hint: (verb) It's item on a menu. */
+      c->AddItem(wxT("Exit"), _("E&xit"), FN(OnExit), wxT("Ctrl+Q"),
+         AlwaysEnabledFlag,
+         AlwaysEnabledFlag);
+   }
+   c->EndMenu();
 }
 
 void FileMenuCommands::OnNew()
