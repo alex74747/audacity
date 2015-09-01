@@ -94,6 +94,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
       CaptureNotBusyFlag);
    c->AddCommand(wxT("PlayBeforeSelectionStart"), _("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
    c->AddCommand(wxT("PlayAfterSelectionStart"), _("Play After Selection Start"), FN(OnPlayAfterSelectionStart), wxT("Shift+F6"));
+   c->AddCommand(wxT("PlayBeforeSelectionEnd"), _("Play Before Selection End"), FN(OnPlayBeforeSelectionEnd), wxT("Shift+F7"));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -394,4 +395,25 @@ void TransportMenuCommands::OnPlayAfterSelectionStart()
    else
       mProject->GetControlToolBar()->PlayPlayRegion
       (SelectedRegion(t0, t0 + afterLen), mProject->GetDefaultPlayOptions());
+}
+
+void TransportMenuCommands::OnPlayBeforeSelectionEnd()
+{
+   if (!mProject->MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0 = viewInfo.selectedRegion.t0();
+   double t1 = viewInfo.selectedRegion.t1();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+
+   mProject->mLastPlayMode = oneSecondPlay;      // this disables auto scrolling, as in OnPlayToSelection()
+
+   if (t1 - t0 > 0.0 && t1 - t0 < beforeLen)
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions());
+   else
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t1 - beforeLen, t1), mProject->GetDefaultPlayOptions());
 }
