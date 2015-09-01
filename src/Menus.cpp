@@ -882,7 +882,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("PlayBeforeAndAfterSelectionEnd"),_("Play Before and After Selection End"), FN(OnPlayBeforeAndAfterSelectionEnd), wxT("Ctrl+Shift+F7"));
    c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
                  CaptureNotBusyFlag,
                  CaptureNotBusyFlag);
@@ -1852,25 +1851,6 @@ bool AudacityProject::MakeReadyToPlay(bool loop, bool cutpreview)
 
 // The next functions provide a limited version of the
 // functionality of OnPlayToSelection() for keyboard users
-
-void AudacityProject::OnPlayBeforeAndAfterSelectionEnd()
-{
-   if (!MakeReadyToPlay())
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double t1 = mViewInfo.selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-   double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
-
-   if ( t1 - t0 > 0.0 && t1 - t0 < beforeLen )
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t1 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-   else
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t1 - beforeLen, t1 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
 
 void AudacityProject::OnPlayCutPreview()
 {
