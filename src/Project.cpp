@@ -1293,9 +1293,9 @@ void AudacityProject::SetProjectTitle()
    SetName(name);       // to make the nvda screen reader read the correct title
 }
 
-HistoryWindow *AudacityProject::GetHistoryWindow()
+HistoryWindow *AudacityProject::GetHistoryWindow(bool createAsNeeded)
 {
-   if (!mHistoryWindow)
+   if (!mHistoryWindow && createAsNeeded)
       mHistoryWindow = new HistoryWindow(this, &mUndoManager);
    return mHistoryWindow;
 }
@@ -4880,7 +4880,7 @@ void AudacityProject::OnAudioIOStopRecording()
       // Reset timer record 
       if (IsTimerRecordCancelled())
       {
-         OnUndo();
+         EditMenuCommands(this).OnUndo();
          ResetTimerRecordFlag();
       }
 

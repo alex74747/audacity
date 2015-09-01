@@ -265,8 +265,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
    TrackPanel * GetTrackPanel(){return mTrackPanel;}
 
-   // Creates the window as needed on demand:
-   HistoryWindow *GetHistoryWindow();
+   HistoryWindow *GetHistoryWindow(bool createAsNeeded = false);
 
    bool GetIsEmpty();
 
@@ -517,7 +516,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                              // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
-private:
    void PopState(TrackList * l);
 
 public:

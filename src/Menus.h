@@ -28,9 +28,10 @@ void PopulateEffectsMenu(CommandManager *c, EffectType type, int batchflags, int
 void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs, int batchflags, int realflags, bool isDefault);
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, const PluginIDList & plugs, const wxArrayInt & flags, bool isDefault);
 void CreateRecentFilesMenu(CommandManager *c);
-void ModifyUndoMenuItems();
 
 public:
+void ModifyUndoMenuItems();
+
 void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
@@ -136,7 +137,6 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnUndo();
 void OnRedo();
 
 void OnCut();

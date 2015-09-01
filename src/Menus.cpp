@@ -382,10 +382,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
                       AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-   c->AddItem(wxT("Undo"), _("&Undo"), FN(OnUndo), wxT("Ctrl+Z"),
-              AudioIONotBusyFlag | UndoAvailableFlag,
-              AudioIONotBusyFlag | UndoAvailableFlag);
-
    // The default shortcut key for Redo is different on different platforms.
    wxString key =
 #ifdef __WXMSW__
@@ -2425,32 +2421,6 @@ void AudacityProject::OnPrint()
 //
 // Edit Menu
 //
-
-void AudacityProject::OnUndo()
-{
-   if (!mUndoManager.UndoAvailable()) {
-      wxMessageBox(_("Nothing to undo"));
-      return;
-   }
-
-   // can't undo while dragging
-   if (mTrackPanel->IsMouseCaptured()) {
-      return;
-   }
-
-   TrackList *l = mUndoManager.Undo(&mViewInfo.selectedRegion);
-   PopState(l);
-
-   mTrackPanel->SetFocusedTrack(NULL);
-   mTrackPanel->EnsureVisible(mTrackPanel->GetFirstSelectedTrack());
-
-   RedrawProject();
-
-   if (mHistoryWindow)
-      mHistoryWindow->UpdateDisplay();
-
-   ModifyUndoMenuItems();
-}
 
 void AudacityProject::OnRedo()
 {
