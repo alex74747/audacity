@@ -959,7 +959,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
    c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
    c->AddCommand(wxT("TrackMoveUp"), _("Move focused track up"), FN(OnTrackMoveUp));
    c->AddCommand(wxT("TrackMoveDown"), _("Move focused track down"), FN(OnTrackMoveDown));
@@ -2482,18 +2481,6 @@ void AudacityProject::PrevWindow()
 }
 
 //The following methods operate controls on specified tracks,
-
-void AudacityProject::OnTrackSolo()
-{
-   Track *t = NULL;
-   if (!t)
-   {
-      t = mTrackPanel->GetFocusedTrack();
-      if (!t || (t->GetKind() != Track::Wave))
-         return;
-   }
-   DoTrackSolo(t, false);
-}
 
 void AudacityProject::OnTrackClose()
 {
