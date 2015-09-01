@@ -169,6 +169,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
    c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
    c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
+   c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1282,7 +1283,7 @@ void TracksMenuCommands::OnTrackGain()
    LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
       (static_cast<WaveTrack*>(track));
    if (slider->ShowDialog()) {
-      mProject->SetTrackGain(track, slider);
+      SetTrackGain(track, slider);
    }
 }
 
@@ -1297,5 +1298,37 @@ void TracksMenuCommands::OnTrackGainInc()
    LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
       (static_cast<WaveTrack*>(track));
    slider->Increase(1);
-   mProject->SetTrackGain(track, slider);
+   SetTrackGain(track, slider);
+}
+
+void TracksMenuCommands::OnTrackGainDec()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Decrease(1);
+   SetTrackGain(track, slider);
+}
+
+void TracksMenuCommands::SetTrackGain(Track * track, LWSlider * slider)
+{
+   wxASSERT(track);
+   if (track->GetKind() != Track::Wave)
+      return;
+   float newValue = slider->Get();
+
+   WaveTrack *const link = static_cast<WaveTrack*>
+      (mProject->GetTracks()->GetLink(track));
+   static_cast<WaveTrack*>(track)->SetGain(newValue);
+   if (link)
+      link->SetGain(newValue);
+
+   mProject->PushState(_("Adjusted gain"), _("Gain"), PUSH_CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(track);
 }
