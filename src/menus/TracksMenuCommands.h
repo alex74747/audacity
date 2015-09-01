@@ -81,6 +81,8 @@ private:
    void OnTrackGainDec();
    void SetTrackGain(WaveTrack * wt, LWSlider * slider);
 
+   void OnTrackMenu();
+
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
 };
