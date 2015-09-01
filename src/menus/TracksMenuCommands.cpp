@@ -188,6 +188,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
    c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
    c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
+   c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1404,4 +1405,24 @@ void TracksMenuCommands::OnTrackSolo()
          return;
    }
    mProject->DoTrackSolo(t, false);
+}
+
+void TracksMenuCommands::OnTrackClose()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *t = trackPanel->GetFocusedTrack();
+   if (!t)
+      return;
+
+   if (mProject->IsAudioActive())
+   {
+      mProject->TP_DisplayStatusMessage(_("Can't delete track with active audio"));
+      wxBell();
+      return;
+   }
+
+   mProject->RemoveTrack(t);
+
+   trackPanel->UpdateViewIfNoTracks();
+   trackPanel->Refresh(false);
 }

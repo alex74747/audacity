@@ -1021,7 +1021,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
    c->AddCommand(wxT("TrackMoveUp"), _("Move focused track up"), FN(OnTrackMoveUp));
    c->AddCommand(wxT("TrackMoveDown"), _("Move focused track down"), FN(OnTrackMoveDown));
    c->AddCommand(wxT("TrackMoveTop"), _("Move focused track to top"), FN(OnTrackMoveTop));
@@ -2771,27 +2770,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-//The following methods operate controls on specified tracks,
-
-void AudacityProject::OnTrackClose()
-{
-   Track *t = mTrackPanel->GetFocusedTrack();
-   if (!t)
-      return;
-
-   if (IsAudioActive())
-   {
-      this->TP_DisplayStatusMessage(_("Can't delete track with active audio"));
-      wxBell();
-      return;
-   }
-
-   RemoveTrack(t);
-
-   GetTrackPanel()->UpdateViewIfNoTracks();
-   GetTrackPanel()->Refresh(false);
 }
 
 void AudacityProject::OnTrackMoveUp()
