@@ -511,7 +511,9 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
  private:
 
    void OnCapture(wxCommandEvent & evt);
+public:
    void ClearClipboard();
+private:
    void InitialState();
 public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
@@ -558,12 +560,15 @@ private:
 
    TrackList *mLastSavedTracks;
 
+public:
    // Clipboard (static because it is shared by all projects)
    static TrackList *msClipboard;
+
    static AudacityProject *msClipProject;
    static double msClipT0;
    static double msClipT1;
 
+private:
    //shared by all projects
    static ODLock *msAllProjectDeleteMutex;
 

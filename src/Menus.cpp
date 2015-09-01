@@ -382,13 +382,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
                       AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-   c->AddSeparator();
-
-   // Basic Edit coomands
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Cut"), _("Cu&t"), FN(OnCut), wxT("Ctrl+X"),
-              AudioIONotBusyFlag | CutCopyAvailableFlag,
-              AudioIONotBusyFlag | CutCopyAvailableFlag);
    c->AddItem(wxT("Delete"), _("&Delete"), FN(OnDelete), wxT("Ctrl+K"));
    /* i18n-hint: (verb)*/
    c->AddItem(wxT("Copy"), _("&Copy"), FN(OnCopy), wxT("Ctrl+C"),
@@ -2407,95 +2400,6 @@ void AudacityProject::OnPrint()
 //
 // Edit Menu
 //
-
-void AudacityProject::OnCut()
-{
-   TrackListIterator iter(mTracks);
-   Track *n = iter.First();
-   Track *dest;
-
-   // This doesn't handle cutting labels, it handles
-   // cutting the _text_ inside of labels, i.e. if you're
-   // in the middle of editing the label text and select "Cut".
-
-   while (n) {
-      if (n->GetSelected()) {
-         if (n->GetKind() == Track::Label) {
-            if (((LabelTrack *)n)->CutSelectedText()) {
-               mTrackPanel->Refresh(false);
-               return;
-            }
-         }
-      }
-      n = iter.Next();
-   }
-
-   ClearClipboard();
-   n = iter.First();
-   while (n) {
-      if (n->GetSelected()) {
-         dest = NULL;
-#if defined(USE_MIDI)
-         if (n->GetKind() == Track::Note)
-            // Since portsmf has a built-in cut operator, we use that instead
-            n->Cut(mViewInfo.selectedRegion.t0(),
-                   mViewInfo.selectedRegion.t1(), &dest);
-         else
-#endif
-            n->Copy(mViewInfo.selectedRegion.t0(),
-                    mViewInfo.selectedRegion.t1(), &dest);
-
-         if (dest) {
-            dest->SetChannel(n->GetChannel());
-            dest->SetLinked(n->GetLinked());
-            dest->SetName(n->GetName());
-            msClipboard->Add(dest);
-         }
-      }
-      n = iter.Next();
-   }
-
-   n = iter.First();
-   while (n) {
-      // We clear from selected and sync-lock selected tracks.
-      if (n->GetSelected() || n->IsSyncLockSelected()) {
-         switch (n->GetKind())
-         {
-#if defined(USE_MIDI)
-            case Track::Note:
-               //if NoteTrack, it was cut, so do not clear anything
-            break;
-#endif
-            case Track::Wave:
-               if (gPrefs->Read(wxT("/GUI/EnableCutLines"), (long)0)) {
-                  ((WaveTrack*)n)->ClearAndAddCutLine(
-                     mViewInfo.selectedRegion.t0(),
-                     mViewInfo.selectedRegion.t1());
-                  break;
-               }
-
-               // Fall through
-
-            default:
-               n->Clear(mViewInfo.selectedRegion.t0(),
-                        mViewInfo.selectedRegion.t1());
-            break;
-         }
-      }
-      n = iter.Next();
-   }
-
-   msClipT0 = mViewInfo.selectedRegion.t0();
-   msClipT1 = mViewInfo.selectedRegion.t1();
-   msClipProject = this;
-
-   PushState(_("Cut to the clipboard"), _("Cut"));
-
-   RedrawProject();
-
-   mViewInfo.selectedRegion.collapseToT0();
-}
-
 
 void AudacityProject::OnSplitCut()
 {

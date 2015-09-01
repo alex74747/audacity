@@ -234,7 +234,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
 
    switch (id) {
       case ETBCutID:
-         if (!busy) p->OnCut();
+         if (!busy) EditMenuCommands(p).OnCut();
          break;
       case ETBCopyID:
          if (!busy) p->OnCopy();
