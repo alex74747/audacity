@@ -13,6 +13,7 @@ public:
    void Create(CommandManager *c);
 
 private:
+   void OnNew();
 
    AudacityProject *const mProject;
 };
