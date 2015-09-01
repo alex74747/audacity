@@ -63,6 +63,7 @@ private:
    void OnOutputDevice();
    void OnAudioHost();
    void OnInputChannels();
+   void OnOutputGain();
 
    AudacityProject *const mProject;
 };

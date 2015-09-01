@@ -14,6 +14,7 @@
 #include "../toolbars/ControlToolBar.h"
 #include "../tracks/ui/Scrubbing.h"
 #include "../toolbars/DeviceToolBar.h"
+#include "../toolbars/MixerToolBar.h"
 
 #include "../TrackPanel.h"
 #include "../tracks/ui/Scrubbing.h"
@@ -127,6 +128,8 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("InputChannels"), _("Change recording channels"), FN(OnInputChannels), wxT("Shift+N"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+
+   c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -706,5 +709,13 @@ void TransportMenuCommands::OnInputChannels()
    DeviceToolBar *tb = mProject->GetDeviceToolBar();
    if (tb) {
       tb->ShowChannelsDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputGain()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->ShowOutputGainDialog();
    }
 }
