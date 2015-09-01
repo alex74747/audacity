@@ -99,6 +99,7 @@ class Regions;
 class LWSlider;
 class UndoManager;
 enum class UndoPush : unsigned char;
+class HelpMenuCommands;
 
 class Track;
 
@@ -740,6 +741,8 @@ private:
 
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
+
+   HelpMenuCommands *mHelpMenuCommands;
 
    // CommandManager needs to use private methods
    friend class CommandManager;

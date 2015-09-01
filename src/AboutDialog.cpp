@@ -458,7 +458,13 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
    informationStr = wxT("<h2><center>");
    informationStr += _("Build Information");
    informationStr += wxT("</center></h2>\n");
-   informationStr += VerCheckHtml();
+   // Only for debug builds, for now.
+#ifdef __WXDEBUG__
+   informationStr += wxT("<center>");
+   informationStr += wxString("[[http://www.audacityteam.org/download/?") + VerCheckArgs() + "|" +
+      _("Check Online") + "]]";
+   informationStr += wxT("</center>\n");
+#endif
    // top level heading
    informationStr += wxT("<h3>");
    informationStr += _("File Format Support");
