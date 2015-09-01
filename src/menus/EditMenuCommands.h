@@ -33,6 +33,10 @@ public:
    void OnTrim();
 private:
    void OnPasteNewLabel();
+   void OnSplit();
+   void OnSplitNew();
+   void OnJoin();
+   void OnDisjoin();
 
    AudacityProject *const mProject;
 };

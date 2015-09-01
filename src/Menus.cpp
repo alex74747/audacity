@@ -393,24 +393,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->BeginSubMenu(_("Clip B&oundaries"));
-      /* i18n-hint: (verb) It's an item on a menu. */
-      c->AddItem(wxT("Split"), _("Sp&lit"), FN(OnSplit), wxT("Ctrl+I"),
-         AudioIONotBusyFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | WaveTracksSelectedFlag);
-      c->AddItem(wxT("SplitNew"), _("Split Ne&w"), FN(OnSplitNew), wxT("Ctrl+Alt+I"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-      c->AddSeparator();
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Join"), _("&Join"), FN(OnJoin), wxT("Ctrl+J"));
-      c->AddItem(wxT("Disjoin"), _("Detac&h at Silences"), FN(OnDisjoin), wxT("Ctrl+Alt+J"));
-      c->EndSubMenu();
-
-      c->AddSeparator();
-
-      /////////////////////////////////////////////////////////////////////////////
-
       c->BeginSubMenu(_("La&beled Audio"));
       c->SetDefaultFlags(AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag,
          AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag);
@@ -2514,56 +2496,6 @@ void AudacityProject::OnPrint()
 // Edit Menu
 //
 
-void AudacityProject::OnDisjoin()
-{
-   TrackListIterator iter(GetTracks());
-
-   Track *n = iter.First();
-
-   while (n) {
-      if (n->GetSelected()) {
-         if (n->GetKind() == Track::Wave)
-         {
-            ((WaveTrack*)n)->Disjoin(mViewInfo.selectedRegion.t0(),
-                                     mViewInfo.selectedRegion.t1());
-         }
-      }
-      n = iter.Next();
-   }
-
-   PushState(wxString::Format(_("Detached %.2f seconds at t=%.2f"),
-                              mViewInfo.selectedRegion.duration(),
-                              mViewInfo.selectedRegion.t0()),
-             _("Detach"));
-
-   RedrawProject();
-}
-
-void AudacityProject::OnJoin()
-{
-   TrackListIterator iter(GetTracks());
-
-   Track *n = iter.First();
-
-   while (n) {
-      if (n->GetSelected()) {
-         if (n->GetKind() == Track::Wave)
-         {
-            ((WaveTrack*)n)->Join(mViewInfo.selectedRegion.t0(),
-                                  mViewInfo.selectedRegion.t1());
-         }
-      }
-      n = iter.Next();
-   }
-
-   PushState(wxString::Format(_("Joined %.2f seconds at t=%.2f"),
-                              mViewInfo.selectedRegion.duration(),
-                              mViewInfo.selectedRegion.t0()),
-             _("Join"));
-
-   RedrawProject();
-}
-
 void AudacityProject::OnCutLabels()
 {
   if( mViewInfo.selectedRegion.isPoint() )
@@ -2720,124 +2652,6 @@ void AudacityProject::OnDisjoinLabels()
      _( "Detach Labeled Audio" ) );
 
   RedrawProject();
-}
-
-void AudacityProject::OnSplit()
-{
-   TrackListIterator iter(GetTracks());
-
-   double sel0 = mViewInfo.selectedRegion.t0();
-   double sel1 = mViewInfo.selectedRegion.t1();
-
-   for (Track* n=iter.First(); n; n = iter.Next())
-   {
-      if (n->GetKind() == Track::Wave)
-      {
-         WaveTrack* wt = (WaveTrack*)n;
-         if (wt->GetSelected())
-            wt->Split( sel0, sel1 );
-      }
-   }
-
-   PushState(_("Split"), _("Split"));
-   mTrackPanel->Refresh(false);
-#if 0
-//ANSWER-ME: Do we need to keep this commented out OnSplit() code?
-// This whole section no longer used...
-   /*
-    * Previous (pre-multiclip) implementation of "Split" command
-    * This does work only when a range is selected!
-    *
-   TrackListIterator iter(mTracks);
-
-   Track *n = iter.First();
-   Track *dest;
-
-   TrackList newTracks;
-
-   while (n) {
-      if (n->GetSelected()) {
-         double sel0 = mViewInfo.selectedRegion.t0();
-         double sel1 = mViewInfo.selectedRegion.t1();
-
-         dest = NULL;
-         n->Copy(sel0, sel1, &dest);
-         if (dest) {
-            dest->Init(*n);
-            dest->SetOffset(wxMax(sel0, n->GetOffset()));
-
-            if (sel1 >= n->GetEndTime())
-               n->Clear(sel0, sel1);
-            else if (sel0 <= n->GetOffset()) {
-               n->Clear(sel0, sel1);
-               n->SetOffset(sel1);
-            } else
-               n->Silence(sel0, sel1);
-
-            newTracks.Add(dest);
-         }
-      }
-      n = iter.Next();
-   }
-
-   TrackListIterator nIter(&newTracks);
-   n = nIter.First();
-   while (n) {
-      mTracks->Add(n);
-      n = nIter.Next();
-   }
-
-   PushState(_("Split"), _("Split"));
-
-   FixScrollbars();
-   mTrackPanel->Refresh(false);
-   */
-#endif
-}
-
-void AudacityProject::OnSplitNew()
-{
-   TrackListIterator iter(GetTracks());
-   Track *l = iter.Last();
-
-   for (Track *n = iter.First(); n; n = iter.Next()) {
-      if (n->GetSelected()) {
-         Track::Holder dest;
-         double newt0 = 0, newt1 = 0;
-         double offset = n->GetOffset();
-         if (n->GetKind() == Track::Wave) {
-            const auto wt = static_cast<WaveTrack*>(n);
-            // Clips must be aligned to sample positions or the NEW clip will not fit in the gap where it came from
-            offset = wt->LongSamplesToTime(wt->TimeToLongSamples(offset));
-            newt0 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t0()));
-            newt1 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t1()));
-            dest = wt->SplitCut(newt0, newt1);
-         }
-#if 0
-         // LL:  For now, just skip all non-wave tracks since the other do not
-         //      yet support proper splitting.
-         else {
-            dest = n->Cut(mViewInfo.selectedRegion.t0(),
-                   mViewInfo.selectedRegion.t1());
-         }
-#endif
-         if (dest) {
-            dest->SetChannel(n->GetChannel());
-            dest->SetLinked(n->GetLinked());
-            dest->SetName(n->GetName());
-            dest->SetOffset(wxMax(newt0, offset));
-            mTracks->Add(std::move(dest));
-         }
-      }
-
-      if (n == l) {
-         break;
-      }
-   }
-
-   PushState(_("Split to new track"), _("Split New"));
-
-   RedrawProject();
 }
 
 void AudacityProject::OnSelectAll()
