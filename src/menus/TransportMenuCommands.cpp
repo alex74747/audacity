@@ -92,6 +92,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayToSelection"), _("Play To Selection"), FN(OnPlayToSelection), wxT("B"),
       CaptureNotBusyFlag,
       CaptureNotBusyFlag);
+   c->AddCommand(wxT("PlayBeforeSelectionStart"), _("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -353,4 +354,22 @@ void TransportMenuCommands::OnPlayToSelection()
 
    mProject->GetControlToolBar()->PlayPlayRegion
       (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions());
+}
+
+// The next functions provide a limited version of the
+// functionality of OnPlayToSelection() for keyboard users
+
+void TransportMenuCommands::OnPlayBeforeSelectionStart()
+{
+   if (!mProject->MakeReadyToPlay())
+      return;
+
+   double t0 = mProject->GetViewInfo().selectedRegion.t0();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+
+   mProject->mLastPlayMode = oneSecondPlay;      // this disables auto scrolling, as in OnPlayToSelection()
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0 - beforeLen, t0), mProject->GetDefaultPlayOptions());
 }
