@@ -899,7 +899,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
    c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
    c->AddCommand(wxT("OutputGainDec"), _("Decrease playback volume"), FN(OnOutputGainDec));
    c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
@@ -2013,14 +2012,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnOutputGain()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->ShowOutputGainDialog();
-   }
 }
 
 void AudacityProject::OnInputGain()
