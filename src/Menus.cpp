@@ -386,24 +386,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       mEditMenuCommands->Create(c);
 
-      /////////////////////////////////////////////////////////////////////////////
-
-#ifndef __WXMAC__
-      c->AddSeparator();
-#endif
-
-      // The default shortcut key for Preferences is different on different platforms.
-      wxString key =
-#ifdef __WXMAC__
-         wxT("Ctrl+,");
-#else
-         wxT("Ctrl+P");
-#endif
-
-      c->AddItem(wxT("Preferences"), _("Pre&ferences..."), FN(OnPreferences), key,
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-
       c->EndMenu();
 
       /////////////////////////////////////////////////////////////////////////////
@@ -2150,36 +2132,6 @@ void AudacityProject::OnExportMultiple()
 
    wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
    em.ShowModal();
-}
-
-void AudacityProject::OnPreferences()
-{
-   GlobalPrefsDialog dialog(this /* parent */ );
-
-   if (!dialog.ShowModal()) {
-      // Canceled
-      return;
-   }
-
-   // LL:  Moved from PrefsDialog since wxWidgets on OSX can't deal with
-   //      rebuilding the menus while the PrefsDialog is still in the modal
-   //      state.
-   for (size_t i = 0; i < gAudacityProjects.size(); i++) {
-      AudacityProject *p = gAudacityProjects[i].get();
-
-      p->RebuildMenuBar();
-      p->RebuildOtherMenus();
-#if defined(__WXGTK__)
-      // Workaround for:
-      //
-      //   http://bugzilla.audacityteam.org/show_bug.cgi?id=458
-      //
-      // This workaround should be removed when Audacity updates to wxWidgets 3.x which has a fix.
-      wxRect r = p->GetRect();
-      p->SetSize(wxSize(1,1));
-      p->SetSize(r.GetSize());
-#endif
-   }
 }
 
 void AudacityProject::OnPageSetup()

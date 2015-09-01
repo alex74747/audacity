@@ -131,8 +131,6 @@ void OnExportMultiple();
 void OnExportLabels();
 void OnExportMIDI();
 
-void OnPreferences();
-
 void OnPageSetup();
 void OnPrint();
 
