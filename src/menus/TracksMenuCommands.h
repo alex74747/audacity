@@ -80,6 +80,7 @@ private:
    void OnTrackSolo();
    void OnTrackClose();
    void OnTrackMoveUp();
+   void OnTrackMoveDown();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
