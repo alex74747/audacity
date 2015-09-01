@@ -86,12 +86,6 @@ void DoZoomFitV();
 void OnPlotSpectrum();
 void OnContrast();
 
-// Import Submenu
-void OnImport();
-void OnImportLabels();
-void OnImportMIDI();
-void OnImportRaw();
-
 public:
 
 // Effect Menu

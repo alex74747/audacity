@@ -28,6 +28,12 @@ private:
    void OnCheckDependencies();
    void OnEditMetadata();
 
+   // Import Submenu
+   void OnImport();
+   void OnImportLabels();
+   void OnImportMIDI();
+   void OnImportRaw();
+
    AudacityProject *const mProject;
 };
 
