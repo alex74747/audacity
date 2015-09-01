@@ -11,10 +11,12 @@ class EditMenuCommands
 public:
    EditMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
+   void CreateNonMenuCommands(CommandManager *c);
 
    void OnUndo();
    void OnRedo();
    void OnCut();
+   void OnDelete();
 private:
 
    AudacityProject *const mProject;

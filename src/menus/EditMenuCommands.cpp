@@ -47,6 +47,20 @@ void EditMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Cut"), _("Cu&t"), FN(OnCut), wxT("Ctrl+X"),
       AudioIONotBusyFlag | CutCopyAvailableFlag,
       AudioIONotBusyFlag | CutCopyAvailableFlag);
+   c->AddItem(wxT("Delete"), _("&Delete"), FN(OnDelete), wxT("Ctrl+K"));
+}
+
+void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
+{
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddCommand(wxT("DeleteKey"), _("DeleteKey"), FN(OnDelete), wxT("Backspace"),
+      AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag,
+      AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag);
+
+   c->AddCommand(wxT("DeleteKey2"), _("DeleteKey2"), FN(OnDelete), wxT("Delete"),
+      AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag,
+      AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag);
 }
 
 void EditMenuCommands::OnUndo()
@@ -193,4 +207,9 @@ void EditMenuCommands::OnCut()
    mProject->RedrawProject();
 
    viewInfo.selectedRegion.collapseToT0();
+}
+
+void EditMenuCommands::OnDelete()
+{
+   mProject->Clear();
 }

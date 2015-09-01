@@ -150,7 +150,6 @@ void OnPasteNewLabel();
 void OnPasteOver();
 void OnTrim();
 
-void OnDelete();
 void OnSplitDelete();
 void OnSilence();
 
