@@ -882,7 +882,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("PlayBeforeSelectionStart"),_("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
    c->AddCommand(wxT("PlayAfterSelectionStart"),_("Play After Selection Start"), FN(OnPlayAfterSelectionStart), wxT("Shift+F6"));
    c->AddCommand(wxT("PlayBeforeSelectionEnd"),_("Play Before Selection End"), FN(OnPlayBeforeSelectionEnd), wxT("Shift+F7"));
    c->AddCommand(wxT("PlayAfterSelectionEnd"),_("Play After Selection End"), FN(OnPlayAfterSelectionEnd), wxT("Shift+F8"));
@@ -1855,20 +1854,8 @@ bool AudacityProject::MakeReadyToPlay(bool loop, bool cutpreview)
    return true;
 }
 
-// The next 4 functions provide a limited version of the
+// The next functions provide a limited version of the
 // functionality of OnPlayToSelection() for keyboard users
-
-void AudacityProject::OnPlayBeforeSelectionStart()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-
-   GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0 - beforeLen, t0), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
 
 void AudacityProject::OnPlayAfterSelectionStart()
 {
