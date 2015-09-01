@@ -257,7 +257,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          EditMenuCommands(p).OnCopy();
          break;
       case ETBPasteID:
-         p->OnPaste();
+         EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
          p->SelectAllIfNone();

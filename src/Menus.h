@@ -152,14 +152,7 @@ void OnExit();
 public:
 void OnSplitCut();
 
-void OnPaste();
-private:
-bool HandlePasteText(); // Handle text paste (into active label), if any. Return true if pasted.
-bool HandlePasteNothingSelected(); // Return true if nothing selected, regardless of paste result.
-public:
-
 void OnPasteNewLabel();
-void OnPasteOver();
 void OnTrim();
 
 void OnSplitDelete();
