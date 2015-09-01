@@ -51,6 +51,10 @@ void EditMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | CutCopyAvailableFlag,
       AudioIONotBusyFlag | CutCopyAvailableFlag);
    c->AddItem(wxT("Delete"), _("&Delete"), FN(OnDelete), wxT("Ctrl+K"));
+   /* i18n-hint: (verb)*/
+   c->AddItem(wxT("Copy"), _("&Copy"), FN(OnCopy), wxT("Ctrl+C"),
+      AudioIONotBusyFlag | CutCopyAvailableFlag,
+      AudioIONotBusyFlag | CutCopyAvailableFlag);
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -226,4 +230,54 @@ void EditMenuCommands::OnCut()
 void EditMenuCommands::OnDelete()
 {
    mProject->Clear();
+}
+
+void EditMenuCommands::OnCopy()
+{
+
+   TrackListIterator iter(mProject->GetTracks());
+
+   Track *n = iter.First();
+
+   while (n) {
+      if (n->GetSelected()) {
+         if (n->GetKind() == Track::Label) {
+            if (((LabelTrack *)n)->CopySelectedText()) {
+               //mTrackPanel->Refresh(false);
+               return;
+            }
+         }
+      }
+      n = iter.Next();
+   }
+
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   mProject->ClearClipboard();
+   n = iter.First();
+   while (n) {
+      if (n->GetSelected()) {
+         auto dest = n->Copy(viewInfo.selectedRegion.t0(),
+                             viewInfo.selectedRegion.t1());
+         if (dest) {
+            dest->SetChannel(n->GetChannel());
+            dest->SetLinked(n->GetLinked());
+            dest->SetName(n->GetName());
+            AudacityProject::msClipboard->Add(std::move(dest));
+         }
+      }
+      n = iter.Next();
+   }
+
+   AudacityProject::msClipT0 = viewInfo.selectedRegion.t0();
+   AudacityProject::msClipT1 = viewInfo.selectedRegion.t1();
+   AudacityProject::msClipProject = mProject;
+
+   //Make sure the menus/toolbar states get updated
+   trackPanel->Refresh(false);
+
+   auto history = mProject->GetHistoryWindow();
+   if (history)
+      history->UpdateDisplay();
 }

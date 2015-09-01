@@ -17,6 +17,7 @@ public:
    void OnRedo();
    void OnCut();
    void OnDelete();
+   void OnCopy();
 private:
 
    AudacityProject *const mProject;
