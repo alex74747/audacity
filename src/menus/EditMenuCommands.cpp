@@ -110,6 +110,48 @@ void EditMenuCommands::Create(CommandManager *c)
       c->AddItem(wxT("Disjoin"), _("Detac&h at Silences"), FN(OnDisjoin), wxT("Ctrl+Alt+J"));
    }
    c->EndSubMenu();
+
+   c->AddSeparator();
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("La&beled Audio"));
+   {
+      c->SetDefaultFlags(AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag,
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag);
+
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("CutLabels"), _("&Cut"), FN(OnCutLabels), wxT("Alt+X"),
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
+      c->AddItem(wxT("DeleteLabels"), _("&Delete"), FN(OnDeleteLabels), wxT("Alt+K"),
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag,
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag | TimeSelectedFlag | IsNotSyncLockedFlag);
+
+      c->AddSeparator();
+
+      /* i18n-hint: (verb) A special way to cut out a piece of audio*/
+      c->AddItem(wxT("SplitCutLabels"), _("&Split Cut"), FN(OnSplitCutLabels), wxT("Alt+Shift+X"));
+      c->AddItem(wxT("SplitDeleteLabels"), _("Sp&lit Delete"), FN(OnSplitDeleteLabels), wxT("Alt+Shift+K"));
+
+      c->AddSeparator();
+
+
+      c->AddItem(wxT("SilenceLabels"), _("Silence &Audio"), FN(OnSilenceLabels), wxT("Alt+L"));
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("CopyLabels"), _("Co&py"), FN(OnCopyLabels), wxT("Alt+Shift+C"));
+
+      c->AddSeparator();
+
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("SplitLabels"), _("Spli&t"), FN(OnSplitLabels), wxT("Alt+I"),
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag,
+         AudioIONotBusyFlag | LabelsSelectedFlag | WaveTracksExistFlag);
+      /* i18n-hint: (verb)*/
+      c->AddItem(wxT("JoinLabels"), _("&Join"), FN(OnJoinLabels), wxT("Alt+J"));
+      c->AddItem(wxT("DisjoinLabels"), _("Detac&h at Silences"), FN(OnDisjoinLabels), wxT("Alt+Shift+J"));
+   }
+   c->EndSubMenu();
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -212,7 +254,7 @@ void EditMenuCommands::OnCut()
       n = iter.Next();
    }
 
-   mProject->ClearClipboard();
+   ClearClipboard();
    n = iter.First();
    while (n) {
       if (n->GetSelected()) {
@@ -309,7 +351,7 @@ void EditMenuCommands::OnCopy()
    TrackPanel *const trackPanel = mProject->GetTrackPanel();
    ViewInfo &viewInfo = mProject->GetViewInfo();
 
-   mProject->ClearClipboard();
+   ClearClipboard();
    n = iter.First();
    while (n) {
       if (n->GetSelected()) {
@@ -728,7 +770,7 @@ void EditMenuCommands::OnSplitCut()
    TrackListIterator iter(mProject->GetTracks());
    Track *n = iter.First();
 
-   mProject->ClearClipboard();
+   ClearClipboard();
    while (n) {
       if (n->GetSelected()) {
          Track::Holder dest;
@@ -1102,4 +1144,354 @@ void EditMenuCommands::OnDisjoin()
              _("Detach"));
 
    mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnCutLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   // Because of grouping the copy may need to operate on different tracks than
+   // the clear, so we do these actions separately.
+   EditClipboardByLabel(&WaveTrack::CopyNonconst);
+
+   if (gPrefs->Read(wxT("/GUI/EnableCutLines"), (long)0))
+      EditByLabel(&WaveTrack::ClearAndAddCutLine, true);
+   else
+      EditByLabel(&WaveTrack::Clear, true);
+
+   AudacityProject::msClipProject = mProject;
+
+   viewInfo.selectedRegion.collapseToT0();
+
+   mProject->PushState(
+      /* i18n-hint: (verb) past tense.  Audacity has just cut the labeled audio regions.*/
+      _("Cut labeled audio regions to clipboard"),
+      /* i18n-hint: (verb)*/
+      _("Cut Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnDeleteLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditByLabel(&WaveTrack::Clear, true);
+
+   viewInfo.selectedRegion.collapseToT0();
+
+   mProject->PushState(
+      /* i18n-hint: (verb) Audacity has just deleted the labeled audio regions*/
+      _("Deleted labeled audio regions"),
+      /* i18n-hint: (verb)*/
+      _("Delete Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSplitCutLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditClipboardByLabel(&WaveTrack::SplitCut);
+
+   AudacityProject::msClipProject = mProject;
+
+   mProject->PushState(
+      /* i18n-hint: (verb) Audacity has just split cut the labeled audio regions*/
+      _("Split Cut labeled audio regions to clipboard"),
+      /* i18n-hint: (verb) Do a special kind of cut on the labels*/
+      _("Split Cut Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSplitDeleteLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditByLabel(&WaveTrack::SplitDelete, false);
+
+   mProject->PushState(
+      /* i18n-hint: (verb) Audacity has just done a special kind of DELETE on the labeled audio regions */
+      _("Split Deleted labeled audio regions"),
+      /* i18n-hint: (verb) Do a special kind of DELETE on labeled audio regions*/
+      _("Split Delete Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnSilenceLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditByLabel(&WaveTrack::Silence, false);
+
+   mProject->PushState(
+      /* i18n-hint: (verb)*/
+      _("Silenced labeled audio regions"),
+      /* i18n-hint: (verb)*/
+      _("Silence Labeled Audio"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnCopyLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditClipboardByLabel(&WaveTrack::CopyNonconst);
+
+   AudacityProject::msClipProject = mProject;
+
+   mProject->PushState(_("Copied labeled audio regions to clipboard"),
+      /* i18n-hint: (verb)*/
+      _("Copy Labeled Audio"));
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnSplitLabels()
+{
+   EditByLabel(&WaveTrack::Split, false);
+
+   mProject->PushState(
+      /* i18n-hint: (verb) past tense.  Audacity has just split the labeled audio (a point or a region)*/
+      _("Split labeled audio (points or regions)"),
+      /* i18n-hint: (verb)*/
+      _("Split Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnJoinLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditByLabel(&WaveTrack::Join, false);
+
+   mProject->PushState(
+      /* i18n-hint: (verb) Audacity has just joined the labeled audio (points or regions)*/
+      _("Joined labeled audio (points or regions)"),
+      /* i18n-hint: (verb)*/
+      _("Join Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+void EditMenuCommands::OnDisjoinLabels()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   if (viewInfo.selectedRegion.isPoint())
+      return;
+
+   EditByLabel(&WaveTrack::Disjoin, false);
+
+   mProject->PushState(
+      /* i18n-hint: (verb) Audacity has just detached the labeled audio regions.
+      This message appears in history and tells you about something
+      Audacity has done.*/
+      _("Detached labeled audio regions"),
+      /* i18n-hint: (verb)*/
+      _("Detach Labeled Audio"));
+
+   mProject->RedrawProject();
+}
+
+
+//Executes the edit function on all selected wave tracks with
+//regions specified by selected labels
+//If No tracks selected, function is applied on all tracks
+//If the function replaces the selection with audio of a different length,
+// bSyncLockedTracks should be set true to perform the same action on sync-lock selected
+// tracks.
+void EditMenuCommands::EditByLabel( EditFunction action,
+                                   bool bSyncLockedTracks )
+{
+   Regions regions;
+
+   GetRegionsByLabel( regions );
+   if( regions.size() == 0 )
+      return;
+
+   TrackListIterator iter( mProject->GetTracks() );
+   Track *n;
+   bool allTracks = true;
+
+   // if at least one wave track is selected
+   // apply only on the selected track
+   for( n = iter.First(); n; n = iter.Next() )
+      if( n->GetKind() == Track::Wave && n->GetSelected() )
+      {
+         allTracks = false;
+         break;
+      }
+
+   //Apply action on wavetracks starting from
+   //labeled regions in the end. This is to correctly perform
+   //actions like 'Delete' which collapse the track area.
+   n = iter.First();
+   while (n)
+   {
+      if ((n->GetKind() == Track::Wave) &&
+            (allTracks || n->GetSelected() || (bSyncLockedTracks && n->IsSyncLockSelected())))
+      {
+         WaveTrack *wt = ( WaveTrack* )n;
+         for (int i = (int)regions.size() - 1; i >= 0; i--) {
+            const Region &region = regions.at(i);
+            (wt->*action)(region.start, region.end);
+         }
+      }
+      n = iter.Next();
+   }
+}
+
+
+//Executes the edit function on all selected wave tracks with
+//regions specified by selected labels
+//If No tracks selected, function is applied on all tracks
+//Functions copy the edited regions to clipboard, possibly in multiple tracks
+//This probably should not be called if *action() changes the timeline, because
+// the copy needs to happen by track, and the timeline change by group.
+void EditMenuCommands::EditClipboardByLabel( EditDestFunction action )
+{
+   Regions regions;
+
+   GetRegionsByLabel( regions );
+   if( regions.size() == 0 )
+      return;
+
+   TrackListIterator iter( mProject->GetTracks() );
+   Track *n;
+   bool allTracks = true;
+
+   // if at least one wave track is selected
+   // apply only on the selected track
+   for( n = iter.First(); n; n = iter.Next() )
+      if( n->GetKind() == Track::Wave && n->GetSelected() )
+      {
+         allTracks = false;
+         break;
+      }
+
+   ClearClipboard();
+   //Apply action on wavetracks starting from
+   //labeled regions in the end. This is to correctly perform
+   //actions like 'Cut' which collapse the track area.
+   for( n = iter.First(); n; n = iter.Next() )
+   {
+      if( n->GetKind() == Track::Wave && ( allTracks || n->GetSelected() ) )
+      {
+         WaveTrack *wt = ( WaveTrack* )n;
+         Track::Holder merged;
+         for( int i = (int)regions.size() - 1; i >= 0; i-- )
+         {
+            const Region &region = regions.at(i);
+            auto dest = ( wt->*action )( region.start, region.end );
+            if( dest )
+            {
+               dest->SetChannel( wt->GetChannel() );
+               dest->SetLinked( wt->GetLinked() );
+               dest->SetName( wt->GetName() );
+               if( !merged )
+                  merged = std::move(dest);
+               else
+               {
+                  // Paste to the beginning; unless this is the first region,
+                  // offset the track to account for time between the regions
+                  if (i < (int)regions.size() - 1)
+                     merged->Offset(
+                        regions.at(i + 1).start - region.end);
+
+                  bool bResult = merged->Paste( 0.0 , dest.get() );
+                  wxASSERT(bResult); // TO DO: Actually handle this.
+                  wxUnusedVar(bResult);
+               }
+            }
+            else  // nothing copied but there is a 'region', so the 'region' must be a 'point label' so offset
+               if (i < (int)regions.size() - 1)
+                  if (merged)
+                     merged->Offset(
+                        regions.at(i + 1).start - region.end);
+         }
+         if( merged )
+            AudacityProject::msClipboard->Add( std::move(merged) );
+      }
+   }
+
+   AudacityProject::msClipT0 = regions.front().start;
+   AudacityProject::msClipT1 = regions.back().end;
+
+   auto history = mProject->GetHistoryWindow();
+   if (history)
+      history->UpdateDisplay();
+}
+
+void EditMenuCommands::ClearClipboard()
+{
+   AudacityProject::msClipT0 = 0.0;
+   AudacityProject::msClipT1 = 0.0;
+   AudacityProject::msClipProject = NULL;
+   if (AudacityProject::msClipboard) {
+      AudacityProject::msClipboard->Clear();
+   }
+}
+
+//get regions selected by selected labels
+//removes unnecessary regions, overlapping regions are merged
+//regions memory need to be deleted by the caller
+void EditMenuCommands::GetRegionsByLabel( Regions &regions )
+{
+   const auto &viewInfo = mProject->GetViewInfo();
+   TrackListIterator iter( mProject->GetTracks() );
+   Track *n;
+
+   //determine labelled regions
+   for( n = iter.First(); n; n = iter.Next() )
+      if( n->GetKind() == Track::Label && n->GetSelected() )
+      {
+         LabelTrack *lt = ( LabelTrack* )n;
+         for( int i = 0; i < lt->GetNumLabels(); i++ )
+         {
+            const LabelStruct *ls = lt->GetLabel( i );
+            if( ls->selectedRegion.t0() >= viewInfo.selectedRegion.t0() &&
+                ls->selectedRegion.t1() <= viewInfo.selectedRegion.t1() )
+               regions.push_back(Region(ls->getT0(), ls->getT1()));
+         }
+      }
+
+   //anything to do ?
+   if( regions.size() == 0 )
+      return;
+
+   //sort and remove unnecessary regions
+   std::sort(regions.begin(), regions.end());
+   unsigned int selected = 1;
+   while( selected < regions.size() )
+   {
+      const Region &cur = regions.at( selected );
+      Region &last = regions.at( selected - 1 );
+      if( cur.start < last.end )
+      {
+         if( cur.end > last.end )
+            last.end = cur.end;
+         regions.erase( regions.begin() + selected );
+      }
+      else
+         selected++;
+   }
 }

@@ -34,6 +34,7 @@ undo memory so as to free up space.
 #include "AudioIO.h"
 #include "../images/Arrow.xpm"
 #include "../images/Empty9x16.xpm"
+#include "menus/EditMenuCommands.h"
 #include "UndoManager.h"
 #include "Project.h"
 #include "ShuttleGui.h"
@@ -261,7 +262,7 @@ void HistoryWindow::OnDiscard(wxCommandEvent & WXUNUSED(event))
 
 void HistoryWindow::OnDiscardClipboard(wxCommandEvent & WXUNUSED(event))
 {
-   AudacityProject::ClearClipboard();
+   EditMenuCommands::ClearClipboard();
    DoUpdate();
 }
 

@@ -150,16 +150,6 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnCutLabels();
-void OnSplitCutLabels();
-void OnCopyLabels();
-void OnDeleteLabels();
-void OnSplitDeleteLabels();
-void OnSilenceLabels();
-void OnSplitLabels();
-void OnJoinLabels();
-void OnDisjoinLabels();
-
 void OnSelectAll();
 void OnSelectNone();
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING

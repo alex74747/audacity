@@ -1,8 +1,13 @@
 #ifndef __AUDACITY_EDIT_MENU_COMMANDS__
 #define __AUDACITY_EDIT_MENU_COMMANDS__
 
+#include "../MemoryX.h"
+
 class AudacityProject;
 class CommandManager;
+class Regions;
+class Track;
+class WaveTrack;
 
 class EditMenuCommands
 {
@@ -38,6 +43,28 @@ private:
    void OnJoin();
    void OnDisjoin();
 
+   void OnCutLabels();
+   void OnDeleteLabels();
+   void OnSplitCutLabels();
+   void OnSplitDeleteLabels();
+   void OnSilenceLabels();
+   void OnCopyLabels();
+   void OnSplitLabels();
+   void OnJoinLabels();
+   void OnDisjoinLabels();
+
+   typedef bool (WaveTrack::* EditFunction)(double, double);
+   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
+
+   typedef std::unique_ptr<Track> (WaveTrack::* EditDestFunction)(double, double);
+   void EditClipboardByLabel(EditDestFunction action);
+
+   void GetRegionsByLabel(Regions &regions);
+
+public:
+   static void ClearClipboard();
+
+private:
    AudacityProject *const mProject;
 };
 #endif

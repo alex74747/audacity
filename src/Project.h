@@ -94,8 +94,6 @@ class MixerBoardFrame;
 struct AudioIOStartStreamOptions;
 struct UndoState;
 
-class Regions;
-
 class UndoManager;
 enum class UndoPush : unsigned char;
 
@@ -365,7 +363,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    // Other commands
    static TrackList *GetClipboardTracks();
-   static void ClearClipboard();
    static void DeleteClipboard();
 
    int GetProjectNumber(){ return mProjectNo;};
@@ -386,12 +383,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    void Rewind(bool shift);
    void SkipEnd(bool shift);
 
-
-   typedef bool (WaveTrack::* EditFunction)(double, double);
-   typedef std::unique_ptr<Track> (WaveTrack::* EditDestFunction)(double, double);
-
-   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
-   void EditClipboardByLabel(EditDestFunction action );
 
    bool IsSyncLocked();
    void SetSyncLock(bool flag);
@@ -567,8 +558,6 @@ public:
 
 private:
    void UpdateMixerBoard();
-
-   void GetRegionsByLabel( Regions &regions );
 
    void AutoSave();
    void DeleteCurrentAutoSaveFile();
