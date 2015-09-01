@@ -153,11 +153,6 @@ public:
 void OnSelectionSave();
 void OnSelectionRestore();
 
-void OnCursorTrackStart();
-void OnCursorTrackEnd();
-void OnCursorSelStart();
-void OnCursorSelEnd();
-
 // Effect Menu
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
