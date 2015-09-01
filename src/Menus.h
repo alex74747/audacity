@@ -65,10 +65,6 @@ void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
 
-        // Mixer control
-
-void OnInputGainDec();
-
         // Transcription control
 
 void OnPlayAtSpeed();

@@ -61,6 +61,7 @@ private:
    void OnOutputGainDec();
    void OnInputGain();
    void OnInputGainInc();
+   void OnInputGainDec();
 
    AudacityProject *const mProject;
 };
