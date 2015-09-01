@@ -78,6 +78,10 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("Play"), _("Play"), FN(OnPlayStop),
       WaveTracksExistFlag | AudioIONotBusyFlag,
       WaveTracksExistFlag | AudioIONotBusyFlag);
+   /* i18n-hint: (verb) Stop playing audio*/
+   c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
+      AudioIOBusyFlag,
+      AudioIOBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -275,4 +279,12 @@ void TransportMenuCommands::OnToggleAutomatedInputLevelAdjustment()
 void TransportMenuCommands::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
+}
+
+void TransportMenuCommands::OnStop()
+{
+   wxCommandEvent evt;
+
+   if (gAudioIO->IsStreamActive())
+      mProject->GetControlToolBar()->OnStop(evt);
 }

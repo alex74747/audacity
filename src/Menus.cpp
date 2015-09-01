@@ -835,11 +835,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   /* i18n-hint: (verb) Stop playing audio*/
-   c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
-                 AudioIOBusyFlag,
-                 AudioIOBusyFlag);
-
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
    c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
@@ -1913,14 +1908,6 @@ void AudacityProject::OnPlayCutPreview()
    GetControlToolBar()->PlayCurrentRegion(false, true);
 }
 
-void AudacityProject::OnStop()
-{
-   wxCommandEvent evt;
-
-   if (gAudioIO->IsStreamActive())
-      GetControlToolBar()->OnStop(evt);
-}
-
 void AudacityProject::OnStopSelect()
 {
    wxCommandEvent evt;
@@ -2502,7 +2489,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    // for batch commands
    if (flags & OnEffectFlagsConfigured)
    {
-      OnStop();
+      TransportMenuCommands(this).OnStop();
       SelectAllIfNone();
    }
 
