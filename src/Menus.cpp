@@ -899,9 +899,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("AudioHost"), _("Change audio host"), FN(OnAudioHost), wxT("Shift+H"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
    c->AddCommand(wxT("InputChannels"), _("Change recording channels"), FN(OnInputChannels), wxT("Shift+N"),
                  AudioIONotBusyFlag,
                  AudioIONotBusyFlag);
@@ -2020,14 +2017,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnAudioHost()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowHostDialog();
-   }
 }
 
 void AudacityProject::OnInputChannels()

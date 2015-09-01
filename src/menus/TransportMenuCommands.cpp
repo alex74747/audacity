@@ -111,6 +111,9 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
       AudioIONotBusyFlag,
       AudioIONotBusyFlag);
+   c->AddCommand(wxT("AudioHost"), _("Change audio host"), FN(OnAudioHost), wxT("Shift+H"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -547,5 +550,13 @@ void TransportMenuCommands::OnOutputDevice()
    DeviceToolBar *tb = mProject->GetDeviceToolBar();
    if (tb) {
       tb->ShowOutputDialog();
+   }
+}
+
+void TransportMenuCommands::OnAudioHost()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowHostDialog();
    }
 }
