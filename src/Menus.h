@@ -74,7 +74,6 @@ void OnSeekRightLong();
 
         // Transcription control
 
-void OnPlayAtSpeed();
 void OnPlayAtSpeedLooped();
 void OnPlayAtSpeedCutPreview();
 void OnSetPlaySpeed();
