@@ -268,11 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   // Enable Export Selection commands only when there's a selection.
-   c->AddItem(wxT("ExportSel"), _("Expo&rt Selected Audio..."), FN(OnExportSelection),
-              AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-              AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-
    c->AddItem(wxT("ExportLabels"), _("Export &Labels..."), FN(OnExportLabels),
               AudioIONotBusyFlag | LabelTracksExistFlag,
               AudioIONotBusyFlag | LabelTracksExistFlag);
@@ -1545,16 +1540,6 @@ void AudacityProject::OnExportMIDI(){
 }
 #endif // USE_MIDI
 
-
-void AudacityProject::OnExportSelection()
-{
-   Exporter e;
-
-   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
-   e.SetFileDialogTitle( _("Export Selected Audio") );
-   e.Process(this, true, mViewInfo.selectedRegion.t0(),
-      mViewInfo.selectedRegion.t1());
-}
 
 void AudacityProject::OnExportMultiple()
 {

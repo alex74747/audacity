@@ -35,6 +35,7 @@ private:
    void OnImportRaw();
 
    void OnExport();
+   void OnExportSelection();
 
    AudacityProject *const mProject;
 };
