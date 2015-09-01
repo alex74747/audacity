@@ -948,7 +948,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
    c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
 
    c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
@@ -2227,14 +2226,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-void AudacityProject::OnPlaySpeedInc()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->AdjustPlaySpeed(0.1f);
-   }
 }
 
 void AudacityProject::OnPlaySpeedDec()
