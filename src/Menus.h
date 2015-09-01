@@ -75,7 +75,6 @@ void OnSeekRightLong();
         // Wave track control
 
         // Device control
-void OnAudioHost();
 void OnInputChannels();
 
         // Mixer control
