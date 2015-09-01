@@ -275,10 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddSeparator();
-
-      c->AddItem(wxT("Close"), _("&Close"), FN(OnClose), wxT("Ctrl+W"));
-
       c->AddItem(wxT("Save"), _("&Save Project"), FN(OnSave), wxT("Ctrl+S"),
          AudioIONotBusyFlag | UnsavedChangesFlag,
          AudioIONotBusyFlag | UnsavedChangesFlag);
