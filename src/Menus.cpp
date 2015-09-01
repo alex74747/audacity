@@ -1021,7 +1021,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackMoveTop"), _("Move focused track to top"), FN(OnTrackMoveTop));
    c->AddCommand(wxT("TrackMoveBottom"), _("Move focused track to bottom"), FN(OnTrackMoveBottom));
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
@@ -2768,15 +2767,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-void AudacityProject::OnTrackMoveTop()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveUp(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveTopID);
-      mTrackPanel->Refresh(false);
-   }
 }
 
 void AudacityProject::OnTrackMoveBottom()
