@@ -31,8 +31,9 @@ private:
 public:
    void OnSilence();
    void OnTrim();
-
 private:
+   void OnPasteNewLabel();
+
    AudacityProject *const mProject;
 };
 #endif
