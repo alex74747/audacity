@@ -85,6 +85,9 @@ private:
    void OnSelectAllTracks();
    void OnSelectSyncLockSel();
 
+   void OnZeroCrossing();
+   double NearestZeroCrossing(double t0);
+
    AudacityProject *const mProject;
 };
 #endif

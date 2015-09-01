@@ -388,10 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->AddItem(wxT("ZeroCross"), _("Find &Zero Crossings"), FN(OnZeroCrossing), wxT("Z"));
-
-      /////////////////////////////////////////////////////////////////////////////
-
       c->BeginSubMenu(_("Mo&ve Cursor"));
 
       c->AddItem(wxT("CursSelStart"), _("to Selection Star&t"), FN(OnCursorSelStart));
@@ -1798,100 +1794,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-double AudacityProject::NearestZeroCrossing(double t0)
-{
-   // Window is 1/100th of a second.
-   int windowSize = (int)(GetRate() / 100);
-   float *dist = new float[windowSize];
-   int i, j;
-
-   for(i=0; i<windowSize; i++)
-      dist[i] = 0.0;
-
-   TrackListIterator iter(GetTracks());
-   Track *track = iter.First();
-   while (track) {
-      if (!track->GetSelected() || track->GetKind() != (Track::Wave)) {
-         track = iter.Next();
-         continue;
-      }
-      WaveTrack *one = (WaveTrack *)track;
-      int oneWindowSize = (int)(one->GetRate() / 100);
-      float *oneDist = new float[oneWindowSize];
-      auto s = one->TimeToLongSamples(t0);
-      // fillTwo to ensure that missing values are treated as 2, and hence do not
-      // get used as zero crossings.
-      one->Get((samplePtr)oneDist, floatSample,
-               s - oneWindowSize/2, oneWindowSize, fillTwo);
-
-      // Start by penalizing downward motion.  We prefer upward
-      // zero crossings.
-      if (oneDist[1] - oneDist[0] < 0)
-         oneDist[0] = oneDist[0]*6 + (oneDist[0] > 0 ? 0.3 : -0.3);
-      for(i=1; i<oneWindowSize; i++)
-         if (oneDist[i] - oneDist[i-1] < 0)
-            oneDist[i] = oneDist[i]*6 + (oneDist[i] > 0 ? 0.3 : -0.3);
-
-      // Taking the absolute value -- apply a tiny LPF so square waves work.
-      float newVal, oldVal = oneDist[0];
-      oneDist[0] = fabs(.75 * oneDist[0] + .25 * oneDist[1]);
-      for(i=1; i<oneWindowSize-1; i++)
-      {
-         newVal = fabs(.25 * oldVal + .5 * oneDist[i] + .25 * oneDist[i+1]);
-         oldVal = oneDist[i];
-         oneDist[i] = newVal;
-      }
-      oneDist[oneWindowSize-1] = fabs(.25 * oldVal +
-            .75 * oneDist[oneWindowSize-1]);
-
-      // TODO: The mixed rate zero crossing code is broken,
-      // if oneWindowSize > windowSize we'll miss out some
-      // samples - so they will still be zero, so we'll use them.
-      for(i=0; i<windowSize; i++) {
-         if (windowSize != oneWindowSize)
-            j = i * (oneWindowSize-1) / (windowSize-1);
-         else
-            j = i;
-
-         dist[i] += oneDist[j];
-         // Apply a small penalty for distance from the original endpoint
-         dist[i] += 0.1 * (abs(i - windowSize/2)) / float(windowSize/2);
-      }
-
-      delete [] oneDist;
-      track = iter.Next();
-   }
-
-   // Find minimum
-   int argmin = 0;
-   float min = 3.0;
-   for(i=0; i<windowSize; i++) {
-      if (dist[i] < min) {
-         argmin = i;
-         min = dist[i];
-      }
-   }
-
-   delete [] dist;
-
-   return t0 + (argmin - windowSize/2)/GetRate();
-}
-
-void AudacityProject::OnZeroCrossing()
-{
-   const double t0 = NearestZeroCrossing(mViewInfo.selectedRegion.t0());
-   if (mViewInfo.selectedRegion.isPoint())
-      mViewInfo.selectedRegion.setTimes(t0, t0);
-   else {
-      const double t1 = NearestZeroCrossing(mViewInfo.selectedRegion.t1());
-      mViewInfo.selectedRegion.setTimes(t0, t1);
-   }
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
 }
 
 //
