@@ -1,6 +1,8 @@
 #ifndef __AUDACITY_FILE_MENU_COMMANDS__
 #define __AUDACITY_FILE_MENU_COMMANDS__
 
+#include "../Audacity.h"
+
 class AudacityProject;
 class CommandManager;
 
@@ -20,6 +22,9 @@ private:
    void OnClose();
    void OnSave();
    void OnSaveAs();
+#ifdef USE_LIBVORBIS
+   void OnSaveCompressed();
+#endif
 
    AudacityProject *const mProject;
 };
