@@ -58,6 +58,8 @@ void EditMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Paste"), _("&Paste"), FN(OnPaste), wxT("Ctrl+V"),
       AudioIONotBusyFlag | ClipboardFlag,
       AudioIONotBusyFlag | ClipboardFlag);
+   /* i18n-hint: (verb)*/
+   c->AddItem(wxT("Duplicate"), _("Duplic&ate"), FN(OnDuplicate), wxT("Ctrl+D"));
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -651,4 +653,38 @@ bool EditMenuCommands::HandlePasteNothingSelected()
 
       return true;
    }
+}
+
+void EditMenuCommands::OnDuplicate()
+{
+   TrackList *const trackList = mProject->GetTracks();
+   TrackListIterator iter(trackList);
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   Track *l = iter.Last();
+   Track *n = iter.First();
+
+   while (n) {
+      if (n->GetSelected()) {
+         Track *dest = NULL;
+         n->Copy(viewInfo.selectedRegion.t0(),
+            viewInfo.selectedRegion.t1(), &dest);
+         if (dest) {
+            dest->Init(*n);
+            dest->SetOffset(wxMax(viewInfo.selectedRegion.t0(), n->GetOffset()));
+            trackList->Add(dest);
+         }
+      }
+
+      if (n == l) {
+         break;
+      }
+
+      n = iter.Next();
+   }
+
+   mProject->PushState(_("Duplicated"), _("Duplicate"));
+
+   mProject->RedrawProject();
 }

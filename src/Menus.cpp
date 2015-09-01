@@ -382,9 +382,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
                       AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-   /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Duplicate"), _("Duplic&ate"), FN(OnDuplicate), wxT("Ctrl+D"));
-
    c->AddSeparator();
 
    c->BeginSubMenu(_("R&emove Special"));
@@ -2631,37 +2628,6 @@ void AudacityProject::OnSilence()
              _("Silence"));
 
    mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnDuplicate()
-{
-   TrackListIterator iter(mTracks);
-
-   Track *l = iter.Last();
-   Track *n = iter.First();
-
-   while (n) {
-      if (n->GetSelected()) {
-         Track *dest = NULL;
-         n->Copy(mViewInfo.selectedRegion.t0(),
-                 mViewInfo.selectedRegion.t1(), &dest);
-         if (dest) {
-            dest->Init(*n);
-            dest->SetOffset(wxMax(mViewInfo.selectedRegion.t0(), n->GetOffset()));
-            mTracks->Add(dest);
-         }
-      }
-
-      if (n == l) {
-         break;
-      }
-
-      n = iter.Next();
-   }
-
-   PushState(_("Duplicated"), _("Duplicate"));
-
-   RedrawProject();
 }
 
 void AudacityProject::OnCutLabels()
