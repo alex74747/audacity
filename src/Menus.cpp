@@ -275,10 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddSeparator();
-      c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
-         AudioIONotBusyFlag,
-         AudioIONotBusyFlag);
       c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
 
       c->AddSeparator();
@@ -1691,13 +1687,6 @@ void AudacityProject::OnContrast()
 // Project Menu
 //
 
-
-void AudacityProject::OnApplyChain()
-{
-   BatchProcessDialog dlg(this);
-   dlg.ShowModal();
-   ModifyUndoMenuItems();
-}
 
 void AudacityProject::OnEditChains()
 {

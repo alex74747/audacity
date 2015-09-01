@@ -1,4 +1,6 @@
 #include "FileMenuCommands.h"
+
+#include "../BatchProcessDialog.h"
 #include "../Dependencies.h"
 #include "../lib-src/FileDialog/FileDialog.h"
 #include "../LabelTrack.h"
@@ -102,6 +104,11 @@ void FileMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag | NoteTracksSelectedFlag,
       AudioIONotBusyFlag | NoteTracksSelectedFlag);
 #endif
+
+   c->AddSeparator();
+   c->AddItem(wxT("ApplyChain"), _("Appl&y Chain..."), FN(OnApplyChain),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -499,3 +506,10 @@ void FileMenuCommands::OnExportMIDI(){
    }
 }
 #endif // USE_MIDI
+
+void FileMenuCommands::OnApplyChain()
+{
+   BatchProcessDialog dlg(mProject);
+   dlg.ShowModal();
+   mProject->ModifyUndoMenuItems();
+}
