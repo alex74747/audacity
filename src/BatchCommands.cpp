@@ -28,6 +28,7 @@ See also BatchCommandDialog and BatchProcessDialog.
 #include "Project.h"
 #include "commands/CommandManager.h"
 #include "effects/EffectManager.h"
+#include "menus/EditMenuCommands.h"
 #include "FileNames.h"
 #include "Internat.h"
 #include "PluginManager.h"
@@ -597,7 +598,7 @@ bool BatchCommands::ApplyEffectCommand(const PluginID & ID, const wxString & com
    //FIXME: for later versions may want to not select-all in batch mode.
    //IF nothing selected, THEN select everything
    // (most effects require that you have something selected).
-   project->SelectAllIfNone();
+   EditMenuCommands(project).SelectAllIfNone();
 
    bool res = false;
 

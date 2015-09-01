@@ -340,7 +340,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    void RedrawProject(const bool bForceWaveTracks = false);
    void RefreshCursor();
    void SelectNone();
-   void SelectAllIfNone();
    void Zoom(double level);
    void ZoomBy(double multiplier);
    void Rewind(bool shift);
