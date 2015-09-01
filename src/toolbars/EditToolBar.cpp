@@ -249,22 +249,22 @@ void EditToolBar::OnButton(wxCommandEvent &event)
    // due to bugs elsewhere (see: AudacityProject::UpdateMenus() )
    switch (id) {
       case ETBCutID:
-         p->SelectAllIfNone();
+         EditMenuCommands(p).SelectAllIfNone();
          EditMenuCommands(p).OnCut();
          break;
       case ETBCopyID:
-         p->SelectAllIfNone();
+         EditMenuCommands(p).SelectAllIfNone();
          EditMenuCommands(p).OnCopy();
          break;
       case ETBPasteID:
          EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
-         p->SelectAllIfNone();
+         EditMenuCommands(p).SelectAllIfNone();
          EditMenuCommands(p).OnTrim();
          break;
       case ETBSilenceID:
-         p->SelectAllIfNone();
+         EditMenuCommands(p).SelectAllIfNone();
          EditMenuCommands(p).OnSilence();
          break;
       case ETBUndoID:

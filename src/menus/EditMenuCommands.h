@@ -2,6 +2,7 @@
 #define __AUDACITY_EDIT_MENU_COMMANDS__
 
 #include "../MemoryX.h"
+#include "../Experimental.h"
 
 class AudacityProject;
 class CommandManager;
@@ -63,8 +64,27 @@ private:
 
 public:
    static void ClearClipboard();
+   void OnSelectAll();
+   // This is not bound to a menu item:
+   void SelectAllIfNone();
+   void OnSelectNone();
 
 private:
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+   void OnToggleSpectralSelection();
+   void DoNextPeakFrequency(bool up);
+   void OnNextHigherPeakFrequency();
+   void OnNextLowerPeakFrequency();
+#endif
+
+   void OnSetLeftSelection();
+   void OnSetRightSelection();
+   void OnSelectStartCursor();
+   void OnSelectCursorEnd();
+   void OnSelectCursorStoredCursor();
+   void OnSelectAllTracks();
+   void OnSelectSyncLockSel();
+
    AudacityProject *const mProject;
 };
 #endif

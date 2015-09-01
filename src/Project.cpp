@@ -2302,7 +2302,7 @@ bool AudacityProject::TryToMakeActionAllowed
    if( (MissingFlags & ~( TimeSelectedFlag | WaveTracksSelectedFlag)) )
       return false;
 
-   OnSelectAll();
+   EditMenuCommands(this).OnSelectAll();
    flags = GetUpdateFlags();
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    return bAllowed;
@@ -4168,7 +4168,7 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
    if (mode == 1) {
       //TODO: All we want is a SelectAll()
       SelectNone();
-      SelectAllIfNone();
+      EditMenuCommands(this).SelectAllIfNone();
       OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("Normalize")),
                OnEffectFlagsConfigured);
    }

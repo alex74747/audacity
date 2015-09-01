@@ -388,49 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      /* i18n-hint: (verb) It's an item on a menu. */
-      c->BeginSubMenu(_("&Select"));
-      c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
-
-      c->AddItem(wxT("SelectAll"), _("&All"), FN(OnSelectAll), wxT("Ctrl+A"));
-      c->AddItem(wxT("SelectNone"), _("&None"), FN(OnSelectNone), wxT("Ctrl+Shift+A"));
-
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-      c->BeginSubMenu(_("S&pectral"));
-      c->AddItem(wxT("ToggleSpectralSelection"), _("To&ggle spectral selection"), FN(OnToggleSpectralSelection), wxT("Q"));
-      c->AddItem(wxT("NextHigherPeakFrequency"), _("Next Higher Peak Frequency"), FN(OnNextHigherPeakFrequency));
-      c->AddItem(wxT("NextLowerPeakFrequency"), _("Next Lower Peak Frequency"), FN(OnNextLowerPeakFrequency));
-      c->EndSubMenu();
-#endif
-
-      c->AddItem(wxT("SetLeftSelection"), _("&Left at Playback Position"), FN(OnSetLeftSelection), wxT("["));
-      c->AddItem(wxT("SetRightSelection"), _("&Right at Playback Position"), FN(OnSetRightSelection), wxT("]"));
-
-      c->SetDefaultFlags(TracksSelectedFlag, TracksSelectedFlag);
-
-      c->AddItem(wxT("SelStartCursor"), _("Track &Start to Cursor"), FN(OnSelectStartCursor), wxT("Shift+J"));
-      c->AddItem(wxT("SelCursorEnd"), _("Cursor to Track &End"), FN(OnSelectCursorEnd), wxT("Shift+K"));
-      c->AddItem(wxT("SelCursorStoredCursor"), _("Cursor to Stored &Cursor Position"), FN(OnSelectCursorStoredCursor),
-         wxT(""), TracksExistFlag, TracksExistFlag);
-
-
-      c->AddSeparator();
-
-      c->AddItem(wxT("SelAllTracks"), _("In All &Tracks"), FN(OnSelectAllTracks),
-         wxT("Ctrl+Shift+K"),
-         TracksExistFlag, TracksExistFlag);
-
-#ifdef EXPERIMENTAL_SYNC_LOCK
-      c->AddItem(wxT("SelSyncLockTracks"), _("In All S&ync-Locked Tracks"),
-         FN(OnSelectSyncLockSel), wxT("Ctrl+Shift+Y"),
-         TracksSelectedFlag | IsSyncLockedFlag,
-         TracksSelectedFlag | IsSyncLockedFlag);
-#endif
-
-      c->EndSubMenu();
-
-      /////////////////////////////////////////////////////////////////////////////
-
       c->AddItem(wxT("ZeroCross"), _("Find &Zero Crossings"), FN(OnZeroCrossing), wxT("Z"));
 
       /////////////////////////////////////////////////////////////////////////////
@@ -1297,14 +1254,6 @@ CommandFlag AudacityProject::GetUpdateFlags(bool checkActive)
    return flags;
 }
 
-void AudacityProject::SelectAllIfNone()
-{
-   auto flags = GetUpdateFlags();
-   if(!(flags & TracksSelectedFlag) ||
-      (mViewInfo.selectedRegion.isPoint()))
-      OnSelectAll();
-}
-
 void AudacityProject::StopIfPaused()
 {
    auto flags = GetUpdateFlags();
@@ -1679,72 +1628,6 @@ void AudacityProject::OnSelContractRight(const wxEvent * evt)
    OnCursorLeft( true, true, evt->GetEventType() == wxEVT_KEY_UP );
 }
 
-//this pops up a dialog which allows the left selection to be set.
-//If playing/recording is happening, it sets the left selection at
-//the current play position.
-void AudacityProject::OnSetLeftSelection()
-{
-   bool bSelChanged = false;
-   if ((GetAudioIOToken() > 0) && gAudioIO->IsStreamActive(GetAudioIOToken()))
-   {
-      double indicator = gAudioIO->GetStreamTime();
-      mViewInfo.selectedRegion.setT0(indicator, false);
-      bSelChanged = true;
-   }
-   else
-   {
-      wxString fmt = GetSelectionFormat();
-      TimeDialog dlg(this, _("Set Left Selection Boundary"),
-         fmt, mRate, mViewInfo.selectedRegion.t0(), _("Position"));
-
-      if (wxID_OK == dlg.ShowModal())
-      {
-         //Get the value from the dialog
-         mViewInfo.selectedRegion.setT0(
-            std::max(0.0, dlg.GetTimeValue()), false);
-         bSelChanged = true;
-      }
-   }
-
-   if (bSelChanged)
-   {
-      ModifyState(false);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-
-void AudacityProject::OnSetRightSelection()
-{
-   bool bSelChanged = false;
-   if ((GetAudioIOToken() > 0) && gAudioIO->IsStreamActive(GetAudioIOToken()))
-   {
-      double indicator = gAudioIO->GetStreamTime();
-      mViewInfo.selectedRegion.setT1(indicator, false);
-      bSelChanged = true;
-   }
-   else
-   {
-      wxString fmt = GetSelectionFormat();
-      TimeDialog dlg(this, _("Set Right Selection Boundary"),
-         fmt, mRate, mViewInfo.selectedRegion.t1(), _("Position"));
-
-      if (wxID_OK == dlg.ShowModal())
-      {
-         //Get the value from the dialog
-         mViewInfo.selectedRegion.setT1(
-            std::max(0.0, dlg.GetTimeValue()), false);
-         bSelChanged = true;
-      }
-   }
-
-   if (bSelChanged)
-   {
-      ModifyState(false);
-      mTrackPanel->Refresh(false);
-   }
-}
-
 void AudacityProject::NextOrPrevFrame(bool forward)
 {
    // Focus won't take in a dock unless at least one descendant window
@@ -2033,7 +1916,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    if (flags & OnEffectFlagsConfigured)
    {
       TransportMenuCommands(this).OnStop();
-      SelectAllIfNone();
+      EditMenuCommands(this).SelectAllIfNone();
    }
 
    wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
@@ -2446,169 +2329,6 @@ void AudacityProject::OnPageSetup()
 void AudacityProject::OnPrint()
 {
    HandlePrint(this, GetName(), GetTracks());
-}
-
-//
-// Edit Menu
-//
-
-void AudacityProject::OnSelectAll()
-{
-   TrackListIterator iter(GetTracks());
-
-   Track *t = iter.First();
-   while (t) {
-      t->SetSelected(true);
-      t = iter.Next();
-   }
-   mViewInfo.selectedRegion.setTimes(
-      mTracks->GetMinOffset(), mTracks->GetEndTime());
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
-   if (mMixerBoard)
-      mMixerBoard->Refresh(false);
-}
-
-void AudacityProject::OnSelectNone()
-{
-   this->SelectNone();
-   mViewInfo.selectedRegion.collapseToT0();
-   ModifyState(false);
-}
-
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-void AudacityProject::OnToggleSpectralSelection()
-{
-   mTrackPanel->ToggleSpectralSelection();
-   mTrackPanel->Refresh(false);
-   ModifyState(false);
-}
-
-void AudacityProject::DoNextPeakFrequency(bool up)
-{
-   // Find the first selected wave track that is in a spectrogram view.
-   WaveTrack *pTrack = 0;
-   SelectedTrackListOfKindIterator iter(Track::Wave, GetTracks());
-   for (Track *t = iter.First(); t; t = iter.Next()) {
-      WaveTrack *const wt = static_cast<WaveTrack*>(t);
-      const int display = wt->GetDisplay();
-      if (display == WaveTrack::Spectrum) {
-         pTrack = wt;
-         break;
-      }
-   }
-
-   if (pTrack) {
-      mTrackPanel->SnapCenterOnce(pTrack, up);
-      mTrackPanel->Refresh(false);
-      ModifyState(false);
-   }
-}
-
-void AudacityProject::OnNextHigherPeakFrequency()
-{
-   DoNextPeakFrequency(true);
-}
-
-
-void AudacityProject::OnNextLowerPeakFrequency()
-{
-   DoNextPeakFrequency(false);
-}
-#endif
-
-void AudacityProject::OnSelectCursorEnd()
-{
-   double maxEndOffset = -1000000.0;
-
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-
-   while (t) {
-      if (t->GetSelected()) {
-         if (t->GetEndTime() > maxEndOffset)
-            maxEndOffset = t->GetEndTime();
-      }
-
-      t = iter.Next();
-   }
-
-   mViewInfo.selectedRegion.setT1(maxEndOffset);
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnSelectStartCursor()
-{
-   double minOffset = 1000000.0;
-
-   TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
-
-   while (t) {
-      if (t->GetSelected()) {
-         if (t->GetOffset() < minOffset)
-            minOffset = t->GetOffset();
-      }
-
-      t = iter.Next();
-   }
-
-   mViewInfo.selectedRegion.setT0(minOffset);
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnSelectCursorStoredCursor()
-{
-   if (mCursorPositionHasBeenStored) {
-      double cursorPositionCurrent = IsAudioActive() ? gAudioIO->GetStreamTime() : mViewInfo.selectedRegion.t0();
-      mViewInfo.selectedRegion.setTimes(std::min(cursorPositionCurrent, mCursorPositionStored),
-         std::max(cursorPositionCurrent, mCursorPositionStored));
-
-      ModifyState(false);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-void AudacityProject::OnSelectSyncLockSel()
-{
-   bool selected = false;
-   TrackListIterator iter(GetTracks());
-   for (Track *t = iter.First(); t; t = iter.Next())
-   {
-      if (t->IsSyncLockSelected()) {
-         t->SetSelected(true);
-         selected = true;
-      }
-   }
-
-   if (selected)
-      ModifyState(false);
-
-   mTrackPanel->Refresh(false);
-   if (mMixerBoard)
-      mMixerBoard->Refresh(false);
-}
-
-void AudacityProject::OnSelectAllTracks()
-{
-   TrackListIterator iter(GetTracks());
-   for (Track *t = iter.First(); t; t = iter.Next()) {
-      t->SetSelected(true);
-   }
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
-   if (mMixerBoard)
-      mMixerBoard->Refresh(false);
 }
 
 //

@@ -21,6 +21,7 @@
 #include <wx/string.h>
 #include "../Project.h"
 #include "../Track.h"
+#include "../menus/EditMenuCommands.h"
 
 wxString SelectCommandType::BuildName()
 {
@@ -61,12 +62,12 @@ bool SelectCommand::Apply(CommandExecutionContext context)
    if (mode.IsSameAs(wxT("None")))
    {
       // select none
-      context.GetProject()->OnSelectNone();
+      EditMenuCommands(context.GetProject()).OnSelectNone();
    }
    else if (mode.IsSameAs(wxT("All")))
    {
       // select all
-      context.GetProject()->OnSelectAll();
+      EditMenuCommands(context.GetProject()).OnSelectAll();
    }
    else if (mode.IsSameAs(wxT("Range")))
    {

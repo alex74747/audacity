@@ -1,12 +1,17 @@
 #include "../Audacity.h"
 #include "EditMenuCommands.h"
 
+#include <algorithm>
+
+#include "../AudioIO.h"
 #include "../HistoryWindow.h"
 #include "../MixerBoard.h"
 #include "../LabelTrack.h"
+#include "../MixerBoard.h"
 #include "../NoteTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../TimeDialog.h"
 #include "../TimeTrack.h"
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
@@ -150,6 +155,49 @@ void EditMenuCommands::Create(CommandManager *c)
       /* i18n-hint: (verb)*/
       c->AddItem(wxT("JoinLabels"), _("&Join"), FN(OnJoinLabels), wxT("Alt+J"));
       c->AddItem(wxT("DisjoinLabels"), _("Detac&h at Silences"), FN(OnDisjoinLabels), wxT("Alt+Shift+J"));
+   }
+   c->EndSubMenu();
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   /* i18n-hint: (verb) It's an item on a menu. */
+   c->BeginSubMenu(_("&Select"));
+   {
+      c->SetDefaultFlags(TracksExistFlag, TracksExistFlag);
+
+      c->AddItem(wxT("SelectAll"), _("&All"), FN(OnSelectAll), wxT("Ctrl+A"));
+      c->AddItem(wxT("SelectNone"), _("&None"), FN(OnSelectNone), wxT("Ctrl+Shift+A"));
+
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+      c->BeginSubMenu(_("S&pectral"));
+      c->AddItem(wxT("ToggleSpectralSelection"), _("To&ggle spectral selection"), FN(OnToggleSpectralSelection), wxT("Q"));
+      c->AddItem(wxT("NextHigherPeakFrequency"), _("Next Higher Peak Frequency"), FN(OnNextHigherPeakFrequency));
+      c->AddItem(wxT("NextLowerPeakFrequency"), _("Next Lower Peak Frequency"), FN(OnNextLowerPeakFrequency));
+      c->EndSubMenu();
+#endif
+
+      c->AddItem(wxT("SetLeftSelection"), _("&Left at Playback Position"), FN(OnSetLeftSelection), wxT("["));
+      c->AddItem(wxT("SetRightSelection"), _("&Right at Playback Position"), FN(OnSetRightSelection), wxT("]"));
+
+      c->SetDefaultFlags(TracksSelectedFlag, TracksSelectedFlag);
+
+      c->AddItem(wxT("SelStartCursor"), _("Track &Start to Cursor"), FN(OnSelectStartCursor), wxT("Shift+J"));
+      c->AddItem(wxT("SelCursorEnd"), _("Cursor to Track &End"), FN(OnSelectCursorEnd), wxT("Shift+K"));
+     c->AddItem(wxT("SelCursorStoredCursor"), _("Cursor to Stored &Cursor Position"), FN(OnSelectCursorStoredCursor),
+        wxT(""), TracksExistFlag, TracksExistFlag);
+
+      c->AddSeparator();
+
+      c->AddItem(wxT("SelAllTracks"), _("In All &Tracks"), FN(OnSelectAllTracks),
+         wxT("Ctrl+Shift+K"),
+         TracksExistFlag, TracksExistFlag);
+
+#ifdef EXPERIMENTAL_SYNC_LOCK
+      c->AddItem(wxT("SelSyncLockTracks"), _("In All S&ync-Locked Tracks"),
+         FN(OnSelectSyncLockSel), wxT("Ctrl+Shift+Y"),
+         TracksSelectedFlag | IsSyncLockedFlag,
+         TracksSelectedFlag | IsSyncLockedFlag);
+#endif
    }
    c->EndSubMenu();
 }
@@ -1494,4 +1542,255 @@ void EditMenuCommands::GetRegionsByLabel( Regions &regions )
       else
          selected++;
    }
+}
+
+void EditMenuCommands::OnSelectAll()
+{
+   TrackList *const trackList = mProject->GetTracks();
+   TrackListIterator iter(trackList);
+
+   Track *t = iter.First();
+   while (t) {
+      t->SetSelected(true);
+      t = iter.Next();
+   }
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   viewInfo.selectedRegion.setTimes(
+      trackList->GetMinOffset(), trackList->GetEndTime());
+
+   mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
+   MixerBoard *const mixerBoard = mProject->GetMixerBoard();
+   if (mixerBoard)
+      mixerBoard->Refresh(false);
+}
+
+void EditMenuCommands::SelectAllIfNone()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   auto flags = mProject->GetUpdateFlags();
+   if (!(flags & TracksSelectedFlag) ||
+      (viewInfo.selectedRegion.isPoint()))
+      OnSelectAll();
+}
+
+void EditMenuCommands::OnSelectNone()
+{
+   mProject->SelectNone();
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   viewInfo.selectedRegion.collapseToT0();
+   mProject->ModifyState(false);
+}
+
+#ifdef EXPERIMENTAL_SPECTRAL_EDITING
+void EditMenuCommands::OnToggleSpectralSelection()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   trackPanel->ToggleSpectralSelection();
+   trackPanel->Refresh(false);
+   mProject->ModifyState(false);
+}
+
+void EditMenuCommands::OnNextHigherPeakFrequency()
+{
+   DoNextPeakFrequency(true);
+}
+
+
+void EditMenuCommands::OnNextLowerPeakFrequency()
+{
+   DoNextPeakFrequency(false);
+}
+
+void EditMenuCommands::DoNextPeakFrequency(bool up)
+{
+   // Find the first selected wave track that is in a spectrogram view.
+   WaveTrack *pTrack = 0;
+   SelectedTrackListOfKindIterator iter(Track::Wave, mProject->GetTracks());
+   for (Track *t = iter.First(); t; t = iter.Next()) {
+      WaveTrack *const wt = static_cast<WaveTrack*>(t);
+      const int display = wt->GetDisplay();
+      if (display == WaveTrack::Spectrum) {
+         pTrack = wt;
+         break;
+      }
+   }
+
+   if (pTrack) {
+      TrackPanel *const trackPanel = mProject->GetTrackPanel();
+      trackPanel->SnapCenterOnce(pTrack, up);
+      trackPanel->Refresh(false);
+      mProject->ModifyState(false);
+   }
+}
+#endif
+
+//this pops up a dialog which allows the left selection to be set.
+//If playing/recording is happening, it sets the left selection at
+//the current play position.
+void EditMenuCommands::OnSetLeftSelection()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   bool bSelChanged = false;
+   if ((mProject->GetAudioIOToken() > 0) &&
+       gAudioIO->IsStreamActive(mProject->GetAudioIOToken()))
+   {
+      double indicator = gAudioIO->GetStreamTime();
+      viewInfo.selectedRegion.setT0(indicator, false);
+      bSelChanged = true;
+   }
+   else
+   {
+      wxString fmt = mProject->GetSelectionFormat();
+      TimeDialog dlg(mProject, _("Set Left Selection Boundary"),
+         fmt, mProject->GetRate(), viewInfo.selectedRegion.t0(), _("Position"));
+
+      if (wxID_OK == dlg.ShowModal())
+      {
+         //Get the value from the dialog
+         viewInfo.selectedRegion.setT0(
+            std::max(0.0, dlg.GetTimeValue()), false);
+         bSelChanged = true;
+      }
+   }
+
+   if (bSelChanged)
+   {
+      mProject->ModifyState(false);
+      mProject->GetTrackPanel()->Refresh(false);
+   }
+}
+
+void EditMenuCommands::OnSetRightSelection()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   bool bSelChanged = false;
+   if ((mProject->GetAudioIOToken() > 0) &&
+       gAudioIO->IsStreamActive(mProject->GetAudioIOToken()))
+   {
+      double indicator = gAudioIO->GetStreamTime();
+      viewInfo.selectedRegion.setT1(indicator, false);
+      bSelChanged = true;
+   }
+   else
+   {
+      wxString fmt = mProject->GetSelectionFormat();
+      TimeDialog dlg(mProject, _("Set Right Selection Boundary"),
+         fmt, mProject->GetRate(), viewInfo.selectedRegion.t1(), _("Position"));
+
+      if (wxID_OK == dlg.ShowModal())
+      {
+         //Get the value from the dialog
+         viewInfo.selectedRegion.setT1(
+            std::max(0.0, dlg.GetTimeValue()), false);
+         bSelChanged = true;
+      }
+   }
+
+   if (bSelChanged)
+   {
+      mProject->ModifyState(false);
+      mProject->GetTrackPanel()->Refresh(false);
+   }
+}
+
+void EditMenuCommands::OnSelectStartCursor()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double minOffset = 1000000.0;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t) {
+      if (t->GetSelected()) {
+         if (t->GetOffset() < minOffset)
+            minOffset = t->GetOffset();
+      }
+
+      t = iter.Next();
+   }
+
+   viewInfo.selectedRegion.setT0(minOffset);
+
+   mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnSelectCursorEnd()
+{
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double maxEndOffset = -1000000.0;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *t = iter.First();
+
+   while (t) {
+      if (t->GetSelected()) {
+         if (t->GetEndTime() > maxEndOffset)
+            maxEndOffset = t->GetEndTime();
+      }
+
+      t = iter.Next();
+   }
+
+   viewInfo.selectedRegion.setT1(maxEndOffset);
+
+   mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnSelectCursorStoredCursor()
+{
+   auto &selectedRegion = mProject->GetViewInfo().selectedRegion;
+   if (mProject->CursorPositionHasBeenStored()) {
+      double cursorPositionCurrent = mProject->IsAudioActive()
+         ? gAudioIO->GetStreamTime() : selectedRegion.t0();
+      selectedRegion.setTimes(
+         std::min(cursorPositionCurrent, mProject->CursorPositionStored()),
+         std::max(cursorPositionCurrent, mProject->CursorPositionStored())
+      );
+
+      mProject->ModifyState(false);
+      mProject->GetTrackPanel()->Refresh(false);
+   }
+}
+
+void EditMenuCommands::OnSelectAllTracks()
+{
+   TrackListIterator iter(mProject->GetTracks());
+   for (Track *t = iter.First(); t; t = iter.Next()) {
+      t->SetSelected(true);
+   }
+
+   mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
+   MixerBoard *const mixerBoard = mProject->GetMixerBoard();
+   if (mixerBoard)
+      mixerBoard->Refresh(false);
+}
+
+void EditMenuCommands::OnSelectSyncLockSel()
+{
+   bool selected = false;
+   TrackListIterator iter(mProject->GetTracks());
+   for (Track *t = iter.First(); t; t = iter.Next())
+   {
+      if (t->IsSyncLockSelected()) {
+         t->SetSelected(true);
+         selected = true;
+      }
+   }
+
+   if (selected)
+      mProject->ModifyState(false);
+
+   mProject->GetTrackPanel()->Refresh(false);
+   MixerBoard *const mixerBoard = mProject->GetMixerBoard();
+   if (mixerBoard)
+      mixerBoard->Refresh(false);
 }

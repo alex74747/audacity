@@ -43,13 +43,13 @@ void ModifyAllProjectToolbarMenus();
 private:
 CommandFlag GetFocusedFrame();
 
+public:
 // If checkActive, do not do complete flags testing on an
 // inactive project as it is needlessly expensive.
 CommandFlag GetUpdateFlags(bool checkActive = false);
 
-double NearestZeroCrossing(double t0);
-
 private:
+double NearestZeroCrossing(double t0);
 
         // Selecting a tool from the keyboard
 
@@ -100,9 +100,6 @@ void OnCursorLongJumpRight();
 void OnSelSetExtendLeft();
 void OnSelSetExtendRight();
 
-void OnSetLeftSelection();
-void OnSetRightSelection();
-
 void OnSelToStart();
 void OnSelToEnd();
 
@@ -147,22 +144,7 @@ void OnPrint();
 
 void OnExit();
 
-        // Edit Menu
-
 public:
-void OnSelectAll();
-void OnSelectNone();
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-void OnToggleSpectralSelection();
-void DoNextPeakFrequency(bool up);
-void OnNextHigherPeakFrequency();
-void OnNextLowerPeakFrequency();
-#endif
-void OnSelectCursorEnd();
-void OnSelectStartCursor();
-void OnSelectCursorStoredCursor();
-void OnSelectSyncLockSel();
-void OnSelectAllTracks();
 
         // View Menu
 
@@ -183,6 +165,19 @@ void OnImportRaw();
 
 void OnEditMetadata();
 bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool force);
+
+public:
+bool CursorPositionHasBeenStored() const
+{ return mCursorPositionHasBeenStored; }
+
+void SetCursorPositionHasBeenStored(bool value)
+{ mCursorPositionHasBeenStored = value; }
+
+double CursorPositionStored() const
+{ return mCursorPositionStored; }
+
+void SetCursorPositionStored(double value)
+{ mCursorPositionStored = value; }
 
 private:
    SelectedRegion mRegionSave{};
