@@ -162,7 +162,6 @@ void OnSplit();
 void OnSplitNew();
 void OnJoin();
 void OnDisjoin();
-void OnDuplicate();
 
 void OnCutLabels();
 void OnSplitCutLabels();
