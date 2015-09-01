@@ -383,10 +383,6 @@ void AudacityProject::CreateMenusAndCommands()
                       AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
    /* i18n-hint: (verb)*/
-   c->AddItem(wxT("Copy"), _("&Copy"), FN(OnCopy), wxT("Ctrl+C"),
-              AudioIONotBusyFlag | CutCopyAvailableFlag,
-              AudioIONotBusyFlag | CutCopyAvailableFlag);
-   /* i18n-hint: (verb)*/
    c->AddItem(wxT("Paste"), _("&Paste"), FN(OnPaste), wxT("Ctrl+V"),
               AudioIONotBusyFlag | ClipboardFlag,
               AudioIONotBusyFlag | ClipboardFlag);
@@ -2434,51 +2430,6 @@ void AudacityProject::OnSplitCut()
    RedrawProject();
 }
 
-
-void AudacityProject::OnCopy()
-{
-
-   TrackListIterator iter(mTracks);
-
-   Track *n = iter.First();
-   Track *dest;
-
-   while (n) {
-      if (n->GetSelected()) {
-         if (n->GetKind() == Track::Label) {
-            if (((LabelTrack *)n)->CopySelectedText()) {
-               //mTrackPanel->Refresh(false);
-               return;
-            }
-         }
-      }
-      n = iter.Next();
-   }
-
-   ClearClipboard();
-   n = iter.First();
-   while (n) {
-      if (n->GetSelected()) {
-         dest = NULL;
-         n->Copy(mViewInfo.selectedRegion.t0(),
-                 mViewInfo.selectedRegion.t1(), &dest);
-         if (dest) {
-            dest->SetChannel(n->GetChannel());
-            dest->SetLinked(n->GetLinked());
-            dest->SetName(n->GetName());
-            msClipboard->Add(dest);
-         }
-      }
-      n = iter.Next();
-   }
-
-   msClipT0 = mViewInfo.selectedRegion.t0();
-   msClipT1 = mViewInfo.selectedRegion.t1();
-   msClipProject = this;
-
-   //Make sure the menus/toolbar states get updated
-   mTrackPanel->Refresh(false);
-}
 
 void AudacityProject::OnPaste()
 {

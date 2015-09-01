@@ -138,7 +138,6 @@ void OnExit();
 
 public:
 void OnSplitCut();
-void OnCopy();
 
 void OnPaste();
 private:
