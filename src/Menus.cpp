@@ -946,8 +946,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("InputGainDec"), _("Decrease recording volume"), FN(OnInputGainDec));
-
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
    c->AddCommand(wxT("PlayAtSpeed"), _("Play at speed"), FN(OnPlayAtSpeed));
@@ -2233,14 +2231,6 @@ void AudacityProject::PrevWindow()
       w->SetFocus();
    }
 #endif
-}
-
-void AudacityProject::OnInputGainDec()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->AdjustInputGain(-1);
-   }
 }
 
 void AudacityProject::OnPlayAtSpeed()
