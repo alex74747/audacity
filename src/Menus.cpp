@@ -389,28 +389,6 @@ void AudacityProject::CreateMenusAndCommands()
       c->SetDefaultFlags(AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag,
                          AudioIONotBusyFlag | TimeSelectedFlag | TracksSelectedFlag);
 
-      c->AddSeparator();
-
-      c->BeginSubMenu(_("R&emove Special"));
-      /* i18n-hint: (verb) Do a special kind of cut*/
-      c->AddItem(wxT("SplitCut"), _("Spl&it Cut"), FN(OnSplitCut), wxT("Ctrl+Alt+X"));
-      /* i18n-hint: (verb) Do a special kind of DELETE*/
-      c->AddItem(wxT("SplitDelete"), _("Split D&elete"), FN(OnSplitDelete), wxT("Ctrl+Alt+K"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-
-      c->AddSeparator();
-
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Silence"), _("Silence Audi&o"), FN(OnSilence), wxT("Ctrl+L"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Trim"), _("Tri&m Audio"), FN(OnTrim), wxT("Ctrl+T"),
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag,
-         AudioIONotBusyFlag | TimeSelectedFlag | WaveTracksSelectedFlag);
-      c->EndSubMenu();
-
       c->AddItem(wxT("PasteNewLabel"), _("Paste Te&xt to New Label"), FN(OnPasteNewLabel), wxT("Ctrl+Alt+V"),
          AudioIONotBusyFlag, AudioIONotBusyFlag);
 
@@ -2540,51 +2518,6 @@ void AudacityProject::OnPrint()
 // Edit Menu
 //
 
-void AudacityProject::OnSplitCut()
-{
-   TrackListIterator iter(GetTracks());
-   Track *n = iter.First();
-
-   ClearClipboard();
-   while (n) {
-      if (n->GetSelected()) {
-         Track::Holder dest;
-         if (n->GetKind() == Track::Wave)
-         {
-            dest = ((WaveTrack*)n)->SplitCut(
-               mViewInfo.selectedRegion.t0(),
-               mViewInfo.selectedRegion.t1());
-         }
-         else
-         {
-            dest = n->Copy(mViewInfo.selectedRegion.t0(),
-                    mViewInfo.selectedRegion.t1());
-            n->Silence(mViewInfo.selectedRegion.t0(),
-                       mViewInfo.selectedRegion.t1());
-         }
-         if (dest) {
-            dest->SetChannel(n->GetChannel());
-            dest->SetLinked(n->GetLinked());
-            dest->SetName(n->GetName());
-            msClipboard->Add(std::move(dest));
-         }
-      }
-      n = iter.Next();
-   }
-
-   msClipT0 = mViewInfo.selectedRegion.t0();
-   msClipT1 = mViewInfo.selectedRegion.t1();
-   msClipProject = this;
-
-   PushState(_("Split-cut to the clipboard"), _("Split Cut"));
-
-   RedrawProject();
-
-   if (mHistoryWindow)
-      mHistoryWindow->UpdateDisplay();
-}
-
-
 // Creates a NEW label in each selected label track with text from the system
 // clipboard
 void AudacityProject::OnPasteNewLabel()
@@ -2656,74 +2589,6 @@ void AudacityProject::OnPasteNewLabel()
    }
 }
 
-void AudacityProject::OnTrim()
-{
-   if (mViewInfo.selectedRegion.isPoint())
-      return;
-
-   TrackListIterator iter(GetTracks());
-   Track *n = iter.First();
-
-   while (n) {
-      if (n->GetSelected()) {
-         switch (n->GetKind())
-         {
-#if defined(USE_MIDI)
-            case Track::Note:
-               ((NoteTrack*)n)->Trim(mViewInfo.selectedRegion.t0(),
-                                     mViewInfo.selectedRegion.t1());
-            break;
-#endif
-
-            case Track::Wave:
-               //Delete the section before the left selector
-               ((WaveTrack*)n)->Trim(mViewInfo.selectedRegion.t0(),
-                                     mViewInfo.selectedRegion.t1());
-            break;
-
-            default:
-            break;
-         }
-      }
-      n = iter.Next();
-   }
-
-   PushState(wxString::Format(_("Trim selected audio tracks from %.2f seconds to %.2f seconds"),
-       mViewInfo.selectedRegion.t0(), mViewInfo.selectedRegion.t1()),
-       _("Trim Audio"));
-
-   RedrawProject();
-}
-
-void AudacityProject::OnSplitDelete()
-{
-   TrackListIterator iter(GetTracks());
-
-   Track *n = iter.First();
-
-   while (n) {
-      if (n->GetSelected()) {
-         if (n->GetKind() == Track::Wave)
-         {
-            ((WaveTrack*)n)->SplitDelete(mViewInfo.selectedRegion.t0(),
-                                         mViewInfo.selectedRegion.t1());
-         }
-         else {
-            n->Silence(mViewInfo.selectedRegion.t0(),
-                       mViewInfo.selectedRegion.t1());
-         }
-      }
-      n = iter.Next();
-   }
-
-   PushState(wxString::Format(_("Split-deleted %.2f seconds at t=%.2f"),
-                              mViewInfo.selectedRegion.duration(),
-                              mViewInfo.selectedRegion.t0()),
-             _("Split Delete"));
-
-   RedrawProject();
-}
-
 void AudacityProject::OnDisjoin()
 {
    TrackListIterator iter(GetTracks());
@@ -2772,22 +2637,6 @@ void AudacityProject::OnJoin()
              _("Join"));
 
    RedrawProject();
-}
-
-void AudacityProject::OnSilence()
-{
-   SelectedTrackListOfKindIterator iter(Track::Wave, GetTracks());
-
-   for (Track *n = iter.First(); n; n = iter.Next())
-      n->Silence(mViewInfo.selectedRegion.t0(), mViewInfo.selectedRegion.t1());
-
-   PushState(wxString::
-             Format(_("Silenced selected tracks for %.2f seconds at %.2f"),
-                    mViewInfo.selectedRegion.duration(),
-                    mViewInfo.selectedRegion.t0()),
-             _("Silence"));
-
-   mTrackPanel->Refresh(false);
 }
 
 void AudacityProject::OnCutLabels()

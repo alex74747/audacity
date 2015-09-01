@@ -26,7 +26,13 @@ private:
    bool HandlePasteNothingSelected(); // Return true if nothing selected, regardless of paste result.
 
    void OnDuplicate();
+   void OnSplitCut();
+   void OnSplitDelete();
+public:
+   void OnSilence();
+   void OnTrim();
 
+private:
    AudacityProject *const mProject;
 };
 #endif

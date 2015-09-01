@@ -150,13 +150,7 @@ void OnExit();
         // Edit Menu
 
 public:
-void OnSplitCut();
-
 void OnPasteNewLabel();
-void OnTrim();
-
-void OnSplitDelete();
-void OnSilence();
 
 void OnSplit();
 void OnSplitNew();

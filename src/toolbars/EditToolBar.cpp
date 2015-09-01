@@ -261,11 +261,11 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          break;
       case ETBTrimID:
          p->SelectAllIfNone();
-         p->OnTrim();
+         EditMenuCommands(p).OnTrim();
          break;
       case ETBSilenceID:
          p->SelectAllIfNone();
-         p->OnSilence();
+         EditMenuCommands(p).OnSilence();
          break;
       case ETBUndoID:
          EditMenuCommands(p).OnUndo();
