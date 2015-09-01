@@ -89,7 +89,6 @@ class MixerBoardFrame;
 struct AudioIOStartStreamOptions;
 
 class WaveTrackArray;
-class Regions;
 
 class EditMenuCommands;
 class ViewMenuCommands;
@@ -348,12 +347,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    void SkipEnd(bool shift);
 
 
-   typedef bool (WaveTrack::* EditFunction)(double, double);
-   typedef bool (WaveTrack::* EditDestFunction)(double, double, Track**);
-
-   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
-   void EditClipboardByLabel(EditDestFunction action );
-
    bool IsSyncLocked();
    void SetSyncLock(bool flag);
 
@@ -511,8 +504,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
  private:
 
    void OnCapture(wxCommandEvent & evt);
-public:
-   void ClearClipboard();
 private:
    void InitialState();
 public:
@@ -525,8 +516,6 @@ public:
 
 private:
    void UpdateMixerBoard();
-
-   void GetRegionsByLabel( Regions &regions );
 
    void AutoSave();
    void DeleteCurrentAutoSaveFile();

@@ -3,6 +3,9 @@
 
 class AudacityProject;
 class CommandManager;
+class Regions;
+class Track;
+class WaveTrack;
 
 class EditMenuCommands
 {
@@ -37,6 +40,25 @@ private:
    void OnSplitNew();
    void OnJoin();
    void OnDisjoin();
+
+   void OnCutLabels();
+   void OnDeleteLabels();
+   void OnSplitCutLabels();
+   void OnSplitDeleteLabels();
+   void OnSilenceLabels();
+   void OnCopyLabels();
+   void OnSplitLabels();
+   void OnJoinLabels();
+   void OnDisjoinLabels();
+
+   typedef bool (WaveTrack::* EditFunction)(double, double);
+   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
+
+   typedef bool (WaveTrack::* EditDestFunction)(double, double, Track**);
+   void EditClipboardByLabel(EditDestFunction action);
+
+   void GetRegionsByLabel(Regions &regions);
+   void ClearClipboard();
 
    AudacityProject *const mProject;
 };
