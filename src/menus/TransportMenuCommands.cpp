@@ -130,6 +130,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
       AudioIONotBusyFlag);
 
    c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
+   c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -717,5 +718,13 @@ void TransportMenuCommands::OnOutputGain()
    MixerToolBar *tb = mProject->GetMixerToolBar();
    if (tb) {
       tb->ShowOutputGainDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputGainInc()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustOutputGain(1);
    }
 }
