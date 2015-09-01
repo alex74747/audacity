@@ -8,6 +8,7 @@
 #include "../Tags.h"
 #include "../TrackPanel.h"
 #include "../commands/CommandManager.h"
+#include "../export/Export.h"
 #include "../import/ImportMIDI.h"
 #include "../import/ImportRaw.h"
 #include "../ondemand/ODManager.h"
@@ -71,6 +72,15 @@ void FileMenuCommands::Create(CommandManager *c)
       c->AddItem(wxT("ImportRaw"), _("&Raw Data..."), FN(OnImportRaw));
    }
    c->EndSubMenu();
+
+   c->AddSeparator();
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   // Enable Export audio commands only when there are audio tracks.
+   c->AddItem(wxT("Export"), _("&Export Audio..."), FN(OnExport), wxT("Ctrl+Shift+E"),
+      AudioIONotBusyFlag | WaveTracksExistFlag,
+      AudioIONotBusyFlag | WaveTracksExistFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -285,4 +295,12 @@ void FileMenuCommands::OnImportRaw()
 
    mProject->AddImportedTracks(fileName, std::move(newTracks));
    mProject->HandleResize(); // Adjust scrollers for NEW track sizes.
+}
+
+void FileMenuCommands::OnExport()
+{
+   Exporter e;
+
+   wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
+   e.Process(mProject, false, 0.0, mProject->GetTracks()->GetEndTime());
 }

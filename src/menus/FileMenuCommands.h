@@ -44,6 +44,8 @@ public:
 private:
    void OnImportRaw();
 
+   void OnExport();
+
    AudacityProject *const mProject;
 };
 

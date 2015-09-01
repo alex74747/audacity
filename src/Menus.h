@@ -78,7 +78,6 @@ void OnMacBringAllToFront();
 
 void OnClose();
 
-void OnExport();
 void OnExportSelection();
 void OnExportMultiple();
 void OnExportLabels();
