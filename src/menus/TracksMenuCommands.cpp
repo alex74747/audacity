@@ -177,6 +177,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackMoveUp"), _("Move focused track up"), FN(OnTrackMoveUp));
    c->AddCommand(wxT("TrackMoveDown"), _("Move focused track down"), FN(OnTrackMoveDown));
    c->AddCommand(wxT("TrackMoveTop"), _("Move focused track to top"), FN(OnTrackMoveTop));
+   c->AddCommand(wxT("TrackMoveBottom"), _("Move focused track to bottom"), FN(OnTrackMoveBottom));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1414,6 +1415,16 @@ void TracksMenuCommands::OnTrackMoveTop()
    Track *const focusedTrack = trackPanel->GetFocusedTrack();
    if (mProject->GetTracks()->CanMoveUp(focusedTrack)) {
       mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveTopID);
+      trackPanel->Refresh(false);
+   }
+}
+
+void TracksMenuCommands::OnTrackMoveBottom()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const focusedTrack = trackPanel->GetFocusedTrack();
+   if (trackPanel->GetTracks()->CanMoveDown(focusedTrack)) {
+      mProject->MoveTrack(focusedTrack, AudacityProject::OnMoveBottomID);
       trackPanel->Refresh(false);
    }
 }

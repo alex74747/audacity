@@ -89,8 +89,6 @@ void OnPlayCutPreview();
 
         // Wave track control
 
-void OnTrackMoveBottom();
-
 enum MoveChoice { OnMoveUpID, OnMoveDownID, OnMoveTopID, OnMoveBottomID };
 void MoveTrack(Track* target, MoveChoice choice);
 

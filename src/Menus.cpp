@@ -959,8 +959,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackMoveBottom"), _("Move focused track to bottom"), FN(OnTrackMoveBottom));
-
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddCommand(wxT("SnapToOff"), _("Snap To Off"), FN(OnSnapToOff));
@@ -2474,15 +2472,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnTrackMoveBottom()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveDown(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveBottomID);
-      mTrackPanel->Refresh(false);
-   }
 }
 
 /// Move a track up, down, to top or to bottom.
