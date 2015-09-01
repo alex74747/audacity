@@ -268,15 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddSeparator();
-
-   // On the Mac, the Exit item doesn't actually go here...wxMac will pull it out
-   // and put it in the Audacity menu for us based on its ID.
-   /* i18n-hint: (verb) It's item on a menu. */
-   c->AddItem(wxT("Exit"), _("E&xit"), FN(OnExit), wxT("Ctrl+Q"),
-              AlwaysEnabledFlag,
-              AlwaysEnabledFlag);
-
    c->EndMenu();
 
    /////////////////////////////////////////////////////////////////////////////
@@ -1350,11 +1341,6 @@ void AudacityProject::OnClose()
 {
    mMenuClose = true;
    Close();
-}
-
-void AudacityProject::OnExit()
-{
-   QuitAudacity();
 }
 
 //

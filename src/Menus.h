@@ -64,8 +64,6 @@ void OnStopSelect();
 
 void OnClose();
 
-void OnExit();
-
 public:
 
         // View Menu

@@ -43,6 +43,7 @@ private:
    void OnEditChains();
    void OnPageSetup();
    void OnPrint();
+   void OnExit();
 
    AudacityProject *const mProject;
 };

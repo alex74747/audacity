@@ -1,5 +1,6 @@
 #include "FileMenuCommands.h"
 
+#include "../Audacity.h"
 #include "../BatchProcessDialog.h"
 #include "../Dependencies.h"
 #include "../FileDialog.h"
@@ -123,6 +124,15 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
       AudioIONotBusyFlag | TracksExistFlag,
       AudioIONotBusyFlag | TracksExistFlag);
+
+   c->AddSeparator();
+
+   // On the Mac, the Exit item doesn't actually go here...wxMac will pull it out
+   // and put it in the Audacity menu for us based on its ID.
+   /* i18n-hint: (verb) It's item on a menu. */
+   c->AddItem(wxT("Exit"), _("E&xit"), FN(OnExit), wxT("Ctrl+Q"),
+      AlwaysEnabledFlag,
+      AlwaysEnabledFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -521,4 +531,9 @@ void FileMenuCommands::OnPageSetup()
 void FileMenuCommands::OnPrint()
 {
    ::HandlePrint(mProject, mProject->GetName(), mProject->GetTracks());
+}
+
+void FileMenuCommands::OnExit()
+{
+   ::QuitAudacity();
 }
