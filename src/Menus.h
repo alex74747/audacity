@@ -75,7 +75,6 @@ void OnSeekRightLong();
         // Mixer control
 
 void OnInputGain();
-void OnOutputGainDec();
 void OnInputGainInc();
 void OnInputGainDec();
 
