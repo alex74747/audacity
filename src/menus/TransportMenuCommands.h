@@ -52,6 +52,8 @@ private:
    void OnPlayCutPreview();
    bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
 
+   void OnInputDevice();
+
    AudacityProject *const mProject;
 };
 

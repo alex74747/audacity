@@ -899,9 +899,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->AddCommand(wxT("InputDevice"), _("Change recording device"), FN(OnInputDevice), wxT("Shift+I"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
    c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
                  AudioIONotBusyFlag,
                  AudioIONotBusyFlag);
@@ -2026,14 +2023,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-void AudacityProject::OnInputDevice()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowInputDialog();
-   }
 }
 
 void AudacityProject::OnOutputDevice()
