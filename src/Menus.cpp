@@ -388,14 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->AddSeparator();
-
-      c->AddItem(wxT("SelSave"), _("Store Re&gion"), FN(OnSelectionSave),
-         WaveTracksSelectedFlag,
-         WaveTracksSelectedFlag);
-      c->AddItem(wxT("SelRestore"), _("Retrieve Regio&n"), FN(OnSelectionRestore),
-         TracksExistFlag,
-         TracksExistFlag);
       c->AddItem(wxT("StoreCursorPosition"), _("Store Cursor Pos&ition"), FN(OnCursorPositionStore),
          WaveTracksExistFlag,
          WaveTracksExistFlag);
@@ -2594,28 +2586,10 @@ bool AudacityProject::DoEditMetadata
    return false;
 }
 
-void AudacityProject::OnSelectionSave()
-{
-   mRegionSave =  mViewInfo.selectedRegion;
-}
-
 void AudacityProject::OnCursorPositionStore()
 {
    mCursorPositionStored = IsAudioActive() ? gAudioIO->GetStreamTime() : mViewInfo.selectedRegion.t0();
    mCursorPositionHasBeenStored = true;
-}
-
-void AudacityProject::OnSelectionRestore()
-{
-   if ((mRegionSave.t0() == 0.0) &&
-       (mRegionSave.t1() == 0.0))
-      return;
-
-   mViewInfo.selectedRegion = mRegionSave;
-
-   ModifyState(false);
-
-   mTrackPanel->Refresh(false);
 }
 
 void AudacityProject::OnApplyChain()

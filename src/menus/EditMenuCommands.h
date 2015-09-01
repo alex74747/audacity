@@ -3,6 +3,7 @@
 
 #include "../MemoryX.h"
 #include "../Experimental.h"
+#include "../SelectedRegion.h"
 
 class AudacityProject;
 class CommandManager;
@@ -92,7 +93,10 @@ private:
    void OnCursorSelEnd();
    void OnCursorTrackStart();
    void OnCursorTrackEnd();
+   void OnSelectionSave();
+   void OnSelectionRestore();
 
    AudacityProject *const mProject;
+   SelectedRegion mRegionSave{};
 };
 #endif

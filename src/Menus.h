@@ -180,8 +180,6 @@ private:
    bool mCursorPositionHasBeenStored{false};
    double mCursorPositionStored;
 public:
-void OnSelectionSave();
-void OnSelectionRestore();
 void OnCursorPositionStore();
 
 // Effect Menu
