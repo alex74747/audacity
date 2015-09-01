@@ -6,6 +6,7 @@
 #include "../LabelTrack.h"
 #include "../NoteTrack.h"
 #include "../Prefs.h"
+#include "../Printing.h"
 #include "../Project.h"
 #include "../Tags.h"
 #include "../TrackPanel.h"
@@ -111,6 +112,12 @@ void FileMenuCommands::Create(CommandManager *c)
       AudioIONotBusyFlag);
 
    c->AddItem(wxT("EditChains"), _("Edit C&hains..."), FN(OnEditChains));
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
+      AudioIONotBusyFlag | TracksExistFlag,
+      AudioIONotBusyFlag | TracksExistFlag);
 }
 
 void FileMenuCommands::OnNew()
@@ -520,4 +527,9 @@ void FileMenuCommands::OnEditChains()
 {
    EditChainsDialog dlg(mProject);
    dlg.ShowModal();
+}
+
+void FileMenuCommands::OnPageSetup()
+{
+   ::HandlePageSetup(mProject);
 }

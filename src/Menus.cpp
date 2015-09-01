@@ -275,11 +275,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddSeparator();
-
-      c->AddItem(wxT("PageSetup"), _("Pa&ge Setup..."), FN(OnPageSetup),
-         AudioIONotBusyFlag | TracksExistFlag,
-         AudioIONotBusyFlag | TracksExistFlag);
       /* i18n-hint: (verb) It's item on a menu. */
       c->AddItem(wxT("Print"), _("&Print..."), FN(OnPrint),
          AudioIONotBusyFlag | TracksExistFlag,
@@ -1477,11 +1472,6 @@ void AudacityProject::OnClose()
 void AudacityProject::OnExit()
 {
    QuitAudacity();
-}
-
-void AudacityProject::OnPageSetup()
-{
-   HandlePageSetup(this);
 }
 
 void AudacityProject::OnPrint()
