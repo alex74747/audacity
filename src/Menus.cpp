@@ -1021,7 +1021,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
    c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
    c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
    c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
@@ -2780,21 +2779,6 @@ void AudacityProject::PrevWindow()
 }
 
 //The following methods operate controls on specified tracks,
-
-void AudacityProject::OnTrackGain()
-{
-   /// This will pop up the track gain dialog for specified track
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-   const auto wt = static_cast<WaveTrack*>(track);
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->GainSlider(wt);
-   if (slider->ShowDialog()) {
-      SetTrackGain(wt, slider);
-   }
-}
 
 void AudacityProject::OnTrackGainInc()
 {

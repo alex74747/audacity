@@ -182,6 +182,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
    c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
    c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
+   c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1310,4 +1311,20 @@ void TracksMenuCommands::SetTrackPan(WaveTrack * wt, LWSlider * slider)
    mProject->PushState(_("Adjusted Pan"), _("Pan"), UndoPush::CONSOLIDATE);
 
    mProject->GetTrackPanel()->RefreshTrack(wt);
+}
+
+void TracksMenuCommands::OnTrackGain()
+{
+   /// This will pop up the track gain dialog for specified track
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+   const auto wt = static_cast<WaveTrack*>(track);
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider(wt);
+   if (slider->ShowDialog()) {
+      mProject->SetTrackGain(wt, slider);
+   }
 }
