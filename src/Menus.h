@@ -43,8 +43,6 @@ public:
 wxUint32 GetUpdateFlags();
 
 private:
-double NearestZeroCrossing(double t0);
-
         // Selecting a tool from the keyboard
 
 void SetTool(int tool);
@@ -96,8 +94,6 @@ void OnSelSetExtendRight();
 
 void OnSelToStart();
 void OnSelToEnd();
-
-void OnZeroCrossing();
 
 void OnLockPlayRegion();
 void OnUnlockPlayRegion();
