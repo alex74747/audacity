@@ -89,8 +89,8 @@ class MixerBoardFrame;
 struct AudioIOStartStreamOptions;
 
 class WaveTrackArray;
-class Regions;
 
+class EditMenuCommands;
 class ViewMenuCommands;
 class TransportMenuCommands;
 class TracksMenuCommands;
@@ -190,6 +190,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
    void GetPlayRegion(double* playRegionStart, double *playRegionEnd);
    bool IsPlayRegionLocked() { return mLockPlayRegion; }
+   void SetPlayRegionLocked(bool locked) { mLockPlayRegion = locked; }
 
    void SetSel0(double);        //Added by STM
    void SetSel1(double);        //Added by STM
@@ -264,8 +265,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
    TrackPanel * GetTrackPanel(){return mTrackPanel;}
 
-   // Creates the window as needed on demand:
-   HistoryWindow *GetHistoryWindow();
+   HistoryWindow *GetHistoryWindow(bool createAsNeeded = false);
 
    bool GetIsEmpty();
 
@@ -341,18 +341,11 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    void RedrawProject(const bool bForceWaveTracks = false);
    void RefreshCursor();
    void SelectNone();
-   void SelectAllIfNone();
    void Zoom(double level);
    void ZoomBy(double multiplier);
    void Rewind(bool shift);
    void SkipEnd(bool shift);
 
-
-   typedef bool (WaveTrack::* EditFunction)(double, double);
-   typedef bool (WaveTrack::* EditDestFunction)(double, double, Track**);
-
-   void EditByLabel(EditFunction action, bool bSyncLockedTracks);
-   void EditClipboardByLabel(EditDestFunction action );
 
    bool IsSyncLocked();
    void SetSyncLock(bool flag);
@@ -511,12 +504,11 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
  private:
 
    void OnCapture(wxCommandEvent & evt);
-   void ClearClipboard();
+private:
    void InitialState();
 public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                              // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
-private:
    void PopState(TrackList * l);
 
 public:
@@ -524,8 +516,6 @@ public:
 
 private:
    void UpdateMixerBoard();
-
-   void GetRegionsByLabel( Regions &regions );
 
    void AutoSave();
    void DeleteCurrentAutoSaveFile();
@@ -559,12 +549,15 @@ private:
 
    TrackList *mLastSavedTracks;
 
+public:
    // Clipboard (static because it is shared by all projects)
    static TrackList *msClipboard;
+
    static AudacityProject *msClipProject;
    static double msClipT0;
    static double msClipT1;
 
+private:
    //shared by all projects
    static ODLock *msAllProjectDeleteMutex;
 
@@ -700,6 +693,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   EditMenuCommands *mEditMenuCommands;
    ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;

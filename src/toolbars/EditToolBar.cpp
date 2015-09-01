@@ -54,6 +54,7 @@
 #include "../Theme.h"
 #include "../Track.h"
 #include "../UndoManager.h"
+#include "../menus/EditMenuCommands.h"
 #include "../menus/ViewMenuCommands.h"
 #include "../menus/TracksMenuCommands.h"
 #include "../widgets/AButton.h"
@@ -233,25 +234,25 @@ void EditToolBar::OnButton(wxCommandEvent &event)
 
    switch (id) {
       case ETBCutID:
-         if (!busy) p->OnCut();
+         if (!busy) EditMenuCommands(p).OnCut();
          break;
       case ETBCopyID:
-         if (!busy) p->OnCopy();
+         if (!busy) EditMenuCommands(p).OnCopy();
          break;
       case ETBPasteID:
-         if (!busy) p->OnPaste();
+         if (!busy) EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
-         if (!busy) p->OnTrim();
+         if (!busy) EditMenuCommands(p).OnTrim();
          break;
       case ETBSilenceID:
-         if (!busy) p->OnSilence();
+         if (!busy) EditMenuCommands(p).OnSilence();
          break;
       case ETBUndoID:
-         if (!busy) p->OnUndo();
+         if (!busy) EditMenuCommands(p).OnUndo();
          break;
       case ETBRedoID:
-         if (!busy) p->OnRedo();
+         if (!busy) EditMenuCommands(p).OnRedo();
          break;
 #ifdef EXPERIMENTAL_SYNC_LOCK
       case ETBSyncLockID:

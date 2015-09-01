@@ -28,21 +28,21 @@ void PopulateEffectsMenu(CommandManager *c, EffectType type, int batchflags, int
 void AddEffectMenuItems(CommandManager *c, EffectPlugs & plugs, int batchflags, int realflags, bool isDefault);
 void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, const PluginIDList & plugs, const wxArrayInt & flags, bool isDefault);
 void CreateRecentFilesMenu(CommandManager *c);
-void ModifyUndoMenuItems();
 
 public:
+void ModifyUndoMenuItems();
+
 void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
 private:
 int GetFocusedFrame();
+
+public:
 wxUint32 GetUpdateFlags();
 
-double NearestZeroCrossing(double t0);
-
 private:
-
         // Selecting a tool from the keyboard
 
 void SetTool(int tool);
@@ -92,16 +92,8 @@ void OnCursorLongJumpRight();
 void OnSelSetExtendLeft();
 void OnSelSetExtendRight();
 
-void OnSetLeftSelection();
-void OnSetRightSelection();
-
 void OnSelToStart();
 void OnSelToEnd();
-
-void OnZeroCrossing();
-
-void OnLockPlayRegion();
-void OnUnlockPlayRegion();
 
 void OnSnapToOff();
 void OnSnapToNearest();
@@ -126,65 +118,12 @@ void OnExportMultiple();
 void OnExportLabels();
 void OnExportMIDI();
 
-void OnPreferences();
-
 void OnPageSetup();
 void OnPrint();
 
 void OnExit();
 
-        // Edit Menu
-
 public:
-void OnUndo();
-void OnRedo();
-
-void OnCut();
-void OnSplitCut();
-void OnCopy();
-
-void OnPaste();
-private:
-bool HandlePasteText(); // Handle text paste (into active label), if any. Return true if pasted.
-bool HandlePasteNothingSelected(); // Return true if nothing selected, regardless of paste result.
-public:
-
-void OnPasteNewLabel();
-void OnPasteOver();
-void OnTrim();
-
-void OnDelete();
-void OnSplitDelete();
-void OnSilence();
-
-void OnSplit();
-void OnSplitNew();
-void OnJoin();
-void OnDisjoin();
-void OnDuplicate();
-
-void OnCutLabels();
-void OnSplitCutLabels();
-void OnCopyLabels();
-void OnDeleteLabels();
-void OnSplitDeleteLabels();
-void OnSilenceLabels();
-void OnSplitLabels();
-void OnJoinLabels();
-void OnDisjoinLabels();
-
-void OnSelectAll();
-void OnSelectNone();
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-void OnToggleSpectralSelection();
-void DoNextPeakFrequency(bool up);
-void OnNextHigherPeakFrequency();
-void OnNextLowerPeakFrequency();
-#endif
-void OnSelectCursorEnd();
-void OnSelectStartCursor();
-void OnSelectSyncLockSel();
-void OnSelectAllTracks();
 
         // View Menu
 
@@ -203,16 +142,7 @@ void OnImportRaw();
 
 void OnEditMetadata();
 
-private:
-SelectedRegion mRegionSave;
 public:
-void OnSelectionSave();
-void OnSelectionRestore();
-
-void OnCursorTrackStart();
-void OnCursorTrackEnd();
-void OnCursorSelStart();
-void OnCursorSelEnd();
 
 // Effect Menu
 

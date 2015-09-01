@@ -38,6 +38,7 @@
 #include "Project.h"
 #include "Internat.h"
 #include "commands/CommandManager.h"
+#include "menus/EditMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "effects/Effect.h"
 #include "../images/Arrow.xpm"
@@ -354,7 +355,7 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
       mList->EnsureVisible(i);
 
       project->Import(files[i]);
-      project->OnSelectAll();
+      EditMenuCommands(project).OnSelectAll();
       if (!mBatchCommands.ApplyChain()) {
          break;
       }
@@ -364,7 +365,7 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
       }
       UndoManager *um = project->GetUndoManager();
       um->ClearStates();
-      project->OnSelectAll();
+      EditMenuCommands(project).OnSelectAll();
       TracksMenuCommands(project).OnRemoveTracks();
    }
    TracksMenuCommands(project).OnRemoveTracks();
