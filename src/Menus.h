@@ -67,12 +67,7 @@ public:
         // Audio I/O Commands
 
 void OnStop();
-void OnPause();
-void OnRecord();
-void OnRecordAppend();
 void OnStopSelect();
-void OnSkipStart();
-void OnSkipEnd();
 void OnSeekLeftShort();
 void OnSeekRightShort();
 void OnSeekLeftLong();
@@ -81,9 +76,6 @@ void OnSeekRightLong();
         // Different posibilities for playing sound
 
 bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
-void OnPlayStop();
-bool DoPlayStopSelect(bool click, bool shift);
-void OnPlayStopSelect();
 void OnPlayOneSecond();
 void OnPlayToSelection();
 void OnPlayBeforeSelectionStart();
@@ -92,7 +84,6 @@ void OnPlayBeforeSelectionEnd();
 void OnPlayAfterSelectionEnd();
 void OnPlayBeforeAndAfterSelectionStart();
 void OnPlayBeforeAndAfterSelectionEnd();
-void OnPlayLooped();
 void OnPlayCutPreview();
 
         // Wave track control
@@ -296,17 +287,6 @@ void OnShowToolsToolBar();
 void OnShowTranscriptionToolBar();
 void OnResetToolBars();
 
-        // Transport Menu
-
-void OnSoundActivated();
-void OnToggleSoundActivated();
-void OnTogglePinnedHead();
-void OnTogglePlayRecording();
-void OnToggleSWPlaythrough();
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-   void OnToogleAutomatedInputLevelAdjustment();
-#endif
-void OnRescanDevices();
 
 // Import Submenu
 void OnImport();
@@ -332,10 +312,7 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-// Tracks menu
-void OnTimerRecord();
-
-        // Effect Menu
+// Effect Menu
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);

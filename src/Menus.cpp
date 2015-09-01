@@ -34,6 +34,7 @@ simplifies construction of menu items.
 #include "Project.h"
 
 #include <cfloat>
+#include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
 
@@ -108,11 +109,8 @@ simplifies construction of menu items.
 #include "PlatformCompatibility.h"
 #include "FileNames.h"
 #include "TimeDialog.h"
-#include "TimerRecordDialog.h"
-#include "SoundActivatedRecord.h"
 
 #include "SplashDialog.h"
-#include "DeviceManager.h"
 
 #include "Snap.h"
 
@@ -134,19 +132,6 @@ simplifies construction of menu items.
 #include "prefs/TracksPrefs.h"
 
 #include "widgets/Meter.h"
-
-// Post Timer Recording Actions
-// Ensure this matches the enum in TimerRecordDialog.cpp
-enum {
-   POST_TIMER_RECORD_STOPPED = -3,
-   POST_TIMER_RECORD_CANCEL_WAIT,
-   POST_TIMER_RECORD_CANCEL,
-   POST_TIMER_RECORD_NOTHING,
-   POST_TIMER_RECORD_CLOSE,
-   POST_TIMER_RECORD_RESTART,
-   POST_TIMER_RECORD_SHUTDOWN
-};
-
 #include "commands/CommandFunctors.h"
 
 //
@@ -741,57 +726,9 @@ void AudacityProject::CreateMenusAndCommands()
       // Transport Menu
       /////////////////////////////////////////////////////////////////////////////
 
-      /*i18n-hint: 'Transport' is the name given to the set of controls that
-      play, record, pause etc. */
-      c->BeginMenu(_("T&ransport"));
-      c->SetDefaultFlags(CanStopAudioStreamFlag, CanStopAudioStreamFlag);
 
-      /* i18n-hint: (verb) Start or Stop audio playback*/
-      c->AddItem(wxT("PlayStop"), _("Pl&ay/Stop"), FN(OnPlayStop), wxT("Space"));
-      c->AddItem(wxT("PlayStopSelect"), _("Play/Stop and &Set Cursor"), FN(OnPlayStopSelect), wxT("X"));
-      c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
-         WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag,
-         WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag);
+      mTransportMenuCommands->Create(c);
 
-      // Scrubbing sub-menu
-      GetScrubber().AddMenuItems();
-
-      c->AddItem(wxT("Pause"), _("&Pause"), FN(OnPause), wxT("P"));
-      c->AddItem(wxT("SkipStart"), _("S&kip to Start"), FN(OnSkipStart), wxT("Home"),
-                 AudioIONotBusyFlag, AudioIONotBusyFlag);
-      c->AddItem(wxT("SkipEnd"), _("Skip to E&nd"), FN(OnSkipEnd), wxT("End"),
-                 WaveTracksExistFlag | AudioIONotBusyFlag,
-                 WaveTracksExistFlag | AudioIONotBusyFlag);
-
-      c->AddSeparator();
-
-      c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
-                         AudioIONotBusyFlag | CanStopAudioStreamFlag);
-      /* i18n-hint: (verb)*/
-      c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
-      c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
-      c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
-
-      c->AddSeparator();
-
-      c->AddCheck(wxT("PinnedHead"), _("Pinned Recording/Playback &Head"),
-                  FN(OnTogglePinnedHead), 0,
-                  // Switching of scrolling on and off is permitted even during transport
-                  AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-      c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
-      c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
-
-      // Sound Activated recording options
-      c->AddCheck(wxT("SoundActivation"), _("Sound A&ctivated Recording (on/off)"), FN(OnToggleSoundActivated), 0);
-      c->AddItem(wxT("SoundActivationLevel"), _("Sound Activation Le&vel..."), FN(OnSoundActivated));
-
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-      c->AddCheck(wxT("AutomatedInputLevelAdjustmentOnOff"), _("A&utomated Recording Level Adjustment (on/off)"), FN(OnToogleAutomatedInputLevelAdjustment), 0);
-#endif
-      c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
-
-      c->EndMenu();
 
       //////////////////////////////////////////////////////////////////////////
       // Tracks Menu (formerly Project Menu)
@@ -922,6 +859,7 @@ void AudacityProject::CreateMenusAndCommands()
       SetMenuBar(menubar.release());
    }
 
+   mTransportMenuCommands->CreateNonMenuCommands(c);
    mTracksMenuCommands->CreateNonMenuCommands(c);
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
@@ -941,10 +879,7 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
-   /* i18n-hint: (verb) Start playing audio*/
-   c->AddCommand(wxT("Play"), _("Play"), FN(OnPlayStop),
-                 WaveTracksExistFlag | AudioIONotBusyFlag,
-                 WaveTracksExistFlag | AudioIONotBusyFlag);
+
    /* i18n-hint: (verb) Stop playing audio*/
    c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
                  AudioIOBusyFlag,
@@ -2084,16 +2019,6 @@ void AudacityProject::OnPlayBeforeAndAfterSelectionEnd()
 }
 
 
-void AudacityProject::OnPlayLooped()
-{
-   if( !MakeReadyToPlay(true) )
-      return;
-
-   // Now play in a loop
-   // Will automatically set mLastPlayMode
-   GetControlToolBar()->PlayCurrentRegion(true);
-}
-
 void AudacityProject::OnPlayCutPreview()
 {
    if ( !MakeReadyToPlay(false, true) )
@@ -2103,150 +2028,11 @@ void AudacityProject::OnPlayCutPreview()
    GetControlToolBar()->PlayCurrentRegion(false, true);
 }
 
-void AudacityProject::OnPlayStop()
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-
-   //If this project is playing, stop playing, make sure everything is unpaused.
-   if (gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      toolbar->SetPlay(false);        //Pops
-      toolbar->SetStop(true);         //Pushes stop down
-      toolbar->StopPlaying();
-   }
-   else if (gAudioIO->IsStreamActive()) {
-      //If this project isn't playing, but another one is, stop playing the old and start the NEW.
-
-      //find out which project we need;
-      AudacityProject* otherProject = NULL;
-      for(unsigned i=0; i<gAudacityProjects.size(); i++) {
-         if(gAudioIO->IsStreamActive(gAudacityProjects[i]->GetAudioIOToken())) {
-            otherProject=gAudacityProjects[i].get();
-            break;
-         }
-      }
-
-      //stop playing the other project
-      if(otherProject) {
-         ControlToolBar *otherToolbar = otherProject->GetControlToolBar();
-         otherToolbar->SetPlay(false);        //Pops
-         otherToolbar->SetStop(true);         //Pushes stop down
-         otherToolbar->StopPlaying();
-      }
-
-      //play the front project
-      if (!gAudioIO->IsBusy()) {
-         //update the playing area
-         TP_DisplaySelection();
-         //Otherwise, start playing (assuming audio I/O isn't busy)
-         //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
-         toolbar->SetStop(false);
-
-         // Will automatically set mLastPlayMode
-         toolbar->PlayCurrentRegion(false);
-      }
-   }
-   else if (!gAudioIO->IsBusy()) {
-      //Otherwise, start playing (assuming audio I/O isn't busy)
-      //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
-      toolbar->SetStop(false);
-
-      // Will automatically set mLastPlayMode
-      toolbar->PlayCurrentRegion(false);
-   }
-}
-
 void AudacityProject::OnStop()
 {
    wxCommandEvent evt;
 
    GetControlToolBar()->OnStop(evt);
-}
-
-void AudacityProject::OnPause()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnPause(evt);
-}
-
-void AudacityProject::OnRecord()
-{
-   wxCommandEvent evt;
-   evt.SetInt(2); // 0 is default, use 1 to set shift on, 2 to clear it
-
-   GetControlToolBar()->OnRecord(evt);
-}
-
-void AudacityProject::OnRecordAppend()
-{
-   wxCommandEvent evt;
-   evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
-
-   GetControlToolBar()->OnRecord(evt);
-}
-
-// The code for "OnPlayStopSelect" is simply the code of "OnPlayStop" and "OnStopSelect" merged.
-void AudacityProject::OnPlayStopSelect()
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-   wxCommandEvent evt;
-   if (DoPlayStopSelect(false, false))
-      toolbar->OnStop(evt);
-   else if (!gAudioIO->IsBusy()) {
-      //Otherwise, start playing (assuming audio I/O isn't busy)
-      //toolbar->SetPlay(true); // Not needed as set in PlayPlayRegion()
-      toolbar->SetStop(false);
-
-      // Will automatically set mLastPlayMode
-      toolbar->PlayCurrentRegion(false);
-   }
-}
-
-bool AudacityProject::DoPlayStopSelect(bool click, bool shift)
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-
-   //If busy, stop playing, make sure everything is unpaused.
-   if (GetScrubber().HasStartedScrubbing() ||
-       gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      toolbar->SetPlay(false);        //Pops
-      toolbar->SetStop(true);         //Pushes stop down
-
-      // change the selection
-      auto time = gAudioIO->GetStreamTime();
-      auto &selection = mViewInfo.selectedRegion;
-      if (shift && click) {
-         // Change the region selection, as if by shift-click at the play head
-         auto t0 = selection.t0(), t1 = selection.t1();
-         if (time < t0)
-            // Grow selection
-            t0 = time;
-         else if (time > t1)
-            // Grow selection
-            t1 = time;
-         else {
-            // Shrink selection, changing the nearer boundary
-            if (fabs(t0 - time) < fabs(t1 - time))
-               t0 = time;
-            else
-               t1 = time;
-         }
-         selection.setTimes(t0, t1);
-      }
-      else if (click){
-         // avoid a point at negative time.
-         time = wxMax( time, 0 );
-         // Set a point selection, as if by a click at the play head
-         selection.setTimes(time, time);
-      } else
-         // How stop and set cursor always worked
-         // -- change t0, collapsing to point only if t1 was greater
-         selection.setT0(time, false);
-
-      ModifyState(false);           // without bWantsAutoSave
-      return true;
-   }
-   return false;
 }
 
 void AudacityProject::OnStopSelect()
@@ -2258,81 +2044,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnToggleSoundActivated()
-{
-   bool pause;
-   gPrefs->Read(wxT("/AudioIO/SoundActivatedRecord"), &pause, false);
-   gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-
-void AudacityProject::OnTogglePinnedHead()
-{
-   bool value = !TracksPrefs::GetPinnedHeadPreference();
-   TracksPrefs::SetPinnedHeadPreference(value, true);
-   ModifyAllProjectToolbarMenus();
-
-   // Change what happens in case transport is in progress right now
-   auto ctb = GetActiveProject()->GetControlToolBar();
-   if (ctb)
-      ctb->StartScrollingIfPreferred();
-
-   auto ruler = GetRulerPanel();
-   if (ruler)
-      // Update button image
-      ruler->UpdateButtonStates();
-
-   auto &scrubber = GetScrubber();
-   if (scrubber.HasStartedScrubbing())
-      scrubber.SetScrollScrubbing(value);
-}
-
-void AudacityProject::OnTogglePlayRecording()
-{
-   bool Duplex;
-   gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, true);
-   gPrefs->Write(wxT("/AudioIO/Duplex"), !Duplex);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-
-void AudacityProject::OnToggleSWPlaythrough()
-{
-   bool SWPlaythrough;
-   gPrefs->Read(wxT("/AudioIO/SWPlaythrough"), &SWPlaythrough, false);
-   gPrefs->Write(wxT("/AudioIO/SWPlaythrough"), !SWPlaythrough);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-
-#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-void AudacityProject::OnToogleAutomatedInputLevelAdjustment()
-{
-   bool AVEnabled;
-   gPrefs->Read(wxT("/AudioIO/AutomatedInputLevelAdjustment"), &AVEnabled, false);
-   gPrefs->Write(wxT("/AudioIO/AutomatedInputLevelAdjustment"), !AVEnabled);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
-}
-#endif
-
-void AudacityProject::OnSkipStart()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnRewind(evt);
-   ModifyState(false);
-}
-
-void AudacityProject::OnSkipEnd()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnFF(evt);
-   ModifyState(false);
 }
 
 void AudacityProject::OnSeekLeftShort()
@@ -2413,10 +2124,10 @@ void AudacityProject::OnMoveToLabel(bool next)
       if (i >= 0) {
          const LabelStruct* label = lt->GetLabel(i);
          if (IsAudioActive()) {
-            OnPlayStop();     // stop
+            TransportMenuCommands{this}.OnPlayStop();     // stop
             GetViewInfo().selectedRegion = label->selectedRegion;
             RedrawProject();
-            OnPlayStop();     // play
+            TransportMenuCommands{this}.OnPlayStop();     // play
          }
          else {
             GetViewInfo().selectedRegion = label->selectedRegion;
@@ -5373,91 +5084,6 @@ void AudacityProject::OnCursorSelEnd()
    ModifyState(false);
    mTrackPanel->ScrollIntoView(mViewInfo.selectedRegion.t1());
    mTrackPanel->Refresh(false);
-}
-
-void AudacityProject::OnTimerRecord()
-{
-   // MY: Due to improvements in how Timer Recording saves and/or exports
-   // it is now safer to disable Timer Recording when there is more than
-   // one open project.
-   if (GetOpenProjectCount() > 1) {
-      wxMessageBox(_("Timer Recording cannot be used with more than one open project.\n\nPlease close any additional projects and try again."),
-                   _("Timer Recording"),
-                   wxICON_INFORMATION | wxOK);
-      return;
-   }
-
-   // MY: If the project has unsaved changes then we no longer allow access
-   // to Timer Recording.  This decision has been taken as the safest approach
-   // preventing issues surrounding "dirty" projects when Automatic Save/Export
-   // is used in Timer Recording.
-   if ((GetUndoManager()->UnsavedChanges()) && (ProjectHasTracks() || mEmptyCanBeDirty)) {
-      wxMessageBox(_("Timer Recording cannot be used while you have unsaved changes.\n\nPlease save or close this project and try again."),
-                   _("Timer Recording"),
-                   wxICON_INFORMATION | wxOK);
-      return;
-   }
-   // We use this variable to display "Current Project" in the Timer Recording save project field
-   bool bProjectSaved = IsProjectSaved();
-
-   //we break the prompting and waiting dialogs into two sections
-   //because they both give the user a chance to click cancel
-   //and therefore remove the newly inserted track.
-
-   TimerRecordDialog dialog(this, bProjectSaved); /* parent, project saved? */
-   int modalResult = dialog.ShowModal();
-   if (modalResult == wxID_CANCEL)
-   {
-      // Cancelled before recording - don't need to do anyting.
-   }
-   else
-   {
-      int iTimerRecordingOutcome = dialog.RunWaitDialog();
-      switch (iTimerRecordingOutcome) {
-      case POST_TIMER_RECORD_CANCEL_WAIT:
-         // Canceled on the wait dialog
-         RollbackState();
-         break;
-      case POST_TIMER_RECORD_CANCEL:
-         // RunWaitDialog() shows the "wait for start" as well as "recording" dialog
-         // if it returned POST_TIMER_RECORD_CANCEL it means the user cancelled while the recording, so throw out the fresh track.
-         // However, we can't undo it here because the PushState() is called in TrackPanel::OnTimer(),
-         // which is blocked by this function.
-         // so instead we mark a flag to undo it there.
-         mTimerRecordCanceled = true;
-         break;
-      case POST_TIMER_RECORD_NOTHING:
-         // No action required
-         break;
-      case POST_TIMER_RECORD_CLOSE:
-         // Quit Audacity
-         exit(0);
-         break;
-      case POST_TIMER_RECORD_RESTART:
-         // Restart System
-#ifdef __WINDOWS__
-         system("shutdown /r /f /t 30");
-#endif
-         break;
-      case POST_TIMER_RECORD_SHUTDOWN:
-         // Shutdown System
-#ifdef __WINDOWS__
-         system("shutdown /s /f /t 30");
-#endif
-         break;
-      }
-   }
-}
-
-void AudacityProject::OnSoundActivated()
-{
-   SoundActivatedRecord dialog(this /* parent */ );
-   dialog.ShowModal();
-}
-
-void AudacityProject::OnRescanDevices()
-{
-   DeviceManager::Instance()->Rescan();
 }
 
 void AudacityProject::OnApplyChain()

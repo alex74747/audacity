@@ -1217,6 +1217,7 @@
 		5EF17C231D1F0A690090A642 /* ScrubbingToolBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EF17C211D1F0A690090A642 /* ScrubbingToolBar.cpp */; };
 		5E6B19F21F2CD1A2009A2CB0 /* HelpMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */; };
 		5E5DC4841F2CD28B00E8CDA9 /* TracksMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4821F2CD28B00E8CDA9 /* TracksMenuCommands.cpp */; };
+		5E5DC4871F2CD42100E8CDA9 /* TransportMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
 		ED15214D163C22F000451B5F /* lsr.c in Sources */ = {isa = PBXBuildFile; fileRef = ED152123163C220300451B5F /* lsr.c */; };
@@ -3009,6 +3010,8 @@
 		5E6B19F11F2CD1A2009A2CB0 /* HelpMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpMenuCommands.h; path = menus/HelpMenuCommands.h; sourceTree = "<group>"; };
 		5E5DC4821F2CD28B00E8CDA9 /* TracksMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TracksMenuCommands.cpp; path = menus/TracksMenuCommands.cpp; sourceTree = "<group>"; };
 		5E5DC4831F2CD28B00E8CDA9 /* TracksMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TracksMenuCommands.h; path = menus/TracksMenuCommands.h; sourceTree = "<group>"; };
+		5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransportMenuCommands.cpp; path = menus/TransportMenuCommands.cpp; sourceTree = "<group>"; };
+		5E5DC4861F2CD42100E8CDA9 /* TransportMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransportMenuCommands.h; path = menus/TransportMenuCommands.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
 		82FF184E13CF01A600C1B664 /* dBTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dBTable.h; path = sbsms/src/dBTable.h; sourceTree = "<group>"; };
 		82FF184F13CF01A600C1B664 /* slide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = slide.cpp; path = sbsms/src/slide.cpp; sourceTree = "<group>"; };
@@ -5586,6 +5589,8 @@
 				5E6B19F11F2CD1A2009A2CB0 /* HelpMenuCommands.h */,
 				5E5DC4821F2CD28B00E8CDA9 /* TracksMenuCommands.cpp */,
 				5E5DC4831F2CD28B00E8CDA9 /* TracksMenuCommands.h */,
+				5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */,
+				5E5DC4861F2CD42100E8CDA9 /* TransportMenuCommands.h */,
 			);
 			name = menus;
 			sourceTree = "<group>";
@@ -7651,6 +7656,7 @@
 				28F2CED5181867BB00573D61 /* valnum.cpp in Sources */,
 				EDFCEB9C18894AE600C98E51 /* OpenSaveCommands.cpp in Sources */,
 				EDFCEBA618894B2A00C98E51 /* RealFFTf48x.cpp in Sources */,
+				5E5DC4871F2CD42100E8CDA9 /* TransportMenuCommands.cpp in Sources */,
 				EDFCEBA718894B2A00C98E51 /* SseMathFuncs.cpp in Sources */,
 				EDFCEBB518894B9E00C98E51 /* Equalization48x.cpp in Sources */,
 				2801127B1943EE0E00D98A16 /* HelpSystem.cpp in Sources */,

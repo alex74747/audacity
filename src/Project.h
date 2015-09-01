@@ -99,6 +99,7 @@ class Regions;
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class TransportMenuCommands;
 class TracksMenuCommands;
 class HelpMenuCommands;
 
@@ -665,8 +666,12 @@ private:
    void SetNormalizedWindowState(wxRect pSizeAndLocation) {  mNormalizedWindowState = pSizeAndLocation;   }
    wxRect GetNormalizedWindowState() const { return mNormalizedWindowState;   }
 
-   bool IsTimerRecordCancelled(){return mTimerRecordCanceled;}
-   void ResetTimerRecordFlag(){mTimerRecordCanceled=false;}
+   bool IsTimerRecordCancelled() const {return mTimerRecordCanceled;}
+   void SetTimerRecordFlag() { mTimerRecordCanceled = true; }
+   void ResetTimerRecordFlag() { mTimerRecordCanceled = false; }
+
+   bool EmptyCanBeDirty() const { return mEmptyCanBeDirty; }
+
  private:
    //sort method used by OnSortName and OnSortTime
    //currently only supported flags are kAudacitySortByName and kAudacitySortByName
@@ -740,6 +745,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   TransportMenuCommands *mTransportMenuCommands;
    TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 

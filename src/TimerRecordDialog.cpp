@@ -37,6 +37,7 @@
 #include "Project.h"
 #include "Internat.h"
 #include "Prefs.h"
+#include "menus/TransportMenuCommands.h"
 #include "widgets/NumericTextCtrl.h"
 #include "widgets/HelpSystem.h"
 
@@ -62,7 +63,7 @@ enum {
 };
 
 // Post Timer Recording Actions
-// Ensure this matches the enum in Menus.cpp
+// Ensure this matches the enum in TransportMenuCommands.cpp
 enum {
    POST_TIMER_RECORD_STOPPED = -3,
    POST_TIMER_RECORD_CANCEL_WAIT,
@@ -515,7 +516,7 @@ int TimerRecordDialog::RunWaitDialog()
       return POST_TIMER_RECORD_CANCEL_WAIT;
    } else {
       // Record for specified time.
-      pProject->OnRecord();
+      TransportMenuCommands(pProject).OnRecord();
       bool bIsRecording = true;
 
       wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString(m_pTimerAfterCompleteChoiceCtrl->GetSelection());
