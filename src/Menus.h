@@ -95,9 +95,6 @@ void OnSelSetExtendRight();
 void OnSelToStart();
 void OnSelToEnd();
 
-void OnLockPlayRegion();
-void OnUnlockPlayRegion();
-
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();

@@ -80,6 +80,7 @@ array of Ruler::Label.
 #include "../NumberScale.h"
 #include "../Prefs.h"
 #include "../Snap.h"
+#include "../menus/EditMenuCommands.h"
 
 using std::min;
 using std::max;
@@ -2003,7 +2004,7 @@ void AdornedRulerPanel::OnMouseEvents(wxMouseEvent &evt)
       // Temporarily unlock locked play region
       if (mPlayRegionLock && evt.LeftDown()) {
          //mPlayRegionLock = true;
-         mProject->OnUnlockPlayRegion();
+         EditMenuCommands(mProject).OnUnlockPlayRegion();
       }
 
       mLeftDownClick = mQuickPlayPos;
@@ -2213,7 +2214,7 @@ void AdornedRulerPanel::OnMouseEvents(wxMouseEvent &evt)
       if (mPlayRegionLock) {
          // Restore Locked Play region
          SetPlayRegion(mOldPlayRegionStart, mOldPlayRegionEnd);
-         mProject->OnLockPlayRegion();
+         EditMenuCommands(mProject).OnLockPlayRegion();
          // and release local lock
          mPlayRegionLock = false;
       }
@@ -2340,9 +2341,9 @@ void AdornedRulerPanel::OnAutoScroll(wxCommandEvent&)
 void AdornedRulerPanel::OnLockPlayRegion(wxCommandEvent&)
 {
    if (mProject->IsPlayRegionLocked())
-      mProject->OnUnlockPlayRegion();
+      EditMenuCommands(mProject).OnUnlockPlayRegion();
    else
-      mProject->OnLockPlayRegion();
+      EditMenuCommands(mProject).OnLockPlayRegion();
 }
 
 

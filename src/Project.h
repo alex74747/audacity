@@ -190,6 +190,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
 
    void GetPlayRegion(double* playRegionStart, double *playRegionEnd);
    bool IsPlayRegionLocked() { return mLockPlayRegion; }
+   void SetPlayRegionLocked(bool locked) { mLockPlayRegion = locked; }
 
    void SetSel0(double);        //Added by STM
    void SetSel1(double);        //Added by STM

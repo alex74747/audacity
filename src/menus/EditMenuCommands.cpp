@@ -9,6 +9,7 @@
 #include "../NoteTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../widgets/Ruler.h"
 #include "../TimeDialog.h"
 #include "../TimeTrack.h"
 #include "../TrackPanel.h"
@@ -223,6 +224,22 @@ void EditMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("SelRestore"), _("Regio&n Restore"), FN(OnSelectionRestore),
       TracksExistFlag,
       TracksExistFlag);
+
+
+   c->AddSeparator();
+
+   /////////////////////////////////////////////////////////////////////////////
+
+   c->BeginSubMenu(_("Pla&y Region"));
+   {
+      c->AddItem(wxT("LockPlayRegion"), _("&Lock"), FN(OnLockPlayRegion),
+         PlayRegionNotLockedFlag,
+         PlayRegionNotLockedFlag);
+      c->AddItem(wxT("UnlockPlayRegion"), _("&Unlock"), FN(OnUnlockPlayRegion),
+         PlayRegionLockedFlag,
+         PlayRegionLockedFlag);
+   }
+   c->EndSubMenu();
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -2004,4 +2021,24 @@ void EditMenuCommands::OnSelectionRestore()
    mProject->ModifyState(false);
 
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnLockPlayRegion()
+{
+   double start, end;
+   mProject->GetPlayRegion(&start, &end);
+   if (start >= mProject->GetTracks()->GetEndTime()) {
+      wxMessageBox(_("Cannot lock region beyond\nend of project."),
+         _("Error"));
+   }
+   else {
+      mProject->SetPlayRegionLocked(true);
+      mProject->GetRulerPanel()->Refresh(false);
+   }
+}
+
+void EditMenuCommands::OnUnlockPlayRegion()
+{
+   mProject->SetPlayRegionLocked(false);
+   mProject->GetRulerPanel()->Refresh(false);
 }

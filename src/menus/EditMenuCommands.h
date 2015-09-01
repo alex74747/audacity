@@ -94,6 +94,12 @@ private:
    void OnSelectionSave();
    void OnSelectionRestore();
 
+public:
+   void OnLockPlayRegion();
+   void OnUnlockPlayRegion();
+
+private:
+
    AudacityProject *const mProject;
    SelectedRegion mRegionSave;
 };
