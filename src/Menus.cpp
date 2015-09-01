@@ -388,23 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->AddSeparator();
-
-      /////////////////////////////////////////////////////////////////////////////
-
-      c->BeginSubMenu(_("Pla&y Region"));
-
-      c->AddItem(wxT("LockPlayRegion"), _("&Lock"), FN(OnLockPlayRegion),
-         PlayRegionNotLockedFlag,
-         PlayRegionNotLockedFlag);
-      c->AddItem(wxT("UnlockPlayRegion"), _("&Unlock"), FN(OnUnlockPlayRegion),
-         PlayRegionLockedFlag,
-         PlayRegionLockedFlag);
-
-      c->EndSubMenu();
-
-      /////////////////////////////////////////////////////////////////////////////
-
 #ifndef __WXMAC__
       c->AddSeparator();
 #endif
@@ -2607,26 +2590,6 @@ void AudacityProject::OnHelpWelcome()
 void AudacityProject::OnSeparator()
 {
 
-}
-
-void AudacityProject::OnLockPlayRegion()
-{
-   double start, end;
-   GetPlayRegion(&start, &end);
-   if (start >= mTracks->GetEndTime()) {
-       wxMessageBox(_("Cannot lock region beyond\nend of project."),
-                    _("Error"));
-   }
-   else {
-      mLockPlayRegion = true;
-      mRuler->Refresh(false);
-   }
-}
-
-void AudacityProject::OnUnlockPlayRegion()
-{
-   mLockPlayRegion = false;
-   mRuler->Refresh(false);
 }
 
 void AudacityProject::OnSnapToOff()
