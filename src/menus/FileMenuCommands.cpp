@@ -2,6 +2,7 @@
 
 #include "../Dependencies.h"
 #include "../Project.h"
+#include "../Tags.h"
 #include "../commands/CommandManager.h"
 
 #define FN(X) new ObjectCommandFunctor<FileMenuCommands>(this, &FileMenuCommands:: X )
@@ -44,6 +45,10 @@ void FileMenuCommands::Create(CommandManager *c)
 #endif
 
    c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata..."), FN(OnEditMetadata));
 }
 
 void FileMenuCommands::OnNew()
@@ -81,4 +86,10 @@ void FileMenuCommands::OnSaveCompressed()
 void FileMenuCommands::OnCheckDependencies()
 {
    ::ShowDependencyDialogIfNeeded(mProject, false);
+}
+
+void FileMenuCommands::OnEditMetadata()
+{
+   if (mProject->GetTags()->ShowEditDialog(mProject, _("Edit Metadata Tags"), true))
+      mProject->PushState(_("Edit Metadata Tags"), _("Edit Metadata"));
 }

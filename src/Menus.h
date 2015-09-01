@@ -92,8 +92,6 @@ void OnImportLabels();
 void OnImportMIDI();
 void OnImportRaw();
 
-void OnEditMetadata();
-
 public:
 
 // Effect Menu

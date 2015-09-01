@@ -270,10 +270,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->AddSeparator();
 
-   c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata..."), FN(OnEditMetadata));
-
-   c->AddSeparator();
-
    /////////////////////////////////////////////////////////////////////////////
 
    c->BeginSubMenu(_("&Import"));
@@ -1970,12 +1966,6 @@ void AudacityProject::OnImportRaw()
 
    AddImportedTracks(fileName, newTracks, numTracks);
    HandleResize(); // Adjust scrollers for new track sizes.
-}
-
-void AudacityProject::OnEditMetadata()
-{
-   if (mTags->ShowEditDialog(this, _("Edit Metadata Tags"), true))
-      PushState(_("Edit Metadata Tags"), _("Edit Metadata"));
 }
 
 void AudacityProject::OnApplyChain()

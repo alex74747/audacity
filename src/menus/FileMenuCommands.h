@@ -26,6 +26,7 @@ private:
    void OnSaveCompressed();
 #endif
    void OnCheckDependencies();
+   void OnEditMetadata();
 
    AudacityProject *const mProject;
 };
