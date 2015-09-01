@@ -862,10 +862,12 @@ void AudacityProject::CreateMenusAndCommands()
 
    SetMenuBar(menubar);
 
-   c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
-   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
+   mTracksMenuCommands->CreateNonMenuCommands(c);
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
+   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
 
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
@@ -956,21 +958,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
-
-   c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
-   c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
-   c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
-   c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
-   c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
-   c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
-   c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
-   c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
-   c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
-   c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
-   c->AddCommand(wxT("TrackMoveUp"), _("Move focused track up"), FN(OnTrackMoveUp));
-   c->AddCommand(wxT("TrackMoveDown"), _("Move focused track down"), FN(OnTrackMoveDown));
-   c->AddCommand(wxT("TrackMoveTop"), _("Move focused track to top"), FN(OnTrackMoveTop));
-   c->AddCommand(wxT("TrackMoveBottom"), _("Move focused track to bottom"), FN(OnTrackMoveBottom));
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
@@ -2485,230 +2472,6 @@ void AudacityProject::PrevWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
-}
-
-//The following methods operate controls on specified tracks,
-//This will pop up the track panning dialog for specified track
-void AudacityProject::OnTrackPan()
-{
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->PanSlider
-      (static_cast<WaveTrack*>(track));
-   if (slider->ShowDialog()) {
-      SetTrackPan(track, slider);
-   }
-}
-
-void AudacityProject::OnTrackPanLeft()
-{
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->PanSlider
-      (static_cast<WaveTrack*>(track));
-   slider->Decrease(1);
-   SetTrackPan(track, slider);
-}
-
-void AudacityProject::OnTrackPanRight()
-{
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->PanSlider
-      (static_cast<WaveTrack*>(track));
-   slider->Increase(1);
-   SetTrackPan(track, slider);
-}
-
-void AudacityProject::OnTrackGain()
-{
-   /// This will pop up the track gain dialog for specified track
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->GainSlider
-      (static_cast<WaveTrack*>(track));
-   if (slider->ShowDialog()) {
-      SetTrackGain(track, slider);
-   }
-}
-
-void AudacityProject::OnTrackGainInc()
-{
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->GainSlider
-      (static_cast<WaveTrack*>(track));
-   slider->Increase(1);
-   SetTrackGain(track, slider);
-}
-
-void AudacityProject::OnTrackGainDec()
-{
-   Track *const track = mTrackPanel->GetFocusedTrack();
-   if (!track || (track->GetKind() != Track::Wave)) {
-      return;
-   }
-
-   LWSlider *slider = mTrackPanel->GetTrackInfo()->GainSlider
-      (static_cast<WaveTrack*>(track));
-   slider->Decrease(1);
-   SetTrackGain(track, slider);
-}
-
-void AudacityProject::OnTrackMenu()
-{
-   mTrackPanel->OnTrackMenu();
-}
-
-void AudacityProject::OnTrackMute()
-{
-   Track *t = NULL;
-   if (!t) {
-      t = mTrackPanel->GetFocusedTrack();
-      if (!t || (t->GetKind() != Track::Wave))
-         return;
-   }
-   DoTrackMute(t, false);
-}
-
-void AudacityProject::OnTrackSolo()
-{
-   Track *t = NULL;
-   if (!t)
-   {
-      t = mTrackPanel->GetFocusedTrack();
-      if (!t || (t->GetKind() != Track::Wave))
-         return;
-   }
-   DoTrackSolo(t, false);
-}
-
-void AudacityProject::OnTrackClose()
-{
-   Track *t = mTrackPanel->GetFocusedTrack();
-   if (!t)
-      return;
-
-   if (IsAudioActive())
-   {
-      this->TP_DisplayStatusMessage(_("Can't delete track with active audio"));
-      wxBell();
-      return;
-   }
-
-   RemoveTrack(t);
-
-   GetTrackPanel()->UpdateViewIfNoTracks();
-   GetTrackPanel()->Refresh(false);
-}
-
-void AudacityProject::OnTrackMoveUp()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveUp(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveUpID);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-void AudacityProject::OnTrackMoveDown()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveDown(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveDownID);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-void AudacityProject::OnTrackMoveTop()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveUp(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveTopID);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-void AudacityProject::OnTrackMoveBottom()
-{
-   Track *const focusedTrack = mTrackPanel->GetFocusedTrack();
-   if (mTracks->CanMoveDown(focusedTrack)) {
-      MoveTrack(focusedTrack, OnMoveBottomID);
-      mTrackPanel->Refresh(false);
-   }
-}
-
-/// Move a track up, down, to top or to bottom.
-
-void AudacityProject::MoveTrack(Track* target, MoveChoice choice)
-{
-   wxString direction;
-
-   switch (choice)
-   {
-   case OnMoveTopID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Top");
-
-      while (mTracks->CanMoveUp(target)) {
-         if (mTracks->Move(target, true)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && (target->GetKind() == Track::Wave))
-               pMixerBoard->MoveTrackCluster((WaveTrack*)target, true);
-         }
-      }
-      break;
-   case OnMoveBottomID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Bottom");
-
-      while (mTracks->CanMoveDown(target)) {
-         if (mTracks->Move(target, false)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && (target->GetKind() == Track::Wave))
-               pMixerBoard->MoveTrackCluster((WaveTrack*)target, false);
-         }
-      }
-      break;
-   default:
-      bool bUp = (OnMoveUpID == choice);
-      /* i18n-hint: a direction.*/
-      direction = bUp ? _("Up") : _("Down");
-
-      if (mTracks->Move(target, bUp)) {
-         MixerBoard* pMixerBoard = this->GetMixerBoard();
-         if (pMixerBoard && (target->GetKind() == Track::Wave)) {
-            pMixerBoard->MoveTrackCluster((WaveTrack*)target, bUp);
-         }
-      }
-   }
-
-   /* i18n-hint: Past tense of 'to move', as in 'moved audio track up'.*/
-   wxString longDesc = (_("Moved"));
-   /* i18n-hint: The direction of movement will be up, down, to top or to bottom.. */
-   wxString shortDesc = (_("Move Track"));
-
-   longDesc = (wxString::Format(wxT("%s '%s' %s"), longDesc.c_str(),
-      target->GetName().c_str(), direction.c_str()));
-   shortDesc = (wxString::Format(wxT("%s %s"), shortDesc.c_str(), direction.c_str()));
-
-   PushState(longDesc, shortDesc);
-   GetTrackPanel()->Refresh(false);
 }
 
 void AudacityProject::OnInputDevice()

@@ -186,6 +186,8 @@ is time to refresh some aspect of the screen.
 #include "commands/CommandManager.h"
 #include "commands/Keyboard.h"
 
+#include "menus/TracksMenuCommands.h"
+
 #include "ondemand/ODManager.h"
 
 #include "prefs/PrefsDialog.h"
@@ -9165,21 +9167,21 @@ void TrackPanel::OnZoomFitVertical(wxCommandEvent &)
 
 void TrackPanel::OnMoveTrack(wxCommandEvent &event)
 {
-   AudacityProject::MoveChoice choice;
+   TracksMenuCommands::MoveChoice choice;
    switch (event.GetId()) {
    default:
       wxASSERT(false);
    case OnMoveUpID:
-      choice = AudacityProject::OnMoveUpID; break;
+      choice = TracksMenuCommands::OnMoveUpID; break;
    case OnMoveDownID:
-      choice = AudacityProject::OnMoveDownID; break;
+      choice = TracksMenuCommands::OnMoveDownID; break;
    case OnMoveTopID:
-      choice = AudacityProject::OnMoveTopID; break;
+      choice = TracksMenuCommands::OnMoveTopID; break;
    case OnMoveBottomID:
-      choice = AudacityProject::OnMoveBottomID; break;
+      choice = TracksMenuCommands::OnMoveBottomID; break;
    }
 
-   GetProject()->MoveTrack(mPopupMenuTarget, choice);
+   TracksMenuCommands(GetProject()).MoveTrack(mPopupMenuTarget, choice);
 }
 
 /// This only applies to MIDI tracks.  Presumably, it shifts the

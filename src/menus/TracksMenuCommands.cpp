@@ -159,6 +159,27 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->EndMenu();
 }
 
+void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
+{
+   c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
+      TracksExistFlag | TrackPanelHasFocus);
+
+   c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
+   c->AddCommand(wxT("TrackPanLeft"), _("Pan left on focused track"), FN(OnTrackPanLeft), wxT("Alt+Shift+Left"));
+   c->AddCommand(wxT("TrackPanRight"), _("Pan right on focused track"), FN(OnTrackPanRight), wxT("Alt+Shift+Right"));
+   c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
+   c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
+   c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
+   c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
+   c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
+   c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
+   c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
+   c->AddCommand(wxT("TrackMoveUp"), _("Move focused track up"), FN(OnTrackMoveUp));
+   c->AddCommand(wxT("TrackMoveDown"), _("Move focused track down"), FN(OnTrackMoveDown));
+   c->AddCommand(wxT("TrackMoveTop"), _("Move focused track to top"), FN(OnTrackMoveTop));
+   c->AddCommand(wxT("TrackMoveBottom"), _("Move focused track to bottom"), FN(OnTrackMoveBottom));
+}
+
 void TracksMenuCommands::OnNewWaveTrack()
 {
    WaveTrack *const t =
@@ -1194,4 +1215,273 @@ void TracksMenuCommands::SortTracks(int flags)
    for (ndx = 0; ndx < (int)arr.GetCount(); ndx++) {
       mProject->GetTracks()->Add((Track *)arr[ndx]);
    }
+}
+
+//This will pop up the track panning dialog for specified track
+void TracksMenuCommands::OnTrackPan()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
+      (static_cast<WaveTrack*>(track));
+   if (slider->ShowDialog()) {
+      SetTrackPan(track, slider);
+   }
+}
+
+void TracksMenuCommands::OnTrackPanLeft()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Decrease(1);
+   SetTrackPan(track, slider);
+}
+
+void TracksMenuCommands::OnTrackPanRight()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Increase(1);
+   SetTrackPan(track, slider);
+}
+
+void TracksMenuCommands::SetTrackPan(Track * track, LWSlider * slider)
+{
+   wxASSERT(track);
+   if (track->GetKind() != Track::Wave)
+      return;
+   float newValue = slider->Get();
+
+   WaveTrack *const link = static_cast<WaveTrack*>
+      (mProject->GetTracks()->GetLink(track));
+   static_cast<WaveTrack*>(track)->SetPan(newValue);
+   if (link)
+      link->SetPan(newValue);
+
+   mProject->PushState(_("Adjusted Pan"), _("Pan"), PUSH_CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(track);
+}
+
+void TracksMenuCommands::OnTrackGain()
+{
+   /// This will pop up the track gain dialog for specified track
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
+      (static_cast<WaveTrack*>(track));
+   if (slider->ShowDialog()) {
+      SetTrackGain(track, slider);
+   }
+}
+
+void TracksMenuCommands::OnTrackGainInc()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Increase(1);
+   SetTrackGain(track, slider);
+}
+
+void TracksMenuCommands::OnTrackGainDec()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->GainSlider
+      (static_cast<WaveTrack*>(track));
+   slider->Decrease(1);
+   SetTrackGain(track, slider);
+}
+
+void TracksMenuCommands::SetTrackGain(Track * track, LWSlider * slider)
+{
+   wxASSERT(track);
+   if (track->GetKind() != Track::Wave)
+      return;
+   float newValue = slider->Get();
+
+   WaveTrack *const link = static_cast<WaveTrack*>
+      (mProject->GetTracks()->GetLink(track));
+   static_cast<WaveTrack*>(track)->SetGain(newValue);
+   if (link)
+      link->SetGain(newValue);
+
+   mProject->PushState(_("Adjusted gain"), _("Gain"), PUSH_CONSOLIDATE);
+
+   mProject->GetTrackPanel()->RefreshTrack(track);
+}
+
+void TracksMenuCommands::OnTrackMenu()
+{
+   mProject->GetTrackPanel()->OnTrackMenu();
+}
+
+void TracksMenuCommands::OnTrackMute()
+{
+   Track *t = NULL;
+   if (!t) {
+      t = mProject->GetTrackPanel()->GetFocusedTrack();
+      if (!t || (t->GetKind() != Track::Wave))
+         return;
+   }
+   mProject->DoTrackMute(t, false);
+}
+
+void TracksMenuCommands::OnTrackSolo()
+{
+   Track *t = NULL;
+   if (!t)
+   {
+      t = mProject->GetTrackPanel()->GetFocusedTrack();
+      if (!t || (t->GetKind() != Track::Wave))
+         return;
+   }
+   mProject->DoTrackSolo(t, false);
+}
+
+void TracksMenuCommands::OnTrackClose()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *t = trackPanel->GetFocusedTrack();
+   if (!t)
+      return;
+
+   if (mProject->IsAudioActive())
+   {
+      mProject->TP_DisplayStatusMessage(_("Can't delete track with active audio"));
+      wxBell();
+      return;
+   }
+
+   mProject->RemoveTrack(t);
+
+   trackPanel->UpdateViewIfNoTracks();
+   trackPanel->Refresh(false);
+}
+
+void TracksMenuCommands::OnTrackMoveUp()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const focusedTrack = trackPanel->GetFocusedTrack();
+   if (mProject->GetTracks()->CanMoveUp(focusedTrack)) {
+      MoveTrack(focusedTrack, OnMoveUpID);
+      trackPanel->Refresh(false);
+   }
+}
+
+void TracksMenuCommands::OnTrackMoveDown()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const focusedTrack = trackPanel->GetFocusedTrack();
+   if (mProject->GetTracks()->CanMoveDown(focusedTrack)) {
+      MoveTrack(focusedTrack, OnMoveDownID);
+      trackPanel->Refresh(false);
+   }
+}
+
+void TracksMenuCommands::OnTrackMoveTop()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const focusedTrack = trackPanel->GetFocusedTrack();
+   if (mProject->GetTracks()->CanMoveUp(focusedTrack)) {
+      MoveTrack(focusedTrack, OnMoveTopID);
+      trackPanel->Refresh(false);
+   }
+}
+
+void TracksMenuCommands::OnTrackMoveBottom()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const focusedTrack = trackPanel->GetFocusedTrack();
+   if (trackPanel->GetTracks()->CanMoveDown(focusedTrack)) {
+      MoveTrack(focusedTrack, OnMoveBottomID);
+      trackPanel->Refresh(false);
+   }
+}
+
+void TracksMenuCommands::MoveTrack(Track* target, MoveChoice choice)
+{
+   TrackList *const trackList = mProject->GetTracks();
+   wxString direction;
+
+   switch (choice)
+   {
+   case OnMoveTopID:
+      /* i18n-hint: where the track is moving to.*/
+      direction = _("to Top");
+
+      while (trackList->CanMoveUp(target)) {
+         if (trackList->Move(target, true)) {
+            MixerBoard* pMixerBoard = mProject->GetMixerBoard(); // Update mixer board.
+            if (pMixerBoard && (target->GetKind() == Track::Wave))
+               pMixerBoard->MoveTrackCluster((WaveTrack*)target, true);
+         }
+      }
+      break;
+   case OnMoveBottomID:
+      /* i18n-hint: where the track is moving to.*/
+      direction = _("to Bottom");
+
+      while (trackList->CanMoveDown(target)) {
+         if (trackList->Move(target, false)) {
+            MixerBoard* pMixerBoard = mProject->GetMixerBoard(); // Update mixer board.
+            if (pMixerBoard && (target->GetKind() == Track::Wave))
+               pMixerBoard->MoveTrackCluster((WaveTrack*)target, false);
+         }
+      }
+      break;
+   default:
+      bool bUp = (OnMoveUpID == choice);
+      /* i18n-hint: a direction.*/
+      direction = bUp ? _("Up") : _("Down");
+
+      if (trackList->Move(target, bUp)) {
+         MixerBoard* pMixerBoard = mProject->GetMixerBoard();
+         if (pMixerBoard && (target->GetKind() == Track::Wave)) {
+            pMixerBoard->MoveTrackCluster((WaveTrack*)target, bUp);
+         }
+      }
+   }
+
+   /* i18n-hint: Past tense of 'to move', as in 'moved audio track up'.*/
+   wxString longDesc = (_("Moved"));
+   /* i18n-hint: The direction of movement will be up, down, to top or to bottom.. */
+   wxString shortDesc = (_("Move Track"));
+
+   longDesc = (wxString::Format(wxT("%s '%s' %s"), longDesc.c_str(),
+      target->GetName().c_str(), direction.c_str()));
+   shortDesc = (wxString::Format(wxT("%s %s"), shortDesc.c_str(), direction.c_str()));
+
+   mProject->PushState(longDesc, shortDesc);
+   mProject->GetTrackPanel()->Refresh(false);
 }

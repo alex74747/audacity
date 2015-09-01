@@ -4942,40 +4942,6 @@ void AudacityProject::DoTrackSolo(Track *t, bool exclusive)
    mTrackPanel->Refresh(false);
 }
 
-void AudacityProject::SetTrackGain(Track * track, LWSlider * slider)
-{
-   wxASSERT(track);
-   if (track->GetKind() != Track::Wave)
-      return;
-   float newValue = slider->Get();
-
-   WaveTrack *const link = static_cast<WaveTrack*>(mTracks->GetLink(track));
-   static_cast<WaveTrack*>(track)->SetGain(newValue);
-   if (link)
-      link->SetGain(newValue);
-
-   PushState(_("Adjusted gain"), _("Gain"), PUSH_CONSOLIDATE);
-
-   GetTrackPanel()->RefreshTrack(track);
-}
-
-void AudacityProject::SetTrackPan(Track * track, LWSlider * slider)
-{
-   wxASSERT(track);
-   if (track->GetKind() != Track::Wave)
-      return;
-   float newValue = slider->Get();
-
-   WaveTrack *const link = static_cast<WaveTrack*>(mTracks->GetLink(track));
-   static_cast<WaveTrack*>(track)->SetPan(newValue);
-   if (link)
-      link->SetPan(newValue);
-
-   PushState(_("Adjusted Pan"), _("Pan"), PUSH_CONSOLIDATE);
-
-   GetTrackPanel()->RefreshTrack(track);
-}
-
 /// Removes the specified track.  Called from HandleClosing.
 void AudacityProject::RemoveTrack(Track * toRemove)
 {

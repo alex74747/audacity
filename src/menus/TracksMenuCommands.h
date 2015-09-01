@@ -3,6 +3,7 @@
 
 class AudacityProject;
 class CommandManager;
+class LWSlider;
 class SelectedRegion;
 class Track;
 
@@ -13,6 +14,7 @@ class TracksMenuCommands
 public:
    TracksMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
+   void CreateNonMenuCommands(CommandManager *c);
 
 private:
    void OnNewWaveTrack();
@@ -61,6 +63,30 @@ private:
       kAudacitySortByName = (1 << 2)
    };
    void SortTracks(int flags);
+
+   // non-menu commands
+   void OnTrackPan();
+   void OnTrackPanLeft();
+   void OnTrackPanRight();
+   void SetTrackPan(Track * track, LWSlider * slider);
+
+   void OnTrackGain();
+   void OnTrackGainInc();
+   void OnTrackGainDec();
+   void SetTrackGain(Track * track, LWSlider * slider);
+
+   void OnTrackMenu();
+   void OnTrackMute();
+   void OnTrackSolo();
+   void OnTrackClose();
+   void OnTrackMoveUp();
+   void OnTrackMoveDown();
+   void OnTrackMoveTop();
+   void OnTrackMoveBottom();
+public:
+   enum MoveChoice { OnMoveUpID, OnMoveDownID, OnMoveTopID, OnMoveBottomID };
+   void MoveTrack(Track* target, MoveChoice choice);
+private:
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

@@ -89,24 +89,6 @@ void OnPlayCutPreview();
 
         // Wave track control
 
-void OnTrackPan();
-void OnTrackPanLeft();
-void OnTrackPanRight();
-void OnTrackGain();
-void OnTrackGainInc();
-void OnTrackGainDec();
-void OnTrackMenu();
-void OnTrackMute();
-void OnTrackSolo();
-void OnTrackClose();
-void OnTrackMoveUp();
-void OnTrackMoveDown();
-void OnTrackMoveTop();
-void OnTrackMoveBottom();
-
-enum MoveChoice { OnMoveUpID, OnMoveDownID, OnMoveTopID, OnMoveBottomID };
-void MoveTrack(Track* target, MoveChoice choice);
-
         // Device control
 void OnInputDevice();
 void OnOutputDevice();
