@@ -43,6 +43,11 @@ private:
 #endif
    void OnRescanDevices();
 
+   // non-menu commands
+public:
+   void OnStop();
+private:
+
    AudacityProject *const mProject;
 };
 

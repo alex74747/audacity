@@ -92,6 +92,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "ondemand/ODManager.h"
 #include "commands/Keyboard.h"
 #include "menus/HelpMenuCommands.h"
+#include "menus/TransportMenuCommands.h"
 #include "widgets/ErrorDialog.h"
 #include "prefs/DirectoriesPrefs.h"
 #include "tracks/ui/Scrubbing.h"
@@ -1616,7 +1617,7 @@ void AudacityApp::OnKeyDown(wxKeyEvent &event)
                gAudioIO->GetNumCaptureChannels() == 0) ||
          scrubbing)
          // ESC out of other play (but not record)
-         project->OnStop();
+         TransportMenuCommands{ project }.OnStop();
       else
          event.Skip();
    }

@@ -66,7 +66,6 @@ void OnPrevTool();
 public:
         // Audio I/O Commands
 
-void OnStop();
 void OnStopSelect();
 void OnSeekLeftShort();
 void OnSeekRightShort();
