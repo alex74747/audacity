@@ -4,14 +4,19 @@
 
 #include "../AudioIO.h"
 #include "../DeviceManager.h"
+#include "../LabelTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../SoundActivatedRecord.h"
 #include "../TimerRecordDialog.h"
+#include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "../commands/CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
 #include "../tracks/ui/Scrubbing.h"
+#include "../toolbars/DeviceToolBar.h"
+#include "../toolbars/MixerToolBar.h"
+#include "../toolbars/TranscriptionToolBar.h"
 
 #include "../TrackPanel.h"
 #include "../tracks/ui/Scrubbing.h"
@@ -88,6 +93,64 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("Play"), _("Play"), FN(OnPlayStop),
       WaveTracksExistFlag | AudioIONotBusyFlag,
       WaveTracksExistFlag | AudioIONotBusyFlag);
+   /* i18n-hint: (verb) Stop playing audio*/
+   c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
+      AudioIOBusyFlag,
+      AudioIOBusyFlag);
+
+   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
+
+   c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
+   c->AddCommand(wxT("PlayToSelection"), _("Play To Selection"), FN(OnPlayToSelection), wxT("B"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
+   c->AddCommand(wxT("PlayBeforeSelectionStart"), _("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
+   c->AddCommand(wxT("PlayAfterSelectionStart"), _("Play After Selection Start"), FN(OnPlayAfterSelectionStart), wxT("Shift+F6"));
+   c->AddCommand(wxT("PlayBeforeSelectionEnd"), _("Play Before Selection End"), FN(OnPlayBeforeSelectionEnd), wxT("Shift+F7"));
+   c->AddCommand(wxT("PlayAfterSelectionEnd"), _("Play After Selection End"), FN(OnPlayAfterSelectionEnd), wxT("Shift+F8"));
+   c->AddCommand(wxT("PlayBeforeAndAfterSelectionStart"), _("Play Before and After Selection Start"), FN(OnPlayBeforeAndAfterSelectionStart), wxT("Ctrl+Shift+F5"));
+   c->AddCommand(wxT("PlayBeforeAndAfterSelectionEnd"), _("Play Before and After Selection End"), FN(OnPlayBeforeAndAfterSelectionEnd), wxT("Ctrl+Shift+F7"));
+   c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
+      CaptureNotBusyFlag,
+      CaptureNotBusyFlag);
+
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddCommand(wxT("InputDevice"), _("Change recording device"), FN(OnInputDevice), wxT("Shift+I"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
+   c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
+   c->AddCommand(wxT("AudioHost"), _("Change audio host"), FN(OnAudioHost), wxT("Shift+H"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
+   c->AddCommand(wxT("InputChannels"), _("Change recording channels"), FN(OnInputChannels), wxT("Shift+N"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
+
+   c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
+   c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
+   c->AddCommand(wxT("OutputGainDec"), _("Decrease playback volume"), FN(OnOutputGainDec));
+   c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
+   c->AddCommand(wxT("InputGainInc"), _("Increase recording volume"), FN(OnInputGainInc));
+   c->AddCommand(wxT("InputGainDec"), _("Decrease recording volume"), FN(OnInputGainDec));
+
+   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
+
+   c->AddCommand(wxT("PlayAtSpeed"), _("Play at speed"), FN(OnPlayAtSpeed));
+   c->AddCommand(wxT("PlayAtSpeedLooped"), _("Loop Play at speed"), FN(OnPlayAtSpeedLooped));
+   c->AddCommand(wxT("PlayAtSpeedCutPreview"), _("Play Cut Preview at speed"), FN(OnPlayAtSpeedCutPreview));
+   c->AddCommand(wxT("SetPlaySpeed"), _("Adjust playback speed"), FN(OnSetPlaySpeed));
+   c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
+   c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
+
+   c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
+      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
+   c->AddCommand(wxT("MoveToPrevLabel"), _("Move to Previous Label"), FN(OnMoveToPrevLabel), wxT("Alt+Left"),
+      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -208,7 +271,7 @@ bool TransportMenuCommands::DoPlayStopSelect(bool click, bool shift)
 
 void TransportMenuCommands::OnPlayLooped()
 {
-   if (!mProject->MakeReadyToPlay(true))
+   if (!MakeReadyToPlay(true))
       return;
 
    // Now play in a loop
@@ -411,4 +474,427 @@ void TransportMenuCommands::OnToggleAutomatedInputLevelAdjustment()
 void TransportMenuCommands::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
+}
+
+void TransportMenuCommands::OnStop()
+{
+   wxCommandEvent evt;
+
+   mProject->GetControlToolBar()->OnStop(evt);
+}
+
+void TransportMenuCommands::OnPlayOneSecond()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(pos - 0.5, pos + 0.5), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+/// The idea for this function (and first implementation)
+/// was from Juhana Sadeharju.  The function plays the
+/// sound between the current mouse position and the
+/// nearest selection boundary.  This gives four possible
+/// play regions depending on where the current mouse
+/// position is relative to the left and right boundaries
+/// of the selection region.
+void TransportMenuCommands::OnPlayToSelection()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   double pos = mProject->GetTrackPanel()->GetMostRecentXPos();
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0, t1;
+   // check region between pointer and the nearest selection edge
+   if (fabs(pos - viewInfo.selectedRegion.t0()) <
+      fabs(pos - viewInfo.selectedRegion.t1())) {
+      t0 = t1 = viewInfo.selectedRegion.t0();
+   }
+   else {
+      t0 = t1 = viewInfo.selectedRegion.t1();
+   }
+   if (pos < t1)
+      t0 = pos;
+   else
+      t1 = pos;
+
+   // JKC: oneSecondPlay mode disables auto scrolling
+   // On balance I think we should always do this in this function
+   // since you are typically interested in the sound EXACTLY
+   // where the cursor is.
+   // TODO: have 'playing attributes' such as 'with_autoscroll'
+   // rather than modes, since that's how we're now using the modes.
+
+   // An alternative, commented out below, is to disable autoscroll
+   // only when playing a short region, less than or equal to a second.
+   //   mLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+// The next functions provide a limited version of the
+// functionality of OnPlayToSelection() for keyboard users
+
+void TransportMenuCommands::OnPlayBeforeSelectionStart()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   double t0 = mProject->GetViewInfo().selectedRegion.t0();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0 - beforeLen, t0), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayAfterSelectionStart()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0 = viewInfo.selectedRegion.t0();
+   double t1 = viewInfo.selectedRegion.t1();
+   double afterLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+
+   if (t1 - t0 > 0.0 && t1 - t0 < afterLen)
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+   else
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t0 + afterLen), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayBeforeSelectionEnd()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0 = viewInfo.selectedRegion.t0();
+   double t1 = viewInfo.selectedRegion.t1();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+
+   if (t1 - t0 > 0.0 && t1 - t0 < beforeLen)
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+   else
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t1 - beforeLen, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayAfterSelectionEnd()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t1 = viewInfo.selectedRegion.t1();
+   double afterLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+
+   mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t1, t1 + afterLen), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayBeforeAndAfterSelectionStart()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0 = viewInfo.selectedRegion.t0();
+   double t1 = viewInfo.selectedRegion.t1();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   double afterLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+
+   if (t1 - t0 > 0.0 && t1 - t0 < afterLen)
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0 - beforeLen, t1), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+   else
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0 - beforeLen, t0 + afterLen), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayBeforeAndAfterSelectionEnd()
+{
+   if (!MakeReadyToPlay())
+      return;
+
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+   double t0 = viewInfo.selectedRegion.t0();
+   double t1 = viewInfo.selectedRegion.t1();
+   double beforeLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   double afterLen;
+   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+
+   if (t1 - t0 > 0.0 && t1 - t0 < beforeLen)
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t0, t1 + afterLen), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+   else
+      mProject->GetControlToolBar()->PlayPlayRegion
+      (SelectedRegion(t1 - beforeLen, t1 + afterLen), mProject->GetDefaultPlayOptions(),
+       PlayMode::oneSecondPlay);
+}
+
+void TransportMenuCommands::OnPlayCutPreview()
+{
+   if (!MakeReadyToPlay(false, true))
+      return;
+
+   // Play with cut preview
+   mProject->GetControlToolBar()->PlayCurrentRegion(false, true);
+}
+
+/// MakeReadyToPlay stops whatever is currently playing
+/// and pops the play button up.  Then, if nothing is now
+/// playing, it pushes the play button down and enables
+/// the stop button.
+bool TransportMenuCommands::MakeReadyToPlay(bool loop, bool cutpreview)
+{
+   ControlToolBar *toolbar = mProject->GetControlToolBar();
+   wxCommandEvent evt;
+
+   // If this project is playing, stop playing
+   if (gAudioIO->IsStreamActive(mProject->GetAudioIOToken())) {
+      toolbar->SetPlay(false);        //Pops
+      toolbar->SetStop(true);         //Pushes stop down
+      toolbar->OnStop(evt);
+
+      ::wxMilliSleep(100);
+   }
+
+   // If it didn't stop playing quickly, or if some other
+   // project is playing, return
+   if (gAudioIO->IsBusy())
+      return false;
+
+   ControlToolBar::PlayAppearance appearance =
+      cutpreview ? ControlToolBar::PlayAppearance::CutPreview
+      : loop ? ControlToolBar::PlayAppearance::Looped
+      : ControlToolBar::PlayAppearance::Straight;
+   toolbar->SetPlay(true, appearance);
+   toolbar->SetStop(false);
+
+   return true;
+}
+
+void TransportMenuCommands::OnInputDevice()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowInputDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputDevice()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowOutputDialog();
+   }
+}
+
+void TransportMenuCommands::OnAudioHost()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowHostDialog();
+   }
+}
+
+void TransportMenuCommands::OnInputChannels()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowChannelsDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputGain()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->ShowOutputGainDialog();
+   }
+}
+
+void TransportMenuCommands::OnOutputGainInc()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustOutputGain(1);
+   }
+}
+
+void TransportMenuCommands::OnOutputGainDec()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustOutputGain(-1);
+   }
+}
+
+void TransportMenuCommands::OnInputGain()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->ShowInputGainDialog();
+   }
+}
+
+void TransportMenuCommands::OnInputGainInc()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustInputGain(1);
+   }
+}
+
+void TransportMenuCommands::OnInputGainDec()
+{
+   MixerToolBar *tb = mProject->GetMixerToolBar();
+   if (tb) {
+      tb->AdjustInputGain(-1);
+   }
+}
+
+void TransportMenuCommands::OnPlayAtSpeed()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->PlayAtSpeed(false, false);
+   }
+}
+
+void TransportMenuCommands::OnPlayAtSpeedLooped()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->PlayAtSpeed(true, false);
+   }
+}
+
+void TransportMenuCommands::OnPlayAtSpeedCutPreview()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->PlayAtSpeed(false, true);
+   }
+}
+
+void TransportMenuCommands::OnSetPlaySpeed()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->ShowPlaySpeedDialog();
+   }
+}
+
+void TransportMenuCommands::OnPlaySpeedInc()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->AdjustPlaySpeed(0.1f);
+   }
+}
+
+void TransportMenuCommands::OnPlaySpeedDec()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->AdjustPlaySpeed(-0.1f);
+   }
+}
+
+void TransportMenuCommands::OnMoveToNextLabel()
+{
+   OnMoveToLabel(true);
+}
+
+void TransportMenuCommands::OnMoveToPrevLabel()
+{
+   OnMoveToLabel(false);
+}
+
+void TransportMenuCommands::OnMoveToLabel(bool next)
+{
+   auto tracks = mProject->GetTracks();
+   auto trackPanel = mProject->GetTrackPanel();
+
+   // Find the number of label tracks, and ptr to last track found
+   Track* track = nullptr;
+   int nLabelTrack = 0;
+   TrackListOfKindIterator iter(Track::Label, tracks);
+   for (Track* t = iter.First(); t; t = iter.Next()) {
+      nLabelTrack++;
+      track = t;
+   }
+
+   if (nLabelTrack == 0 ) {
+      trackPanel->MessageForScreenReader(_("no label track"));
+   }
+   else if (nLabelTrack > 1) {         // find first label track, if any, starting at the focused track
+      track = trackPanel->GetFocusedTrack();
+      while (track && track->GetKind() != Track::Label) {
+         track = tracks->GetNext(track, true);
+         if (!track) {
+          trackPanel->MessageForScreenReader(_("no label track at or below focused track"));
+         }
+      }
+   }
+
+   // If there is a single label track, or there is a label track at or below the focused track
+   if (track) {
+      LabelTrack* lt = static_cast<LabelTrack*>(track);
+      int i;
+      if (next)
+         i = lt->FindNextLabel(mProject->GetSelection());
+      else
+         i = lt->FindPrevLabel(mProject->GetSelection());
+
+      if (i >= 0) {
+         const LabelStruct* label = lt->GetLabel(i);
+         if (mProject->IsAudioActive()) {
+            OnPlayStop();     // stop
+            mProject->GetViewInfo().selectedRegion = label->selectedRegion;
+            mProject->RedrawProject();
+            OnPlayStop();     // play
+         }
+         else {
+            mProject->GetViewInfo().selectedRegion = label->selectedRegion;
+            trackPanel->ScrollIntoView(mProject->GetViewInfo().selectedRegion.t0());
+            mProject->RedrawProject();
+         }
+
+         wxString message;
+         message.Printf(wxT("%s %d of %d"), label->title, i + 1, lt->GetNumLabels() );
+         trackPanel->MessageForScreenReader(message);
+      }
+      else {
+         trackPanel->MessageForScreenReader(_("no labels in label track"));
+      }
+   }
 }

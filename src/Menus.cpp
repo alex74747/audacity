@@ -880,29 +880,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   /* i18n-hint: (verb) Stop playing audio*/
-   c->AddCommand(wxT("Stop"), _("Stop"), FN(OnStop),
-                 AudioIOBusyFlag,
-                 AudioIOBusyFlag);
-
-   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
-
-   c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
-                 CaptureNotBusyFlag,
-                 CaptureNotBusyFlag);
-   c->AddCommand(wxT("PlayToSelection"),_("Play To Selection"), FN(OnPlayToSelection), wxT("B"),
-                 CaptureNotBusyFlag,
-                 CaptureNotBusyFlag);
-   c->AddCommand(wxT("PlayBeforeSelectionStart"),_("Play Before Selection Start"), FN(OnPlayBeforeSelectionStart), wxT("Shift+F5"));
-   c->AddCommand(wxT("PlayAfterSelectionStart"),_("Play After Selection Start"), FN(OnPlayAfterSelectionStart), wxT("Shift+F6"));
-   c->AddCommand(wxT("PlayBeforeSelectionEnd"),_("Play Before Selection End"), FN(OnPlayBeforeSelectionEnd), wxT("Shift+F7"));
-   c->AddCommand(wxT("PlayAfterSelectionEnd"),_("Play After Selection End"), FN(OnPlayAfterSelectionEnd), wxT("Shift+F8"));
-   c->AddCommand(wxT("PlayBeforeAndAfterSelectionStart"),_("Play Before and After Selection Start"), FN(OnPlayBeforeAndAfterSelectionStart), wxT("Ctrl+Shift+F5"));
-   c->AddCommand(wxT("PlayBeforeAndAfterSelectionEnd"),_("Play Before and After Selection End"), FN(OnPlayBeforeAndAfterSelectionEnd), wxT("Ctrl+Shift+F7"));
-   c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
-                 CaptureNotBusyFlag,
-                 CaptureNotBusyFlag);
-
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
 
@@ -968,40 +945,6 @@ void AudacityProject::CreateMenusAndCommands()
 #else
       wxT("F11"));
 #endif
-
-   c->AddCommand(wxT("InputDevice"), _("Change recording device"), FN(OnInputDevice), wxT("Shift+I"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-   c->AddCommand(wxT("OutputDevice"), _("Change playback device"), FN(OnOutputDevice), wxT("Shift+O"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-   c->AddCommand(wxT("AudioHost"), _("Change audio host"), FN(OnAudioHost), wxT("Shift+H"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-   c->AddCommand(wxT("InputChannels"), _("Change recording channels"), FN(OnInputChannels), wxT("Shift+N"),
-                 AudioIONotBusyFlag,
-                 AudioIONotBusyFlag);
-
-   c->AddCommand(wxT("OutputGain"), _("Adjust playback volume"), FN(OnOutputGain));
-   c->AddCommand(wxT("OutputGainInc"), _("Increase playback volume"), FN(OnOutputGainInc));
-   c->AddCommand(wxT("OutputGainDec"), _("Decrease playback volume"), FN(OnOutputGainDec));
-   c->AddCommand(wxT("InputGain"), _("Adjust recording volume"), FN(OnInputGain));
-   c->AddCommand(wxT("InputGainInc"), _("Increase recording volume"), FN(OnInputGainInc));
-   c->AddCommand(wxT("InputGainDec"), _("Decrease recording volume"), FN(OnInputGainDec));
-
-   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
-
-   c->AddCommand(wxT("PlayAtSpeed"), _("Play at speed"), FN(OnPlayAtSpeed));
-   c->AddCommand(wxT("PlayAtSpeedLooped"), _("Loop Play at speed"), FN(OnPlayAtSpeedLooped));
-   c->AddCommand(wxT("PlayAtSpeedCutPreview"), _("Play Cut Preview at speed"), FN(OnPlayAtSpeedCutPreview));
-   c->AddCommand(wxT("SetPlaySpeed"), _("Adjust playback speed"), FN(OnSetPlaySpeed));
-   c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
-   c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
-
-   c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
-      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
-   c->AddCommand(wxT("MoveToPrevLabel"), _("Move to Previous Label"), FN(OnMoveToPrevLabel), wxT("Alt+Left"),
-      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
 
 #ifdef __WXMAC__
    /* i8n-hint: Shrink all project windows to icons on the Macintosh tooldock */
@@ -1601,7 +1544,7 @@ void AudacityProject::StopIfPaused()
 {
    auto flags = GetUpdateFlags();
    if( flags & PausedFlag )
-      OnStop();
+      TransportMenuCommands{this}.OnStop();
 }
 
 void AudacityProject::ModifyAllProjectToolbarMenus()
@@ -1833,208 +1776,6 @@ void AudacityProject::OnPrevTool()
 // TODO: Should all these functions which involve
 // the toolbar actually move into ControlToolBar?
 
-/// MakeReadyToPlay stops whatever is currently playing
-/// and pops the play button up.  Then, if nothing is now
-/// playing, it pushes the play button down and enables
-/// the stop button.
-bool AudacityProject::MakeReadyToPlay(bool loop, bool cutpreview)
-{
-   ControlToolBar *toolbar = GetControlToolBar();
-   wxCommandEvent evt;
-
-   // If this project is playing, stop playing
-   if (gAudioIO->IsStreamActive(GetAudioIOToken())) {
-      toolbar->SetPlay(false);        //Pops
-      toolbar->SetStop(true);         //Pushes stop down
-      toolbar->OnStop(evt);
-
-      ::wxMilliSleep(100);
-   }
-
-   // If it didn't stop playing quickly, or if some other
-   // project is playing, return
-   if (gAudioIO->IsBusy())
-      return false;
-
-   ControlToolBar::PlayAppearance appearance =
-      cutpreview ? ControlToolBar::PlayAppearance::CutPreview
-      : loop ? ControlToolBar::PlayAppearance::Looped
-      : ControlToolBar::PlayAppearance::Straight;
-   toolbar->SetPlay(true, appearance);
-   toolbar->SetStop(false);
-
-   return true;
-}
-
-void AudacityProject::OnPlayOneSecond()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double pos = mTrackPanel->GetMostRecentXPos();
-   GetControlToolBar()->PlayPlayRegion
-      (SelectedRegion(pos - 0.5, pos + 0.5), GetDefaultPlayOptions(),
-       PlayMode::oneSecondPlay);
-}
-
-
-/// The idea for this function (and first implementation)
-/// was from Juhana Sadeharju.  The function plays the
-/// sound between the current mouse position and the
-/// nearest selection boundary.  This gives four possible
-/// play regions depending on where the current mouse
-/// position is relative to the left and right boundaries
-/// of the selection region.
-void AudacityProject::OnPlayToSelection()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double pos = mTrackPanel->GetMostRecentXPos();
-
-   double t0,t1;
-   // check region between pointer and the nearest selection edge
-   if (fabs(pos - mViewInfo.selectedRegion.t0()) <
-       fabs(pos - mViewInfo.selectedRegion.t1())) {
-      t0 = t1 = mViewInfo.selectedRegion.t0();
-   } else {
-      t0 = t1 = mViewInfo.selectedRegion.t1();
-   }
-   if( pos < t1)
-      t0=pos;
-   else
-      t1=pos;
-
-   // JKC: oneSecondPlay mode disables auto scrolling
-   // On balance I think we should always do this in this function
-   // since you are typically interested in the sound EXACTLY
-   // where the cursor is.
-   // TODO: have 'playing attributes' such as 'with_autoscroll'
-   // rather than modes, since that's how we're now using the modes.
-
-   // An alternative, commented out below, is to disable autoscroll
-   // only when playing a short region, less than or equal to a second.
-//   mLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
-
-   GetControlToolBar()->PlayPlayRegion
-      (SelectedRegion(t0, t1), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-// The next 4 functions provide a limited version of the
-// functionality of OnPlayToSelection() for keyboard users
-
-void AudacityProject::OnPlayBeforeSelectionStart()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-
-   GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0 - beforeLen, t0), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-void AudacityProject::OnPlayAfterSelectionStart()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double t1 = mViewInfo.selectedRegion.t1();
-   double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
-
-   if ( t1 - t0 > 0.0 && t1 - t0 < afterLen )
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t1), GetDefaultPlayOptions(),
-                                          PlayMode::oneSecondPlay);
-   else
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t0 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-void AudacityProject::OnPlayBeforeSelectionEnd()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double t1 = mViewInfo.selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-
-   if ( t1 - t0 > 0.0 && t1 - t0 < beforeLen )
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t1), GetDefaultPlayOptions(),
-                                          PlayMode::oneSecondPlay);
-   else
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t1 - beforeLen, t1), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-
-void AudacityProject::OnPlayAfterSelectionEnd()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double t1 = mViewInfo.selectedRegion.t1();
-   double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
-
-   GetControlToolBar()->PlayPlayRegion(SelectedRegion(t1, t1 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-void AudacityProject::OnPlayBeforeAndAfterSelectionStart()
-{
-   if (!MakeReadyToPlay())
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double t1 = mViewInfo.selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-   double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
-
-   if ( t1 - t0 > 0.0 && t1 - t0 < afterLen )
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0 - beforeLen, t1), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-   else
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0 - beforeLen, t0 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-void AudacityProject::OnPlayBeforeAndAfterSelectionEnd()
-{
-   if (!MakeReadyToPlay())
-      return;
-
-   double t0 = mViewInfo.selectedRegion.t0();
-   double t1 = mViewInfo.selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-   double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
-
-   if ( t1 - t0 > 0.0 && t1 - t0 < beforeLen )
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t0, t1 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-   else
-      GetControlToolBar()->PlayPlayRegion(SelectedRegion(t1 - beforeLen, t1 + afterLen), GetDefaultPlayOptions(), PlayMode::oneSecondPlay);
-}
-
-
-void AudacityProject::OnPlayCutPreview()
-{
-   if ( !MakeReadyToPlay(false, true) )
-      return;
-
-   // Play with cut preview
-   GetControlToolBar()->PlayCurrentRegion(false, true);
-}
-
-void AudacityProject::OnStop()
-{
-   wxCommandEvent evt;
-
-   GetControlToolBar()->OnStop(evt);
-}
-
 void AudacityProject::OnStopSelect()
 {
    wxCommandEvent evt;
@@ -2076,73 +1817,6 @@ void AudacityProject::OnSelToEnd()
 {
    SkipEnd(true);
    ModifyState(false);
-}
-
-void AudacityProject::OnMoveToNextLabel()
-{
-   OnMoveToLabel(true);
-}
-
-void AudacityProject::OnMoveToPrevLabel()
-{
-   OnMoveToLabel(false);
-}
-
-void AudacityProject::OnMoveToLabel(bool next)
-{
-   // Find the number of label tracks, and ptr to last track found
-   Track* track = nullptr;
-   int nLabelTrack = 0;
-   TrackListOfKindIterator iter(Track::Label, &*mTracks);
-   for (Track* t = iter.First(); t; t = iter.Next()) {
-      nLabelTrack++;
-      track = t;
-   }
-
-   if (nLabelTrack == 0 ) {
-      mTrackPanel->MessageForScreenReader(_("no label track"));
-   }
-   else if (nLabelTrack > 1) {         // find first label track, if any, starting at the focused track
-      track = mTrackPanel->GetFocusedTrack();
-      while (track && track->GetKind() != Track::Label) {
-         track = mTracks->GetNext(track, true);
-         if (!track) {
-          mTrackPanel->MessageForScreenReader(_("no label track at or below focused track"));
-         }
-      }
-   }
-
-   // If there is a single label track, or there is a label track at or below the focused track
-   if (track) {
-      LabelTrack* lt = static_cast<LabelTrack*>(track);
-      int i;
-      if (next)
-         i = lt->FindNextLabel(GetSelection());
-      else
-         i = lt->FindPrevLabel(GetSelection());
-
-      if (i >= 0) {
-         const LabelStruct* label = lt->GetLabel(i);
-         if (IsAudioActive()) {
-            TransportMenuCommands{this}.OnPlayStop();     // stop
-            GetViewInfo().selectedRegion = label->selectedRegion;
-            RedrawProject();
-            TransportMenuCommands{this}.OnPlayStop();     // play
-         }
-         else {
-            GetViewInfo().selectedRegion = label->selectedRegion;
-            mTrackPanel->ScrollIntoView(GetViewInfo().selectedRegion.t0());
-            RedrawProject();
-         }
-
-         wxString message;
-         message.Printf(wxT("%s %d of %d"), label->title, i + 1, lt->GetNumLabels() );
-         mTrackPanel->MessageForScreenReader(message);
-      }
-      else {
-         mTrackPanel->MessageForScreenReader(_("no labels in label track"));
-      }
-   }
 }
 
 void AudacityProject::OnCursorUp()
@@ -2478,134 +2152,6 @@ void AudacityProject::PrevWindow()
 #endif
 }
 
-void AudacityProject::OnInputDevice()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowInputDialog();
-   }
-}
-
-void AudacityProject::OnOutputDevice()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowOutputDialog();
-   }
-}
-
-void AudacityProject::OnAudioHost()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowHostDialog();
-   }
-}
-
-void AudacityProject::OnInputChannels()
-{
-   DeviceToolBar *tb = GetDeviceToolBar();
-   if (tb) {
-      tb->ShowChannelsDialog();
-   }
-}
-
-void AudacityProject::OnOutputGain()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->ShowOutputGainDialog();
-   }
-}
-
-void AudacityProject::OnInputGain()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->ShowInputGainDialog();
-   }
-}
-
-void AudacityProject::OnOutputGainInc()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->AdjustOutputGain(1);
-   }
-}
-
-void AudacityProject::OnOutputGainDec()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->AdjustOutputGain(-1);
-   }
-}
-
-void AudacityProject::OnInputGainInc()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->AdjustInputGain(1);
-   }
-}
-
-void AudacityProject::OnInputGainDec()
-{
-   MixerToolBar *tb = GetMixerToolBar();
-   if (tb) {
-      tb->AdjustInputGain(-1);
-   }
-}
-
-void AudacityProject::OnPlayAtSpeed()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->PlayAtSpeed(false, false);
-   }
-}
-
-void AudacityProject::OnPlayAtSpeedLooped()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->PlayAtSpeed(true, false);
-   }
-}
-
-void AudacityProject::OnPlayAtSpeedCutPreview()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->PlayAtSpeed(false, true);
-   }
-}
-
-void AudacityProject::OnSetPlaySpeed()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->ShowPlaySpeedDialog();
-   }
-}
-
-void AudacityProject::OnPlaySpeedInc()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->AdjustPlaySpeed(0.1f);
-   }
-}
-
-void AudacityProject::OnPlaySpeedDec()
-{
-   TranscriptionToolBar *tb = GetTranscriptionToolBar();
-   if (tb) {
-      tb->AdjustPlaySpeed(-0.1f);
-   }
-}
-
 double AudacityProject::NearestZeroCrossing(double t0)
 {
    // Window is 1/100th of a second.
@@ -2721,7 +2267,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    // for batch commands
    if (flags & OnEffectFlagsConfigured)
    {
-      OnStop();
+      TransportMenuCommands(this).OnStop();
       SelectAllIfNone();
    }
 

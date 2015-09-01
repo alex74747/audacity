@@ -66,51 +66,11 @@ void OnPrevTool();
 public:
         // Audio I/O Commands
 
-void OnStop();
 void OnStopSelect();
 void OnSeekLeftShort();
 void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
-
-        // Different posibilities for playing sound
-
-bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
-void OnPlayOneSecond();
-void OnPlayToSelection();
-void OnPlayBeforeSelectionStart();
-void OnPlayAfterSelectionStart();
-void OnPlayBeforeSelectionEnd();
-void OnPlayAfterSelectionEnd();
-void OnPlayBeforeAndAfterSelectionStart();
-void OnPlayBeforeAndAfterSelectionEnd();
-void OnPlayCutPreview();
-
-        // Wave track control
-
-        // Device control
-void OnInputDevice();
-void OnOutputDevice();
-void OnAudioHost();
-void OnInputChannels();
-
-        // Mixer control
-
-void OnOutputGain();
-void OnInputGain();
-void OnOutputGainInc();
-void OnOutputGainDec();
-void OnInputGainInc();
-void OnInputGainDec();
-
-        // Transcription control
-
-void OnPlayAtSpeed();
-void OnPlayAtSpeedLooped();
-void OnPlayAtSpeedCutPreview();
-void OnSetPlaySpeed();
-void OnPlaySpeedInc();
-void OnPlaySpeedDec();
 
         // Moving track focus commands
 
@@ -144,10 +104,6 @@ void OnSetRightSelection();
 
 void OnSelToStart();
 void OnSelToEnd();
-
-void OnMoveToNextLabel();
-void OnMoveToPrevLabel();
-void OnMoveToLabel(bool next);
 
 void OnZeroCrossing();
 
