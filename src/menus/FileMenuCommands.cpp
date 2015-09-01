@@ -36,6 +36,7 @@ void FileMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Save"), _("&Save Project"), FN(OnSave), wxT("Ctrl+S"),
       AudioIONotBusyFlag | UnsavedChangesFlag,
       AudioIONotBusyFlag | UnsavedChangesFlag);
+   c->AddItem(wxT("SaveAs"), _("Save Project &As..."), FN(OnSaveAs));
 }
 
 void FileMenuCommands::OnNew()
@@ -56,4 +57,9 @@ void FileMenuCommands::OnClose()
 void FileMenuCommands::OnSave()
 {
    mProject->Save();
+}
+
+void FileMenuCommands::OnSaveAs()
+{
+   mProject->SaveAs();
 }

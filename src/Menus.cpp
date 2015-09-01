@@ -268,7 +268,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-   c->AddItem(wxT("SaveAs"), _("Save Project &As..."), FN(OnSaveAs));
 #ifdef USE_LIBVORBIS
    c->AddItem(wxT("SaveCompressed"), _("Save Compressed Copy of Project..."), FN(OnSaveCompressed));
 #endif
@@ -1419,11 +1418,6 @@ void AudacityProject::OnClose()
 {
    mMenuClose = true;
    Close();
-}
-
-void AudacityProject::OnSaveAs()
-{
-   SaveAs();
 }
 
 #ifdef USE_LIBVORBIS

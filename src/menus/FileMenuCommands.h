@@ -19,6 +19,7 @@ public:
 private:
    void OnClose();
    void OnSave();
+   void OnSaveAs();
 
    AudacityProject *const mProject;
 };

@@ -63,7 +63,6 @@ void OnStopSelect();
         // File Menu
 
 void OnClose();
-void OnSaveAs();
 #ifdef USE_LIBVORBIS
    void OnSaveCompressed();
 #endif
