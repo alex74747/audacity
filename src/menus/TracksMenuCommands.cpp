@@ -173,6 +173,14 @@ void TracksMenuCommands::Create(CommandManager *c)
    c->EndMenu();
 }
 
+void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
+{
+   c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
+      TracksExistFlag | TrackPanelHasFocus);
+
+   c->AddCommand(wxT("TrackPan"), _("Change pan on focused track"), FN(OnTrackPan), wxT("Shift+P"));
+}
+
 void TracksMenuCommands::OnNewWaveTrack()
 {
    auto t = mProject->GetTracks()->Add(
@@ -1239,4 +1247,20 @@ void TracksMenuCommands::SortTracks(int flags)
    
    // Now apply the permutation
    tracks->Permute(arr);
+}
+
+//This will pop up the track panning dialog for specified track
+void TracksMenuCommands::OnTrackPan()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *const track = trackPanel->GetFocusedTrack();
+   if (!track || (track->GetKind() != Track::Wave)) {
+      return;
+   }
+   const auto wt = static_cast<WaveTrack*>(track);
+
+   LWSlider *slider = trackPanel->GetTrackInfo()->PanSlider(wt);
+   if (slider->ShowDialog()) {
+      mProject->SetTrackPan(wt, slider);
+   }
 }

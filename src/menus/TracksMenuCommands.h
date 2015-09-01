@@ -16,6 +16,7 @@ class TracksMenuCommands
 public:
    TracksMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
+   void CreateNonMenuCommands(CommandManager *c);
 
 private:
    void OnNewWaveTrack();
@@ -66,6 +67,9 @@ private:
       kAudacitySortByName = (1 << 2)
    };
    void SortTracks(int flags);
+
+   // non-menu commands
+   void OnTrackPan();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;
