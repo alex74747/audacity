@@ -25,6 +25,7 @@ private:
 #ifdef USE_LIBVORBIS
    void OnSaveCompressed();
 #endif
+   void OnCheckDependencies();
 
    AudacityProject *const mProject;
 };
