@@ -18,7 +18,11 @@ public:
    void OnCut();
    void OnDelete();
    void OnCopy();
+   void OnPaste();
 private:
+   void OnPasteOver();
+   bool HandlePasteText(); // Handle text paste (into active label), if any. Return true if pasted.
+   bool HandlePasteNothingSelected(); // Return true if nothing selected, regardless of paste result.
 
    AudacityProject *const mProject;
 };

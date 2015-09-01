@@ -240,7 +240,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
          if (!busy) EditMenuCommands(p).OnCopy();
          break;
       case ETBPasteID:
-         if (!busy) p->OnPaste();
+         if (!busy) EditMenuCommands(p).OnPaste();
          break;
       case ETBTrimID:
          if (!busy) p->OnTrim();
