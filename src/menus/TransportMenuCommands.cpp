@@ -13,6 +13,7 @@
 #include "../commands/CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
 #include "../tracks/ui/Scrubbing.h"
+#include "../toolbars/DeviceToolBar.h"
 
 #include "../TrackPanel.h"
 #include "../tracks/ui/Scrubbing.h"
@@ -111,6 +112,12 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayCutPreview"), _("Play Cut Preview"), FN(OnPlayCutPreview), wxT("C"),
       CaptureNotBusyFlag,
       CaptureNotBusyFlag);
+
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddCommand(wxT("InputDevice"), _("Change recording device"), FN(OnInputDevice), wxT("Shift+I"),
+      AudioIONotBusyFlag,
+      AudioIONotBusyFlag);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -659,4 +666,12 @@ bool TransportMenuCommands::MakeReadyToPlay(bool loop, bool cutpreview)
    toolbar->SetStop(false);
 
    return true;
+}
+
+void TransportMenuCommands::OnInputDevice()
+{
+   DeviceToolBar *tb = mProject->GetDeviceToolBar();
+   if (tb) {
+      tb->ShowInputDialog();
+   }
 }
