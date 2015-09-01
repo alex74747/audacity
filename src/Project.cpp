@@ -1401,6 +1401,11 @@ const Tags *AudacityProject::GetTags()
    return mTags.get();
 }
 
+void AudacityProject::SetTags( const std::shared_ptr<Tags> &pTags )
+{
+   mTags = pTags;
+}
+
 wxString AudacityProject::GetName()
 {
    wxString name = wxFileNameFromPath(mFileName);

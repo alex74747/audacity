@@ -1,6 +1,7 @@
 #include "FileMenuCommands.h"
 #include "../Dependencies.h"
 #include "../Project.h"
+#include "../Tags.h"
 #include "../commands/CommandManager.h"
 
 #define FN(X) FNT(FileMenuCommands, this, & FileMenuCommands :: X)
@@ -43,6 +44,10 @@ void FileMenuCommands::Create(CommandManager *c)
 #endif
 
    c->AddItem(wxT("CheckDeps"), _("Chec&k Dependencies..."), FN(OnCheckDependencies));
+
+   c->AddSeparator();
+
+   c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata Tags..."), FN(OnEditMetadata));
 }
 
 void FileMenuCommands::OnNew()
@@ -80,4 +85,28 @@ void FileMenuCommands::OnSaveCompressed()
 void FileMenuCommands::OnCheckDependencies()
 {
    ::ShowDependencyDialogIfNeeded(mProject, false);
+}
+
+void FileMenuCommands::OnEditMetadata()
+{
+   (void)DoEditMetadata(_("Edit Metadata Tags"), _("Metadata Tags"), true);
+}
+
+bool FileMenuCommands::DoEditMetadata
+(const wxString &title, const wxString &shortUndoDescription, bool force)
+{
+   // Back up my tags
+   auto newTags = mProject->GetTags()->Duplicate();
+
+   if (newTags->ShowEditDialog(mProject, title, force)) {
+      if (*mProject->GetTags() != *newTags) {
+         // Commit the change to project state only now.
+         mProject->SetTags( newTags );
+         mProject->PushState(title, shortUndoDescription);
+      }
+
+      return true;
+   }
+
+   return false;
 }

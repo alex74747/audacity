@@ -108,9 +108,6 @@ void OnImportMIDI();
 void DoImportMIDI(const wxString &fileName);
 void OnImportRaw();
 
-void OnEditMetadata();
-bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool force);
-
 public:
 bool CursorPositionHasBeenStored() const
 { return mCursorPositionHasBeenStored; }

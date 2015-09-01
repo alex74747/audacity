@@ -277,10 +277,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->AddSeparator();
 
-      c->AddItem(wxT("EditMetaData"), _("Edit Me&tadata Tags..."), FN(OnEditMetadata));
-
-      c->AddSeparator();
-
       /////////////////////////////////////////////////////////////////////////////
 
       c->BeginSubMenu(_("&Import"));
@@ -2069,30 +2065,6 @@ void AudacityProject::OnImportRaw()
 
    AddImportedTracks(fileName, std::move(newTracks));
    HandleResize(); // Adjust scrollers for NEW track sizes.
-}
-
-void AudacityProject::OnEditMetadata()
-{
-   (void)DoEditMetadata(_("Edit Metadata Tags"), _("Metadata Tags"), true);
-}
-
-bool AudacityProject::DoEditMetadata
-(const wxString &title, const wxString &shortUndoDescription, bool force)
-{
-   // Back up my tags
-   auto newTags = mTags->Duplicate();
-
-   if (newTags->ShowEditDialog(this, title, force)) {
-      if (*mTags != *newTags) {
-         // Commit the change to project state only now.
-         mTags = newTags;
-         PushState(title, shortUndoDescription);
-      }
-
-      return true;
-   }
-
-   return false;
 }
 
 void AudacityProject::OnApplyChain()

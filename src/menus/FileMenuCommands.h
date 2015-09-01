@@ -5,6 +5,7 @@
 
 class AudacityProject;
 class CommandManager;
+class wxString;
 
 class FileMenuCommands
 {
@@ -26,7 +27,12 @@ private:
    void OnSaveCompressed();
 #endif
    void OnCheckDependencies();
+   void OnEditMetadata();
 
+public:
+   bool DoEditMetadata(const wxString &title, const wxString &shortUndoDescription, bool  force);
+
+private:
    AudacityProject *const mProject;
 };
 
