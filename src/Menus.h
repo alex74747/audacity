@@ -65,7 +65,6 @@ void OnStopSelect();
 void OnClose();
 
 void OnExportMultiple();
-void OnExportLabels();
 void OnExportMIDI();
 
 void OnPageSetup();
