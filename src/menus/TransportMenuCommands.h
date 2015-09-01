@@ -40,6 +40,7 @@ private:
 public:
    void OnStop();
 private:
+
    void OnPlayOneSecond();
    void OnPlayToSelection();
    void OnPlayBeforeSelectionStart();
@@ -48,6 +49,8 @@ private:
    void OnPlayAfterSelectionEnd();
    void OnPlayBeforeAndAfterSelectionStart();
    void OnPlayBeforeAndAfterSelectionEnd();
+   void OnPlayCutPreview();
+   bool MakeReadyToPlay(bool loop = false, bool cutpreview = false); // Helper function that sets button states etc.
 
    AudacityProject *const mProject;
 };
