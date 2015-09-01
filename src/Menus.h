@@ -89,7 +89,6 @@ void OnPlayCutPreview();
 
         // Wave track control
 
-void OnTrackMoveUp();
 void OnTrackMoveDown();
 void OnTrackMoveTop();
 void OnTrackMoveBottom();
