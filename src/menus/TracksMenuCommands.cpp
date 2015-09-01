@@ -170,6 +170,7 @@ void TracksMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("TrackGain"), _("Change gain on focused track"), FN(OnTrackGain), wxT("Shift+G"));
    c->AddCommand(wxT("TrackGainInc"), _("Increase gain on focused track"), FN(OnTrackGainInc), wxT("Alt+Shift+Up"));
    c->AddCommand(wxT("TrackGainDec"), _("Decrease gain on focused track"), FN(OnTrackGainDec), wxT("Alt+Shift+Down"));
+   c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1331,4 +1332,9 @@ void TracksMenuCommands::SetTrackGain(Track * track, LWSlider * slider)
    mProject->PushState(_("Adjusted gain"), _("Gain"), PUSH_CONSOLIDATE);
 
    mProject->GetTrackPanel()->RefreshTrack(track);
+}
+
+void TracksMenuCommands::OnTrackMenu()
+{
+   mProject->GetTrackPanel()->OnTrackMenu();
 }

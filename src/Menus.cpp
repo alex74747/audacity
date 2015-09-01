@@ -959,7 +959,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
-   c->AddCommand(wxT("TrackMenu"), _("Open menu on focused track"), FN(OnTrackMenu), wxT("Shift+M\tskipKeydown"));
    c->AddCommand(wxT("TrackMute"), _("Mute/Unmute focused track"), FN(OnTrackMute), wxT("Shift+U"));
    c->AddCommand(wxT("TrackSolo"), _("Solo/Unsolo focused track"), FN(OnTrackSolo), wxT("Shift+S"));
    c->AddCommand(wxT("TrackClose"), _("Close focused track"), FN(OnTrackClose), wxT("Shift+C"));
@@ -2484,11 +2483,6 @@ void AudacityProject::PrevWindow()
 }
 
 //The following methods operate controls on specified tracks,
-
-void AudacityProject::OnTrackMenu()
-{
-   mTrackPanel->OnTrackMenu();
-}
 
 void AudacityProject::OnTrackMute()
 {
