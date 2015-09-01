@@ -65,6 +65,7 @@ private:
    void OnPlayAtSpeed();
    void OnPlayAtSpeedLooped();
    void OnPlayAtSpeedCutPreview();
+   void OnSetPlaySpeed();
 
    AudacityProject *const mProject;
 };
