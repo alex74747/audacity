@@ -92,6 +92,8 @@ class WaveTrackArray;
 class Regions;
 
 class LWSlider;
+
+class TracksMenuCommands;
 class HelpMenuCommands;
 
 AudacityProject *CreateNewAudacityProject();
@@ -180,6 +182,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    double GetSel0() { return mViewInfo.selectedRegion.t0(); }
    double GetSel1() { return mViewInfo.selectedRegion.t1(); }
    const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
+   ViewInfo &GetViewInfo() { return mViewInfo; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();
@@ -503,8 +506,10 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    void OnCapture(wxCommandEvent & evt);
    void ClearClipboard();
    void InitialState();
+public:
    void ModifyState(bool bWantsAutoSave);    // if true, writes auto-save file. Should set only if you really want the state change restored after
                                              // a crash, as it can take many seconds for large (eg. 10 track-hours) projects
+private:
    void PopState(TrackList * l);
 
    void UpdateLyrics();
@@ -613,9 +618,6 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    //sort method used by OnSortName and OnSortTime
    //currently only supported flags are kAudacitySortByName and kAudacitySortByName
    //in the future we might have 0x01 as sort ascending and we can bit or it
-#define kAudacitySortByTime (1 << 1)
-#define kAudacitySortByName (1 << 2)
-   void SortTracks(int flags);
 
    int  mAudioIOToken;
 
@@ -687,6 +689,7 @@ class AUDACITY_DLL_API AudacityProject : public wxFrame,
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
+   TracksMenuCommands *mTracksMenuCommands;
    HelpMenuCommands *mHelpMenuCommands;
 
    // CommandManager needs to use private methods

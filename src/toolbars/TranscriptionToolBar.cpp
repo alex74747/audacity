@@ -44,6 +44,7 @@
 
 #ifdef EXPERIMENTAL_VOICE_DETECTION
 #include "../VoiceKey.h"
+#include "../menus/TracksMenuCommands.h"
 #endif
 
 IMPLEMENT_CLASS(TranscriptionToolBar, ToolBar);
@@ -846,7 +847,7 @@ void TranscriptionToolBar::OnAutomateSelection(wxCommandEvent & WXUNUSED(event))
                //Increment
                start = newEnd;
 
-               p->DoAddLabel(SelectedRegion(newStartPos, newEndPos));
+               TracksMenuCommands(p).DoAddLabel(SelectedRegion(newStartPos, newEndPos));
                p->RedrawProject();
             }
          SetButton(false, mButtons[TTB_AutomateSelection]);
@@ -857,7 +858,7 @@ void TranscriptionToolBar::OnMakeLabel(wxCommandEvent & WXUNUSED(event))
 {
    AudacityProject *p = GetActiveProject();
    SetButton(false, mButtons[TTB_MakeLabel]);
-   p->DoAddLabel(SelectedRegion(p->GetSel0(),  p->GetSel1()));
+   TracksMenuCommands(p).DoAddLabel(SelectedRegion(p->GetSel0(), p->GetSel1()));
 }
 
 //This returns a double z-score between 0 and 10.

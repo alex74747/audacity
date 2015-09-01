@@ -38,6 +38,7 @@
 #include "Project.h"
 #include "Internat.h"
 #include "commands/CommandManager.h"
+#include "menus/TracksMenuCommands.h"
 #include "effects/Effect.h"
 #include "../images/Arrow.xpm"
 #include "../images/Empty9x16.xpm"
@@ -364,9 +365,9 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
       UndoManager *um = project->GetUndoManager();
       um->ClearStates();
       project->OnSelectAll();
-      project->OnRemoveTracks();
+      TracksMenuCommands(project).OnRemoveTracks();
    }
-   project->OnRemoveTracks();
+   TracksMenuCommands(project).OnRemoveTracks();
 
    wxWindow * pWnd = this->GetParent();
    // Under Linux an EndModal() here crashes (Bug #1221).

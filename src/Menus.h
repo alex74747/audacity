@@ -30,17 +30,16 @@ void AddEffectMenuItemGroup(CommandManager *c, const wxArrayString & names, cons
 void CreateRecentFilesMenu(CommandManager *c);
 void ModifyUndoMenuItems();
 void ModifyToolbarMenus();
+
+public:
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
+private:
 int GetFocusedFrame();
 wxUint32 GetUpdateFlags();
 
 double NearestZeroCrossing(double t0);
-
-public:
-//Adds label and returns index of label in labeltrack.
-int DoAddLabel(const SelectedRegion& region);
 
 private:
 
@@ -170,10 +169,6 @@ void OnZeroCrossing();
 void OnLockPlayRegion();
 void OnUnlockPlayRegion();
 
-double GetTime(Track *t);
-void OnSortTime();
-void OnSortName();
-
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
@@ -274,9 +269,6 @@ void OnGoSelEnd();
 void OnExpandAllTracks();
 void OnCollapseAllTracks();
 
-void OnMuteAllTracks();
-void OnUnMuteAllTracks();
-
 void OnShowClipping();
 
 void OnHistory();
@@ -321,10 +313,6 @@ void OnImportRaw();
 
 void OnEditMetadata();
 
-void OnMixAndRender();
-void OnMixAndRenderToNewTrack();
-void HandleMixAndRender(bool toNewTrack);
-
 private:
 SelectedRegion mRegionSave;
 public:
@@ -336,27 +324,8 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-void OnAlignNoSync(int index);
-void OnAlign(int index);
-void OnAlignMoveSel(int index);
-void HandleAlign(int index, bool moveSel);
-size_t mAlignLabelsCount;
-
-#ifdef EXPERIMENTAL_SCOREALIGN
-void OnScoreAlign();
-#endif // EXPERIMENTAL_SCOREALIGN
-
 // Tracks menu
-void OnNewWaveTrack();
-void OnNewStereoTrack();
-void OnNewLabelTrack();
-void OnNewTimeTrack();
 void OnTimerRecord();
-void OnRemoveTracks();
-void OnSyncLock();
-void OnAddLabel();
-void OnAddLabelPlaying();
-void OnEditLabels();
 
         // Effect Menu
 
@@ -364,7 +333,6 @@ bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
 void OnApplyChain();
 void OnEditChains();
-void OnStereoToMono(int index);
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
 void OnManageEffects();
@@ -385,8 +353,6 @@ void NextFrame();
 
 void PrevWindow();
 void NextWindow();
-
-void OnResample();
 
 private:
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);

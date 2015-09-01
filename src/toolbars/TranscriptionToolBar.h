@@ -97,14 +97,6 @@ class TranscriptionToolBar:public ToolBar {
    virtual void OnAutomateSelection(wxCommandEvent & event);
    virtual void OnSensitivitySlider(wxCommandEvent & event);
 
-   virtual void Populate();
-   virtual void Repaint(wxDC * WXUNUSED(dc)) {}
-   virtual void EnableDisableButtons();
-   virtual void UpdatePrefs();
-
-   void OnFocus(wxFocusEvent &event);
-   void OnCaptureKey(wxCommandEvent &event);
-
    virtual double GetSensitivity();
    virtual void SetKeyType(wxCommandEvent & event);
 #endif
