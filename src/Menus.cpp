@@ -882,9 +882,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("PlayOneSec"), _("Play One Second"), FN(OnPlayOneSecond), wxT("1"),
-                 CaptureNotBusyFlag,
-                 CaptureNotBusyFlag);
    c->AddCommand(wxT("PlayToSelection"),_("Play To Selection"), FN(OnPlayToSelection), wxT("B"),
                  CaptureNotBusyFlag,
                  CaptureNotBusyFlag);
@@ -1860,18 +1857,6 @@ bool AudacityProject::MakeReadyToPlay(bool loop, bool cutpreview)
 
    return true;
 }
-
-void AudacityProject::OnPlayOneSecond()
-{
-   if( !MakeReadyToPlay() )
-      return;
-
-   double pos = mTrackPanel->GetMostRecentXPos();
-   GetControlToolBar()->PlayPlayRegion
-      (SelectedRegion(pos - 0.5, pos + 0.5), GetDefaultPlayOptions(),
-       PlayMode::oneSecondPlay);
-}
-
 
 /// The idea for this function (and first implementation)
 /// was from Juhana Sadeharju.  The function plays the
