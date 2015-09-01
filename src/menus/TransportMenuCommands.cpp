@@ -144,6 +144,7 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("PlayAtSpeedCutPreview"), _("Play Cut Preview at speed"), FN(OnPlayAtSpeedCutPreview));
    c->AddCommand(wxT("SetPlaySpeed"), _("Adjust playback speed"), FN(OnSetPlaySpeed));
    c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
+   c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -811,5 +812,13 @@ void TransportMenuCommands::OnPlaySpeedInc()
    TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
    if (tb) {
       tb->AdjustPlaySpeed(0.1f);
+   }
+}
+
+void TransportMenuCommands::OnPlaySpeedDec()
+{
+   TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
+   if (tb) {
+      tb->AdjustPlaySpeed(-0.1f);
    }
 }
