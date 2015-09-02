@@ -98,6 +98,3 @@ void OnSeparator();
 public:
 
 #endif
-
-
-

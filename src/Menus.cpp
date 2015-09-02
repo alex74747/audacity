@@ -935,6 +935,8 @@ wxUint32 AudacityProject::GetUpdateFlags()
    return flags;
 }
 
+
+// todo
 void AudacityProject::ModifyAllProjectToolbarMenus()
 {
    AProjectArray::iterator i;
@@ -1145,6 +1147,7 @@ void AudacityProject::OnPrevTool()
 // TODO: Should all these functions which involve
 // the toolbar actually move into ControlToolBar?
 
+// unused
 void AudacityProject::OnStopSelect()
 {
    wxCommandEvent evt;
@@ -1337,6 +1340,7 @@ double AudacityProject::GetScreenEndTime() const
    return mTrackPanel->GetScreenEndTime();
 }
 
+// todo
 void AudacityProject::ZoomInByFactor( double ZoomFactor )
 {
    // LLL: Handling positioning differently when audio is active
@@ -1424,6 +1428,7 @@ void AudacityProject::ZoomOutByFactor( double ZoomFactor )
 
 }
 
+// unused
 // this is unused:
 #if 0
 static double OldZooms[2]={ 44100.0/512.0, 4410.0/512.0 };
@@ -1545,6 +1550,8 @@ void AudacityProject::OnHelpWelcome()
    SplashDialog::Show2( this );
 }
 
+
+// unused
 void AudacityProject::OnSeparator()
 {
 
