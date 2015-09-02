@@ -685,11 +685,6 @@ private:
    // Keyboard capture
    wxWindow *mKeyboardCaptureHandler;
 
-   double mSeekShort;
-   double mSeekLong;
-
-   wxLongLong mLastSelectionAdjustment;
-
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted;
 
