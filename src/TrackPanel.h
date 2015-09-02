@@ -192,7 +192,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void HandlePageDownKey();
    virtual AudacityProject * GetProject() const;
 
-   virtual void OnNextTrack(bool shift = false);
    virtual void OnToggle();
 
    virtual void ScrollIntoView(double pos);
@@ -781,7 +780,6 @@ protected:
 
    bool mAdjustSelectionEdges;
    bool mSlideUpDownOnly;
-   bool mCircularTrackNavigation;
 
    // JH: if the user is dragging a track, at what y
    //   coordinate should the dragging track move up or down?

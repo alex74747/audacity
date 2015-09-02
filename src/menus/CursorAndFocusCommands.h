@@ -70,7 +70,9 @@ private:
    void OnFirstTrack();
    void OnLastTrack();
    void OnShiftUp();
+   void OnShiftDown();
    void OnPrevTrack(bool shift = false);
+   void OnNextTrack(bool shift = false);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
