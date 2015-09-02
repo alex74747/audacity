@@ -61,6 +61,8 @@ private:
    void PrevFrame();
    void NextFrame();
 
+   void OnSelToStart();
+
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
 };

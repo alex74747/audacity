@@ -543,7 +543,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
 
-   c->AddCommand(wxT("SelStart"), _("Selection to Start"), FN(OnSelToStart), wxT("Shift+Home"));
    c->AddCommand(wxT("SelEnd"), _("Selection to End"), FN(OnSelToEnd), wxT("Shift+End"));
 
    c->SetDefaultFlags(AudioIOBusyFlag, AudioIOBusyFlag);
@@ -1442,12 +1441,6 @@ void AudacityProject::OnSeekLeftLong()
 void AudacityProject::OnSeekRightLong()
 {
    OnCursorRight( true, false );
-}
-
-void AudacityProject::OnSelToStart()
-{
-   Rewind(true);
-   ModifyState(false);
 }
 
 void AudacityProject::OnSelToEnd()

@@ -109,6 +109,8 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
+
+   c->AddCommand(wxT("SelStart"), _("Selection to Start"), FN(OnSelToStart), wxT("Shift+Home"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -724,4 +726,10 @@ void CursorAndFocusCommands::PrevFrame()
 void CursorAndFocusCommands::NextFrame()
 {
    NextOrPrevFrame(true);
+}
+
+void CursorAndFocusCommands::OnSelToStart()
+{
+   mProject->Rewind(true);
+   mProject->ModifyState(false);
 }
