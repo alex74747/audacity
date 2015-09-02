@@ -8174,22 +8174,6 @@ void TrackPanel::OnNextTrack( bool shift )
    }
 }
 
-void TrackPanel::OnFirstTrack()
-{
-   Track *t = GetFocusedTrack();
-   if (!t)
-      return;
-
-   TrackListIterator iter(mTracks);
-   Track *f = iter.First();
-   if (t != f)
-   {
-      SetFocusedTrack(f);
-      MakeParentModifyState(false);
-   }
-   EnsureVisible(f);
-}
-
 void TrackPanel::OnLastTrack()
 {
    Track *t = GetFocusedTrack();
