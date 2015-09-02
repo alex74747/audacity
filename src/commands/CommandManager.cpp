@@ -1211,7 +1211,7 @@ bool CommandManager::HandleTextualCommand(wxString & Str, wxUint32 flags, wxUint
    {
       if (em.GetEffectByIdentifier(plug->GetID()).IsSameAs(Str))
       {
-         return proj->OnEffect(plug->GetID(), AudacityProject::OnEffectFlags::kConfigured);
+         return proj->OnEffect(plug->GetID(), OnEffectFlagsConfigured);
       }
       plug = pm.GetNextPlugin(PluginTypeEffect);
    }

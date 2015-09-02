@@ -142,7 +142,17 @@ class ImportXMLTagHandler : public XMLTagHandler
    AudacityProject* mProject;
 };
 
-class AUDACITY_DLL_API AudacityProject:  public wxFrame,
+enum OnEffectFlags
+{
+   // No flags specified
+   OnEffectFlagsNone = 0x00,
+   // Flag used to disable prompting for configuration parameteres.
+   OnEffectFlagsConfigured = 0x01,
+   // Flag used to disable saving the state after processing.
+   OnEffectFlagsSkipState = 0x02,
+};
+
+class AUDACITY_DLL_API AudacityProject : public wxFrame,
                                      public TrackPanelListener,
                                      public SelectionBarListener,
                                      public SpectralSelectionBarListener,
