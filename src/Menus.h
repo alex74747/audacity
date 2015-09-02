@@ -97,8 +97,6 @@ void OnCursorLongJumpRight();
 void OnSelSetExtendLeft();
 void OnSelSetExtendRight();
 
-void OnSelToEnd();
-
 
 void OnSnapToOff();
 void OnSnapToNearest();

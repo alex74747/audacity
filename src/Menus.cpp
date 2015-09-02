@@ -540,11 +540,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-
-   c->AddCommand(wxT("SelEnd"), _("Selection to End"), FN(OnSelToEnd), wxT("Shift+End"));
-
    c->SetDefaultFlags(AudioIOBusyFlag, AudioIOBusyFlag);
 
    c->AddCommand(wxT("SeekLeftShort"), _("Short seek left during playback"), FN(OnSeekLeftShort), wxT("Left\tallowDup"));
@@ -1441,12 +1436,6 @@ void AudacityProject::OnSeekLeftLong()
 void AudacityProject::OnSeekRightLong()
 {
    OnCursorRight( true, false );
-}
-
-void AudacityProject::OnSelToEnd()
-{
-   SkipEnd(true);
-   ModifyState(false);
 }
 
 void AudacityProject::OnCursorUp()
