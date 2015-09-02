@@ -78,9 +78,12 @@ private:
    void OnToggle();
    void OnCursorLeft(const wxEvent * evt);
    void OnCursorRight(const wxEvent * evt);
+
    void OnCursorShortJumpLeft();
    void OnCursorShortJumpRight();
    void OnCursorLongJumpLeft();
+   void OnCursorLongJumpRight();
+   void OnCursorMove(bool forward, bool jump, bool longjump);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;

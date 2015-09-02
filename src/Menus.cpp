@@ -508,8 +508,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("CursorLongJumpRight"), _("Cursor Long Jump Right"), FN(OnCursorLongJumpRight), wxT("Shift+."));
-
    c->AddCommand(wxT("SelExtLeft"), _("Selection Extend Left"), FN(OnSelExtendLeft), wxT("Shift+Left\twantKeyup\tallowDup"));
    c->AddCommand(wxT("SelExtRight"), _("Selection Extend Right"), FN(OnSelExtendRight), wxT("Shift+Right\twantKeyup\tallowDup"));
 
@@ -1286,11 +1284,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnCursorLongJumpRight()
-{
-   OnCursorMove( true, true, true );
 }
 
 void AudacityProject::OnSelSetExtendLeft()
@@ -2458,35 +2451,4 @@ void AudacityProject::OnBoundaryMove(bool left, bool boundaryContract)
       GetTrackPanel()->Refresh( false );
       ModifyState(false);
    }
-}
-
-// Move the cursor forward or backward, while paused or while playing.
-// forward=true: Move cursor forward; forward=false: Move cursor backwards
-// jump=false: Move cursor determined by zoom; jump=true: Use seek times
-// longjump=false: Use mSeekShort; longjump=true: Use mSeekLong
-void AudacityProject::OnCursorMove(bool forward, bool jump, bool longjump )
-{
-   // PRL:  nobody calls this yet with !jump
-
-   double positiveSeekStep;
-   bool byPixels;
-   if (jump) {
-      if (!longjump) {
-         positiveSeekStep = mSeekShort;
-      } else {
-         positiveSeekStep = mSeekLong;
-      }
-      byPixels = false;
-   } else {
-      positiveSeekStep = 1.0;
-      byPixels = true;
-   }
-   bool mayAccelerate = !jump;
-   SeekLeftOrRight
-      (!forward, false, false, false,
-       0, mayAccelerate, mayAccelerate,
-       positiveSeekStep, byPixels,
-       positiveSeekStep, byPixels);
-
-   ModifyState(false);
 }
