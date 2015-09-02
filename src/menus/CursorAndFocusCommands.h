@@ -86,6 +86,7 @@ public:
    void OnToggle();
    void OnCursorLeft(const wxEvent * evt);
    void OnCursorRight(const wxEvent * evt);
+   void OnCursorShortJumpLeft();
 
 private:
    AudacityProject *mProject;

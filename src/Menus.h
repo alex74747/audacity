@@ -73,7 +73,6 @@ void OnSelExtendRight(const wxEvent * evt);
 void OnSelContractLeft(const wxEvent * evt);
 void OnSelContractRight(const wxEvent * evt);
 
-void OnCursorShortJumpLeft();
 void OnCursorShortJumpRight();
 void OnCursorLongJumpLeft();
 void OnCursorLongJumpRight();
@@ -179,8 +178,7 @@ void OnSeparator();
 
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
-private:
-   void OnCursorMove(bool forward, bool jump, bool longjump);
+void OnCursorMove(bool forward, bool jump, bool longjump);
 void OnBoundaryMove(bool left, bool boundaryContract);
 
 // Handle small cursor and play head movements
