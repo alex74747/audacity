@@ -20,6 +20,7 @@
 CursorAndFocusCommands::CursorAndFocusCommands(AudacityProject *project)
    : mProject(project)
    , mRegionSave()
+   , mLastSelectionAdjustment(wxGetLocalTimeMillis())
 {
 }
 
@@ -141,6 +142,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelExtLeft"), _("Selection Extend Left"), FN(OnSelExtendLeft), wxT("Shift+Left\twantKeyup\tallowDup"));
    c->AddCommand(wxT("SelExtRight"), _("Selection Extend Right"), FN(OnSelExtendRight), wxT("Shift+Right\twantKeyup\tallowDup"));
    c->AddCommand(wxT("SelSetExtLeft"), _("Set (or Extend) Left Selection"), FN(OnSelSetExtendLeft));
+   c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1169,5 +1171,112 @@ void CursorAndFocusCommands::OnSelExtendRight(const wxEvent * evt)
 
 void CursorAndFocusCommands::OnSelSetExtendLeft()
 {
-   mProject->OnBoundaryMove(true, false);
+   OnBoundaryMove(true, false);
+}
+
+void CursorAndFocusCommands::OnSelSetExtendRight()
+{
+   OnBoundaryMove(false, false);
+}
+
+void CursorAndFocusCommands::OnBoundaryMove(bool left, bool boundaryContract)
+{
+   // Move the left/right selection boundary, to either expand or contract the selection
+   // left=true: operate on left boundary; left=false: operate on right boundary
+   // boundaryContract=true: contract region; boundaryContract=false: expand region.
+
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   // If the last adjustment was very recent, we are
+   // holding the key down and should move faster.
+   wxLongLong curtime = ::wxGetLocalTimeMillis();
+   int pixels = 1;
+   if (curtime - mLastSelectionAdjustment < 50)
+   {
+      pixels = 4;
+   }
+   mLastSelectionAdjustment = curtime;
+
+   if (mProject->IsAudioActive())
+   {
+      double indicator = gAudioIO->GetStreamTime();
+      if (left)
+         viewInfo.selectedRegion.setT0(indicator, false);
+      else
+         viewInfo.selectedRegion.setT1(indicator);
+
+      mProject->ModifyState(false);
+      trackPanel->Refresh(false);
+   }
+   else
+   {
+      // BOUNDARY MOVEMENT
+      // Contract selection from the right to the left
+      if (boundaryContract)
+      {
+         if (left) {
+            // Reduce and constrain left boundary (counter-intuitive)
+            // Move the left boundary by at most the desired number of pixels,
+            // but not past the right
+            viewInfo.selectedRegion.setT0(
+               std::min(viewInfo.selectedRegion.t1(),
+                        viewInfo.OffsetTimeByPixels(
+                        viewInfo.selectedRegion.t0(),
+                        pixels
+            )));
+
+            // Make sure it's visible
+            trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+         }
+         else
+         {
+            // Reduce and constrain right boundary (counter-intuitive)
+            // Move the right boundary by at most the desired number of pixels,
+            // but not past the left
+            viewInfo.selectedRegion.setT1(
+               std::max(viewInfo.selectedRegion.t0(),
+                        viewInfo.OffsetTimeByPixels(
+                        viewInfo.selectedRegion.t1(),
+                        -pixels
+            )));
+
+            // Make sure it's visible
+            trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+         }
+      }
+      // BOUNDARY MOVEMENT
+      // Extend selection toward the left
+      else
+      {
+         if (left) {
+            // Expand and constrain left boundary
+            viewInfo.selectedRegion.setT0(
+               std::max(0.0,
+                        viewInfo.OffsetTimeByPixels(
+                        viewInfo.selectedRegion.t0(),
+                        -pixels
+            )));
+
+            // Make sure it's visible
+            trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+         }
+         else
+         {
+            // Expand and constrain right boundary
+            const double end = mProject->GetTracks()->GetEndTime();
+            viewInfo.selectedRegion.setT1(
+               std::min(end,
+                        viewInfo.OffsetTimeByPixels(
+                        viewInfo.selectedRegion.t1(),
+                        pixels
+            )));
+
+            // Make sure it's visible
+            trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+         }
+      }
+      trackPanel->Refresh(false);
+      mProject->ModifyState(false);
+   }
 }

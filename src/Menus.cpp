@@ -543,8 +543,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
-
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
@@ -1385,11 +1383,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnSelSetExtendRight()
-{
-   OnBoundaryMove( false, false);
 }
 
 void AudacityProject::OnSelContractLeft(const wxEvent * evt)
@@ -2458,99 +2451,4 @@ double AudacityProject::GridMove(double t, int minPix)
    nc.SetValue(result);
    result = nc.GetValue();
    return result;
-}
-
-void AudacityProject::OnBoundaryMove(bool left, bool boundaryContract)
-{
-  // Move the left/right selection boundary, to either expand or contract the selection
-  // left=true: operate on left boundary; left=false: operate on right boundary
-  // boundaryContract=true: contract region; boundaryContract=false: expand region.
-
-   // If the last adjustment was very recent, we are
-   // holding the key down and should move faster.
-   wxLongLong curtime = ::wxGetLocalTimeMillis();
-   int pixels = 1;
-   if( curtime - mLastSelectionAdjustment < 50 )
-   {
-      pixels = 4;
-   }
-   mLastSelectionAdjustment = curtime;
-
-   if (IsAudioActive())
-   {
-      double indicator = gAudioIO->GetStreamTime();
-      if (left)
-         mViewInfo.selectedRegion.setT0(indicator, false);
-      else
-         mViewInfo.selectedRegion.setT1(indicator);
-
-      ModifyState(false);
-      GetTrackPanel()->Refresh(false);
-   }
-   else
-   {
-      // BOUNDARY MOVEMENT
-      // Contract selection from the right to the left
-      if( boundaryContract )
-      {
-         if (left) {
-            // Reduce and constrain left boundary (counter-intuitive)
-            // Move the left boundary by at most the desired number of pixels,
-            // but not past the right
-            mViewInfo.selectedRegion.setT0(
-               std::min(mViewInfo.selectedRegion.t1(),
-                  mViewInfo.OffsetTimeByPixels(
-                     mViewInfo.selectedRegion.t0(),
-                     pixels)));
-
-            // Make sure it's visible
-            GetTrackPanel()->ScrollIntoView(mViewInfo.selectedRegion.t0());
-         }
-         else
-         {
-            // Reduce and constrain right boundary (counter-intuitive)
-            // Move the right boundary by at most the desired number of pixels,
-            // but not past the left
-            mViewInfo.selectedRegion.setT1(
-               std::max(mViewInfo.selectedRegion.t0(),
-                  mViewInfo.OffsetTimeByPixels(
-                     mViewInfo.selectedRegion.t1(),
-                     -pixels)));
-
-            // Make sure it's visible
-            GetTrackPanel()->ScrollIntoView(mViewInfo.selectedRegion.t1());
-         }
-      }
-      // BOUNDARY MOVEMENT
-      // Extend selection toward the left
-      else
-      {
-         if (left) {
-            // Expand and constrain left boundary
-            mViewInfo.selectedRegion.setT0(
-               std::max(0.0,
-                  mViewInfo.OffsetTimeByPixels(
-                     mViewInfo.selectedRegion.t0(),
-                     -pixels)));
-
-            // Make sure it's visible
-            GetTrackPanel()->ScrollIntoView(mViewInfo.selectedRegion.t0());
-         }
-         else
-         {
-            // Expand and constrain right boundary
-            const double end = mTracks->GetEndTime();
-            mViewInfo.selectedRegion.setT1(
-               std::min(end,
-                  mViewInfo.OffsetTimeByPixels(
-                     mViewInfo.selectedRegion.t1(),
-                     pixels)));
-
-            // Make sure it's visible
-            GetTrackPanel()->ScrollIntoView(mViewInfo.selectedRegion.t1());
-         }
-      }
-      GetTrackPanel()->Refresh( false );
-      ModifyState(false);
-   }
 }
