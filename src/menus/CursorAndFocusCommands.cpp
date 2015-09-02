@@ -124,6 +124,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("PrevTrack"), _("Move Focus to Previous Track"), FN(OnCursorUp), wxT("Up"));
    c->AddCommand(wxT("NextTrack"), _("Move Focus to Next Track"), FN(OnCursorDown), wxT("Down"));
+   c->AddCommand(wxT("FirstTrack"), _("Move Focus to First Track"), FN(OnFirstTrack), wxT("Ctrl+Home"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -781,4 +782,21 @@ void CursorAndFocusCommands::OnCursorUp()
 void CursorAndFocusCommands::OnCursorDown()
 {
    mProject->GetTrackPanel()->OnNextTrack(false);
+}
+
+void CursorAndFocusCommands::OnFirstTrack()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *t = trackPanel->GetFocusedTrack();
+   if (!t)
+      return;
+
+   TrackListIterator iter(mProject->GetTracks());
+   Track *f = iter.First();
+   if (t != f)
+   {
+      trackPanel->SetFocusedTrack(f);
+      mProject->ModifyState(false);
+   }
+   trackPanel->EnsureVisible(f);
 }

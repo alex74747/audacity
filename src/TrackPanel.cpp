@@ -190,6 +190,7 @@ is time to refresh some aspect of the screen.
 #include "commands/CommandManager.h"
 #include "commands/Keyboard.h"
 
+#include "menus/CursorAndFocusCommands.h"
 #include "menus/TracksMenuCommands.h"
 
 #include "ondemand/ODManager.h"
@@ -7664,22 +7665,6 @@ void TrackPanel::OnNextTrack( bool shift )
          return;
       }
    }
-}
-
-void TrackPanel::OnFirstTrack()
-{
-   Track *t = GetFocusedTrack();
-   if (!t)
-      return;
-
-   TrackListIterator iter(GetTracks());
-   Track *f = iter.First();
-   if (t != f)
-   {
-      SetFocusedTrack(f);
-      MakeParentModifyState(false);
-   }
-   EnsureVisible(f);
 }
 
 void TrackPanel::OnLastTrack()

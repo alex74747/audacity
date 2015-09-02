@@ -543,7 +543,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("FirstTrack"), _("Move Focus to First Track"), FN(OnFirstTrack), wxT("Ctrl+Home"));
    c->AddCommand(wxT("LastTrack"), _("Move Focus to Last Track"), FN(OnLastTrack), wxT("Ctrl+End"));
 
 
@@ -1407,11 +1406,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnFirstTrack()
-{
-   mTrackPanel->OnFirstTrack();
 }
 
 void AudacityProject::OnLastTrack()

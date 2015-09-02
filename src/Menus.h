@@ -68,7 +68,6 @@ void OnStopSelect();
 
         // Moving track focus commands
 
-void OnFirstTrack();
 void OnLastTrack();
 
         // Selection-Editing Commands

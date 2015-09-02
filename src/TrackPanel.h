@@ -203,7 +203,6 @@ class AUDACITY_DLL_API TrackPanel final : public OverlayPanel {
 
    virtual void OnPrevTrack(bool shift = false);
    virtual void OnNextTrack(bool shift = false);
-   virtual void OnFirstTrack();
    virtual void OnLastTrack();
    virtual void OnToggle();
 
