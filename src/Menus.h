@@ -62,7 +62,6 @@ void OnStopSelect();
 
         // Selection-Editing Commands
 
-void OnSelContractLeft(const wxEvent * evt);
 void OnSelContractRight(const wxEvent * evt);
 
 void OnSnapToOff();
@@ -136,7 +135,6 @@ void OnSeparator();
       // Keyboard navigation
 
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
-void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
 
 // Handle small cursor and play head movements
 void SeekLeftOrRight

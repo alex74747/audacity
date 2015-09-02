@@ -94,6 +94,9 @@ private:
    void OnSelSetExtendRight();
    void OnBoundaryMove(bool left, bool boundaryContract);
 
+   void OnSelContractLeft(const wxEvent * evt);
+   void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
+
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
    wxLongLong mLastSelectionAdjustment;
