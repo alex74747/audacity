@@ -130,6 +130,3 @@ void OnSeparator();
 public:
 
 #endif
-
-
-
