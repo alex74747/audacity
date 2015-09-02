@@ -60,10 +60,6 @@ public:
 
 void OnStopSelect();
 
-        // Moving track focus commands
-
-void OnLastTrack();
-
         // Selection-Editing Commands
 
 void OnShiftUp();
