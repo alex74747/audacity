@@ -132,6 +132,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("CursorLongJumpLeft"), _("Cursor Long Jump Left"), FN(OnCursorLongJumpLeft), wxT("Shift+,"));
    c->AddCommand(wxT("CursorLongJumpRight"), _("Cursor Long Jump Right"), FN(OnCursorLongJumpRight), wxT("Shift+."));
    c->AddCommand(wxT("SelExtLeft"), _("Selection Extend Left"), FN(OnSelExtendLeft), wxT("Shift+Left\twantKeyup\tallowDup"));
+   c->AddCommand(wxT("SelExtRight"), _("Selection Extend Right"), FN(OnSelExtendRight), wxT("Shift+Right\twantKeyup\tallowDup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1088,4 +1089,9 @@ void CursorAndFocusCommands::OnCursorMove(bool forward, bool jump, bool longjump
 void CursorAndFocusCommands::OnSelExtendLeft(const wxEvent * evt)
 {
    mProject->OnCursorLeft(true, false, evt->GetEventType() == wxEVT_KEY_UP);
+}
+
+void CursorAndFocusCommands::OnSelExtendRight(const wxEvent * evt)
+{
+   mProject->OnCursorRight(true, false, evt->GetEventType() == wxEVT_KEY_UP);
 }
