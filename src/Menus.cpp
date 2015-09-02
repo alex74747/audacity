@@ -495,8 +495,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
-
    c->AddCommand(wxT("SelectTool"), _("Selection Tool"), FN(OnSelectTool), wxT("F1"));
    c->AddCommand(wxT("EnvelopeTool"),_("Envelope Tool"), FN(OnEnvelopeTool), wxT("F2"));
    c->AddCommand(wxT("DrawTool"), _("Draw Tool"), FN(OnDrawTool), wxT("F3"));
@@ -1444,24 +1442,6 @@ void AudacityProject::OnSelContractLeft(const wxEvent * evt)
 void AudacityProject::OnSelContractRight(const wxEvent * evt)
 {
    OnCursorLeft( true, true, evt->GetEventType() == wxEVT_KEY_UP );
-}
-
-void AudacityProject::NextFrame()
-{
-   switch( GetFocusedFrame() )
-   {
-      case TopDockHasFocus:
-         mTrackPanel->SetFocus();
-      break;
-
-      case TrackPanelHasFocus:
-         mToolManager->GetBotDock()->SetFocus();
-      break;
-
-      case BotDockHasFocus:
-         mToolManager->GetTopDock()->SetFocus();
-      break;
-   }
 }
 
 //

@@ -101,6 +101,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
 
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
+   c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -637,6 +638,24 @@ void CursorAndFocusCommands::PrevFrame()
 
    case BotDockHasFocus:
       mProject->GetTrackPanel()->SetFocus();
+      break;
+   }
+}
+
+void CursorAndFocusCommands::NextFrame()
+{
+   switch (mProject->GetFocusedFrame())
+   {
+   case TopDockHasFocus:
+      mProject->GetTrackPanel()->SetFocus();
+      break;
+
+   case TrackPanelHasFocus:
+      mProject->mToolManager->GetBotDock()->SetFocus();
+      break;
+
+   case BotDockHasFocus:
+      mProject->mToolManager->GetTopDock()->SetFocus();
       break;
    }
 }

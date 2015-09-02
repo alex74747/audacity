@@ -164,8 +164,6 @@ void OnSeparator();
 
       // Keyboard navigation
 
-void NextFrame();
-
 private:
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
