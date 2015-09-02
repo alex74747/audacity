@@ -71,6 +71,7 @@ array of Ruler::Label.
 #include "../AColor.h"
 #include "../AudioIO.h"
 #include "../Internat.h"
+#include "../menus/TransportMenuCommands.h"
 #include "../Project.h"
 #include "../toolbars/ControlToolBar.h"
 #include "../Theme.h"
