@@ -508,7 +508,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("SelSetExtLeft"), _("Set (or Extend) Left Selection"), FN(OnSelSetExtendLeft));
    c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
 
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
@@ -1281,11 +1280,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnSelSetExtendLeft()
-{
-   OnBoundaryMove( true, false);
 }
 
 void AudacityProject::OnSelSetExtendRight()

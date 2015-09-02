@@ -65,7 +65,6 @@ void OnStopSelect();
 void OnSelContractLeft(const wxEvent * evt);
 void OnSelContractRight(const wxEvent * evt);
 
-void OnSelSetExtendLeft();
 void OnSelSetExtendRight();
 
 void OnSnapToOff();
