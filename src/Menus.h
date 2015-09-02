@@ -91,7 +91,6 @@ void OnCursorLongJumpRight();
 void OnSelSetExtendLeft();
 void OnSelSetExtendRight();
 
-void OnSelToStart();
 void OnSelToEnd();
 
 void OnSnapToOff();
