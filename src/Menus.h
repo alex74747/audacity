@@ -68,7 +68,6 @@ void OnStopSelect();
 
         // Moving track focus commands
 
-void OnCursorUp();
 void OnCursorDown();
 void OnFirstTrack();
 void OnLastTrack();

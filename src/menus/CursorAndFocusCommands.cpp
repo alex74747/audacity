@@ -121,6 +121,8 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
+
+   c->AddCommand(wxT("PrevTrack"), _("Move Focus to Previous Track"), FN(OnCursorUp), wxT("Up"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -768,4 +770,9 @@ void CursorAndFocusCommands::OnSeekLeftLong()
 void CursorAndFocusCommands::OnSeekRightLong()
 {
    mProject->OnCursorRight(true, false);
+}
+
+void CursorAndFocusCommands::OnCursorUp()
+{
+   mProject->GetTrackPanel()->OnPrevTrack(false);
 }
