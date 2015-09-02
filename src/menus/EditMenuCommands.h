@@ -2,10 +2,10 @@
 #define __AUDACITY_EDIT_MENU_COMMANDS__
 
 #include "../Experimental.h"
-#include "../SelectedRegion.h"
 
 class AudacityProject;
 class CommandManager;
+class CursorAndFocusCommands;
 class Regions;
 class Track;
 class WaveTrack;
@@ -63,38 +63,12 @@ private:
    void GetRegionsByLabel(Regions &regions);
    void ClearClipboard();
 
+
 public:
    void OnSelectAll();
-   // This is not bound to a menu item:
    void SelectAllIfNone();
    void OnSelectNone();
 
-private:
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   void OnToggleSpectralSelection();
-   void DoNextPeakFrequency(bool up);
-   void OnNextHigherPeakFrequency();
-   void OnNextLowerPeakFrequency();
-#endif
-
-   void OnSetLeftSelection();
-   void OnSetRightSelection();
-   void OnSelectStartCursor();
-   void OnSelectCursorEnd();
-   void OnSelectAllTracks();
-   void OnSelectSyncLockSel();
-
-   void OnZeroCrossing();
-   double NearestZeroCrossing(double t0);
-
-   void OnCursorSelStart();
-   void OnCursorSelEnd();
-   void OnCursorTrackStart();
-   void OnCursorTrackEnd();
-   void OnSelectionSave();
-   void OnSelectionRestore();
-
-public:
    void OnLockPlayRegion();
    void OnUnlockPlayRegion();
    void OnPreferences();
@@ -102,6 +76,6 @@ public:
 private:
 
    AudacityProject *const mProject;
-   SelectedRegion mRegionSave;
+   CursorAndFocusCommands *const mCursorAndFocusCommands;
 };
 #endif

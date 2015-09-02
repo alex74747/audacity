@@ -192,12 +192,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void HandlePageDownKey();
    virtual AudacityProject * GetProject() const;
 
-   virtual void OnPrevTrack(bool shift = false);
-   virtual void OnNextTrack(bool shift = false);
-   virtual void OnFirstTrack();
-   virtual void OnLastTrack();
-   virtual void OnToggle();
-
    virtual void ScrollIntoView(double pos);
    virtual void ScrollIntoView(int x);
 
@@ -646,6 +640,7 @@ protected:
 
 public:
    void ToggleSpectralSelection();
+
 protected:
 
 #endif
@@ -784,7 +779,6 @@ protected:
 
    bool mAdjustSelectionEdges;
    bool mSlideUpDownOnly;
-   bool mCircularTrackNavigation;
 
    // JH: if the user is dragging a track, at what y
    //   coordinate should the dragging track move up or down?
@@ -858,6 +852,12 @@ protected:
    friend class TrackPanelAx;
 
    TrackPanelAx *mAx;
+
+public:
+
+   TrackPanelAx &GetAx() { return *mAx; }
+
+protected:
 
    wxString mSoloPref;
 

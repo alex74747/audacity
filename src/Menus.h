@@ -36,7 +36,6 @@ void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
-private:
 int GetFocusedFrame();
 
 public:
@@ -60,44 +59,6 @@ public:
         // Audio I/O Commands
 
 void OnStopSelect();
-void OnSeekLeftShort();
-void OnSeekRightShort();
-void OnSeekLeftLong();
-void OnSeekRightLong();
-
-        // Moving track focus commands
-
-void OnCursorUp();
-void OnCursorDown();
-void OnFirstTrack();
-void OnLastTrack();
-
-        // Selection-Editing Commands
-
-void OnShiftUp();
-void OnShiftDown();
-void OnToggle();
-
-void OnCursorLeft(const wxEvent * evt);
-void OnCursorRight(const wxEvent * evt);
-void OnSelExtendLeft(const wxEvent * evt);
-void OnSelExtendRight(const wxEvent * evt);
-void OnSelContractLeft(const wxEvent * evt);
-void OnSelContractRight(const wxEvent * evt);
-
-void OnCursorShortJumpLeft();
-void OnCursorShortJumpRight();
-void OnCursorLongJumpLeft();
-void OnCursorLongJumpRight();
-void OnSelSetExtendLeft();
-void OnSelSetExtendRight();
-
-void OnSelToStart();
-void OnSelToEnd();
-
-void OnSnapToOff();
-void OnSnapToNearest();
-void OnSnapToPrior();
 
         // File Menu
 
@@ -162,30 +123,6 @@ void OnHelpWelcome();
        //
 
 void OnSeparator();
-
-      // Keyboard navigation
-
-void PrevFrame();
-void NextFrame();
-
-void PrevWindow();
-void NextWindow();
-
-private:
-void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
-void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
-void OnCursorMove(bool forward, bool jump, bool longjump);
-void OnBoundaryMove(bool left, bool boundaryContract);
-
-// Handle small cursor and play head movements
-void SeekLeftOrRight
-(bool left, bool shift, bool ctrl, bool keyup,
- int snapToTime, bool mayAccelerateQuiet, bool mayAccelerateAudio,
- double quietSeekStepPositive, bool quietStepIsPixels,
- double audioSeekStepPositive, bool audioStepIsPixels);
-
-// Helper for moving by keyboard with snap-to-grid enabled
-double GridMove(double t, int minPix);
 
 // Make sure we return to "public" for subsequent declarations in Project.h.
 public:
