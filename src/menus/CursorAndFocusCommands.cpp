@@ -94,6 +94,9 @@ void CursorAndFocusCommands::Create(CommandManager *c)
 
 void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 {
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -514,4 +517,53 @@ void CursorAndFocusCommands::OnSelectionRestore()
    mProject->ModifyState(false);
 
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void CursorAndFocusCommands::PrevWindow()
+{
+   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
+   const wxWindowList & list = mProject->GetChildren();
+   wxWindowList::compatibility_iterator iter;
+
+   // If the project window has the current focus, start the search with the last child
+   if (w == mProject)
+   {
+      iter = list.GetLast();
+   }
+   // Otherwise start the search with the current window's previous sibling
+   else
+   {
+      if (list.Find(w))
+         iter = list.Find(w)->GetPrevious();
+   }
+
+   // Search for the previous toplevel window
+   while (iter)
+   {
+      // If it's a toplevel and is visible (we have come hidden windows), then we're done
+      w = iter->GetData();
+      if (w->IsTopLevel() && w->IsShown())
+      {
+         break;
+      }
+
+      // Find the window in this projects children.  If the window with the
+      // focus isn't a child of this project (like when a dialog is created
+      // without specifying a parent), then we'll get back NULL here.
+      iter = list.Find(w);
+      if (iter)
+      {
+         iter = iter->GetPrevious();
+      }
+   }
+
+   // Ran out of siblings, so make the current project active
+   if (!iter && mProject->IsEnabled())
+   {
+      w = mProject;
+   }
+
+   // And make sure it's on top (only for floating windows...project window will not raise)
+   // (Really only works on Windows)
+   w->Raise();
 }

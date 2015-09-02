@@ -48,6 +48,8 @@ private:
    void OnSelectionSave();
    void OnSelectionRestore();
 
+   // non-menu commands
+   void PrevWindow();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;

@@ -168,7 +168,6 @@ void OnSeparator();
 void PrevFrame();
 void NextFrame();
 
-void PrevWindow();
 void NextWindow();
 
 private:
