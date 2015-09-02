@@ -145,6 +145,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
+   c->AddCommand(wxT("SnapToOff"), _("Snap To Off"), FN(OnSnapToOff));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1541,4 +1542,9 @@ double CursorAndFocusCommands::GridMove(double t, int minPix)
    nc.SetValue(result);
    result = nc.GetValue();
    return result;
+}
+
+void CursorAndFocusCommands::OnSnapToOff()
+{
+   mProject->SetSnapTo(SNAP_OFF);
 }

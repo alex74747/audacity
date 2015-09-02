@@ -69,7 +69,6 @@ void OnStopSelect();
         // Selection-Editing Commands
 
 
-void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
 

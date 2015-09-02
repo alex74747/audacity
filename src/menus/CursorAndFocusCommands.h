@@ -118,6 +118,8 @@ private:
    // Helper for moving by keyboard with snap-to-grid enabled
    double GridMove(double t, int minPix);
 
+   void OnSnapToOff();
+
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
    wxLongLong mLastSelectionAdjustment;
