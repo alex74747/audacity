@@ -90,6 +90,7 @@ array of Ruler::Label.
 #include "../prefs/PlaybackPrefs.h"
 #include "../prefs/TracksPrefs.h"
 #include "../widgets/Grabber.h"
+#include "../menus/CursorAndFocusCommands.h"
 #include "../menus/EditMenuCommands.h"
 
 //#define SCRUB_ABOVE

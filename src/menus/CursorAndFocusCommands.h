@@ -77,6 +77,8 @@ private:
 public:
    void OnFirstTrack();
    void OnLastTrack();
+   void OnShiftUp();
+   void OnPrevTrack(bool shift = false);
 
 private:
    AudacityProject *mProject;
