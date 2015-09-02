@@ -543,7 +543,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
@@ -1385,11 +1384,6 @@ void AudacityProject::OnStopSelect()
    }
 }
 
-void AudacityProject::OnSelContractLeft(const wxEvent * evt)
-{
-   OnCursorRight( true, true, evt->GetEventType() == wxEVT_KEY_UP );
-}
-
 void AudacityProject::OnSelContractRight(const wxEvent * evt)
 {
    OnCursorLeft( true, true, evt->GetEventType() == wxEVT_KEY_UP );
@@ -2228,21 +2222,6 @@ void AudacityProject::OnCursorLeft(bool shift, bool ctrl, bool keyup)
    double audioSeekStepPositive = shift ? mSeekLong : mSeekShort;
    SeekLeftOrRight
       (true, shift, ctrl, keyup, snapToTime, true, false,
-       quietSeekStepPositive, true,
-       audioSeekStepPositive, false);
-}
-
-void AudacityProject::OnCursorRight(bool shift, bool ctrl, bool keyup)
-{
-   // PRL:  What I found and preserved, strange though it be:
-   // During playback:  jump depends on preferences and is independent of the zoom
-   // and does not vary if the key is held
-   // Else: jump depends on the zoom and gets bigger if the key is held
-   int snapToTime = GetSnapTo();
-   double quietSeekStepPositive = 1.0; // pixels
-   double audioSeekStepPositive = shift ? mSeekLong : mSeekShort;
-   SeekLeftOrRight
-      (false, shift, ctrl, keyup, snapToTime, true, false,
        quietSeekStepPositive, true,
        audioSeekStepPositive, false);
 }

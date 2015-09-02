@@ -143,6 +143,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelExtRight"), _("Selection Extend Right"), FN(OnSelExtendRight), wxT("Shift+Right\twantKeyup\tallowDup"));
    c->AddCommand(wxT("SelSetExtLeft"), _("Set (or Extend) Left Selection"), FN(OnSelSetExtendLeft));
    c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
+   c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -779,7 +780,7 @@ void CursorAndFocusCommands::OnSeekLeftShort()
 
 void CursorAndFocusCommands::OnSeekRightShort()
 {
-   mProject->OnCursorRight(false, false);
+   OnCursorRight(false, false);
 }
 
 void CursorAndFocusCommands::OnSeekLeftLong()
@@ -789,7 +790,7 @@ void CursorAndFocusCommands::OnSeekLeftLong()
 
 void CursorAndFocusCommands::OnSeekRightLong()
 {
-   mProject->OnCursorRight(true, false);
+   OnCursorRight(true, false);
 }
 
 void CursorAndFocusCommands::OnCursorUp()
@@ -1099,7 +1100,7 @@ void CursorAndFocusCommands::OnCursorLeft(const wxEvent * evt)
 
 void CursorAndFocusCommands::OnCursorRight(const wxEvent * evt)
 {
-   mProject->OnCursorRight(false, false, evt->GetEventType() == wxEVT_KEY_UP);
+   OnCursorRight(false, false, evt->GetEventType() == wxEVT_KEY_UP);
 }
 
 void CursorAndFocusCommands::OnCursorShortJumpLeft()
@@ -1166,7 +1167,7 @@ void CursorAndFocusCommands::OnSelExtendLeft(const wxEvent * evt)
 
 void CursorAndFocusCommands::OnSelExtendRight(const wxEvent * evt)
 {
-   mProject->OnCursorRight(true, false, evt->GetEventType() == wxEVT_KEY_UP);
+   OnCursorRight(true, false, evt->GetEventType() == wxEVT_KEY_UP);
 }
 
 void CursorAndFocusCommands::OnSelSetExtendLeft()
@@ -1279,4 +1280,28 @@ void CursorAndFocusCommands::OnBoundaryMove(bool left, bool boundaryContract)
       trackPanel->Refresh(false);
       mProject->ModifyState(false);
    }
+}
+
+void CursorAndFocusCommands::OnSelContractLeft(const wxEvent * evt)
+{
+   OnCursorRight(true, true, evt->GetEventType() == wxEVT_KEY_UP);
+}
+
+void CursorAndFocusCommands::OnCursorRight(bool shift, bool ctrl, bool keyup)
+{
+   double seekShort, seekLong;
+   gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &seekShort, 1.0);
+   gPrefs->Read(wxT("/AudioIO/SeekLongPeriod"), &seekLong, 15.0);
+
+   // PRL:  What I found and preserved, strange though it be:
+   // During playback:  jump depends on preferences and is independent of the zoom
+   // and does not vary if the key is held
+   // Else: jump depends on the zoom and gets bigger if the key is held
+   int snapToTime = mProject->GetSnapTo();
+   double quietSeekStepPositive = 1.0; // pixels
+   double audioSeekStepPositive = shift ? seekLong : seekShort;
+   mProject->SeekLeftOrRight
+      (false, shift, ctrl, keyup, snapToTime, true, false,
+      quietSeekStepPositive, true,
+      audioSeekStepPositive, false);
 }
