@@ -136,6 +136,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("CursorRight"), _("Cursor Right"), FN(OnCursorRight), wxT("Right\twantKeyup\tallowDup"));
    c->AddCommand(wxT("CursorShortJumpLeft"), _("Cursor Short Jump Left"), FN(OnCursorShortJumpLeft), wxT(","));
    c->AddCommand(wxT("CursorShortJumpRight"), _("Cursor Short Jump Right"), FN(OnCursorShortJumpRight), wxT("."));
+   c->AddCommand(wxT("CursorLongJumpLeft"), _("Cursor Long Jump Left"), FN(OnCursorLongJumpLeft), wxT("Shift+,"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1103,4 +1104,9 @@ void CursorAndFocusCommands::OnCursorShortJumpLeft()
 void CursorAndFocusCommands::OnCursorShortJumpRight()
 {
    mProject->OnCursorMove(true, true, false);
+}
+
+void CursorAndFocusCommands::OnCursorLongJumpLeft()
+{
+   mProject->OnCursorMove(false, true, true);
 }
