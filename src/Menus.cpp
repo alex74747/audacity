@@ -505,10 +505,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-   c->AddCommand(wxT("SnapToPrior"), _("Snap To Prior"), FN(OnSnapToPrior));
-
    mLastFlags = 0;
 
 #if defined(__WXDEBUG__)
@@ -2065,9 +2061,4 @@ void AudacityProject::OnHelpWelcome()
 void AudacityProject::OnSeparator()
 {
 
-}
-
-void AudacityProject::OnSnapToPrior()
-{
-   SetSnapTo(SNAP_PRIOR);
 }

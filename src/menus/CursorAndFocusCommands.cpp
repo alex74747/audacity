@@ -140,6 +140,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
    c->AddCommand(wxT("SnapToOff"), _("Snap To Off"), FN(OnSnapToOff));
    c->AddCommand(wxT("SnapToNearest"), _("Snap To Nearest"), FN(OnSnapToNearest));
+   c->AddCommand(wxT("SnapToPrior"), _("Snap To Prior"), FN(OnSnapToPrior));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1479,4 +1480,9 @@ void CursorAndFocusCommands::OnSnapToOff()
 void CursorAndFocusCommands::OnSnapToNearest()
 {
    mProject->SetSnapTo(SNAP_NEAREST);
+}
+
+void CursorAndFocusCommands::OnSnapToPrior()
+{
+   mProject->SetSnapTo(SNAP_PRIOR);
 }

@@ -60,10 +60,6 @@ public:
 
 void OnStopSelect();
 
-        // Selection-Editing Commands
-
-void OnSnapToPrior();
-
         // File Menu
 
 void OnNew();

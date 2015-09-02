@@ -111,6 +111,7 @@ private:
 
    void OnSnapToOff();
    void OnSnapToNearest();
+   void OnSnapToPrior();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
