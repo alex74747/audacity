@@ -68,8 +68,6 @@ void OnStopSelect();
 
         // Selection-Editing Commands
 
-void OnToggle();
-
 void OnCursorLeft(const wxEvent * evt);
 void OnCursorRight(const wxEvent * evt);
 void OnSelExtendLeft(const wxEvent * evt);

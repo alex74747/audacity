@@ -81,6 +81,7 @@ public:
    void OnShiftDown();
    void OnPrevTrack(bool shift = false);
    void OnNextTrack(bool shift = false);
+   void OnToggle();
 
 private:
    AudacityProject *mProject;

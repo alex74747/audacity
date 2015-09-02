@@ -8,6 +8,7 @@
 #include "../Project.h"
 #include "../TimeDialog.h"
 #include "../TrackPanel.h"
+#include "../TrackPanelAx.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandManager.h"
 #include "../toolbars/ToolManager.h"
@@ -129,6 +130,8 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("LastTrack"), _("Move Focus to Last Track"), FN(OnLastTrack), wxT("Ctrl+End"));
    c->AddCommand(wxT("ShiftUp"), _("Move Focus to Previous and Select"), FN(OnShiftUp), wxT("Shift+Up"));
    c->AddCommand(wxT("ShiftDown"), _("Move Focus to Next and Select"), FN(OnShiftDown), wxT("Shift+Down"));
+   c->AddCommand(wxT("Toggle"), _("Toggle Focused Track"), FN(OnToggle), wxT("Return"));
+   c->AddCommand(wxT("ToggleAlt"), _("Toggle Focused Track"), FN(OnToggle), wxT("NUMPAD_ENTER"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1058,4 +1061,22 @@ void CursorAndFocusCommands::OnNextTrack(bool shift)
          return;
       }
    }
+}
+
+void CursorAndFocusCommands::OnToggle()
+{
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   Track *t;
+
+   t = trackPanel->GetFocusedTrack();   // Get currently focused track
+   if (!t)
+      return;
+
+   trackPanel->SelectTrack(t, !t->GetSelected());
+   trackPanel->EnsureVisible(t);
+   mProject->ModifyState(false);
+
+   trackPanel->GetAx().Updated();
+
+   return;
 }
