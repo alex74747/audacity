@@ -1,6 +1,8 @@
 #ifndef __AUDACITY_CURSOR_AND_FOCUS_COMMANDS__
 #define __AUDACITY_CURSOR_AND_FOCUS_COMMANDS__
 
+#include <wx/longlong.h>
+
 #include "../SelectedRegion.h"
 
 class AudacityProject;
@@ -87,10 +89,14 @@ private:
 
    void OnSelExtendLeft(const wxEvent * evt);
    void OnSelExtendRight(const wxEvent * evt);
+
    void OnSelSetExtendLeft();
+   void OnSelSetExtendRight();
+   void OnBoundaryMove(bool left, bool boundaryContract);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
+   wxLongLong mLastSelectionAdjustment;
 };
 
 #endif

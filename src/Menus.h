@@ -65,8 +65,6 @@ void OnStopSelect();
 void OnSelContractLeft(const wxEvent * evt);
 void OnSelContractRight(const wxEvent * evt);
 
-void OnSelSetExtendRight();
-
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
@@ -139,7 +137,6 @@ void OnSeparator();
 
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
-void OnBoundaryMove(bool left, bool boundaryContract);
 
 // Handle small cursor and play head movements
 void SeekLeftOrRight
