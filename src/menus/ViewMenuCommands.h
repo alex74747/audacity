@@ -13,6 +13,7 @@ class ViewMenuCommands
 public:
    ViewMenuCommands(AudacityProject *project);
    void Create(CommandManager *c);
+   void CreateNonMenuCommands(CommandManager *c);
 
    void OnZoomIn();
 private:
@@ -45,6 +46,9 @@ private:
    void OnShowTranscriptionToolBar();
    void OnShowTransportToolBar();
    void OnResetToolBars();
+
+   // non-menu commands
+   void OnFullScreen();
 
    AudacityProject *const mProject;
 };

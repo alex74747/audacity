@@ -106,7 +106,6 @@ void OnUnlockPlayRegion();
 void OnSnapToOff();
 void OnSnapToNearest();
 void OnSnapToPrior();
-void OnFullScreen();
 
         // File Menu
 
