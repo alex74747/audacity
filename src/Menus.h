@@ -62,7 +62,6 @@ void OnStopSelect();
 
         // Selection-Editing Commands
 
-void OnSnapToNearest();
 void OnSnapToPrior();
 
         // File Menu

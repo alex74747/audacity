@@ -110,6 +110,7 @@ private:
    double GridMove(double t, int minPix);
 
    void OnSnapToOff();
+   void OnSnapToNearest();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;

@@ -507,7 +507,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddCommand(wxT("SnapToNearest"), _("Snap To Nearest"), FN(OnSnapToNearest));
    c->AddCommand(wxT("SnapToPrior"), _("Snap To Prior"), FN(OnSnapToPrior));
 
    mLastFlags = 0;
@@ -2066,11 +2065,6 @@ void AudacityProject::OnHelpWelcome()
 void AudacityProject::OnSeparator()
 {
 
-}
-
-void AudacityProject::OnSnapToNearest()
-{
-   SetSnapTo(SNAP_NEAREST);
 }
 
 void AudacityProject::OnSnapToPrior()
