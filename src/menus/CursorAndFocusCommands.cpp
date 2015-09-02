@@ -144,6 +144,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelSetExtLeft"), _("Set (or Extend) Left Selection"), FN(OnSelSetExtendLeft));
    c->AddCommand(wxT("SelSetExtRight"), _("Set (or Extend) Right Selection"), FN(OnSelSetExtendRight));
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
+   c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -775,7 +776,7 @@ void CursorAndFocusCommands::OnSelToEnd()
 
 void CursorAndFocusCommands::OnSeekLeftShort()
 {
-   mProject->OnCursorLeft(false, false);
+   OnCursorLeft(false, false);
 }
 
 void CursorAndFocusCommands::OnSeekRightShort()
@@ -785,7 +786,7 @@ void CursorAndFocusCommands::OnSeekRightShort()
 
 void CursorAndFocusCommands::OnSeekLeftLong()
 {
-   mProject->OnCursorLeft(true, false);
+   OnCursorLeft(true, false);
 }
 
 void CursorAndFocusCommands::OnSeekRightLong()
@@ -1095,7 +1096,7 @@ void CursorAndFocusCommands::OnToggle()
 
 void CursorAndFocusCommands::OnCursorLeft(const wxEvent * evt)
 {
-   mProject->OnCursorLeft(false, false, evt->GetEventType() == wxEVT_KEY_UP);
+   OnCursorLeft(false, false, evt->GetEventType() == wxEVT_KEY_UP);
 }
 
 void CursorAndFocusCommands::OnCursorRight(const wxEvent * evt)
@@ -1151,7 +1152,7 @@ void CursorAndFocusCommands::OnCursorMove(bool forward, bool jump, bool longjump
       byPixels = true;
    }
    bool mayAccelerate = !jump;
-   mProject->SeekLeftOrRight
+   SeekLeftOrRight
       (!forward, false, false, false,
       0, mayAccelerate, mayAccelerate,
       positiveSeekStep, byPixels,
@@ -1162,7 +1163,7 @@ void CursorAndFocusCommands::OnCursorMove(bool forward, bool jump, bool longjump
 
 void CursorAndFocusCommands::OnSelExtendLeft(const wxEvent * evt)
 {
-   mProject->OnCursorLeft(true, false, evt->GetEventType() == wxEVT_KEY_UP);
+   OnCursorLeft(true, false, evt->GetEventType() == wxEVT_KEY_UP);
 }
 
 void CursorAndFocusCommands::OnSelExtendRight(const wxEvent * evt)
@@ -1300,8 +1301,244 @@ void CursorAndFocusCommands::OnCursorRight(bool shift, bool ctrl, bool keyup)
    int snapToTime = mProject->GetSnapTo();
    double quietSeekStepPositive = 1.0; // pixels
    double audioSeekStepPositive = shift ? seekLong : seekShort;
-   mProject->SeekLeftOrRight
+   SeekLeftOrRight
       (false, shift, ctrl, keyup, snapToTime, true, false,
       quietSeekStepPositive, true,
       audioSeekStepPositive, false);
+}
+
+void CursorAndFocusCommands::OnSelContractRight(const wxEvent * evt)
+{
+   OnCursorLeft(true, true, evt->GetEventType() == wxEVT_KEY_UP);
+}
+
+void CursorAndFocusCommands::OnCursorLeft(bool shift, bool ctrl, bool keyup)
+{
+   double seekShort, seekLong;
+   gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &seekShort, 1.0);
+   gPrefs->Read(wxT("/AudioIO/SeekLongPeriod"), &seekLong, 15.0);
+
+   // PRL:  What I found and preserved, strange though it be:
+   // During playback:  jump depends on preferences and is independent of the zoom
+   // and does not vary if the key is held
+   // Else: jump depends on the zoom and gets bigger if the key is held
+   int snapToTime = mProject->GetSnapTo();
+   double quietSeekStepPositive = 1.0; // pixels
+   double audioSeekStepPositive = shift ? seekLong : seekShort;
+   SeekLeftOrRight
+      (true, shift, ctrl, keyup, snapToTime, true, false,
+      quietSeekStepPositive, true,
+      audioSeekStepPositive, false);
+}
+
+// Handle small cursor and play head movements
+void CursorAndFocusCommands::SeekLeftOrRight
+(bool leftward, bool shift, bool ctrl, bool keyup,
+ int snapToTime, bool mayAccelerateQuiet, bool mayAccelerateAudio,
+ double quietSeekStepPositive, bool quietStepIsPixels,
+ double audioSeekStepPositive, bool audioStepIsPixels)
+{
+   if (keyup)
+   {
+      if (mProject->IsAudioActive())
+      {
+         return;
+      }
+
+      mProject->ModifyState(false);
+      return;
+   }
+
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   // If the last adjustment was very recent, we are
+   // holding the key down and should move faster.
+   const wxLongLong curtime = ::wxGetLocalTimeMillis();
+   enum { MIN_INTERVAL = 50 };
+   const bool fast = (curtime - mLastSelectionAdjustment < MIN_INTERVAL);
+
+   // How much faster should the cursor move if shift is down?
+   enum { LARGER_MULTIPLIER = 4 };
+   int multiplier = (fast && mayAccelerateQuiet) ? LARGER_MULTIPLIER : 1;
+   if (leftward)
+      multiplier = -multiplier;
+
+   if (shift && ctrl)
+   {
+      mLastSelectionAdjustment = curtime;
+
+      // Contract selection
+      // Reduce and constrain (counter-intuitive)
+      if (leftward) {
+         const double t1 = viewInfo.selectedRegion.t1();
+         viewInfo.selectedRegion.setT1(
+            std::max(viewInfo.selectedRegion.t0(),
+               snapToTime
+               ? GridMove(t1, multiplier)
+               : quietStepIsPixels
+                  ? viewInfo.OffsetTimeByPixels(
+                        t1, (int)(multiplier * quietSeekStepPositive))
+                  : t1 +  multiplier * quietSeekStepPositive
+         ));
+
+         // Make sure it's visible.
+         trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+      }
+      else {
+         const double t0 = viewInfo.selectedRegion.t0();
+         viewInfo.selectedRegion.setT0(
+            std::min(viewInfo.selectedRegion.t1(),
+               snapToTime
+               ? GridMove(t0, multiplier)
+               : quietStepIsPixels
+                  ? viewInfo.OffsetTimeByPixels(
+                     t0, (int)(multiplier * quietSeekStepPositive))
+                  : t0 + multiplier * quietSeekStepPositive
+         ));
+
+         // Make sure NEW position is in view.
+         trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+      }
+      trackPanel->Refresh(false);
+   }
+   else if (mProject->IsAudioActive()) {
+#ifdef EXPERIMENTAL_IMPROVED_SEEKING
+      if (gAudioIO->GetLastPlaybackTime() < mLastSelectionAdjustment) {
+         // Allow time for the last seek to output a buffer before
+         // discarding samples again
+         // Do not advance mLastSelectionAdjustment
+         return;
+      }
+#endif
+      mLastSelectionAdjustment = curtime;
+
+      // Ignore the multiplier for the quiet case
+      multiplier = (fast && mayAccelerateAudio) ? LARGER_MULTIPLIER : 1;
+      if (leftward)
+         multiplier = -multiplier;
+
+      // If playing, reposition
+      double seconds;
+      if (audioStepIsPixels) {
+         const double streamTime = gAudioIO->GetStreamTime();
+         const double newTime =
+            viewInfo.OffsetTimeByPixels(streamTime, (int)(audioSeekStepPositive));
+         seconds = newTime - streamTime;
+      }
+      else
+         seconds = multiplier * audioSeekStepPositive;
+      gAudioIO->SeekStream(seconds);
+      return;
+   }
+   else if (shift)
+   {
+      mLastSelectionAdjustment = curtime;
+
+      // Extend selection
+      // Expand and constrain
+      if (leftward) {
+         const double t0 = viewInfo.selectedRegion.t0();
+         viewInfo.selectedRegion.setT0(
+            std::max(0.0,
+               snapToTime
+               ? GridMove(t0, multiplier)
+               : quietStepIsPixels
+                  ? viewInfo.OffsetTimeByPixels(
+                        t0, (int)(multiplier * quietSeekStepPositive))
+                  : t0 + multiplier * quietSeekStepPositive
+         ));
+
+         // Make sure it's visible.
+         trackPanel->ScrollIntoView(viewInfo.selectedRegion.t0());
+      }
+      else {
+         const double end = mProject->GetTracks()->GetEndTime();
+         const double t1 = viewInfo.selectedRegion.t1();
+         viewInfo.selectedRegion.setT1(
+            std::min(end,
+               snapToTime
+               ? GridMove(t1, multiplier)
+               : quietStepIsPixels
+                  ? viewInfo.OffsetTimeByPixels(
+                        t1, (int)(multiplier * quietSeekStepPositive))
+                  : t1 + multiplier * quietSeekStepPositive
+         ));
+
+         // Make sure NEW position is in view.
+         trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+      }
+      trackPanel->Refresh(false);
+   }
+   else
+   {
+      mLastSelectionAdjustment = curtime;
+
+      // Move the cursor
+      // Already in cursor mode?
+      if (viewInfo.selectedRegion.isPoint())
+      {
+         // Move and constrain
+         const double end = mProject->GetTracks()->GetEndTime();
+         const double t0 = viewInfo.selectedRegion.t0();
+         viewInfo.selectedRegion.setT0(
+            std::max(0.0,
+               std::min(end,
+                  snapToTime
+                  ? GridMove(t0, multiplier)
+                  : quietStepIsPixels
+                     ? viewInfo.OffsetTimeByPixels(
+                          t0, (int)(multiplier * quietSeekStepPositive))
+                     : t0 + multiplier * quietSeekStepPositive)),
+            false // do not swap selection boundaries
+         );
+         viewInfo.selectedRegion.collapseToT0();
+
+         // Move the visual cursor, avoiding an unnecessary complete redraw
+         trackPanel->DrawOverlays(false);
+         mProject->GetRulerPanel()->DrawOverlays(false);
+
+         // This updates the selection shown on the selection bar, and the play region
+         mProject->TP_DisplaySelection();
+      }
+      else
+      {
+         // Transition to cursor mode.
+         if (leftward)
+            viewInfo.selectedRegion.collapseToT0();
+         else
+            viewInfo.selectedRegion.collapseToT1();
+         trackPanel->Refresh(false);
+      }
+
+      // Make sure NEW position is in view
+      trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+   }
+}
+
+// Handles moving a selection edge with the keyboard in snap-to-time mode;
+// returns the moved value.
+// Will move at least minPix pixels -- set minPix positive to move forward,
+// negative to move backward.
+double CursorAndFocusCommands::GridMove(double t, int minPix)
+{
+   NumericConverter nc
+      (NumericConverter::TIME, mProject->GetSelectionFormat(), t, mProject->GetRate());
+
+   const ViewInfo &viewInfo = mProject->GetViewInfo();
+
+   // Try incrementing/decrementing the value; if we've moved far enough we're
+   // done
+   double result;
+   minPix >= 0 ? nc.Increment() : nc.Decrement();
+   result = nc.GetValue();
+   if (std::abs(viewInfo.TimeToPosition(result) - viewInfo.TimeToPosition(t))
+      >= abs(minPix))
+      return result;
+
+   // Otherwise, move minPix pixels, then snap to the time.
+   result = viewInfo.OffsetTimeByPixels(t, minPix);
+   nc.SetValue(result);
+   result = nc.GetValue();
+   return result;
 }

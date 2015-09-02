@@ -1212,9 +1212,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
                      wxCommandEventHandler(AudacityProject::OnCapture),
                      NULL,
                      this);
-
-   //Initialize the last selection adjustment time.
-   mLastSelectionAdjustment = ::wxGetLocalTimeMillis();
 }
 
 AudacityProject::~AudacityProject()
@@ -1277,9 +1274,6 @@ void AudacityProject::UpdatePrefsVariables()
 
    gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleRate"), &mRate, AudioIO::GetOptimalSupportedSampleRate());
    mDefaultFormat = (sampleFormat) gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleFormat"), floatSample);
-
-   gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &mSeekShort, 1.0);
-   gPrefs->Read(wxT("/AudioIO/SeekLongPeriod"), &mSeekLong, 15.0);
 }
 
 void AudacityProject::UpdatePrefs()

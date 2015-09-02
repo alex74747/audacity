@@ -106,6 +106,18 @@ private:
    void OnSelContractLeft(const wxEvent * evt);
    void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
 
+   void OnSelContractRight(const wxEvent * evt);
+   void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
+
+   // Handle small cursor and play head movements
+   void SeekLeftOrRight
+      (bool left, bool shift, bool ctrl, bool keyup,
+      int snapToTime, bool mayAccelerateQuiet, bool mayAccelerateAudio,
+      double quietSeekStepPositive, bool quietStepIsPixels,
+      double audioSeekStepPositive, bool audioStepIsPixels);
+   // Helper for moving by keyboard with snap-to-grid enabled
+   double GridMove(double t, int minPix);
+
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
    wxLongLong mLastSelectionAdjustment;
