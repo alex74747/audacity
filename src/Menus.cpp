@@ -505,10 +505,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   c->SetDefaultFlags(AudioIOBusyFlag, AudioIOBusyFlag);
-
-   c->AddCommand(wxT("SeekRightLong"), _("Long Seek right during playback"), FN(OnSeekRightLong), wxT("Shift+Right\tallowDup"));
-
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
@@ -1306,11 +1302,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnSeekRightLong()
-{
-   OnCursorRight( true, false );
 }
 
 void AudacityProject::OnCursorUp()

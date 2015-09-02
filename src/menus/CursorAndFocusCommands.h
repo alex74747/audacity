@@ -62,6 +62,8 @@ private:
    void OnSeekLeftShort();
    void OnSeekRightShort();
    void OnSeekLeftLong();
+   void OnSeekRightLong();
+   //
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
