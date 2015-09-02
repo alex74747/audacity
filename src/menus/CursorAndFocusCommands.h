@@ -80,6 +80,7 @@ private:
    void OnCursorRight(const wxEvent * evt);
    void OnCursorShortJumpLeft();
    void OnCursorShortJumpRight();
+   void OnCursorLongJumpLeft();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
