@@ -117,6 +117,10 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SeekLeftShort"), _("Short seek left during playback"), FN(OnSeekLeftShort), wxT("Left\tallowDup"));
    c->AddCommand(wxT("SeekRightShort"), _("Short seek right during playback"), FN(OnSeekRightShort), wxT("Right\tallowDup"));
    c->AddCommand(wxT("SeekLeftLong"), _("Long seek left during playback"), FN(OnSeekLeftLong), wxT("Shift+Left\tallowDup"));
+   c->AddCommand(wxT("SeekRightLong"), _("Long Seek right during playback"), FN(OnSeekRightLong), wxT("Shift+Right\tallowDup"));
+
+   c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
+                      TracksExistFlag | TrackPanelHasFocus);
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -759,4 +763,9 @@ void CursorAndFocusCommands::OnSeekRightShort()
 void CursorAndFocusCommands::OnSeekLeftLong()
 {
    mProject->OnCursorLeft(true, false);
+}
+
+void CursorAndFocusCommands::OnSeekRightLong()
+{
+   mProject->OnCursorRight(true, false);
 }

@@ -65,7 +65,6 @@ public:
         // Audio I/O Commands
 
 void OnStopSelect();
-void OnSeekRightLong();
 
         // Moving track focus commands
 
