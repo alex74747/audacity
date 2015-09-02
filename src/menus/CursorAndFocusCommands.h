@@ -50,6 +50,7 @@ private:
 
    // non-menu commands
    void PrevWindow();
+   void NextWindow();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;

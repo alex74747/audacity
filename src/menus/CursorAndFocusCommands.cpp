@@ -97,6 +97,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
+   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -555,6 +556,57 @@ void CursorAndFocusCommands::PrevWindow()
       {
          iter = iter->GetPrevious();
       }
+   }
+
+   // Ran out of siblings, so make the current project active
+   if (!iter && mProject->IsEnabled())
+   {
+      w = mProject;
+   }
+
+   // And make sure it's on top (only for floating windows...project window will not raise)
+   // (Really only works on Windows)
+   w->Raise();
+}
+
+void CursorAndFocusCommands::NextWindow()
+{
+   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
+   const wxWindowList & list = mProject->GetChildren();
+   wxWindowList::compatibility_iterator iter;
+
+   // If the project window has the current focus, start the search with the first child
+   if (w == mProject)
+   {
+      iter = list.GetFirst();
+   }
+   // Otherwise start the search with the current window's next sibling
+   else
+   {
+      // Find the window in this projects children.  If the window with the
+      // focus isn't a child of this project (like when a dialog is created
+      // without specifying a parent), then we'll get back NULL here.
+      iter = list.Find(w);
+      if (iter)
+      {
+         iter = iter->GetNext();
+      }
+   }
+
+   // Search for the next toplevel window
+   while (iter)
+   {
+      // If it's a toplevel, visible (we have hidden windows) and is enabled,
+      // then we're done.  The IsEnabled() prevents us from moving away from 
+      // a modal dialog because all other toplevel windows will be disabled.
+      w = iter->GetData();
+      if (w->IsTopLevel() && w->IsShown() && w->IsEnabled())
+      {
+         break;
+      }
+
+      // Get the next sibling
+      iter = iter->GetNext();
    }
 
    // Ran out of siblings, so make the current project active

@@ -495,8 +495,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
-
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 
@@ -1483,57 +1481,6 @@ void AudacityProject::PrevFrame()
          mTrackPanel->SetFocus();
       break;
    }
-}
-
-void AudacityProject::NextWindow()
-{
-   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
-   const wxWindowList & list = GetChildren();
-   wxWindowList::compatibility_iterator iter;
-
-   // If the project window has the current focus, start the search with the first child
-   if (w == this)
-   {
-      iter = list.GetFirst();
-   }
-   // Otherwise start the search with the current window's next sibling
-   else
-   {
-      // Find the window in this projects children.  If the window with the
-      // focus isn't a child of this project (like when a dialog is created
-      // without specifying a parent), then we'll get back NULL here.
-      iter = list.Find(w);
-      if (iter)
-      {
-         iter = iter->GetNext();
-      }
-   }
-
-   // Search for the next toplevel window
-   while (iter)
-   {
-      // If it's a toplevel, visible (we have hidden windows) and is enabled,
-      // then we're done.  The IsEnabled() prevents us from moving away from 
-      // a modal dialog because all other toplevel windows will be disabled.
-      w = iter->GetData();
-      if (w->IsTopLevel() && w->IsShown() && w->IsEnabled())
-      {
-         break;
-      }
-
-      // Get the next sibling
-      iter = iter->GetNext();
-   }
-
-   // Ran out of siblings, so make the current project active
-   if (!iter && IsEnabled())
-   {
-      w = this;
-   }
-
-   // And make sure it's on top (only for floating windows...project window will not raise)
-   // (Really only works on Windows)
-   w->Raise();
 }
 
 //
