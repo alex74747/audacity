@@ -438,6 +438,8 @@ audacity_SOURCES = \
 	import/MultiFormatReader.h \
 	import/SpecPowerMeter.cpp \
 	import/SpecPowerMeter.h \
+	menus/CursorAndFocusCommands.cpp \
+	menus/CursorAndFocesCommands.h \
 	menus/EditMenuCommands.cpp \
 	menus/EditMenuCommands.h \
 	menus/HelpMenuCommands.cpp \

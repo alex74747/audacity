@@ -1220,6 +1220,7 @@
 		5E5DC4871F2CD42100E8CDA9 /* TransportMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4851F2CD42100E8CDA9 /* TransportMenuCommands.cpp */; };
 		5E5DC48A1F2CD51D00E8CDA9 /* ViewMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4881F2CD51D00E8CDA9 /* ViewMenuCommands.cpp */; };
 		5E5DC48D1F2CD61800E8CDA9 /* EditMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC48B1F2CD61800E8CDA9 /* EditMenuCommands.cpp */; };
+		5E5DC4901F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC48E1F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
 		ED15214D163C22F000451B5F /* lsr.c in Sources */ = {isa = PBXBuildFile; fileRef = ED152123163C220300451B5F /* lsr.c */; };
@@ -3018,6 +3019,8 @@
 		5E5DC4891F2CD51D00E8CDA9 /* ViewMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewMenuCommands.h; path = menus/ViewMenuCommands.h; sourceTree = "<group>"; };
 		5E5DC48B1F2CD61800E8CDA9 /* EditMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditMenuCommands.cpp; path = menus/EditMenuCommands.cpp; sourceTree = "<group>"; };
 		5E5DC48C1F2CD61800E8CDA9 /* EditMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditMenuCommands.h; path = menus/EditMenuCommands.h; sourceTree = "<group>"; };
+		5E5DC48E1F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CursorAndFocusCommands.cpp; path = menus/CursorAndFocusCommands.cpp; sourceTree = "<group>"; };
+		5E5DC48F1F2CD83900E8CDA9 /* CursorAndFocusCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CursorAndFocusCommands.h; path = menus/CursorAndFocusCommands.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
 		82FF184E13CF01A600C1B664 /* dBTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dBTable.h; path = sbsms/src/dBTable.h; sourceTree = "<group>"; };
 		82FF184F13CF01A600C1B664 /* slide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = slide.cpp; path = sbsms/src/slide.cpp; sourceTree = "<group>"; };
@@ -5591,6 +5594,8 @@
 		5EE752D51F351F4D00E71292 /* menus */ = {
 			isa = PBXGroup;
 			children = (
+				5E5DC48E1F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp */,
+				5E5DC48F1F2CD83900E8CDA9 /* CursorAndFocusCommands.h */,
 				5E5DC48B1F2CD61800E8CDA9 /* EditMenuCommands.cpp */,
 				5E5DC48C1F2CD61800E8CDA9 /* EditMenuCommands.h */,
 				5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */,
@@ -7639,6 +7644,7 @@
 				28884962131B6CF600B59735 /* my.po in Sources */,
 				28884963131B6CF600B59735 /* nb.po in Sources */,
 				28884964131B6CF600B59735 /* nl.po in Sources */,
+				5E5DC4901F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp in Sources */,
 				28884965131B6CF600B59735 /* oc.po in Sources */,
 				28884966131B6CF600B59735 /* pl.po in Sources */,
 				28884967131B6CF600B59735 /* pt_BR.po in Sources */,
