@@ -69,7 +69,6 @@ void OnStopSelect();
         // Selection-Editing Commands
 
 
-void OnSnapToNearest();
 void OnSnapToPrior();
 
 static void DoMacMinimize(AudacityProject *project);

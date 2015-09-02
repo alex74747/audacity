@@ -146,6 +146,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SelCntrLeft"), _("Selection Contract Left"), FN(OnSelContractLeft), wxT("Ctrl+Shift+Right\twantKeyup"));
    c->AddCommand(wxT("SelCntrRight"), _("Selection Contract Right"), FN(OnSelContractRight), wxT("Ctrl+Shift+Left\twantKeyup"));
    c->AddCommand(wxT("SnapToOff"), _("Snap To Off"), FN(OnSnapToOff));
+   c->AddCommand(wxT("SnapToNearest"), _("Snap To Nearest"), FN(OnSnapToNearest));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1547,4 +1548,9 @@ double CursorAndFocusCommands::GridMove(double t, int minPix)
 void CursorAndFocusCommands::OnSnapToOff()
 {
    mProject->SetSnapTo(SNAP_OFF);
+}
+
+void CursorAndFocusCommands::OnSnapToNearest()
+{
+   mProject->SetSnapTo(SNAP_NEAREST);
 }
