@@ -39,7 +39,6 @@ simplifies construction of menu items.
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
-#include "menus/CursorAndFocusCommands.h"
 
 #include <algorithm>
 #include <iterator>
@@ -530,8 +529,6 @@ void AudacityProject::CreateMenusAndCommands()
    mTracksMenuCommands->CreateNonMenuCommands(c);
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-   c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 
    c->AddCommand(wxT("SelectTool"), _("Selection Tool"), FN(OnSelectTool), wxT("F1"));
    c->AddCommand(wxT("EnvelopeTool"),_("Envelope Tool"), FN(OnEnvelopeTool), wxT("F2"));
@@ -1552,12 +1549,6 @@ void AudacityProject::OnSelContractLeft(const wxEvent * evt)
 void AudacityProject::OnSelContractRight(const wxEvent * evt)
 {
    OnCursorLeft( true, true, evt->GetEventType() == wxEVT_KEY_UP );
-}
-
-void AudacityProject::NextFrame()
-{
-
-  CursorAndFocusCommands{this}.NextOrPrevFrame(true);
 }
 
 //

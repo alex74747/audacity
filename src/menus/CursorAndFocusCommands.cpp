@@ -108,6 +108,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
 
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
+   c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -718,4 +719,9 @@ void CursorAndFocusCommands::NextOrPrevFrame(bool forward)
 void CursorAndFocusCommands::PrevFrame()
 {
    NextOrPrevFrame(false);
+}
+
+void CursorAndFocusCommands::NextFrame()
+{
+   NextOrPrevFrame(true);
 }
