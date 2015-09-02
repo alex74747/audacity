@@ -65,6 +65,8 @@ private:
    void OnSeekRightLong();
    //
 
+   void OnCursorUp();
+
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
 };
