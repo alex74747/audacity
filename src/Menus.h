@@ -40,7 +40,6 @@ void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
-private:
 CommandFlag GetFocusedFrame();
 
 public:
@@ -198,8 +197,6 @@ void OnSeparator();
 
       // Keyboard navigation
 
-void NextOrPrevFrame(bool next);
-void PrevFrame();
 void NextFrame();
 
 private:

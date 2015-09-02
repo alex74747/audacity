@@ -39,6 +39,7 @@ simplifies construction of menu items.
 #include "menus/TransportMenuCommands.h"
 #include "menus/TracksMenuCommands.h"
 #include "menus/HelpMenuCommands.h"
+#include "menus/CursorAndFocusCommands.h"
 
 #include <algorithm>
 #include <iterator>
@@ -530,7 +531,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 
    c->AddCommand(wxT("SelectTool"), _("Selection Tool"), FN(OnSelectTool), wxT("F1"));
@@ -1554,67 +1554,10 @@ void AudacityProject::OnSelContractRight(const wxEvent * evt)
    OnCursorLeft( true, true, evt->GetEventType() == wxEVT_KEY_UP );
 }
 
-void AudacityProject::NextOrPrevFrame(bool forward)
-{
-   // Focus won't take in a dock unless at least one descendant window
-   // accepts focus.  Tell controls to take focus for the duration of this
-   // function, only.  Outside of this, they won't steal the focus when
-   // clicked.
-   auto temp1 = AButton::TemporarilyAllowFocus();
-   auto temp2 = ASlider::TemporarilyAllowFocus();
-   auto temp3 = Meter::TemporarilyAllowFocus();
-
-
-   // Define the set of windows we rotate among.
-   static const unsigned rotationSize = 3u;
-
-   wxWindow *const begin [rotationSize] = {
-      GetTopPanel(),
-      GetTrackPanel(),
-      mToolManager->GetBotDock(),
-   };
-   const auto end = begin + rotationSize;
-
-   // helper functions
-   auto IndexOf = [&](wxWindow *pWindow) {
-      return std::find(begin, end, pWindow) - begin;
-   };
-
-   auto FindAncestor = [&]() {
-      wxWindow *pWindow = wxWindow::FindFocus();
-      unsigned index = rotationSize;
-      while ( pWindow &&
-              (rotationSize == (index = IndexOf(pWindow) ) ) )
-         pWindow = pWindow->GetParent();
-      return index;
-   };
-
-   const auto idx = FindAncestor();
-   if (idx == rotationSize)
-      return;
-
-   auto idx2 = idx;
-   auto increment = (forward ? 1 : rotationSize - 1);
-
-   while( idx != (idx2 = (idx2 + increment) % rotationSize) ) {
-      wxWindow *toFocus = begin[idx2];
-      toFocus->SetFocus();
-      if ( FindAncestor() == idx2 )
-         // The focus took!
-         break;
-      // else, one of the tool docks might be empty because all bars were
-      // dragged off it.  Skip it and try another.
-   }
-}
-
 void AudacityProject::NextFrame()
 {
-   NextOrPrevFrame(true);
-}
 
-void AudacityProject::PrevFrame()
-{
-   NextOrPrevFrame(false);
+  CursorAndFocusCommands{this}.NextOrPrevFrame(true);
 }
 
 //
