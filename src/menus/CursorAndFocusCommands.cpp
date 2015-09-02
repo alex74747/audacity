@@ -125,6 +125,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("ShiftDown"), _("Move Focus to Next and Select"), FN(OnShiftDown), wxT("Shift+Down"));
    c->AddCommand(wxT("Toggle"), _("Toggle Focused Track"), FN(OnToggle), wxT("Return"));
    c->AddCommand(wxT("ToggleAlt"), _("Toggle Focused Track"), FN(OnToggle), wxT("NUMPAD_ENTER"));
+   c->AddCommand(wxT("CursorLeft"), _("Cursor Left"), FN(OnCursorLeft), wxT("Left\twantKeyup\tallowDup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1009,4 +1010,9 @@ void CursorAndFocusCommands::OnToggle()
    trackPanel->GetAx().Updated();
 
    return;
+}
+
+void CursorAndFocusCommands::OnCursorLeft(const wxEvent * evt)
+{
+   mProject->OnCursorLeft(false, false, evt->GetEventType() == wxEVT_KEY_UP);
 }

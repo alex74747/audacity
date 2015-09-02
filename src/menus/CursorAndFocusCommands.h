@@ -6,6 +6,8 @@
 class AudacityProject;
 class CommandManager;
 
+class wxEvent;
+
 // There is no menu just for these commands.
 // This class splits up the many edit commmands.
 class CursorAndFocusCommands
@@ -74,6 +76,7 @@ private:
    void OnPrevTrack(bool shift = false);
    void OnNextTrack(bool shift = false);
    void OnToggle();
+   void OnCursorLeft(const wxEvent * evt);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
