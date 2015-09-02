@@ -105,6 +105,9 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("SelStart"), _("Selection to Start"), FN(OnSelToStart), wxT("Shift+Home"));
    c->AddCommand(wxT("SelEnd"), _("Selection to End"), FN(OnSelToEnd), wxT("Shift+End"));
+
+   c->SetDefaultFlags(AudioIOBusyFlag, AudioIOBusyFlag);
+   c->AddCommand(wxT("SeekLeftShort"), _("Short seek left during playback"), FN(OnSeekLeftShort), wxT("Left\tallowDup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -673,4 +676,9 @@ void CursorAndFocusCommands::OnSelToEnd()
 {
    mProject->SkipEnd(true);
    mProject->ModifyState(false);
+}
+
+void CursorAndFocusCommands::OnSeekLeftShort()
+{
+   mProject->OnCursorLeft(false, false);
 }
