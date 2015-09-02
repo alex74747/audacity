@@ -543,7 +543,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->SetDefaultFlags(TracksExistFlag | TrackPanelHasFocus,
                       TracksExistFlag | TrackPanelHasFocus);
 
-   c->AddCommand(wxT("CursorLeft"), _("Cursor Left"), FN(OnCursorLeft), wxT("Left\twantKeyup\tallowDup"));
    c->AddCommand(wxT("CursorRight"), _("Cursor Right"), FN(OnCursorRight), wxT("Right\twantKeyup\tallowDup"));
    c->AddCommand(wxT("CursorShortJumpLeft"), _("Cursor Short Jump Left"), FN(OnCursorShortJumpLeft), wxT(","));
    c->AddCommand(wxT("CursorShortJumpRight"), _("Cursor Short Jump Right"), FN(OnCursorShortJumpRight), wxT("."));
@@ -1396,11 +1395,6 @@ void AudacityProject::OnStopSelect()
       GetControlToolBar()->OnStop(evt);
       ModifyState(false);           // without bWantsAutoSave
    }
-}
-
-void AudacityProject::OnCursorLeft(const wxEvent * evt)
-{
-   OnCursorLeft( false, false, evt->GetEventType() == wxEVT_KEY_UP );
 }
 
 void AudacityProject::OnCursorRight(const wxEvent * evt)
