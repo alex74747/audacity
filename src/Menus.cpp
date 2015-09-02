@@ -163,6 +163,7 @@ enum {
 };
 
 #include "commands/CommandFunctors.h"
+
 //
 // Effects menu arrays
 //
@@ -3549,7 +3550,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    // Make sure there's no activity since the effect is about to be applied
    // to the project's tracks.  Mainly for Apply during RTP, but also used
    // for batch commands
-   if (flags & OnEffectFlags::kConfigured)
+   if (flags & OnEffectFlagsConfigured)
    {
       OnStop();
       SelectAllIfNone();
@@ -3587,7 +3588,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    bool success = em.DoEffect(ID, this, mRate,
                                GetTracks(), GetTrackFactory(),
                                &mViewInfo.selectedRegion,
-                               (flags & OnEffectFlags::kConfigured) == 0);
+                               (flags & OnEffectFlagsConfigured) == 0);
 
    if (!success) {
       if (newTrack) {
@@ -3604,16 +3605,16 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    }
 
    if (em.GetSkipStateFlag())
-      flags = flags | OnEffectFlags::kSkipState;
+      flags = flags | OnEffectFlagsSkipState;
 
-   if (!(flags & OnEffectFlags::kSkipState))
+   if (!(flags & OnEffectFlagsSkipState))
    {
       wxString shortDesc = em.GetEffectName(ID);
       wxString longDesc = em.GetEffectDescription(ID);
       PushState(longDesc, shortDesc);
    }
 
-   if (!(flags & OnEffectFlags::kDontRepeatLast))
+   if (!(flags & OnEffectFlagsDontRepeatLast))
    {
       // Only remember a successful effect, don't rmemeber insert,
       // or analyze effects.
@@ -3653,7 +3654,7 @@ void AudacityProject::OnRepeatLastEffect(int WXUNUSED(index))
 {
    if (!mLastEffect.IsEmpty())
    {
-      OnEffect(mLastEffect, OnEffectFlags::kConfigured);
+      OnEffect(mLastEffect, OnEffectFlagsConfigured);
    }
 }
 
@@ -3702,7 +3703,7 @@ void AudacityProject::OnManageAnalyzers()
 void AudacityProject::OnStereoToMono(int WXUNUSED(index))
 {
    OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
-            OnEffectFlags::kConfigured);
+            OnEffectFlagsConfigured);
 }
 
 //

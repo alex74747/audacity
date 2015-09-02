@@ -388,20 +388,7 @@ void OnToggleTypeToCreateLabel();
 
         // Effect Menu
 
-class OnEffectFlags
-{
-public:
-   // No flags specified
-   static const int kNone = 0x00;
-   // Flag used to disable prompting for configuration parameteres.
-   static const int kConfigured = 0x01;
-   // Flag used to disable saving the state after processing.
-   static const int kSkipState  = 0x02;
-   // Flag used to disable "Repeat Last Effect"
-   static const int kDontRepeatLast = 0x04;
-};
-
-bool OnEffect(const PluginID & ID, int flags = OnEffectFlags::kNone);
+bool OnEffect(const PluginID & ID, int flags = OnEffectFlagsNone);
 void OnRepeatLastEffect(int index);
 void OnApplyChain();
 void OnEditChains();

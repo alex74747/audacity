@@ -4142,7 +4142,7 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
       SelectNone();
       SelectAllIfNone();
       OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("Normalize")),
-               OnEffectFlags::kConfigured);
+               OnEffectFlagsConfigured);
    }
 
    GetDirManager()->FillBlockfilesCache();
