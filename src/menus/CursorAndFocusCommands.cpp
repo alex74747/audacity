@@ -127,6 +127,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("ToggleAlt"), _("Toggle Focused Track"), FN(OnToggle), wxT("NUMPAD_ENTER"));
    c->AddCommand(wxT("CursorLeft"), _("Cursor Left"), FN(OnCursorLeft), wxT("Left\twantKeyup\tallowDup"));
    c->AddCommand(wxT("CursorRight"), _("Cursor Right"), FN(OnCursorRight), wxT("Right\twantKeyup\tallowDup"));
+   c->AddCommand(wxT("CursorShortJumpLeft"), _("Cursor Short Jump Left"), FN(OnCursorShortJumpLeft), wxT(","));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1021,4 +1022,9 @@ void CursorAndFocusCommands::OnCursorLeft(const wxEvent * evt)
 void CursorAndFocusCommands::OnCursorRight(const wxEvent * evt)
 {
    mProject->OnCursorRight(false, false, evt->GetEventType() == wxEVT_KEY_UP);
+}
+
+void CursorAndFocusCommands::OnCursorShortJumpLeft()
+{
+   mProject->OnCursorMove(false, true, false);
 }
