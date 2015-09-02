@@ -137,6 +137,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("CursorShortJumpLeft"), _("Cursor Short Jump Left"), FN(OnCursorShortJumpLeft), wxT(","));
    c->AddCommand(wxT("CursorShortJumpRight"), _("Cursor Short Jump Right"), FN(OnCursorShortJumpRight), wxT("."));
    c->AddCommand(wxT("CursorLongJumpLeft"), _("Cursor Long Jump Left"), FN(OnCursorLongJumpLeft), wxT("Shift+,"));
+   c->AddCommand(wxT("CursorLongJumpRight"), _("Cursor Long Jump Right"), FN(OnCursorLongJumpRight), wxT("Shift+."));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -1098,15 +1099,57 @@ void CursorAndFocusCommands::OnCursorRight(const wxEvent * evt)
 
 void CursorAndFocusCommands::OnCursorShortJumpLeft()
 {
-   mProject->OnCursorMove(false, true, false);
+   OnCursorMove(false, true, false);
 }
 
 void CursorAndFocusCommands::OnCursorShortJumpRight()
 {
-   mProject->OnCursorMove(true, true, false);
+   OnCursorMove(true, true, false);
 }
 
 void CursorAndFocusCommands::OnCursorLongJumpLeft()
 {
-   mProject->OnCursorMove(false, true, true);
+   OnCursorMove(false, true, true);
+}
+
+void CursorAndFocusCommands::OnCursorLongJumpRight()
+{
+   OnCursorMove(true, true, true);
+}
+
+// Move the cursor forward or backward, while paused or while playing.
+// forward=true: Move cursor forward; forward=false: Move cursor backwards
+// jump=false: Move cursor determined by zoom; jump=true: Use seek times
+// longjump=false: Use mSeekShort; longjump=true: Use mSeekLong
+void CursorAndFocusCommands::OnCursorMove(bool forward, bool jump, bool longjump)
+{
+   double seekShort, seekLong;
+   gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &seekShort, 1.0);
+   gPrefs->Read(wxT("/AudioIO/SeekLongPeriod"), &seekLong, 15.0);
+
+   // PRL:  nobody calls this yet with !jump
+
+   double positiveSeekStep;
+   bool byPixels;
+   if (jump) {
+      if (!longjump) {
+         positiveSeekStep = seekShort;
+      }
+      else {
+         positiveSeekStep = seekLong;
+      }
+      byPixels = false;
+   }
+   else {
+      positiveSeekStep = 1.0;
+      byPixels = true;
+   }
+   bool mayAccelerate = !jump;
+   mProject->SeekLeftOrRight
+      (!forward, false, false, false,
+      0, mayAccelerate, mayAccelerate,
+      positiveSeekStep, byPixels,
+      positiveSeekStep, byPixels);
+
+   mProject->ModifyState(false);
 }
