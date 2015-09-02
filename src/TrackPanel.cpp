@@ -7957,23 +7957,6 @@ void TrackPanel::UpdateVRulerSize()
    Refresh(false);
 }
 
-void TrackPanel::OnToggle()
-{
-   Track *t;
-
-   t = GetFocusedTrack();   // Get currently focused track
-   if (!t)
-      return;
-
-   mTracks->Select( t, !t->GetSelected() );
-   EnsureVisible( t );
-   MakeParentModifyState(false);
-
-   mAx->Updated();
-
-   return;
-}
-
 // Make sure selection edge is in view
 void TrackPanel::ScrollIntoView(double pos)
 {

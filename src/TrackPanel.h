@@ -192,8 +192,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void HandlePageDownKey();
    virtual AudacityProject * GetProject() const;
 
-   virtual void OnToggle();
-
    virtual void ScrollIntoView(double pos);
    virtual void ScrollIntoView(int x);
 
@@ -642,6 +640,7 @@ protected:
 
 public:
    void ToggleSpectralSelection();
+
 protected:
 
 #endif
@@ -853,6 +852,12 @@ protected:
    friend class TrackPanelAx;
 
    TrackPanelAx *mAx;
+
+public:
+
+   TrackPanelAx &GetAx() { return *mAx; }
+
+protected:
 
    wxString mSoloPref;
 

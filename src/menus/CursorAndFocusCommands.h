@@ -73,6 +73,7 @@ private:
    void OnShiftDown();
    void OnPrevTrack(bool shift = false);
    void OnNextTrack(bool shift = false);
+   void OnToggle();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
