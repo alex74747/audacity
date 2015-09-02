@@ -530,8 +530,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
-
    c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 
@@ -1617,63 +1615,6 @@ void AudacityProject::NextFrame()
 void AudacityProject::PrevFrame()
 {
    NextOrPrevFrame(false);
-}
-
-void AudacityProject::NextWindow()
-{
-   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
-   const auto & list = GetChildren();
-   auto iter = list.begin(), end = list.end();
-
-   // If the project window has the current focus, start the search with the first child
-   if (w == this)
-   {
-   }
-   // Otherwise start the search with the current window's next sibling
-   else
-   {
-      // Find the window in this projects children.  If the window with the
-      // focus isn't a child of this project (like when a dialog is created
-      // without specifying a parent), then we'll get back NULL here.
-      while (iter != end && *iter != w)
-         ++iter;
-      if (iter != end)
-         ++iter;
-   }
-
-   // Search for the next toplevel window
-   for (; iter != end; ++iter)
-   {
-      // If it's a toplevel, visible (we have hidden windows) and is enabled,
-      // then we're done.  The IsEnabled() prevents us from moving away from 
-      // a modal dialog because all other toplevel windows will be disabled.
-      w = *iter;
-      if (w->IsTopLevel() && w->IsShown() && w->IsEnabled())
-      {
-         break;
-      }
-   }
-
-   // Ran out of siblings, so make the current project active
-   if ((iter == end) && IsEnabled())
-   {
-      w = this;
-   }
-
-   // And make sure it's on top (only for floating windows...project window will not raise)
-   // (Really only works on Windows)
-   w->Raise();
-
-
-#if defined(__WXMAC__) || defined(__WXGTK__)
-   // bug 868
-   // Simulate a TAB key press before continuing, else the cycle of
-   // navigation among top level windows stops because the keystrokes don't
-   // go to the CommandManager.
-   if (dynamic_cast<wxDialog*>(w)) {
-      w->SetFocus();
-   }
-#endif
 }
 
 //

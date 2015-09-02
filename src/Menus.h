@@ -202,8 +202,6 @@ void NextOrPrevFrame(bool next);
 void PrevFrame();
 void NextFrame();
 
-void NextWindow();
-
 private:
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);

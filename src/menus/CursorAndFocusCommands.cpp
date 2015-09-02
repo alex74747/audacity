@@ -102,6 +102,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
    c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
+   c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -574,6 +575,62 @@ void CursorAndFocusCommands::PrevWindow()
       // If it's a toplevel and is visible (we have come hidden windows), then we're done
       w = *iter;
       if (w->IsTopLevel() && w->IsShown() && mProject->IsEnabled())
+      {
+         break;
+      }
+   }
+
+   // Ran out of siblings, so make the current project active
+   if ((iter == end) && mProject->IsEnabled())
+   {
+      w = mProject;
+   }
+
+   // And make sure it's on top (only for floating windows...project window will not raise)
+   // (Really only works on Windows)
+   w->Raise();
+
+#if defined(__WXMAC__) || defined(__WXGTK__)
+   // bug 868
+   // Simulate a TAB key press before continuing, else the cycle of
+   // navigation among top level windows stops because the keystrokes don't
+   // go to the CommandManager.
+   if (dynamic_cast<wxDialog*>(w)) {
+      w->SetFocus();
+   }
+#endif
+}
+
+void CursorAndFocusCommands::NextWindow()
+{
+   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
+   const auto & list = mProject->GetChildren();
+   auto iter = list.begin(), end = list.end();
+
+   // If the project window has the current focus, start the search with the first child
+   if (w == mProject)
+   {
+   }
+   // Otherwise start the search with the current window's next sibling
+   else
+   {
+      // Find the window in this projects children.  If the window with the
+      // focus isn't a child of this project (like when a dialog is created
+      // without specifying a parent), then we'll get back NULL here.
+      while (iter != end && *iter != w)
+         ++iter;
+      if (iter != end)
+         ++iter;
+   }
+
+   // Search for the next toplevel window
+   for (; iter != end; ++iter)
+   {
+      // If it's a toplevel, visible (we have hidden windows) and is enabled,
+      // then we're done.  The IsEnabled() prevents us from moving away from 
+      // a modal dialog because all other toplevel windows will be disabled.
+      w = *iter;
+      if (w->IsTopLevel() && w->IsShown() && w->IsEnabled())
       {
          break;
       }
