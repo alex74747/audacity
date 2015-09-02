@@ -128,6 +128,18 @@ void ViewMenuCommands::Create(CommandManager *c)
    c->EndMenu();
 }
 
+void ViewMenuCommands::CreateNonMenuCommands(CommandManager *c)
+{
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddCommand(wxT("FullScreenOnOff"), _("Full screen on/off"), FN(OnFullScreen),
+#ifdef __WXMAC__
+      wxT("Ctrl+/"));
+#else
+      wxT("F11"));
+#endif
+}
+
 void ViewMenuCommands::OnZoomIn()
 {
    mProject->ZoomInByFactor(2.0);
@@ -374,4 +386,12 @@ void ViewMenuCommands::OnResetToolBars()
 {
    mProject->GetToolManager()->Reset();
    mProject->ModifyToolbarMenus();
+}
+
+void ViewMenuCommands::OnFullScreen()
+{
+   if (mProject->wxTopLevelWindow::IsFullScreen())
+      mProject->wxTopLevelWindow::ShowFullScreen(false);
+   else
+      mProject->wxTopLevelWindow::ShowFullScreen(true);
 }

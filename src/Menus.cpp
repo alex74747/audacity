@@ -759,6 +759,7 @@ void AudacityProject::CreateMenusAndCommands()
       SetMenuBar(menubar.release());
    }
 
+   mViewMenuCommands->CreateNonMenuCommands(c);
    mTransportMenuCommands->CreateNonMenuCommands(c);
    mTracksMenuCommands->CreateNonMenuCommands(c);
 
@@ -838,13 +839,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("SnapToOff"), _("Snap To Off"), FN(OnSnapToOff));
    c->AddCommand(wxT("SnapToNearest"), _("Snap To Nearest"), FN(OnSnapToNearest));
    c->AddCommand(wxT("SnapToPrior"), _("Snap To Prior"), FN(OnSnapToPrior));
-
-   c->AddCommand(wxT("FullScreenOnOff"), _("Full screen on/off"), FN(OnFullScreen),
-#ifdef __WXMAC__
-      wxT("Ctrl+/"));
-#else
-      wxT("F11"));
-#endif
 
 #ifdef __WXMAC__
    /* i8n-hint: Shrink all project windows to icons on the Macintosh tooldock */
@@ -4373,14 +4367,6 @@ void AudacityProject::OnSnapToNearest()
 void AudacityProject::OnSnapToPrior()
 {
    SetSnapTo(SNAP_PRIOR);
-}
-
-void AudacityProject::OnFullScreen()
-{
-   if(wxTopLevelWindow::IsFullScreen())
-      wxTopLevelWindow::ShowFullScreen(false);
-   else
-      wxTopLevelWindow::ShowFullScreen(true);
 }
 
 void AudacityProject::OnCursorLeft(bool shift, bool ctrl, bool keyup)
