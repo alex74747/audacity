@@ -540,10 +540,6 @@ void AudacityProject::CreateMenusAndCommands()
    c->AddCommand(wxT("NextTool"), _("Next Tool"), FN(OnNextTool), wxT("D"));
    c->AddCommand(wxT("PrevTool"), _("Previous Tool"), FN(OnPrevTool), wxT("A"));
 
-   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
-
-   c->AddCommand(wxT("SnapToPrior"), _("Snap To Prior"), FN(OnSnapToPrior));
-
 #ifdef __WXMAC__
    /* i8n-hint: Shrink all project windows to icons on the Macintosh tooldock */
    c->AddCommand(wxT("MacMinimizeAll"), _("Minimize all projects"),
@@ -2182,9 +2178,4 @@ void AudacityProject::OnHelpWelcome()
 void AudacityProject::OnSeparator()
 {
 
-}
-
-void AudacityProject::OnSnapToPrior()
-{
-   SetSnapTo(SNAP_PRIOR);
 }

@@ -66,10 +66,6 @@ public:
 
 void OnStopSelect();
 
-        // Selection-Editing Commands
-
-
-void OnSnapToPrior();
 
 static void DoMacMinimize(AudacityProject *project);
 void OnMacMinimize();
