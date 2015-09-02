@@ -73,7 +73,6 @@ void OnSelExtendRight(const wxEvent * evt);
 void OnSelContractLeft(const wxEvent * evt);
 void OnSelContractRight(const wxEvent * evt);
 
-void OnCursorShortJumpRight();
 void OnCursorLongJumpLeft();
 void OnCursorLongJumpRight();
 void OnSelSetExtendLeft();
