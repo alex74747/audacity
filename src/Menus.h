@@ -62,7 +62,6 @@ void OnStopSelect();
 
         // Selection-Editing Commands
 
-void OnShiftUp();
 void OnShiftDown();
 void OnToggle();
 

@@ -192,7 +192,6 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    virtual void HandlePageDownKey();
    virtual AudacityProject * GetProject() const;
 
-   virtual void OnPrevTrack(bool shift = false);
    virtual void OnNextTrack(bool shift = false);
    virtual void OnToggle();
 

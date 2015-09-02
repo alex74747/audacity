@@ -69,6 +69,8 @@ private:
    void OnCursorDown();
    void OnFirstTrack();
    void OnLastTrack();
+   void OnShiftUp();
+   void OnPrevTrack(bool shift = false);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
