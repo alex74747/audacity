@@ -128,6 +128,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("FirstTrack"), _("Move Focus to First Track"), FN(OnFirstTrack), wxT("Ctrl+Home"));
    c->AddCommand(wxT("LastTrack"), _("Move Focus to Last Track"), FN(OnLastTrack), wxT("Ctrl+End"));
    c->AddCommand(wxT("ShiftUp"), _("Move Focus to Previous and Select"), FN(OnShiftUp), wxT("Shift+Up"));
+   c->AddCommand(wxT("ShiftDown"), _("Move Focus to Next and Select"), FN(OnShiftDown), wxT("Shift+Down"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -784,7 +785,7 @@ void CursorAndFocusCommands::OnCursorUp()
 
 void CursorAndFocusCommands::OnCursorDown()
 {
-   mProject->GetTrackPanel()->OnNextTrack(false);
+   OnNextTrack(false);
 }
 
 void CursorAndFocusCommands::OnFirstTrack()
@@ -825,6 +826,11 @@ void CursorAndFocusCommands::OnLastTrack()
 void CursorAndFocusCommands::OnShiftUp()
 {
    OnPrevTrack(true);
+}
+
+void CursorAndFocusCommands::OnShiftDown()
+{
+   OnNextTrack(true);
 }
 
 /// The following method moves to the previous track
@@ -938,6 +944,116 @@ void CursorAndFocusCommands::OnPrevTrack(bool shift)
       {
          trackPanel->SetFocusedTrack( p );   // move focus to next track down
          trackPanel->EnsureVisible( p );
+         mProject->ModifyState(false);
+         return;
+      }
+   }
+}
+
+/// The following method moves to the next track,
+/// selecting and unselecting depending if you are on the start of a
+/// block or not.
+void CursorAndFocusCommands::OnNextTrack(bool shift)
+{
+   bool circularTrackNavigation;
+   gPrefs->Read(wxT("/GUI/CircularTrackNavigation"), &circularTrackNavigation,
+                false);
+
+   auto tracks = mProject->GetTracks();
+   auto trackPanel = mProject->GetTrackPanel();
+
+   Track *t;
+   Track *n;
+   TrackListIterator iter( tracks );
+   bool tSelected,nSelected;
+
+   t = trackPanel->GetFocusedTrack();   // Get currently focused track
+   if( t == NULL )   // if there isn't one, focus on first
+   {
+      t = iter.First();
+      trackPanel->SetFocusedTrack( t );
+      trackPanel->EnsureVisible( t );
+      mProject->ModifyState(false);
+      return;
+   }
+
+   if( shift )
+   {
+      n = tracks->GetNext( t, true ); // Get next track
+      if( n == NULL )   // On last track so stay there
+      {
+         wxBell();
+         if( circularTrackNavigation )
+         {
+            TrackListIterator iter( tracks );
+            n = iter.First();
+         }
+         else
+         {
+            trackPanel->EnsureVisible( t );
+            return;
+         }
+      }
+      tSelected = t->GetSelected();
+      nSelected = n->GetSelected();
+      if( tSelected && nSelected )
+      {
+         trackPanel->SelectTrack( t, false, false );
+         trackPanel->SetFocusedTrack( n );   // move focus to next track down
+         trackPanel->EnsureVisible( n );
+         mProject->ModifyState(false);
+         return;
+      }
+      if( tSelected && !nSelected )
+      {
+         trackPanel->SelectTrack( t, true, false );
+         trackPanel->SetFocusedTrack( n );   // move focus to next track down
+         trackPanel->EnsureVisible( n );
+         mProject->ModifyState(false);
+         return;
+      }
+      if( !tSelected && nSelected )
+      {
+         trackPanel->SelectTrack( t, false, false );
+         trackPanel->SetFocusedTrack( n );   // move focus to next track down
+         trackPanel->EnsureVisible( n );
+         mProject->ModifyState(false);
+         return;
+      }
+      if( !tSelected && !nSelected )
+      {
+         trackPanel->SelectTrack( t, true, false );
+         trackPanel->SetFocusedTrack( n );   // move focus to next track down
+         trackPanel->EnsureVisible( n );
+         mProject->ModifyState(false);
+         return;
+      }
+   }
+   else
+   {
+      n = tracks->GetNext( t, true ); // Get next track
+      if( n == NULL )   // On last track so stay there
+      {
+         wxBell();
+         if( circularTrackNavigation )
+         {
+            TrackListIterator iter( tracks );
+            n = iter.First();
+            trackPanel->SetFocusedTrack( n );   // Wrap to the first track
+            trackPanel->EnsureVisible( n );
+            mProject->ModifyState(false);
+            return;
+         }
+         else
+         {
+            trackPanel->EnsureVisible( t );
+            return;
+         }
+      }
+      else
+      {
+         trackPanel->SetFocusedTrack( n );   // move focus to next track down
+         trackPanel->EnsureVisible( n );
          mProject->ModifyState(false);
          return;
       }

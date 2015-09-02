@@ -459,7 +459,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mMouseCapture = IsUncaptured;
    mSlideUpDownOnly = false;
    mLabelTrackStartXPos=-1;
-   mCircularTrackNavigation = false;
 
 
    mRedrawAfterStop = false;
@@ -759,8 +758,6 @@ void TrackPanel::UpdatePrefs()
       true);
    gPrefs->Read(wxT("/GUI/AdjustSelectionEdges"), &mAdjustSelectionEdges,
       true);
-   gPrefs->Read(wxT("/GUI/CircularTrackNavigation"), &mCircularTrackNavigation,
-      false);
    gPrefs->Read(wxT("/GUI/Solo"), &mSoloPref, wxT("Simple"));
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -7450,109 +7447,6 @@ void TrackPanel::UpdateVRulerSize()
       }
    }
    Refresh(false);
-}
-
-/// The following method moves to the next track,
-/// selecting and unselecting depending if you are on the start of a
-/// block or not.
-void TrackPanel::OnNextTrack( bool shift )
-{
-   Track *t;
-   Track *n;
-   TrackListIterator iter( GetTracks() );
-   bool tSelected,nSelected;
-
-   t = GetFocusedTrack();   // Get currently focused track
-   if( t == NULL )   // if there isn't one, focus on first
-   {
-      t = iter.First();
-      SetFocusedTrack( t );
-      EnsureVisible( t );
-      MakeParentModifyState(false);
-      return;
-   }
-
-   if( shift )
-   {
-      n = mTracks->GetNext( t, true ); // Get next track
-      if( n == NULL )   // On last track so stay there
-      {
-         wxBell();
-         if( mCircularTrackNavigation )
-         {
-            TrackListIterator iter( GetTracks() );
-            n = iter.First();
-         }
-         else
-         {
-            EnsureVisible( t );
-            return;
-         }
-      }
-      tSelected = t->GetSelected();
-      nSelected = n->GetSelected();
-      if( tSelected && nSelected )
-      {
-         SelectTrack(t, false, false);
-         SetFocusedTrack( n );   // move focus to next track down
-         EnsureVisible( n );
-         MakeParentModifyState(false);
-         return;
-      }
-      if( tSelected && !nSelected )
-      {
-         SelectTrack(n, true, false);
-         SetFocusedTrack( n );   // move focus to next track down
-         EnsureVisible( n );
-         MakeParentModifyState(false);
-         return;
-      }
-      if( !tSelected && nSelected )
-      {
-         SelectTrack(n, false, false);
-         SetFocusedTrack( n );   // move focus to next track down
-         EnsureVisible( n );
-         MakeParentModifyState(false);
-         return;
-      }
-      if( !tSelected && !nSelected )
-      {
-         SelectTrack(t, true, false);
-         SetFocusedTrack( n );   // move focus to next track down
-         EnsureVisible( n );
-         MakeParentModifyState(false);
-         return;
-      }
-   }
-   else
-   {
-      n = mTracks->GetNext( t, true ); // Get next track
-      if( n == NULL )   // On last track so stay there
-      {
-         wxBell();
-         if( mCircularTrackNavigation )
-         {
-            TrackListIterator iter( GetTracks() );
-            n = iter.First();
-            SetFocusedTrack( n );   // Wrap to the first track
-            EnsureVisible( n );
-            MakeParentModifyState(false);
-            return;
-         }
-         else
-         {
-            EnsureVisible( t );
-            return;
-         }
-      }
-      else
-      {
-         SetFocusedTrack( n );   // move focus to next track down
-         EnsureVisible( n );
-         MakeParentModifyState(false);
-         return;
-      }
-   }
 }
 
 void TrackPanel::OnToggle()
