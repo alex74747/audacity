@@ -50,6 +50,8 @@ private:
    void OnSelectionRestore();
    void OnCursorPositionStore();
 
+   // non-menu commands
+   void PrevWindow();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;

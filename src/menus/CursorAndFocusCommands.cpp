@@ -99,6 +99,9 @@ void CursorAndFocusCommands::Create(CommandManager *c)
 
 void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 {
+   c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
+
+   c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -544,4 +547,55 @@ void CursorAndFocusCommands::OnCursorPositionStore()
       ? gAudioIO->GetStreamTime() : selectedRegion.t0();
    mProject->SetCursorPositionStored(cursorPositionStored);
    mProject->SetCursorPositionHasBeenStored(true);
+}
+
+void CursorAndFocusCommands::PrevWindow()
+{
+   wxWindow *w = wxGetTopLevelParent(wxWindow::FindFocus());
+   const auto & list = mProject->GetChildren();
+   auto iter = list.rbegin(), end = list.rend();
+
+   // If the project window has the current focus, start the search with the last child
+   if (w == mProject)
+   {
+   }
+   // Otherwise start the search with the current window's previous sibling
+   else
+   {
+      while (iter != end && *iter != w)
+         ++iter;
+      if (iter != end)
+         ++iter;
+   }
+
+   // Search for the previous toplevel window
+   for (; iter != end; ++iter)
+   {
+      // If it's a toplevel and is visible (we have come hidden windows), then we're done
+      w = *iter;
+      if (w->IsTopLevel() && w->IsShown() && mProject->IsEnabled())
+      {
+         break;
+      }
+   }
+
+   // Ran out of siblings, so make the current project active
+   if ((iter == end) && mProject->IsEnabled())
+   {
+      w = mProject;
+   }
+
+   // And make sure it's on top (only for floating windows...project window will not raise)
+   // (Really only works on Windows)
+   w->Raise();
+
+#if defined(__WXMAC__) || defined(__WXGTK__)
+   // bug 868
+   // Simulate a TAB key press before continuing, else the cycle of
+   // navigation among top level windows stops because the keystrokes don't
+   // go to the CommandManager.
+   if (dynamic_cast<wxDialog*>(w)) {
+      w->SetFocus();
+   }
+#endif
 }

@@ -202,7 +202,6 @@ void NextOrPrevFrame(bool next);
 void PrevFrame();
 void NextFrame();
 
-void PrevWindow();
 void NextWindow();
 
 private:
