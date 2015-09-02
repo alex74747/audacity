@@ -66,6 +66,7 @@ private:
 
    // Enabled only during play/record:
    void OnSeekLeftShort();
+   void OnSeekRightShort();
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
