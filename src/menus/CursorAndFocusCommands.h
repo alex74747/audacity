@@ -95,6 +95,7 @@ public:
 
 private:
    void OnSelExtendLeft(const wxEvent * evt);
+   void OnSelExtendRight(const wxEvent * evt);
 
    AudacityProject *mProject;
    SelectedRegion mRegionSave;
