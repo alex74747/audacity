@@ -59,7 +59,6 @@ public:
         // Audio I/O Commands
 
 void OnStopSelect();
-void OnSeekRightShort();
 void OnSeekLeftLong();
 void OnSeekRightLong();
 
@@ -161,9 +160,9 @@ void OnSeparator();
       // Keyboard navigation
 
 void OnCursorLeft(bool shift, bool ctrl, bool keyup = false);
-private:
 void OnCursorRight(bool shift, bool ctrl, bool keyup = false);
-void OnCursorMove(bool forward, bool jump, bool longjump);
+private:
+   void OnCursorMove(bool forward, bool jump, bool longjump);
 void OnBoundaryMove(bool left, bool boundaryContract);
 
 // Handle small cursor and play head movements

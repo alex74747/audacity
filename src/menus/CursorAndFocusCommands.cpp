@@ -108,6 +108,7 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->SetDefaultFlags(AudioIOBusyFlag, AudioIOBusyFlag);
    c->AddCommand(wxT("SeekLeftShort"), _("Short seek left during playback"), FN(OnSeekLeftShort), wxT("Left\tallowDup"));
+   c->AddCommand(wxT("SeekRightShort"), _("Short seek right during playback"), FN(OnSeekRightShort), wxT("Right\tallowDup"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -681,4 +682,9 @@ void CursorAndFocusCommands::OnSelToEnd()
 void CursorAndFocusCommands::OnSeekLeftShort()
 {
    mProject->OnCursorLeft(false, false);
+}
+
+void CursorAndFocusCommands::OnSeekRightShort()
+{
+   mProject->OnCursorRight(false, false);
 }
