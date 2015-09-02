@@ -495,7 +495,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(AlwaysEnabledFlag, AlwaysEnabledFlag);
 
-   c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
    c->AddCommand(wxT("NextFrame"), _("Move forward from toolbars to tracks"), FN(NextFrame), wxT("Ctrl+F6"));
 
    c->AddCommand(wxT("SelectTool"), _("Selection Tool"), FN(OnSelectTool), wxT("F1"));
@@ -1461,24 +1460,6 @@ void AudacityProject::NextFrame()
 
       case BotDockHasFocus:
          mToolManager->GetTopDock()->SetFocus();
-      break;
-   }
-}
-
-void AudacityProject::PrevFrame()
-{
-   switch( GetFocusedFrame() )
-   {
-      case TopDockHasFocus:
-         mToolManager->GetBotDock()->SetFocus();
-      break;
-
-      case TrackPanelHasFocus:
-         mToolManager->GetTopDock()->SetFocus();
-      break;
-
-      case BotDockHasFocus:
-         mTrackPanel->SetFocus();
       break;
    }
 }

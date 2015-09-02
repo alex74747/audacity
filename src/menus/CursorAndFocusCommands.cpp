@@ -9,6 +9,7 @@
 #include "../TrackPanel.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandManager.h"
+#include "../toolbars/ToolManager.h"
 
 #define FN(X) new ObjectCommandFunctor<CursorAndFocusCommands>(this, &CursorAndFocusCommands:: X )
 
@@ -98,6 +99,8 @@ void CursorAndFocusCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddGlobalCommand(wxT("PrevWindow"), _("Move backward thru active windows"), FN(PrevWindow), wxT("Alt+Shift+F6"));
    c->AddGlobalCommand(wxT("NextWindow"), _("Move forward thru active windows"), FN(NextWindow), wxT("Alt+F6"));
+
+   c->AddCommand(wxT("PrevFrame"), _("Move backward from toolbars to tracks"), FN(PrevFrame), wxT("Ctrl+Shift+F6"));
 }
 
 void CursorAndFocusCommands::OnSelectAll()
@@ -618,4 +621,22 @@ void CursorAndFocusCommands::NextWindow()
    // And make sure it's on top (only for floating windows...project window will not raise)
    // (Really only works on Windows)
    w->Raise();
+}
+
+void CursorAndFocusCommands::PrevFrame()
+{
+   switch (mProject->GetFocusedFrame())
+   {
+   case TopDockHasFocus:
+      mProject->mToolManager->GetBotDock()->SetFocus();
+      break;
+
+   case TrackPanelHasFocus:
+      mProject->mToolManager->GetTopDock()->SetFocus();
+      break;
+
+   case BotDockHasFocus:
+      mProject->GetTrackPanel()->SetFocus();
+      break;
+   }
 }

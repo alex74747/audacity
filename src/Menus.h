@@ -36,7 +36,6 @@ void ModifyToolbarMenus();
 // Calls ModifyToolbarMenus() on all projects
 void ModifyAllProjectToolbarMenus();
 
-private:
 int GetFocusedFrame();
 
 public:
@@ -165,7 +164,6 @@ void OnSeparator();
 
       // Keyboard navigation
 
-void PrevFrame();
 void NextFrame();
 
 private:
