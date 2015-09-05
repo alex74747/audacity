@@ -170,6 +170,7 @@ public:
    bool bUpdateTrackIndicator;
 
    bool bScrollBeyondZero;
+   bool bAdjustSelectionEdges;
 
    void WriteXMLAttributes(XMLWriter &xmlFile);
    bool ReadXMLAttribute(const wxChar *attr, const wxChar *value);

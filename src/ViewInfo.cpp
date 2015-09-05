@@ -122,7 +122,8 @@ void ViewInfo::UpdatePrefs()
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
    gPrefs->Read(wxT("/GUI/ScrollBeyondZero"), &bScrollBeyondZero, false);
 #endif
-
+   gPrefs->Read(wxT("/GUI/AdjustSelectionEdges"), &bAdjustSelectionEdges,
+      true);
 }
 
 void ViewInfo::SetBeforeScreenWidth(wxInt64 beforeWidth, wxInt64 screenWidth, double lowerBoundTime)
