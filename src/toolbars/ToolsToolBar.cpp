@@ -207,7 +207,7 @@ void ToolsToolBar::Populate()
 /// Gets the currently active tool
 /// In Multi-mode this might not return the multi-tool itself
 /// since the active tool may be changed by what you hover over.
-int ToolsToolBar::GetCurrentTool()
+int ToolsToolBar::GetCurrentTool() const
 {
    return mCurrentTool;
 }
@@ -261,7 +261,7 @@ void ToolsToolBar::SetCurrentTool(int tool, bool show)
    }
 }
 
-bool ToolsToolBar::IsDown(int tool)
+bool ToolsToolBar::IsDown(int tool) const
 {
    return mTool[tool]->IsDown();
 }
@@ -277,7 +277,7 @@ int ToolsToolBar::GetDownTool()
    return firstTool;  // Should never happen
 }
 
-const wxChar * ToolsToolBar::GetMessageForTool( int ToolNumber )
+const wxChar * ToolsToolBar::GetMessageForTool( int ToolNumber ) const
 {
    wxASSERT( ToolNumber >= 0 );
    wxASSERT( ToolNumber < numTools );

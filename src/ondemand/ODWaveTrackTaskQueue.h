@@ -62,7 +62,7 @@ class ODWaveTrackTaskQueue
 
 
    //returns true if the agrument is in the WaveTrack list.
-   bool ContainsWaveTrack(WaveTrack* track);
+   bool ContainsWaveTrack(const WaveTrack* track);
 
    //returns the wavetrack at position x.
    WaveTrack* GetWaveTrack(size_t x);
@@ -92,7 +92,7 @@ class ODWaveTrackTaskQueue
    ODTask* GetTask(size_t x);
 
    ///fills in the status bar message for a given track
-   void FillTipForWaveTrack( WaveTrack * t, wxString &tip );
+   void FillTipForWaveTrack( const WaveTrack * t, wxString &tip );
 
  protected:
 

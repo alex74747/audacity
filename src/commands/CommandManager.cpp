@@ -1351,9 +1351,11 @@ wxString CommandManager::GetCategoryFromName(wxString name)
    return entry->labelTop;
 }
 
-wxString CommandManager::GetKeyFromName(wxString name)
+wxString CommandManager::GetKeyFromName(wxString name) const
 {
-   CommandListEntry *entry = mCommandNameHash[name];
+   CommandListEntry *entry =
+      // May create a NULL entry
+      const_cast<CommandManager*>(this)->mCommandNameHash[name];
    if (!entry)
       return wxT("");
 

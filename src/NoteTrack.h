@@ -101,7 +101,7 @@ class AUDACITY_DLL_API NoteTrack:public Track {
    void SetGain(float gain) { mGain = gain; }
 #endif
 
-   double NearestBeatTime(double time, double *beat);
+   double NearestBeatTime(double time, double *beat) const;
    bool StretchRegion(double b0, double b1, double dur);
 
    int GetBottomNote() const { return mBottomNote; }

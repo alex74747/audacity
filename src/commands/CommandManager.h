@@ -217,7 +217,7 @@ class AUDACITY_DLL_API CommandManager: public XMLTagHandler
    wxString GetLabelFromName(wxString name);
    wxString GetPrefixedLabelFromName(wxString name);
    wxString GetCategoryFromName(wxString name);
-   wxString GetKeyFromName(wxString name);
+   wxString GetKeyFromName(wxString name) const;
    wxString GetDefaultKeyFromName(wxString name);
 
    bool GetEnabled(const wxString &name);

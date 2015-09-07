@@ -75,7 +75,7 @@ void ODWaveTrackTaskQueue::MergeWaveTrack(WaveTrack* track)
 }
 
 ///returns true if the argument is in the WaveTrack list.
-bool ODWaveTrackTaskQueue::ContainsWaveTrack(WaveTrack* track)
+bool ODWaveTrackTaskQueue::ContainsWaveTrack(const WaveTrack* track)
 {
    mTracksMutex.Lock();
    for(unsigned int i=0;i<mTracks.size();i++)
@@ -325,7 +325,7 @@ ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 }
 
 ///fills in the status bar message for a given track
-void ODWaveTrackTaskQueue::FillTipForWaveTrack( WaveTrack * t, wxString &tip )
+void ODWaveTrackTaskQueue::FillTipForWaveTrack( const WaveTrack * t, wxString &tip )
 {
    if(ContainsWaveTrack(t) && GetNumTasks())
    {

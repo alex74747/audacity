@@ -122,13 +122,13 @@ class Envelope : public XMLTagHandler {
 
    // Event Handlers
    // Each ofthese returns true if parents needs to be redrawn
-   bool MouseEvent(wxMouseEvent & event, wxRect & r,
+   bool MouseEvent(const wxMouseEvent & event, wxRect & r,
                    const ZoomInfo &zoomInfo, bool dB, double dBRange,
                    float zoomMin, float zoomMax);
-   bool HandleMouseButtonDown( wxMouseEvent & event, wxRect & r,
+   bool HandleMouseButtonDown( const wxMouseEvent & event, wxRect & r,
                                const ZoomInfo &zoomInfo, bool dB, double dBRange,
                                float zoomMin, float zoomMax);
-   bool HandleDragging( wxMouseEvent & event, wxRect & r,
+   bool HandleDragging( const wxMouseEvent & event, wxRect & r,
                         const ZoomInfo &zoomInfo, bool dB, double dBRange,
                         float zoomMin, float zoomMax);
    bool HandleMouseButtonUp();
@@ -200,7 +200,7 @@ private:
                        float zoomMin, float zoomMax);
    void BinarySearchForTime( int &Lo, int &Hi, double t ) const;
    double GetInterpolationStartValueAtPoint( int iPoint ) const;
-   void MoveDraggedPoint( wxMouseEvent & event, wxRect & r,
+   void MoveDraggedPoint( const wxMouseEvent & event, wxRect & r,
                                const ZoomInfo &zoomInfo, bool dB, double dBRange,
                                float zoomMin, float zoomMax);
 

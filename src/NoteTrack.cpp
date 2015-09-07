@@ -578,7 +578,7 @@ bool NoteTrack::Shift(double t) // t is always seconds
    return true;
 }
 
-double NoteTrack::NearestBeatTime(double time, double *beat)
+double NoteTrack::NearestBeatTime(double time, double *beat) const
 {
    wxASSERT(mSeq);
    // Alg_seq knows nothing about offset, so remove offset time

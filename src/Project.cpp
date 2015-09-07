@@ -4263,6 +4263,14 @@ ToolsToolBar *AudacityProject::GetToolsToolBar()
            NULL);
 }
 
+const ToolsToolBar *AudacityProject::GetToolsToolBar() const
+{
+   return (ToolsToolBar *)
+      (mToolManager ?
+      mToolManager->GetToolBar(ToolsBarID) :
+      NULL);
+}
+
 TranscriptionToolBar *AudacityProject::GetTranscriptionToolBar()
 {
    return (TranscriptionToolBar *)

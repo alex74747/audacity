@@ -167,6 +167,8 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    double GetSel0() { return mViewInfo.selectedRegion.t0(); }
    double GetSel1() { return mViewInfo.selectedRegion.t1(); }
    const ZoomInfo &GetZoomInfo() const { return mViewInfo; }
+   const ViewInfo &GetViewInfo() const { return mViewInfo; }
+   ViewInfo &GetViewInfo() { return mViewInfo; }
 
    Track *GetFirstVisible();
    void UpdateFirstVisible();
@@ -245,7 +247,8 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    bool GetDirty() { return mDirty; }
    void SetProjectTitle();
 
-   TrackPanel * GetTrackPanel(){return mTrackPanel;}
+   TrackPanel * GetTrackPanel() {return mTrackPanel;}
+   const TrackPanel * GetTrackPanel() const { return mTrackPanel; }
 
    bool GetIsEmpty();
 
@@ -270,6 +273,7 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
 #include "Menus.h"
 
    CommandManager *GetCommandManager() { return &mCommandManager; }
+   const CommandManager *GetCommandManager() const { return &mCommandManager; }
 
    // Keyboard capture
    static bool HasKeyboardCapture(const wxWindow *handler);
@@ -421,6 +425,7 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    SpectralSelectionBar *GetSpectralSelectionBar();
 #endif
    ToolsToolBar *GetToolsToolBar();
+   const ToolsToolBar *GetToolsToolBar() const;
    TranscriptionToolBar *GetTranscriptionToolBar();
 
    Meter *GetPlaybackMeter();
@@ -503,8 +508,8 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    void DeleteCurrentAutoSaveFile();
 
  public:
-   bool IsSoloSimple() { return mSoloPref == wxT("Simple"); }
-   bool IsSoloNone() { return mSoloPref == wxT("None"); }
+   bool IsSoloSimple() const { return mSoloPref == wxT("Simple"); }
+   bool IsSoloNone() const { return mSoloPref == wxT("None"); }
 
  private:
 

@@ -562,6 +562,7 @@ protected:
    TrackInfo mTrackInfo;
  public:
     TrackInfo *GetTrackInfo() { return &mTrackInfo; }
+    const TrackInfo *GetTrackInfo() const { return &mTrackInfo; }
 
 protected:
    TrackPanelListener *mListener;
