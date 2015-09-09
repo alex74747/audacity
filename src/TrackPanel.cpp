@@ -1586,9 +1586,6 @@ void TrackPanel::HandleCursor(wxMouseEvent & event)
    if( SetCursorByActivity() )
       return;
 
-   // (2) If we are not over a track at all, set the cursor to Arrow and
-   //     clear the StatusBar,
-
    wxRect inner;
    TrackPanelCell *pCell;
    Track *pTrack;
@@ -1596,13 +1593,7 @@ void TrackPanel::HandleCursor(wxMouseEvent & event)
    FindCell(event, inner, pCell, pTrack);
    const bool inLabel = (pTrack != pCell);
 
-   if (!pTrack) {
-      SetCursor(*mArrowCursor);
-      mListener->TP_DisplayStatusMessage(wxT(""));
-      return;
-   }
-
-   // (3) The easy cases are done.
+   // (2) The easy cases are done.
    // Now we've got to hit-test against a number of different possibilities.
    // We could be over the label or a vertical ruler etc...
 
@@ -1618,7 +1609,6 @@ void TrackPanel::HandleCursor(wxMouseEvent & event)
       SetCursorAndTipWhenInVResizeArea(!inLabel && pTrack->GetLinked(), tip);
       // tip may still be NULL at this point, in which case we go on looking.
 
-   // Otherwise, we must be over a track of some kind
    if (pCursor == NULL && tip == wxString()) {
       HitTestResult hitTest(pCell->HitTest
          (TrackPanelMouseEvent(event, inner, pCell), GetProject()));
@@ -4589,14 +4579,6 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
        (within(event.m_y, inner.y + inner.height + kBorderThickness, TRACK_RESIZE_REGION))) {
       HandleResize(event);
       HandleCursor(event);
-      return;
-   }
-
-   // AS: If the user clicked outside all tracks, make nothing
-   //  selected.
-   if ((event.ButtonDown() || event.ButtonDClick()) && !pTrack) {
-      SelectNone();
-      Refresh(false);
       return;
    }
 

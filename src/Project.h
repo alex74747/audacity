@@ -93,6 +93,8 @@ class Regions;
 
 class LWSlider;
 
+class BackgroundCell;
+
 AudacityProject *CreateNewAudacityProject();
 AUDACITY_DLL_API AudacityProject *GetActiveProject();
 void RedrawAllProjects();
@@ -694,6 +696,8 @@ private:
    TrackPanelOverlay *mIndicatorOverlay;
    TrackPanelOverlay *mCursorOverlay;
    TrackPanelOverlay *mScrubOverlay;
+
+   BackgroundCell *mBackgroundCell;
 
    Scrubber *mScrubber;
 public:
