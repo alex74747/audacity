@@ -18,6 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../toolbars/ToolsToolBar.h"
 
 #include "CutlineHandle.h"
+#include "../../ui/SelectHandle.h"
 #include "../../ui/EnvelopeHandle.h"
 #include "SampleHandle.h"
 #include "../../ui/TimeShiftHandle.h"
@@ -55,6 +56,10 @@ HitTestResult WaveTrack::HitTest
       else if (NULL != (result =
          TimeShiftHandle::HitTest(event.event, event.rect, pProject)).preview.cursor)
          currentTool = slideTool;
+      else if (NULL != (result =
+         SelectHandle::HitTest(event, pProject, this)).preview.cursor)
+         // default of all other hit tests
+         currentTool = selectTool;
 
       if (currentTool >= 0) {
          // Side-effect on the toolbar

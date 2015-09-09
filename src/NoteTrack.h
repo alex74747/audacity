@@ -76,6 +76,7 @@ class AUDACITY_DLL_API NoteTrack:public Track {
    bool LabelClick(wxRect & r, int x, int y, bool right);
 
    void SetSequence(Alg_seq *seq);
+   void SwapSequence(NoteTrack &other);
    Alg_seq* GetSequence();
    void PrintSequence();
 
