@@ -524,6 +524,18 @@ UIHandle::Result SelectHandle::Click
 
    const wxMouseEvent &event = evt.event;
    Track *const pTrack = static_cast<Track*>(evt.pCell);
+
+#ifdef EXPERIMENTAL_SCRUBBING_BASIC
+   if (pProject->GetScrubber().IsScrubbing() &&
+      evt.rect.Contains(event.GetPosition()) &&
+      (!pTrack ||
+       pTrack->GetKind() == Track::Wave)) {
+      if (event.LeftDown())
+         pProject->GetScrubber().SetSeeking();
+      return Cancelled;
+   }
+#endif
+
    ViewInfo &viewInfo = pProject->GetViewInfo();
 
    mMostRecentX = event.m_x;

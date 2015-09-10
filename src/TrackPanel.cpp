@@ -178,9 +178,6 @@ is time to refresh some aspect of the screen.
 #include "toolbars/ControlToolBar.h"
 #include "toolbars/ToolsToolBar.h"
 
-// To do:  eliminate this!
-#include "tracks/ui/Scrubbing.h"
-
 //This loads the appropriate set of cursors, depending on platform.
 #include "../images/Cursors.h"
 
@@ -1353,6 +1350,12 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
             mUIHandle = pCell->HitTest(TrackPanelMouseEvent(event, inner), GetProject()).handle;
       }
 
+      if (mUIHandle == NULL &&
+         pCell &&
+         (event.ButtonDown() || event.ButtonDClick()))
+         mUIHandle =
+         pCell->HitTest(TrackPanelMouseEvent(event, inner), GetProject()).handle;
+
       if (mUIHandle) {
          // UIHANDLE CLICK
          UIHandle::Result refreshResult =
@@ -1367,43 +1370,6 @@ void TrackPanel::HandleTrackSpecificMouseEvent(wxMouseEvent & event)
       if (mUIHandle) {
          HandleCursor(event);
          return;
-      }
-   }
-
-   // To do: remove the following special things
-   // so that we can coalesce the code for track and non-track clicks
-
-#ifdef EXPERIMENTAL_SCRUBBING_BASIC
-   if (GetProject()->GetScrubber().IsScrubbing() &&
-       GetRect().Contains(event.GetPosition()) &&
-       (!pTrack ||
-        pTrack->GetKind() == Track::Wave)) {
-      if (event.LeftDown()) {
-         GetProject()->GetScrubber().SetSeeking();
-         return;
-      }
-      else if (event.LeftIsDown())
-         return;
-   }
-#endif
-
-   bool handled = false;
-
-   if( !handled )
-   {
-      if (mUIHandle == NULL &&
-          pCell &&
-          (event.ButtonDown() || event.ButtonDClick()) &&
-          NULL != (mUIHandle =
-             pCell->HitTest(TrackPanelMouseEvent(event, inner), GetProject()).handle)) {
-         // UIHANDLE CLICK
-         UIHandle::Result refreshResult =
-            mUIHandle->Click(TrackPanelMouseEvent(event, inner, pCell), GetProject());
-         if (refreshResult & RefreshCode::Cancelled)
-            mUIHandle = NULL;
-         else
-            mpClickedTrack = pTrack;
-         ProcessUIHandleResult(this, pTrack, pTrack, refreshResult);
       }
    }
 
