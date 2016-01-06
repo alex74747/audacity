@@ -77,6 +77,13 @@ SpectrogramSettings::SpectrogramSettings(const SpectrogramSettings &other)
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    , spectralSelection(other.spectralSelection)
 #endif
+
+   , style(other.style)
+   , waterfallSlopeDegrees(other.waterfallSlopeDegrees)
+   , waterfallHeight(other.waterfallHeight)
+
+   , grid(other.grid)
+
    , algorithm(other.algorithm)
 #ifdef EXPERIMENTAL_FFT_Y_GRID
    , fftYGrid(other.fftYGrid)
@@ -114,6 +121,13 @@ SpectrogramSettings &SpectrogramSettings::operator= (const SpectrogramSettings &
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
       spectralSelection = other.spectralSelection;
 #endif
+
+      style = other.style;
+      waterfallSlopeDegrees = other.waterfallSlopeDegrees;
+      waterfallHeight = other.waterfallHeight;
+
+      grid = other.grid;
+
       algorithm = other.algorithm;
 #ifdef EXPERIMENTAL_FFT_Y_GRID
       fftYGrid = other.fftYGrid;
@@ -159,6 +173,46 @@ const wxArrayString &SpectrogramSettings::GetScaleNames()
    };
 
    static ScaleNamesArray theArray;
+   return theArray.Get();
+}
+
+//static
+const wxArrayString &SpectrogramSettings::GetStyleNames()
+{
+   class StyleNamesArray : public TranslatableStringArray
+   {
+      virtual void Populate()
+      {
+         // Keep in correspondence with enum SpectrogramSettings::Style:
+         mContents.Add(_("Flat"));
+         mContents.Add(_("Solid"));
+         mContents.Add(_("Opaque")); // hidden-line removal
+         mContents.Add(_("Translucent")); // wireframe
+      }
+   };
+
+   static StyleNamesArray theArray;
+   return theArray.Get();
+}
+
+//static
+const wxArrayString &SpectrogramSettings::GetGridNames()
+{
+   class GridNamesArray : public TranslatableStringArray
+   {
+      virtual void Populate()
+      {
+         // Keep in correspondence with enum SpectrogramSettings::Grid:
+         mContents.Add(_("None"));
+         mContents.Add(_("kHz"));
+         mContents.Add(_("31 Bands"));
+         mContents.Add(_("Decades"));
+         mContents.Add(_("Chromatic Scale"));
+         mContents.Add(_("Octaves"));
+      }
+   };
+
+   static GridNamesArray theArray;
    return theArray.Get();
 }
 
@@ -237,10 +291,18 @@ bool SpectrogramSettings::Validate(bool quiet)
       std::max(0, std::min(NumWindowFuncs() - 1, windowType));
    scaleType =
       ScaleType(std::max(0,
-         std::min((int)(SpectrogramSettings::stNumScaleTypes) - 1,
-            (int)(scaleType))));
+         std::min((int)SpectrogramSettings::stNumScaleTypes - 1,
+            (int)scaleType)));
+         std::min((int)SpectrogramSettings::stNumScaleTypes - 1,
+            (int)scaleType);
+   style = Style(
+      std::max(0, std::min((int)styleNumStyles - 1, (int)style))
+   );
+   grid = Grid(
+      std::max(0, std::min((int)gridNumGrids - 1, (int)grid))
+   );
    algorithm = Algorithm(
-      std::max(0, std::min((int)(algNumAlgorithms) - 1, (int)(algorithm)))
+      std::max(0, std::min((int)algNumAlgorithms - 1, (int)algorithm))
    );
    ConvertToEnumeratedWindowSizes();
    ConvertToActualWindowSizes();
@@ -273,6 +335,12 @@ void SpectrogramSettings::LoadPrefs()
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    spectralSelection = (gPrefs->Read(wxT("/Spectrum/EnableSpectralSelection"), 0L) != 0);
 #endif
+
+   style = Style(gPrefs->Read(wxT("/Spectrum/Style"), 0L));
+   waterfallSlopeDegrees = gPrefs->Read(wxT("/Spectrum/WaterfallSlope"), 60.0);
+   waterfallHeight = gPrefs->Read(wxT("/Spectrum/WaterfallHeight"), 100L);
+
+   grid = Grid(gPrefs->Read(wxT("/Spectrum/Grid"), 0L));
 
    algorithm = Algorithm(gPrefs->Read(wxT("/Spectrum/Algorithm"), 0L));
 
@@ -321,6 +389,12 @@ void SpectrogramSettings::SavePrefs()
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    gPrefs->Write(wxT("/Spectrum/EnableSpectralSelection"), spectralSelection);
 #endif
+
+   gPrefs->Write(wxT("/Spectrum/Style"), (int) style);
+   gPrefs->Write(wxT("/Spectrum/WaterfallSlope"), waterfallSlopeDegrees);
+   gPrefs->Write(wxT("/Spectrum/WaterfalHeight"), waterfallHeight);
+
+   gPrefs->Write(wxT("/Spectrum/Grid"), (int) grid);
 
    gPrefs->Write(wxT("/Spectrum/Algorithm"), (int) algorithm);
 
