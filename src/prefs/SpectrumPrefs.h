@@ -32,6 +32,7 @@
 class wxChoice;
 class wxCheckBox;
 class wxTextCtrl;
+class wxSlider;
 struct FFTParam;
 class ShuttleGui;
 class SpectrogramSettings;
@@ -69,16 +70,28 @@ class SpectrumPrefs final : public PrefsPanel
 
    void EnableDisableSTFTOnlyControls();
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   void OnStyle(wxCommandEvent &event);
+   void EnableDisableWaterfallOnlyControls();
+#endif
+
    AudacityProject *mProject{};
 
    WaveTrack *const mWt;
    bool mDefaulted, mOrigDefaulted;
 
-   wxTextCtrl *mMinFreq;
-   wxTextCtrl *mMaxFreq;
-   wxTextCtrl *mGain;
-   wxTextCtrl *mRange;
-   wxTextCtrl *mFrequencyGain;
+   wxSlider *mMinFreq;
+   wxSlider *mMaxFreq;
+   wxSlider *mGain;
+   wxSlider *mRange;
+   wxSlider *mFrequencyGain;
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   wxChoice *mStyleChoice;
+
+   wxSlider *mWaterfallSlope;
+   wxSlider *mWaterfallHeight;
+#endif
 
 #ifdef EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
    int mZeroPaddingChoice;

@@ -78,6 +78,13 @@ SpectrogramSettings::SpectrogramSettings(const SpectrogramSettings &other)
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    , spectralSelection(other.spectralSelection)
 #endif
+
+   , style(other.style)
+   , waterfallSlopeDegrees(other.waterfallSlopeDegrees)
+   , waterfallHeight(other.waterfallHeight)
+
+   , grid(other.grid)
+
    , algorithm(other.algorithm)
 #ifdef EXPERIMENTAL_FFT_Y_GRID
    , fftYGrid(other.fftYGrid)
@@ -115,6 +122,13 @@ SpectrogramSettings &SpectrogramSettings::operator= (const SpectrogramSettings &
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
       spectralSelection = other.spectralSelection;
 #endif
+
+      style = other.style;
+      waterfallSlopeDegrees = other.waterfallSlopeDegrees;
+      waterfallHeight = other.waterfallHeight;
+
+      grid = other.grid;
+
       algorithm = other.algorithm;
 #ifdef EXPERIMENTAL_FFT_Y_GRID
       fftYGrid = other.fftYGrid;
@@ -153,6 +167,34 @@ const EnumValueSymbols &SpectrogramSettings::GetScaleNames()
       XO("ERB") ,
       /* i18n-hint: Time units, that is Period = 1 / Frequency */
       XO("Period") ,
+   };
+   return result;
+}
+
+//static
+const TranslatableStrings &SpectrogramSettings::GetStyleNames()
+{
+   static const TranslatableStrings result{
+      // Keep in correspondence with enum SpectrogramSettings::Style:
+      XO("Flat"),
+      XO("Solid"),
+      XO("Opaque"), // hidden-line removal
+      XO("Translucent"), // wireframe
+   };
+   return result;
+}
+
+//static
+const TranslatableStrings &SpectrogramSettings::GetGridNames()
+{
+   static const TranslatableStrings result{
+      // Keep in correspondence with enum SpectrogramSettings::Grid:
+      XO("None"),
+      XO("kHz"),
+      XO("31 Bands"),
+      XO("Decades"),
+      XO("Chromatic Scale"),
+      XO("Octaves"),
    };
    return result;
 }
@@ -228,10 +270,16 @@ bool SpectrogramSettings::Validate(bool quiet)
       std::max(0, std::min(NumWindowFuncs() - 1, windowType));
    scaleType =
       ScaleType(std::max(0,
-         std::min((int)(SpectrogramSettings::stNumScaleTypes) - 1,
-            (int)(scaleType))));
+         std::min((int)SpectrogramSettings::stNumScaleTypes - 1,
+            (int)scaleType)));
+   style = Style(
+      std::max(0, std::min((int)styleNumStyles - 1, (int)style))
+   );
+   grid = Grid(
+      std::max(0, std::min((int)gridNumGrids - 1, (int)grid))
+   );
    algorithm = Algorithm(
-      std::max(0, std::min((int)(algNumAlgorithms) - 1, (int)(algorithm)))
+      std::max(0, std::min((int)algNumAlgorithms - 1, (int)algorithm))
    );
    ConvertToEnumeratedWindowSizes();
    ConvertToActualWindowSizes();
@@ -264,6 +312,12 @@ void SpectrogramSettings::LoadPrefs()
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    spectralSelection = (gPrefs->Read(wxT("/Spectrum/EnableSpectralSelection"), 1L) != 0);
 #endif
+
+   style = Style(gPrefs->Read(wxT("/Spectrum/Style"), 0L));
+   waterfallSlopeDegrees = gPrefs->Read(wxT("/Spectrum/WaterfallSlope"), 60.0);
+   waterfallHeight = gPrefs->Read(wxT("/Spectrum/WaterfallHeight"), 100L);
+
+   grid = Grid(gPrefs->Read(wxT("/Spectrum/Grid"), 0L));
 
    algorithm = Algorithm(gPrefs->Read(wxT("/Spectrum/Algorithm"), 0L));
 
@@ -312,6 +366,12 @@ void SpectrogramSettings::SavePrefs()
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    gPrefs->Write(wxT("/Spectrum/EnableSpectralSelection"), spectralSelection);
 #endif
+
+   gPrefs->Write(wxT("/Spectrum/Style"), (int) style);
+   gPrefs->Write(wxT("/Spectrum/WaterfallSlope"), waterfallSlopeDegrees);
+   gPrefs->Write(wxT("/Spectrum/WaterfalHeight"), waterfallHeight);
+
+   gPrefs->Write(wxT("/Spectrum/Grid"), (int) grid);
 
    gPrefs->Write(wxT("/Spectrum/Algorithm"), (int) algorithm);
 

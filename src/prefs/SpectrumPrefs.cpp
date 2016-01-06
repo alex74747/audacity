@@ -24,6 +24,7 @@
 #include <wx/intl.h>
 #include <wx/checkbox.h>
 #include <wx/textctrl.h>
+#include <wx/slider.h>
 
 #include "../FFT.h"
 #include "../Project.h"
@@ -105,6 +106,13 @@ enum {
    ID_FREQUENCY_GAIN,
    ID_GRAYSCALE,
    ID_SPECTRAL_SELECTION,
+
+   ID_STYLE,
+   ID_WATERFALL_SLOPE,
+   ID_WATERFALL_HEIGHT,
+
+   ID_GRID,
+
 #endif
    ID_DEFAULTS,
 };
@@ -194,13 +202,16 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
                mTempSettings.scaleType,
                Msgids( SpectrogramSettings::GetScaleNames() ) );
             mMinFreq =
-               S.Id(ID_MINIMUM).TieNumericTextBox(XXO("Mi&n Frequency (Hz):"),
+               S.Id(ID_MINIMUM).TieSlider(XXO("Mi&nimum Frequency (Hz):"),
                mTempSettings.minFreq,
-               12);
+               22050,
+               0);
+
             mMaxFreq =
-               S.Id(ID_MAXIMUM).TieNumericTextBox(XXO("Ma&x Frequency (Hz):"),
+               S.Id(ID_MAXIMUM).TieSlider(XXO("Ma&ximum Frequency (Hz):"),
                mTempSettings.maxFreq,
-               12);
+               22050,
+               0);
          }
          S.EndMultiColumn();
       }
@@ -213,18 +224,19 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
             S.SetStretchyCol( 0 );
             S.SetStretchyCol( 1 );
             mGain =
-               S.Id(ID_GAIN).TieNumericTextBox(XXO("&Gain (dB):"),
+               S.Id(ID_GAIN).TieSlider(XXO("&Gain (dB):"),
                mTempSettings.gain,
-               8);
+               120, 0);
+
             mRange =
-               S.Id(ID_RANGE).TieNumericTextBox(XXO("&Range (dB):"),
+               S.Id(ID_RANGE).TieSlider(XXO("&Range (dB):"),
                mTempSettings.range,
-               8);
+               200, 1);
 
             mFrequencyGain =
-               S.Id(ID_FREQUENCY_GAIN).TieNumericTextBox(XXO("High &boost (dB/dec):"),
+               S.Id(ID_FREQUENCY_GAIN).TieSlider(XXO("High &boost (dB/dec):"),
                mTempSettings.frequencyGain,
-               8);
+               20, 0);
          }
          S.EndMultiColumn();
 
@@ -235,6 +247,37 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
    }
    S.EndMultiColumn();
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   S.StartStatic(XO("Style"));
+   {
+      S.StartTwoColumn();
+      {
+         mStyleChoice =
+            S.Id(ID_STYLE).TieChoice(XO("Style:"),
+            *(int*)&mTempSettings.style,
+            SpectrogramSettings::GetStyleNames());
+//         S.SetSizeHints(SpectrogramSettings::GetStyleNames());
+
+         mWaterfallSlope =
+            S.Id(ID_WATERFALL_SLOPE).TieSlider(XXO("Slope (degrees):"),
+            mTempSettings.waterfallSlopeDegrees,
+            90.0, 1.0);
+
+         mWaterfallHeight =
+            S.Id(ID_WATERFALL_HEIGHT).TieSlider(XXO("Height (pixels):"),
+            mTempSettings.waterfallHeight,
+            100, 1);
+
+         S.Id(ID_GRID).TieChoice(XO("Grid:"),
+            *(int*)&mTempSettings.grid,
+            SpectrogramSettings::GetGridNames());
+//         S.SetSizeHints(SpectrogramSettings::GetGridNames());
+      }
+      S.EndTwoColumn();
+   }
+   S.EndStatic();
+#endif
+
    S.StartStatic(XO("Algorithm"));
    {
       S.StartMultiColumn(2);
@@ -243,6 +286,7 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
             S.Id(ID_ALGORITHM).TieChoice(XXO("A&lgorithm:"),
             mTempSettings.algorithm,
             SpectrogramSettings::GetAlgorithmNames() );
+//         S.SetSizeHints(SpectrogramSettings::GetAlgorithmNames());
 
          S.Id(ID_WINDOW_SIZE).TieChoice(XXO("Window &size:"),
             mTempSettings.windowSize,
@@ -331,6 +375,10 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
    if( S.GetMode() != eIsGettingMetadata )
       EnableDisableSTFTOnlyControls();
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   EnableDisableWaterfallOnlyControls();
+#endif
+
    mPopulating = false;
 }
 
@@ -340,6 +388,7 @@ bool SpectrumPrefs::Validate()
 
    // ToDo: use wxIntegerValidator<unsigned> when available
 
+   /*
    long maxFreq;
    if (!mMaxFreq->GetValue().ToLong(&maxFreq)) {
       AudacityMessageBox( XO("The maximum frequency must be an integer") );
@@ -369,6 +418,7 @@ bool SpectrumPrefs::Validate()
       AudacityMessageBox( XO("The frequency gain must be an integer") );
       return false;
    }
+   */
 
 #ifdef EXPERIMENTAL_FIND_NOTES
    long findNotesMinA;
@@ -388,6 +438,24 @@ bool SpectrumPrefs::Validate()
       return false;
    }
 #endif //EXPERIMENTAL_FIND_NOTES
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   /*
+   double waterfallSlope;
+   if (!mWaterfallSlope->GetValue().ToDouble(&waterfallSlope) ||
+       waterfallSlope <= 1 ||
+       waterfallSlope > 90) {
+      wxMessageBox(_("The slope must be between 1 and 90 degrees"));
+      return false;
+   }
+
+   long waterfallHeight;
+   if (!mWaterfallHeight->GetValue().ToLong(&waterfallHeight) || waterfallHeight <= 0) {
+      wxMessageBox(_("The height must be a positive integer"));
+      return false;
+   }
+   */
+#endif
 
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
@@ -526,6 +594,8 @@ void SpectrumPrefs::OnControl(wxCommandEvent&)
       mDefaulted = false;
       mDefaultsCheckbox->SetValue(false);
    }
+
+   Preview();
 }
 
 void SpectrumPrefs::OnWindowSize(wxCommandEvent &evt)
@@ -572,6 +642,22 @@ void SpectrumPrefs::EnableDisableSTFTOnlyControls()
 #endif
 }
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+void SpectrumPrefs::OnStyle(wxCommandEvent &e)
+{
+   EnableDisableWaterfallOnlyControls();
+   OnControl(e);
+}
+
+void SpectrumPrefs::EnableDisableWaterfallOnlyControls()
+{
+   const bool waterfall =
+      SpectrogramSettings::styleFlat != mStyleChoice->GetSelection();
+   mWaterfallSlope->Enable(waterfall);
+   mWaterfallHeight->Enable(waterfall);
+}
+#endif
+
 BEGIN_EVENT_TABLE(SpectrumPrefs, PrefsPanel)
    EVT_CHOICE(ID_WINDOW_SIZE, SpectrumPrefs::OnWindowSize)
    EVT_CHECKBOX(ID_DEFAULTS, SpectrumPrefs::OnDefaults)
@@ -581,13 +667,21 @@ BEGIN_EVENT_TABLE(SpectrumPrefs, PrefsPanel)
    EVT_CHOICE(ID_WINDOW_TYPE, SpectrumPrefs::OnControl)
    EVT_CHOICE(ID_PADDING_SIZE, SpectrumPrefs::OnControl)
    EVT_CHOICE(ID_SCALE, SpectrumPrefs::OnControl)
-   EVT_TEXT(ID_MINIMUM, SpectrumPrefs::OnControl)
-   EVT_TEXT(ID_MAXIMUM, SpectrumPrefs::OnControl)
-   EVT_TEXT(ID_GAIN, SpectrumPrefs::OnControl)
-   EVT_TEXT(ID_RANGE, SpectrumPrefs::OnControl)
-   EVT_TEXT(ID_FREQUENCY_GAIN, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_MINIMUM, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_MAXIMUM, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_GAIN, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_RANGE, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_FREQUENCY_GAIN, SpectrumPrefs::OnControl)
    EVT_CHECKBOX(ID_GRAYSCALE, SpectrumPrefs::OnControl)
    EVT_CHECKBOX(ID_SPECTRAL_SELECTION, SpectrumPrefs::OnControl)
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   EVT_CHOICE(ID_STYLE, SpectrumPrefs::OnStyle)
+   EVT_SLIDER(ID_WATERFALL_SLOPE, SpectrumPrefs::OnControl)
+   EVT_SLIDER(ID_WATERFALL_HEIGHT, SpectrumPrefs::OnControl)
+
+   EVT_CHECKBOX(ID_GRID, SpectrumPrefs::OnControl)
+#endif
 
 END_EVENT_TABLE()
 

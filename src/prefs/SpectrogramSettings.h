@@ -16,6 +16,7 @@ Paul Licameli
 #include "../Prefs.h"
 #include "../SampleFormat.h"
 #include "../RealFFTf.h"
+#include "math.h"
 
 
 #undef SPECTRAL_SELECTION_GLOBAL_SWITCH
@@ -70,6 +71,8 @@ public:
    };
 
    static const EnumValueSymbols &GetScaleNames();
+   static const TranslatableStrings &GetStyleNames();
+   static const TranslatableStrings &GetGridNames();
    static const TranslatableStrings &GetAlgorithmNames();
 
    static SpectrogramSettings &defaults();
@@ -138,6 +141,37 @@ public:
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    bool spectralSelection; // But should this vary per track? -- PRL
 #endif
+
+   typedef int Style;
+   enum StyleValues : int {
+      styleFlat = 0,
+      styleSolid,
+      styleHLR,
+      styleWireframe,
+
+      styleNumStyles,
+   };
+   Style style;
+   double waterfallSlopeDegrees;
+   int waterfallHeight;
+
+   const double GetSlope() const
+   {
+      return tan(waterfallSlopeDegrees * 3.1415926535 / 180);
+   }
+
+   typedef int Grid;
+   enum GridValues : int {
+      gridNone = 0,
+      gridKHz,
+      grid31Bands,
+      gridDecades,
+      gridChromatic,
+      gridOctaves,
+
+      gridNumGrids,
+   };
+   Grid grid;
 
    typedef int Algorithm;
    enum AlgorithmValues : int {

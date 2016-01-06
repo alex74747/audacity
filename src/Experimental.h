@@ -247,4 +247,8 @@
 // Jonatã Bolzan Loss 31 Dec 2019
 #define EXPERIMENTAL_TIMER_TOOLBAR
 
+// Paul Licameli (PRL) 8 Jan 2016
+// Waterfall spectrogram display option
+#define EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+
 #endif
