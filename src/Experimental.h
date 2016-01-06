@@ -201,5 +201,9 @@
 // interpolating in frequency domain.
 #define EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
 
+// Paul Licameli (PRL) 8 Jan 2016
+// Waterfall spectrogram display option
+#define EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+
 
 #endif

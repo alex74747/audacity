@@ -12,6 +12,7 @@ Paul Licameli
 #define __AUDACITY_SPECTROGRAM_SETTINGS__
 
 #include "../Experimental.h"
+#include "math.h"
 
 #undef SPECTRAL_SELECTION_GLOBAL_SWITCH
 
@@ -63,6 +64,8 @@ public:
    };
 
    static const wxArrayString &GetScaleNames();
+   static const wxArrayString &GetStyleNames();
+   static const wxArrayString &GetGridNames();
    static const wxArrayString &GetAlgorithmNames();
 
    static SpectrogramSettings &defaults();
@@ -114,6 +117,35 @@ public:
 #ifndef SPECTRAL_SELECTION_GLOBAL_SWITCH
    bool spectralSelection; // But should this vary per track? -- PRL
 #endif
+
+   enum Style {
+      styleFlat = 0,
+      styleSolid,
+      styleHLR,
+      styleWireframe,
+
+      styleNumStyles,
+   };
+   Style style;
+   double waterfallSlopeDegrees;
+   int waterfallHeight;
+
+   const double GetSlope() const
+   {
+      return tan(waterfallSlopeDegrees * 3.1415926535 / 180);
+   }
+
+   enum Grid {
+      gridNone = 0,
+      gridKHz,
+      grid31Bands,
+      gridDecades,
+      gridChromatic,
+      gridOctaves,
+
+      gridNumGrids,
+   };
+   Grid grid;
 
    enum Algorithm {
       algSTFT = 0,

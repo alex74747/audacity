@@ -33,6 +33,7 @@
 class wxChoice;
 class wxCheckBox;
 class wxTextCtrl;
+class wxSlider;
 struct FFTParam;
 class ShuttleGui;
 class SpectrogramSettings;
@@ -60,14 +61,30 @@ class SpectrumPrefs:public PrefsPanel
 
    void EnableDisableSTFTOnlyControls();
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   void OnStyle(wxCommandEvent &event);
+   void EnableDisableWaterfallOnlyControls();
+#endif
+
    WaveTrack *const mWt;
    bool mDefaulted;
 
-   wxTextCtrl *mMinFreq;
-   wxTextCtrl *mMaxFreq;
-   wxTextCtrl *mGain;
-   wxTextCtrl *mRange;
-   wxTextCtrl *mFrequencyGain;
+   wxSlider *mMinFreq;
+   wxSlider *mMaxFreq;
+   wxSlider *mGain;
+   wxSlider *mRange;
+   wxSlider *mFrequencyGain;
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   wxChoice *mStyleChoice;
+   wxArrayString mStyleChoices;
+
+   wxSlider *mWaterfallSlope;
+   wxSlider *mWaterfallHeight;
+
+   wxChoice *mGridChoice;
+   wxArrayString mGridChoices;
+#endif
 
    wxArrayString mSizeChoices;
 
