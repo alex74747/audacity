@@ -117,6 +117,22 @@ std::shared_ptr<TrackVRulerControls> SpectrumView::DoGetVRulerControls()
 namespace
 {
 
+inline
+AColor::ColorGradientChoice ChangeColorSet
+(AColor::ColorGradientChoice colorSet, bool timeOnly)
+{
+   switch (colorSet) {
+   case AColor::ColorGradientUnselected:
+   case AColor::ColorGradientTimeSelected:
+      return colorSet;
+   default:
+      if (timeOnly)
+         return AColor::ColorGradientTimeSelected;
+      else
+         return AColor::ColorGradientTimeAndFrequencySelected;
+   }
+}
+
 static inline float findValue
 (const float *spectrum, float bin0, float bin1, unsigned nBins,
  bool autocorrelation, int gain, int range)
@@ -195,6 +211,68 @@ ChooseColorSet( float bin0, float bin1, float selBinLo,
    return  AColor::ColorGradientTimeSelected;
 }
 
+inline
+void FadeRGB
+(unsigned char &rv, unsigned char &bv, unsigned char &gv,
+ unsigned char r0, unsigned char b0, unsigned char g0)
+{
+   rv = (char)(((int)rv + 3 * (int)r0) / 4);
+   gv = (char)(((int)gv + 3 * (int)g0) / 4);
+   bv = (char)(((int)bv + 3 * (int)b0) / 4);
+}
+
+// Find the highest grid frequency, in bins, that is at or below the given bin
+inline
+float GridLine(float bin, float binUnit, SpectrogramSettings::Grid gridType)
+{
+   static const float middleC = 261.6255653f;
+
+   switch (gridType) {
+
+   case SpectrogramSettings::gridNone:
+   default:
+      return -1.0f;
+
+   case SpectrogramSettings::gridKHz:
+   {
+      const float kHz = bin * binUnit / 1000;
+      return (1000 / binUnit) * floor(kHz);
+   }
+
+   case SpectrogramSettings::grid31Bands:
+   {
+      // Ten bands per decade from 20 to 20,000, as with the graphic equalizer
+      const float bands = 10 * log10(bin * binUnit / 20);
+      if (bands < 0)
+         return -1;
+      return (20 / binUnit) *
+         pow(10, std::min<float>(31.0f, floor(bands)) / 10);
+   }
+
+   case SpectrogramSettings::gridDecades:
+   {
+      // 2, 20, 200, 2000, etc.
+      const float decades = log10(bin * binUnit / 20);
+      return (20 / binUnit) * pow(10, floor(decades));
+   }
+
+   case SpectrogramSettings::gridChromatic:
+   {
+      // A 440 tuning.
+      const float semitones = 12 * log2(bin * binUnit / middleC);
+      return (middleC / binUnit) * pow(2, floor(semitones) / 12);
+   }
+
+   case SpectrogramSettings::gridOctaves:
+   {
+      // At the C's, with A 440 tuning.
+      const float octaves = log2(bin * binUnit / middleC);
+      return (middleC / binUnit) * pow(2, floor(octaves));
+   }
+
+   }
+}
+
 void DrawClipSpectrum(TrackPanelDrawingContext &context,
                                    WaveTrackCache &waveTrackCache,
                                    const WaveClip *clip,
@@ -256,6 +334,15 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
 #endif
 
    dc.SetPen(*wxTRANSPARENT_PEN);
+
+   const SpectrogramSettings::Style style = settings.style;
+   const bool waterfall =
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+      style != SpectrogramSettings::styleFlat;
+#else
+      false
+#endif
+      ;
 
    // We draw directly to a bit image in memory,
    // and then paint this directly to our offscreen
@@ -346,7 +433,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
 #endif
    ) {
       // Wave clip's spectrum cache is up to date,
-      // and so is the spectrum pixel cache
+      // and so is the spectrum pixel value cache
    }
    else {
       // Update the spectrum pixel cache
@@ -528,6 +615,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
    specCache.Grow(numPixels, settings, -1, t0);
 
    if (numPixels > 0) {
+      // Calculate pixel value for the varying-zoom fisheye area
       for (int ii = begin; ii < end; ++ii) {
          const double time = zoomInfo.PositionToTime(ii, -leftOffset) - tOffset;
          specCache.where[ii - begin] = sampleCount(0.5 + rate * time);
@@ -541,6 +629,31 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
        );
    }
 
+   // Now use the "pixel value cache," which contains floats in the
+   // range 0 to 1, to color pixels.  This is not straightforward.
+
+   // First, for x and y coordinates in the rectangle,
+   // find corresponding column and row of the cache, which involves a
+   // shearing of x with higher y in case of waterfalls.
+   
+   // Then determine the number of pixels to color at and above those
+   // coordinates as a function of the value in the cache.
+   // That function is just 1 always for ordinary view but proprtional to the
+   // value for waterfall.
+
+   // Then paint the column.  But work bottom up, and for waterfalls, do not
+   // overpaint what was already done.  This achieves the "hidden line removal."
+
+   const bool doSilhouettes = waterfall &&
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+      style != SpectrogramSettings::styleSolid;
+#else
+      false
+#endif
+      ;
+   const double waterfallSlope = settings.GetSlope();
+   const int waterfallHeight = settings.waterfallHeight;
+
    // build color gradient tables (not thread safe)
    if (!AColor::gradient_inited)
       AColor::PreComputeGradient();
@@ -551,21 +664,54 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
    // Bug 2389 - always draw at least one pixel of selection.
    int selectedX = zoomInfo.TimeToPosition(selectedRegion.t0(), -leftOffset);
 
+   // Remember the pixel height of each frequency for the previous column.
+   std::vector<int> prevColumn;
+   if (waterfall) {
+      prevColumn.resize(mid.height, -1);
+   }
+
+   // Record the pixel heights at which there are "silhouette" lines
+   struct SilhouetteData {
+      int yy;
+      float value;
+      AColor::ColorGradientChoice selected;
+      bool hidden;
+
+      SilhouetteData(int yy_, float value_, AColor::ColorGradientChoice selected_, bool hidden_)
+         : yy(yy_), value(value_), selected(selected_)
+         , hidden(hidden_)
+      {}
+   };
+   std::vector<SilhouetteData> silhouetteData;
+   // std::vector<SilhouetteData> prevSilhouetteData;
+   if (waterfall) {
+      silhouetteData.reserve(hiddenMid.height);
+      // prevSilhouetteData.reserve(hiddenMid.height);
+   }
+
+   // Get values to average with for fading of hidden lines
+   unsigned char r0, g0, b0;
+   GetColorGradient(0, AColor::ColorGradientUnselected,
+      isGrayscale, &r0, &g0, &b0);
+
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
    for (int xx = 0; xx < mid.width; ++xx) {
 
       int correctedX = xx + leftOffset - hiddenLeftOffset;
+      bool inFisheye = zoomInfo.InFisheye(xx, -leftOffset);
+      int fisheyeColumn = 0;
 
       // in fisheye mode the time scale has changed, so the row values aren't cached
       // in the loop above, and must be fetched from fft cache
       float* uncached;
-      if (!zoomInfo.InFisheye(xx, -leftOffset)) {
+      if (!inFisheye) {
           uncached = 0;
       }
       else {
-          int specIndex = (xx - fisheyeLeft) * nBins;
+          fisheyeColumn = xx - fisheyeLeft;
+          int specIndex = fisheyeColumn * nBins;
           wxASSERT(specIndex >= 0 && specIndex < (int)specCache.freq.size());
           uncached = &specCache.freq[specIndex];
       }
@@ -578,12 +724,83 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
       auto w1 = sampleCount(0.5 + rate *
                     (zoomInfo.PositionToTime(xx+1, -leftOffset) - tOffset));
 
+      if (waterfall)
+         // Must recompute
+         w0 = sampleCount(0.5 + rate *
+            (zoomInfo.PositionToTime(xx, -leftOffset) - tOffset));
+
       bool maybeSelected = ssel0 <= w0 && w1 < ssel1;
       maybeSelected = maybeSelected || (xx == selectedX);
+
+      int maxY = -1;
+      float prevValue = 0;
+      int prevZ = -1;
+      AColor::ColorGradientChoice prevSelected = AColor::ColorGradientUnselected;
+      bool findPeak = true;
 
       for (int yy = 0; yy < hiddenMid.height; ++yy) {
          const float bin     = bins[yy];
          const float nextBin = bins[yy+1];
+
+         int waterfallAdjustX = 0;
+         if (waterfall) {
+            waterfallAdjustX = int(0.5 + yy / waterfallSlope);
+            if (waterfallAdjustX) {
+               inFisheye = zoomInfo.InFisheye(xx - waterfallAdjustX, -leftOffset);
+               if (inFisheye && waterfallAdjustX < fisheyeColumn)
+                  uncached = &specCache.freq[(fisheyeColumn - 1 - waterfallAdjustX) * half];
+               else
+                  uncached = 0;
+               w0 = sampleCount(0.5 + rate *
+                  (zoomInfo.PositionToTime(xx - waterfallAdjustX, -leftOffset) - tOffset));
+               w1 = sampleCount(0.5 + rate *
+                  (zoomInfo.PositionToTime(xx - waterfallAdjustX + 1, -leftOffset) - tOffset));
+            }
+         }
+         bool drawGridline =
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+            bin <= GridLine(nextBin, binUnit, settings.grid)
+#else
+            false
+#endif
+            ;
+
+         float value = uncached
+            ? findValue(uncached, bin, nextBin, half, autocorrelation, gain, range)
+            : correctedX >= waterfallAdjustX
+               ? clip->mSpecPxCache->values[(correctedX - waterfallAdjustX) * hiddenMid.height + yy]
+               : 0;
+         const int height =
+            waterfall ? std::max(1, int(0.5 + value * waterfallHeight)) : 1;
+         int zz = yy + height - 1;
+
+         if (doSilhouettes) {
+            if (findPeak && zz < prevZ) {
+               // The previous row is now discovered to be a peak.
+               const bool hidden = prevZ < maxY;
+               if(!hidden || style == SpectrogramSettings::styleWireframe)
+                  silhouetteData.push_back
+                  (SilhouetteData(prevZ, prevValue, prevSelected, hidden));
+               // Now we must find a trough before finding another peak.
+               findPeak = false;
+            }
+            else if (!findPeak && zz > prevZ) {
+               // Found a trough between peaks.
+               // Now we can find a peak again.
+               findPeak = true;
+            }
+         }
+
+         prevZ = zz;
+         prevValue = value;
+
+         // This test does easy "HLR"
+         if (waterfall && zz <= maxY) {
+            if (!drawGridline || style != SpectrogramSettings::styleWireframe) {
+               prevColumn[yy] = -1;
+               continue;
+            }
+         }
 
          // For spectral selection, determine what colour
          // set to use.  We use a darker selection if
@@ -595,33 +812,109 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
          if (maybeSelected)
             selected =
                ChooseColorSet(bin, nextBin, selBinLo, selBinCenter, selBinHi,
-                  (xx + leftOffset - hiddenLeftOffset) / DASH_LENGTH, isSpectral);
+                  (xx - waterfallAdjustX + leftOffset - hiddenLeftOffset) / DASH_LENGTH, isSpectral);
+         prevSelected = selected;
 
-         const float value = uncached
-            ? findValue(uncached, bin, nextBin, nBins, autocorrelation, gain, range)
-            : clip->mSpecPxCache->values[correctedX * hiddenMid.height + yy];
+         const int initZ = zz;
+         int bottomZ = zz;
+         if (waterfall && (drawGridline || selected == AColor::ColorGradientEdge)) {
+            // Draw a longer stroke down so that the curve appears unbroken
+            const int prev = prevColumn[yy];
+            if (prev >= 0) {
+               bottomZ = std::min(initZ, prev);
+               zz = std::max(initZ, prev);
+            }
+         }
 
-         unsigned char rv, gv, bv;
-         GetColorGradient(value, selected, isGrayscale, &rv, &gv, &bv);
+         const int prevMaxY = maxY;
+         maxY = std::max(maxY, zz);
+
+         if (doSilhouettes)
+            // Draw gray for now, except where there are
+            // selection or grid lines.
+            value = 0;
+
+         // Draw top-down, maybe switching from curves to other colors
+         for (; drawGridline || zz > prevMaxY; --zz) {
+            if (zz < mid.height) {
+               unsigned char rv, gv, bv;
+               GetColorGradient(value * (zz - yy + 1) / height,
+                  drawGridline ? AColor::ColorGradientEdge : selected,
+                  isGrayscale, &rv, &gv, &bv);
 
 #ifdef EXPERIMENTAL_FFT_Y_GRID
-         if (fftYGrid && yGrid[yy]) {
-            rv /= 1.1f;
-            gv /= 1.1f;
-            bv /= 1.1f;
-         }
+               if (fftYGrid && yGrid[yy]) {
+                  rv /= 1.1f;
+                  gv /= 1.1f;
+                  bv /= 1.1f;
+               }
 #endif //EXPERIMENTAL_FFT_Y_GRID
 
-         int px = ((mid.height - 1 - yy) * mid.width + xx);
+               int px = ((mid.height - 1 - zz) * mid.width + xx);
 #ifdef EXPERIMENTAL_SPECTROGRAM_OVERLAY
-         // More transparent the closer to zero intensity.
-         alpha[px]= wxMin( 200, (value+0.3) * 500) ;
+               // More transparent the closer to zero intensity.
+               alpha[px]= wxMin( 200, (value+0.3) * 500) ;
 #endif
-         px *=3;
-         data[px++] = rv;
-         data[px++] = gv;
-         data[px] = bv;
+               px *=3;
+               if (zz <= prevMaxY)
+                  // Fade out a hidden but not removed curve in wireframe
+                  FadeRGB(rv, bv, gv, r0, b0, g0);
+               data[px++] = rv;
+               data[px++] = gv;
+               data[px] = bv;
+            }
+
+            if (zz == bottomZ) {
+               // Maybe change color set.
+               drawGridline = false;
+               selected = ChangeColorSet(selected, (bin <= selBinLo));
+            }
+         }
+
+         if (waterfall)
+            prevColumn[yy] = initZ;
       } // each yy
+
+      if (doSilhouettes) {
+         // Deferred drawing of the tops of crests, after having decided
+         // where they are.
+
+         // To do:  use prevSilhouetteData to stroke short vertical lines of more than one
+         // pixel, in case the silhouette is steep and otherwise looks disconnected.
+
+         const int nn = silhouetteData.size();
+         for (int ii = nn; ii--;) {
+            const SilhouetteData &sdata = silhouetteData[ii];
+
+            if (sdata.yy >= mid.height)
+               continue;
+
+            unsigned char rv, gv, bv;
+            GetColorGradient(sdata.value,
+               sdata.selected,
+               isGrayscale, &rv, &gv, &bv);
+
+#ifdef EXPERIMENTAL_FFT_Y_GRID
+            if (fftYGrid && yGrid[yy]) {
+               rv /= 1.1f;
+               gv /= 1.1f;
+               bv /= 1.1f;
+            }
+#endif //EXPERIMENTAL_FFT_Y_GRID
+
+            if (sdata.hidden)
+               FadeRGB(rv, gv, bv, r0, g0, b0);
+
+            int px = ((mid.height - 1 - sdata.yy) * mid.width + xx) * 3;
+            data[px++] = rv;
+            data[px++] = gv;
+            data[px] = bv;
+         }
+      }
+
+      // prevSilhouetteData.swap(silhouetteData);
+
+      silhouetteData.clear();
    } // each xx
 
    wxBitmap converted = wxBitmap(image);

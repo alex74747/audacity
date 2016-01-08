@@ -135,11 +135,12 @@ void SpectrumVRulerControls::DoUpdateVRuler(
    const wxRect &rect, const WaveTrack *wt )
 {
    auto vruler = &WaveTrackVRulerControls::ScratchRuler();
-   const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
    float minFreq, maxFreq;
    wt->GetSpectrumBounds(&minFreq, &maxFreq);
    vruler->SetDbMirrorValue( 0.0 );
    
+   auto settings = wt->GetSpectrogramSettings();
+
    switch (settings.scaleType) {
       default:
          wxASSERT(false);
