@@ -169,6 +169,7 @@ UIHandle::Result ZoomHandle::Release
       /// This handles normal Zoom In/Out, if you just clicked;
       /// IOW, if you were NOT dragging to zoom an area.
       /// \todo MAGIC NUMBER: We've got several in this method.
+      //?
       const double center_h =
          viewInfo.PositionToTime(event.m_x, trackLeftEdge);
 
@@ -180,6 +181,7 @@ UIHandle::Result ZoomHandle::Release
       if (event.MiddleUp() || event.MiddleDClick())
          viewInfo.SetZoom(ZoomInfo::GetDefaultZoom()); // AS: Reset zoom.
 
+      //?
       const double new_center_h =
          viewInfo.PositionToTime(event.m_x, trackLeftEdge);
 

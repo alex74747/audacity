@@ -743,6 +743,8 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
 
 double TrackPanel::GetMostRecentXPos()
 {
+   // Affects play-one-second and play-to-selection
+   // Use XYToTime?  Maybe it's not so bad if not.
    return mViewInfo->PositionToTime(
       MostRecentXCoord(), mViewInfo->GetLabelWidth());
 }

@@ -289,7 +289,7 @@ void StretchHandle::Stretch(AudacityProject *pProject, int mouseXCoordinate, int
    if (pTrack == NULL && mpTrack != NULL)
       pTrack = mpTrack.get();
 
-  if (pTrack) pTrack->TypeSwitch( [&](NoteTrack *pNt) {
+   if (pTrack) pTrack->TypeSwitch( [&](NoteTrack *pNt) {
       double moveto =
         std::max(0.0, viewInfo.PositionToTime(mouseXCoordinate, trackLeftEdge));
 

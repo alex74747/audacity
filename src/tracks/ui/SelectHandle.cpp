@@ -54,6 +54,34 @@ enum {
    FREQ_SNAP_DISTANCE = 10,
 };
 
+#include "../playabletrack/wavetrack/ui/SpectrumView.h"
+namespace {
+   double XYToTime
+      (const ViewInfo &viewInfo,
+       const TrackView &trackView,
+       wxInt64 mouseXCoordinate,
+       wxInt64 mouseYCoordinate,
+       wxInt64 trackLeftEdge,
+       wxInt64 trackBottomEdge)
+   {
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+      if (auto pView = dynamic_cast<const SpectrumView*>(&trackView)) {
+         const auto wt =
+            std::static_pointer_cast<const WaveTrack>(pView->FindTrack());
+         const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+         if (settings.style != SpectrogramSettings::styleFlat)
+            // Correct x for the perspective
+            mouseXCoordinate -=
+            (trackBottomEdge - mouseYCoordinate) / settings.GetSlope();
+      }
+#else
+      trackView; mouseYCoordinate; trackBottomEdge;
+#endif
+
+      return viewInfo.PositionToTime(mouseXCoordinate, trackLeftEdge);
+   }
+}
+
 // #define SPECTRAL_EDITING_ESC_KEY
 
 bool SelectHandle::IsClicked() const
@@ -183,7 +211,8 @@ namespace
       // within the time boundaries.
       // May choose no boundary if onlyWithinSnapDistance is true.
       // Otherwise choose the eligible boundary nearest the mouse click.
-      const double selend = viewInfo.PositionToTime(xx, rect.x);
+      const double selend = XYToTime(viewInfo, *pTrackView,
+         xx, yy, rect.x, rect.GetBottom());
       wxInt64 pixelDist = 0;
       const double t0 = viewInfo.selectedRegion.t0();
       const double t1 = viewInfo.selectedRegion.t1();
@@ -438,8 +467,10 @@ SelectHandle::SelectHandle
    const wxMouseState &state = st.state;
    mRect = st.rect;
 
-   auto time = std::max(0.0, viewInfo.PositionToTime(state.m_x, mRect.x));
    auto pTrack = pTrackView->FindTrack();
+   auto time = std::max(0.0,
+      XYToTime(viewInfo, *pTrackView,
+         state.m_x, state.m_y, mRect.x, mRect.y));
    mSnapStart = mSnapManager->Snap(pTrack.get(), time, false);
    if (mSnapStart.snappedPoint)
          mSnapStart.outCoord += mRect.x;
@@ -632,7 +663,8 @@ UIHandle::Result SelectHandle::Click
             mSelStartValid = true;
             mSelStart = value;
             mSnapStart = SnapResults{};
-            AdjustSelection(pProject, viewInfo, event.m_x, mRect.x, pTrack);
+            AdjustSelection(pProject, viewInfo,
+               event.m_x, event.m_y, mRect.x, mRect.GetBottom(), pTrack);
             break;
          }
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
@@ -858,7 +890,9 @@ UIHandle::Result SelectHandle::Drag
                   viewInfo, y, mRect.y, mRect.height);
    #endif
          
-         AdjustSelection(pProject, viewInfo, x, mRect.x, clickedTrack.get());
+         AdjustSelection(
+            pProject, viewInfo, x, y, mRect.x, mRect.GetBottom(),
+               clickedTrack.get());
       }
    }
 
@@ -1164,15 +1198,22 @@ void SelectHandle::StartSelection( AudacityProject *pProject )
 /// Extend or contract the existing selection
 void SelectHandle::AdjustSelection
 (AudacityProject *pProject,
- ViewInfo &viewInfo, int mouseXCoordinate, int trackLeftEdge,
+ ViewInfo &viewInfo, int mouseXCoordinate, int mouseYCoordinate,
+ int trackLeftEdge, int trackBottomEdge,
  Track *track)
 {
    if (!mSelStartValid)
       // Must be dragging frequency bounds only.
       return;
 
-   double selend =
-      std::max(0.0, viewInfo.PositionToTime(mouseXCoordinate, trackLeftEdge));
+   auto pView = mpView.lock();
+   if (!pView)
+      return;
+
+   double selend = std::max(0.0,
+      XYToTime(viewInfo, *pView, // Is this the correct view?
+         mouseXCoordinate, mouseYCoordinate,
+         trackLeftEdge, trackBottomEdge));
    double origSelend = selend;
 
    auto pTrack = Track::SharedPointer( track );

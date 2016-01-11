@@ -415,6 +415,7 @@ unsigned operator()
       // Time corresponding to mouse position
       wxCoord xx;
       double center_h;
+      // ?
       double mouse_h = viewInfo.PositionToTime(event.m_x, trackLeftEdge);
 
       // Scrubbing? Expand or contract about the center, ignoring mouse position
@@ -459,6 +460,7 @@ unsigned operator()
       wxCoord xTrackEnd = viewInfo.TimeToPosition( audioEndTime );
       viewInfo.ZoomBy(pow(2.0, steps));
 
+      // ?
       double new_center_h = viewInfo.PositionToTime(xx, trackLeftEdge);
       viewInfo.h += (center_h - new_center_h);
 

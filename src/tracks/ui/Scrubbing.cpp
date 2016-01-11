@@ -371,9 +371,11 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
          auto &projectAudioManager = ProjectAudioManager::Get( *mProject );
          double maxTime = TrackList::Get( *mProject ).GetEndTime();
          const int leftOffset = viewInfo.GetLeftOffset();
+         // XY
          double time0 = std::min(maxTime,
             viewInfo.PositionToTime(mScrubStartPosition, leftOffset)
          );
+         // XY
          double time1 = std::min(maxTime,
             viewInfo.PositionToTime(position, leftOffset)
          );
