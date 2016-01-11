@@ -180,6 +180,15 @@ class AUDACITY_DLL_API TrackPanel final : public OverlayPanel {
    // Either argument may be NULL
    virtual void GetTracksUsableArea(int *width, int *height) const;
 
+   // Get the inner drawing area of one track -- ignoring whether it is vertically scrolled
+   // into view.
+   virtual void GetTrackUsableArea(
+      const Track *pTrack, int *width, int *height) const;
+
+   // Count how many extra columns are required by tracks showing waterfall
+   // (ignores whether they are vertically scrolled into view)
+   int NumExtraPixelColumns() const;
+
    virtual void SelectNone();
 
    virtual void Refresh(bool eraseBackground = true,
@@ -493,6 +502,7 @@ protected:
 // They work around some messy problems with constructors.
 public:
    TrackList * GetTracks(){ return mTracks.get(); }
+   const TrackList *GetTracks() const { return mTracks.get(); }
    ViewInfo * GetViewInfo(){ return mViewInfo;}
    TrackPanelListener * GetListener(){ return mListener;}
    AdornedRulerPanel * GetRuler(){ return mRuler;}
