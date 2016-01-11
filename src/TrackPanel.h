@@ -177,6 +177,14 @@ class AUDACITY_DLL_API TrackPanel:public wxPanel {
    // Either argument may be NULL
    virtual void GetTracksUsableArea(int *width, int *height) const;
 
+   // Get the inner drawing area of one track -- ignoring whether it is vertically scrolled
+   // into view.
+   virtual void GetTrackUsableArea(Track *pTrack, int *width, int *height) const;
+
+   // Count how many extra columns are required by tracks showing waterfall
+   // (ignores whether they are vertically scrolled into view)
+   int NumExtraPixelColumns() const;
+
    virtual void SelectNone();
 
    virtual void Refresh(bool eraseBackground = true,

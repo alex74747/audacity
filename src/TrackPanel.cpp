@@ -939,6 +939,35 @@ void TrackPanel::GetTracksUsableArea(int *width, int *height) const
    }
 }
 
+void TrackPanel::GetTrackUsableArea(Track *pTrack, int *width, int *height) const
+{
+   GetTracksUsableArea(width, height);
+   if (height)
+      *height = pTrack->GetHeight() - (kTopMargin + kBottomMargin);
+}
+
+int TrackPanel::NumExtraPixelColumns() const
+{
+   int extraColumns = 0;
+   TrackListIterator iter(mTracks);
+   for (Track *pTrack = iter.First(); pTrack; pTrack = iter.Next()) {
+      if (!pTrack->GetMinimized() &&
+         pTrack->GetKind() == Track::Wave) {
+         WaveTrack *const wt = static_cast<WaveTrack*>(pTrack);
+         if (wt->GetDisplay() == WaveTrack::Spectrum) {
+            const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+            if (settings.style != SpectrogramSettings::styleFlat) {
+               int height;
+               GetTrackUsableArea(pTrack, NULL, &height);
+               const int extra = int(0.5 + (height - 1) / settings.GetSlope());
+               extraColumns = std::max(extraColumns, extra);
+            }
+         }
+      }
+   }
+   return extraColumns;
+}
+
 /// Gets the pointer to the AudacityProject that
 /// goes with this track panel.
 AudacityProject * TrackPanel::GetProject() const
@@ -3812,8 +3841,20 @@ void TrackPanel::DragZoom(wxMouseEvent & event, int trackLeftEdge)
    double left = mViewInfo->PositionToTime(mZoomStart, trackLeftEdge);
    double right = mViewInfo->PositionToTime(mZoomEnd, trackLeftEdge);
    double multiplier = (GetScreenEndTime() - mViewInfo->h) / (right - left);
-   if (event.ShiftDown())
+   if (event.ShiftDown()) {
+      // Zoom out
       multiplier = 1.0 / multiplier;
+   }
+   else {
+      // Zoom in, to fit the drag boundaries.
+      // Be careful to expand the bounds in case of waterfall displays!
+      const int extra = NumExtraPixelColumns();
+      if (extra > 0) {
+         int width;
+         GetTracksUsableArea(&width, NULL);
+         multiplier /= (double(width + extra) / width);
+      }
+   }
 
    mViewInfo->ZoomBy(multiplier);
 

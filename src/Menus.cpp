@@ -95,6 +95,8 @@ simplifies construction of menu items.
 #include "BatchCommands.h"
 #include "prefs/BatchPrefs.h"
 
+#include "prefs/SpectrogramSettings.h"
+
 #include "toolbars/ToolManager.h"
 #include "toolbars/ControlToolBar.h"
 #include "toolbars/ToolsToolBar.h"
@@ -5177,8 +5179,20 @@ void AudacityProject::OnZoomSel()
 {
    const double lowerBound =
       std::max(mViewInfo.selectedRegion.t0(), ScrollingLowerBoundTime());
-   const double denom =
-      mViewInfo.selectedRegion.t1() - lowerBound;
+   double upperBound = mViewInfo.selectedRegion.t1();
+
+   const int extraColumns =
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+
+   // If any track displays waterfall spectrogram (whether scrolled
+   // vertically into view or not), increase the time range so that
+   // the entire sheared spectrogram fits into the view.
+      GetTrackPanel()->NumExtraPixelColumns();
+#else
+      0;
+#endif
+
+   const double denom = upperBound - lowerBound;
    if (denom <= 0.0)
       return;
 
@@ -5194,7 +5208,13 @@ void AudacityProject::OnZoomSel()
    //      e7c7bb84a966c3b3cc4b3a9717d5f247f25e7296
    int width;
    mTrackPanel->GetTracksUsableArea(&width, NULL);
-   Zoom((width - 1) / denom);
+   width -= 1;
+
+   // Now adjust for any waterfalls
+   width -= extraColumns;
+   width = std::max(1, width);
+
+   Zoom(width / denom);
    TP_ScrollWindow(mViewInfo.selectedRegion.t0());
 }  
 
