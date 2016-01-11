@@ -298,9 +298,12 @@ protected:
 
    virtual void SelectionHandleClick(wxMouseEvent &event,
                                      Track* pTrack, wxRect rect);
-   virtual void StartSelection (int mouseXCoordinate, int trackLeftEdge);
-   virtual void ExtendSelection(int mouseXCoordinate, int trackLeftEdge,
-                        Track *pTrack);
+   virtual void StartSelection
+      (int mouseXCoordinate, int mouseYCoordinate,
+       int trackLeftEdge, int trackBottomEdge, const Track *pTrack);
+   virtual void ExtendSelection
+      (int mouseXCoordinate, int mouseYCoordinate, int trackLeftEdge, int trackBottomEdge,
+       const Track *pTrack);
    virtual void UpdateSelectionDisplay();
 
 public:

@@ -177,9 +177,11 @@ bool Scrubber::MaybeStartScrubbing(const wxMouseEvent &event)
          ControlToolBar * const ctb = mProject->GetControlToolBar();
          double maxTime = mProject->GetTracks()->GetEndTime();
          const int leftOffset = trackPanel->GetLeftOffset();
+         // XY
          double time0 = std::min(maxTime,
             viewInfo.PositionToTime(mScrubStartPosition, leftOffset)
          );
+         // XY
          double time1 = std::min(maxTime,
             viewInfo.PositionToTime(position, leftOffset)
          );
@@ -246,6 +248,7 @@ void Scrubber::ContinueScrubbing()
    if (!mScrubHasFocus)
       result = gAudioIO->EnqueueScrubBySignedSpeed(0, mMaxScrubSpeed, false);
    else {
+      // XY
       const double time = mProject->GetViewInfo().PositionToTime(position.x, trackPanel->GetLeftOffset());
 
       if (seek)
