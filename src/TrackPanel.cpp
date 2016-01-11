@@ -1096,6 +1096,7 @@ double TrackPanel::GetScreenEndTime() const
 {
    int width;
    GetTracksUsableArea(&width, NULL);
+   // PRL:  Don't need XYToTime, there is no mouse position
    return mViewInfo->PositionToTime(width, 0, true);
 }
 
@@ -2048,6 +2049,35 @@ void TrackPanel::ChangeSelectionOnShiftClick(Track * pTrack){
    mLastPickedTrack = pExtendFrom;
 }
 
+namespace {
+   double XYToTime
+      (const ViewInfo &viewInfo,
+       const Track *pTrack,
+       wxInt64 mouseXCoordinate,
+       wxInt64 mouseYCoordinate,
+       wxInt64 trackLeftEdge,
+       wxInt64 trackBottomEdge)
+   {
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+      if (pTrack &&
+         pTrack->GetKind() == Track::Wave) {
+         const WaveTrack *const wt = static_cast<const WaveTrack*>(pTrack);
+         const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+         const int display = wt->GetDisplay();
+         if (display == WaveTrack::Spectrum &&
+             settings.style != SpectrogramSettings::styleFlat)
+            // Correct x for the perspective
+            mouseXCoordinate -=
+            (trackBottomEdge - mouseYCoordinate) / settings.GetSlope();
+      }
+#else
+      pTrack; mouseYCoordinate; trackBottomEdge;
+#endif
+
+      return viewInfo.PositionToTime(mouseXCoordinate, trackLeftEdge);
+   }
+}
+
 /// This method gets called when we're handling selection
 /// and the mouse was just clicked.
 void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
@@ -2120,7 +2150,7 @@ void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
 #endif
             mSelStartValid = true;
             mSelStart = value;
-            ExtendSelection(event.m_x, rect.x, pTrack);
+            ExtendSelection(event.m_x, event.m_y, rect.x, rect.GetBottom(), pTrack);
             break;
          }
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
@@ -2261,6 +2291,7 @@ void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
       if (startNewSelection) { // mouse is not at an edge, but after
          // quantization, we could be indicating the selection edge
          mSelStartValid = true;
+         // PRL:  Don't need XYToTime, it's not a wave track.
          mSelStart = std::max(0.0, mViewInfo->PositionToTime(event.m_x, rect.x));
          mStretchStart = nt->NearestBeatTime(mSelStart, &centerBeat);
          if (within(qBeat0, centerBeat, 0.1)) {
@@ -2335,7 +2366,7 @@ void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
       StartFreqSelection (event.m_y, rect.y, rect.height, pTrack);
 #endif
-      StartSelection(event.m_x, rect.x);
+      StartSelection(event.m_x, event.m_y, rect.x, rect.GetBottom(), pTrack);
       SelectTrack(pTrack, true);
       SetFocusedTrack(pTrack);
       //On-Demand: check to see if there is an OD thing associated with this track.
@@ -2349,10 +2380,14 @@ void TrackPanel::SelectionHandleClick(wxMouseEvent & event,
 
 
 /// Reset our selection markers.
-void TrackPanel::StartSelection(int mouseXCoordinate, int trackLeftEdge)
+void TrackPanel::StartSelection
+(int mouseXCoordinate, int mouseYCoordinate, int trackLeftEdge, int trackBottomEdge, const Track *pTrack)
 {
    mSelStartValid = true;
-   mSelStart = std::max(0.0, mViewInfo->PositionToTime(mouseXCoordinate, trackLeftEdge));
+   mSelStart = std::max(0.0,
+      XYToTime(*mViewInfo, pTrack, mouseXCoordinate, mouseYCoordinate,
+         trackLeftEdge, trackBottomEdge)
+   );
 
    double s = mSelStart;
 
@@ -2375,14 +2410,18 @@ void TrackPanel::StartSelection(int mouseXCoordinate, int trackLeftEdge)
 }
 
 /// Extend the existing selection
-void TrackPanel::ExtendSelection(int mouseXCoordinate, int trackLeftEdge,
-                                 Track *pTrack)
+void TrackPanel::ExtendSelection
+(int mouseXCoordinate, int mouseYCoordinate, int trackLeftEdge, int trackBottomEdge,
+ const Track *pTrack)
 {
    if (!mSelStartValid)
       // Must be dragging frequency bounds only.
       return;
 
-   double selend = std::max(0.0, mViewInfo->PositionToTime(mouseXCoordinate, trackLeftEdge));
+   double selend = std::max(0.0,
+      XYToTime(*mViewInfo, pTrack, mouseXCoordinate, mouseYCoordinate,
+      trackLeftEdge, trackBottomEdge)
+   );
    clip_bottom(selend, 0.0);
 
    double origSel0, origSel1;
@@ -2826,6 +2865,7 @@ void TrackPanel::Stretch(int mouseXCoordinate, int trackLeftEdge,
    }
 
    NoteTrack *pNt = (NoteTrack *) pTrack;
+   // PRL:  Don't need XYToTime, it's not a wave track.
    double moveto = std::max(0.0, mViewInfo->PositionToTime(mouseXCoordinate, trackLeftEdge));
 
    // check to make sure tempo is not higher than 20 beats per second
@@ -2974,7 +3014,7 @@ void TrackPanel::SelectionHandleDrag(wxMouseEvent & event, Track *clickedTrack)
       ExtendFreqSelection(y, rect.y, rect.height);
 #endif
 
-   ExtendSelection(x, rect.x, clickedTrack);
+   ExtendSelection(x, y, rect.x, rect.GetBottom(), clickedTrack);
    // If scrubbing does not use the helper poller thread, then
    // don't do this at every mouse event, because it slows down seek-scrub.
    // Instead, let OnTimer do it, which is often enough.
@@ -3089,7 +3129,8 @@ bool mayDragWidth, bool onlyWithinSnapDistance,
    // within the time boundaries.
    // May choose no boundary if onlyWithinSnapDistance is true.
    // Otherwise choose the eligible boundary nearest the mouse click.
-   const double selend = mViewInfo->PositionToTime(event.m_x, rect.x);
+   const double selend =
+      XYToTime(*mViewInfo, pTrack, event.m_x, event.m_y, rect.x, rect.GetBottom());
    wxInt64 pixelDist = 0;
    SelectionBoundary boundary =
       ChooseTimeBoundary(selend, onlyWithinSnapDistance,
@@ -3471,6 +3512,7 @@ void TrackPanel::StartSlide(wxMouseEvent & event)
    ToolsToolBar * ttb = mListener->TP_GetToolsToolBar();
    bool multiToolModeActive = (ttb && ttb->IsDown(multiTool));
 
+   // PRL:  I decided not to use XYToTime for time-shift.
    double clickTime =
       mViewInfo->PositionToTime(event.m_x, GetLeftOffset());
    mCapturedClipIsSelection =
@@ -3523,6 +3565,7 @@ void TrackPanel::StartSlide(wxMouseEvent & event)
          if (mCapturedClip &&
              // Assume linked track is wave or null
              nullptr != (wt = static_cast<WaveTrack*>(partner))) {
+            // PRL:  I decided not to use XYToTime for time-shift.
             WaveClip *const clip =
                FindClipAtTime(wt,
                   mViewInfo->PositionToTime(event.m_x, GetLeftOffset()));
@@ -3586,6 +3629,7 @@ void TrackPanel::StartSlide(wxMouseEvent & event)
    mMouseClickY = event.m_y;
 
    mSelStartValid = true;
+   // PRL:  I decided not to use XYToTime for time-shift.
    mSelStart = mViewInfo->PositionToTime(event.m_x, rect.x);
 
    mSnapManager = std::make_unique<SnapManager>(GetTracks(),
@@ -3724,6 +3768,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
       desiredSlideAmount = 0.0;
    }
    else {
+      // PRL:  I decided not to use XYToTime for time-shift.
       desiredSlideAmount =
          mViewInfo->PositionToTime(event.m_x) -
          mViewInfo->PositionToTime(mMouseClickX);
@@ -4074,6 +4119,8 @@ bool TrackPanel::IsMouseCaptured()
 ///  a drag zoom.
 void TrackPanel::DragZoom(wxMouseEvent & event, int trackLeftEdge)
 {
+   // PRL:  The vertical goal posts draw on the screen determine the zoom interval.
+   // Don't use XYToTime.
    double left = mViewInfo->PositionToTime(mZoomStart, trackLeftEdge);
    double right = mViewInfo->PositionToTime(mZoomEnd, trackLeftEdge);
    double multiplier = (GetScreenEndTime() - mViewInfo->h) / (right - left);
@@ -4102,6 +4149,7 @@ void TrackPanel::DragZoom(wxMouseEvent & event, int trackLeftEdge)
 /// \todo MAGIC NUMBER: We've got several in this method.
 void TrackPanel::DoZoomInOut(wxMouseEvent & event, int trackLeftEdge)
 {
+   // ?
    double center_h = mViewInfo->PositionToTime(event.m_x, trackLeftEdge);
 
    const double multiplier =
@@ -4112,6 +4160,7 @@ void TrackPanel::DoZoomInOut(wxMouseEvent & event, int trackLeftEdge)
    if (event.MiddleUp() || event.MiddleDClick())
       mViewInfo->SetZoom(ZoomInfo::GetDefaultZoom()); // AS: Reset zoom.
 
+   // ?
    double new_center_h = mViewInfo->PositionToTime(event.m_x, trackLeftEdge);
 
    mViewInfo->h += (center_h - new_center_h);
@@ -4493,6 +4542,7 @@ bool TrackPanel::IsSampleEditingPossible( wxMouseEvent &event, const WaveTrack *
       wxRect rect;
       FindTrack(event.m_x, event.m_y, false, false, &rect);
       const double rate = wt->GetRate();
+      // PRL:  Don't use XYToTime, because display cannot be spectrogram
       const double time = mViewInfo->PositionToTime(event.m_x, rect.x);
       int width;
       GetTracksUsableArea(&width, NULL);
@@ -4560,6 +4610,7 @@ void TrackPanel::HandleSampleEditingClick( wxMouseEvent & event )
 
    //If we are still around, we are drawing in earnest.  Set some member data structures up:
    //First, calculate the starting sample.  To get this, we need the time
+   // PRL:  Don't use XYToTime, because display cannot be spectrogram
    double t0 = mViewInfo->PositionToTime(event.m_x, GetLeftOffset());
 
    //convert t0 to samples
@@ -4700,6 +4751,7 @@ void TrackPanel::HandleSampleEditingDrag( wxMouseEvent & event )
 
       //Otherwise, adjust the sample you are dragging over right now.
       //convert this to samples
+      // PRL:  Don't use XYToTime, because display cannot be spectrogram
       const double t = mViewInfo->PositionToTime(event.m_x, GetLeftOffset());
       s0 = mDrawingTrack->TimeToLongSamples(t);
    }
@@ -5846,6 +5898,7 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
       }
       else {
          xx = event.m_x;
+         // ?
          center_h = mViewInfo->PositionToTime(xx, trackLeftEdge);
       }
       // Time corresponding to last (most far right) audio.
@@ -5864,6 +5917,7 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
 
       mViewInfo->ZoomBy(pow(2.0, steps));
 
+      // ?
       double new_center_h = mViewInfo->PositionToTime(xx, trackLeftEdge);
       mViewInfo->h += (center_h - new_center_h);
 
@@ -6853,6 +6907,7 @@ bool TrackPanel::HitTestEnvelope(Track *track, wxRect &rect, const wxMouseEvent 
    // Get envelope point, range 0.0 to 1.0
    const bool dB = !wavetrack->GetWaveformSettings().isLinear();
    // Convert x to time.
+   // PRL:  Don't use XYToTime, because display cannot be spectrogram
    const double envValue = envelope->GetValue(mViewInfo->PositionToTime(event.m_x, rect.x));
 
    float zoomMin, zoomMax;
@@ -6917,6 +6972,7 @@ bool TrackPanel::HitTestSamples(Track *track, wxRect &rect, const wxMouseEvent &
       return false;  // Not a wave, so return.
    const bool dB = !wavetrack->GetWaveformSettings().isLinear();
 
+   // PRL:  Don't use XYToTime, because display cannot be spectrogram
    const double tt = mViewInfo->PositionToTime(event.m_x, rect.x);
    int width;
    GetTracksUsableArea(&width, NULL);
@@ -6974,6 +7030,8 @@ bool TrackPanel::HitTestSlide(Track * WXUNUSED(track), wxRect &rect, const wxMou
 
 double TrackPanel::GetMostRecentXPos()
 {
+   // Affects play-one-second and play-to-selection
+   // Use XYToTime?  Maybe it's not so bad if not.
    return mViewInfo->PositionToTime(mMouseMostRecentX, GetLabelWidth());
 }
 
