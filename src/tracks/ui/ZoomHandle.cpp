@@ -123,6 +123,8 @@ HitTestPreview ZoomHandle::Preview
    return HitPreview(st.state, pProject);
 }
 
+#include "../../TrackPanel.h"
+#include "../../tracks/playabletrack/wavetrack/ui/SpectrumView.h"
 UIHandle::Result ZoomHandle::Release
 (const TrackPanelMouseEvent &evt, AudacityProject *pProject,
  wxWindow *)
@@ -143,8 +145,20 @@ UIHandle::Result ZoomHandle::Release
       double multiplier =
          (viewInfo.PositionToTime(mRect.width) - viewInfo.PositionToTime(0)) /
          (right - left);
-      if (event.ShiftDown())
+      if (event.ShiftDown()) {
+         // Zoom out
          multiplier = 1.0 / multiplier;
+      }
+      else {
+         // Zoom in, to fit the drag boundaries.
+         // Be careful to expand the bounds in case of waterfall displays!
+         const int extra =
+            SpectrumView::NumExtraPixelColumns(*pProject);
+         if (extra > 0) {
+            auto width = viewInfo.GetTracksUsableWidth();
+            multiplier /= (double(width + extra) / width);
+         }
+      }
 
       viewInfo.ZoomBy(multiplier);
 

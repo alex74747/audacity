@@ -13,6 +13,7 @@ Paul Licameli split from WaveTrackView.h
 
 #include "WaveTrackView.h" // to inherit
 
+class AudacityProject;
 class WaveTrack;
 
 class SpectrumView final : public WaveTrackSubView
@@ -21,6 +22,10 @@ class SpectrumView final : public WaveTrackSubView
    SpectrumView &operator=( const SpectrumView& ) = delete;
 
 public:
+   // Count how many extra columns are required by tracks showing waterfall
+   // (ignores whether they are vertically scrolled into view)
+   static int NumExtraPixelColumns(const AudacityProject &project);
+
    using WaveTrackSubView::WaveTrackSubView;
    ~SpectrumView() override;
 

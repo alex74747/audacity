@@ -44,6 +44,30 @@ bool SpectrumView::IsSpectral() const
    return true;
 }
 
+int SpectrumView::NumExtraPixelColumns(const AudacityProject &project)
+{
+   int extraColumns = 0;
+   for (auto wt: TrackList::Get(project).Any<const WaveTrack>()) {
+      auto &view = WaveTrackView::Get(*wt);
+      if (view.GetMinimized())
+         continue;
+      const auto displays = view.GetDisplays();
+         bool hasSpectral = (displays.end() != std::find(
+            displays.begin(), displays.end(),
+            WaveTrackSubView::Type{ WaveTrackViewConstants::Spectrum, {} }
+         ) );
+      if (hasSpectral) {
+         const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+         if (settings.style != SpectrogramSettings::styleFlat) {
+            auto height = view.GetHeight() - (kTopMargin + kBottomMargin);
+            const int extra = int(0.5 + (height - 1) / settings.GetSlope());
+            extraColumns = std::max(extraColumns, extra);
+         }
+      }
+   }
+   return extraColumns;
+}
+
 std::vector<UIHandlePtr> SpectrumView::DetailedHitTest(
    const TrackPanelMouseState &state,
    const AudacityProject *pProject, int currentTool, bool bMultiTool )

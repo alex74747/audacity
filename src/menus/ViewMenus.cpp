@@ -25,19 +25,34 @@
 
 #include <wx/scrolbar.h>
 
+#include "../tracks/playabletrack/wavetrack/ui/SpectrumView.h"
+
 // private helper classes and functions
 namespace {
 
 double GetZoomOfSelection( const AudacityProject &project )
 {
    auto &viewInfo = ViewInfo::Get( project );
+   auto &trackPanel = TrackPanel::Get( project );
    auto &window = ProjectWindow::Get( project );
 
    const double lowerBound =
       std::max(viewInfo.selectedRegion.t0(),
          window.ScrollingLowerBoundTime());
-   const double denom =
-      viewInfo.selectedRegion.t1() - lowerBound;
+   double upperBound = viewInfo.selectedRegion.t1();
+
+   const int extraColumns =
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+
+   // If any track displays waterfall spectrogram (whether scrolled
+   // vertically into view or not), increase the time range so that
+   // the entire sheared spectrogram fits into the view.
+      SpectrumView::NumExtraPixelColumns(project);
+#else
+      0;
+#endif
+
+   const double denom = upperBound - lowerBound;
    if (denom <= 0.0)
       return viewInfo.GetZoom();
 
@@ -52,7 +67,13 @@ double GetZoomOfSelection( const AudacityProject &project )
    //      1b8f44d0537d987c59653b11ed75a842b48896ea and
    //      e7c7bb84a966c3b3cc4b3a9717d5f247f25e7296
    auto width = viewInfo.GetTracksUsableWidth();
-   return (width - 1) / denom;
+   width -= 1;
+
+   // Now adjust for any waterfalls
+   width -= extraColumns;
+   width = std::max(1, width);
+   
+   return width / denom;
 }
 
 double GetZoomOfPreset( const AudacityProject &project, int preset )
