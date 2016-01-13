@@ -2005,12 +2005,37 @@ void TrackArtist::DrawSpectrum(WaveTrack *track,
                                const SelectedRegion &selectedRegion,
                                const ZoomInfo &zoomInfo)
 {
+   double slope = 0.0;
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
+   if (settings.style != SpectrogramSettings::styleFlat)
+   {
+      slope = settings.GetSlope();
+   }
+#endif
+
    DrawBackgroundWithSelection(&dc, rect, track, blankSelectedBrush, blankBrush,
-         selectedRegion, zoomInfo);
+         selectedRegion, zoomInfo, slope);
 
    WaveTrackCache cache(track);
-   for (WaveClipList::compatibility_iterator it = track->GetClipIterator(); it; it = it->GetNext()) {
-      DrawClipSpectrum(cache, it->GetData(), dc, rect, selectedRegion, zoomInfo);
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   if (settings.style != SpectrogramSettings::styleFlat)
+   {
+      // It is important to paint the clips left-to-right!  That is not always
+      // the iteration order.
+      WaveClipArray clips;
+      track->FillSortedClipArray(clips);
+      for (size_t ii = 0, nn = clips.GetCount(); ii < nn;  ++ii)
+         DrawClipSpectrum(cache, clips[ii], dc, rect, selectedRegion, zoomInfo);
+   }
+   else
+#endif
+   {
+      for (WaveClipList::compatibility_iterator it = track->GetClipIterator(); it; it = it->GetNext()) {
+         DrawClipSpectrum(cache, it->GetData(), dc, rect, selectedRegion, zoomInfo);
+      }
    }
 }
 
@@ -2249,7 +2274,17 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
    // and then paint this directly to our offscreen
    // bitmap.  Note that this could be optimized even
    // more, but for now this is not bad.  -dmazzoni
-   wxImage *image = new wxImage((int)mid.width, (int)mid.height);
+
+   int theWidth = std::min(rect.width - (mid.x - rect.x),
+      mid.width +
+      // If drawing a waterfall, widen the rectangle rightward
+      int(waterfall ? (mid.height - 1) / settings.GetSlope() : 0)
+   );
+   wxImage *image = new wxImage(
+      theWidth,
+      mid.height,
+      waterfall // don't need to clear it unless the transparency matters at the corners
+   );
    if (!image)
       return;
    unsigned char *data = image->GetData();
@@ -2567,7 +2602,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
    GetColorGradient(0, AColor::ColorGradientUnselected,
       isGrayscale, &r0, &g0, &b0);
 
-   for (int xx = 0; xx < mid.width; ++xx, ++correctedX)
+   for (int xx = 0; xx < theWidth; ++xx, ++correctedX)
    {
       bool inFisheye = zoomInfo.InFisheye(xx, -leftOffset);
       float *uncached =
@@ -2596,6 +2631,12 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
          int waterfallAdjustX = 0;
          if (waterfall) {
             waterfallAdjustX = int(0.5 + yy / waterfallSlope);
+            if (waterfallAdjustX > xx // We are in the transparency at the upper left corner of the rectangle
+               || xx - waterfallAdjustX >= mid.width // We are in the other transparency at lower right
+            ) {
+               ++maxY;
+               continue;
+            }
             if (waterfallAdjustX) {
                inFisheye = zoomInfo.InFisheye(xx - waterfallAdjustX, -leftOffset);
                if (inFisheye && waterfallAdjustX < fisheyeColumn)
@@ -2699,7 +2740,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
                }
 #endif //EXPERIMENTAL_FFT_Y_GRID
 
-               int px = ((mid.height - 1 - zz) * mid.width + xx) * 3;
+               int px = ((mid.height - 1 - zz) * theWidth + xx) * 3;
                if (zz <= prevMaxY)
                   // Fade out a hidden but not removed curve in wireframe
                   FadeRGB(rv, bv, gv, r0, b0, g0);
@@ -2749,7 +2790,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
             if (sdata.hidden)
                FadeRGB(rv, gv, bv, r0, g0, b0);
 
-            int px = ((mid.height - 1 - sdata.yy) * mid.width + xx) * 3;
+            int px = ((mid.height - 1 - sdata.yy) * theWidth + xx) * 3;
             data[px++] = rv;
             data[px++] = gv;
             data[px] = bv;
@@ -2761,13 +2802,18 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
       silhouetteData.clear();
    } // each xx
 
+   if (waterfall) {
+      image->SetMaskColour(0, 0, 0);
+   }
    wxBitmap converted = wxBitmap(*image);
 
    wxMemoryDC memDC;
 
    memDC.SelectObject(converted);
 
-   dc.Blit(mid.x, mid.y, mid.width, mid.height, &memDC, 0, 0, wxCOPY, FALSE);
+   dc.Blit(mid.x, mid.y, theWidth, mid.height, &memDC, 0, 0, wxCOPY,
+      waterfall // whether to use transparency mask
+   );
 
    delete image;
 #ifdef EXPERIMENTAL_FFT_Y_GRID
@@ -3475,9 +3521,11 @@ void TrackArtist::UpdatePrefs()
 // 5x5 box.
 //
 // There may be a better way to do this, or a more appealing pattern.
-void TrackArtist::DrawSyncLockTiles(wxDC *dc, wxRect rect)
+void TrackArtist::DrawSyncLockTiles(wxDC *dc, wxRect rect, int offset)
 {
    wxBitmap syncLockBitmap(theTheme.Image(bmpSyncLockSelTile));
+
+   const int theWidth = rect.width + offset;
 
    // Grid spacing is a bit smaller than actual image size
    int gridW = syncLockBitmap.GetWidth() - 6;
@@ -3502,10 +3550,10 @@ void TrackArtist::DrawSyncLockTiles(wxDC *dc, wxRect rect)
    if (blockX < 0) blockX += 5;
 
    int xx = 0;
-   while (xx < rect.width) {
+   while (xx < theWidth) {
       int width = syncLockBitmap.GetWidth() - xOffset;
-      if (xx + width > rect.width)
-         width = rect.width - xx;
+      if (xx + width > theWidth)
+         width = theWidth - xx;
 
       //
       // Draw each row in this column
@@ -3582,9 +3630,35 @@ void TrackArtist::DrawSyncLockTiles(wxDC *dc, wxRect rect)
    }
 }
 
+namespace {
+   bool DrawQuadrangle(wxDC *dc, const wxRect &rect, bool leftmost, int offset)
+   {
+      if (offset == 0.0) {
+         if (rect.width > 0) {
+            dc->DrawRectangle(rect);
+            return true;
+         }
+      }
+      else {
+         if (rect.width + offset > 0) {
+            wxPoint points[] = {
+               wxPoint(rect.x, rect.GetBottom()),
+               wxPoint(rect.GetRight(), rect.GetBottom()),
+               wxPoint(rect.GetRight() + offset, rect.y),
+               wxPoint(rect.x + (leftmost ? 0 : offset), rect.y)
+            };
+            dc->SetPen(wxPen(dc->GetBrush().GetColour()));
+            dc->DrawPolygon(4, points);
+            return true;
+         }
+      }
+      return false;
+   }
+}
+
 void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
    Track *track, wxBrush &selBrush, wxBrush &unselBrush,
-   const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo)
+   const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo, double slope)
 {
    //MM: Draw background. We should optimize that a bit more.
    //AWD: "+ 1.5" and "+ 2.5" throughout match code in
@@ -3593,6 +3667,8 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
 
    const double sel0 = selectedRegion.t0();
    const double sel1 = selectedRegion.t1();
+
+   const int offset = slope == 0.0 ? 0 : int(0.5 + (rect.height - 1) / slope);
 
    dc->SetPen(*wxTRANSPARENT_PEN);
    if (track->GetSelected() || track->IsSyncLockSelected())
@@ -3608,11 +3684,9 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
       }
 
       if (before.width > 0) {
-         dc->SetBrush(unselBrush);
-         dc->DrawRectangle(before);
-
          within.x = 1 + before.GetRight();
       }
+
       within.width = rect.x + int(zoomInfo.TimeToPosition(sel1) + 2) - within.x;
 
       if (within.GetRight() > rect.GetRight()) {
@@ -3621,14 +3695,12 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
 
       if (within.width > 0) {
          if (track->GetSelected()) {
-            dc->SetBrush(selBrush);
-            dc->DrawRectangle(within);
          }
          else {
             // Per condition above, track must be sync-lock selected
             dc->SetBrush(unselBrush);
-            dc->DrawRectangle(within);
-            DrawSyncLockTiles(dc, within);
+            DrawQuadrangle(dc, rect, true, offset);
+            DrawSyncLockTiles(dc, within, offset);
          }
 
          after.x = 1 + within.GetRight();
@@ -3639,16 +3711,27 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
       }
 
       after.width = 1 + rect.GetRight() - after.x;
+
+      // Delay drawing of quadrangles until after drawing any pocket watches
+      // This is the easy way to obscure the correct part of the pocket watch
+      // rectangle so we leave a parallelogram in case of waterfall view
+      dc->SetBrush(unselBrush);
+      bool leftmost = true;
+      leftmost = !DrawQuadrangle(dc, before, leftmost, offset);
+      if (within.width > 0 && track->GetSelected()) {
+         dc->SetBrush(selBrush);
+         leftmost = !DrawQuadrangle(dc, within, leftmost, offset);
+      }
       if (after.width > 0) {
          dc->SetBrush(unselBrush);
-         dc->DrawRectangle(after);
+         DrawQuadrangle(dc, after, leftmost, offset);
       }
    }
    else
    {
       // Track not selected; just draw background
       dc->SetBrush(unselBrush);
-      dc->DrawRectangle(rect);
+      DrawQuadrangle(dc, rect, true, offset);
    }
 }
 

@@ -80,12 +80,13 @@ class AUDACITY_DLL_API TrackArtist {
    }
 
    // Helper: draws the "sync-locked" watermark tiled to a rectangle
-   static void DrawSyncLockTiles(wxDC *dc, wxRect rect);
+   static void DrawSyncLockTiles(wxDC *dc, wxRect rect, int offset = 0.0);
 
    // Helper: draws background with selection rect
    static void DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
          Track *track, wxBrush &selBrush, wxBrush &unselBrush,
-         const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo);
+         const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo,
+         double slope = 0.0);
 
  private:
 
