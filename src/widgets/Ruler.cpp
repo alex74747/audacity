@@ -2471,7 +2471,7 @@ void AdornedRulerPanel::OnMouseEvents(wxMouseEvent &evt)
       }
       //wxLogDebug("up");
       // mouse going up => we shift to scrubbing.
-      scrubber.MarkScrubStart(evt.m_x,
+      scrubber.MarkScrubStart(evt.GetPosition() ,
          TracksPrefs::GetPinnedHeadPreference(), false);
       UpdateStatusBarAndTooltips(StatusChoice::EnteringScrubZone);
       // repaint_all so that the indicator changes shape.
@@ -2485,8 +2485,8 @@ void AdornedRulerPanel::OnMouseEvents(wxMouseEvent &evt)
       if (evt.LeftDown()) {
          //wxLogDebug("down");
          scrubber.mInOneShotMode = !scrubber.IsScrubbing();
-         scrubber.MarkScrubStart(evt.m_x,
-            TracksPrefs::GetPinnedHeadPreference(), false);
+         scrubber.MarkScrubStart(
+            evt.GetPosition(), TracksPrefs::GetPinnedHeadPreference(), false);
          UpdateStatusBarAndTooltips(StatusChoice::EnteringScrubZone);
       } 
       else if( changeInZone ) {

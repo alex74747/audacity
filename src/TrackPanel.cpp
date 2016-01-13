@@ -7465,6 +7465,29 @@ void TrackPanel::DrawOutsideOfTrack(Track * t, wxDC * dc, const wxRect & rect)
 #endif
 }
 
+double TrackPanel::PointToTime(wxPoint point)
+{
+   int xx = point.x;
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   wxRect rect;
+   Track *const pTrack = FindTrack(point.x, point.y, false, false, &rect);
+   if (pTrack &&
+      pTrack->GetKind() == Track::Wave) {
+      const WaveTrack *const wt = static_cast<const WaveTrack*>(pTrack);
+      const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+      const int display = wt->GetDisplay();
+      if (display == WaveTrack::Spectrum &&
+         settings.style != SpectrogramSettings::styleFlat)
+         // Correct x for the perspective
+         xx -=
+         (rect.GetBottom() - kBottomMargin - point.y) / settings.GetSlope();
+   }
+#endif
+
+   return mViewInfo->PositionToTime(xx, GetLeftOffset());
+}
+
 /// Draw a three-level highlight gradient around the focused track.
 void TrackPanel::HighlightFocusedTrack(wxDC * dc, const wxRect & rect)
 {

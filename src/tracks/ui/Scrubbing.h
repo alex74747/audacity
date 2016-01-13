@@ -72,11 +72,11 @@ public:
    ~Scrubber();
 
    // Assume xx is relative to the left edge of TrackPanel!
-   void MarkScrubStart(wxCoord xx, bool smoothScrolling, bool seek);
+   void MarkScrubStart(wxPoint point, bool smoothScrolling, bool seek);
 
    // Returns true iff the event should be considered consumed by this:
    // Assume xx is relative to the left edge of TrackPanel!
-   bool MaybeStartScrubbing(wxCoord xx);
+   bool MaybeStartScrubbing(wxPoint point);
 
    void ContinueScrubbingUI();
    void ContinueScrubbingPoll();

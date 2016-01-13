@@ -534,6 +534,9 @@ protected:
    virtual void DrawBordersAroundTrack(Track *t, wxDC* dc, const wxRect & rect, const int labelw, const int vrul);
    virtual void DrawOutsideOfTrack    (Track *t, wxDC* dc, const wxRect & rect);
 
+public:
+   virtual double PointToTime(wxPoint point);
+
 protected:
    virtual int IdOfRate( int rate );
    virtual int IdOfFormat( int format );
