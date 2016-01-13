@@ -240,7 +240,6 @@ void TrackArt::DrawNegativeOffsetTrackArrows(
 #ifdef USE_MIDI
 #endif // USE_MIDI
 
-
 void TrackArtist::UpdateSelectedPrefs( int id )
 {
    if( id == ShowClippingPrefsID())
@@ -274,11 +273,13 @@ void TrackArtist::UpdatePrefs()
 //
 // There may be a better way to do this, or a more appealing pattern.
 void TrackArt::DrawSyncLockTiles(
-   TrackPanelDrawingContext &context, const wxRect &rect )
+   TrackPanelDrawingContext &context, const wxRect &rect, int offset)
 {
    const auto dc = &context.dc;
 
    wxBitmap syncLockBitmap(theTheme.Image(bmpSyncLockSelTile));
+
+   const int theWidth = rect.width + offset;
 
    // Grid spacing is a bit smaller than actual image size
    int gridW = syncLockBitmap.GetWidth() - 6;
@@ -303,10 +304,10 @@ void TrackArt::DrawSyncLockTiles(
    if (blockX < 0) blockX += 5;
 
    int xx = 0;
-   while (xx < rect.width) {
+   while (xx < theWidth) {
       int width = syncLockBitmap.GetWidth() - xOffset;
-      if (xx + width > rect.width)
-         width = rect.width - xx;
+      if (xx + width > theWidth)
+         width = theWidth - xx;
 
       //
       // Draw each row in this column
@@ -383,10 +384,36 @@ void TrackArt::DrawSyncLockTiles(
    }
 }
 
+namespace {
+   bool DrawQuadrangle(wxDC *dc, const wxRect &rect, bool leftmost, int offset)
+   {
+      if (offset == 0.0) {
+         if (rect.width > 0) {
+            dc->DrawRectangle(rect);
+            return true;
+         }
+      }
+      else {
+         if (rect.width + offset > 0) {
+            wxPoint points[] = {
+               wxPoint(rect.x, rect.GetBottom()),
+               wxPoint(rect.GetRight(), rect.GetBottom()),
+               wxPoint(rect.GetRight() + offset, rect.y),
+               wxPoint(rect.x + (leftmost ? 0 : offset), rect.y)
+            };
+            dc->SetPen(wxPen(dc->GetBrush().GetColour()));
+            dc->DrawPolygon(4, points);
+            return true;
+         }
+      }
+      return false;
+   }
+}
+
 void TrackArt::DrawBackgroundWithSelection(
    TrackPanelDrawingContext &context, const wxRect &rect,
    const Track *track, const wxBrush &selBrush, const wxBrush &unselBrush,
-   bool useSelection)
+   bool useSelection, double slope)
 {
    const auto dc = &context.dc;
    const auto artist = TrackArtist::Get( context );
@@ -396,6 +423,8 @@ void TrackArt::DrawBackgroundWithSelection(
    //MM: Draw background. We should optimize that a bit more.
    const double sel0 = useSelection ? selectedRegion.t0() : 0.0;
    const double sel1 = useSelection ? selectedRegion.t1() : 0.0;
+
+   const int offset = slope == 0.0 ? 0 : int(0.5 + (rect.height - 1) / slope);
 
    dc->SetPen(*wxTRANSPARENT_PEN);
    if (track->GetSelected() || track->IsSyncLockSelected())
@@ -411,11 +440,9 @@ void TrackArt::DrawBackgroundWithSelection(
       }
 
       if (before.width > 0) {
-         dc->SetBrush(unselBrush);
-         dc->DrawRectangle(before);
-
          within.x = 1 + before.GetRight();
       }
+
       within.width = rect.x + (int)(zoomInfo.TimeToPosition(sel1) ) - within.x -1;
 
       if (within.GetRight() > rect.GetRight()) {
@@ -431,14 +458,12 @@ void TrackArt::DrawBackgroundWithSelection(
 
       if (within.width > 0) {
          if (track->GetSelected()) {
-            dc->SetBrush(selBrush);
-            dc->DrawRectangle(within);
          }
          else {
             // Per condition above, track must be sync-lock selected
             dc->SetBrush(unselBrush);
-            dc->DrawRectangle(within);
-            DrawSyncLockTiles( context, within );
+            DrawQuadrangle(dc, rect, true, offset);
+            DrawSyncLockTiles(context, within, offset);
          }
 
          after.x = 1 + within.GetRight();
@@ -449,16 +474,27 @@ void TrackArt::DrawBackgroundWithSelection(
       }
 
       after.width = 1 + rect.GetRight() - after.x;
+
+      // Delay drawing of quadrangles until after drawing any pocket watches
+      // This is the easy way to obscure the correct part of the pocket watch
+      // rectangle so we leave a parallelogram in case of waterfall view
+      dc->SetBrush(unselBrush);
+      bool leftmost = true;
+      leftmost = !DrawQuadrangle(dc, before, leftmost, offset);
+      if (within.width > 0 && track->GetSelected()) {
+         dc->SetBrush(selBrush);
+         leftmost = !DrawQuadrangle(dc, within, leftmost, offset);
+      }
       if (after.width > 0) {
          dc->SetBrush(unselBrush);
-         dc->DrawRectangle(after);
+         DrawQuadrangle(dc, after, leftmost, offset);
       }
    }
    else
    {
       // Track not selected; just draw background
       dc->SetBrush(unselBrush);
-      dc->DrawRectangle(rect);
+      DrawQuadrangle(dc, rect, true, offset);
    }
 }
 

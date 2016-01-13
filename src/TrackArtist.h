@@ -40,13 +40,13 @@ namespace TrackArt {
 
    // Helper: draws the "sync-locked" watermark tiled to a rectangle
    void DrawSyncLockTiles(
-      TrackPanelDrawingContext &context, const wxRect &rect );
+      TrackPanelDrawingContext &context, const wxRect &rect, int offset = 0.0);
 
    // Helper: draws background with selection rect
    void DrawBackgroundWithSelection(TrackPanelDrawingContext &context,
          const wxRect &rect, const Track *track,
          const wxBrush &selBrush, const wxBrush &unselBrush,
-         bool useSelection = true);
+         bool useSelection = true, double slope = 0.0);
 
    void DrawNegativeOffsetTrackArrows( TrackPanelDrawingContext &context,
                                        const wxRect & rect );

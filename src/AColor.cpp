@@ -651,7 +651,9 @@ void AColor::PreComputeGradient() {
                   float value = float(i)/gradientSteps;
 
                   if (grayscale) {
-                     r = g = b = 0.84 - 0.84 * value;
+                     // PRL: I want to reserve 0, 0, 0 for transparency so make it
+                     // not quite black.
+                     r = g = b = 0.84 - 0.835 * value;
                   } else {
                      const int gsteps = 4;
                      float gradient[gsteps + 1][3];
@@ -705,11 +707,11 @@ void AColor::PreComputeGradient() {
 
                   // For now edge colour is just black (or white if grey-scale)
                   // Later we might invert or something else funky.
+                  // PRL: I want to reserve 0, 0, 0 for transparency so make it
+                  // not quite black.
                   case ColorGradientEdge:
                      // fully dimmed
-                     r = 1.0f * grayscale;
-                     g = 1.0f * grayscale;
-                     b = 1.0f * grayscale;
+                     r = g = b = .995f * grayscale + 0.05 * (!grayscale);
                      break;
                   }
                   gradient_pre[selected][grayscale][i][0] = (unsigned char) (255 * r);

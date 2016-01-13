@@ -344,11 +344,17 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
 #endif
       ;
 
+   int theWidth = std::min(rect.width - (mid.x - rect.x),
+      mid.width +
+      // If drawing a waterfall, widen the rectangle rightward
+      int(waterfall ? (mid.height - 1) / settings.GetSlope() : 0)
+   );
+
    // We draw directly to a bit image in memory,
    // and then paint this directly to our offscreen
    // bitmap.  Note that this could be optimized even
    // more, but for now this is not bad.  -dmazzoni
-   wxImage image((int)mid.width, (int)mid.height);
+   wxImage image((int)theWidth, (int)mid.height);
    if (!image.IsOk())
       return;
 #ifdef EXPERIMENTAL_SPECTROGRAM_OVERLAY
@@ -697,7 +703,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-   for (int xx = 0; xx < mid.width; ++xx) {
+   for (int xx = 0; xx < theWidth; ++xx) {
 
       int correctedX = xx + leftOffset - hiddenLeftOffset;
       bool inFisheye = zoomInfo.InFisheye(xx, -leftOffset);
@@ -745,6 +751,12 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
          int waterfallAdjustX = 0;
          if (waterfall) {
             waterfallAdjustX = int(0.5 + yy / waterfallSlope);
+            if (waterfallAdjustX > xx // We are in the transparency at the upper left corner of the rectangle
+               || xx - waterfallAdjustX >= mid.width // We are in the other transparency at lower right
+            ) {
+               ++maxY;
+               continue;
+            }
             if (waterfallAdjustX) {
                inFisheye = zoomInfo.InFisheye(xx - waterfallAdjustX, -leftOffset);
                if (inFisheye && waterfallAdjustX < fisheyeColumn)
@@ -850,7 +862,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
                }
 #endif //EXPERIMENTAL_FFT_Y_GRID
 
-               int px = ((mid.height - 1 - zz) * mid.width + xx);
+               int px = ((mid.height - 1 - zz) * theWidth + xx);
 #ifdef EXPERIMENTAL_SPECTROGRAM_OVERLAY
                // More transparent the closer to zero intensity.
                alpha[px]= wxMin( 200, (value+0.3) * 500) ;
@@ -905,7 +917,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
             if (sdata.hidden)
                FadeRGB(rv, gv, bv, r0, g0, b0);
 
-            int px = ((mid.height - 1 - sdata.yy) * mid.width + xx) * 3;
+            int px = ((mid.height - 1 - sdata.yy) * theWidth + xx) * 3;
             data[px++] = rv;
             data[px++] = gv;
             data[px] = bv;
@@ -917,13 +929,19 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
       silhouetteData.clear();
    } // each xx
 
+   if (waterfall) {
+      image.SetMaskColour(0, 0, 0);
+   }
+
    wxBitmap converted = wxBitmap(image);
 
    wxMemoryDC memDC;
 
    memDC.SelectObject(converted);
 
-   dc.Blit(mid.x, mid.y, mid.width, mid.height, &memDC, 0, 0, wxCOPY, FALSE);
+   dc.Blit(mid.x, mid.y, theWidth, mid.height, &memDC, 0, 0, wxCOPY,
+      waterfall // whether to use transparency mask
+   );
 
    // Draw clip edges, as also in waveform view, which improves the appearance
    // of split views
@@ -939,12 +957,36 @@ void SpectrumView::DoDraw( TrackPanelDrawingContext &context,
    const auto artist = TrackArtist::Get( context );
    const auto &blankSelectedBrush = artist->blankSelectedBrush;
    const auto &blankBrush = artist->blankBrush;
-   TrackArt::DrawBackgroundWithSelection(
-      context, rect, track, blankSelectedBrush, blankBrush );
+   double slope = 0.0;
 
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
+   if (settings.style != SpectrogramSettings::styleFlat)
+   {
+      slope = settings.GetSlope();
+   }
+#endif
+
+   TrackArt::DrawBackgroundWithSelection(context, rect, track, blankSelectedBrush, blankBrush,
+         true, slope);
+ 
    WaveTrackCache cache(track->SharedPointer<const WaveTrack>());
-   for (const auto &clip: track->GetClips())
-      DrawClipSpectrum( context, cache, clip.get(), rect );
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   if (settings.style != SpectrogramSettings::styleFlat)
+   {
+      // It is important to paint the clips left-to-right!  That is not always
+      // the iteration order.
+      auto clips = track->SortedClipArray();
+      for (auto clip : clips)
+         DrawClipSpectrum(context, cache, clip, rect);
+   }
+   else
+#endif
+   {
+      for (const auto &clip: track->GetClips())
+         DrawClipSpectrum(context, cache, clip.get(), rect);
+   }
 
    DrawBoldBoundaries( context, track, rect );
 }
