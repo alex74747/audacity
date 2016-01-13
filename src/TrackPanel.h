@@ -521,6 +521,8 @@ public:
    // client area, without full refresh.
    virtual void DrawOverlays(bool repaint);
 
+   virtual double PointToTime(wxPoint point);
+
 protected:
    virtual int IdOfRate( int rate );
    virtual int IdOfFormat( int format );

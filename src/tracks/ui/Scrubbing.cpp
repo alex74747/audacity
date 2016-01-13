@@ -139,7 +139,7 @@ Scrubber::~Scrubber()
 }
 
 void Scrubber::MarkScrubStart(
-   wxCoord xx
+   double time
 #ifdef EXPERIMENTAL_SCRUBBING_SMOOTH_SCROLL
    , bool smoothScrolling
 #endif
@@ -151,7 +151,9 @@ void Scrubber::MarkScrubStart(
 #ifdef EXPERIMENTAL_SCRUBBING_SMOOTH_SCROLL
    mSmoothScrollingScrub = smoothScrolling;
 #endif
-   mScrubStartPosition = xx;
+   const ViewInfo &viewInfo = mProject->GetViewInfo();
+   TrackPanel *const trackPanel = mProject->GetTrackPanel();
+   mScrubStartPosition = viewInfo.TimeToPosition(time, trackPanel->GetLeftOffset());
    mScrubStartClockTimeMillis = ::wxGetLocalTimeMillis();
 }
 
@@ -177,13 +179,11 @@ bool Scrubber::MaybeStartScrubbing(const wxMouseEvent &event)
          ControlToolBar * const ctb = mProject->GetControlToolBar();
          double maxTime = mProject->GetTracks()->GetEndTime();
          const int leftOffset = trackPanel->GetLeftOffset();
-         // XY
          double time0 = std::min(maxTime,
             viewInfo.PositionToTime(mScrubStartPosition, leftOffset)
          );
-         // XY
          double time1 = std::min(maxTime,
-            viewInfo.PositionToTime(position, leftOffset)
+            trackPanel->PointToTime(event.GetPosition())
          );
          if (time1 != time0)
          {
@@ -248,8 +248,7 @@ void Scrubber::ContinueScrubbing()
    if (!mScrubHasFocus)
       result = gAudioIO->EnqueueScrubBySignedSpeed(0, mMaxScrubSpeed, false);
    else {
-      // XY
-      const double time = mProject->GetViewInfo().PositionToTime(position.x, trackPanel->GetLeftOffset());
+      const double time = trackPanel->PointToTime(position);
 
       if (seek)
          // Cause OnTimer() to suppress the speed display

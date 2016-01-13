@@ -27,7 +27,7 @@ public:
    ~Scrubber();
 
    void MarkScrubStart(
-      wxCoord xx
+      double time
 #ifdef EXPERIMENTAL_SCRUBBING_SMOOTH_SCROLL
       , bool smoothScrolling
 #endif
