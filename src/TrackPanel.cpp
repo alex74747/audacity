@@ -863,6 +863,28 @@ std::shared_ptr< TrackPanelCell > TrackPanel::GetBackgroundCell()
    return mpBackground;
 }
 
+#include "tracks/playabletrack/wavetrack/ui/SpectrumView.h"
+#include "prefs/SpectrogramSettings.h"
+double TrackPanel::PointToTime(wxPoint point)
+{
+   int xx = point.x;
+
+#ifdef EXPERIMENTAL_WATERFALL_SPECTROGRAMS
+   auto found = FindCell(point.x, point.y);
+   if (auto pView = dynamic_cast<SpectrumView*>(found.pCell.get())) {
+      const auto wt =
+         static_cast<const WaveTrack*>(pView->FindTrack().get());
+      const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+      if (settings.style != SpectrogramSettings::styleFlat)
+         // Correct x for the perspective
+         xx -=
+         (found.rect.GetBottom() - kBottomMargin - point.y) / settings.GetSlope();
+   }
+#endif
+
+   return mViewInfo->PositionToTime(xx, mViewInfo->GetLeftOffset());
+}
+
 void TrackPanel::UpdateVRulers()
 {
    for (auto t : GetTracks()->Any< WaveTrack >())

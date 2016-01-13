@@ -24,6 +24,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ProjectSettings.h"
 #include "../../ProjectStatus.h"
 #include "../../Track.h"
+#include "../../TrackPanel.h"
 #include "../../ViewInfo.h"
 #include "../../WaveTrack.h"
 #include "../../prefs/PlaybackPrefs.h"
@@ -310,8 +311,8 @@ namespace {
 }
 
 void Scrubber::MarkScrubStart(
-   // Assume xx is relative to the left edge of TrackPanel!
-   wxCoord xx, bool smoothScrolling, bool seek
+   // Assume point is relative to the left edge of TrackPanel!
+   wxPoint point, bool smoothScrolling, bool seek
 )
 {
    // Don't actually start scrubbing, but collect some information
@@ -340,13 +341,24 @@ void Scrubber::MarkScrubStart(
    //   ? ControlToolBar::PlayAppearance::Seek
    //   : ControlToolBar::PlayAppearance::Scrub);
 
-   mScrubStartPosition = xx;
+   const ViewInfo &viewInfo = ViewInfo::Get(*mProject);
+   auto &trackPanel = TrackPanel::Get(*mProject);
+   const double time = trackPanel.PointToTime(point);
+
+   // Limit x
+   auto width = viewInfo.GetTracksUsableWidth();
+   const auto offset =  viewInfo.GetLeftOffset();
+
+   mScrubStartPosition = std::max<wxInt64>(offset,
+      std::min<wxInt64>(offset + width - 1,
+         viewInfo.TimeToPosition(time, viewInfo.GetLeftOffset())));
+
    mCancelled = false;
 }
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
-// Assume xx is relative to the left edge of TrackPanel!
-bool Scrubber::MaybeStartScrubbing(wxCoord xx)
+// Assume point is relative to the left edge of TrackPanel!
+bool Scrubber::MaybeStartScrubbing(wxPoint point)
 {
    if (mScrubStartPosition < 0)
       return false;
@@ -365,19 +377,19 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
          return false;
       }
 
-      wxCoord position = xx;
+      const auto &viewInfo = ViewInfo::Get( *mProject );
+      double maxTime = TrackList::Get( *mProject ).GetEndTime();
+      auto &trackPanel = TrackPanel::Get( *mProject );
+      const int leftOffset = viewInfo.GetLeftOffset();
+      double time1 = std::min(maxTime,
+         trackPanel.PointToTime(point)
+      );
+      wxCoord position = viewInfo.TimeToPosition(time1, leftOffset);
+      auto xx = position;
       if (abs(mScrubStartPosition - position) >= SCRUBBING_PIXEL_TOLERANCE) {
-         auto &viewInfo = ViewInfo::Get( *mProject );
          auto &projectAudioManager = ProjectAudioManager::Get( *mProject );
-         double maxTime = TrackList::Get( *mProject ).GetEndTime();
-         const int leftOffset = viewInfo.GetLeftOffset();
-         // XY
          double time0 = std::min(maxTime,
             viewInfo.PositionToTime(mScrubStartPosition, leftOffset)
-         );
-         // XY
-         double time1 = std::min(maxTime,
-            viewInfo.PositionToTime(position, leftOffset)
          );
          if (time1 != time0) {
             if (busy) {
@@ -705,7 +717,7 @@ void Scrubber::ContinueScrubbingPoll()
       if (mDragging && mSmoothScrollingScrub) {
          const auto lastTime = gAudioIO->GetLastScrubTime();
          const auto delta = mLastScrubPosition - position.x;
-         const double time = viewInfo.OffsetTimeByPixels(lastTime, delta);
+         const double time = viewInfo.OffsetTimeByPixels(lastTime, delta); // ?
          mOptions.minSpeed = 0.0;
          mOptions.maxSpeed = mMaxSpeed;
          mOptions.adjustStart = true;
@@ -983,15 +995,8 @@ void Scrubber::DoScrub(bool seek)
    const bool scroll = ShouldScrubPinned();
    if (!wasScrubbing) {
       auto &tp = GetProjectPanel( *mProject );
-      const auto &viewInfo = ViewInfo::Get( *mProject );
-      wxCoord xx = tp.ScreenToClient(::wxGetMouseState().GetPosition()).x;
-
-      // Limit x
-      auto width = viewInfo.GetTracksUsableWidth();
-      const auto offset = viewInfo.GetLeftOffset();
-      xx = (std::max(offset, std::min(offset + width - 1, xx)));
-
-      MarkScrubStart(xx, scroll, seek);
+      auto point = tp.ScreenToClient(::wxGetMouseState().GetPosition());
+      MarkScrubStart(point, scroll, seek);
    }
    else if (mSeeking != seek) {
       // just switching mode

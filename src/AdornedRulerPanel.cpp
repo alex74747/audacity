@@ -754,7 +754,7 @@ private:
             if (!scrubber.HasMark()) {
                // Asynchronous scrub poller gets activated here
                scrubber.MarkScrubStart(
-                  event.event.m_x, Scrubber::ShouldScrubPinned(), false);
+                  event.event.GetPosition(), Scrubber::ShouldScrubPinned(), false);
             }
          }
       }

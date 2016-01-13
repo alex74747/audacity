@@ -163,6 +163,8 @@ public:
       (const std::shared_ptr< TrackPanelCell > &pCell);
    std::shared_ptr< TrackPanelCell > GetBackgroundCell();
 
+   virtual double PointToTime(wxPoint point);
+
 public:
 
 protected:
