@@ -237,6 +237,7 @@ void TrackArt::DrawNegativeOffsetTrackArrows(
 }
 
 
+
 #ifdef USE_MIDI
 #endif // USE_MIDI
 

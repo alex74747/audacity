@@ -273,6 +273,213 @@ float GridLine(float bin, float binUnit, SpectrogramSettings::Grid gridType)
    }
 }
 
+static
+void DrawWaterfallTimeslice(WaveTrackCache &waveTrackCache, WaveClip *clip,
+   wxDC & dc, const wxRect & rect,
+   const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo)
+{
+#ifdef PROFILE_WAVEFORM
+   Profiler profiler;
+#endif
+
+   const WaveTrack *const track = waveTrackCache.GetTrack().get();
+   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
+   // const bool autocorrelation = (settings.algorithm == SpectrogramSettings::algPitchEAC);
+
+   const ClipParameters params(true, track, clip, rect, selectedRegion, zoomInfo);
+   const wxRect &hiddenMid = params.hiddenMid;
+   // The "hiddenMid" rect contains the part of the display actually
+   // containing the waveform, as it appears without the fisheye.  If it's empty, we're done.
+   if (hiddenMid.width <= 0) {
+      return;
+   }
+
+   const double &t0 = params.t0;
+   // const double &tOffset = params.tOffset;
+   const double &averagePixelsPerSample = params.averagePixelsPerSample;
+   const double &rate = params.rate;
+   const double &hiddenLeftOffset = params.hiddenLeftOffset;
+   const double &leftOffset = params.leftOffset;
+   const wxRect &mid = params.mid;
+
+   // const int &range = settings.range;
+   // const int &gain = settings.gain;
+
+   const SpectrogramSettings::Style style = settings.style;
+
+   // We draw directly to a bit image in memory,
+   // and then paint this directly to our offscreen
+   // bitmap.  Note that this could be optimized even
+   // more, but for now this is not bad.  -dmazzoni
+
+   int theWidth = std::min(rect.width - (mid.x - rect.x),
+      mid.width +
+      // Drawing a waterfall, widen the rectangle rightward
+      int((mid.height - 1) / settings.GetSlope())
+   );
+
+   // const int half = settings.GetFFTLength() / 2;
+   const float *freq = 0;
+   const sampleCount *where = 0;
+   bool updated;
+   {
+      const double pps = averagePixelsPerSample * rate;
+      updated = clip->GetSpectrogram(waveTrackCache, freq, where, hiddenMid.width,
+         t0, pps);
+   }
+
+   float minFreq, maxFreq;
+   track->GetSpectrumBounds(&minFreq, &maxFreq);
+
+   const NumberScale numberScale(settings.GetScale(minFreq, maxFreq));
+
+   /*
+   const bool hidden = (ZoomInfo::HIDDEN == zoomInfo.GetFisheyeState());
+   const int begin = hidden
+      ? 0
+      : std::max(0, int(zoomInfo.GetFisheyeLeftBoundary(-leftOffset)));
+   const int end = hidden
+      ? 0
+      : std::min(mid.width, int(zoomInfo.GetFisheyeRightBoundary(-leftOffset)));
+   const int numPixels = std::max(0, end - begin);
+   const int zeroPaddingFactor = autocorrelation ? 1 : settings.zeroPaddingFactor;
+   SpecCache specCache
+      (numPixels, settings.algorithm, -1,
+       t0, settings.windowType,
+       settings.windowSize, zeroPaddingFactor, settings.frequencyGain);
+   if (numPixels > 0) {
+      // Calculate pixel value for the varying-zoom fisheye area
+      for (int ii = begin; ii < end; ++ii) {
+         const double time = zoomInfo.PositionToTime(ii, -leftOffset) - tOffset;
+         specCache.where[ii - begin] = sampleCount(0.5 + rate * time);
+      }
+      specCache.Populate
+         (settings, waveTrackCache,
+          0, 0, numPixels,
+          clip->GetNumSamples(),
+          tOffset, rate,
+          0 //FIXME -- make reassignment work with fisheye
+       );
+   }
+   */
+
+   // Now use the "pixel value cache," which contains floats in the
+   // range 0 to 1, to color pixels.  This is not straightforward.
+
+   // First, for x and y coordinates in the rectangle,
+   // find corresponding column and row of the cache, which involves a
+   // shearing of x with higher y in case of waterfalls.
+
+   // Then determine the number of pixels to color at and above those
+   // coordinates as a function of the value in the cache.
+   // That function is just 1 always for ordinary view but proprtional to the
+   // value for waterfall.
+
+   // Then paint the column.  But work bottom up, and for waterfalls, do not
+   // overpaint what was already done.  This achieves the "hidden line removal."
+
+   const double waterfallSlope = settings.GetSlope();
+   const int waterfallHeight = settings.waterfallHeight;
+
+   int correctedX = leftOffset - hiddenLeftOffset;
+   // int fisheyeColumn = 0;
+
+   NumberScale::Iterator it = numberScale.begin(mid.height);
+   // float nextBin = std::max(0.0f, std::min(float(half - 1), *it));
+
+   // Outer loop over y for this routine!  Not over x as when drawing the spectrogram.
+   int prevAdjustX = 0;
+   int yMin = hiddenMid.height, yMax = -1;
+   int xx = 0;
+   for (int yy = 0; yy < hiddenMid.height; ++yy) {
+      int waterfallAdjustX = 0;
+
+      // const float bin = nextBin;
+      // nextBin = std::max(0.0f, std::min(float(half - 1), *++it));
+
+      int adjustX = 0;
+
+      if (prevAdjustX != (adjustX = int(0.5 + yy / waterfallSlope))) {
+         if (yMax > -1) {
+            // Stroke the line, inclusive of endpoints
+            const int adjustedX = xx + prevAdjustX;
+            const int h1 = mid.height - 1;
+            AColor::Line(dc,
+               adjustedX, h1 - yMin,
+               adjustedX, h1 - yMax);
+         }
+         yMin = hiddenMid.height, yMax = -1;
+      }
+
+      prevAdjustX = adjustX;
+
+      for (int xx = 0; xx < theWidth; ++xx, ++correctedX)
+      {
+         //. To do: make this cooperate with the fisheye
+         /*
+         bool inFisheye = zoomInfo.InFisheye(xx, -leftOffset);
+         float *uncached =
+            inFisheye ? &specCache.freq[(fisheyeColumn++) * half] : 0;
+            */
+
+         int maxY = -1;
+         float prevValue = 0;
+         int prevZ = -1;
+
+         if (waterfallAdjustX > xx // We are in the transparency at the upper left corner of the rectangle
+            || xx - waterfallAdjustX >= mid.width // We are in the other transparency at lower right
+         ) {
+            ++maxY;
+            continue;
+         }
+         /*
+         if (waterfallAdjustX) {
+            inFisheye = zoomInfo.InFisheye(xx - waterfallAdjustX, -leftOffset);
+            if (inFisheye && waterfallAdjustX < fisheyeColumn)
+               uncached = &specCache.freq[(fisheyeColumn - 1 - waterfallAdjustX) * half];
+            else
+               uncached = 0;
+         }
+         */
+
+         float value =
+            /*
+            uncached
+            ? findValue(uncached, bin, nextBin, half, autocorrelation, gain, range)
+            :
+            */
+              correctedX >= waterfallAdjustX
+               ? clip->mSpecPxCache->values[(correctedX - waterfallAdjustX) * hiddenMid.height + yy]
+               : 0;
+         const int height =
+            std::max(1, int(0.5 + value * waterfallHeight));
+         int zz = yy + height - 1;
+
+         prevZ = zz;
+         prevValue = value;
+
+         const int prevMaxY = maxY;
+         maxY = std::max(maxY, zz);
+
+         // Draw top-down, maybe switching from curves to other colors
+         for (; zz > prevMaxY; --zz) {
+            if (zz < mid.height) {
+               dc.DrawPoint(xx, mid.height - 1 - zz);
+            }
+         }
+      } // each yy
+   } // each xx
+
+   // And the last line
+   if (yMax > -1) {
+      // Stroke the line, inclusive of endpoints
+      const int adjustedX = xx + prevAdjustX;
+      AColor::Line(dc,
+         adjustedX, mid.height - 1 - yMin,
+         adjustedX, mid.height - 1 - yMax);
+   }
+}
+
 void DrawClipSpectrum(TrackPanelDrawingContext &context,
                                    WaveTrackCache &waveTrackCache,
                                    const WaveClip *clip,

@@ -34,6 +34,8 @@ class SelectedRegion;
 class Track;
 class TrackPanel;
 struct TrackPanelDrawingContext;
+class WaveClip;
+class WaveTrackCache;
 class ZoomInfo;
 
 namespace TrackArt {
