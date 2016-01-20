@@ -137,6 +137,10 @@ class AUDACITY_DLL_API TrackArtist {
                          wxDC & dc, const wxRect & rect,
                          const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo);
 
+   void DrawWaterfallTimeslice(WaveTrackCache &cache, WaveClip *clip,
+                         wxDC & dc, const wxRect & rect,
+                         const SelectedRegion &selectedRegion, const ZoomInfo &zoomInfo);
+
    // Waveform utility functions
 
    void DrawWaveformBackground(wxDC & dc, int leftOffset, const wxRect &rect,
