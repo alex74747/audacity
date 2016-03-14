@@ -63,7 +63,7 @@ class ExportFFmpegAC3Options final : public wxPanel
 public:
 
    ExportFFmpegAC3Options(wxWindow *parent, int format);
-   virtual ~ExportFFmpegAC3Options();
+   virtual ~ExportFFmpegAC3Options() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -89,7 +89,7 @@ class ExportFFmpegAACOptions final : public wxPanel
 public:
 
    ExportFFmpegAACOptions(wxWindow *parent, int format);
-   virtual ~ExportFFmpegAACOptions();
+   virtual ~ExportFFmpegAACOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -105,7 +105,7 @@ class ExportFFmpegAMRNBOptions final : public wxPanel
 public:
 
    ExportFFmpegAMRNBOptions(wxWindow *parent, int format);
-   virtual ~ExportFFmpegAMRNBOptions();
+   virtual ~ExportFFmpegAMRNBOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -127,7 +127,7 @@ class ExportFFmpegWMAOptions final : public wxPanel
 public:
 
    ExportFFmpegWMAOptions(wxWindow *parent, int format);
-   ~ExportFFmpegWMAOptions();
+   ~ExportFFmpegWMAOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -150,7 +150,7 @@ class ExportFFmpegCustomOptions final : public wxPanel
 public:
 
    ExportFFmpegCustomOptions(wxWindow *parent, int format);
-   ~ExportFFmpegCustomOptions();
+   ~ExportFFmpegCustomOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -180,7 +180,7 @@ class ExportFFmpegOptions final : public wxDialog
 public:
 
    ExportFFmpegOptions(wxWindow *parent);
-   ~ExportFFmpegOptions();
+   ~ExportFFmpegOptions() NOEXCEPT;
    void PopulateOrExchange(ShuttleGui & S);
    void OnOK(wxCommandEvent& event);
    void OnFormatList(wxCommandEvent& event);
@@ -308,7 +308,7 @@ class FFmpegPreset
 {
 public:
    FFmpegPreset();
-   ~FFmpegPreset();
+   ~FFmpegPreset() NOEXCEPT;
 
    wxString mPresetName;
    wxArrayString mControlState;
@@ -321,7 +321,7 @@ class FFmpegPresets : XMLTagHandler
 {
 public:
    FFmpegPresets();
-   ~FFmpegPresets();
+   ~FFmpegPresets() NOEXCEPT;
 
    wxArrayString *GetPresetList();
    void LoadPreset(ExportFFmpegOptions *parent, wxString &name);

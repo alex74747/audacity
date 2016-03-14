@@ -108,7 +108,7 @@ BlockFile::BlockFile(wxFileName fileName, sampleCount samples):
    mSilentLog=FALSE;
 }
 
-BlockFile::~BlockFile()
+BlockFile::~BlockFile() NOEXCEPT
 {
    if (!IsLocked() && mFileName.HasName())
       wxRemoveFile(mFileName.GetFullPath());
@@ -586,7 +586,7 @@ void AliasBlockFile::WriteSummary()
    summaryFile.Write(summaryData, mSummaryInfo.totalSummaryBytes);
 }
 
-AliasBlockFile::~AliasBlockFile()
+AliasBlockFile::~AliasBlockFile() NOEXCEPT
 {
 }
 

@@ -32,7 +32,7 @@ CrossFader::CrossFader():
 
 
 
-CrossFader::~CrossFader()
+CrossFader::~CrossFader() NOEXCEPT
 {
 }
 

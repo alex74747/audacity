@@ -36,7 +36,7 @@ class EffectNoiseRemoval final : public Effect
 {
 public:
    EffectNoiseRemoval();
-   virtual ~EffectNoiseRemoval();
+   virtual ~EffectNoiseRemoval() NOEXCEPT;
 
    // IdentInterface implementation
 

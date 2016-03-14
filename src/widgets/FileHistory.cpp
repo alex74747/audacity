@@ -27,7 +27,7 @@ FileHistory::FileHistory(size_t maxfiles, wxWindowID base)
    mIDBase = base;
 }
 
-FileHistory::~FileHistory()
+FileHistory::~FileHistory() NOEXCEPT
 {
 }
 

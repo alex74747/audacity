@@ -56,7 +56,7 @@ SpectrumPrefs::SpectrumPrefs(wxWindow * parent, WaveTrack *wt)
    Populate(windowSize);
 }
 
-SpectrumPrefs::~SpectrumPrefs()
+SpectrumPrefs::~SpectrumPrefs() NOEXCEPT
 {
 }
 

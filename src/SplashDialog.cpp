@@ -121,7 +121,7 @@ void SplashDialog::Populate( ShuttleGui & S )
    S.EndVerticalLay();
 }
 
-SplashDialog::~SplashDialog()
+SplashDialog::~SplashDialog() NOEXCEPT
 {
    delete m_pLogo;
 }

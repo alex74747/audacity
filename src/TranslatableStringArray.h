@@ -43,7 +43,7 @@ public:
             this);
    }
 
-   ~TranslatableArray()
+   ~TranslatableArray() NOEXCEPT
    {
       if (wxTheApp)
          wxTheApp->Disconnect(EVT_LANGUAGE_CHANGE,

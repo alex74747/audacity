@@ -85,7 +85,7 @@ KeyConfigPrefs::KeyConfigPrefs(wxWindow * parent)
    Populate();
 }
 
-KeyConfigPrefs::~KeyConfigPrefs()
+KeyConfigPrefs::~KeyConfigPrefs() NOEXCEPT
 {
    if (mKey)
    {
@@ -703,7 +703,7 @@ KeyConfigPrefs::KeyConfigPrefs(wxWindow * parent)
    Populate();
 }
 
-KeyConfigPrefs::~KeyConfigPrefs()
+KeyConfigPrefs::~KeyConfigPrefs() NOEXCEPT
 {
    if (mKey)
    {

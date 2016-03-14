@@ -56,7 +56,7 @@ DirectoriesPrefs::DirectoriesPrefs(wxWindow * parent)
    Populate();
 }
 
-DirectoriesPrefs::~DirectoriesPrefs()
+DirectoriesPrefs::~DirectoriesPrefs() NOEXCEPT
 {
 }
 

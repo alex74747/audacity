@@ -211,7 +211,7 @@ public:
       *var = val_entry;
    }
 
-   ~VarSetter()
+   ~VarSetter() NOEXCEPT
    {
       *mVar = mValExit;
    }
@@ -309,7 +309,7 @@ public:
       SetDataObject(new FileObject());
    }
 
-   ~DropTarget()
+   ~DropTarget() NOEXCEPT
    {
    }
 
@@ -1046,7 +1046,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
 }
 
-AudacityProject::~AudacityProject()
+AudacityProject::~AudacityProject() NOEXCEPT
 {
    if (wxGetApp().GetRecentFiles())
    {
@@ -3351,7 +3351,7 @@ public:
    {
       mWindow->GetEventHandler()->SetEvtHandlerEnabled(false);
    }
-   ~ProjectDisabler()
+   ~ProjectDisabler() NOEXCEPT
    {
       mWindow->GetEventHandler()->SetEvtHandlerEnabled(true);
    }
@@ -3766,7 +3766,7 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
             pTags = oldTags->Duplicate();
       }
 
-      ~TempTags()
+      ~TempTags() NOEXCEPT
       {
          if (oldTags) {
             // roll back

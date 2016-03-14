@@ -50,7 +50,7 @@ class EffectPhaser final : public Effect
 {
 public:
    EffectPhaser();
-   virtual ~EffectPhaser();
+   virtual ~EffectPhaser() NOEXCEPT;
 
    // IdentInterface implementation
 

@@ -158,7 +158,7 @@ NyquistEffect::NyquistEffect(const wxString &fName)
    ParseFile();
 }
 
-NyquistEffect::~NyquistEffect()
+NyquistEffect::~NyquistEffect() NOEXCEPT
 {
 }
 

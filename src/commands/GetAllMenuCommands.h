@@ -39,7 +39,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~GetAllMenuCommands()
+   virtual ~GetAllMenuCommands() NOEXCEPT
    { }
 
    bool Apply(CommandExecutionContext context) override;

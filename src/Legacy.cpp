@@ -53,7 +53,7 @@ public:
       mFinished = false;
       mNewFile = NULL;
    }
-   ~AutoRollbackRenamer()
+   ~AutoRollbackRenamer() NOEXCEPT
    {
       if (mNewFile)
          fclose(mNewFile);

@@ -64,7 +64,7 @@ class CheckListAx final : public wxWindowAccessible
 public:
    CheckListAx(wxListCtrl * window);
 
-   virtual ~ CheckListAx();
+   virtual ~CheckListAx() NOEXCEPT;
 
    // Retrieves the address of an IDispatch interface for the specified child.
    // All objects must support this property.
@@ -138,7 +138,7 @@ CheckListAx::CheckListAx( wxListCtrl * window )
    mLastId = -1;
 }
 
-CheckListAx::~CheckListAx()
+CheckListAx::~CheckListAx() NOEXCEPT
 {
 }
 
@@ -419,7 +419,7 @@ class PluginRegistrationDialog final : public wxDialog
 public:
    // constructors and destructors
    PluginRegistrationDialog(wxWindow *parent, EffectType type);
-   virtual ~PluginRegistrationDialog();
+   virtual ~PluginRegistrationDialog() NOEXCEPT;
 
 private:
    void Populate();
@@ -497,7 +497,7 @@ PluginRegistrationDialog::PluginRegistrationDialog(wxWindow *parent, EffectType 
    Populate();
 }
 
-PluginRegistrationDialog::~PluginRegistrationDialog()
+PluginRegistrationDialog::~PluginRegistrationDialog() NOEXCEPT
 {
    mEffects->Disconnect(wxEVT_KEY_DOWN,
                         wxKeyEventHandler(PluginRegistrationDialog::OnListChar),
@@ -1052,7 +1052,7 @@ PluginDescriptor::PluginDescriptor()
    mEffectAutomatable = false;
 }
 
-PluginDescriptor::~PluginDescriptor()
+PluginDescriptor::~PluginDescriptor() NOEXCEPT
 {
    if (mInstance)
    {
@@ -1666,7 +1666,7 @@ PluginManager::PluginManager()
    mSettings = NULL;
 }
 
-PluginManager::~PluginManager()
+PluginManager::~PluginManager() NOEXCEPT
 {
    if (mSettings)
    {

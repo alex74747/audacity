@@ -75,7 +75,7 @@ public:
            wxWindowID id = wxID_ANY,
            const wxPoint & pos = wxDefaultPosition,
            const wxSize & size = wxDefaultSize);
-   virtual ~KeyView();
+   virtual ~KeyView() NOEXCEPT;
    wxString GetName() const; // Gets the control name from the base class
 
    void RefreshBindings(const wxArrayString & names,

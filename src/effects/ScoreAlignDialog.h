@@ -62,7 +62,7 @@ public:
 
    // constructors and destructors
    ScoreAlignDialog(wxWindow * parent, ScoreAlignParams &params);
-   ~ScoreAlignDialog();
+   ~ScoreAlignDialog() NOEXCEPT;
 
    bool TransferDataFromWindow();
 

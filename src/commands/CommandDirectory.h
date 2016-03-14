@@ -36,7 +36,7 @@ private:
    CommandMap mCmdMap;
 public:
    CommandDirectory();
-   ~CommandDirectory();
+   ~CommandDirectory() NOEXCEPT;
 
    /// If a command with the given name has been registered in the directory,
    /// return a pointer to the factory for commands of that type.

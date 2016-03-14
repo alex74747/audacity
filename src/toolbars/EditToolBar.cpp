@@ -80,7 +80,7 @@ EditToolBar::EditToolBar()
 {
 }
 
-EditToolBar::~EditToolBar()
+EditToolBar::~EditToolBar() NOEXCEPT
 {
 }
 

@@ -63,7 +63,7 @@ CommandDirectory::CommandDirectory()
    AddCommand(new SaveProjectCommandType());
 }
 
-CommandDirectory::~CommandDirectory()
+CommandDirectory::~CommandDirectory() NOEXCEPT
 {
    // Delete the factories
    CommandMap::iterator iter;

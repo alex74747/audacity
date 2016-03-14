@@ -289,7 +289,7 @@ EffectEqualization::EffectEqualization()
 }
 
 
-EffectEqualization::~EffectEqualization()
+EffectEqualization::~EffectEqualization() NOEXCEPT
 {
    if(mLogEnvelope)
       delete mLogEnvelope;
@@ -2910,7 +2910,7 @@ EqualizationPanel::EqualizationPanel(EffectEqualization *effect, wxWindow *paren
    ForceRecalc();
 }
 
-EqualizationPanel::~EqualizationPanel()
+EqualizationPanel::~EqualizationPanel() NOEXCEPT
 {
    if (mBitmap)
       delete mBitmap;
@@ -3199,7 +3199,7 @@ wxDialog(parent, wxID_ANY, _("Manage Curves List"),
    Populate();
 }
 
-EditCurvesDialog::~EditCurvesDialog()
+EditCurvesDialog::~EditCurvesDialog() NOEXCEPT
 {
 }
 
@@ -3675,7 +3675,7 @@ wxWindowAccessible( window )
    mFmt = fmt;
 }
 
-SliderAx::~SliderAx()
+SliderAx::~SliderAx() NOEXCEPT
 {
 }
 

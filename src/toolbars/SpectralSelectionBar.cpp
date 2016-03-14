@@ -94,7 +94,7 @@ SpectralSelectionBar::SpectralSelectionBar()
 {
 }
 
-SpectralSelectionBar::~SpectralSelectionBar()
+SpectralSelectionBar::~SpectralSelectionBar() NOEXCEPT
 {
    // Do nothing, sizer deletes the controls
 }

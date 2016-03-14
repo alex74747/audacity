@@ -49,7 +49,7 @@ class ODDecodeBlockFile final : public SimpleBlockFile
                      sampleCount aliasLen, int aliasChannel, unsigned int decodeType,
                    float min, float max, float rms, bool dataAvailable);
 
-   virtual ~ODDecodeBlockFile();
+   virtual ~ODDecodeBlockFile() NOEXCEPT;
    //checks to see if summary data has been computed and written to disk yet.  Thread safe.  Blocks if we are writing summary data.
    bool IsSummaryAvailable() override;
 

@@ -37,7 +37,7 @@ GUIPrefs::GUIPrefs(wxWindow * parent)
    Populate();
 }
 
-GUIPrefs::~GUIPrefs()
+GUIPrefs::~GUIPrefs() NOEXCEPT
 {
 }
 

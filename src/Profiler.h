@@ -40,7 +40,7 @@ class Profiler
  public:
 
    ///write to a profile at the end of the test.
-   virtual ~Profiler();
+    virtual ~Profiler() NOEXCEPT;
 
    ///start the task timer.
    void Begin(char* fileName, int lineNum, char* taskDescription);
@@ -69,7 +69,7 @@ class Profiler
    {
    public:
       TaskProfile();
-      virtual ~TaskProfile();
+      virtual ~TaskProfile() NOEXCEPT;
 
       ///start the task timer.
       void Begin(char* fileName, int lineNum, char* taskDescription);

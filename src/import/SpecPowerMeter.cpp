@@ -37,7 +37,7 @@ SpecPowerMeter::SpecPowerMeter(int sigLen)
    }
 }
 
-SpecPowerMeter::~SpecPowerMeter()
+SpecPowerMeter::~SpecPowerMeter() NOEXCEPT
 {
    delete[] mSigI;
    delete[] mSigFR;

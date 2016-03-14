@@ -143,7 +143,7 @@ LegacyBlockFile::LegacyBlockFile(wxFileName existingFile,
                             &mMin, &mMax, &mRMS);
 }
 
-LegacyBlockFile::~LegacyBlockFile()
+LegacyBlockFile::~LegacyBlockFile() NOEXCEPT
 {
 }
 

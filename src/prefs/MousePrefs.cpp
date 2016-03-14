@@ -66,7 +66,7 @@ MousePrefs::MousePrefs(wxWindow * parent)
    Populate();
 }
 
-MousePrefs::~MousePrefs()
+MousePrefs::~MousePrefs() NOEXCEPT
 {
 }
 

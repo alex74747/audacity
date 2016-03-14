@@ -25,7 +25,7 @@ class SplashDialog final : public wxDialog {
    DECLARE_DYNAMIC_CLASS(SplashDialog)
 public:
    SplashDialog(wxWindow * parent);
-   virtual ~ SplashDialog();
+   virtual ~SplashDialog() NOEXCEPT;
    void OnOK(wxCommandEvent & event);
    static void Show2( wxWindow * pParent );
 

@@ -16,6 +16,8 @@
 #ifndef __COMMANDTYPE__
 #define __COMMANDTYPE__
 
+#include "../Audacity.h"
+
 #include "CommandMisc.h"
 
 class Command;
@@ -31,7 +33,7 @@ private:
 
 public:
    CommandType();
-   virtual ~CommandType();
+   virtual ~CommandType() NOEXCEPT;
    wxString GetName();
    CommandSignature &GetSignature();
    wxString Describe();

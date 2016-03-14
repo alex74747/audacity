@@ -169,7 +169,7 @@ ExpandingToolBar::ExpandingToolBar(wxWindow* parent,
    mTimer.SetOwner(this, kTimerID);
 }
 
-ExpandingToolBar::~ExpandingToolBar()
+ExpandingToolBar::~ExpandingToolBar() NOEXCEPT
 {
 }
 
@@ -750,7 +750,7 @@ ToolBarDialog::ToolBarDialog(wxWindow* parent,
 {
 }
 
-ToolBarDialog::~ToolBarDialog()
+ToolBarDialog::~ToolBarDialog() NOEXCEPT
 {
 }
 
@@ -802,7 +802,7 @@ ToolBarFrame::ToolBarFrame(wxWindow* parent,
 {
 }
 
-ToolBarFrame::~ToolBarFrame()
+ToolBarFrame::~ToolBarFrame() NOEXCEPT
 {
 }
 
@@ -853,7 +853,7 @@ ToolBarArea::ToolBarArea(wxWindow* parent,
 
 }
 
-ToolBarArea::~ToolBarArea()
+ToolBarArea::~ToolBarArea() NOEXCEPT
 {
 }
 

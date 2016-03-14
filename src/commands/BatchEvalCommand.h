@@ -42,7 +42,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~BatchEvalCommand();
+   virtual ~BatchEvalCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };
 

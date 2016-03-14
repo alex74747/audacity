@@ -106,7 +106,7 @@ EffectNoiseRemoval::EffectNoiseRemoval()
    Init();
 }
 
-EffectNoiseRemoval::~EffectNoiseRemoval()
+EffectNoiseRemoval::~EffectNoiseRemoval() NOEXCEPT
 {
    delete [] mNoiseThreshold;
 }

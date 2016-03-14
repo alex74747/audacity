@@ -32,7 +32,7 @@ class EffectAutoDuck final : public Effect
 {
 public:
    EffectAutoDuck();
-   virtual ~EffectAutoDuck();
+   virtual ~EffectAutoDuck() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -94,7 +94,7 @@ class EffectAutoDuckPanel final : public wxPanel
 {
 public:
    EffectAutoDuckPanel(wxWindow *parent, EffectAutoDuck *effect);
-   virtual ~EffectAutoDuckPanel();
+   virtual ~EffectAutoDuckPanel() NOEXCEPT;
 
 private:
    enum EControlPoint

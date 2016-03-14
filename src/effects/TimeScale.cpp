@@ -80,7 +80,7 @@ EffectTimeScale::EffectTimeScale()
    SetLinearEffectFlag(true);
 }
 
-EffectTimeScale::~EffectTimeScale()
+EffectTimeScale::~EffectTimeScale() NOEXCEPT
 {
 }
 

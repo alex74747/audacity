@@ -25,7 +25,7 @@ class EffectSilence final : public Generator
 {
 public:
    EffectSilence();
-   virtual ~EffectSilence();
+   virtual ~EffectSilence() NOEXCEPT;
 
    // IdentInterface implementation
 

@@ -55,5 +55,5 @@ bool BatchEvalCommand::Apply(CommandExecutionContext WXUNUSED(context))
    return Batch.ApplyCommand(cmdName, cmdParams);
 }
 
-BatchEvalCommand::~BatchEvalCommand()
+BatchEvalCommand::~BatchEvalCommand() NOEXCEPT
 { }

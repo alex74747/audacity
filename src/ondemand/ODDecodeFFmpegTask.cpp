@@ -59,7 +59,7 @@ class ODFFmpegDecoder final : public ODFileDecoder
 public:
    ///This should handle unicode converted to UTF-8 on mac/linux, but OD TODO:check on windows
    ODFFmpegDecoder(const wxString & fileName, streamContext** scs, int numStreams,WaveTrack*** channels, AVFormatContext* formatContext, int streamIndex);
-   virtual ~ODFFmpegDecoder();
+   virtual ~ODFFmpegDecoder() NOEXCEPT;
 
    ///Decodes the samples for this blockfile from the real file into a float buffer.
    ///This is file specific, so subclasses must implement this only.
@@ -118,7 +118,7 @@ ODDecodeFFmpegTask::ODDecodeFFmpegTask(void* scs,int numStreams, WaveTrack*** ch
    //same for streamContext, but we should also use a ref counting system - this should be added to streamContext
  //  mScs = (streamContext**)malloc(sizeof(streamContext**)*mFormatContext->nb_streams);
 }
-ODDecodeFFmpegTask::~ODDecodeFFmpegTask()
+ODDecodeFFmpegTask::~ODDecodeFFmpegTask() NOEXCEPT
 {
 }
 
@@ -257,7 +257,7 @@ mStreamIndex(streamIndex)
 }
 
 //we have taken ownership, so DELETE the ffmpeg stuff allocated in ImportFFmpeg that was given to us.
-ODFFmpegDecoder::~ODFFmpegDecoder()
+ODFFmpegDecoder::~ODFFmpegDecoder() NOEXCEPT
 {
    if (FFmpegLibsInst->ValidLibsLoaded())
    {

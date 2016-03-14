@@ -26,7 +26,7 @@ class EffectsPrefs final : public PrefsPanel
 {
  public:
    EffectsPrefs(wxWindow * parent);
-   ~EffectsPrefs();
+   ~EffectsPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

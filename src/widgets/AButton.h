@@ -54,7 +54,7 @@ class AButton final : public wxWindow {
            wxImage dis,
            bool toggle);
 
-   virtual ~ AButton();
+   virtual ~AButton() NOEXCEPT;
 
    bool AcceptsFocus() const override { return false; }
    bool AcceptsFocusFromKeyboard() const override { return true; }
@@ -178,7 +178,7 @@ class AButtonAx final : public wxWindowAccessible
 public:
    AButtonAx(wxWindow * window);
 
-   virtual ~ AButtonAx();
+   virtual ~AButtonAx() NOEXCEPT;
 
    // Performs the default action. childId is 0 (the action for this object)
    // or > 0 (the action for a child).

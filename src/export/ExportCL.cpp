@@ -43,7 +43,7 @@ class ExportCLOptions final : public wxPanel
 {
 public:
    ExportCLOptions(wxWindow *parent, int format);
-   virtual ~ExportCLOptions();
+   virtual ~ExportCLOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -88,7 +88,7 @@ ExportCLOptions::ExportCLOptions(wxWindow *parent, int WXUNUSED(format))
    parent->Layout();
 }
 
-ExportCLOptions::~ExportCLOptions()
+ExportCLOptions::~ExportCLOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }

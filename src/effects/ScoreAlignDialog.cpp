@@ -211,7 +211,7 @@ ScoreAlignDialog::ScoreAlignDialog(wxWindow *parent, ScoreAlignParams &params)
    }
 }
 
-ScoreAlignDialog::~ScoreAlignDialog()
+ScoreAlignDialog::~ScoreAlignDialog() NOEXCEPT
 {
 }
 

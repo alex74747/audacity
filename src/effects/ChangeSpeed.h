@@ -31,7 +31,7 @@ class EffectChangeSpeed final : public Effect
 {
 public:
    EffectChangeSpeed();
-   virtual ~EffectChangeSpeed();
+   virtual ~EffectChangeSpeed() NOEXCEPT;
 
    // IdentInterface implementation
 

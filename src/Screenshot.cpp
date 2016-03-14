@@ -45,7 +45,7 @@ class ScreenFrame final : public wxFrame
  public:
    // constructors and destructors
    ScreenFrame(wxWindow *parent, wxWindowID id);
-   virtual ~ScreenFrame();
+   virtual ~ScreenFrame() NOEXCEPT;
 
    bool ProcessEvent(wxEvent & event) override;
 
@@ -290,7 +290,7 @@ ScreenFrame::ScreenFrame(wxWindow * parent, wxWindowID id)
    mContext.GetProject()->mToolManager->Reset();
 }
 
-ScreenFrame::~ScreenFrame()
+ScreenFrame::~ScreenFrame() NOEXCEPT
 {
    delete mCommand;
 }

@@ -25,7 +25,7 @@ class ThemePrefs final : public PrefsPanel
 {
  public:
    ThemePrefs(wxWindow * parent);
-   ~ThemePrefs(void);
+   ~ThemePrefs(void) NOEXCEPT;
    bool Apply() override;
 
  private:

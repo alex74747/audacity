@@ -144,7 +144,7 @@ HistoryWindow::HistoryWindow(AudacityProject *parent, UndoManager *manager):
                      this);
 }
 
-HistoryWindow::~HistoryWindow()
+HistoryWindow::~HistoryWindow() NOEXCEPT
 {
    wxTheApp->Disconnect(EVT_AUDIOIO_PLAYBACK,
                         wxCommandEventHandler(HistoryWindow::OnAudioIO),

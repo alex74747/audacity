@@ -32,7 +32,7 @@ class SelectionBar final : public ToolBar {
  public:
 
    SelectionBar();
-   virtual ~SelectionBar();
+   virtual ~SelectionBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

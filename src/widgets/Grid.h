@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_WIDGETS_GRID__
 #define __AUDACITY_WIDGETS_GRID__
 
+#include "../Audacity.h"
 #include <wx/defs.h>
 #include <wx/choice.h>
 #include <wx/dynarray.h>
@@ -43,7 +44,7 @@ class TimeEditor final : public wxGridCellEditor
 
    TimeEditor(const wxString &format, double rate);
 
-   ~TimeEditor();
+   ~TimeEditor() NOEXCEPT;
 
    // Precondition: parent != NULL
    void Create(wxWindow *parent, wxWindowID id, wxEvtHandler *handler);
@@ -123,7 +124,7 @@ public:
 
    ChoiceEditor(const wxArrayString &choices);
 
-   ~ChoiceEditor();
+   ~ChoiceEditor() NOEXCEPT;
 
    void Create(wxWindow *parent,
                        wxWindowID id,
@@ -193,7 +194,7 @@ class Grid final : public wxGrid
         long style = wxWANTS_CHARS | wxBORDER,
         const wxString& name = wxPanelNameStr);
 
-   ~Grid();
+   ~Grid() NOEXCEPT;
 
 #if wxUSE_ACCESSIBILITY
    void ClearGrid();

@@ -83,8 +83,8 @@ public:
       wxWindowID id, const wxString &titlePrefix)
       : wxTreebook( parent, id )
       , mTitlePrefix(titlePrefix)
-   {;};
-   ~wxTreebookExt(){;};
+   {}
+   ~wxTreebookExt() NOEXCEPT {}
    int ChangeSelection(size_t n) override;
    int SetSelection(size_t n) override;
    const wxString mTitlePrefix;
@@ -316,7 +316,7 @@ PrefsDialog::PrefsDialog
    CentreOnParent();
 }
 
-PrefsDialog::~PrefsDialog()
+PrefsDialog::~PrefsDialog() NOEXCEPT
 {
 }
 
@@ -473,7 +473,7 @@ GlobalPrefsDialog::GlobalPrefsDialog(wxWindow * parent, Factories &factories)
 {
 }
 
-GlobalPrefsDialog::~GlobalPrefsDialog()
+GlobalPrefsDialog::~GlobalPrefsDialog() NOEXCEPT
 {
 }
 
@@ -503,7 +503,7 @@ void PrefsDialog::RecordExpansionState()
       mFactories[0].expanded = true;
 }
 
-PrefsPanel::~PrefsPanel()
+PrefsPanel::~PrefsPanel() NOEXCEPT
 {
 }
 

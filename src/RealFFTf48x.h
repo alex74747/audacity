@@ -89,7 +89,7 @@ public:
    int mSinCosTablePow;
    SinCosStruct *mSinCosTable;
    SinCosTable();
-   ~SinCosTable(){ delete [] mSinCosTable; };
+   ~SinCosTable() NOEXCEPT { delete[] mSinCosTable; };
 };
 
 int SmallRB(int bits, int numberBits);

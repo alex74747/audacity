@@ -43,7 +43,7 @@ class PaulStretch
 public:
    PaulStretch(float rap_,int in_bufsize_,float samplerate_);
    //in_bufsize is also a half of a FFT buffer (in samples)
-   virtual ~PaulStretch();
+   virtual ~PaulStretch() NOEXCEPT;
 
    void process(float *smps,int nsmps);
 
@@ -88,7 +88,7 @@ EffectPaulstretch::EffectPaulstretch()
    SetLinearEffectFlag(true);
 }
 
-EffectPaulstretch::~EffectPaulstretch()
+EffectPaulstretch::~EffectPaulstretch() NOEXCEPT
 {
 }
 
@@ -391,7 +391,7 @@ PaulStretch::PaulStretch(float rap_,int in_bufsize_,float samplerate_)
    }
 }
 
-PaulStretch::~PaulStretch()
+PaulStretch::~PaulStretch() NOEXCEPT
 {
    delete [] out_buf;
    delete [] old_out_smp_buf;

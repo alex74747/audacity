@@ -86,7 +86,7 @@ class ExportMP2Options final : public wxPanel
 {
 public:
    ExportMP2Options(wxWindow *parent, int format);
-   virtual ~ExportMP2Options();
+   virtual ~ExportMP2Options() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -116,7 +116,7 @@ ExportMP2Options::ExportMP2Options(wxWindow *parent, int WXUNUSED(format))
 
 ///
 ///
-ExportMP2Options::~ExportMP2Options()
+ExportMP2Options::~ExportMP2Options() NOEXCEPT
 {
    TransferDataFromWindow();
 }

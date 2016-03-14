@@ -78,7 +78,7 @@ public:
       numODPixels = CountODPixels(0, len);
    }
 
-   ~WaveCache()
+   ~WaveCache() NOEXCEPT
    {
       ClearInvalidRegions();
    }
@@ -329,7 +329,7 @@ WaveClip::WaveClip(const WaveClip& orig, DirManager *projDirManager)
    mIsPlaceholder = orig.GetIsPlaceholder();
 }
 
-WaveClip::~WaveClip()
+WaveClip::~WaveClip() NOEXCEPT
 {
    delete mSequence;
 

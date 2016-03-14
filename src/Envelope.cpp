@@ -69,7 +69,7 @@ Envelope::Envelope()
    mSearchGuess = -1;
 }
 
-Envelope::~Envelope()
+Envelope::~Envelope() NOEXCEPT
 {
 }
 

@@ -60,7 +60,7 @@ MidiIOPrefs::MidiIOPrefs(wxWindow * parent)
    Populate();
 }
 
-MidiIOPrefs::~MidiIOPrefs()
+MidiIOPrefs::~MidiIOPrefs() NOEXCEPT
 {
 }
 

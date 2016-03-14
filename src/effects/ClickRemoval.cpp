@@ -69,7 +69,7 @@ EffectClickRemoval::EffectClickRemoval()
    sep = 2049;
 }
 
-EffectClickRemoval::~EffectClickRemoval()
+EffectClickRemoval::~EffectClickRemoval() NOEXCEPT
 {
 }
 

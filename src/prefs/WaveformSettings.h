@@ -33,7 +33,7 @@ public:
    WaveformSettings();
    WaveformSettings(const WaveformSettings &other);
    WaveformSettings& operator= (const WaveformSettings &other);
-   ~WaveformSettings();
+   ~WaveformSettings() NOEXCEPT;
 
    bool IsDefault() const
    {

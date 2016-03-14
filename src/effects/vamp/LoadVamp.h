@@ -26,7 +26,7 @@ class VampEffectsModule final : public ModuleInterface
 {
 public:
    VampEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~VampEffectsModule();
+   virtual ~VampEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

@@ -143,7 +143,7 @@ LabelTrack::LabelTrack(const LabelTrack &orig) :
    ResetFlags();
 }
 
-LabelTrack::~LabelTrack()
+LabelTrack::~LabelTrack() NOEXCEPT
 {
    int len = mLabels.Count();
 

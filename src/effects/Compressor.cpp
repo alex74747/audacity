@@ -92,7 +92,7 @@ EffectCompressor::EffectCompressor()
    SetLinearEffectFlag(false);
 }
 
-EffectCompressor::~EffectCompressor()
+EffectCompressor::~EffectCompressor() NOEXCEPT
 {
    if (mCircle) {
       delete[] mCircle;

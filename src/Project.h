@@ -154,7 +154,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
  public:
    AudacityProject(wxWindow * parent, wxWindowID id,
                    const wxPoint & pos, const wxSize & size);
-   virtual ~AudacityProject();
+   virtual ~AudacityProject() NOEXCEPT;
 
    AudioIOStartStreamOptions GetDefaultPlayOptions();
 

@@ -67,7 +67,7 @@ EffectLeveller::EffectLeveller()
    CalcLevellerFactors();
 }
 
-EffectLeveller::~EffectLeveller()
+EffectLeveller::~EffectLeveller() NOEXCEPT
 {
 }
 

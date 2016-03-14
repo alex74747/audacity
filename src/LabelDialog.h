@@ -40,7 +40,7 @@ class LabelDialog final : public wxDialog
                ViewInfo &viewinfo,
                double rate,
                const wxString & format);
-   ~LabelDialog();
+   ~LabelDialog() NOEXCEPT;
 
     bool Show(bool show = true) override;
 

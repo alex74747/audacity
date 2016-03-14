@@ -68,7 +68,7 @@ ODPCMAliasBlockFile::ODPCMAliasBlockFile(
    mSummaryBeingComputed=mHasBeenSaved=false;
  }
 
-ODPCMAliasBlockFile::~ODPCMAliasBlockFile()
+ODPCMAliasBlockFile::~ODPCMAliasBlockFile() NOEXCEPT
 {
 }
 

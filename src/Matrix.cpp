@@ -66,7 +66,7 @@ void Vector::CopyFrom(const Vector &other)
       mData[i] = other.mData[i];
 }
 
-Vector::~Vector()
+Vector::~Vector() NOEXCEPT
 {
    if (mCopy)
       delete[] mData;
@@ -131,7 +131,7 @@ void Matrix::CopyFrom(const Matrix &other)
    }
 }
 
-Matrix::~Matrix()
+Matrix::~Matrix() NOEXCEPT
 {
    int i;
    for(i=0; i<mRows; i++)

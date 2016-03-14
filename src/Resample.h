@@ -33,7 +33,7 @@ class Resample final
    // dMinFactor and dMaxFactor specify the range of factors for variable-rate resampling.
    // For constant-rate, pass the same value for both.
    Resample(const bool useBestMethod, const double dMinFactor, const double dMaxFactor);
-   ~Resample();
+   ~Resample() NOEXCEPT;
 
    static int GetNumMethods();
    static wxString GetMethodName(int index);

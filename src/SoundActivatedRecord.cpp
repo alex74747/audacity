@@ -42,7 +42,7 @@ SoundActivatedRecord::SoundActivatedRecord(wxWindow* parent)
    Center();
 }
 
-SoundActivatedRecord::~SoundActivatedRecord()
+SoundActivatedRecord::~SoundActivatedRecord() NOEXCEPT
 {
 }
 

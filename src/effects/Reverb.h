@@ -30,7 +30,7 @@ class EffectReverb final : public Effect
 {
 public:
    EffectReverb();
-   virtual ~EffectReverb();
+   virtual ~EffectReverb() NOEXCEPT;
 
    struct Params
    {

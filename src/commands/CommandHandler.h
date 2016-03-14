@@ -28,7 +28,7 @@ class CommandHandler
 
    public:
       CommandHandler(AudacityApp &app);
-      ~CommandHandler();
+      ~CommandHandler() NOEXCEPT;
 
       // This should only be used during initialization
       void SetProject(AudacityProject *proj);

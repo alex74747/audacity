@@ -25,14 +25,14 @@ class VSTControlImpl final : public wxWidgetCocoaImpl
 {
 public :
    VSTControlImpl(wxWindowMac *peer, NSView *view);
-   ~VSTControlImpl();
+   ~VSTControlImpl() NOEXCEPT;
 };
 
 class VSTControl : public VSTControlBase
 {
 public:
    VSTControl();
-   ~VSTControl();
+   ~VSTControl() NOEXCEPT;
 
    bool Create(wxWindow *parent, VSTEffectLink *link);
 

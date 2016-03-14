@@ -49,7 +49,7 @@ EffectManager::EffectManager()
 #endif
 }
 
-EffectManager::~EffectManager()
+EffectManager::~EffectManager() NOEXCEPT
 {
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
    // wxWidgets has already destroyed the rack since it was derived from wxFrame. So

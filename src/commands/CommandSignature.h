@@ -33,7 +33,7 @@ private:
    explicit CommandSignature(const CommandSignature & WXUNUSED(other)) { }
 public:
    explicit CommandSignature() { }
-   ~CommandSignature();
+   ~CommandSignature() NOEXCEPT;
 
    // Add a parameter to the signature.
    //    name:  the parameter name (case-sensitive)

@@ -77,7 +77,7 @@ Sequence::Sequence(const Sequence &orig, DirManager *projDirManager)
    (void)bResult;
 }
 
-Sequence::~Sequence()
+Sequence::~Sequence() NOEXCEPT
 {
    DerefAllFiles();
    mDirManager->Deref();

@@ -217,7 +217,7 @@ LabelDialog::LabelDialog(wxWindow *parent,
    Center();
 }
 
-LabelDialog::~LabelDialog()
+LabelDialog::~LabelDialog() NOEXCEPT
 {
 }
 

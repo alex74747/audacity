@@ -18,7 +18,7 @@
 class AUDACITY_DLL_API XMLFileReader final {
  public:
    XMLFileReader();
-   ~XMLFileReader();
+   ~XMLFileReader() NOEXCEPT;
 
    bool Parse(XMLTagHandler *baseHandler,
               const wxString &fname);

@@ -45,7 +45,7 @@ public:
                    const wxString & name,
                    AudioComponent component,
                    AudioUnitEffect *master = NULL);
-   virtual ~AudioUnitEffect();
+   virtual ~AudioUnitEffect() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -225,7 +225,7 @@ class AudioUnitEffectsModule final : public ModuleInterface
 {
 public:
    AudioUnitEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~AudioUnitEffectsModule();
+   virtual ~AudioUnitEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

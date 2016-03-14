@@ -34,7 +34,7 @@ class ODComputeSummaryTask final : public ODTask
 
    /// Constructs an ODTask
    ODComputeSummaryTask();
-   virtual ~ODComputeSummaryTask(){};
+   virtual ~ODComputeSummaryTask() NOEXCEPT {};
 
    ODTask* Clone() override;
 

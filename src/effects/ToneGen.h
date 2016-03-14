@@ -29,7 +29,7 @@ class EffectToneGen final : public Effect
 {
 public:
    EffectToneGen(bool isChirp);
-   virtual ~EffectToneGen();
+   virtual ~EffectToneGen() NOEXCEPT;
 
    // IdentInterface implementation
 

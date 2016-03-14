@@ -32,7 +32,7 @@ class CrossFader
 
  public:
   CrossFader();
-  ~CrossFader();
+  ~CrossFader() NOEXCEPT;
 
   //This sets a crossfade mode where the overlapping
   //tracks are simply mixed equally.

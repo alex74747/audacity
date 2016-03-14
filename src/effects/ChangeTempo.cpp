@@ -74,7 +74,7 @@ EffectChangeTempo::EffectChangeTempo()
    SetLinearEffectFlag(true);
 }
 
-EffectChangeTempo::~EffectChangeTempo()
+EffectChangeTempo::~EffectChangeTempo() NOEXCEPT
 {
 }
 

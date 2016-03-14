@@ -82,7 +82,7 @@ Importer::Importer()
    mExtImportItems = NULL;
 }
 
-Importer::~Importer()
+Importer::~Importer() NOEXCEPT
 {
    if (mExtImportItems != NULL)
    {
@@ -780,7 +780,7 @@ wxDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
    SetSize( 400, 200 );
 }
 
-ImportStreamDialog::~ImportStreamDialog()
+ImportStreamDialog::~ImportStreamDialog() NOEXCEPT
 {
 
 }

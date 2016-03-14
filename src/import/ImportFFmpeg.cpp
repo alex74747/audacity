@@ -176,7 +176,7 @@ public:
 
       }
 
-   ~FFmpegImportPlugin() { }
+   ~FFmpegImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("libav"); }
    wxString GetPluginFormatDescription();
@@ -191,7 +191,7 @@ class FFmpegImportFileHandle final : public ImportFileHandle
 
 public:
    FFmpegImportFileHandle(const wxString & name);
-   ~FFmpegImportFileHandle();
+   ~FFmpegImportFileHandle() NOEXCEPT;
 
    ///! Format initialization
    ///\return true if successful, false otherwise
@@ -853,7 +853,7 @@ void FFmpegImportFileHandle::GetMetadata(Tags *tags, const wxChar *tag, const ch
 }
 
 
-FFmpegImportFileHandle::~FFmpegImportFileHandle()
+FFmpegImportFileHandle::~FFmpegImportFileHandle() NOEXCEPT
 {
 #ifdef EXPERIMENTAL_OD_FFMPEG
    //ODDecodeFFmpegTask takes ownership and deltes it there.

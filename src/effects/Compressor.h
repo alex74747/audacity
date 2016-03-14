@@ -33,7 +33,7 @@ class EffectCompressor final : public EffectTwoPassSimpleMono
 public:
 
    EffectCompressor();
-   virtual ~EffectCompressor();
+   virtual ~EffectCompressor() NOEXCEPT;
 
    // IdentInterface implementation
 

@@ -158,7 +158,7 @@ Ruler::Ruler()
    mUseZoomInfo = NULL;
 }
 
-Ruler::~Ruler()
+Ruler::~Ruler() NOEXCEPT
 {
    Invalidate();  // frees up our arrays
    if( mUserBits )
@@ -1602,7 +1602,7 @@ RulerPanel::RulerPanel(wxWindow* parent, wxWindowID id,
 {
 }
 
-RulerPanel::~RulerPanel()
+RulerPanel::~RulerPanel() NOEXCEPT
 {
 }
 
@@ -1747,7 +1747,7 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* parent,
                      this);
 }
 
-AdornedRulerPanel::~AdornedRulerPanel()
+AdornedRulerPanel::~AdornedRulerPanel() NOEXCEPT
 {
    // Done with the snap manager
    if (mSnapManager) {

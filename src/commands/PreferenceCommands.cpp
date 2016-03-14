@@ -47,7 +47,7 @@ bool GetPreferenceCommand::Apply(CommandExecutionContext WXUNUSED(context))
    return true;
 }
 
-GetPreferenceCommand::~GetPreferenceCommand()
+GetPreferenceCommand::~GetPreferenceCommand() NOEXCEPT
 { }
 
 // SetPreference
@@ -77,5 +77,5 @@ bool SetPreferenceCommand::Apply(CommandExecutionContext WXUNUSED(context))
    return (gPrefs->Write(prefName, prefValue) && gPrefs->Flush());
 }
 
-SetPreferenceCommand::~SetPreferenceCommand()
+SetPreferenceCommand::~SetPreferenceCommand() NOEXCEPT
 { }

@@ -76,7 +76,7 @@ BatchProcessDialog::BatchProcessDialog(wxWindow * parent):
    mAbort = false;
 }
 
-BatchProcessDialog::~BatchProcessDialog()
+BatchProcessDialog::~BatchProcessDialog() NOEXCEPT
 {
 }
 
@@ -468,7 +468,7 @@ EditChainsDialog::EditChainsDialog(wxWindow * parent):
    Populate();
 }
 
-EditChainsDialog::~EditChainsDialog()
+EditChainsDialog::~EditChainsDialog() NOEXCEPT
 {
 }
 

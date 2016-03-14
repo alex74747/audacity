@@ -47,7 +47,7 @@ public:
       mHandler = NULL;
    }
 
-   virtual ~DeviceChangeListener()
+   virtual ~DeviceChangeListener() NOEXCEPT
    {
       if (mEnumerator)
       {
@@ -184,7 +184,7 @@ public:
       mThread = 0;
    }
 
-   virtual ~DeviceChangeListener()
+   virtual ~DeviceChangeListener() NOEXCEPT
    {
       if (mThread)
       {
@@ -289,7 +289,7 @@ public:
       mListening = false;
    }
 
-   virtual ~DeviceChangeListener()
+   virtual ~DeviceChangeListener() NOEXCEPT
    {
       if (mListening)
       {
@@ -378,7 +378,7 @@ DeviceChangeHandler::DeviceChangeHandler()
    mListener->Enable(true);
 }
 
-DeviceChangeHandler::~DeviceChangeHandler()
+DeviceChangeHandler::~DeviceChangeHandler() NOEXCEPT
 {
    if (mListener)
    {

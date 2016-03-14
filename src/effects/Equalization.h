@@ -87,7 +87,7 @@ class EffectEqualization final : public Effect,
 {
 public:
    EffectEqualization();
-   virtual ~EffectEqualization();
+   virtual ~EffectEqualization() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -286,7 +286,7 @@ class EqualizationPanel final : public wxPanel
 {
 public:
    EqualizationPanel(EffectEqualization *effect, wxWindow *parent);
-   ~EqualizationPanel();
+   ~EqualizationPanel() NOEXCEPT;
 
    // We don't need or want to accept focus.
    bool AcceptsFocus() const { return false; }
@@ -337,7 +337,7 @@ class EditCurvesDialog final : public wxDialog
 {
 public:
    EditCurvesDialog(wxWindow * parent, EffectEqualization * effect, int position);
-   ~EditCurvesDialog();
+   ~EditCurvesDialog() NOEXCEPT;
 
 private:
 
@@ -382,7 +382,7 @@ class SliderAx final : public wxWindowAccessible
 public:
    SliderAx(wxWindow * window, const wxString &fmt);
 
-   virtual ~ SliderAx();
+   virtual ~SliderAx() NOEXCEPT;
 
    // Retrieves the address of an IDispatch interface for the specified child.
    // All objects must support this property.

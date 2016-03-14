@@ -42,7 +42,7 @@ class LadspaEffect final : public wxEvtHandler,
 {
 public:
    LadspaEffect(const wxString & path, int index);
-   virtual ~LadspaEffect();
+   virtual ~LadspaEffect() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -206,7 +206,7 @@ class LadspaEffectsModule final : public ModuleInterface
 {
 public:
    LadspaEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~LadspaEffectsModule();
+   virtual ~LadspaEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

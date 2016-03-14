@@ -26,7 +26,7 @@ class EffectRepeat final : public Effect
 {
 public:
    EffectRepeat();
-   virtual ~EffectRepeat();
+   virtual ~EffectRepeat() NOEXCEPT;
 
    // IdentInterface implementation
 

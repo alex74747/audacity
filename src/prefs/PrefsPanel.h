@@ -50,7 +50,7 @@ class PrefsPanel /* not final */ : public wxPanel
       SetName(title);      // Provide audible label
    }
 
-   virtual ~PrefsPanel();
+   virtual ~PrefsPanel() NOEXCEPT;
 
    // NEW virtuals
    virtual bool Apply() = 0;

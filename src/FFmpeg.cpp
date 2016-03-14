@@ -584,7 +584,7 @@ FFmpegLibs::FFmpegLibs()
 
 }
 
-FFmpegLibs::~FFmpegLibs()
+FFmpegLibs::~FFmpegLibs() NOEXCEPT
 {
    FreeLibs();
 };

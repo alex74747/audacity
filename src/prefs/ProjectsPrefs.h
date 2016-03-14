@@ -25,7 +25,7 @@ class ProjectsPrefs final : public PrefsPanel
 {
  public:
    ProjectsPrefs(wxWindow * parent);
-   ~ProjectsPrefs();
+   ~ProjectsPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

@@ -26,6 +26,8 @@
 #ifndef __AUDACITY_MATRIX__
 #define __AUDACITY_MATRIX__
 
+#include "Audacity.h"
+
 class Matrix;
 
 class Vector
@@ -36,7 +38,7 @@ class Vector
    Vector(int len, double *data=NULL, bool copy=true);
    Vector(int len, float *data);
    Vector& operator=(const Vector &other);
-   virtual ~Vector();
+   virtual ~Vector() NOEXCEPT;
 
    inline double& operator[](int i) { return mData[i]; }
    inline double operator[](int i) const { return mData[i]; }
@@ -57,7 +59,7 @@ class Matrix
  public:
    Matrix(const Matrix& copyFrom);
    Matrix(int rows, int cols, double **data=NULL);
-   virtual ~Matrix();
+   virtual ~Matrix() NOEXCEPT;
 
    Matrix& operator=(const Matrix& other);
 

@@ -42,7 +42,7 @@ bool ImportCommand::Apply(CommandExecutionContext context)
    return context.GetProject()->Import(filename);
 }
 
-ImportCommand::~ImportCommand()
+ImportCommand::~ImportCommand() NOEXCEPT
 { }
 
 // Export
@@ -117,5 +117,5 @@ bool ExportCommand::Apply(CommandExecutionContext context)
    return false;
 }
 
-ExportCommand::~ExportCommand()
+ExportCommand::~ExportCommand() NOEXCEPT
 { }

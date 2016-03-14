@@ -23,7 +23,7 @@ class EffectNoiseReduction final : public Effect {
 public:
 
    EffectNoiseReduction();
-   virtual ~EffectNoiseReduction();
+   virtual ~EffectNoiseReduction() NOEXCEPT;
 
    using Effect::TrackProgress;
 

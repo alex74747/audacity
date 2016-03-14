@@ -32,7 +32,7 @@ class AUDACITY_DLL_API ZoomInfo /* not final */
 {
 public:
    ZoomInfo(double start, double pixelsPerSecond);
-   ~ZoomInfo();
+   ~ZoomInfo() NOEXCEPT;
 
    // Be sure we don't slice
    ZoomInfo(const ZoomInfo&) PROHIBITED;

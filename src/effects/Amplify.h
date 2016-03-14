@@ -31,7 +31,7 @@ class EffectAmplify final : public Effect
 {
 public:
    EffectAmplify();
-   virtual ~EffectAmplify();
+   virtual ~EffectAmplify() NOEXCEPT;
 
    // IdentInterface implementation
 

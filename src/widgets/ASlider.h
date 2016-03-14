@@ -114,7 +114,7 @@ class LWSlider
              float speed,
              int orientation = wxHORIZONTAL); // wxHORIZONTAL or wxVERTICAL. wxVERTICAL is currently only for DB_SLIDER.
 
-   virtual ~LWSlider();
+   virtual ~LWSlider() NOEXCEPT;
 
    wxWindowID GetId();
    void SetId(wxWindowID id);
@@ -263,7 +263,7 @@ class ASlider /* not final */ : public wxPanel
             bool canUseShift = true,
             float stepValue = STEP_CONTINUOUS,
             int orientation = wxHORIZONTAL);
-   virtual ~ASlider();
+   virtual ~ASlider() NOEXCEPT;
 
    void GetScroll(float & line, float & page);
    void SetScroll(float line, float page);
@@ -328,7 +328,7 @@ class SliderDialog final : public wxDialog
                 float value,
                 float line,
                 float page);
-   ~SliderDialog();
+   ~SliderDialog() NOEXCEPT;
 
    float Get();
 
@@ -354,7 +354,7 @@ class ASliderAx final : public wxWindowAccessible
 public:
    ASliderAx(wxWindow * window);
 
-   virtual ~ ASliderAx();
+   virtual ~ASliderAx() NOEXCEPT;
 
    // Retrieves the address of an IDispatch interface for the specified child.
    // All objects must support this property.

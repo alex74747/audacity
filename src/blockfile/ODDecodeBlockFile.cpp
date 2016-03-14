@@ -66,7 +66,7 @@ ODDecodeBlockFile::ODDecodeBlockFile(wxFileName existingFile, wxFileName audioFi
 
 
 
-ODDecodeBlockFile::~ODDecodeBlockFile()
+ODDecodeBlockFile::~ODDecodeBlockFile() NOEXCEPT
 {
 
 }

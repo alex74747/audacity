@@ -433,7 +433,7 @@ ToolManager::ToolManager( AudacityProject *parent )
 //
 // Destructer
 //
-ToolManager::~ToolManager()
+ToolManager::~ToolManager() NOEXCEPT
 {
    // Save the toolbar states
    WriteConfig();

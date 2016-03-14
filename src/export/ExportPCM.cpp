@@ -97,7 +97,7 @@ class ExportPCMOptions final : public wxPanel
 public:
 
    ExportPCMOptions(wxWindow *parent, int format);
-   virtual ~ExportPCMOptions();
+   virtual ~ExportPCMOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -171,7 +171,7 @@ ExportPCMOptions::ExportPCMOptions(wxWindow *parent, int selformat)
    TransferDataFromWindow();
 }
 
-ExportPCMOptions::~ExportPCMOptions()
+ExportPCMOptions::~ExportPCMOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }

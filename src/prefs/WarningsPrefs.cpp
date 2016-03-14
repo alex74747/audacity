@@ -33,7 +33,7 @@ WarningsPrefs::WarningsPrefs(wxWindow * parent)
    Populate();
 }
 
-WarningsPrefs::~WarningsPrefs()
+WarningsPrefs::~WarningsPrefs() NOEXCEPT
 {
 }
 

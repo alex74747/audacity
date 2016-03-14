@@ -753,7 +753,7 @@ void NumericConverter::PrintDebugInfo()
    printf("\n");
 }
 
-NumericConverter::~NumericConverter()
+NumericConverter::~NumericConverter() NOEXCEPT
 {
 }
 
@@ -1209,7 +1209,7 @@ NumericTextCtrl::NumericTextCtrl(NumericConverter::Type type,
 #endif
 }
 
-NumericTextCtrl::~NumericTextCtrl()
+NumericTextCtrl::~NumericTextCtrl() NOEXCEPT
 {
    if (mBackgroundBitmap)
       delete mBackgroundBitmap;
@@ -1834,7 +1834,7 @@ NumericTextCtrlAx::NumericTextCtrlAx(NumericTextCtrl *ctrl)
    mLastDigit = -1;
 }
 
-NumericTextCtrlAx::~NumericTextCtrlAx()
+NumericTextCtrlAx::~NumericTextCtrlAx() NOEXCEPT
 {
 }
 

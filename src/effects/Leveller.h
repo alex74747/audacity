@@ -24,7 +24,7 @@ class EffectLeveller final : public Effect
 {
 public:
    EffectLeveller();
-   virtual ~EffectLeveller();
+   virtual ~EffectLeveller() NOEXCEPT;
 
    // IdentInterface implementation
 

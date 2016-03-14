@@ -26,7 +26,7 @@ EffectSilence::EffectSilence()
    SetLinearEffectFlag(true);
 }
 
-EffectSilence::~EffectSilence()
+EffectSilence::~EffectSilence() NOEXCEPT
 {
 }
 

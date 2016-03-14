@@ -85,7 +85,7 @@ class ToolBar /* not final */ : public wxPanel
  public:
 
    ToolBar(int type, const wxString & label, const wxString & section, bool resizable = false);
-   virtual ~ToolBar();
+   virtual ~ToolBar() NOEXCEPT;
 
    bool AcceptsFocus() const override { return false; };
 

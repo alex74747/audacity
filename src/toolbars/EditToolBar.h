@@ -63,7 +63,7 @@ class EditToolBar final : public ToolBar {
  public:
 
    EditToolBar();
-   virtual ~EditToolBar();
+   virtual ~EditToolBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

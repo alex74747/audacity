@@ -57,7 +57,7 @@ class PROFILE_DLL_API SimpleBlockFile /* not final */ : public BlockFile {
    SimpleBlockFile(wxFileName existingFile, sampleCount len,
                    float min, float max, float rms);
 
-   virtual ~SimpleBlockFile();
+   virtual ~SimpleBlockFile() NOEXCEPT;
 
    // Reading
 

@@ -16,7 +16,7 @@
 class RingBuffer {
  public:
    RingBuffer(sampleFormat format, int size);
-   ~RingBuffer();
+   ~RingBuffer() NOEXCEPT;
 
    //
    // For the writer only:

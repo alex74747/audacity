@@ -69,7 +69,7 @@ public:
    SpectrogramSettings();
    SpectrogramSettings(const SpectrogramSettings &other);
    SpectrogramSettings& operator= (const SpectrogramSettings &other);
-   ~SpectrogramSettings();
+   ~SpectrogramSettings() NOEXCEPT;
 
    bool IsDefault() const
    {

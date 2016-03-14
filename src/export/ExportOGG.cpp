@@ -47,7 +47,7 @@ class ExportOGGOptions final : public wxPanel
 public:
 
    ExportOGGOptions(wxWindow *parent, int format);
-   virtual ~ExportOGGOptions();
+   virtual ~ExportOGGOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -71,7 +71,7 @@ ExportOGGOptions::ExportOGGOptions(wxWindow *parent, int WXUNUSED(format))
    TransferDataToWindow();
 }
 
-ExportOGGOptions::~ExportOGGOptions()
+ExportOGGOptions::~ExportOGGOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }

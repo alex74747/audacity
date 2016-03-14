@@ -32,7 +32,7 @@ class EffectClickRemoval final : public Effect
 {
 public:
    EffectClickRemoval();
-   virtual ~EffectClickRemoval();
+   virtual ~EffectClickRemoval() NOEXCEPT;
 
    // IdentInterface implementation
 

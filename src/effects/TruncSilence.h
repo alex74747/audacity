@@ -37,7 +37,7 @@ class EffectTruncSilence final : public Effect
 {
 public:
    EffectTruncSilence();
-   virtual ~EffectTruncSilence();
+   virtual ~EffectTruncSilence() NOEXCEPT;
 
    // IdentInterface implementation
 

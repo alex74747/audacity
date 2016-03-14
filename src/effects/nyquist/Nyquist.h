@@ -69,7 +69,7 @@ public:
     * an empty string, then prompt the user for the Nyquist code to interpret.
     */
    NyquistEffect(const wxString &fName);
-   virtual ~NyquistEffect();
+   virtual ~NyquistEffect() NOEXCEPT;
 
    // IdentInterface implementation
 

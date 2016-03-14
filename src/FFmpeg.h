@@ -238,7 +238,7 @@ class FFmpegLibs
 {
 public:
    FFmpegLibs();
-   ~FFmpegLibs();
+   ~FFmpegLibs() NOEXCEPT;
 
    ///! Finds libav* libraries
    ///\return true if found, false if not found

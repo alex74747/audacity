@@ -73,7 +73,7 @@ ODManager::ODManager()
 }
 
 //private destructor - DELETE with static method Quit()
-ODManager::~ODManager()
+ODManager::~ODManager() NOEXCEPT
 {
    //get rid of all the queues.  The queues get rid of the tasks, so we don't worry abut them.
    //nothing else should be running on OD related threads at this point, so we don't lock.

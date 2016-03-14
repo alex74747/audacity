@@ -34,7 +34,7 @@ public:
    GetProjectInfoCommand(CommandType &type, CommandOutputTarget *target)
       : CommandImplementation(type, target)
    { }
-   virtual ~GetProjectInfoCommand()
+   virtual ~GetProjectInfoCommand() NOEXCEPT
    { }
 
    bool Apply(CommandExecutionContext context) override;

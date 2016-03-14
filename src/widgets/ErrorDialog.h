@@ -28,7 +28,7 @@ public:
       const wxString & helpURL,
       const bool Close = true, const bool modal = true);
 
-   virtual ~ErrorDialog(){}
+   virtual ~ErrorDialog() NOEXCEPT {}
 
 private:
    wxString dhelpURL;
@@ -50,7 +50,7 @@ public:
       MakeModal( true );
 #endif
    }
-   virtual ~HtmlTextHelpDialog()
+   virtual ~HtmlTextHelpDialog() NOEXCEPT
    {
 #if !wxCHECK_VERSION(3, 0, 0)
       MakeModal( false );

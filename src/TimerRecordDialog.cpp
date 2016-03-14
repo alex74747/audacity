@@ -100,7 +100,7 @@ TimerRecordDialog::TimerRecordDialog(wxWindow* parent)
    m_timer.Start(kTimerInterval);
 }
 
-TimerRecordDialog::~TimerRecordDialog()
+TimerRecordDialog::~TimerRecordDialog() NOEXCEPT
 {
 }
 

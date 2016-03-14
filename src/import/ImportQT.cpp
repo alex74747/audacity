@@ -96,7 +96,7 @@ class QTImportPlugin final : public ImportPlugin
       }
    }
 
-   ~QTImportPlugin()
+   ~QTImportPlugin() NOEXCEPT
    {
       if (mInitialized) {
          ExitMovies();
@@ -126,7 +126,7 @@ class QTImportFileHandle final : public ImportFileHandle
       mMovie = movie;
    }
 
-   virtual ~QTImportFileHandle()
+   virtual ~QTImportFileHandle() NOEXCEPT
    {
       if (mMovie) {
          DisposeMovie(mMovie);

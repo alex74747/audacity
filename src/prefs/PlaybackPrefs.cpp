@@ -33,7 +33,7 @@ PlaybackPrefs::PlaybackPrefs(wxWindow * parent)
    Populate();
 }
 
-PlaybackPrefs::~PlaybackPrefs()
+PlaybackPrefs::~PlaybackPrefs() NOEXCEPT
 {
 }
 

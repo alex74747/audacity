@@ -51,7 +51,7 @@ EffectRepeat::EffectRepeat()
    SetLinearEffectFlag(true);
 }
 
-EffectRepeat::~EffectRepeat()
+EffectRepeat::~EffectRepeat() NOEXCEPT
 {
 }
 

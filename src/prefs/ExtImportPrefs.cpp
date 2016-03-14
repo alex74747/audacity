@@ -69,7 +69,7 @@ ExtImportPrefs::ExtImportPrefs(wxWindow * parent)
    Populate();
 }
 
-ExtImportPrefs::~ExtImportPrefs()
+ExtImportPrefs::~ExtImportPrefs() NOEXCEPT
 {
 }
 
@@ -649,7 +649,7 @@ ExtImportPrefsDropTarget::ExtImportPrefsDropTarget (wxDataObject *dataObject)
    mPrefs = NULL;
 }
 
-ExtImportPrefsDropTarget::~ExtImportPrefsDropTarget ()
+ExtImportPrefsDropTarget::~ExtImportPrefsDropTarget() NOEXCEPT
 {
 }
 

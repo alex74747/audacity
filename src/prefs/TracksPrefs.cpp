@@ -41,7 +41,7 @@ TracksPrefs::TracksPrefs(wxWindow * parent)
    Populate();
 }
 
-TracksPrefs::~TracksPrefs()
+TracksPrefs::~TracksPrefs() NOEXCEPT
 {
 }
 

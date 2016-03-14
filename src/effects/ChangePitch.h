@@ -37,7 +37,7 @@ class EffectChangePitch final : public EffectSoundTouch
 {
 public:
    EffectChangePitch();
-   virtual ~EffectChangePitch();
+   virtual ~EffectChangePitch() NOEXCEPT;
 
    // IdentInterface implementation
 

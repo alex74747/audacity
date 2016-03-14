@@ -44,7 +44,7 @@ public:
                      bool canUseShift = true,
                      float stepValue = STEP_CONTINUOUS,
                      int orientation = wxHORIZONTAL);
-   virtual ~MixerTrackSlider() {}
+   virtual ~MixerTrackSlider() NOEXCEPT {}
 
    void OnMouseEvent(wxMouseEvent & event);
 
@@ -76,7 +76,7 @@ public:
                      WaveTrack* pLeftTrack, WaveTrack* pRightTrack = NULL,
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize);
-   virtual ~MixerTrackCluster() {}
+   virtual ~MixerTrackCluster() NOEXCEPT {}
 
    void UpdatePrefs();
 
@@ -157,7 +157,7 @@ class MusicalInstrument
 {
 public:
    MusicalInstrument(wxBitmap* pBitmap, const wxString & strXPMfilename);
-   virtual ~MusicalInstrument();
+   virtual ~MusicalInstrument() NOEXCEPT;
 
    wxBitmap*      mBitmap;
    wxArrayString  mKeywords;
@@ -177,7 +177,7 @@ public:
                               const wxPoint& pos = wxDefaultPosition,
                               const wxSize& size = wxDefaultSize,
                               long style = wxHSCROLL | wxVSCROLL);
-   virtual ~MixerBoardScrolledWindow();
+   virtual ~MixerBoardScrolledWindow() NOEXCEPT;
 
 private:
    void OnMouseEvent(wxMouseEvent& event);
@@ -203,7 +203,7 @@ public:
                wxFrame* parent,
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize);
-   virtual ~MixerBoard();
+   virtual ~MixerBoard() NOEXCEPT;
 
    void UpdatePrefs();
 
@@ -305,7 +305,7 @@ class MixerBoardFrame final : public wxFrame
 {
 public:
    MixerBoardFrame(AudacityProject* parent);
-   virtual ~MixerBoardFrame();
+   virtual ~MixerBoardFrame() NOEXCEPT;
 
 private:
    // event handlers

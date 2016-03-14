@@ -25,7 +25,7 @@ EffectStereoToMono::EffectStereoToMono()
 {
 }
 
-EffectStereoToMono::~EffectStereoToMono()
+EffectStereoToMono::~EffectStereoToMono() NOEXCEPT
 {
 }
 

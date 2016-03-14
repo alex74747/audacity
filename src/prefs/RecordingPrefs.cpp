@@ -50,7 +50,7 @@ RecordingPrefs::RecordingPrefs(wxWindow * parent)
    Populate();
 }
 
-RecordingPrefs::~RecordingPrefs()
+RecordingPrefs::~RecordingPrefs() NOEXCEPT
 {
 }
 

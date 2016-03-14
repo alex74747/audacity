@@ -64,7 +64,7 @@ MixerToolBar::MixerToolBar()
    mOutputSliderVolume = 0.0;
 }
 
-MixerToolBar::~MixerToolBar()
+MixerToolBar::~MixerToolBar() NOEXCEPT
 {
    delete mPlayBitmap;
    delete mRecordBitmap;

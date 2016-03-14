@@ -71,7 +71,7 @@ Grabber::Grabber(wxWindow * parent, wxWindowID id)
 //
 // Destructor
 //
-Grabber::~Grabber()
+Grabber::~Grabber() NOEXCEPT
 {
 }
 

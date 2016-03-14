@@ -25,7 +25,7 @@ class RecordingPrefs final : public PrefsPanel
 {
  public:
    RecordingPrefs(wxWindow * parent);
-   virtual ~RecordingPrefs();
+   virtual ~RecordingPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

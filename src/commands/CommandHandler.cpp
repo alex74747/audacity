@@ -27,7 +27,7 @@ CommandHandler::CommandHandler(AudacityApp &app)
  : mCurrentContext(new CommandExecutionContext(&app, GetActiveProject()))
 { }
 
-CommandHandler::~CommandHandler()
+CommandHandler::~CommandHandler() NOEXCEPT
 {
    delete mCurrentContext;
 }

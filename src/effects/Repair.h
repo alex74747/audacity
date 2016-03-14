@@ -23,7 +23,7 @@ class EffectRepair final : public Effect
 {
 public:
    EffectRepair();
-   virtual ~EffectRepair();
+   virtual ~EffectRepair() NOEXCEPT;
 
    // IdentInterface implementation
 

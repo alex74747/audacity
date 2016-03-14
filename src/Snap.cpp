@@ -55,7 +55,7 @@ SnapManager::SnapManager(TrackList *tracks,
    Reinit();
 }
 
-SnapManager::~SnapManager()
+SnapManager::~SnapManager() NOEXCEPT
 {
 }
 

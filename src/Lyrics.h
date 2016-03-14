@@ -48,7 +48,7 @@ public:
                      const wxString& value = wxT(""),
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize);
-   virtual ~HighlightTextCtrl() {};
+   virtual ~HighlightTextCtrl() NOEXCEPT {};
 
    void OnMouseEvent(wxMouseEvent &evt);
 
@@ -72,7 +72,7 @@ class Lyrics final : public wxPanel
    Lyrics(wxWindow* parent, wxWindowID id,
           const wxPoint& pos = wxDefaultPosition,
           const wxSize& size = wxDefaultSize);
-   virtual ~Lyrics();
+   virtual ~Lyrics() NOEXCEPT;
 
    void Clear();
    void AddLabels(const LabelTrack *pLT);

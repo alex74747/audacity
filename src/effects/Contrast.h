@@ -33,7 +33,7 @@ public:
    // constructors and destructors
    ContrastDialog(wxWindow * parent, wxWindowID id,
               const wxString & title, const wxPoint & pos);
-   ~ContrastDialog();
+   ~ContrastDialog() NOEXCEPT;
 
    void OnGetForegroundDB( wxCommandEvent &event );
    void OnGetBackgroundDB( wxCommandEvent &event );

@@ -30,7 +30,7 @@ class ExtImportPrefsDropTarget final : public wxDropTarget
 {
 public:
    ExtImportPrefsDropTarget (wxDataObject *dataObject = 0);
-   ~ExtImportPrefsDropTarget ();
+   ~ExtImportPrefsDropTarget() NOEXCEPT;
    wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult def);
    bool OnDrop(wxCoord x, wxCoord y);
    wxDragResult OnEnter(wxCoord x, wxCoord y, wxDragResult def);
@@ -46,7 +46,7 @@ class ExtImportPrefs final : public PrefsPanel
 {
  public:
    ExtImportPrefs(wxWindow * parent);
-   ~ExtImportPrefs();
+   ~ExtImportPrefs() NOEXCEPT;
    bool Apply() override;
 
    void OnPluginKeyDown(wxListEvent& event);

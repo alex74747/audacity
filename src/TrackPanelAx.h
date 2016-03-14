@@ -27,7 +27,7 @@ class TrackPanelAx final
 {
 public:
    TrackPanelAx(wxWindow * window);
-   virtual ~ TrackPanelAx();
+   virtual ~TrackPanelAx() NOEXCEPT;
 
    // Returns currently focused track or first one if none focused
    Track *GetFocus();

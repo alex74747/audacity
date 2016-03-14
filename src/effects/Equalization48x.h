@@ -107,7 +107,7 @@ class EffectEqualization48x {
 public:
 
    EffectEqualization48x();
-   virtual ~EffectEqualization48x();
+   virtual ~EffectEqualization48x() NOEXCEPT;
 
    static MathCaps *GetMathCaps();
    static void SetMathPath(int mathPath);

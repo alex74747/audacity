@@ -264,7 +264,7 @@ class ExportMP3Options final : public wxPanel
 public:
 
    ExportMP3Options(wxWindow *parent, int format);
-   virtual ~ExportMP3Options();
+   virtual ~ExportMP3Options() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -326,7 +326,7 @@ ExportMP3Options::ExportMP3Options(wxWindow *parent, int WXUNUSED(format))
    TransferDataToWindow();
 }
 
-ExportMP3Options::~ExportMP3Options()
+ExportMP3Options::~ExportMP3Options() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -785,7 +785,7 @@ public:
    };
 
    MP3Exporter();
-   virtual ~MP3Exporter();
+   virtual ~MP3Exporter() NOEXCEPT;
 
 #ifndef DISABLE_DYNAMIC_LOADING_LAME
    bool FindLibrary(wxWindow *parent);
@@ -916,7 +916,7 @@ MP3Exporter::MP3Exporter()
    mRoutine = ROUTINE_FAST;
 }
 
-MP3Exporter::~MP3Exporter()
+MP3Exporter::~MP3Exporter() NOEXCEPT
 {
    FreeLibrary();
 }

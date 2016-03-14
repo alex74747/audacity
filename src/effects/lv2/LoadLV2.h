@@ -72,7 +72,7 @@ class LV2EffectsModule final : public ModuleInterface
 {
 public:
    LV2EffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~LV2EffectsModule();
+   virtual ~LV2EffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

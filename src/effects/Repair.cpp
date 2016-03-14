@@ -37,7 +37,7 @@ EffectRepair::EffectRepair()
 {
 }
 
-EffectRepair::~EffectRepair()
+EffectRepair::~EffectRepair() NOEXCEPT
 {
 }
 

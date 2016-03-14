@@ -48,7 +48,7 @@ class Module
 {
 public:
    Module(const wxString & name);
-   virtual ~Module();
+   virtual ~Module() NOEXCEPT;
 
    bool Load();
    void Unload();
@@ -69,7 +69,7 @@ class ModuleManager final : public ModuleManagerInterface
 {
 public:
    ModuleManager();
-   virtual ~ModuleManager();
+   virtual ~ModuleManager() NOEXCEPT;
 
    // -------------------------------------------------------------------------
    // ModuleManagerInterface implementation

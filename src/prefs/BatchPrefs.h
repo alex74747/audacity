@@ -24,7 +24,7 @@ class BatchPrefs final : public PrefsPanel
 {
 public:
    BatchPrefs(wxWindow * parent);
-   ~BatchPrefs();
+   ~BatchPrefs() NOEXCEPT;
    bool Apply() override;
 
 private:

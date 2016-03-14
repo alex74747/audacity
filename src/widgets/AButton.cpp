@@ -53,7 +53,7 @@ class AButton::Listener final
 {
 public:
    Listener (AButton *button);
-   ~Listener();
+   ~Listener() NOEXCEPT;
 
    void OnKeyDown(wxKeyEvent & event);
    void OnKeyUp(wxKeyEvent & event);
@@ -89,7 +89,7 @@ AButton::Listener::Listener (AButton *button)
                       this );
 }
 
-AButton::Listener::~Listener ()
+AButton::Listener::~Listener() NOEXCEPT
 {
    wxTheApp->Disconnect( wxEVT_KEY_DOWN,
                          wxKeyEventHandler( AButton::Listener::OnKeyDown ),
@@ -185,7 +185,7 @@ AButton::AButton(wxWindow * parent,
         toggle);
 }
 
-AButton::~AButton()
+AButton::~AButton() NOEXCEPT
 {
 }
 
@@ -566,7 +566,7 @@ AButtonAx::AButtonAx( wxWindow *window ):
 {
 }
 
-AButtonAx::~AButtonAx()
+AButtonAx::~AButtonAx() NOEXCEPT
 {
 }
 

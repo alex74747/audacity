@@ -22,7 +22,7 @@ class DirectoriesPrefs final : public PrefsPanel
 {
  public:
    DirectoriesPrefs(wxWindow * parent);
-   ~DirectoriesPrefs();
+   ~DirectoriesPrefs() NOEXCEPT;
    bool Apply() override;
    bool Validate() override;
 

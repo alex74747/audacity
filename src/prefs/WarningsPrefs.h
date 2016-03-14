@@ -25,7 +25,7 @@ class WarningsPrefs final : public PrefsPanel
 {
  public:
    WarningsPrefs(wxWindow * parent);
-   ~WarningsPrefs();
+   ~WarningsPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

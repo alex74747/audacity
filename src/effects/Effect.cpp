@@ -134,7 +134,7 @@ Effect::Effect()
    mIsBatch = false;
 }
 
-Effect::~Effect()
+Effect::~Effect() NOEXCEPT
 {
    if (mOutputTracks)
    {
@@ -1160,7 +1160,7 @@ namespace {
       SetProgress(ProgressDialog *& mProgress_, ProgressDialog *progress)
          : mProgress(mProgress_)
       { mProgress = progress; }
-      ~SetProgress() { mProgress = nullptr; }
+      ~SetProgress() NOEXCEPT { mProgress = nullptr; }
       ProgressDialog *& mProgress;
    };
 }
@@ -2154,7 +2154,7 @@ void Effect::AddedAnalysisTrack::Commit()
    mpEffect = nullptr;
 }
 
-Effect::AddedAnalysisTrack::~AddedAnalysisTrack()
+Effect::AddedAnalysisTrack::~AddedAnalysisTrack() NOEXCEPT
 {
    if (mpEffect) {
       // not committed -- DELETE the label track
@@ -2203,7 +2203,7 @@ void Effect::ModifiedAnalysisTrack::Commit()
    mpEffect = nullptr;
 }
 
-Effect::ModifiedAnalysisTrack::~ModifiedAnalysisTrack()
+Effect::ModifiedAnalysisTrack::~ModifiedAnalysisTrack() NOEXCEPT
 {
    if (mpEffect) {
       // not committed -- DELETE the label track
@@ -2821,7 +2821,7 @@ public:
       mAcceptsFocus = true;
    }
 
-   virtual ~EffectPanel()
+   virtual ~EffectPanel() NOEXCEPT
    {
    }
 
@@ -2916,7 +2916,7 @@ EffectUIHost::EffectUIHost(wxWindow *parent,
    mClient->SetHostUI(this);
 }
 
-EffectUIHost::~EffectUIHost()
+EffectUIHost::~EffectUIHost() NOEXCEPT
 {
    CleanupRealtime();
 
@@ -3917,7 +3917,7 @@ EffectPresetsDialog::EffectPresetsDialog(wxWindow *parent, Effect *effect)
    UpdateUI();
 }
 
-EffectPresetsDialog::~EffectPresetsDialog()
+EffectPresetsDialog::~EffectPresetsDialog() NOEXCEPT
 {
 }
 

@@ -26,7 +26,7 @@ class EffectFindClipping final : public Effect
 {
 public:
    EffectFindClipping();
-   virtual ~EffectFindClipping();
+   virtual ~EffectFindClipping() NOEXCEPT;
 
    // IdentInterface implementation
 

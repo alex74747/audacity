@@ -169,7 +169,7 @@ EffectEqualization48x::EffectEqualization48x():
 {
 }
 
-EffectEqualization48x::~EffectEqualization48x()
+EffectEqualization48x::~EffectEqualization48x() NOEXCEPT
 {
 }
 

@@ -68,7 +68,7 @@ MeterToolBar::MeterToolBar(AudacityProject *project, int type)
    mRecordMeter = NULL;
 }
 
-MeterToolBar::~MeterToolBar()
+MeterToolBar::~MeterToolBar() NOEXCEPT
 {
 }
 

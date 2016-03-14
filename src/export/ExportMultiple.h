@@ -35,7 +35,7 @@ class ExportMultiple final : public wxDialog
 public:
 
    ExportMultiple(AudacityProject *parent);
-   virtual ~ExportMultiple();
+   virtual ~ExportMultiple() NOEXCEPT;
 
    int ShowModal();
 

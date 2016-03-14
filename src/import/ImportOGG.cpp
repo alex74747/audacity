@@ -88,7 +88,7 @@ public:
    {
    }
 
-   ~OggImportPlugin() { }
+   ~OggImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("liboggvorbis"); }
    wxString GetPluginFormatDescription();
@@ -120,7 +120,7 @@ public:
       }
 
    }
-   ~OggImportFileHandle();
+   ~OggImportFileHandle() NOEXCEPT;
 
    wxString GetFileDescription();
    int GetFileUncompressedBytes();
@@ -423,7 +423,7 @@ int OggImportFileHandle::Import(TrackFactory *trackFactory, Track ***outTracks,
    return res;
 }
 
-OggImportFileHandle::~OggImportFileHandle()
+OggImportFileHandle::~OggImportFileHandle() NOEXCEPT
 {
    ov_clear(mVorbisFile);
    mFile->Detach();    // so that it doesn't try to close the file (ov_clear()

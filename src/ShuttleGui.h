@@ -75,7 +75,7 @@ class AUDACITY_DLL_API ShuttleGuiBase /* not final */
 {
 public:
    ShuttleGuiBase(wxWindow * pParent,teShuttleMode ShuttleMode);
-   ~ShuttleGuiBase(void);
+   ~ShuttleGuiBase(void) NOEXCEPT;
    void Init();
 
 //-- Add functions.  These only add a widget or 2.
@@ -368,7 +368,7 @@ class AUDACITY_DLL_API ShuttleGui /* not final */ : public ShuttleGuiBase
 {
 public:
    ShuttleGui(wxWindow * pParent,teShuttleMode ShuttleMode);
-   ~ShuttleGui(void);
+   ~ShuttleGui(void) NOEXCEPT;
 public:
    ShuttleGui & Id(int id );
    // Prop() sets the proportion value, defined as in wxSizer::Add().

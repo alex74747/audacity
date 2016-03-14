@@ -53,7 +53,7 @@ class AUDACITY_DLL_API ProgressDialog /* not final */ : public wxDialog
 public:
    ProgressDialog();
    ProgressDialog(const wxString & title, const wxString & message = wxEmptyString, int flags = pdlgDefaultFlags);
-   virtual ~ProgressDialog();
+   virtual ~ProgressDialog() NOEXCEPT;
 
    // NEW virtual?  It doesn't override wxDialog
    virtual bool Create(const wxString & title, const wxString & message = wxEmptyString, int flags = pdlgDefaultFlags);

@@ -31,7 +31,7 @@ ZoomInfo::ZoomInfo(double start, double pixelsPerSecond)
    UpdatePrefs();
 }
 
-ZoomInfo::~ZoomInfo()
+ZoomInfo::~ZoomInfo() NOEXCEPT
 {
 }
 

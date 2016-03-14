@@ -78,7 +78,7 @@ public:
       mExtensions = sf_get_all_extensions();
    }
 
-   ~PCMImportPlugin() { }
+   ~PCMImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("libsndfile"); }
    wxString GetPluginFormatDescription();
@@ -90,7 +90,7 @@ class PCMImportFileHandle final : public ImportFileHandle
 {
 public:
    PCMImportFileHandle(wxString name, SNDFILE *file, SF_INFO info);
-   ~PCMImportFileHandle();
+   ~PCMImportFileHandle() NOEXCEPT;
 
    wxString GetFileDescription();
    int GetFileUncompressedBytes();
@@ -688,7 +688,7 @@ int PCMImportFileHandle::Import(TrackFactory *trackFactory,
    return updateResult;
 }
 
-PCMImportFileHandle::~PCMImportFileHandle()
+PCMImportFileHandle::~PCMImportFileHandle() NOEXCEPT
 {
    sf_close(mFile);
 }

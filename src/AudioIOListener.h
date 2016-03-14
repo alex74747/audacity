@@ -20,7 +20,7 @@ class AutoSaveFile;
 class AUDACITY_DLL_API AudioIOListener /* not final */ {
 public:
    AudioIOListener() {}
-   virtual ~AudioIOListener() {}
+   virtual ~AudioIOListener() NOEXCEPT {}
 
    virtual void OnAudioIORate(int rate) = 0;
    virtual void OnAudioIOStartRecording() = 0;

@@ -37,7 +37,7 @@ AppCommandEvent::AppCommandEvent(const AppCommandEvent &event) : wxCommandEvent(
    this->mCommand = event.mCommand;
 }
 
-AppCommandEvent::~AppCommandEvent()
+AppCommandEvent::~AppCommandEvent() NOEXCEPT
 {
 }
 

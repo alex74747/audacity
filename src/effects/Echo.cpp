@@ -43,7 +43,7 @@ EffectEcho::EffectEcho()
    SetLinearEffectFlag(true);
 }
 
-EffectEcho::~EffectEcho()
+EffectEcho::~EffectEcho() NOEXCEPT
 {
 }
 

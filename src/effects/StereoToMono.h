@@ -21,7 +21,7 @@ class EffectStereoToMono final : public Effect
 {
 public:
    EffectStereoToMono();
-   virtual ~EffectStereoToMono();
+   virtual ~EffectStereoToMono() NOEXCEPT;
 
    // IdentInterface implementation
 

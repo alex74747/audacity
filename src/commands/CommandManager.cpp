@@ -169,7 +169,7 @@ public:
 #endif
    }
 
-   virtual ~CommandManagerEventMonitor()
+   virtual ~CommandManagerEventMonitor() NOEXCEPT
    {
 #if defined(__WXMAC__)
       [NSEvent removeMonitor:mHandler];
@@ -404,7 +404,7 @@ CommandManager::CommandManager():
 ///
 ///  Class Destructor.  Includes PurgeData, which removes
 ///  menubars
-CommandManager::~CommandManager()
+CommandManager::~CommandManager() NOEXCEPT
 {
    //WARNING: This removes menubars that could still be assigned to windows!
    PurgeData();

@@ -35,7 +35,7 @@ MultiFormatReader::MultiFormatReader(const char* filename)
    }
 }
 
-MultiFormatReader::~MultiFormatReader()
+MultiFormatReader::~MultiFormatReader() NOEXCEPT
 {
    if (mpFid != NULL)
    {

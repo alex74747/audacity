@@ -63,7 +63,7 @@ UndoManager::UndoManager()
    ResetODChangesFlag();
 }
 
-UndoManager::~UndoManager()
+UndoManager::~UndoManager() NOEXCEPT
 {
    ClearStates();
 }

@@ -27,7 +27,7 @@ class DevicePrefs final : public PrefsPanel
 {
  public:
    DevicePrefs(wxWindow * parent);
-   virtual ~DevicePrefs();
+   virtual ~DevicePrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

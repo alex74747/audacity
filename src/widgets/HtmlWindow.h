@@ -41,7 +41,7 @@ public:
               const wxSize& size = wxDefaultSize,
               long style = wxHW_DEFAULT_STYLE,
               const wxString& name = wxT("htmlWindow"));
-   virtual ~HtmlWindow();
+   virtual ~HtmlWindow() NOEXCEPT;
 };
 
 #if wxUSE_ACCESSIBILITY
@@ -51,7 +51,7 @@ class HtmlWindowAx final : public wxWindowAccessible
 public:
    HtmlWindowAx(wxWindow * window);
 
-   virtual ~ HtmlWindowAx();
+   virtual ~HtmlWindowAx() NOEXCEPT;
 
    // Retrieves the address of an IDispatch interface for the specified child.
    // All objects must support this property.

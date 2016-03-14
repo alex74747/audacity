@@ -229,7 +229,7 @@ Tags::Tags()
    LoadGenres();
 }
 
-Tags::~Tags()
+Tags::~Tags() NOEXCEPT
 {
 }
 
@@ -713,7 +713,7 @@ TagsEditor::TagsEditor(wxWindow * parent,
    PopulateGenres();
 }
 
-TagsEditor::~TagsEditor()
+TagsEditor::~TagsEditor() NOEXCEPT
 {
    delete mGrid;
 // TODO:  Need to figure out if these should be deleted.  Looks like the wxGrid

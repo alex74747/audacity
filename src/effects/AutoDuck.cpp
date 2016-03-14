@@ -99,7 +99,7 @@ EffectAutoDuck::EffectAutoDuck()
    mPanel = NULL;
 }
 
-EffectAutoDuck::~EffectAutoDuck()
+EffectAutoDuck::~EffectAutoDuck() NOEXCEPT
 {
 }
 
@@ -627,7 +627,7 @@ EffectAutoDuckPanel::EffectAutoDuckPanel(wxWindow *parent, EffectAutoDuck *effec
    ResetControlPoints();
 }
 
-EffectAutoDuckPanel::~EffectAutoDuckPanel()
+EffectAutoDuckPanel::~EffectAutoDuckPanel() NOEXCEPT
 {
    if (mBackgroundBitmap)
       delete mBackgroundBitmap;

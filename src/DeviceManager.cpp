@@ -323,7 +323,7 @@ DeviceManager::DeviceManager()
    m_inited = false;
 }
 
-DeviceManager::~DeviceManager()
+DeviceManager::~DeviceManager() NOEXCEPT
 {
 
 }

@@ -87,7 +87,7 @@ EffectWahwah::EffectWahwah()
    SetLinearEffectFlag(true);
 }
 
-EffectWahwah::~EffectWahwah()
+EffectWahwah::~EffectWahwah() NOEXCEPT
 {
 }
 

@@ -27,7 +27,7 @@ class EffectNoise final : public Effect
 {
 public:
    EffectNoise();
-   virtual ~EffectNoise();
+   virtual ~EffectNoise() NOEXCEPT;
 
    // IdentInterface implementation
 

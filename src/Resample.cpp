@@ -44,7 +44,7 @@ Resample::Resample(const bool useBestMethod, const double dMinFactor, const doub
    mHandle = (void *)soxr_create(1, dMinFactor, 1, 0, 0, &q_spec, 0);
 }
 
-Resample::~Resample()
+Resample::~Resample() NOEXCEPT
 {
    soxr_delete((soxr_t)mHandle);
    mHandle = NULL;

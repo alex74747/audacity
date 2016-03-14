@@ -32,7 +32,7 @@ EffectReverse::EffectReverse()
 {
 }
 
-EffectReverse::~EffectReverse()
+EffectReverse::~EffectReverse() NOEXCEPT
 {
 }
 

@@ -363,7 +363,7 @@ DirManager::DirManager()
    }
 }
 
-DirManager::~DirManager()
+DirManager::~DirManager() NOEXCEPT
 {
    wxASSERT(mRef == 0); // MM: Otherwise, we shouldn't DELETE it
 

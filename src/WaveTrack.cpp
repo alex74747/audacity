@@ -166,7 +166,7 @@ void WaveTrack::Merge(const Track &orig)
    Track::Merge(orig);
 }
 
-WaveTrack::~WaveTrack()
+WaveTrack::~WaveTrack() NOEXCEPT
 {
    //Let the ODManager know this WaveTrack is disappearing.
    //Deschedules tasks associated with this track.
@@ -2648,7 +2648,7 @@ void WaveTrack::SetAutoSaveIdent(int ident)
    mAutoSaveIdent = ident;
 }
 
-WaveTrackCache::~WaveTrackCache()
+WaveTrackCache::~WaveTrackCache() NOEXCEPT
 {
    Free();
 }

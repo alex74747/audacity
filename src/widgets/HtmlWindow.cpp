@@ -49,7 +49,7 @@ HtmlWindow::HtmlWindow(wxWindow *parent,
 //
 // Destructor
 //
-HtmlWindow::~HtmlWindow()
+HtmlWindow::~HtmlWindow() NOEXCEPT
 {
 }
 
@@ -60,7 +60,7 @@ HtmlWindowAx::HtmlWindowAx( wxWindow *window ):
 {
 }
 
-HtmlWindowAx::~HtmlWindowAx()
+HtmlWindowAx::~HtmlWindowAx() NOEXCEPT
 {
 }
 

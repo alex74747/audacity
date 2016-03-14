@@ -73,7 +73,7 @@ class LV2EffectMeter final : public wxWindow
 {
 public:
    LV2EffectMeter(wxWindow *parent, const LV2Port & ctrl);
-   virtual ~LV2EffectMeter();
+   virtual ~LV2EffectMeter() NOEXCEPT;
 
 private:
    void OnErase(wxEraseEvent & evt);
@@ -104,7 +104,7 @@ LV2EffectMeter::LV2EffectMeter(wxWindow *parent, const LV2Port & ctrl)
    SetBackgroundColour(*wxWHITE);
 }
 
-LV2EffectMeter::~LV2EffectMeter()
+LV2EffectMeter::~LV2EffectMeter() NOEXCEPT
 {
 }
 
@@ -171,7 +171,7 @@ class LV2EffectSettingsDialog final : public wxDialog
 {
 public:
    LV2EffectSettingsDialog(wxWindow *parent, LV2Effect *effect);
-   virtual ~LV2EffectSettingsDialog();
+   virtual ~LV2EffectSettingsDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -201,7 +201,7 @@ LV2EffectSettingsDialog::LV2EffectSettingsDialog(wxWindow *parent, LV2Effect *ef
    PopulateOrExchange(S);
 }
 
-LV2EffectSettingsDialog::~LV2EffectSettingsDialog()
+LV2EffectSettingsDialog::~LV2EffectSettingsDialog() NOEXCEPT
 {
 }
 
@@ -331,7 +331,7 @@ LV2Effect::LV2Effect(const LilvPlugin *plug)
    mFactoryPresetsLoaded = false;
 }
 
-LV2Effect::~LV2Effect()
+LV2Effect::~LV2Effect() NOEXCEPT
 {
    if (mURIMap)
    {

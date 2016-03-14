@@ -88,7 +88,7 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
 
    typedef WaveTrackLocation Location;
 
-   virtual ~WaveTrack();
+   virtual ~WaveTrack() NOEXCEPT;
    double GetOffset() const override;
    void SetOffset(double o) override;
 
@@ -512,7 +512,7 @@ public:
    {
       SetTrack(pTrack);
    }
-   ~WaveTrackCache();
+   ~WaveTrackCache() NOEXCEPT;
 
    const WaveTrack *GetTrack() const { return mPTrack; }
    void SetTrack(const WaveTrack *pTrack);

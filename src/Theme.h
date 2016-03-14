@@ -55,8 +55,8 @@ WX_DECLARE_USER_EXPORTED_OBJARRAY(wxColour, ArrayOfColours, AUDACITY_DLL_API);
 class AUDACITY_DLL_API FlowPacker
 {
 public:
-   FlowPacker(){;};
-   ~FlowPacker(){;};
+   FlowPacker() {}
+   ~FlowPacker() NOEXCEPT {}
    void Init(int width);
    void GetNextPosition( int xSize, int ySize );
    void SetNewGroup( int iGroupSize );
@@ -87,7 +87,7 @@ class AUDACITY_DLL_API ThemeBase /* not final */
 public:
    ThemeBase(void);
 public:
-   virtual ~ThemeBase(void);
+   virtual ~ThemeBase(void) NOEXCEPT;
 
 public:
    virtual void EnsureInitialised()=0;
@@ -141,7 +141,7 @@ class AUDACITY_DLL_API Theme final : public ThemeBase
 public:
    Theme(void);
 public:
-   ~Theme(void);
+   ~Theme(void) NOEXCEPT;
 public:
    void EnsureInitialised() override;
    void ApplyUpdatedImages() override;

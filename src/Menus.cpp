@@ -6012,7 +6012,7 @@ class ASAProgress final : public SAProgress {
          mTimeFile = fopen("timing-data.txt", "w");
       #endif
    }
-   ~ASAProgress() {
+   ~ASAProgress() NOEXCEPT {
       delete mProgress;
       #ifdef COLLECT_TIMING_DATA
          fclose(mTimeFile);

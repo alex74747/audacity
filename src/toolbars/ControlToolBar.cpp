@@ -110,7 +110,7 @@ ControlToolBar::ControlToolBar()
    mStatePause = XO("Paused");
 }
 
-ControlToolBar::~ControlToolBar()
+ControlToolBar::~ControlToolBar() NOEXCEPT
 {
 }
 

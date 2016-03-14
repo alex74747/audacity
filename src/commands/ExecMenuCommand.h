@@ -38,7 +38,7 @@ public:
                    CommandOutputTarget *target)
       : CommandImplementation(type, target)
    { }
-   virtual ~ExecMenuCommand() { }
+   virtual ~ExecMenuCommand() NOEXCEPT {}
    bool Apply(CommandExecutionContext context) override;
 };
 

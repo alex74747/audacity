@@ -110,7 +110,7 @@ public:
    {
    }
 
-   ~MP3ImportPlugin() { }
+   ~MP3ImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("libmad"); }
    wxString GetPluginFormatDescription();
@@ -126,7 +126,7 @@ public:
    {
    }
 
-   ~MP3ImportFileHandle();
+   ~MP3ImportFileHandle() NOEXCEPT;
 
    wxString GetFileDescription();
    int GetFileUncompressedBytes();
@@ -265,7 +265,7 @@ int MP3ImportFileHandle::Import(TrackFactory *trackFactory, Track ***outTracks,
       return mPrivateData.updateResult;
    }
 
-MP3ImportFileHandle::~MP3ImportFileHandle()
+MP3ImportFileHandle::~MP3ImportFileHandle() NOEXCEPT
 {
    if(mFile) {
       if (mFile->IsOpened()) {

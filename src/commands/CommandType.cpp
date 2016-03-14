@@ -26,7 +26,7 @@ CommandType::CommandType()
    : mName(NULL), mSignature(NULL)
 { }
 
-CommandType::~CommandType()
+CommandType::~CommandType() NOEXCEPT
 {
    if (mName != NULL)
    {

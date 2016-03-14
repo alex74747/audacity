@@ -24,7 +24,7 @@ class SoundActivatedRecord final : public wxDialog
 {
 public:
    SoundActivatedRecord(wxWindow* parent);
-   ~SoundActivatedRecord();
+   ~SoundActivatedRecord() NOEXCEPT;
 
 private:
    void OnOK(wxCommandEvent& event);

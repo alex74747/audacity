@@ -78,7 +78,7 @@ bool BatchPrefs::Apply()
    return true;
 }
 
-BatchPrefs::~BatchPrefs()
+BatchPrefs::~BatchPrefs() NOEXCEPT
 {
 }
 

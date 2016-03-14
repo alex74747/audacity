@@ -28,7 +28,7 @@ class EffectNormalize final : public Effect
 {
 public:
    EffectNormalize();
-   virtual ~EffectNormalize();
+   virtual ~EffectNormalize() NOEXCEPT;
 
    // IdentInterface implementation
 

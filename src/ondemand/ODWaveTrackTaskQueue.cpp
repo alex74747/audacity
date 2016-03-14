@@ -24,7 +24,7 @@ ODWaveTrackTaskQueue::ODWaveTrackTaskQueue()
 {
 }
 
-ODWaveTrackTaskQueue::~ODWaveTrackTaskQueue()
+ODWaveTrackTaskQueue::~ODWaveTrackTaskQueue() NOEXCEPT
 {
    //we need to DELETE all ODTasks.  We will have to block or wait until block for the active ones.
    for(unsigned int i=0;i<mTasks.size();i++)

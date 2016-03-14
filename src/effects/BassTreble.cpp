@@ -80,7 +80,7 @@ EffectBassTreble::EffectBassTreble()
    SetLinearEffectFlag(false);
 }
 
-EffectBassTreble::~EffectBassTreble()
+EffectBassTreble::~EffectBassTreble() NOEXCEPT
 {
 }
 

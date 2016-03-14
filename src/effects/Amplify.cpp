@@ -73,7 +73,7 @@ EffectAmplify::EffectAmplify()
    SetLinearEffectFlag(true);
 }
 
-EffectAmplify::~EffectAmplify()
+EffectAmplify::~EffectAmplify() NOEXCEPT
 {
 }
 

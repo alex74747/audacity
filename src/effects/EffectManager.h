@@ -56,7 +56,7 @@ public:
 //
 public:
    EffectManager();
-   virtual ~EffectManager();
+   virtual ~EffectManager() NOEXCEPT;
 
    /** (Un)Register an effect so it can be executed. */
    // Here solely for the purpose of Nyquist Workbench until

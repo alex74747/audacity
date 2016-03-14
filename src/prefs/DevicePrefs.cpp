@@ -58,7 +58,7 @@ DevicePrefs::DevicePrefs(wxWindow * parent)
    Populate();
 }
 
-DevicePrefs::~DevicePrefs()
+DevicePrefs::~DevicePrefs() NOEXCEPT
 {
 }
 

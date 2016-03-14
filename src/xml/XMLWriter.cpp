@@ -61,7 +61,7 @@ XMLWriter::XMLWriter()
    mHasKids.Add(false);
 }
 
-XMLWriter::~XMLWriter()
+XMLWriter::~XMLWriter() NOEXCEPT
 {
 }
 
@@ -256,7 +256,7 @@ XMLFileWriter::XMLFileWriter()
 {
 }
 
-XMLFileWriter::~XMLFileWriter()
+XMLFileWriter::~XMLFileWriter() NOEXCEPT
 {
    if (IsOpened()) {
       Close();
@@ -317,7 +317,7 @@ XMLStringWriter::XMLStringWriter(size_t initialSize)
    }
 }
 
-XMLStringWriter::~XMLStringWriter()
+XMLStringWriter::~XMLStringWriter() NOEXCEPT
 {
 }
 

@@ -149,7 +149,7 @@ SimpleBlockFile::SimpleBlockFile(wxFileName existingFile, sampleCount len,
    mCache.active = false;
 }
 
-SimpleBlockFile::~SimpleBlockFile()
+SimpleBlockFile::~SimpleBlockFile() NOEXCEPT
 {
    if (mCache.active)
    {

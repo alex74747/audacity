@@ -44,7 +44,7 @@ class PluginDescriptor
 {
 public:
    PluginDescriptor();
-   virtual ~PluginDescriptor();
+   virtual ~PluginDescriptor() NOEXCEPT;
 
    bool IsInstantiated() const;
    IdentInterface *GetInstance();
@@ -168,7 +168,7 @@ class PluginManager final : public PluginManagerInterface
 {
 public:
    PluginManager();
-   virtual ~PluginManager();
+   virtual ~PluginManager() NOEXCEPT;
 
    // PluginManagerInterface implementation
 

@@ -37,7 +37,7 @@ class CommandBuilder
       CommandBuilder(const wxString &cmdString);
       CommandBuilder(const wxString &cmdName,
                      const wxString &cmdParams);
-      ~CommandBuilder();
+      ~CommandBuilder() NOEXCEPT;
       bool WasValid();
       Command *GetCommand();
       void Cleanup();

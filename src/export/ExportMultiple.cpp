@@ -138,7 +138,7 @@ ExportMultiple::ExportMultiple(AudacityProject *project)
    EnableControls();
 }
 
-ExportMultiple::~ExportMultiple()
+ExportMultiple::~ExportMultiple() NOEXCEPT
 {
 }
 

@@ -44,7 +44,7 @@ FileIO::FileIO(const wxString & name, FileIOMode mode)
       mOpen = true;
 }
 
-FileIO::~FileIO()
+FileIO::~FileIO() NOEXCEPT
 {
    Close();
 }

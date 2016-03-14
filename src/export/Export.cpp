@@ -83,7 +83,7 @@ ExportPlugin::ExportPlugin()
    mFormatInfos.Empty();
 }
 
-ExportPlugin::~ExportPlugin()
+ExportPlugin::~ExportPlugin() NOEXCEPT
 {
    mFormatInfos.Clear();
 }
@@ -297,7 +297,7 @@ Exporter::Exporter()
 #endif
 }
 
-Exporter::~Exporter()
+Exporter::~Exporter() NOEXCEPT
 {
    for (size_t i = 0; i < mPlugins.GetCount(); i++) {
       mPlugins[i]->Destroy();
@@ -912,7 +912,7 @@ ExportMixerPanel::ExportMixerPanel( MixerSpec *mixerSpec,
    mTrackNames = trackNames;
 }
 
-ExportMixerPanel::~ExportMixerPanel()
+ExportMixerPanel::~ExportMixerPanel() NOEXCEPT
 {
    delete[] mTrackRects;
    delete[] mChannelRects;
@@ -1226,7 +1226,7 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
    SetSize( 640, 480 );
 }
 
-ExportMixerDialog::~ExportMixerDialog()
+ExportMixerDialog::~ExportMixerDialog() NOEXCEPT
 {
    if( mMixerSpec )
    {

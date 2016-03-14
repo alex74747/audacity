@@ -11,6 +11,7 @@
 #ifndef AUDACITY_VSTCONTROL_H
 #define AUDACITY_VSTCONTROL_H
 
+#include "../../Audacity.h"
 #include <wx/control.h>
 #include <wx/panel.h>
 
@@ -19,7 +20,7 @@
 class VSTEffectLink /* not final */
 {
 public:
-   virtual ~VSTEffectLink() {};
+   virtual ~VSTEffectLink() NOEXCEPT {};
    virtual intptr_t callDispatcher(int opcode, int index, intptr_t value, void *ptr, float opt) = 0;
 };
 
@@ -32,7 +33,7 @@ public:
       mLink = NULL;
    }
 
-   virtual ~VSTControlBase()
+   virtual ~VSTControlBase() NOEXCEPT
    {
    }
 

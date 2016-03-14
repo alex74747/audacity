@@ -112,7 +112,7 @@ Lyrics::Lyrics(wxWindow* parent, wxWindowID id,
    #endif
 }
 
-Lyrics::~Lyrics()
+Lyrics::~Lyrics() NOEXCEPT
 {
 }
 

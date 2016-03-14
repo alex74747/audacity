@@ -20,7 +20,7 @@ class AUDACITY_DLL_API SpectralSelectionBarListener /* not final */ {
  public:
 
    SpectralSelectionBarListener(){}
-   virtual ~SpectralSelectionBarListener(){}
+   virtual ~SpectralSelectionBarListener() NOEXCEPT {}
 
    virtual double SSBL_GetRate() const = 0;
 

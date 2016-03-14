@@ -180,7 +180,7 @@ SpectrumAnalyst::SpectrumAnalyst()
 {
 }
 
-SpectrumAnalyst::~SpectrumAnalyst()
+SpectrumAnalyst::~SpectrumAnalyst() NOEXCEPT
 {
 }
 
@@ -513,7 +513,7 @@ FreqWindow::FreqWindow(wxWindow * parent, wxWindowID id,
 #endif
 }
 
-FreqWindow::~FreqWindow()
+FreqWindow::~FreqWindow() NOEXCEPT
 {
    if (mBitmap)
       delete mBitmap;

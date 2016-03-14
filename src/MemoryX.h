@@ -106,7 +106,7 @@ namespace std {
          return *this;
       }
 
-      ~unique_ptr() { delete p; }
+      ~unique_ptr() NOEXCEPT { delete p; }
 
       T* operator -> () const { return p; }
       T& operator * () const { return *p; }
@@ -174,7 +174,7 @@ namespace std {
       // NO template versions of move for upcasting!
 
       // delete[] not delete!
-      ~unique_ptr() { delete[] p; }
+      ~unique_ptr() NOEXCEPT { delete[] p; }
 
       // No operator ->, but [] instead
       T& operator [] (ptrdiff_t n) const { return p[n]; }
@@ -384,13 +384,13 @@ public:
       return *this;
    }
 
-   Maybe(Maybe &&that)
+   Maybe(Maybe &&that) NOEXCEPT
    {
       if (that.get())
          create(::std::move(*that));
    }
 
-   Maybe& operator= (Maybe &&that)
+   Maybe& operator= (Maybe &&that) NOEXCEPT
    {
       if (this != &that) {
          if (that.get())
@@ -416,7 +416,7 @@ public:
    }
 
    // Destroy any object that was built in it
-   ~Maybe()
+   ~Maybe() NOEXCEPT
    {
       reset();
    }
@@ -439,7 +439,7 @@ public:
       return pp;
    }
 
-   void reset()
+   void reset() NOEXCEPT
    {
       if (pp)
          pp->~X(), pp = nullptr;

@@ -118,7 +118,7 @@ ShuttleGuiBase::ShuttleGuiBase(wxWindow * pParent, teShuttleMode ShuttleMode )
    Init();
 }
 
-ShuttleGuiBase::~ShuttleGuiBase()
+ShuttleGuiBase::~ShuttleGuiBase() NOEXCEPT
 {
 }
 
@@ -908,9 +908,9 @@ public:
       wxPanel( parent, id, pos, size, style )
    {
    };
-   ~InvisiblePanel(){;};
+   ~InvisiblePanel() NOEXCEPT {}
    void OnPaint( wxPaintEvent &event );
-   void OnErase(wxEraseEvent &/*evt*/){;};
+   void OnErase(wxEraseEvent &/*evt*/) {}
    DECLARE_EVENT_TABLE()
 };
 
@@ -2032,7 +2032,7 @@ ShuttleGui::ShuttleGui(wxWindow * pParent, teShuttleMode ShuttleMode) :
    mpShuttle->mbStoreInClient = (mShuttleMode == eIsCreating );
 };
 
-ShuttleGui::~ShuttleGui()
+ShuttleGui::~ShuttleGui() NOEXCEPT
 {
    if( mpShuttle )
       delete mpShuttle;

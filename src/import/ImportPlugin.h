@@ -103,7 +103,7 @@ public:
    // state.
    virtual ImportFileHandle *Open(const wxString &Filename) = 0;
 
-   virtual ~ImportPlugin() { }
+   virtual ~ImportPlugin() NOEXCEPT {}
 
 protected:
 
@@ -125,7 +125,7 @@ public:
    {
    }
 
-   virtual ~ImportFileHandle()
+   virtual ~ImportFileHandle() NOEXCEPT
    {
    }
 

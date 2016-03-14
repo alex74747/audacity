@@ -97,7 +97,7 @@ LadspaEffectsModule::LadspaEffectsModule(ModuleManagerInterface *moduleManager,
    }
 }
 
-LadspaEffectsModule::~LadspaEffectsModule()
+LadspaEffectsModule::~LadspaEffectsModule() NOEXCEPT
 {
 }
 
@@ -325,7 +325,7 @@ class LadspaEffectOptionsDialog final : public wxDialog
 {
 public:
    LadspaEffectOptionsDialog(wxWindow * parent, EffectHostInterface *host);
-   virtual ~LadspaEffectOptionsDialog();
+   virtual ~LadspaEffectOptionsDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -353,7 +353,7 @@ LadspaEffectOptionsDialog::LadspaEffectOptionsDialog(wxWindow * parent, EffectHo
    PopulateOrExchange(S);
 }
 
-LadspaEffectOptionsDialog::~LadspaEffectOptionsDialog()
+LadspaEffectOptionsDialog::~LadspaEffectOptionsDialog() NOEXCEPT
 {
 }
 
@@ -426,7 +426,7 @@ class LadspaEffectMeter final : public wxWindow
 {
 public:
    LadspaEffectMeter(wxWindow *parent, const float & val, float min, float max);
-   virtual ~LadspaEffectMeter();
+   virtual ~LadspaEffectMeter() NOEXCEPT;
 
 private:
    void OnErase(wxEraseEvent & evt);
@@ -461,7 +461,7 @@ LadspaEffectMeter::LadspaEffectMeter(wxWindow *parent, const float & val, float 
    SetBackgroundColour(*wxWHITE);
 }
 
-LadspaEffectMeter::~LadspaEffectMeter()
+LadspaEffectMeter::~LadspaEffectMeter() NOEXCEPT
 {
 }
 
@@ -562,7 +562,7 @@ LadspaEffect::LadspaEffect(const wxString & path, int index)
    mToggles = NULL;
 }
 
-LadspaEffect::~LadspaEffect()
+LadspaEffect::~LadspaEffect() NOEXCEPT
 {
    if (mInputPorts)
    {

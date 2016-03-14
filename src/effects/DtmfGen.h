@@ -31,7 +31,7 @@ class EffectDtmf final : public Effect
 {
 public:
    EffectDtmf();
-   virtual ~EffectDtmf();
+   virtual ~EffectDtmf() NOEXCEPT;
 
    // IdentInterface implementation
 

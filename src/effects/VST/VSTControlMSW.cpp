@@ -18,7 +18,7 @@ VSTControl::VSTControl()
 {
 }
 
-VSTControl::~VSTControl()
+VSTControl::~VSTControl() NOEXCEPT
 {
    if (mHwnd)
    {

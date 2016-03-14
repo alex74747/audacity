@@ -23,7 +23,7 @@ class MousePrefs final : public PrefsPanel
 {
  public:
    MousePrefs(wxWindow * parent);
-   ~MousePrefs();
+   ~MousePrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

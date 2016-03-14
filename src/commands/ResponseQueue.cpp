@@ -22,7 +22,7 @@ ResponseQueue::ResponseQueue()
    : mCondition(mMutex)
 { }
 
-ResponseQueue::~ResponseQueue()
+ResponseQueue::~ResponseQueue() NOEXCEPT
 { }
 
 void ResponseQueue::AddResponse(Response response)

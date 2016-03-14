@@ -65,7 +65,7 @@ DeviceToolBar::DeviceToolBar()
    mRecordBitmap = NULL;
 }
 
-DeviceToolBar::~DeviceToolBar()
+DeviceToolBar::~DeviceToolBar() NOEXCEPT
 {
    delete mPlayBitmap;
    delete mRecordBitmap;

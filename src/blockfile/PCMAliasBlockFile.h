@@ -34,7 +34,7 @@ class PCMAliasBlockFile /* not final */ : public AliasBlockFile
                      sampleCount aliasStart,
                      sampleCount aliasLen, int aliasChannel,
                      float min, float max, float rms);
-   virtual ~PCMAliasBlockFile();
+   virtual ~PCMAliasBlockFile() NOEXCEPT;
 
    /// Reads the specified data from the aliased file using libsndfile
    int ReadData(samplePtr data, sampleFormat format,

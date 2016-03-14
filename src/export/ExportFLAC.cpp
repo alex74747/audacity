@@ -52,7 +52,7 @@ class ExportFLACOptions final : public wxPanel
 public:
 
    ExportFLACOptions(wxWindow *parent, int format);
-   virtual ~ExportFLACOptions();
+   virtual ~ExportFLACOptions() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow();
@@ -72,7 +72,7 @@ ExportFLACOptions::ExportFLACOptions(wxWindow *parent, int WXUNUSED(format))
 
 ///
 ///
-ExportFLACOptions::~ExportFLACOptions()
+ExportFLACOptions::~ExportFLACOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }

@@ -36,7 +36,7 @@ ProjectsPrefs::ProjectsPrefs(wxWindow * parent)
    Populate();
 }
 
-ProjectsPrefs::~ProjectsPrefs()
+ProjectsPrefs::~ProjectsPrefs() NOEXCEPT
 {
 }
 

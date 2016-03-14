@@ -77,7 +77,7 @@ class AUDACITY_DLL_API TrackInfo
 {
 public:
    TrackInfo(TrackPanel * pParentIn);
-   ~TrackInfo();
+   ~TrackInfo() NOEXCEPT;
 
 private:
    int GetTrackInfoWidth() const;
@@ -137,7 +137,7 @@ class AUDACITY_DLL_API TrackPanel final : public wxPanel {
               TrackPanelListener * listener,
               AdornedRulerPanel * ruler );
 
-   virtual ~ TrackPanel();
+   virtual ~TrackPanel() NOEXCEPT;
 
    virtual void BuildMenus(void);
 

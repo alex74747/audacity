@@ -44,7 +44,7 @@ class AUDACITY_DLL_API Ruler {
    //
 
    Ruler();
-   ~Ruler();
+   ~Ruler() NOEXCEPT;
 
    //
    // Required Ruler Parameters
@@ -246,7 +246,7 @@ class AUDACITY_DLL_API RulerPanel final : public wxPanel {
               const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxDefaultSize);
 
-   ~RulerPanel();
+   ~RulerPanel() NOEXCEPT;
 
    void DoSetSize(int x, int y,
                   int width, int height,
@@ -283,7 +283,7 @@ public:
                      const wxSize& size = wxDefaultSize,
                      ViewInfo *viewinfo = NULL);
 
-   ~AdornedRulerPanel();
+   ~AdornedRulerPanel() NOEXCEPT;
 
    bool AcceptsFocus() const override { return false; };
 

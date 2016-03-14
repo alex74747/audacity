@@ -99,7 +99,7 @@ EffectChangePitch::EffectChangePitch()
    SetLinearEffectFlag(true);
 }
 
-EffectChangePitch::~EffectChangePitch()
+EffectChangePitch::~EffectChangePitch() NOEXCEPT
 {
 }
 

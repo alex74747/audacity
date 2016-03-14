@@ -14,6 +14,7 @@
 #ifndef __AUDACITY_LYRICS_WINDOW__
 #define __AUDACITY_LYRICS_WINDOW__
 
+#include "Audacity.h"
 #include <wx/frame.h>
 
 class AudacityProject;
@@ -23,7 +24,7 @@ class LyricsWindow final : public wxFrame {
 
  public:
    LyricsWindow(AudacityProject* parent);
-   virtual ~LyricsWindow();
+   virtual ~LyricsWindow() NOEXCEPT;
 
    Lyrics *GetLyricsPanel() { return mLyricsPanel; };
 

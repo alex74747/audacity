@@ -33,7 +33,7 @@ public:
    SetTrackInfoCommand(CommandType &type, CommandOutputTarget *target)
       : CommandImplementation(type, target)
    { }
-   virtual ~SetTrackInfoCommand()
+   virtual ~SetTrackInfoCommand() NOEXCEPT
    { }
 
    bool Apply(CommandExecutionContext context) override;

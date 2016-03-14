@@ -49,7 +49,7 @@ AttachableScrollBar::AttachableScrollBar(
    mpViewInfo = NULL;
 }
 
-AttachableScrollBar::~AttachableScrollBar(void)
+AttachableScrollBar::~AttachableScrollBar() NOEXCEPT
 {
 }
 

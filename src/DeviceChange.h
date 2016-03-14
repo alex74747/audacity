@@ -28,7 +28,7 @@
 class DeviceChangeInterface /* not final */
 {
 public:
-   virtual ~DeviceChangeInterface() {};
+   virtual ~DeviceChangeInterface() NOEXCEPT {};
 
    virtual bool SetHandler(wxEvtHandler *handler) = 0;
    virtual void Enable(bool enable = true) = 0;
@@ -38,7 +38,7 @@ class DeviceChangeHandler : public wxEvtHandler
 {
 public:
    DeviceChangeHandler();
-   virtual ~DeviceChangeHandler();
+   virtual ~DeviceChangeHandler() NOEXCEPT;
 
    void Enable(bool enable = true);
 

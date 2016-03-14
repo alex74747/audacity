@@ -89,7 +89,7 @@ class UnusableImportPluginList;
 class Importer {
 public:
    Importer();
-   ~Importer();
+   ~Importer() NOEXCEPT;
 
    /**
     * Return instance reference
@@ -166,7 +166,7 @@ public:
       const wxPoint& pos = wxDefaultPosition,
       const wxSize& size = wxDefaultSize,
       long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
-   virtual ~ImportStreamDialog();
+   virtual ~ImportStreamDialog() NOEXCEPT;
 
 private:
    ImportFileHandle *mFile;

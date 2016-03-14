@@ -30,7 +30,7 @@ class MidiIOPrefs final : public PrefsPanel
 {
  public:
    MidiIOPrefs(wxWindow * parent);
-   virtual ~MidiIOPrefs();
+   virtual ~MidiIOPrefs() NOEXCEPT;
    bool Apply() override;
    bool Validate() override;
 

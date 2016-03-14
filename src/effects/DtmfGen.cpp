@@ -77,7 +77,7 @@ EffectDtmf::EffectDtmf()
    dtmfSilence = 0.0;
 }
 
-EffectDtmf::~EffectDtmf()
+EffectDtmf::~EffectDtmf() NOEXCEPT
 {
 }
 

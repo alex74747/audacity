@@ -51,7 +51,7 @@ class ToolDock final : public wxPanel
  public:
 
    ToolDock( ToolManager *manager, wxWindow *parent, int dockid );
-   ~ToolDock();
+   ~ToolDock() NOEXCEPT;
 
    bool AcceptsFocus() const override { return false; };
 

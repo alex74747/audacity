@@ -40,7 +40,7 @@ class ControlToolBar final : public ToolBar {
  public:
 
    ControlToolBar();
-   virtual ~ControlToolBar();
+   virtual ~ControlToolBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

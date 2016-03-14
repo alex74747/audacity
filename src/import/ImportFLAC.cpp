@@ -134,7 +134,7 @@ class FLACImportPlugin final : public ImportPlugin
    {
    }
 
-   ~FLACImportPlugin() { }
+   ~FLACImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("libflac"); }
    wxString GetPluginFormatDescription();
@@ -147,7 +147,7 @@ class FLACImportFileHandle final : public ImportFileHandle
    friend class MyFLACFile;
 public:
    FLACImportFileHandle(const wxString & name);
-   ~FLACImportFileHandle();
+   ~FLACImportFileHandle() NOEXCEPT;
 
    bool Init();
 
@@ -549,7 +549,7 @@ int FLACImportFileHandle::Import(TrackFactory *trackFactory,
 }
 
 
-FLACImportFileHandle::~FLACImportFileHandle()
+FLACImportFileHandle::~FLACImportFileHandle() NOEXCEPT
 {
    //don't DELETE mFile if we are using OD.
 #ifndef EXPERIMENTAL_OD_FLAC

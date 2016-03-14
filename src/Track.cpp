@@ -126,7 +126,7 @@ void Track::Merge(const Track &orig)
    mSolo = orig.mSolo;
 }
 
-Track::~Track()
+Track::~Track() NOEXCEPT
 {
    mDirManager->Deref();
 }
@@ -140,7 +140,7 @@ const TrackListNode *Track::GetNode() const
 // A track can only live on one list at a time, so if you're moving a
 // track from one list to another, you must call SetOwner() with NULL
 // pointers first and then with the real pointers.
-void Track::SetOwner(TrackList *list, TrackListNode *node)
+void Track::SetOwner(TrackList *list, TrackListNode *node) NOEXCEPT
 {
    // Try to detect offenders while in development.
    wxASSERT(list == NULL || mList == NULL);
@@ -727,12 +727,12 @@ TrackList& TrackList::operator= (const TrackList &that)
    return *this;
 }
 
-TrackList::TrackList(TrackList &&that)
+TrackList::TrackList(TrackList &&that) NOEXCEPT
 {
    Swap(that);
 }
 
-TrackList &TrackList::operator= (TrackList &&that)
+TrackList &TrackList::operator= (TrackList &&that) NOEXCEPT
 {
    if (this != &that) {
       this->Clear(mDestructorDeletesTracks);
@@ -749,8 +749,10 @@ void TrackList::DoAssign(const TrackList &that)
       Add(track->Duplicate());
 }
 
-void TrackList::Swap(TrackList &that)
+void TrackList::Swap(TrackList &that) NOEXCEPT
 {
+   throw;
+
    std::swap(mDestructorDeletesTracks, that.mDestructorDeletesTracks);
    std::swap(head, that.head);
    std::swap(tail, that.tail);
@@ -772,7 +774,7 @@ void TrackList::Swap(TrackList &that)
    }
 }
 
-TrackList::~TrackList()
+TrackList::~TrackList() NOEXCEPT
 {
    Clear(mDestructorDeletesTracks);
 }

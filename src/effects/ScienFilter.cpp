@@ -179,7 +179,7 @@ EffectScienFilter::EffectScienFilter()
    }
 }
 
-EffectScienFilter::~EffectScienFilter()
+EffectScienFilter::~EffectScienFilter() NOEXCEPT
 {
    delete [] mpBiquad;
 }
@@ -1028,7 +1028,7 @@ EffectScienFilterPanel::EffectScienFilterPanel(EffectScienFilter *effect, wxWind
    mDbMax = 0.0;
 }
 
-EffectScienFilterPanel::~EffectScienFilterPanel()
+EffectScienFilterPanel::~EffectScienFilterPanel() NOEXCEPT
 {
    if (mBitmap)
    {

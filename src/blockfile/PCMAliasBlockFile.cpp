@@ -60,7 +60,7 @@ PCMAliasBlockFile::PCMAliasBlockFile(
 {
 }
 
-PCMAliasBlockFile::~PCMAliasBlockFile()
+PCMAliasBlockFile::~PCMAliasBlockFile() NOEXCEPT
 {
 }
 

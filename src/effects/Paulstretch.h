@@ -22,7 +22,7 @@ class EffectPaulstretch final : public Effect
 {
 public:
    EffectPaulstretch();
-   virtual ~EffectPaulstretch();
+   virtual ~EffectPaulstretch() NOEXCEPT;
 
    // IdentInterface implementation
 

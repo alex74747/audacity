@@ -17,7 +17,7 @@
 #include "CommandSignature.h"
 #include "Validators.h"
 
-CommandSignature::~CommandSignature()
+CommandSignature::~CommandSignature() NOEXCEPT
 {
    // Delete the validators
    ValidatorMap::iterator iter;

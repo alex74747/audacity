@@ -73,7 +73,7 @@ AudioUnitEffectsModule::AudioUnitEffectsModule(ModuleManagerInterface *moduleMan
    }
 }
 
-AudioUnitEffectsModule::~AudioUnitEffectsModule()
+AudioUnitEffectsModule::~AudioUnitEffectsModule() NOEXCEPT
 {
    mPath.Clear();
 }
@@ -290,7 +290,7 @@ class AudioUnitEffectOptionsDialog final : public wxDialog
 {
 public:
    AudioUnitEffectOptionsDialog(wxWindow * parent, EffectHostInterface *host);
-   virtual ~AudioUnitEffectOptionsDialog();
+   virtual ~AudioUnitEffectOptionsDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -329,7 +329,7 @@ AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent, Ef
    PopulateOrExchange(S);
 }
 
-AudioUnitEffectOptionsDialog::~AudioUnitEffectOptionsDialog()
+AudioUnitEffectOptionsDialog::~AudioUnitEffectOptionsDialog() NOEXCEPT
 {
 }
 
@@ -430,7 +430,7 @@ class AudioUnitEffectExportDialog final : public wxDialog
 {
 public:
    AudioUnitEffectExportDialog(wxWindow * parent, AudioUnitEffect *effect);
-   virtual ~AudioUnitEffectExportDialog();
+   virtual ~AudioUnitEffectExportDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -458,7 +458,7 @@ AudioUnitEffectExportDialog::AudioUnitEffectExportDialog(wxWindow * parent, Audi
    PopulateOrExchange(S);
 }
 
-AudioUnitEffectExportDialog::~AudioUnitEffectExportDialog()
+AudioUnitEffectExportDialog::~AudioUnitEffectExportDialog() NOEXCEPT
 {
 }
 
@@ -604,7 +604,7 @@ class AudioUnitEffectImportDialog final : public wxDialog
 {
 public:
    AudioUnitEffectImportDialog(wxWindow * parent, AudioUnitEffect *effect);
-   virtual ~AudioUnitEffectImportDialog();
+   virtual ~AudioUnitEffectImportDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -632,7 +632,7 @@ AudioUnitEffectImportDialog::AudioUnitEffectImportDialog(wxWindow * parent, Audi
    PopulateOrExchange(S);
 }
 
-AudioUnitEffectImportDialog::~AudioUnitEffectImportDialog()
+AudioUnitEffectImportDialog::~AudioUnitEffectImportDialog() NOEXCEPT
 {
 }
 
@@ -813,7 +813,7 @@ AudioUnitEffect::AudioUnitEffect(const wxString & path,
    mEventListenerRef = NULL;
 }
 
-AudioUnitEffect::~AudioUnitEffect()
+AudioUnitEffect::~AudioUnitEffect() NOEXCEPT
 {
    if (mUnitInitialized)
    {

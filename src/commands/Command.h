@@ -63,7 +63,7 @@ public:
    virtual void Progress(double completed) = 0;
    virtual void Status(const wxString &message) = 0;
    virtual void Error(const wxString &message) = 0;
-   virtual ~Command() { }
+   virtual ~Command()  NOEXCEPT {}
    virtual wxString GetName() = 0;
    virtual CommandSignature &GetSignature() = 0;
    virtual bool SetParameter(const wxString &paramName, const wxVariant &paramValue);
@@ -85,7 +85,7 @@ public:
    {
       wxASSERT(cmd != NULL);
    }
-   virtual ~DecoratedCommand();
+   virtual ~DecoratedCommand() NOEXCEPT;
    wxString GetName() override;
    CommandSignature &GetSignature() override;
    bool SetParameter(const wxString &paramName, const wxVariant &paramValue) override;
@@ -137,7 +137,7 @@ public:
    CommandImplementation(CommandType &type,
                          CommandOutputTarget *output);
 
-   virtual ~CommandImplementation();
+   virtual ~CommandImplementation() NOEXCEPT;
 
    /// An instance method for getting the command name (for consistency)
    wxString GetName();

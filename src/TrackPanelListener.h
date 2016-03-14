@@ -19,7 +19,7 @@ class AUDACITY_DLL_API TrackPanelListener /* not final */ {
 
  public:
    TrackPanelListener(){};
-   virtual ~TrackPanelListener(){};
+   virtual ~TrackPanelListener() NOEXCEPT {};
 
    virtual void TP_DisplaySelection() = 0;
    virtual void TP_DisplayStatusMessage(const wxString &msg) = 0;

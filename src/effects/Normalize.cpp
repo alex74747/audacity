@@ -52,7 +52,7 @@ EffectNormalize::EffectNormalize()
    SetLinearEffectFlag(false);
 }
 
-EffectNormalize::~EffectNormalize()
+EffectNormalize::~EffectNormalize() NOEXCEPT
 {
 }
 

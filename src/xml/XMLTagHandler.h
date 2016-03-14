@@ -69,7 +69,7 @@ public:
 class AUDACITY_DLL_API XMLTagHandler /* not final */ {
  public:
    XMLTagHandler(){};
-   virtual ~XMLTagHandler(){};
+   virtual ~XMLTagHandler() NOEXCEPT {};
    //
    // Methods to override
    //

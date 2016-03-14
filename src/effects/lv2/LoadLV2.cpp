@@ -83,7 +83,7 @@ LV2EffectsModule::LV2EffectsModule(ModuleManagerInterface *moduleManager,
    }
 }
 
-LV2EffectsModule::~LV2EffectsModule()
+LV2EffectsModule::~LV2EffectsModule() NOEXCEPT
 {
 }
 

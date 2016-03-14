@@ -11,6 +11,8 @@
 #ifndef __AUDACITY_MULTIFORMATREADER_H__
 #define __AUDACITY_MULTIFORMATREADER_H__
 
+#include "../Audacity.h"
+
 class MachineEndianness
 {
 public:
@@ -31,7 +33,7 @@ public:
          mFlag = MachineEndianness::Big;
       }
    }
-   ~MachineEndianness()
+   ~MachineEndianness() NOEXCEPT
    {}
 
    int IsLittle()
@@ -73,7 +75,7 @@ public:
    } FormatT;
    
    MultiFormatReader(const char* filename);
-   ~MultiFormatReader();
+   ~MultiFormatReader() NOEXCEPT;
 
    void Reset();
    size_t ReadSamples(void* buffer, size_t len,

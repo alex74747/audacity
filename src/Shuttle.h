@@ -12,6 +12,8 @@
 #ifndef __AUDACITY_SHUTTLE__
 #define __AUDACITY_SHUTTLE__
 
+#include "Audacity.h"
+
 
 
 class Enums {
@@ -28,7 +30,7 @@ class Shuttle /* not final */ {
  public:
    // constructors and destructors
    Shuttle();
-   virtual ~Shuttle() {}
+   virtual ~Shuttle() NOEXCEPT {}
 
  public:
    bool mbStoreInClient;
@@ -55,7 +57,7 @@ class ShuttleCli final : public Shuttle
 public:
    wxString mParams;
    ShuttleCli(){ mParams = wxT("") ;}
-   virtual ~ShuttleCli() {}
+   virtual ~ShuttleCli() NOEXCEPT {}
    bool ExchangeWithMaster(const wxString & Name) override;
 };
 

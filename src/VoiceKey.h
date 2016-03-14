@@ -34,7 +34,7 @@ class VoiceKey {
 
  public:
    VoiceKey();
-   ~VoiceKey();
+   ~VoiceKey() NOEXCEPT;
    sampleCount OnForward   (WaveTrack & t, sampleCount start, sampleCount len);
    sampleCount OnBackward  (WaveTrack & t, sampleCount start, sampleCount len);
    sampleCount OffForward  (WaveTrack & t, sampleCount start, sampleCount len);

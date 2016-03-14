@@ -22,7 +22,7 @@ class NyquistEffectsModule final : public ModuleInterface
 {
 public:
    NyquistEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~NyquistEffectsModule();
+   virtual ~NyquistEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

@@ -121,7 +121,7 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    LabelTrack(DirManager * projDirManager);
    LabelTrack(const LabelTrack &orig);
 
-   virtual ~ LabelTrack();
+   virtual ~LabelTrack() NOEXCEPT;
    void SetOffset(double dOffset) override;
 
    static void ResetFont();

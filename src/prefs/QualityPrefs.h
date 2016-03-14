@@ -27,7 +27,7 @@ class QualityPrefs final : public PrefsPanel
 {
  public:
    QualityPrefs(wxWindow * parent);
-   virtual ~QualityPrefs();
+   virtual ~QualityPrefs() NOEXCEPT;
 
    bool Apply() override;
 

@@ -341,7 +341,7 @@ void SpectrogramSettings::InvalidateCaches()
    DestroyWindows();
 }
 
-SpectrogramSettings::~SpectrogramSettings()
+SpectrogramSettings::~SpectrogramSettings() NOEXCEPT
 {
    DestroyWindows();
 }

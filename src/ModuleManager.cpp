@@ -95,7 +95,7 @@ Module::Module(const wxString & name)
    mDispatch = NULL;
 }
 
-Module::~Module()
+Module::~Module() NOEXCEPT
 {
    delete mLib;
 }
@@ -204,7 +204,7 @@ ModuleManager::ModuleManager()
 {
 }
 
-ModuleManager::~ModuleManager()
+ModuleManager::~ModuleManager() NOEXCEPT
 {
    size_t cnt = mModules.GetCount();
 

@@ -30,7 +30,7 @@ class AUDACITY_DLL_API CommandFunctor /* not final */
 {
 public:
    CommandFunctor(){};
-   virtual ~CommandFunctor(){};
+   virtual ~CommandFunctor() NOEXCEPT {};
    virtual void operator()(int index, const wxEvent *e) = 0;
 };
 
@@ -103,7 +103,7 @@ class AUDACITY_DLL_API CommandManager final : public XMLTagHandler
    //
 
    CommandManager();
-   virtual ~CommandManager();
+   virtual ~CommandManager() NOEXCEPT;
 
    CommandManager(const CommandManager&) = delete;
    CommandManager &operator= (const CommandManager&) = delete;

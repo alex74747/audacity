@@ -76,7 +76,7 @@ class AUDACITY_DLL_API Tags final : public XMLTagHandler {
 
  public:
    Tags();  // constructor
-   virtual ~Tags();
+   virtual ~Tags() NOEXCEPT;
 
    std::shared_ptr<Tags> Duplicate() const;
 
@@ -140,7 +140,7 @@ class TagsEditor final : public wxDialog
               bool editTitle,
               bool editTrackNumber);
 
-   virtual ~TagsEditor();
+   virtual ~TagsEditor() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 

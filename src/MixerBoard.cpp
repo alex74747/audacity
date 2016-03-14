@@ -898,7 +898,7 @@ MusicalInstrument::MusicalInstrument(wxBitmap* pBitmap, const wxString & strXPMf
       mKeywords.Add(strFilename); // Add the last one.
 }
 
-MusicalInstrument::~MusicalInstrument()
+MusicalInstrument::~MusicalInstrument() NOEXCEPT
 {
    delete mBitmap;
    mKeywords.Clear();
@@ -928,7 +928,7 @@ MixerBoardScrolledWindow::MixerBoardScrolledWindow(AudacityProject* project,
    mProject = project;
 }
 
-MixerBoardScrolledWindow::~MixerBoardScrolledWindow()
+MixerBoardScrolledWindow::~MixerBoardScrolledWindow() NOEXCEPT
 {
 }
 
@@ -1021,7 +1021,7 @@ MixerBoard::MixerBoard(AudacityProject* pProject,
       this);
 }
 
-MixerBoard::~MixerBoard()
+MixerBoard::~MixerBoard() NOEXCEPT
 {
    // public data members
    delete mImageMuteUp;
@@ -1778,7 +1778,7 @@ MixerBoardFrame::MixerBoardFrame(AudacityProject* parent)
    #endif
 }
 
-MixerBoardFrame::~MixerBoardFrame()
+MixerBoardFrame::~MixerBoardFrame() NOEXCEPT
 {
 }
 

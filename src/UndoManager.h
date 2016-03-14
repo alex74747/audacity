@@ -96,7 +96,7 @@ inline UndoPush operator & (UndoPush a, UndoPush b)
 class AUDACITY_DLL_API UndoManager {
  public:
    UndoManager();
-   ~UndoManager();
+   ~UndoManager() NOEXCEPT;
 
    void PushState(const TrackList * l,
                   const SelectedRegion &selectedRegion,

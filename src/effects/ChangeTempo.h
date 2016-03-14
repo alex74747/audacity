@@ -31,7 +31,7 @@ class EffectChangeTempo final : public EffectSoundTouch
 {
 public:
    EffectChangeTempo();
-   virtual ~EffectChangeTempo();
+   virtual ~EffectChangeTempo() NOEXCEPT;
 
    // IdentInterface implementation
 

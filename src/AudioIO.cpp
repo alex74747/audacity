@@ -400,7 +400,7 @@ struct AudioIO::ScrubQueue
          entry.mPlayed = entry.mDuration = 1;
       }
    }
-   ~ScrubQueue() {}
+   ~ScrubQueue() NOEXCEPT {}
 
    bool Producer(double end, double maxSpeed, bool bySpeed, bool maySkip)
    {
@@ -957,7 +957,7 @@ AudioIO::AudioIO()
 #endif
 }
 
-AudioIO::~AudioIO()
+AudioIO::~AudioIO() NOEXCEPT
 {
 #if defined(USE_PORTMIXER)
    if (mPortMixer) {

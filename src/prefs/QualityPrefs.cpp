@@ -39,7 +39,7 @@ QualityPrefs::QualityPrefs(wxWindow * parent)
    Populate();
 }
 
-QualityPrefs::~QualityPrefs()
+QualityPrefs::~QualityPrefs() NOEXCEPT
 {
 }
 

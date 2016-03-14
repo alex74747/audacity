@@ -109,7 +109,7 @@ public:
    {
    }
 
-   ~LOFImportPlugin() { }
+   ~LOFImportPlugin() NOEXCEPT {}
 
    wxString GetPluginStringID() { return wxT("lof"); }
    wxString GetPluginFormatDescription();
@@ -121,7 +121,7 @@ class LOFImportFileHandle final : public ImportFileHandle
 {
 public:
    LOFImportFileHandle(const wxString & name, wxTextFile *file);
-   ~LOFImportFileHandle();
+   ~LOFImportFileHandle() NOEXCEPT;
 
    wxString GetFileDescription();
    int GetFileUncompressedBytes();
@@ -493,7 +493,7 @@ void LOFImportFileHandle::doScrollOffset()
    }
 }
 
-LOFImportFileHandle::~LOFImportFileHandle()
+LOFImportFileHandle::~LOFImportFileHandle() NOEXCEPT
 {
    if(mTextFile)
    {

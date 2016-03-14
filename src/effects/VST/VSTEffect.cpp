@@ -278,7 +278,7 @@ VSTEffectsModule::VSTEffectsModule(ModuleManagerInterface *moduleManager,
    }
 }
 
-VSTEffectsModule::~VSTEffectsModule()
+VSTEffectsModule::~VSTEffectsModule() NOEXCEPT
 {
    mPath = wxEmptyString;
 }
@@ -698,7 +698,7 @@ class VSTEffectOptionsDialog final : public wxDialog
 {
 public:
    VSTEffectOptionsDialog(wxWindow * parent, EffectHostInterface *host);
-   virtual ~VSTEffectOptionsDialog();
+   virtual ~VSTEffectOptionsDialog() NOEXCEPT;
 
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -730,7 +730,7 @@ VSTEffectOptionsDialog::VSTEffectOptionsDialog(wxWindow * parent, EffectHostInte
    PopulateOrExchange(S);
 }
 
-VSTEffectOptionsDialog::~VSTEffectOptionsDialog()
+VSTEffectOptionsDialog::~VSTEffectOptionsDialog() NOEXCEPT
 {
 }
 
@@ -838,7 +838,7 @@ public:
    {
    }
 
-   ~VSTEffectTimer()
+   ~VSTEffectTimer() NOEXCEPT
    {
    }
 
@@ -1096,7 +1096,7 @@ VSTEffect::VSTEffect(const wxString & path, VSTEffect *master)
    }
 }
 
-VSTEffect::~VSTEffect()
+VSTEffect::~VSTEffect() NOEXCEPT
 {
    if (mDialog)
    {

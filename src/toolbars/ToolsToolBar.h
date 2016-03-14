@@ -49,7 +49,7 @@ class ToolsToolBar final : public ToolBar {
  public:
 
    ToolsToolBar();
-   virtual ~ToolsToolBar();
+   virtual ~ToolsToolBar() NOEXCEPT;
 
    void UpdatePrefs();
 

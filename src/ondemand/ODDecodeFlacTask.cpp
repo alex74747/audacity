@@ -27,7 +27,7 @@ extern "C" {
 
 #define DESC _("FLAC files")
 
-ODDecodeFlacTask::~ODDecodeFlacTask()
+ODDecodeFlacTask::~ODDecodeFlacTask() NOEXCEPT
 {
 }
 
@@ -263,7 +263,7 @@ ODFLACFile* ODFlacDecoder::GetFlacFile()
    return mFile;
 }
 
-ODFlacDecoder::~ODFlacDecoder(){
+ODFlacDecoder::~ODFlacDecoder() NOEXCEPT {
    if(mFile)
    {
       mFile->finish();

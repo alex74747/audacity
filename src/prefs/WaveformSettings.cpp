@@ -161,6 +161,6 @@ const wxArrayString &WaveformSettings::GetScaleNames()
    return theArray.Get();
 }
 
-WaveformSettings::~WaveformSettings()
+WaveformSettings::~WaveformSettings() NOEXCEPT
 {
 }

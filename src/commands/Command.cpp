@@ -49,7 +49,7 @@ void DecoratedCommand::Error(const wxString &message)
    mCommand->Error(message);
 }
 
-DecoratedCommand::~DecoratedCommand()
+DecoratedCommand::~DecoratedCommand() NOEXCEPT
 {
    delete mCommand;
 }
@@ -97,7 +97,7 @@ CommandImplementation::CommandImplementation(CommandType &type,
    wxASSERT(output != NULL);
 }
 
-CommandImplementation::~CommandImplementation()
+CommandImplementation::~CommandImplementation() NOEXCEPT
 {
    delete mOutput;
 }

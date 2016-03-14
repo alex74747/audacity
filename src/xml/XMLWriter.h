@@ -22,7 +22,7 @@ class AUDACITY_DLL_API XMLWriter /* not final */ {
  public:
 
    XMLWriter();
-   virtual ~XMLWriter();
+   virtual ~XMLWriter() NOEXCEPT;
 
    virtual void StartTag(const wxString &name);
    virtual void EndTag(const wxString &name);
@@ -65,7 +65,7 @@ class AUDACITY_DLL_API XMLFileWriter final : public wxFFile, public XMLWriter {
  public:
 
    XMLFileWriter();
-   virtual ~XMLFileWriter();
+   virtual ~XMLFileWriter() NOEXCEPT;
 
    /// Open the file. Might throw XMLFileWriterException.
    void Open(const wxString &name, const wxString &mode);
@@ -105,7 +105,7 @@ class XMLStringWriter final : public wxString, public XMLWriter {
  public:
 
    XMLStringWriter(size_t initialSize = 0);
-   virtual ~XMLStringWriter();
+   virtual ~XMLStringWriter() NOEXCEPT;
 
    void Write(const wxString &data) override;
 

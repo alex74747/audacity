@@ -1008,7 +1008,7 @@ ProgressDialog::ProgressDialog(const wxString & title,
 //
 // Destructor
 //
-ProgressDialog::~ProgressDialog()
+ProgressDialog::~ProgressDialog() NOEXCEPT
 {
    // Delete the window disabler before hiding the dialog to allow
    // focus to return to the original window.

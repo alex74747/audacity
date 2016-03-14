@@ -47,7 +47,7 @@ class ToolManager final : public wxEvtHandler
  public:
 
    ToolManager( AudacityProject *parent );
-   ~ToolManager();
+   ~ToolManager() NOEXCEPT;
 
    void LayoutToolBars();
    void UpdatePrefs();

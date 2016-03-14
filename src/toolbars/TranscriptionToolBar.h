@@ -69,7 +69,7 @@ class TranscriptionToolBar final : public ToolBar {
  public:
 
    TranscriptionToolBar();
-   virtual ~TranscriptionToolBar();
+   virtual ~TranscriptionToolBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

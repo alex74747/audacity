@@ -64,7 +64,7 @@ class ToolBarResizer final : public wxWindow
 {
 public:
    ToolBarResizer(ToolBar *mBar);
-   virtual ~ToolBarResizer();
+   virtual ~ToolBarResizer() NOEXCEPT;
 
    // We don't need or want to accept focus.
    bool AcceptsFocus() const;
@@ -105,7 +105,7 @@ ToolBarResizer::ToolBarResizer(ToolBar *bar)
    SetCursor( wxCURSOR_SIZEWE );
 }
 
-ToolBarResizer::~ToolBarResizer()
+ToolBarResizer::~ToolBarResizer() NOEXCEPT
 {
 }
 
@@ -286,7 +286,7 @@ ToolBar::ToolBar( int type,
 //
 // Destructor
 //
-ToolBar::~ToolBar()
+ToolBar::~ToolBar() NOEXCEPT
 {
 }
 

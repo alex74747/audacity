@@ -132,7 +132,7 @@ LyricsWindow::LyricsWindow(AudacityProject *parent):
       this);
 }
 
-LyricsWindow::~LyricsWindow()
+LyricsWindow::~LyricsWindow() NOEXCEPT
 {
    mProject->Disconnect(EVT_TRACK_PANEL_TIMER,
       wxCommandEventHandler(LyricsWindow::OnTimer),

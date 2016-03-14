@@ -26,7 +26,7 @@ class DeviceToolBar final : public ToolBar {
  public:
 
    DeviceToolBar();
-   virtual ~DeviceToolBar();
+   virtual ~DeviceToolBar() NOEXCEPT;
 
    void Create(wxWindow * parent);
 

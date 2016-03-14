@@ -44,7 +44,7 @@ WaveformPrefs::WaveformPrefs(wxWindow * parent, WaveTrack *wt)
    Populate();
 }
 
-WaveformPrefs::~WaveformPrefs()
+WaveformPrefs::~WaveformPrefs() NOEXCEPT
 {
 }
 

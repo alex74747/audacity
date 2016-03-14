@@ -101,7 +101,7 @@ void TimeTrack::Init(const TimeTrack &orig)
    SetDisplayLog(orig.GetDisplayLog());
 }
 
-TimeTrack::~TimeTrack()
+TimeTrack::~TimeTrack() NOEXCEPT
 {
    delete mEnvelope;
    mEnvelope = NULL;

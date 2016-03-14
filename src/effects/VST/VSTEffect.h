@@ -69,7 +69,7 @@ class VSTEffect final : public wxEvtHandler,
 {
  public:
    VSTEffect(const wxString & path, VSTEffect *master = NULL);
-   virtual ~VSTEffect();
+   virtual ~VSTEffect() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -333,7 +333,7 @@ class VSTEffectsModule final : public ModuleInterface
 {
 public:
    VSTEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~VSTEffectsModule();
+   virtual ~VSTEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

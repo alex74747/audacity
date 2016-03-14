@@ -30,7 +30,7 @@ class TimerRecordDialog final : public wxDialog
 {
 public:
    TimerRecordDialog(wxWindow* parent);
-   ~TimerRecordDialog();
+   ~TimerRecordDialog() NOEXCEPT;
 
    void OnTimer(wxTimerEvent& event);
    ///Runs the wait for start dialog.  Returns false if the user clicks stop.

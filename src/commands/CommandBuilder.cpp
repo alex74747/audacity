@@ -41,7 +41,7 @@ CommandBuilder::CommandBuilder(const wxString &cmdName, const wxString &params)
    BuildCommand(cmdName, params);
 }
 
-CommandBuilder::~CommandBuilder()
+CommandBuilder::~CommandBuilder() NOEXCEPT
 {
    Cleanup();
 }

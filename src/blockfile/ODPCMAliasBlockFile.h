@@ -54,7 +54,7 @@ class ODPCMAliasBlockFile final : public PCMAliasBlockFile
                         wxFileName aliasedFileName, sampleCount aliasStart,
                         sampleCount aliasLen, int aliasChannel,
                         float min, float max, float rms, bool summaryAvailable);
-   virtual ~ODPCMAliasBlockFile();
+   virtual ~ODPCMAliasBlockFile() NOEXCEPT;
 
    //checks to see if summary data has been computed and written to disk yet.  Thread safe.  Blocks if we are writing summary data.
    bool IsSummaryAvailable() override;

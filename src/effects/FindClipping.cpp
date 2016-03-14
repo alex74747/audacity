@@ -46,7 +46,7 @@ EffectFindClipping::EffectFindClipping()
    mStop = DEF_Stop;
 }
 
-EffectFindClipping::~EffectFindClipping()
+EffectFindClipping::~EffectFindClipping() NOEXCEPT
 {
 }
 

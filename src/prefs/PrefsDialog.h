@@ -50,7 +50,7 @@ class PrefsDialog /* not final */ : public wxDialog
    PrefsDialog(wxWindow * parent,
       const wxString &titlePrefix = _("Preferences: "),
       Factories &factories = DefaultFactories());
-   virtual ~PrefsDialog();
+   virtual ~PrefsDialog() NOEXCEPT;
 
    // Defined this so a protected virtual can be invoked after the constructor
    int ShowModal() override;
@@ -90,7 +90,7 @@ class GlobalPrefsDialog final : public PrefsDialog
 {
 public:
    GlobalPrefsDialog(wxWindow * parent, Factories &factories = DefaultFactories());
-   virtual ~GlobalPrefsDialog();
+   virtual ~GlobalPrefsDialog() NOEXCEPT;
    long GetPreferredPage() override;
    void SavePreferredPage() override;
 };

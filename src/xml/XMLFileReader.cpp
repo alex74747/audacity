@@ -33,7 +33,7 @@ XMLFileReader::XMLFileReader()
    mHandler.reserve(128);
 }
 
-XMLFileReader::~XMLFileReader()
+XMLFileReader::~XMLFileReader() NOEXCEPT
 {
    XML_ParserFree(mParser);
 }

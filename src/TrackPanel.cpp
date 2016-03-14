@@ -620,7 +620,7 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 }
 
 
-TrackPanel::~TrackPanel()
+TrackPanel::~TrackPanel() NOEXCEPT
 {
    mTimer.Stop();
 
@@ -9684,7 +9684,7 @@ TrackInfo::TrackInfo(TrackPanel * pParentIn)
    } while (textWidth >= allowableWidth);
 }
 
-TrackInfo::~TrackInfo()
+TrackInfo::~TrackInfo() NOEXCEPT
 {
    delete mGainCaptured;
    delete mGain;

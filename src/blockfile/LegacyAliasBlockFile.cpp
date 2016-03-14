@@ -41,7 +41,7 @@ LegacyAliasBlockFile::LegacyAliasBlockFile(wxFileName fileName,
                             &mMin, &mMax, &mRMS);
 }
 
-LegacyAliasBlockFile::~LegacyAliasBlockFile()
+LegacyAliasBlockFile::~LegacyAliasBlockFile() NOEXCEPT
 {
 }
 

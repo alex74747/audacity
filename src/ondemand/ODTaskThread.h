@@ -97,7 +97,7 @@ class ODLock {
       pthread_mutex_unlock (mutex);
    }
 
-   virtual ~ODLock()
+   virtual ~ODLock() NOEXCEPT
    {
       pthread_mutex_destroy (mutex);
       free(mutex);
@@ -112,7 +112,7 @@ class ODCondition
 {
 public:
    ODCondition(ODLock *lock);
-   virtual ~ODCondition();
+   virtual ~ODCondition() NOEXCEPT;
    void Signal();
    void Broadcast();
    void Wait();
@@ -148,14 +148,14 @@ public:
    ///Constructs a ODTaskThread
    ///@param task the task to be launched as an
    ODLock(){}
-  virtual ~ODLock(){}
+   virtual ~ODLock() NOEXCEPT {}
 };
 
 class ODCondition final : public wxCondition
 {
 public:
    ODCondition(ODLock *lock):wxCondition(*lock){}
-   virtual ~ODCondition(){}
+   virtual ~ODCondition() NOEXCEPT {}
    //these calls are implemented in wxCondition:
    //void Signal();
    //void Broadcast();
@@ -177,7 +177,7 @@ public:
       mLock.Lock();
    }
 
-   ~ODLocker()
+   ~ODLocker() NOEXCEPT
    {
       mLock.Unlock();
    }

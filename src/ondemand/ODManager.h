@@ -119,7 +119,7 @@ class ODManager final
    //private constructor - Singleton.
    ODManager();
    //private constructor - DELETE with static method Quit()
-   virtual ~ODManager();
+   virtual ~ODManager() NOEXCEPT;
    ///Launches a thread for the manager and starts accepting Tasks.
    void Init();
 

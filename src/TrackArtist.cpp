@@ -206,7 +206,7 @@ namespace {
 #   endif
       }
 
-      ~Profiler()
+      ~Profiler() NOEXCEPT
       {
 #   ifdef __WXMSW__
          _time64(&tv1);
@@ -277,7 +277,7 @@ TrackArtist::TrackArtist()
    vruler = new Ruler;
 }
 
-TrackArtist::~TrackArtist()
+TrackArtist::~TrackArtist() NOEXCEPT
 {
    delete vruler;
 }

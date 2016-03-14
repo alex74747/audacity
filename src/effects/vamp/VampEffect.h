@@ -39,7 +39,7 @@ public:
               const wxString & path,
               int output,
               bool hasParameters);
-   virtual ~VampEffect();
+   virtual ~VampEffect() NOEXCEPT;
 
    // IdentInterface implementation
 

@@ -62,7 +62,7 @@ EffectNoise::EffectNoise()
    y = z = buf0 = buf1 = buf2 = buf3 = buf4 = buf5 = buf6 = 0;
 }
 
-EffectNoise::~EffectNoise()
+EffectNoise::~EffectNoise() NOEXCEPT
 {
 }
 

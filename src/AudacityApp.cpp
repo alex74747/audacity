@@ -565,7 +565,7 @@ class GnomeShutdown
       g_signal_connect(mClient, "save-yourself", G_CALLBACK(save_yourself_cb), NULL);
    }
 
-   virtual ~GnomeShutdown()
+   virtual ~GnomeShutdown() NOEXCEPT
    {
       // Do not dlclose() the libraries here lest you want segfaults...
 
@@ -606,7 +606,7 @@ public:
    {
    };
 
-   ~IPCConn()
+   ~IPCConn() NOEXCEPT
    {
    };
 
@@ -630,7 +630,7 @@ public:
       Create(appl);
    };
 
-   ~IPCServ()
+   ~IPCServ() NOEXCEPT
    {
    };
 

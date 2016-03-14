@@ -48,7 +48,7 @@ class AUDACITY_DLL_API TrackArtist {
 
  public:
    TrackArtist();
-   ~TrackArtist();
+   ~TrackArtist() NOEXCEPT;
 
    void SetColours();
    void DrawTracks(TrackList *tracks, Track *start,

@@ -24,7 +24,7 @@ class PlaybackPrefs final : public PrefsPanel
 {
  public:
    PlaybackPrefs(wxWindow * parent);
-   virtual ~PlaybackPrefs();
+   virtual ~PlaybackPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

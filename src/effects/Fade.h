@@ -22,7 +22,7 @@ class EffectFade final : public Effect
 {
 public:
    EffectFade(bool fadeIn = false);
-   virtual ~EffectFade();
+   virtual ~EffectFade() NOEXCEPT;
 
    // IdentInterface implementation
 

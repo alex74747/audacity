@@ -70,7 +70,7 @@ KeyView::KeyView(wxWindow *parent,
    RecalcExtents();
 }
 
-KeyView::~KeyView()
+KeyView::~KeyView() NOEXCEPT
 {
 }
 

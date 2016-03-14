@@ -57,7 +57,7 @@ class MeterUpdateMsg
 
    /* neither constructor nor destructor do anything */
    MeterUpdateMsg() { }
-   ~MeterUpdateMsg() { }
+   ~MeterUpdateMsg() NOEXCEPT {}
    /* for debugging purposes, printing the values out is really handy */
    /** \brief Print out all the values in the meter update message */
    wxString toString();
@@ -70,7 +70,7 @@ class MeterUpdateQueue
 {
  public:
    MeterUpdateQueue(int maxLen);
-   ~MeterUpdateQueue();
+   ~MeterUpdateQueue() NOEXCEPT;
 
    bool Put(MeterUpdateMsg &msg);
    bool Get(MeterUpdateMsg &msg);
@@ -111,7 +111,7 @@ class Meter final : public wxPanel
          Style style = HorizontalStereo,
          float fDecayRate = 60.0f);
 
-   ~Meter();
+   ~Meter() NOEXCEPT;
 
    bool AcceptsFocus() const override { return false; };
    bool AcceptsFocusFromKeyboard() const override { return true; };
@@ -290,7 +290,7 @@ class MeterAx final : public wxWindowAccessible
 public:
    MeterAx(wxWindow * window);
 
-   virtual ~ MeterAx();
+   virtual ~MeterAx() NOEXCEPT;
 
    // Performs the default action. childId is 0 (the action for this object)
    // or > 0 (the action for a child).

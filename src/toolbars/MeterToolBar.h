@@ -34,7 +34,7 @@ class MeterToolBar final : public ToolBar {
  public:
 
    MeterToolBar(AudacityProject *project, int type);
-   virtual ~MeterToolBar();
+   virtual ~MeterToolBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

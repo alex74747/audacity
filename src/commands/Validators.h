@@ -43,6 +43,8 @@ a certain criterion. This is a base validator which allows anything.
 #ifndef __VALIDATORS__
 #define __VALIDATORS__
 
+#include "../Audacity.h"
+
 class Validator /* not final */
 {
 private:
@@ -50,7 +52,7 @@ private:
 
 public:
    Validator() {};
-   virtual ~Validator() {};
+   virtual ~Validator() NOEXCEPT {};
    void SetConverted (const wxVariant &v)
    {
       mConverted = v;

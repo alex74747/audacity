@@ -98,7 +98,7 @@ TranscriptionToolBar::TranscriptionToolBar()
 #endif
 }
 
-TranscriptionToolBar::~TranscriptionToolBar()
+TranscriptionToolBar::~TranscriptionToolBar() NOEXCEPT
 {
 #ifdef EXPERIMENTAL_VOICE_DETECTION
    delete mVk;

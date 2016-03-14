@@ -51,7 +51,7 @@ class ODTask /* not final */
    /// Constructs an ODTask
    ODTask();
 
-   virtual ~ODTask(){};
+   virtual ~ODTask() NOEXCEPT {};
 
    //clones everything except information about the tracks.
    virtual ODTask* Clone()=0;

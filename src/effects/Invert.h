@@ -23,7 +23,7 @@ class EffectInvert final : public Effect
 {
 public:
    EffectInvert();
-   virtual ~EffectInvert();
+   virtual ~EffectInvert() NOEXCEPT;
 
    // IdentInterface implementation
 

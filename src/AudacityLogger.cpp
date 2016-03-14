@@ -56,7 +56,7 @@ AudacityLogger::AudacityLogger()
    mUpdated = false;
 }
 
-AudacityLogger::~AudacityLogger()
+AudacityLogger::~AudacityLogger() NOEXCEPT
 {
    Destroy();
 }

@@ -33,7 +33,7 @@ should be reference-counted.
 class CommandProgressTarget /* not final */
 {
 public:
-   virtual ~CommandProgressTarget() {}
+   virtual ~CommandProgressTarget() NOEXCEPT {}
    virtual void Update(double completed) = 0;
 };
 
@@ -41,7 +41,7 @@ public:
 class NullProgressTarget final : public CommandProgressTarget
 {
 public:
-   virtual ~NullProgressTarget() {}
+   virtual ~NullProgressTarget() NOEXCEPT {}
    void Update(double WXUNUSED(completed)) override {}
 };
 
@@ -54,7 +54,7 @@ public:
    GUIProgressTarget(ProgressDialog &pd)
       : mProgress(pd)
    {}
-   virtual ~GUIProgressTarget() {}
+   virtual ~GUIProgressTarget() NOEXCEPT {}
    void Update(double completed) override
    {
       mProgress.Update(completed);
@@ -65,7 +65,7 @@ public:
 class CommandMessageTarget /* not final */
 {
 public:
-   virtual ~CommandMessageTarget() {}
+   virtual ~CommandMessageTarget() NOEXCEPT {}
    virtual void Update(const wxString &message) = 0;
 };
 
@@ -78,7 +78,7 @@ public:
    ProgressToMessageTarget(CommandMessageTarget *target)
       : mTarget(*target)
    { }
-   virtual ~ProgressToMessageTarget()
+   virtual ~ProgressToMessageTarget() NOEXCEPT
    {
       // delete &mTarget;
    }
@@ -92,7 +92,7 @@ public:
 class NullMessageTarget final : public CommandMessageTarget
 {
 public:
-   virtual ~NullMessageTarget() {}
+   virtual ~NullMessageTarget() NOEXCEPT {}
    void Update(const wxString &message) override {}
 };
 
@@ -100,7 +100,7 @@ public:
 class MessageBoxTarget final : public CommandMessageTarget
 {
 public:
-   virtual ~MessageBoxTarget() {}
+   virtual ~MessageBoxTarget() NOEXCEPT {}
    void Update(const wxString &message) override
    {
       wxMessageBox(message);
@@ -131,7 +131,7 @@ public:
    ResponseQueueTarget(ResponseQueue &responseQueue)
       : mResponseQueue(responseQueue)
    { }
-   virtual ~ResponseQueueTarget()
+   virtual ~ResponseQueueTarget() NOEXCEPT
    {
       mResponseQueue.AddResponse(wxString(wxT("\n")));
    }
@@ -153,7 +153,7 @@ public:
       wxASSERT(t1 != NULL);
       wxASSERT(t2 != NULL);
    }
-   ~CombinedMessageTarget()
+   ~CombinedMessageTarget() NOEXCEPT
    {
       delete m1;
       delete m2;
@@ -208,7 +208,7 @@ public:
                        CommandMessageTarget  *et = TargetFactory::MessageDefault())
       : mProgressTarget(pt), mStatusTarget(st), mErrorTarget(et)
    { }
-   ~CommandOutputTarget()
+   ~CommandOutputTarget() NOEXCEPT
    {
       delete mProgressTarget;
       if (mErrorTarget != mStatusTarget)

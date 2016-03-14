@@ -32,7 +32,7 @@ class SpectralSelectionBar final : public ToolBar {
 public:
 
    SpectralSelectionBar();
-   virtual ~SpectralSelectionBar();
+   virtual ~SpectralSelectionBar() NOEXCEPT;
 
    void Create(wxWindow *parent);
 

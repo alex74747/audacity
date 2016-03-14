@@ -63,7 +63,7 @@ public:
                     double value = 0.0f,
                     double sampleRate = 1.0f /* to prevent div by 0 */);
 
-   virtual ~NumericConverter();
+   virtual ~NumericConverter() NOEXCEPT;
 
    virtual void ValueToControls();
    virtual void ValueToControls(double rawValue, bool nearest = true);
@@ -145,7 +145,7 @@ class NumericTextCtrl final : public wxControl, public NumericConverter
                    const wxSize &size = wxDefaultSize,
                    bool autoPos = false);
 
-   virtual ~NumericTextCtrl();
+   virtual ~NumericTextCtrl() NOEXCEPT;
 
    bool Layout() override;
    void Fit() override;
@@ -231,7 +231,7 @@ class NumericTextCtrlAx final : public wxWindowAccessible
 public:
    NumericTextCtrlAx(NumericTextCtrl * ctrl);
 
-   virtual ~ NumericTextCtrlAx();
+   virtual ~NumericTextCtrlAx() NOEXCEPT;
 
    // Performs the default action. childId is 0 (the action for this object)
    // or > 0 (the action for a child).

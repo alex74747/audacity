@@ -48,7 +48,7 @@ class AliasedFileMissingDialog final : public ErrorDialog
       const wxString & message,
       const wxString & helpURL,
       const bool Close = true, const bool modal = true);
-   virtual ~AliasedFileMissingDialog();
+   virtual ~AliasedFileMissingDialog() NOEXCEPT;
 };
 
 BEGIN_EVENT_TABLE(ErrorDialog, wxDialog)
@@ -67,7 +67,7 @@ ErrorDialog(parent, dlogTitle, message, helpURL, Close, modal)
    parent->SetMissingAliasFileDialog(this);
 }
 
-AliasedFileMissingDialog::~AliasedFileMissingDialog()
+AliasedFileMissingDialog::~AliasedFileMissingDialog() NOEXCEPT
 {
    ((AudacityProject*)GetParent())->SetMissingAliasFileDialog(NULL);
 }

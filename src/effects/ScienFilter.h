@@ -39,7 +39,7 @@ class EffectScienFilter final : public Effect
 {
 public:
    EffectScienFilter();
-   virtual ~EffectScienFilter();
+   virtual ~EffectScienFilter() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -139,7 +139,7 @@ class EffectScienFilterPanel final : public wxPanel
 {
 public:
    EffectScienFilterPanel(EffectScienFilter *effect, wxWindow *parent);
-   virtual ~EffectScienFilterPanel();
+   virtual ~EffectScienFilterPanel() NOEXCEPT;
 
    // We don't need or want to accept focus.
    bool AcceptsFocus() const;

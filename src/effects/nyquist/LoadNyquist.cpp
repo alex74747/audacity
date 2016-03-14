@@ -84,7 +84,7 @@ NyquistEffectsModule::NyquistEffectsModule(ModuleManagerInterface *moduleManager
    }
 }
 
-NyquistEffectsModule::~NyquistEffectsModule()
+NyquistEffectsModule::~NyquistEffectsModule() NOEXCEPT
 {
    mPath.Clear();
 }

@@ -90,7 +90,7 @@ VampEffect::VampEffect(Vamp::Plugin *plugin,
    mValues = NULL;
 }
 
-VampEffect::~VampEffect()
+VampEffect::~VampEffect() NOEXCEPT
 {
    if (mPlugin)
    {

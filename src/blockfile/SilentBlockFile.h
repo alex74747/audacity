@@ -28,7 +28,7 @@ class SilentBlockFile final : public BlockFile {
 
    SilentBlockFile(sampleCount sampleLen);
 
-   virtual ~SilentBlockFile();
+   virtual ~SilentBlockFile() NOEXCEPT;
 
    // Reading
 

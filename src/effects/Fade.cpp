@@ -24,7 +24,7 @@ EffectFade::EffectFade(bool fadeIn)
    mFadeIn = fadeIn;
 }
 
-EffectFade::~EffectFade()
+EffectFade::~EffectFade() NOEXCEPT
 {
 }
 

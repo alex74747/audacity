@@ -38,7 +38,7 @@ class KeyConfigPrefs final : public PrefsPanel
 {
 public:
    KeyConfigPrefs(wxWindow * parent);
-   ~KeyConfigPrefs();
+   ~KeyConfigPrefs() NOEXCEPT;
    bool Apply() override;
    void Cancel() override;
 
@@ -106,7 +106,7 @@ class KeyConfigPrefs final : public PrefsPanel
 {
  public:
    KeyConfigPrefs(wxWindow * parent);
-   ~KeyConfigPrefs();
+   ~KeyConfigPrefs() NOEXCEPT;
    bool Apply() override;
    void Cancel() override;
 

@@ -37,7 +37,7 @@ class TimeTrack final : public Track {
     */
    TimeTrack(const TimeTrack &orig);
 
-   virtual ~TimeTrack();
+   virtual ~TimeTrack() NOEXCEPT;
 
    // Identifying the type of track
    int GetKind() const override { return Time; }

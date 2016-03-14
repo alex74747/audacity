@@ -27,7 +27,7 @@
 class AudacityLogger final : public wxEvtHandler, public wxLog {
  public:
    AudacityLogger();
-   virtual ~AudacityLogger();
+   virtual ~AudacityLogger() NOEXCEPT;
 
    void Show(bool show = true);
    void Destroy();

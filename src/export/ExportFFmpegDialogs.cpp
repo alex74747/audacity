@@ -156,7 +156,7 @@ ExportFFmpegAC3Options::ExportFFmpegAC3Options(wxWindow *parent, int WXUNUSED(fo
    TransferDataToWindow();
 }
 
-ExportFFmpegAC3Options::~ExportFFmpegAC3Options()
+ExportFFmpegAC3Options::~ExportFFmpegAC3Options() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -213,7 +213,7 @@ ExportFFmpegAACOptions::ExportFFmpegAACOptions(wxWindow *parent, int WXUNUSED(fo
    TransferDataToWindow();
 }
 
-ExportFFmpegAACOptions::~ExportFFmpegAACOptions()
+ExportFFmpegAACOptions::~ExportFFmpegAACOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -282,7 +282,7 @@ ExportFFmpegAMRNBOptions::ExportFFmpegAMRNBOptions(wxWindow *parent, int WXUNUSE
    TransferDataToWindow();
 }
 
-ExportFFmpegAMRNBOptions::~ExportFFmpegAMRNBOptions()
+ExportFFmpegAMRNBOptions::~ExportFFmpegAMRNBOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -352,7 +352,7 @@ ExportFFmpegWMAOptions::ExportFFmpegWMAOptions(wxWindow *parent, int WXUNUSED(fo
    TransferDataToWindow();
 }
 
-ExportFFmpegWMAOptions::~ExportFFmpegWMAOptions()
+ExportFFmpegWMAOptions::~ExportFFmpegWMAOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -415,7 +415,7 @@ ExportFFmpegCustomOptions::ExportFFmpegCustomOptions(wxWindow *parent, int WXUNU
    TransferDataToWindow();
 }
 
-ExportFFmpegCustomOptions::~ExportFFmpegCustomOptions()
+ExportFFmpegCustomOptions::~ExportFFmpegCustomOptions() NOEXCEPT
 {
    TransferDataFromWindow();
 }
@@ -475,7 +475,7 @@ FFmpegPreset::FFmpegPreset()
    mControlState.SetCount(FELastID - FEFirstID);
 }
 
-FFmpegPreset::~FFmpegPreset()
+FFmpegPreset::~FFmpegPreset() NOEXCEPT
 {
 }
 
@@ -489,7 +489,7 @@ FFmpegPresets::FFmpegPresets()
    xmlfile.Parse(this,xmlFileName.GetFullPath());
 }
 
-FFmpegPresets::~FFmpegPresets()
+FFmpegPresets::~FFmpegPresets() NOEXCEPT
 {
    XMLFileWriter writer;
    // FIXME: Catch XMLFileWriterException
@@ -1295,7 +1295,7 @@ ApplicableFor ExportFFmpegOptions::apptable[] =
 const wxChar *ExportFFmpegOptions::PredictionOrderMethodNames[] = { _("Estimate"), _("2-level"), _("4-level"), _("8-level"), _("Full search"), _("Log search")};
 
 
-ExportFFmpegOptions::~ExportFFmpegOptions()
+ExportFFmpegOptions::~ExportFFmpegOptions() NOEXCEPT
 {
    delete mPresets;
    delete mPresetNames;

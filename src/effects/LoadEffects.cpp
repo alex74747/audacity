@@ -221,7 +221,7 @@ BuiltinEffectsModule::BuiltinEffectsModule(ModuleManagerInterface *moduleManager
    }
 }
 
-BuiltinEffectsModule::~BuiltinEffectsModule()
+BuiltinEffectsModule::~BuiltinEffectsModule() NOEXCEPT
 {
    mPath.Clear();
 }

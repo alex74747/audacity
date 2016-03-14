@@ -38,7 +38,7 @@ TimeEditor::TimeEditor(const wxString &format, double rate)
    mOld = 0.0;
 }
 
-TimeEditor::~TimeEditor()
+TimeEditor::~TimeEditor() NOEXCEPT
 {
 }
 
@@ -266,7 +266,7 @@ ChoiceEditor::ChoiceEditor(const wxArrayString &choices)
    mChoices = choices;
 }
 
-ChoiceEditor::~ChoiceEditor()
+ChoiceEditor::~ChoiceEditor() NOEXCEPT
 {
    if (m_control)
       mHandler.DisconnectEvent(m_control);
@@ -399,7 +399,7 @@ Grid::Grid(wxWindow *parent,
                     new ChoiceEditor);
 }
 
-Grid::~Grid()
+Grid::~Grid() NOEXCEPT
 {
 #if wxUSE_ACCESSIBILITY
    int cnt = mChildren.GetCount();

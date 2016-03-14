@@ -58,7 +58,7 @@ bool OpenProjectCommand::Apply(CommandExecutionContext context)
    return newFileName != wxEmptyString && newFileName != oldFileName;
 }
 
-OpenProjectCommand::~OpenProjectCommand()
+OpenProjectCommand::~OpenProjectCommand() NOEXCEPT
 { }
 
 // SaveProject
@@ -96,5 +96,5 @@ bool SaveProjectCommand::Apply(CommandExecutionContext context)
       return context.GetProject()->SaveAs(fileName,saveCompressed,addToHistory);
 }
 
-SaveProjectCommand::~SaveProjectCommand()
+SaveProjectCommand::~SaveProjectCommand() NOEXCEPT
 { }

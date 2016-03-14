@@ -103,7 +103,7 @@ EffectTruncSilence::EffectTruncSilence()
    mBlendFrameCount = DEF_BlendFrameCount;
 }
 
-EffectTruncSilence::~EffectTruncSilence()
+EffectTruncSilence::~EffectTruncSilence() NOEXCEPT
 {
 }
 

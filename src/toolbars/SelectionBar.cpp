@@ -99,7 +99,7 @@ SelectionBar::SelectionBar()
       AudioIO::GetOptimalSupportedSampleRate());
 }
 
-SelectionBar::~SelectionBar()
+SelectionBar::~SelectionBar() NOEXCEPT
 {
 }
 

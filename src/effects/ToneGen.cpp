@@ -113,7 +113,7 @@ EffectToneGen::EffectToneGen(bool isChirp)
       SetLinearEffectFlag(true);
 }
 
-EffectToneGen::~EffectToneGen()
+EffectToneGen::~EffectToneGen() NOEXCEPT
 {
 }
 

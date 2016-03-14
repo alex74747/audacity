@@ -94,7 +94,7 @@ FormatClassifier::FormatClassifier(const char* filename) :
 
 }
 
-FormatClassifier::~FormatClassifier()
+FormatClassifier::~FormatClassifier() NOEXCEPT
 {
    delete[] mSigBuffer;
    delete[] mAuxBuffer;

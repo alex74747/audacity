@@ -63,7 +63,7 @@ ODCondition::ODCondition(ODLock *lock)
    pthread_cond_init(condition, NULL);
    m_lock=lock;
 }
-ODCondition::~ODCondition()
+ODCondition::~ODCondition() NOEXCEPT
 {
    pthread_cond_destroy (condition);
    free(condition);

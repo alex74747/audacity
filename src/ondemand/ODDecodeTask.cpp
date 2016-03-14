@@ -294,7 +294,7 @@ ODFileDecoder::ODFileDecoder(const wxString & fName)
    mInited = false;
 }
 
-ODFileDecoder::~ODFileDecoder()
+ODFileDecoder::~ODFileDecoder() NOEXCEPT
 {
 }
 

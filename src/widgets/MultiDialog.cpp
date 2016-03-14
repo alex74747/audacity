@@ -40,7 +40,7 @@ public:
                wxString message,
                wxString title,
                const wxChar **buttons, wxString boxMsg, bool log);
-   ~MultiDialog() {};
+   ~MultiDialog() NOEXCEPT {};
 
 private:
    void OnOK( wxCommandEvent &event );

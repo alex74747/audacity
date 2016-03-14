@@ -70,7 +70,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    // The constructor is called once by each subclass at the beginning of the program.
    // Avoid allocating memory or doing time-consuming processing here.
    Effect();
-   virtual ~Effect();
+   virtual ~Effect() NOEXCEPT;
 
    // IdentInterface implementation
 
@@ -373,7 +373,7 @@ protected:
       void Commit();
 
       // Destructor undoes the addition of the analysis track if not committed.
-      ~AddedAnalysisTrack();
+      ~AddedAnalysisTrack() NOEXCEPT;
 
    private:
       Effect *mpEffect{};
@@ -404,7 +404,7 @@ protected:
       void Commit();
 
       // Destructor undoes the modification of the analysis track if not committed.
-      ~ModifiedAnalysisTrack();
+      ~ModifiedAnalysisTrack() NOEXCEPT;
 
    private:
       Effect *mpEffect{};
@@ -578,7 +578,7 @@ public:
    EffectUIHost(wxWindow *parent,
                 Effect *effect,
                 EffectUIClientInterface *client);
-   virtual ~EffectUIHost();
+   virtual ~EffectUIHost() NOEXCEPT;
 
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
@@ -662,7 +662,7 @@ class EffectPresetsDialog final : public wxDialog
 {
 public:
    EffectPresetsDialog(wxWindow *parent, Effect *effect);
-   virtual ~EffectPresetsDialog();
+   virtual ~EffectPresetsDialog() NOEXCEPT;
 
    wxString GetSelected() const;
    void SetSelected(const wxString & parms);

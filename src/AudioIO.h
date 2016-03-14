@@ -131,7 +131,7 @@ class AUDACITY_DLL_API AudioIO final {
 
  public:
    AudioIO();
-   ~AudioIO();
+   ~AudioIO() NOEXCEPT;
 
    AudioIOListener* GetListener() { return mListener; }
    void SetListener(AudioIOListener* listener);

@@ -36,7 +36,7 @@ class AUDACITY_DLL_API FormatInfo
 {
    public:
       FormatInfo(){};
-      ~FormatInfo(){};
+      ~FormatInfo() NOEXCEPT {};
       wxString mFormat;
       wxString mDescription;
       // wxString mExtension;
@@ -56,7 +56,7 @@ class AUDACITY_DLL_API ExportPlugin /* not final */
 public:
 
    ExportPlugin();
-   virtual ~ExportPlugin();
+   virtual ~ExportPlugin() NOEXCEPT;
    virtual void Destroy();
 
    int AddFormat();
@@ -137,7 +137,7 @@ class  AUDACITY_DLL_API Exporter final : public wxEvtHandler
 public:
 
    Exporter();
-   virtual ~Exporter();
+   virtual ~Exporter() NOEXCEPT;
 
    void SetFileDialogTitle( const wxString & DialogTitle );
    void RegisterPlugin(ExportPlugin *plugin);
@@ -202,7 +202,7 @@ public:
    ExportMixerPanel( MixerSpec *mixerSpec, wxArrayString trackNames,
          wxWindow *parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
          const wxSize& size = wxDefaultSize);
-   virtual ~ExportMixerPanel();
+   virtual ~ExportMixerPanel() NOEXCEPT;
 
    void OnMouseEvent(wxMouseEvent & event);
    void OnPaint(wxPaintEvent & event);
@@ -238,7 +238,7 @@ public:
          const wxPoint& pos = wxDefaultPosition,
          const wxSize& size = wxDefaultSize,
          long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
-   virtual ~ExportMixerDialog();
+   virtual ~ExportMixerDialog() NOEXCEPT;
 
    MixerSpec* GetMixerSpec() { return mMixerSpec; }
 

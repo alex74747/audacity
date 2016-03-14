@@ -41,7 +41,7 @@ class PROFILE_DLL_API DirManager final : public XMLTagHandler {
    DirManager();
 
    // MM: Only called by Deref() when refcount reaches zero.
-   virtual ~DirManager();
+   virtual ~DirManager() NOEXCEPT;
 
    static void SetTempDir(const wxString &_temp) { globaltemp = _temp; }
 

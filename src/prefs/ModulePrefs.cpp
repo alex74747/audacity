@@ -34,7 +34,7 @@ ModulePrefs::ModulePrefs(wxWindow * parent)
    Populate();
 }
 
-ModulePrefs::~ModulePrefs()
+ModulePrefs::~ModulePrefs() NOEXCEPT
 {
 }
 

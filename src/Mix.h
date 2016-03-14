@@ -57,7 +57,7 @@ class AUDACITY_DLL_API MixerSpec
 
    MixerSpec( int numTracks, int maxNumChannels );
    MixerSpec( const MixerSpec &mixerSpec );
-   virtual ~MixerSpec();
+   virtual ~MixerSpec() NOEXCEPT;
 
    bool SetNumChannels( int numChannels );
    int GetNumChannels() { return mNumChannels; }
@@ -98,7 +98,7 @@ class AUDACITY_DLL_API Mixer {
          double outRate, sampleFormat outFormat,
          bool highQuality = true, MixerSpec *mixerSpec = NULL);
 
-   virtual ~ Mixer();
+   virtual ~Mixer() NOEXCEPT;
 
    //
    // Setup

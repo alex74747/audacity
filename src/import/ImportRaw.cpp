@@ -63,7 +63,7 @@ class ImportRawDialog final : public wxDialog {
    ImportRawDialog(wxWindow * parent,
                    int encoding, int channels,
                    int offset, double rate);
-   ~ImportRawDialog();
+   ~ImportRawDialog() NOEXCEPT;
 
    void OnOK(wxCommandEvent & event);
    void OnCancel(wxCommandEvent & event);
@@ -446,7 +446,7 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent,
    Centre(wxBOTH);
 }
 
-ImportRawDialog::~ImportRawDialog()
+ImportRawDialog::~ImportRawDialog() NOEXCEPT
 {
    delete[] mEncodingSubtype;
 }

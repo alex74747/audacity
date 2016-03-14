@@ -29,7 +29,7 @@ class LegacyAliasBlockFile final : public PCMAliasBlockFile
                         int aliasChannel,
                         sampleCount summaryLen,
                         bool noRMS);
-   virtual ~LegacyAliasBlockFile();
+   virtual ~LegacyAliasBlockFile() NOEXCEPT;
 
    void SaveXML(XMLWriter &xmlFile) override;
    BlockFile *Copy(wxFileName fileName) override;

@@ -85,7 +85,7 @@ ToolDock::ToolDock( ToolManager *manager, wxWindow *parent, int dockid ):
 //
 // Destructer
 //
-ToolDock::~ToolDock()
+ToolDock::~ToolDock() NOEXCEPT
 {
 }
 

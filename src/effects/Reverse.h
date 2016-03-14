@@ -23,7 +23,7 @@ class EffectReverse final : public Effect
 {
 public:
    EffectReverse();
-   virtual ~EffectReverse();
+   virtual ~EffectReverse() NOEXCEPT;
 
    // IdentInterface implementation
 

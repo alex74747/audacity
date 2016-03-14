@@ -37,7 +37,7 @@ class ODWaveTrackTaskQueue final
    /// Constructs an ODWaveTrackTaskQueue
    ODWaveTrackTaskQueue();
 
-   virtual ~ODWaveTrackTaskQueue();
+   virtual ~ODWaveTrackTaskQueue() NOEXCEPT;
 
 
 

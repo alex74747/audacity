@@ -85,7 +85,7 @@ public:
       where[0] = 0;
    }
 
-   ~SpecCache()
+   ~SpecCache() NOEXCEPT
    {
    }
 
@@ -133,7 +133,7 @@ public:
       minFreq = maxFreq = -1;
    }
 
-   ~SpecPxCache()
+   ~SpecPxCache() NOEXCEPT
    {
       delete[] values;
    }
@@ -196,7 +196,7 @@ public:
       }
    }
 
-   ~WaveDisplay()
+   ~WaveDisplay() NOEXCEPT
    {
    }
 };
@@ -229,7 +229,7 @@ public:
    // from one project to another
    WaveClip(const WaveClip& orig, DirManager *projDirManager);
 
-   virtual ~WaveClip();
+   virtual ~WaveClip() NOEXCEPT;
 
    void ConvertToSampleFormat(sampleFormat format);
 

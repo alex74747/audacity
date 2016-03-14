@@ -920,8 +920,7 @@ void AboutDialog::AddBuildinfoRow( wxString* htmlstring, const wxChar * libname,
    *htmlstring += wxT("</td></tr>");
 }
 
-
-AboutDialog::~AboutDialog()
+AboutDialog::~AboutDialog() NOEXCEPT
 {
 }
 

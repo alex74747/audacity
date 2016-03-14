@@ -79,7 +79,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
       return new Sequence(*this, projDirManager);
    }
 
-   ~Sequence();
+   ~Sequence() NOEXCEPT;
 
    //
    // Editing
@@ -198,7 +198,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
       {
          mSequence.LockDeleteUpdateMutex();
       }
-      ~DeleteUpdateMutexLocker()
+      ~DeleteUpdateMutexLocker() NOEXCEPT
       {
          mSequence.UnlockDeleteUpdateMutex();
       }

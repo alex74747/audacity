@@ -38,7 +38,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~OpenProjectCommand();
+   virtual ~OpenProjectCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };
 
@@ -60,6 +60,6 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~SaveProjectCommand();
+   virtual ~SaveProjectCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };

@@ -78,7 +78,7 @@ class AUDACITY_DLL_API AutoSaveFile final : public XMLWriter
 public:
 
    AutoSaveFile(size_t allocSize = 1024 * 1024);
-   virtual ~AutoSaveFile();
+   virtual ~AutoSaveFile() NOEXCEPT;
 
    void StartTag(const wxString & name) override;
    void EndTag(const wxString & name) override;

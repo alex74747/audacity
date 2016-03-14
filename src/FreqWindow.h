@@ -57,7 +57,7 @@ public:
    };
 
    SpectrumAnalyst();
-   ~SpectrumAnalyst();
+   ~SpectrumAnalyst() NOEXCEPT;
 
    // Return true iff successful
    bool Calculate(Algorithm alg,
@@ -128,7 +128,7 @@ class FreqWindow final : public wxDialog
 public:
    FreqWindow(wxWindow *parent, wxWindowID id,
               const wxString & title, const wxPoint & pos);
-   virtual ~ FreqWindow();
+   virtual ~FreqWindow() NOEXCEPT;
 
    bool Show( bool show = true ) override;
 

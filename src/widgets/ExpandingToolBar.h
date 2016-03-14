@@ -52,7 +52,7 @@ class ExpandingToolBar final : public wxPanel
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxDefaultSize);
 
-   virtual ~ExpandingToolBar();
+   virtual ~ExpandingToolBar() NOEXCEPT;
 
    wxPanel *GetMainPanel() { return mMainPanel; }
    wxPanel *GetExtraPanel() { return mExtraPanel; }
@@ -154,7 +154,7 @@ class ToolBarDialog final : public wxDialog
                  const wxString& name = wxEmptyString,
                  const wxPoint& pos = wxDefaultPosition);
 
-   ~ToolBarDialog();
+   ~ToolBarDialog() NOEXCEPT;
 
    void Fit() override;
 
@@ -176,7 +176,7 @@ class ToolBarFrame final : public wxMiniFrame
                 const wxString& name = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition);
 
-   ~ToolBarFrame();
+   ~ToolBarFrame() NOEXCEPT;
 
    void Fit() override;
 
@@ -202,7 +202,7 @@ class ToolBarArea final : public wxPanel
                wxWindowID id,
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize);
-   ~ToolBarArea();
+   ~ToolBarArea() NOEXCEPT;
 
    bool Layout() override;
    void Fit() override;

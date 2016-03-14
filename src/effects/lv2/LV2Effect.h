@@ -97,7 +97,7 @@ class LV2Effect final : public wxEvtHandler,
 {
 public:
    LV2Effect(const LilvPlugin *plug);
-   virtual ~LV2Effect();
+   virtual ~LV2Effect() NOEXCEPT;
 
    // IdentInterface implementation
 

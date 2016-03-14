@@ -42,7 +42,7 @@ class BatchProcessDialog final : public wxDialog {
  public:
    // constructors and destructors
    BatchProcessDialog(wxWindow * parent);
-   virtual ~BatchProcessDialog();
+   virtual ~BatchProcessDialog() NOEXCEPT;
  public:
    void Populate();
    void PopulateOrExchange( ShuttleGui & S );
@@ -66,7 +66,7 @@ class EditChainsDialog final : public wxDialog
 {
 public:
    EditChainsDialog(wxWindow * parent);
-   ~EditChainsDialog();
+   ~EditChainsDialog() NOEXCEPT;
 
 private:
    void Populate();

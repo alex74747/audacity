@@ -26,7 +26,7 @@ class EffectEcho final : public Effect
 {
 public:
    EffectEcho();
-   virtual ~EffectEcho();
+   virtual ~EffectEcho() NOEXCEPT;
 
    // IdentInterface implementation
 

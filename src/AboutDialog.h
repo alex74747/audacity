@@ -44,7 +44,7 @@ struct AboutDialogCreditItem {
       description.swap(moveMe.description);
    }
 
-   ~AboutDialogCreditItem() {}
+   ~AboutDialogCreditItem() NOEXCEPT {}
 };
 
 using AboutDialogCreditItemsList = std::vector<AboutDialogCreditItem>;
@@ -54,7 +54,7 @@ class AboutDialog final : public wxDialog {
 
  public:
    AboutDialog(wxWindow * parent);
-   virtual ~ AboutDialog();
+   virtual ~AboutDialog() NOEXCEPT;
 
    void OnOK(wxCommandEvent & event);
 

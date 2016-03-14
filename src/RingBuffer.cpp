@@ -33,7 +33,7 @@ RingBuffer::RingBuffer(sampleFormat format, int size)
    mEnd = 0;
 }
 
-RingBuffer::~RingBuffer()
+RingBuffer::~RingBuffer() NOEXCEPT
 {
 }
 

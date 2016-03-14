@@ -199,7 +199,7 @@ class EffectNoiseReduction::Settings
 {
 public:
    Settings();
-   ~Settings() {}
+   ~Settings() NOEXCEPT {}
 
    bool PromptUser(EffectNoiseReduction *effect,
       wxWindow *parent, bool bHasProfile, bool bAllowTwiddleSettings);
@@ -255,7 +255,7 @@ public:
           , double f0, double f1
 #endif
       );
-   ~Worker();
+   ~Worker() NOEXCEPT;
 
    bool Process(EffectNoiseReduction &effect,
                 Statistics &statistics, TrackFactory &factory,
@@ -417,7 +417,7 @@ EffectNoiseReduction::EffectNoiseReduction()
    Init();
 }
 
-EffectNoiseReduction::~EffectNoiseReduction()
+EffectNoiseReduction::~EffectNoiseReduction() NOEXCEPT
 {
 }
 
@@ -638,7 +638,7 @@ bool EffectNoiseReduction::Process()
    return bGoodResult;
 }
 
-EffectNoiseReduction::Worker::~Worker()
+EffectNoiseReduction::Worker::~Worker() NOEXCEPT
 {
    EndFFT(hFFT);
    for(int ii = 0, nn = mQueue.size(); ii < nn; ++ii)

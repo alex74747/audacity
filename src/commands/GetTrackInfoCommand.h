@@ -33,7 +33,7 @@ public:
    GetTrackInfoCommand(CommandType &type, CommandOutputTarget *target)
       : CommandImplementation(type, target)
    { }
-   virtual ~GetTrackInfoCommand()
+   virtual ~GetTrackInfoCommand() NOEXCEPT
    { }
 
    bool Apply(CommandExecutionContext context) override;

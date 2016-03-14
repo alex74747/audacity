@@ -47,7 +47,7 @@ class EffectWahwah final : public Effect
 {
 public:
    EffectWahwah();
-   virtual ~EffectWahwah();
+   virtual ~EffectWahwah() NOEXCEPT;
 
    // IdentInterface implementation
 

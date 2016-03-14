@@ -99,7 +99,7 @@ EffectChangeSpeed::EffectChangeSpeed()
    SetLinearEffectFlag(true);
 }
 
-EffectChangeSpeed::~EffectChangeSpeed()
+EffectChangeSpeed::~EffectChangeSpeed() NOEXCEPT
 {
 }
 

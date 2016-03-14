@@ -66,7 +66,7 @@ VoiceKey::VoiceKey(){
 };
 
 
-VoiceKey::~VoiceKey(){
+VoiceKey::~VoiceKey() NOEXCEPT {
 };
 
 

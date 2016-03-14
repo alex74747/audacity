@@ -487,7 +487,7 @@ AutoSaveFile::AutoSaveFile(size_t allocSize)
    mAllocSize = allocSize;
 }
 
-AutoSaveFile::~AutoSaveFile()
+AutoSaveFile::~AutoSaveFile() NOEXCEPT
 {
 }
 

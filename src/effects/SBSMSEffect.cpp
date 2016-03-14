@@ -46,7 +46,7 @@ public:
       outputRightTrack = NULL;
    }
 
-   ~ResampleBuf()
+   ~ResampleBuf() NOEXCEPT
    {
       if(buf)                 free(buf);
       if(leftBuffer)          free(leftBuffer);
@@ -94,7 +94,7 @@ public:
    {
       this->resampler = resampler;
    }
-   virtual ~SBSMSEffectInterface() {}
+   virtual ~SBSMSEffectInterface() NOEXCEPT {}
 
    long samples(audio *buf, long n) {
       return resampler->read(buf, n);

@@ -37,7 +37,7 @@ EffectsPrefs::EffectsPrefs(wxWindow * parent)
    Populate();
 }
 
-EffectsPrefs::~EffectsPrefs()
+EffectsPrefs::~EffectsPrefs() NOEXCEPT
 {
 }
 

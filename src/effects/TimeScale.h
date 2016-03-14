@@ -30,7 +30,7 @@ class EffectTimeScale final : public EffectSBSMS
 {
 public:
    EffectTimeScale();
-   virtual ~EffectTimeScale();
+   virtual ~EffectTimeScale() NOEXCEPT;
 
    // IdentInterface implementation
 

@@ -62,7 +62,7 @@ ThemePrefs::ThemePrefs(wxWindow * parent)
    Populate();
 }
 
-ThemePrefs::~ThemePrefs(void)
+ThemePrefs::~ThemePrefs(void) NOEXCEPT
 {
 }
 

@@ -199,7 +199,7 @@ Theme::Theme(void)
    mbInitialised=false;
 }
 
-Theme::~Theme(void)
+Theme::~Theme(void) NOEXCEPT
 {
 }
 
@@ -255,7 +255,7 @@ ThemeBase::ThemeBase(void)
 {
 }
 
-ThemeBase::~ThemeBase(void)
+ThemeBase::~ThemeBase(void) NOEXCEPT
 {
 }
 
@@ -482,7 +482,7 @@ class SourceOutputStream final : public wxOutputStream
 public:
    SourceOutputStream(){;};
    int OpenFile(const wxString & Filename);
-   virtual ~SourceOutputStream();
+   virtual ~SourceOutputStream() NOEXCEPT;
 
 protected:
    size_t OnSysWrite(const void *buffer, size_t bufsize) override;
@@ -528,7 +528,7 @@ size_t SourceOutputStream::OnSysWrite(const void *buffer, size_t bufsize)
 }
 
 /// Destructor.  We close our text stream in here.
-SourceOutputStream::~SourceOutputStream()
+SourceOutputStream::~SourceOutputStream() NOEXCEPT
 {
    File.Write( wxT("\r\n") );
    File.Close();

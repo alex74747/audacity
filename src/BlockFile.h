@@ -45,7 +45,7 @@ class PROFILE_DLL_API BlockFile /* not final, abstract */ {
 
    /// Construct a BlockFile.
    BlockFile(wxFileName fileName, sampleCount samples);
-   virtual ~BlockFile();
+   virtual ~BlockFile() NOEXCEPT;
 
    static void Deinit();
 
@@ -192,7 +192,7 @@ class AliasBlockFile /* not final */ : public BlockFile
                   wxFileName aliasedFileName, sampleCount aliasStart,
                   sampleCount aliasLen, int aliasChannel,
                   float min, float max, float RMS);
-   virtual ~AliasBlockFile();
+   virtual ~AliasBlockFile() NOEXCEPT;
 
    // Reading
 

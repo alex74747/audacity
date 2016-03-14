@@ -61,7 +61,7 @@ public:
    SampleBuffer(int count, sampleFormat format)
       : mPtr(NewSamples(count, format))
    {}
-   ~SampleBuffer()
+   ~SampleBuffer() NOEXCEPT
    {
       Free();
    }

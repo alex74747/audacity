@@ -79,7 +79,7 @@ class Envelope final : public XMLTagHandler {
    Envelope();
    void Initialize(int numPoints);
 
-   virtual ~ Envelope();
+   virtual ~Envelope() NOEXCEPT;
 
    bool GetInterpolateDB() { return mDB; }
    void SetInterpolateDB(bool db) { mDB = db; }

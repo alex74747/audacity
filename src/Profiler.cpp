@@ -25,7 +25,7 @@ but it will probably work fine if you use it on a high level.
 #include <string.h>
 
 ///write to a profile at the end of the test.
-Profiler::~Profiler()
+Profiler::~Profiler() NOEXCEPT
 {
    if(mTasks.size())
    {
@@ -128,7 +128,7 @@ TaskProfile::TaskProfile()
    mNumHits=0;
 }
 
-TaskProfile::~TaskProfile()
+TaskProfile::~TaskProfile() NOEXCEPT
 {
    if(mFileName)
    {

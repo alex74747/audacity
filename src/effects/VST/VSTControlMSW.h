@@ -21,7 +21,7 @@ class VSTControl final : public VSTControlBase
 {
 public:
    VSTControl();
-   ~VSTControl();
+   ~VSTControl() NOEXCEPT;
 
    bool Create(wxWindow *parent, VSTEffectLink *link);
 

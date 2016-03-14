@@ -56,10 +56,12 @@ of the warped region.
 #ifndef __TIMEWARPER__
 #define __TIMEWARPER__
 
+#include "../Audacity.h"
+
 class TimeWarper /* not final */
 {
 public:
-   virtual ~TimeWarper() { }
+   virtual ~TimeWarper() NOEXCEPT {}
    virtual double Warp(double originalTime) const = 0;
 };
 
@@ -77,7 +79,7 @@ private:
 public:
    ShiftTimeWarper(TimeWarper *warper, double shiftAmount)
       : mWarper(warper), mShift(shiftAmount) { }
-   virtual ~ShiftTimeWarper()
+   virtual ~ShiftTimeWarper() NOEXCEPT
    { delete mWarper; }
    double Warp(double originalTime) const override;
 };
@@ -200,7 +202,7 @@ public:
       : mWarper(warper), mTStart(tStart), mTEnd(tEnd),
          mOffset(mWarper->Warp(mTEnd)-mTEnd)
    { }
-   virtual ~RegionTimeWarper()
+   virtual ~RegionTimeWarper() NOEXCEPT
    { delete mWarper; }
    double Warp(double originalTime) const override
    {

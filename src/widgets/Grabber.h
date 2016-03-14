@@ -98,7 +98,7 @@ class Grabber final : public wxWindow
  public:
 
    Grabber(wxWindow *parent, wxWindowID id);
-   virtual ~Grabber();
+   virtual ~Grabber() NOEXCEPT;
 
    // We don't need or want to accept focus since there's really
    // not a need to dock/float a toolbar from the keyboard.  If this

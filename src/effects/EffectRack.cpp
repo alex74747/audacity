@@ -158,7 +158,7 @@ EffectRack::EffectRack()
    Fit();
 }
 
-EffectRack::~EffectRack()
+   EffectRack::~EffectRack() NOEXCEPT
 {
    gPrefs->DeleteGroup(wxT("/EffectsRack"));
 

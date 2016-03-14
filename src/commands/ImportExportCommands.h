@@ -38,7 +38,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~ImportCommand();
+   virtual ~ImportCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };
 
@@ -60,6 +60,6 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~ExportCommand();
+   virtual ~ExportCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };

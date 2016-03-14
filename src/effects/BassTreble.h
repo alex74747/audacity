@@ -29,7 +29,7 @@ class EffectBassTreble final : public Effect
 {
 public:
    EffectBassTreble();
-   virtual ~EffectBassTreble();
+   virtual ~EffectBassTreble() NOEXCEPT;
 
    // IdentInterface implementation
 

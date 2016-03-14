@@ -117,7 +117,7 @@ MeterUpdateQueue::MeterUpdateQueue(int maxLen):
 }
 
 // destructor
-MeterUpdateQueue::~MeterUpdateQueue()
+MeterUpdateQueue::~MeterUpdateQueue() NOEXCEPT
 {
    delete[] mBuffer;
 }
@@ -333,7 +333,7 @@ void Meter::Clear()
    mQueue.Clear();
 }
 
-Meter::~Meter()
+Meter::~Meter() NOEXCEPT
 {
    if (mIsInput)
    {
@@ -2062,7 +2062,7 @@ MeterAx::MeterAx(wxWindow *window):
 {
 }
 
-MeterAx::~MeterAx()
+MeterAx::~MeterAx() NOEXCEPT
 {
 }
 

@@ -34,7 +34,7 @@ class EffectRack final : public wxFrame
 {
 public:
    EffectRack();
-   virtual ~EffectRack();
+   virtual ~EffectRack() NOEXCEPT;
 
    void Add(Effect *effect, bool active = false, bool favorite = false);
 

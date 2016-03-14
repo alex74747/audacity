@@ -34,6 +34,7 @@ force the script thread to wait until a response is available.
 #ifndef __RESPONSEQUEUE__
 #define __RESPONSEQUEUE__
 
+#include "../Audacity.h"
 #include <queue>
 #include <string>
 #include <wx/thread.h>
@@ -65,7 +66,7 @@ class ResponseQueue {
 
    public:
       ResponseQueue();
-      ~ResponseQueue();
+      ~ResponseQueue() NOEXCEPT;
 
       void AddResponse(Response response);
       Response WaitAndGetResponse();

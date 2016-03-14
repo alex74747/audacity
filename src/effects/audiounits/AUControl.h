@@ -24,14 +24,14 @@ class AUControlImpl final : public wxWidgetCocoaImpl
 {
 public :
    AUControlImpl(wxWindowMac *peer, NSView *view);
-   ~AUControlImpl();
+   ~AUControlImpl() NOEXCEPT;
 };
 
 class AUControl final : public wxControl
 {
 public:
    AUControl();
-   ~AUControl();
+   ~AUControl() NOEXCEPT;
 
    bool Create(wxWindow *parent, AudioComponent comp, AudioUnit unit, bool custom);
    void CreateCocoa();

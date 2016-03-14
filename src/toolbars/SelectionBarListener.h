@@ -18,7 +18,7 @@ class AUDACITY_DLL_API SelectionBarListener /* not final */ {
  public:
 
    SelectionBarListener(){};
-   virtual ~SelectionBarListener(){};
+   virtual ~SelectionBarListener() NOEXCEPT {};
 
    virtual double AS_GetRate() = 0;
    virtual void AS_SetRate(double rate) = 0;

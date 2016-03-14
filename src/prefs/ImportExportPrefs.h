@@ -25,7 +25,7 @@ class ImportExportPrefs final : public PrefsPanel
 {
  public:
    ImportExportPrefs(wxWindow * parent);
-   ~ImportExportPrefs();
+   ~ImportExportPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

@@ -30,7 +30,7 @@ ImportExportPrefs::ImportExportPrefs(wxWindow * parent)
    Populate();
 }
 
-ImportExportPrefs::~ImportExportPrefs()
+ImportExportPrefs::~ImportExportPrefs() NOEXCEPT
 {
 }
 

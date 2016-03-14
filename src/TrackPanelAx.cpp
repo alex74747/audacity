@@ -39,7 +39,7 @@ TrackPanelAx::TrackPanelAx( wxWindow *window )
    mFocusedTrack = NULL;
 }
 
-TrackPanelAx::~TrackPanelAx()
+TrackPanelAx::~TrackPanelAx() NOEXCEPT
 {
 }
 

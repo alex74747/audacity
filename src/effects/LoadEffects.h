@@ -24,7 +24,7 @@ class BuiltinEffectsModule final : public ModuleInterface
 {
 public:
    BuiltinEffectsModule(ModuleManagerInterface *moduleManager, const wxString *path);
-   virtual ~BuiltinEffectsModule();
+   virtual ~BuiltinEffectsModule() NOEXCEPT;
 
    // IdentInterface implementatino
 

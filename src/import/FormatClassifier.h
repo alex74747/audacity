@@ -11,6 +11,8 @@
 #ifndef __AUDACITY_FORMATCLASSIFIER_H_
 #define __AUDACITY_FORMATCLASSIFIER_H_
 
+#include "../Audacity.h"
+
 #ifndef SNDFILE_1
 #error Requires libsndfile 1.0.3 or higher
 #endif
@@ -31,7 +33,7 @@ public:
       mpFid = fopen(filename, "wb");
    }
 
-   ~DebugWriter()
+   ~DebugWriter() NOEXCEPT
    {
       if (mpFid) fclose(mpFid);
    }
@@ -87,7 +89,7 @@ private:
 
 public:
    FormatClassifier(const char* filename);
-   ~FormatClassifier();
+   ~FormatClassifier() NOEXCEPT;
 
    FormatClassT GetResultFormat();
    int GetResultFormatLibSndfile();

@@ -41,7 +41,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~GetPreferenceCommand();
+   virtual ~GetPreferenceCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };
 
@@ -63,7 +63,7 @@ public:
       : CommandImplementation(type, target)
    { }
 
-   virtual ~SetPreferenceCommand();
+   virtual ~SetPreferenceCommand() NOEXCEPT;
    bool Apply(CommandExecutionContext context) override;
 };
 

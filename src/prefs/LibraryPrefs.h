@@ -26,7 +26,7 @@ class LibraryPrefs final : public PrefsPanel
 {
  public:
    LibraryPrefs(wxWindow * parent);
-   ~LibraryPrefs();
+   ~LibraryPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

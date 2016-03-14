@@ -11,6 +11,8 @@
 #ifndef __AUDACITY_SPECPOWERMETER_H_
 #define __AUDACITY_SPECPOWERMETER_H_
 
+#include "../Audacity.h"
+
 class SpecPowerMeter
 {
    int mSigLen;
@@ -23,7 +25,7 @@ class SpecPowerMeter
    int Freq2Bin(float fc);
 public:
    SpecPowerMeter(int sigLen);
-   ~SpecPowerMeter();
+   ~SpecPowerMeter() NOEXCEPT;
    
    float CalcPower(float* sig, float fc, float bw);
 };

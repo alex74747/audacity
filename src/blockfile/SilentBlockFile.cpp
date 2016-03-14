@@ -19,7 +19,7 @@ SilentBlockFile::SilentBlockFile(sampleCount sampleLen):
    mRMS = 0.;
 }
 
-SilentBlockFile::~SilentBlockFile()
+SilentBlockFile::~SilentBlockFile() NOEXCEPT
 {
 }
 

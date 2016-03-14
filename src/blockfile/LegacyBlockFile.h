@@ -43,7 +43,7 @@ class LegacyBlockFile final : public BlockFile {
                    sampleCount summaryLen,
                    sampleCount len,
                    bool noRMS);
-   virtual ~LegacyBlockFile();
+   virtual ~LegacyBlockFile() NOEXCEPT;
 
    // Reading
 

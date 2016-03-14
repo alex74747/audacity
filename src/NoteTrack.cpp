@@ -124,7 +124,7 @@ Track(projDirManager)
    mLastMidiPosition = 0;
 }
 
-NoteTrack::~NoteTrack()
+NoteTrack::~NoteTrack() NOEXCEPT
 {
    if (mSerializationBuffer) {
       delete [] mSerializationBuffer;

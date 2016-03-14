@@ -74,7 +74,7 @@ class DeviceManager final
  protected:
    //private constructor - Singleton.
    DeviceManager();
-   virtual ~DeviceManager();
+   virtual ~DeviceManager() NOEXCEPT;
    /// Does an initial scan.
    /// Called by GetInputDeviceMaps and GetOutputDeviceMaps when needed.
    void Init();

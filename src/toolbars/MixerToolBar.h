@@ -26,7 +26,7 @@ class MixerToolBar final : public ToolBar {
  public:
 
    MixerToolBar();
-   virtual ~MixerToolBar();
+   virtual ~MixerToolBar() NOEXCEPT;
 
    void Create(wxWindow * parent);
 

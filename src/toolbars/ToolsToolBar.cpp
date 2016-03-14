@@ -122,7 +122,7 @@ ToolsToolBar::ToolsToolBar()
       mCurrentTool = selectTool;
 }
 
-ToolsToolBar::~ToolsToolBar()
+ToolsToolBar::~ToolsToolBar() NOEXCEPT
 {
 }
 

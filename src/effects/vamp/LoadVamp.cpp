@@ -61,7 +61,7 @@ VampEffectsModule::VampEffectsModule(ModuleManagerInterface *moduleManager,
    }
 }
 
-VampEffectsModule::~VampEffectsModule()
+VampEffectsModule::~VampEffectsModule() NOEXCEPT
 {
 }
 

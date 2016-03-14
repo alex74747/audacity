@@ -86,7 +86,7 @@ class TipPanel final : public wxPopupWindow
 {
  public:
    TipPanel(wxWindow *parent, const wxString & label);
-   virtual ~TipPanel() {}
+   virtual ~TipPanel() NOEXCEPT {}
 
    wxSize GetSize() const;
    void SetPos(const wxPoint & pos);
@@ -221,7 +221,7 @@ SliderDialog::SliderDialog(wxWindow * parent, wxWindowID id,
    mSlider->Set(value);
 }
 
-SliderDialog::~SliderDialog()
+SliderDialog::~SliderDialog() NOEXCEPT
 {
 }
 
@@ -517,7 +517,7 @@ void LWSlider::Init(wxWindow * parent,
    Move(pos);
 }
 
-LWSlider::~LWSlider()
+LWSlider::~LWSlider() NOEXCEPT
 {
    if (mBitmap)
    {
@@ -1616,7 +1616,7 @@ ASlider::ASlider( wxWindow * parent,
 }
 
 
-ASlider::~ASlider()
+ASlider::~ASlider() NOEXCEPT
 {
    delete mLWSlider;
 }
@@ -1787,7 +1787,7 @@ ASliderAx::ASliderAx( wxWindow * window ) :
 {
 }
 
-ASliderAx::~ASliderAx()
+ASliderAx::~ASliderAx() NOEXCEPT
 {
 }
 

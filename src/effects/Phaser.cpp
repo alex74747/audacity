@@ -96,7 +96,7 @@ EffectPhaser::EffectPhaser()
    SetLinearEffectFlag(true);
 }
 
-EffectPhaser::~EffectPhaser()
+EffectPhaser::~EffectPhaser() NOEXCEPT
 {
 }
 

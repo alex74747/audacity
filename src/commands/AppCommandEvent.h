@@ -32,7 +32,7 @@ public:
    AppCommandEvent(wxEventType commandType = wxEVT_APP_COMMAND_RECEIVED, int id = 0);
 
    AppCommandEvent(const AppCommandEvent &event);
-   ~AppCommandEvent();
+   ~AppCommandEvent() NOEXCEPT;
 
    wxEvent *Clone() const override;
    void SetCommand(Command *cmd);

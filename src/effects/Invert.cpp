@@ -24,7 +24,7 @@ EffectInvert::EffectInvert()
 {
 }
 
-EffectInvert::~EffectInvert()
+EffectInvert::~EffectInvert() NOEXCEPT
 {
 }
 

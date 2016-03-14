@@ -105,7 +105,7 @@ class GStreamerImportFileHandle final : public ImportFileHandle
 {
 public:
    GStreamerImportFileHandle(const wxString & name);
-   virtual ~GStreamerImportFileHandle();
+   virtual ~GStreamerImportFileHandle() NOEXCEPT;
 
    ///! Format initialization
    ///\return true if successful, false otherwise
@@ -185,7 +185,7 @@ public:
    GStreamerImportPlugin();
 
    ///! Destructor
-   virtual ~GStreamerImportPlugin();
+   virtual ~GStreamerImportPlugin() NOEXCEPT;
 
    wxString GetPluginFormatDescription();
 
@@ -261,7 +261,7 @@ GStreamerImportPlugin::GStreamerImportPlugin()
 
 // ----------------------------------------------------------------------------
 // Destructor
-GStreamerImportPlugin::~GStreamerImportPlugin()
+GStreamerImportPlugin::~GStreamerImportPlugin() NOEXCEPT
 {
 }
 
@@ -789,7 +789,7 @@ GStreamerImportFileHandle::GStreamerImportFileHandle(const wxString & name)
 
 // ----------------------------------------------------------------------------
 // Destructor
-GStreamerImportFileHandle::~GStreamerImportFileHandle()
+GStreamerImportFileHandle::~GStreamerImportFileHandle() NOEXCEPT
 {
    // Make sure the pipeline isn't running
    if (mPipeline)

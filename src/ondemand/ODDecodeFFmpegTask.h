@@ -29,7 +29,7 @@ class ODDecodeFFmpegTask final : public ODDecodeTask
 
    /// Constructs an ODTask
    ODDecodeFFmpegTask(void* scs,int numStreams, WaveTrack*** channels, void* formatContext, int streamIndex);
-   virtual ~ODDecodeFFmpegTask();
+   virtual ~ODDecodeFFmpegTask() NOEXCEPT;
 
    ODTask* Clone() override;
    ///Creates an ODFileDecoder that decodes a file of filetype the subclass handles.

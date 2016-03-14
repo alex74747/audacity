@@ -79,7 +79,7 @@ public:
                const TrackArray *trackExclusions = NULL,
                bool noTimeSnap = false,
                int pixelTolerance = kPixelTolerance);
-   ~SnapManager();
+   ~SnapManager() NOEXCEPT;
 
    // The track may be NULL.
    // Returns true if the output time is not the same as the input.

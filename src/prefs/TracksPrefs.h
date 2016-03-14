@@ -26,7 +26,7 @@ class TracksPrefs final : public PrefsPanel
 {
  public:
    TracksPrefs(wxWindow * parent);
-   ~TracksPrefs();
+   ~TracksPrefs() NOEXCEPT;
    bool Apply() override;
 
  private:

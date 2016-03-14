@@ -179,4 +179,12 @@ void QuitAudacity();
 // pointer like std::unique_ptr or std::shared_ptr.
 #define safenew new
 
+// C++11 noexcept is a good thing to put on every destructor, swap, and move copy or assignment
+#if (defined (WIN32) || defined (_WIN32))
+// Sorry, no noexcept yet in VS 12
+#define NOEXCEPT throw()
+#else
+#define NOEXCEPT noexcept
+#endif
+
 #endif // __AUDACITY_H__

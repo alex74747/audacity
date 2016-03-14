@@ -41,7 +41,7 @@ class ODDecodeTask /* not final */ : public ODTask
 {
  public:
    ODDecodeTask();
-   virtual ~ODDecodeTask(){};
+   virtual ~ODDecodeTask() NOEXCEPT {};
 
    virtual ODTask* Clone()=0;
 
@@ -103,7 +103,7 @@ class ODFileDecoder /* not final */
 public:
    ///This should handle unicode converted to UTF-8 on mac/linux, but OD TODO:check on windows
    ODFileDecoder(const wxString& fName);
-   virtual ~ODFileDecoder();
+   virtual ~ODFileDecoder() NOEXCEPT;
 
    ///Read header.  Subclasses must override.  Probably should save the info somewhere.
    ///Ideally called once per decoding of a file.  This complicates the task because

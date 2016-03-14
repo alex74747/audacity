@@ -333,7 +333,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
    Center();
 }
 
-ContrastDialog::~ContrastDialog()
+ContrastDialog::~ContrastDialog() NOEXCEPT
 {
    mForegroundRMSText->Disconnect(wxEVT_KEY_DOWN, wxKeyEventHandler(ContrastDialog::OnChar));
    mBackgroundRMSText->Disconnect(wxEVT_KEY_DOWN, wxKeyEventHandler(ContrastDialog::OnChar));

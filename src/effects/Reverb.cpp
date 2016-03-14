@@ -124,7 +124,7 @@ EffectReverb::EffectReverb()
    SetLinearEffectFlag(true);
 }
 
-EffectReverb::~EffectReverb()
+EffectReverb::~EffectReverb() NOEXCEPT
 {
 }
 

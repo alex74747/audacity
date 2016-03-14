@@ -48,7 +48,7 @@ class ODDecodeFlacTask final : public ODDecodeTask
 
    /// Constructs an ODTask
    ODDecodeFlacTask(){}
-   virtual ~ODDecodeFlacTask();
+   virtual ~ODDecodeFlacTask() NOEXCEPT;
 
 
    ODTask* Clone() override;
@@ -97,7 +97,7 @@ class ODFlacDecoder final : public ODFileDecoder
 public:
    ///This should handle unicode converted to UTF-8 on mac/linux, but OD TODO:check on windows
    ODFlacDecoder(const wxString & fileName):ODFileDecoder(fileName),mSamplesDone(0){mFile=NULL;}
-   virtual ~ODFlacDecoder();
+   virtual ~ODFlacDecoder() NOEXCEPT;
 
    ///Decodes the samples for this blockfile from the real file into a float buffer.
    ///This is file specific, so subclasses must implement this only.

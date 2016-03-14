@@ -123,7 +123,7 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    Track *GetLink() const;
 
    const TrackListNode *GetNode() const;
-   void SetOwner(TrackList *list, TrackListNode *node);
+   void SetOwner(TrackList *list, TrackListNode *node) NOEXCEPT;
 
  // Keep in Track
 
@@ -162,7 +162,7 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    Track(DirManager * projDirManager);
    Track(const Track &orig);
 
-   virtual ~ Track();
+   virtual ~Track() NOEXCEPT;
 
    void Init(const Track &orig);
    virtual Track *Duplicate() const = 0;
@@ -239,7 +239,7 @@ class AUDACITY_DLL_API TrackListIterator /* not final */
 {
  public:
    TrackListIterator(TrackList * val = NULL);
-   virtual ~TrackListIterator() {}
+   virtual ~TrackListIterator() NOEXCEPT {}
 
    // Iterate functions
    virtual Track *First(TrackList * val = NULL);
@@ -264,7 +264,7 @@ public:
    TrackListConstIterator(const TrackList * val = NULL)
       : mIter(const_cast<TrackList*>(val))
    {}
-   ~TrackListConstIterator() {}
+   ~TrackListConstIterator() NOEXCEPT {}
 
    // Iterate functions
    const Track *First(const TrackList * val = NULL)
@@ -289,7 +289,7 @@ class AUDACITY_DLL_API TrackListCondIterator /* not final */ : public TrackListI
    public:
       TrackListCondIterator(TrackList *val = NULL)
          :  TrackListIterator(val) {}
-      virtual ~TrackListCondIterator() {}
+      virtual ~TrackListCondIterator() NOEXCEPT {}
 
       // Iteration functions
       Track *First(TrackList *val = NULL) override;
@@ -312,7 +312,7 @@ class AUDACITY_DLL_API TrackListOfKindIterator /* not final */ : public TrackLis
 {
  public:
    TrackListOfKindIterator(int kind, TrackList * val = NULL);
-   virtual ~TrackListOfKindIterator() {}
+   virtual ~TrackListOfKindIterator() NOEXCEPT {}
 
  protected:
    virtual bool Condition(Track *t) override;
@@ -330,7 +330,7 @@ class AUDACITY_DLL_API SelectedTrackListOfKindIterator final : public TrackListO
 {
  public:
     SelectedTrackListOfKindIterator(int kind, TrackList * val = NULL) : TrackListOfKindIterator(kind, val) {}
-   virtual ~SelectedTrackListOfKindIterator() {}
+    virtual ~SelectedTrackListOfKindIterator() NOEXCEPT {}
 
  protected:
    bool Condition(Track *t) override;
@@ -345,7 +345,7 @@ class AUDACITY_DLL_API VisibleTrackIterator final : public TrackListCondIterator
 {
  public:
    VisibleTrackIterator(AudacityProject *project);
-   virtual ~VisibleTrackIterator() {}
+   virtual ~VisibleTrackIterator() NOEXCEPT {}
 
  protected:
    bool Condition(Track *t) override;
@@ -362,7 +362,7 @@ class AUDACITY_DLL_API SyncLockedTracksIterator final : public TrackListIterator
 {
  public:
    SyncLockedTracksIterator(TrackList * val);
-   virtual ~SyncLockedTracksIterator() {}
+   virtual ~SyncLockedTracksIterator() NOEXCEPT {}
 
    // Iterate functions
    Track *StartWith(Track *member) override;
@@ -401,15 +401,15 @@ class AUDACITY_DLL_API TrackList final : public wxEvtHandler
    TrackList &operator= (const TrackList &that);
 
    // Allow move
-   TrackList(TrackList &&that);
-   TrackList& operator= (TrackList&&);
+   TrackList(TrackList &&that) NOEXCEPT;
+   TrackList& operator= (TrackList&&) NOEXCEPT;
 
    // Move is defined in terms of Swap
-   void Swap(TrackList &that);
+   void Swap(TrackList &that) NOEXCEPT;
 
 
    // Destructor
-   virtual ~TrackList();
+   virtual ~TrackList() NOEXCEPT;
 
    friend class Track;
    friend class TrackListIterator;

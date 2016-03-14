@@ -55,7 +55,7 @@ class AUDACITY_DLL_API NoteTrack final : public Track {
    friend class TrackArtist;
 
    NoteTrack(DirManager * projDirManager);
-   virtual ~NoteTrack();
+   virtual ~NoteTrack() NOEXCEPT;
 
    Track *Duplicate() const override;
 

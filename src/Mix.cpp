@@ -347,7 +347,7 @@ Mixer::Mixer(const WaveTrackConstArray &inputTracks,
    mEnvValues = new double[envLen];
 }
 
-Mixer::~Mixer()
+Mixer::~Mixer() NOEXCEPT
 {
    int i;
 
@@ -800,7 +800,7 @@ void MixerSpec::Alloc()
       mMap[ i ] = new bool[ mMaxNumChannels ];
 }
 
-MixerSpec::~MixerSpec()
+MixerSpec::~MixerSpec() NOEXCEPT
 {
    Free();
 }

@@ -28,7 +28,7 @@ VSTControl::VSTControl()
    mXwin = 0;
 }
 
-VSTControl::~VSTControl()
+VSTControl::~VSTControl() NOEXCEPT
 {
    if (mXwin)
    {

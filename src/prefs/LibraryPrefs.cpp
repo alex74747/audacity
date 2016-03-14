@@ -51,7 +51,7 @@ LibraryPrefs::LibraryPrefs(wxWindow * parent)
    Populate();
 }
 
-LibraryPrefs::~LibraryPrefs()
+LibraryPrefs::~LibraryPrefs() NOEXCEPT
 {
 }
 
