@@ -29,7 +29,7 @@ LOCAL LVAL cviptr(OFFTYPE o);
 LOCAL void writeptr(OFFTYPE off);
 LOCAL void setoffset(void);
 LOCAL void writenode(LVAL node);
-LOCAL void freeimage(void);
+void freeimage(void);
 LOCAL void readnode(int type, LVAL node);
 
 
@@ -261,7 +261,7 @@ done:
 }
 
 /* freeimage - free the current memory image */
-LOCAL void freeimage(void)
+void freeimage(void)
 {
     SEGMENT *seg,*next;
     FILE *fp;
@@ -292,6 +292,8 @@ LOCAL void freeimage(void)
         next = seg->sg_next;
         free((void *) seg);
     }
+
+    segs = lastseg = NULL;
 }
 
 /* setoffset - output a positioning command if nodes have been skipped */

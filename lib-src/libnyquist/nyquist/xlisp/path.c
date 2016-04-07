@@ -27,9 +27,17 @@
 #include "xlisp.h"
 
 static char *g_xlisp_path = NULL;
+static unsigned char registered_free_g_xlisp_path = 0;
+static void free_g_xlisp_path(void) { free(g_xlisp_path); g_xlisp_path = NULL;  }
+
 
 void set_xlisp_path(const char *p)
 {
+    if (!registered_free_g_xlisp_path) {
+       atexit(free_g_xlisp_path);
+       registered_free_g_xlisp_path = 1;
+    }
+
     if (g_xlisp_path) {
         free(g_xlisp_path);
         g_xlisp_path = NULL;
@@ -135,7 +143,9 @@ const char *return_xlisp_path()
 }
 
 
-char *g_xlptemp = NULL;
+static char *g_xlptemp = NULL;
+static unsigned char registered_free_g_xlptemp = 0;
+static void free_g_xlptemp(void) { free(g_xlptemp); g_xlptemp = NULL;  }
 
 // find_in_xlisp_path -- find fname or fname.lsp by searching XLISP_PATH
 //
@@ -144,6 +154,11 @@ char *g_xlptemp = NULL;
 //
 const char *find_in_xlisp_path(const char *fname)
 {
+    if (!registered_free_g_xlptemp) {
+       atexit(free_g_xlptemp);
+       registered_free_g_xlptemp = 1;
+    }
+
     const char *paths = return_xlisp_path();
     if (!paths)
         return NULL;
