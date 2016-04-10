@@ -309,11 +309,10 @@ void ODManager::Start()
       {
          mNeedsDraw=0;
          wxCommandEvent event( EVT_ODTASK_UPDATE );
-         AudacityProject::AllProjectsDeleteLock();
+         ODLocker locker{ AudacityProject::msAllProjectDeleteMutex };
          AudacityProject* proj = GetActiveProject();
          if(proj)
             proj->GetEventHandler()->AddPendingEvent(event);
-         AudacityProject::AllProjectsDeleteUnlock();
       }
       mTerminateMutex.Lock();
    }

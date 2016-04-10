@@ -330,7 +330,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    // Other commands
    static TrackList *GetClipboardTracks();
    static void DeleteClipboard();
-   static void DeleteAllProjectsDeleteLock();
 
    // checkActive is a temporary hack that should be removed as soon as we
    // get multiple effect preview working
@@ -502,10 +501,6 @@ public:
    // Command Handling
    bool TryToMakeActionAllowed( wxUint32 & flags, wxUint32 flagsRqd, wxUint32 mask );
 
-   ///Prevents DELETE from external thread - for e.g. use of GetActiveProject
-   static void AllProjectsDeleteLock();
-   static void AllProjectsDeleteUnlock();
-
    void PushState(const wxString &desc, const wxString &shortDesc); // use UndoPush::AUTOSAVE
    void PushState(const wxString &desc, const wxString &shortDesc, UndoPush flags);
    void RollbackState();
@@ -565,9 +560,12 @@ public:
    static double msClipT0;
    static double msClipT1;
 
+public:
+   ///Prevents DELETE from external thread - for e.g. use of GetActiveProject
    //shared by all projects
-   static ODLock *msAllProjectDeleteMutex;
+   static ODLock msAllProjectDeleteMutex;
 
+private:
    // History/Undo manager
    std::unique_ptr<UndoManager> mUndoManager;
    bool mDirty{ false };
