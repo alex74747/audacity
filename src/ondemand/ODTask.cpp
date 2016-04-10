@@ -48,11 +48,12 @@ ODTask::ODTask()
 //outside code must ensure this task is not scheduled again.
 void ODTask::TerminateAndBlock()
 {
-   //one mutex pair for the value of mTerminate
-   mTerminateMutex.Lock();
-   mTerminate=true;
-   //release all data the derived class may have allocated
-   mTerminateMutex.Unlock();
+   {
+      //one mutex pair for the value of mTerminate
+      ODLocker locker{ mTerminateMutex };
+      mTerminate = true;
+      //release all data the derived class may have allocated
+   }
 
    //and one mutex pair for the exit of the function
    mBlockUntilTerminateMutex.Lock();
@@ -76,20 +77,21 @@ void ODTask::DoSome(float amountWork)
 
    mDoingTask=mTaskStarted=true;
 
-   float workUntil = amountWork+PercentComplete();
+   float workUntil = amountWork + PercentComplete();
 
 
 
-   //check periodically to see if we should exit.
-   mTerminateMutex.Lock();
-   if(mTerminate)
    {
-      mTerminateMutex.Unlock();
-      SetIsRunning(false);
-      mBlockUntilTerminateMutex.Unlock();
-      return;
+      //check periodically to see if we should exit.
+      ODLocker locker{ mTerminateMutex };
+      if (mTerminate)
+      {
+         mTerminateMutex.Unlock();
+         SetIsRunning(false);
+         mBlockUntilTerminateMutex.Unlock();
+         return;
+      }
    }
-   mTerminateMutex.Unlock();
 
    Update();
 
@@ -102,72 +104,74 @@ void ODTask::DoSome(float amountWork)
 
    //Do Some of the task.
 
-   mTerminateMutex.Lock();
-   while(PercentComplete() < workUntil && PercentComplete() < 1.0 && !mTerminate)
    {
-      wxThread::This()->Yield();
-      //release within the loop so we can cut the number of iterations short
-
-      DoSomeInternal(); //keep the terminate mutex on so we don't remo
-      mTerminateMutex.Unlock();
-      //check to see if ondemand has been called
-      if(GetNeedsODUpdate() && PercentComplete() < 1.0)
-         ODUpdate();
-
-
-      //But add the mutex lock back before we check the value again.
-      mTerminateMutex.Lock();
-   }
-   mTerminateMutex.Unlock();
-   mDoingTask=false;
-
-   mTerminateMutex.Lock();
-   //if it is not done, put it back onto the ODManager queue.
-   if(PercentComplete() < 1.0&& !mTerminate)
-   {
-      ODManager::Instance()->AddTask(this);
-
-      //we did a bit of progress - we should allow a resave.
-      ODLocker locker{ AudacityProject::msAllProjectDeleteMutex };
-      for(unsigned i=0; i<gAudacityProjects.GetCount(); i++)
+      ODLocker locker{ mTerminateMutex };
+      while (PercentComplete() < workUntil && PercentComplete() < 1.0 && !mTerminate)
       {
-         if(IsTaskAssociatedWithProject(gAudacityProjects[i]))
-         {
-            //mark the changes so that the project can be resaved.
-            gAudacityProjects[i]->GetUndoManager()->SetODChangesFlag();
-            break;
-         }
+         wxThread::This()->Yield();
+         //release within the loop so we can cut the number of iterations short
+
+         DoSomeInternal(); //keep the terminate mutex on so we don't remo
+         mTerminateMutex.Unlock();
+         //check to see if ondemand has been called
+         if (GetNeedsODUpdate() && PercentComplete() < 1.0)
+            ODUpdate();
+
+
+         //But add the mutex lock back before we check the value again.
+         mTerminateMutex.Lock();
       }
-
-
-//      printf("%s %i is %f done\n", GetTaskName(),GetTaskNumber(),PercentComplete());
    }
-   else
+   mDoingTask = false;
+
    {
-      //for profiling, uncomment and look in audacity.app/exe's folder for AudacityProfile.txt
-      //static int tempLog =0;
-      //if(++tempLog % 5==0)
+      ODLocker locker{ mTerminateMutex };
+      //if it is not done, put it back onto the ODManager queue.
+      if (PercentComplete() < 1.0&& !mTerminate)
+      {
+         ODManager::Instance()->AddTask(this);
+
+         //we did a bit of progress - we should allow a resave.
+         ODLocker locker{ AudacityProject::msAllProjectDeleteMutex };
+         for (unsigned i = 0; i < gAudacityProjects.GetCount(); i++)
+         {
+            if (IsTaskAssociatedWithProject(gAudacityProjects[i]))
+            {
+               //mark the changes so that the project can be resaved.
+               gAudacityProjects[i]->GetUndoManager()->SetODChangesFlag();
+               break;
+            }
+         }
+
+
+         //      printf("%s %i is %f done\n", GetTaskName(),GetTaskNumber(),PercentComplete());
+      }
+      else
+      {
+         //for profiling, uncomment and look in audacity.app/exe's folder for AudacityProfile.txt
+         //static int tempLog =0;
+         //if(++tempLog % 5==0)
          //END_TASK_PROFILING("On Demand Drag and Drop 5 80 mb files into audacity, 5 wavs per task");
-      //END_TASK_PROFILING("On Demand open an 80 mb wav stereo file");
+         //END_TASK_PROFILING("On Demand open an 80 mb wav stereo file");
 
-      wxCommandEvent event( EVT_ODTASK_COMPLETE );
+         wxCommandEvent event(EVT_ODTASK_COMPLETE);
 
-      ODLocker locker{ AudacityProject::msAllProjectDeleteMutex };
-      for(unsigned i=0; i<gAudacityProjects.GetCount(); i++)
-      {
-         if(IsTaskAssociatedWithProject(gAudacityProjects[i]))
+         ODLocker locker{ AudacityProject::msAllProjectDeleteMutex };
+         for (unsigned i = 0; i < gAudacityProjects.GetCount(); i++)
          {
-            //this assumes tasks are only associated with one project.
-            gAudacityProjects[i]->GetEventHandler()->AddPendingEvent(event);
-            //mark the changes so that the project can be resaved.
-            gAudacityProjects[i]->GetUndoManager()->SetODChangesFlag();
-            break;
+            if (IsTaskAssociatedWithProject(gAudacityProjects[i]))
+            {
+               //this assumes tasks are only associated with one project.
+               gAudacityProjects[i]->GetEventHandler()->AddPendingEvent(event);
+               //mark the changes so that the project can be resaved.
+               gAudacityProjects[i]->GetUndoManager()->SetODChangesFlag();
+               break;
+            }
          }
-      }
 
-//      printf("%s %i complete\n", GetTaskName(),GetTaskNumber());
+         //      printf("%s %i complete\n", GetTaskName(),GetTaskNumber());
+      }
    }
-   mTerminateMutex.Unlock();
    SetIsRunning(false);
    mBlockUntilTerminateMutex.Unlock();
 }

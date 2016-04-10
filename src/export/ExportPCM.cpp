@@ -410,13 +410,13 @@ int ExportPCM::Export(AudacityProject *project,
    SNDFILE     *sf = NULL;
    int          err;
 
-   //This whole operation should not occur while a file is being loaded on OD,
-   //(we are worried about reading from a file being written to,) so we block.
-   //Furthermore, we need to do this because libsndfile is not threadsafe.
-   ODManager::LockLibSndFileMutex();
-   formatStr = sf_header_name(sf_format & SF_FORMAT_TYPEMASK);
-
-   ODManager::UnlockLibSndFileMutex();
+   {
+      //This whole operation should not occur while a file is being loaded on OD,
+      //(we are worried about reading from a file being written to,) so we block.
+      //Furthermore, we need to do this because libsndfile is not threadsafe.
+      ODLocker locker{ ODManager::sLibSndFileMutex };
+      formatStr = sf_header_name(sf_format & SF_FORMAT_TYPEMASK);
+   }
 
    // Use libsndfile to export file
 
@@ -442,11 +442,10 @@ int ExportPCM::Export(AudacityProject *project,
       // Even though there is an sf_open() that takes a filename, use the one that
       // takes a file descriptor since wxWidgets can open a file with a Unicode name and
       // libsndfile can't (under Windows).
-      ODManager::LockLibSndFileMutex();
+      ODLocker locker{ ODManager::sLibSndFileMutex };
       sf = sf_open_fd(f.fd(), SFM_WRITE, &info, FALSE);
       //add clipping for integer formats.  We allow floats to clip.
       sf_command(sf, SFC_SET_CLIPPING, NULL,sf_subtype_is_integer(sf_format)?SF_TRUE:SF_FALSE) ;
-      ODManager::UnlockLibSndFileMutex();
    }
 
    if (!sf) {
@@ -503,12 +502,13 @@ int ExportPCM::Export(AudacityProject *project,
 
          samplePtr mixed = mixer->GetBuffer();
 
-         ODManager::LockLibSndFileMutex();
-         if (format == int16Sample)
-            samplesWritten = sf_writef_short(sf, (short *)mixed, numSamples);
-         else
-            samplesWritten = sf_writef_float(sf, (float *)mixed, numSamples);
-         ODManager::UnlockLibSndFileMutex();
+         {
+            ODLocker locker{ ODManager::sLibSndFileMutex };
+            if (format == int16Sample)
+               samplesWritten = sf_writef_short(sf, (short *)mixed, numSamples);
+            else
+               samplesWritten = sf_writef_float(sf, (float *)mixed, numSamples);
+         }
 
          if (samplesWritten != numSamples) {
             char buffer2[1000];
@@ -536,9 +536,10 @@ int ExportPCM::Export(AudacityProject *project,
       }
    }
 
-   ODManager::LockLibSndFileMutex();
-   err = sf_close(sf);
-   ODManager::UnlockLibSndFileMutex();
+   {
+      ODLocker locker{ ODManager::sLibSndFileMutex };
+      err = sf_close(sf);
+   }
 
    if (err) {
       char buffer[1000];

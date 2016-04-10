@@ -491,7 +491,7 @@ public:
    // NULL state -- giving exception safety but only weakly
    // (previous value was lost if present)
    template<typename... Args>
-   void create(Args... args)
+   void create(Args&&... args)
    {
       // Lose any old value
       reset();

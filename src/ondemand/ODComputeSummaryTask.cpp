@@ -48,11 +48,10 @@ void ODComputeSummaryTask::Terminate()
 {
    //The terminate block won't allow DoSomeInternal and this method to be run async, so this is thread-safe.
    //Deref the block files since they are ref'ed when put into the array.
-   mBlockFilesMutex.Lock();
+   ODLocker locker{ mBlockFilesMutex };
    for(unsigned int i=0;i<mBlockFiles.size();i++)
       mBlockFiles[i]->Deref();
    mBlockFiles.clear();
-   mBlockFilesMutex.Unlock();
 }
 
 ///Computes and writes the data for one BlockFile if it still has a refcount.
@@ -69,55 +68,55 @@ void ODComputeSummaryTask::DoSomeInternal()
    ODPCMAliasBlockFile* bf;
    sampleCount blockStartSample = 0;
    sampleCount blockEndSample = 0;
-   bool success =false;
+   bool success = false;
 
-   mBlockFilesMutex.Lock();
-   for(size_t i=0; i < mWaveTracks.size() && mBlockFiles.size();i++)
    {
-      bf = mBlockFiles[0];
-
-      //first check to see if the ref count is at least 2.  It should have one
-      //from when we added it to this instance's mBlockFiles array, and one from
-      //the Wavetrack/sequence.  If it doesn't it has been deleted and we should forget it.
-      if(bf->RefCount()>=2)
+      ODLocker locker{ mBlockFilesMutex };
+      for (size_t i = 0; i < mWaveTracks.size() && mBlockFiles.size(); i++)
       {
-         bf->DoWriteSummary();
-         success = true;
-         blockStartSample = bf->GetStart();
-         blockEndSample = blockStartSample + bf->GetLength();
-         mComputedBlockFiles++;
-      }
-      else
-      {
-         //the waveform in the wavetrack now is shorter, so we need to update mMaxBlockFiles
-         //because now there is less work to do.
-         mMaxBlockFiles--;
-      }
+         bf = mBlockFiles[0];
 
-      //Release the refcount we placed on it.
-      bf->Deref();
-      //take it out of the array - we are done with it.
-      mBlockFiles.erase(mBlockFiles.begin());
+         //first check to see if the ref count is at least 2.  It should have one
+         //from when we added it to this instance's mBlockFiles array, and one from
+         //the Wavetrack/sequence.  If it doesn't it has been deleted and we should forget it.
+         if (bf->RefCount() >= 2)
+         {
+            bf->DoWriteSummary();
+            success = true;
+            blockStartSample = bf->GetStart();
+            blockEndSample = blockStartSample + bf->GetLength();
+            mComputedBlockFiles++;
+         }
+         else
+         {
+            //the waveform in the wavetrack now is shorter, so we need to update mMaxBlockFiles
+            //because now there is less work to do.
+            mMaxBlockFiles--;
+         }
 
-      //This is a bit of a convenience in case someone tries to terminate the task by closing the trackpanel or window.
-      //ODComputeSummaryTask::Terminate() uses this lock to remove everything, and we don't want it to wait since the UI is being blocked.
-      mBlockFilesMutex.Unlock();
-      wxThread::This()->Yield();
-      mBlockFilesMutex.Lock();
+         //Release the refcount we placed on it.
+         bf->Deref();
+         //take it out of the array - we are done with it.
+         mBlockFiles.erase(mBlockFiles.begin());
 
-      //upddate the gui for all associated blocks.  It doesn't matter that we're hitting more wavetracks then we should
-      //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
-      //the next iteration at the same sample window.
-      mWaveTrackMutex.Lock();
-      for(size_t i=0;i<mWaveTracks.size();i++)
-      {
-         if(success && mWaveTracks[i])
-            mWaveTracks[i]->AddInvalidRegion(blockStartSample,blockEndSample);
+         //This is a bit of a convenience in case someone tries to terminate the task by closing the trackpanel or window.
+         //ODComputeSummaryTask::Terminate() uses this lock to remove everything, and we don't want it to wait since the UI is being blocked.
+         mBlockFilesMutex.Unlock();
+         wxThread::This()->Yield();
+         mBlockFilesMutex.Lock();
+
+         //upddate the gui for all associated blocks.  It doesn't matter that we're hitting more wavetracks then we should
+         //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
+         //the next iteration at the same sample window.
+         mWaveTrackMutex.Lock();
+         for (size_t i = 0; i < mWaveTracks.size(); i++)
+         {
+            if (success && mWaveTracks[i])
+               mWaveTracks[i]->AddInvalidRegion(blockStartSample, blockEndSample);
+         }
+         mWaveTrackMutex.Unlock();
       }
-      mWaveTrackMutex.Unlock();
    }
-
-   mBlockFilesMutex.Unlock();
 
    //update percentage complete.
    CalculatePercentComplete();
@@ -140,17 +139,15 @@ float ODComputeSummaryTask::ComputeNextWorkUntilPercentageComplete()
 
 void ODComputeSummaryTask::MarkUpdateRan()
 {
-   mHasUpdateRanMutex.Lock();
-   mHasUpdateRan=true;
-   mHasUpdateRanMutex.Unlock();
+   ODLocker locker{ mHasUpdateRanMutex };
+   mHasUpdateRan = true;
 }
 
 bool ODComputeSummaryTask::HasUpdateRan()
 {
    bool ret;
-   mHasUpdateRanMutex.Lock();
+   ODLocker locker{ mHasUpdateRanMutex };
    ret = mHasUpdateRan;
-   mHasUpdateRanMutex.Unlock();
    return ret;
 }
 
@@ -230,9 +227,9 @@ void ODComputeSummaryTask::Update()
    mWaveTrackMutex.Unlock();
 
    //get the NEW order.
-   mBlockFilesMutex.Lock();
-   OrderBlockFiles(tempBlocks);
-   mBlockFilesMutex.Unlock();
+   {
+      OrderBlockFiles(tempBlocks);
+   }
 
    MarkUpdateRan();
 }

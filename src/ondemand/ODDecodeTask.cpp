@@ -147,7 +147,7 @@ void ODDecodeTask::Update()
             clip = node->GetData();
             seq = clip->GetSequence();
             //TODO:this lock is way to big since the whole file is one sequence.  find a way to break it down.
-            seq->LockDeleteUpdateMutex();
+            Sequence::DeleteUpdateMutexLocker locker{ *seq };
 
             //See Sequence::Delete() for why need this for now..
             blocks = clip->GetSequenceBlockArray();
@@ -178,7 +178,6 @@ void ODDecodeTask::Update()
                }
             }
 
-            seq->UnlockDeleteUpdateMutex();
             node = node->GetNext();
          }
       }
@@ -302,17 +301,15 @@ ODFileDecoder::~ODFileDecoder()
 bool ODFileDecoder::IsInitialized()
 {
    bool ret;
-   mInitedLock.Lock();
+   ODLocker locker{ mInitedLock };
    ret = mInited;
-   mInitedLock.Unlock();
    return ret;
 }
 
 ///Derived classes should call this after they have parsed the header.
 void ODFileDecoder::MarkInitialized()
 {
-   mInitedLock.Lock();
-   mInited=true;
-   mInitedLock.Unlock();
+   ODLocker locker{ mInitedLock };
+   mInited = true;
 }
 

@@ -64,20 +64,18 @@ Profiler::~Profiler()
 ///start the task timer.
 void Profiler::Begin(char* fileName, int lineNum, char* taskDescription)
 {
-   mTasksMutex.Lock();
+   ODLocker locker{ mTasksMutex };
    GetOrCreateTaskProfile(fileName,lineNum)->Begin(fileName,lineNum,taskDescription);
-   mTasksMutex.Unlock();
 }
 
 ///end the task timer.
 void Profiler::End(char* fileName, int lineNum, char* taskDescription)
 {
-   mTasksMutex.Lock();
+   ODLocker locker{ mTasksMutex };
    TaskProfile* tp;
    tp=GetTaskProfileByDescription(taskDescription);
    if(tp)
       tp->End(fileName,lineNum,taskDescription);
-   mTasksMutex.Unlock();
 }
 
 ///Gets the singleton instance

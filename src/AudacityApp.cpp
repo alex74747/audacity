@@ -885,21 +885,23 @@ void AudacityApp::OnTimer(wxTimerEvent& WXUNUSED(event))
       wxString missingFileName;
       AudacityProject *offendingProject = NULL;
 
-      m_LastMissingBlockFileLock.Lock();
-      if (numProjects == 1) {
-         // if there is only one project open, no need to search
-         offendingProject = gAudacityProjects[0];
-      } else if (numProjects > 1) {
-         for (size_t i = 0; i < numProjects; i++) {
-            // search each project for the blockfile
-            if (gAudacityProjects[i]->GetDirManager()->ContainsBlockFile(m_LastMissingBlockFile)) {
-               offendingProject = gAudacityProjects[i];
-               break;
+      {
+         ODLocker locker{ m_LastMissingBlockFileLock };
+         if (numProjects == 1) {
+            // if there is only one project open, no need to search
+            offendingProject = gAudacityProjects[0];
+         }
+         else if (numProjects > 1) {
+            for (size_t i = 0; i < numProjects; i++) {
+               // search each project for the blockfile
+               if (gAudacityProjects[i]->GetDirManager()->ContainsBlockFile(m_LastMissingBlockFile)) {
+                  offendingProject = gAudacityProjects[i];
+                  break;
+               }
             }
          }
+         missingFileName = ((AliasBlockFile*)m_LastMissingBlockFile)->GetAliasedFileName().GetFullPath();
       }
-      missingFileName = ((AliasBlockFile*)m_LastMissingBlockFile)->GetAliasedFileName().GetFullPath();
-      m_LastMissingBlockFileLock.Unlock();
 
       // if there are no projects open, don't show the warning (user has closed it)
       if (offendingProject) {
@@ -936,13 +938,12 @@ void AudacityApp::MarkAliasedFilesMissingWarning(BlockFile *b)
    if (b)
       b->Ref();
 
-   m_LastMissingBlockFileLock.Lock();
+   ODLocker locker{ m_LastMissingBlockFileLock };
    if (m_LastMissingBlockFile)
       m_LastMissingBlockFile->Deref();
 
    m_LastMissingBlockFile = b;
 
-   m_LastMissingBlockFileLock.Unlock();
 }
 
 void AudacityApp::SetMissingAliasedFileWarningShouldShow(bool b)

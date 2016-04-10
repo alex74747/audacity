@@ -80,9 +80,8 @@ ODPCMAliasBlockFile::~ODPCMAliasBlockFile()
 /// if two blockfiles deref at the same time resulting in a double deletion of the file
 void ODPCMAliasBlockFile::Ref()
 {
-   mRefMutex.Lock();
+   ODLocker locker{ mRefMutex };
    BlockFile::Ref();
-   mRefMutex.Unlock();
 }
 
 /// Decreases the reference count of this block by one.  If this
@@ -91,6 +90,7 @@ void ODPCMAliasBlockFile::Ref()
 bool ODPCMAliasBlockFile::Deref()
 {
    bool ret;
+   // Do not use ODLock here
    mDerefMutex.Lock();
    ret = BlockFile::Deref();
    if(!ret)
@@ -109,10 +109,9 @@ wxLongLong ODPCMAliasBlockFile::GetSpaceUsage()
    if(IsSummaryAvailable())
    {
       wxLongLong ret;
-      mFileNameMutex.Lock();
+      ODLocker locker{ mFileNameMutex };
       wxFFile summaryFile(mFileName.GetFullPath());
       ret= summaryFile.Length();
-      mFileNameMutex.Unlock();
       return ret;
    }
    else
@@ -268,9 +267,10 @@ void ODPCMAliasBlockFile::SaveXML(XMLWriter &xmlFile)
 
       //unlock to prevent deadlock and resume lock after.
       UnlockRead();
-      mFileNameMutex.Lock();
-      xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
-      mFileNameMutex.Unlock();
+      {
+         ODLocker locker{ mFileNameMutex };
+         xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
+      }
       LockRead();
 
       xmlFile.WriteAttr(wxT("aliasfile"), mAliasedFileName.GetFullPath());
@@ -356,59 +356,57 @@ void ODPCMAliasBlockFile::Recover(void)
 bool ODPCMAliasBlockFile::IsSummaryAvailable()
 {
    bool retval;
-   mSummaryAvailableMutex.Lock();
+   ODLocker locker{ mSummaryAvailableMutex };
    retval= mSummaryAvailable;
-   mSummaryAvailableMutex.Unlock();
    return retval;
 }
 
 ///Calls write summary, and makes sure it is only done once in a thread-safe fashion.
 void ODPCMAliasBlockFile::DoWriteSummary()
 {
-   mWriteSummaryMutex.Lock();
+   ODLocker locker{ mWriteSummaryMutex };
    if(!IsSummaryAvailable())
       WriteSummary();
-   mWriteSummaryMutex.Unlock();
 }
 
 ///sets the file name the summary info will be saved in.  threadsafe.
 void ODPCMAliasBlockFile::SetFileName(wxFileName &name)
 {
-   mFileNameMutex.Lock();
-   mFileName=name;
-   mFileNameMutex.Unlock();
+   ODLocker locker{ mFileNameMutex };
+   mFileName = name;
 }
 
 ///sets the file name the summary info will be saved in.  threadsafe.
 wxFileName ODPCMAliasBlockFile::GetFileName()
 {
    wxFileName name;
-   mFileNameMutex.Lock();
+   ODLocker locker{ mFileNameMutex };
    name = mFileName;
-   mFileNameMutex.Unlock();
    return name;
 }
 
 /// Write the summary to disk, using the derived ReadData() to get the data
 void ODPCMAliasBlockFile::WriteSummary()
 {
-   //the mFileName path may change, for example, when the project is saved.
-   //(it moves from /tmp/ to wherever it is saved to.
-   mFileNameMutex.Lock();
+   char* fileNameChar;
+   FILE* summaryFile;
+   {
+      //the mFileName path may change, for example, when the project is saved.
+      //(it moves from /tmp/ to wherever it is saved to.
+      ODLocker locker{ mFileNameMutex };
 
-   //wxFFile is not thread-safe - if any error occurs in opening the file,
-   // it posts a wxlog message which WILL crash
-   // Audacity because it goes into the wx GUI.
-   // For this reason I left the wxFFile method commented out. (mchinen)
-   //    wxFFile summaryFile(mFileName.GetFullPath(), wxT("wb"));
+      //wxFFile is not thread-safe - if any error occurs in opening the file,
+      // it posts a wxlog message which WILL crash
+      // Audacity because it goes into the wx GUI.
+      // For this reason I left the wxFFile method commented out. (mchinen)
+      //    wxFFile summaryFile(mFileName.GetFullPath(), wxT("wb"));
 
-   // ...and we use fopen instead.
-   wxString sFullPath = mFileName.GetFullPath();
-   char* fileNameChar = new char[strlen(sFullPath.mb_str(wxConvFile)) + 1];
-   strcpy(fileNameChar, sFullPath.mb_str(wxConvFile));
-   FILE* summaryFile = fopen(fileNameChar, "wb");
-
-   mFileNameMutex.Unlock();
+      // ...and we use fopen instead.
+      wxString sFullPath = mFileName.GetFullPath();
+      fileNameChar = new char[strlen(sFullPath.mb_str(wxConvFile)) + 1];
+      strcpy(fileNameChar, sFullPath.mb_str(wxConvFile));
+      summaryFile = fopen(fileNameChar, "wb");
+   }
 
    if( !summaryFile){//.IsOpened() ){
 
@@ -437,9 +435,8 @@ void ODPCMAliasBlockFile::WriteSummary()
 
     //     printf("write successful. filename: %s\n", fileNameChar);
 
-   mSummaryAvailableMutex.Lock();
-   mSummaryAvailable=true;
-   mSummaryAvailableMutex.Unlock();
+   ODLocker locker{ mSummaryAvailableMutex };
+   mSummaryAvailable = true;
 }
 
 
@@ -614,7 +611,7 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
    wxString aliasPath = mAliasedFileName.GetFullPath();
    //there are thread-unsafe crashes here - not sure why.  sf_open may be called on the same file
    //from different threads, but this seems okay, unless it is implemented strangely..
-   static ODLock sfMutex;
+   //static ODLock sfMutex;
 
    wxFile f;   // will be closed when it goes out of scope
    SNDFILE *sf = NULL;
@@ -623,9 +620,8 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
       // Even though there is an sf_open() that takes a filename, use the one that
       // takes a file descriptor since wxWidgets can open a file with a Unicode name and
       // libsndfile can't (under Windows).
-      ODManager::LockLibSndFileMutex();
+      ODLocker locker{ ODManager::sLibSndFileMutex };
       sf = sf_open_fd(f.fd(), SFM_READ, &info, FALSE);
-      ODManager::UnlockLibSndFileMutex();
    }
 
    if (!sf){
@@ -641,11 +637,12 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
       return len;
    }
 
-   mSilentAliasLog=FALSE;
+   mSilentAliasLog = FALSE;
 
-   ODManager::LockLibSndFileMutex();
-   sf_seek(sf, mAliasStart + start, SEEK_SET);
-   ODManager::UnlockLibSndFileMutex();
+   {
+      ODLocker locker{ ODManager::sLibSndFileMutex };
+      sf_seek(sf, mAliasStart + start, SEEK_SET);
+   }
 
    SampleBuffer buffer(len * info.channels, floatSample);
 
@@ -657,9 +654,10 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
       // and the calling method wants 16-bit data, go ahead and
       // read 16-bit data directly.  This is a pretty common
       // case, as most audio files are 16-bit.
-      ODManager::LockLibSndFileMutex();
-      framesRead = sf_readf_short(sf, (short *)buffer.ptr(), len);
-      ODManager::UnlockLibSndFileMutex();
+      {
+         ODLocker locker{ ODManager::sLibSndFileMutex };
+         framesRead = sf_readf_short(sf, (short *)buffer.ptr(), len);
+      }
 
       for (int i = 0; i < framesRead; i++)
          ((short *)data)[i] =
@@ -669,18 +667,20 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
       // Otherwise, let libsndfile handle the conversion and
       // scaling, and pass us normalized data as floats.  We can
       // then convert to whatever format we want.
-      ODManager::LockLibSndFileMutex();
-      framesRead = sf_readf_float(sf, (float *)buffer.ptr(), len);
-      ODManager::UnlockLibSndFileMutex();
+      {
+         ODLocker locker{ ODManager::sLibSndFileMutex };
+         framesRead = sf_readf_float(sf, (float *)buffer.ptr(), len);
+      }
       float *bufferPtr = &((float *)buffer.ptr())[mAliasChannel];
       CopySamples((samplePtr)bufferPtr, floatSample,
                   (samplePtr)data, format,
                   framesRead, true, info.channels);
    }
 
-   ODManager::LockLibSndFileMutex();
-   sf_close(sf);
-   ODManager::UnlockLibSndFileMutex();
+   {
+      ODLocker locker{ ODManager::sLibSndFileMutex };
+      sf_close(sf);
+   }
 
    UnlockRead();
    return framesRead;
@@ -693,8 +693,7 @@ int ODPCMAliasBlockFile::ReadData(samplePtr data, sampleFormat format,
 ///              be at least mSummaryInfo.totalSummaryBytes long.
 bool ODPCMAliasBlockFile::ReadSummary(void *data)
 {
-
-   mFileNameMutex.Lock();
+   ODLocker locker{ mFileNameMutex };
    wxFFile summaryFile(mFileName.GetFullPath(), wxT("rb"));
 
    if( !summaryFile.IsOpened() ){
@@ -708,17 +707,16 @@ bool ODPCMAliasBlockFile::ReadSummary(void *data)
       // deal
       mSilentLog=TRUE;
 
-      mFileNameMutex.Unlock();
       return true;
 
-   }else mSilentLog=FALSE; // worked properly, any future error is NEW
+   }
+   else mSilentLog=FALSE; // worked properly, any future error is NEW
 
    int read = summaryFile.Read(data, (size_t)mSummaryInfo.totalSummaryBytes);
 
    FixSummary(data);
 
 
-   mFileNameMutex.Unlock();
    return (read == mSummaryInfo.totalSummaryBytes);
 }
 

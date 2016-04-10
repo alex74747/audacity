@@ -170,35 +170,34 @@ FLAC__StreamDecoderWriteStatus ODFLACFile::write_callback(const FLAC__Frame *fra
 int ODFlacDecoder::Decode(SampleBuffer & data, sampleFormat & format, sampleCount start, sampleCount len, unsigned int channel)
 {
 
-   //we need to lock this so the target stays fixed over the seek/write callback.
-   mFlacFileLock.Lock();
-
-   bool usingCache=mLastDecodeStartSample==start;
-   if(usingCache)
+   bool usingCache;
    {
-      //we've just decoded this, so lets use a cache.  (often so for
+      //we need to lock this so the target stays fixed over the seek/write callback.
+      ODLocker locker{ mFlacFileLock };
+
+      usingCache = mLastDecodeStartSample == start;
+      if (usingCache)
+      {
+         //we've just decoded this, so lets use a cache.  (often so for
+      }
+
+
+      mDecodeBufferWritePosition = 0;
+      mDecodeBufferLen = len;
+
+      data.Allocate(len, mFormat);
+      mDecodeBuffer = data.ptr();
+      format = mFormat;
+
+      mTargetChannel = channel;
+
+      if (!mFile->seek_absolute(start))
+         return -1;
+
+      while (mDecodeBufferWritePosition < mDecodeBufferLen)
+         mFile->process_single();
    }
 
-
-   mDecodeBufferWritePosition=0;
-   mDecodeBufferLen = len;
-
-   data.Allocate(len, mFormat);
-   mDecodeBuffer = data.ptr();
-   format = mFormat;
-
-   mTargetChannel=channel;
-
-   if(!mFile->seek_absolute(start))
-   {
-      mFlacFileLock.Unlock();
-      return -1;
-   }
-
-   while(mDecodeBufferWritePosition<mDecodeBufferLen)
-      mFile->process_single();
-
-   mFlacFileLock.Unlock();
    if(!usingCache)
    {
       mLastDecodeStartSample=start;

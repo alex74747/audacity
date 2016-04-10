@@ -184,20 +184,16 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
 
    BlockArray &GetBlockArray() {return mBlock;}
 
-   ///
-   void LockDeleteUpdateMutex(){mDeleteUpdateMutex.Lock();}
-   void UnlockDeleteUpdateMutex(){mDeleteUpdateMutex.Unlock();}
-
-   // RAII idiom wrapping the functions above
+   // RAII locking
    struct DeleteUpdateMutexLocker {
       DeleteUpdateMutexLocker(Sequence &sequence)
          : mSequence(sequence)
       {
-         mSequence.LockDeleteUpdateMutex();
+         mSequence.mDeleteUpdateMutex.Lock();
       }
       ~DeleteUpdateMutexLocker()
       {
-         mSequence.UnlockDeleteUpdateMutex();
+         mSequence.mDeleteUpdateMutex.Unlock();
       }
    private:
       Sequence &mSequence;

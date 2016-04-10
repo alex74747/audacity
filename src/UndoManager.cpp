@@ -368,23 +368,20 @@ void UndoManager::StateSaved()
 ///to mark as unsaved changes without changing the state/tracks.
 void UndoManager::SetODChangesFlag()
 {
-   mODChangesMutex.Lock();
+   ODLocker locker{ mODChangesMutex };
    mODChanges=true;
-   mODChangesMutex.Unlock();
 }
 
 bool UndoManager::HasODChangesFlag()
 {
    bool ret;
-   mODChangesMutex.Lock();
-   ret=mODChanges;
-   mODChangesMutex.Unlock();
+   ODLocker locker{ mODChangesMutex };
+   ret = mODChanges;
    return ret;
 }
 
 void UndoManager::ResetODChangesFlag()
 {
-   mODChangesMutex.Lock();
-   mODChanges=false;
-   mODChangesMutex.Unlock();
+   ODLocker locker{ mODChangesMutex };
+   mODChanges = false;
 }

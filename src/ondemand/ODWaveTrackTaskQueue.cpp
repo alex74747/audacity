@@ -44,16 +44,12 @@ bool ODWaveTrackTaskQueue::CanMergeWith(ODWaveTrackTaskQueue* otherQueue)
    if(GetNumTasks()!=otherQueue->GetNumTasks())
       return false;
 
-   mTasksMutex.Lock();
-   for(unsigned int i=0;i<mTasks.size();i++)
+   ODLocker locker{ mTasksMutex };
+   for (unsigned int i = 0; i<mTasks.size(); i++)
    {
       if(!mTasks[i]->CanMergeWith(otherQueue->GetTask(i)))
-      {
-         mTasksMutex.Unlock();
          return false;
-      }
    }
-   mTasksMutex.Unlock();
    return true;
 }
 
@@ -64,14 +60,12 @@ bool ODWaveTrackTaskQueue::CanMergeWith(ODWaveTrackTaskQueue* otherQueue)
 void ODWaveTrackTaskQueue::MergeWaveTrack(WaveTrack* track)
 {
    AddWaveTrack(track);
-   mTasksMutex.Lock();
+   ODLocker locker{ mTasksMutex };
    for(unsigned int i=0;i<mTasks.size();i++)
    {
       mTasks[i]->AddWaveTrack(track);
       mTasks[i]->SetNeedsODUpdate();
    }
-   mTasksMutex.Unlock();
-
 }
 
 ///returns true if the argument is in the WaveTrack list.
@@ -102,9 +96,10 @@ void ODWaveTrackTaskQueue::AddWaveTrack(WaveTrack* track)
 
 void ODWaveTrackTaskQueue::AddTask(ODTask* task)
 {
-   mTasksMutex.Lock();
-   mTasks.push_back(task);
-   mTasksMutex.Unlock();
+   {
+      ODLocker locker{ mTasksMutex };
+      mTasks.push_back(task);
+   }
 
    //take all of the tracks in the task.
    mTracksMutex.Lock();
@@ -128,10 +123,11 @@ void ODWaveTrackTaskQueue::RemoveWaveTrack(WaveTrack* track)
    if(track)
    {
 
-      mTasksMutex.Lock();
-      for(unsigned int i=0;i<mTasks.size();i++)
-         mTasks[i]->StopUsingWaveTrack(track);
-      mTasksMutex.Unlock();
+      {
+         ODLocker locker{ mTasksMutex };
+         for (unsigned int i = 0; i < mTasks.size(); i++)
+            mTasks[i]->StopUsingWaveTrack(track);
+      }
 
       mTracksMutex.Lock();
       for(unsigned int i=0;i<mTracks.size();i++)
@@ -162,20 +158,21 @@ void ODWaveTrackTaskQueue::MakeWaveTrackIndependent(WaveTrack* track)
          RemoveWaveTrack(mTracks[i]);
 
          //clone the items in order and add them to the ODManager.
-         mTasksMutex.Lock();
-         for(unsigned int j=0;j<mTasks.size();j++)
          {
-            auto task = mTasks[j]->Clone();
-            task->AddWaveTrack(track);
-            //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
-            //has already locked the m_queuesMutex.
-            mTasksMutex.Unlock();
-            //AddNewTask locks the m_queuesMutex which is already locked by ODManager::MakeWaveTrackIndependent,
-            //so we pass a boolean flag telling it not to lock again.
-            ODManager::Instance()->AddNewTask(task.release(), false);
-            mTasksMutex.Lock();
+            ODLocker locker{ mTasksMutex };
+            for (unsigned int j = 0; j < mTasks.size(); j++)
+            {
+               auto task = mTasks[j]->Clone();
+               task->AddWaveTrack(track);
+               //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
+               //has already locked the m_queuesMutex.
+               mTasksMutex.Unlock();
+               //AddNewTask locks the m_queuesMutex which is already locked by ODManager::MakeWaveTrackIndependent,
+               //so we pass a boolean flag telling it not to lock again.
+               ODManager::Instance()->AddNewTask(task.release(), false);
+               mTasksMutex.Lock();
+            }
          }
-         mTasksMutex.Unlock();
          mTracksMutex.Lock();
          break;
       }
@@ -206,10 +203,11 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(WaveTrack* oldTrack, WaveTrack* newT
 {
    if(oldTrack)
    {
-      mTasksMutex.Lock();
-      for(unsigned int i=0;i<mTasks.size();i++)
-         mTasks[i]->ReplaceWaveTrack(oldTrack,newTrack);
-      mTasksMutex.Unlock();
+      {
+         ODLocker locker{ mTasksMutex };
+         for (unsigned int i = 0; i < mTasks.size(); i++)
+            mTasks[i]->ReplaceWaveTrack(oldTrack, newTrack);
+      }
 
       mTracksMutex.Lock();
       for(unsigned int i=0;i<mTracks.size();i++)
@@ -244,9 +242,8 @@ int ODWaveTrackTaskQueue::GetNumWaveTracks()
 int ODWaveTrackTaskQueue::GetNumTasks()
 {
    int ret = 0;
-   mTasksMutex.Lock();
-   ret=mTasks.size();
-   mTasksMutex.Unlock();
+   ODLocker locker{ mTasksMutex };
+   ret = mTasks.size();
    return ret;
 }
 
@@ -254,10 +251,9 @@ int ODWaveTrackTaskQueue::GetNumTasks()
 ODTask* ODWaveTrackTaskQueue::GetTask(size_t x)
 {
    ODTask* ret = NULL;
-   mTasksMutex.Lock();
+   ODLocker locker{ mTasksMutex };
    if (x < mTasks.size())
       ret = mTasks[x];
-   mTasksMutex.Unlock();
    return ret;
 }
 
@@ -271,9 +267,8 @@ bool ODWaveTrackTaskQueue::IsEmpty()
    isEmpty = mTracks.size()<=0;
    mTracksMutex.Unlock();
 
-   mTasksMutex.Lock();
-   isEmpty = isEmpty || mTasks.size()<=0;
-   mTasksMutex.Unlock();
+   ODLocker locker{ mTasksMutex };
+   isEmpty = isEmpty || mTasks.size() <= 0;
 
    return isEmpty;
 }
@@ -281,45 +276,38 @@ bool ODWaveTrackTaskQueue::IsEmpty()
 //returns true if the foremost task exists and is empty.
 bool ODWaveTrackTaskQueue::IsFrontTaskComplete()
 {
-   mTasksMutex.Lock();
-   if(mTasks.size())
+   ODLocker locker{ mTasksMutex };
+   if (mTasks.size())
    {
       //there is a chance the task got updated and now has more to do, (like when it is joined with a NEW track)
       //check.
       mTasks[0]->RecalculatePercentComplete();
       bool ret;
       ret = mTasks[0]->IsComplete();
-      mTasksMutex.Unlock();
 
       return ret;
    }
-   mTasksMutex.Unlock();
    return false;
 }
 
 ///Removes and deletes the front task from the list.
 void ODWaveTrackTaskQueue::RemoveFrontTask()
 {
-   mTasksMutex.Lock();
-   if(mTasks.size())
+   ODLocker locker{ mTasksMutex };
+   if (mTasks.size())
    {
       //wait for the task to stop running.
       delete mTasks[0];
       mTasks.erase(mTasks.begin());
    }
-   mTasksMutex.Unlock();
 }
 
 ///gets the front task for immediate execution
 ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 {
-   mTasksMutex.Lock();
-   if(mTasks.size())
-   {
-      mTasksMutex.Unlock();
+   ODLocker locker{ mTasksMutex };
+   if (mTasks.size())
       return mTasks[0];
-   }
-   mTasksMutex.Unlock();
    return NULL;
 }
 

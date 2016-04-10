@@ -110,8 +110,7 @@ class ODManager final
    static void Pause(bool pause = true);
    static void Resume();
 
-   static void LockLibSndFileMutex();
-   static void UnlockLibSndFileMutex();
+   static ODLock sLibSndFileMutex;
 
 
 

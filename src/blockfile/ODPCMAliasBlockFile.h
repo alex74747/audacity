@@ -154,9 +154,6 @@ protected:
    //need to protect this since it is changed from the main thread upon save.
    ODLock mFileNameMutex;
 
-   ///Also need to protect the aliased file name.
-   ODLock mAliasedFileNameMutex;
-
    //lock the read data - libsndfile can't handle two reads at once?
    ODLock mReadDataMutex;
 

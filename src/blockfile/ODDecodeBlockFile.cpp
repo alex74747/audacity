@@ -201,9 +201,10 @@ void ODDecodeBlockFile::SaveXML(XMLWriter &xmlFile)
       xmlFile.StartTag(wxT("oddecodeblockfile"));
        //unlock to prevent deadlock and resume lock after.
       UnlockRead();
-      mFileNameMutex.Lock();
-      xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
-      mFileNameMutex.Unlock();
+      {
+         ODLocker locker{ mFileNameMutex };
+         xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
+      }
       LockRead();
       xmlFile.WriteAttr(wxT("audiofile"), mAudioFileName.GetFullPath());
       xmlFile.WriteAttr(wxT("aliasstart"), mAliasStart);
@@ -297,9 +298,8 @@ bool ODDecodeBlockFile::IsSummaryAvailable()
 bool ODDecodeBlockFile::IsDataAvailable()
 {
    bool retval;
-   mDataAvailableMutex.Lock();
+   ODLocker locker{ mDataAvailableMutex };
    retval= mDataAvailable;
-   mDataAvailableMutex.Unlock();
    return retval;
 }
 /// Write the summary to disk, using the derived ReadData() to get the data
@@ -313,42 +313,37 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
    SampleBuffer sampleData;// = NewSamples(mLen, floatSample);
    int ret;
    //use the decoder here.
-   mDecoderMutex.Lock();
-
-   if(!mDecoder)
    {
-      mDecoderMutex.Unlock();
-      return -1;
+      ODLocker locker{ mDecoderMutex };
+      if (!mDecoder)
+         return -1;
+
+      //sampleData and mFormat are set by the decoder.
+      ret = mDecoder->Decode(sampleData, mFormat, mAliasStart, mLen, mAliasChannel);
    }
 
-
-   //sampleData and mFormat are set by the decoder.
-   ret = mDecoder->Decode(sampleData, mFormat, mAliasStart, mLen, mAliasChannel);
-
-   mDecoderMutex.Unlock();
    if(ret < 0) {
       printf("ODDecodeBlockFile Decode failure\n");
       return ret; //failure
    }
 
    //the summary is also calculated here.
-   mFileNameMutex.Lock();
-   //TODO: we may need to write a version of WriteSimpleBlockFile that uses threadsafe FILE vs wxFile
-   bool bSuccess =
-      WriteSimpleBlockFile(
+   {
+      ODLocker locker{ mFileNameMutex };
+      //TODO: we may need to write a version of WriteSimpleBlockFile that uses threadsafe FILE vs wxFile
+      bool bSuccess =
+         WriteSimpleBlockFile(
          sampleData.ptr(),
          mLen,
          mFormat,
          NULL);
-   wxASSERT(bSuccess); // TODO: Handle failure here by alert to user and undo partial op.
-   wxUnusedVar(bSuccess);
+      wxASSERT(bSuccess); // TODO: Handle failure here by alert to user and undo partial op.
+      wxUnusedVar(bSuccess);
+   }
 
-   mFileNameMutex.Unlock();
 
-
-   mDataAvailableMutex.Lock();
-   mDataAvailable=true;
-   mDataAvailableMutex.Unlock();
+   ODLocker locker{ mDataAvailableMutex };
+   mDataAvailable = true;
 
    return ret;
 }
@@ -356,23 +351,21 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
 ///sets the file name the summary info will be saved in.  threadsafe.
 void ODDecodeBlockFile::SetFileName(wxFileName &name)
 {
-   mFileNameMutex.Lock();
-   mFileName=name;
+   ODLocker locker{ mFileNameMutex };
+   mFileName = name;
 /* mchinen oct 9 2009 don't think we need the char* but leaving it in for now just as a reminder that we might
    if wxFileName isn't threadsafe.
    delete [] mFileNameChar;
    mFileNameChar = new char[strlen(mFileName.GetFullPath().mb_str(wxConvUTF8))+1];
    strcpy(mFileNameChar,mFileName.GetFullPath().mb_str(wxConvUTF8)); */
-   mFileNameMutex.Unlock();
 }
 
 ///sets the file name the summary info will be saved in.  threadsafe.
 wxFileName ODDecodeBlockFile::GetFileName()
 {
    wxFileName name;
-   mFileNameMutex.Lock();
+   ODLocker locker{ mFileNameMutex };
    name = mFileName;
-   mFileNameMutex.Unlock();
    return name;
 }
 
@@ -564,9 +557,8 @@ void ODDecodeBlockFile::SetODFileDecoder(ODFileDecoder* decoder)
    //since this is the only place that writes to mdecoder, it is totally thread-safe to read check without the mutex
    if(decoder == mDecoder)
       return;
-   mDecoderMutex.Lock();
+   ODLocker locker{ mDecoderMutex };
    mDecoder = decoder;
-   mDecoderMutex.Unlock();
 }
 
 
