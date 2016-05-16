@@ -371,7 +371,8 @@ struct AudioIO::ScrubQueue
 {
    ScrubQueue(double t0, double t1, wxLongLong startClockMillis,
               double minTime, double maxTime,
-              double rate, double maxSpeed, double minStutter)
+              double rate, double maxSpeed, double minStutter,
+              long maxDebt)
       : mTrailingIdx(0)
       , mMiddleIdx(1)
       , mLeadingIdx(2)
@@ -381,6 +382,7 @@ struct AudioIO::ScrubQueue
       , mMinStutter(lrint(std::max(0.0, minStutter) * mRate))
       , mLastScrubTimeMillis(startClockMillis)
       , mUpdating()
+      , mMaxDebt { maxDebt }
    {
       bool success = InitEntry(mEntries[mMiddleIdx],
          t0, t1, maxSpeed, false, NULL, false);
@@ -469,21 +471,61 @@ struct AudioIO::ScrubQueue
 
       mNudged = false;
 
-      if (mMiddleIdx != mLeadingIdx)
-      {
-         // There is work in the queue
+      auto now = ::wxGetLocalTimeMillis();
+
+      if (mLastTransformerTimeMillis >= 0 && // Not the first time for this scrub
+          mMiddleIdx != mLeadingIdx) {
+         // There is work in the queue, but if Producer is outrunning us, discard some,
+         // which may make a skip yet keep playback better synchronized with user gestures.
+         const auto interval = (now - mLastTransformerTimeMillis).ToDouble() / 1000.0;
+         const Entry &previous = mEntries[(mMiddleIdx + Size - 1) % Size];
+         const auto deficit =
+            static_cast<long>(interval * mRate) - // Samples needed in the last time interval
+            previous.mDuration;                   // Samples done in the last time interval
+         mDebt += deficit;
+         auto toDiscard = mDebt - mMaxDebt;
+         while (toDiscard > 0 && mMiddleIdx != mLeadingIdx) {
+            // Cancel some debt (discard some new work)
+            auto &entry = mEntries[mMiddleIdx];
+            auto &dur = entry.mDuration;
+            if (toDiscard >= dur) {
+               // Discard entire queue entry
+               mDebt -= dur;
+               toDiscard -= dur;
+               dur = 0; // So Consumer() will handle abandoned entry correctly
+               mMiddleIdx = (mMiddleIdx + 1) % Size;
+            }
+            else {
+               // Adjust the start time
+               auto &start = entry.mS0;
+               const auto end = entry.mS1;
+               const auto adjustment = (std::abs(end - start) * toDiscard) / dur;
+               if (start <= end)
+                  start += adjustment;
+               else
+                  start -= adjustment;
+
+               mDebt -= toDiscard;
+               dur -= toDiscard;
+               toDiscard = 0;
+            }
+         }
+      }
+
+      if (mMiddleIdx != mLeadingIdx) {
+         // There is still work in the queue, after cancelling debt
          Entry &entry = mEntries[mMiddleIdx];
          startSample = entry.mS0;
          endSample = entry.mS1;
          duration = entry.mDuration;
-         const unsigned next = (mMiddleIdx + 1) % Size;
-         mMiddleIdx = next;
+         mMiddleIdx = (mMiddleIdx + 1) % Size;
       }
-      else
-      {
-         // We got the shut-down signal, or we got nudged
+      else {
+         // We got the shut-down signal, or we got nudged, or we discarded all the work.
          startSample = endSample = duration = -1L;
       }
+
+      mLastTransformerTimeMillis = now;
    }
 
    double Consumer(unsigned long frames)
@@ -696,6 +738,11 @@ private:
    const double mRate;
    const long mMinStutter;
    wxLongLong mLastScrubTimeMillis;
+
+   wxLongLong mLastTransformerTimeMillis { -1LL };
+   long mDebt { 0L };
+   const long mMaxDebt;
+
    mutable wxMutex mUpdating;
    mutable wxCondition mAvailable { mUpdating };
    bool mNudged { false };
@@ -1862,7 +1909,8 @@ int AudioIO::StartStream(const WaveTrackArray &playbackTracks,
       mScrubQueue =
          new ScrubQueue(mT0, mT1, options.scrubStartClockTimeMillis,
             0.0, options.maxScrubTime,
-            sampleRate, maxScrubSpeed, minScrubStutter);
+            sampleRate, maxScrubSpeed, minScrubStutter,
+            10 * mPlaybackSamplesToCopy);
       mScrubDuration = 0;
       mSilentScrub = false;
    }
