@@ -21,6 +21,7 @@
 #include "../Audacity.h"
 #include "RecordingPrefs.h"
 
+#include <wx/checkbox.h>
 #include <wx/defs.h>
 #include <wx/textctrl.h>
 #include <algorithm>
@@ -77,9 +78,19 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
                     wxT("/AudioIO/Duplex"),
                     true);
 #if defined(__WXMAC__)
+      {
+      const auto key = wxT("/AudioIO/Playthrough");
+      bool supported = gAudioIO->SupportsPlaythrough();
+      if (!supported && gPrefs->ReadBool(key, false)) {
+         gPrefs->Write(key, false);
+         gPrefs->Flush();
+      }
+      auto checkbox =
       S.TieCheckBox(_("&Hardware Playthrough: Listen while recording or monitoring new track"),
-                    wxT("/AudioIO/Playthrough"),
+                    key,
                     false);
+      checkbox->Enable(supported);
+      }
 #endif
       S.TieCheckBox(_("&Software Playthrough: Listen while recording or monitoring new track"),
                     wxT("/AudioIO/SWPlaythrough"),

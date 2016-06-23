@@ -248,6 +248,14 @@ class AUDACITY_DLL_API AudioIO final {
                  float playbackVolume);
    void GetMixer(int *inputSource, float *inputVolume,
                  float *playbackVolume);
+   
+   /** @brief Find out if hardware playthrough is available
+    *
+    * which is determined in
+    * AudioIO::HandleDeviceChange().
+    */
+   bool SupportsPlaythrough();
+
    /** @brief Find out if the input hardware level control is available
     *
     * Checks the mInputMixerWorks variable, which is set up in
@@ -602,6 +610,7 @@ private:
 
    #if USE_PORTMIXER
    PxMixer            *mPortMixer;
+   bool                mHardwarePlaythrough { false };
    float               mPreviousHWPlaythrough;
    #endif /* USE_PORTMIXER */
 

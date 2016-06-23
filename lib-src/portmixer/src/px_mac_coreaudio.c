@@ -514,7 +514,19 @@ static void set_input_volume(px_mixer *Px, PxVolume volume)
 
 static int supports_play_through(px_mixer *Px)
 {
-   return TRUE;
+   PxInfo   *info = (PxInfo *)Px->info;
+   OSStatus err;
+   UInt32   outSize;
+   UInt32   flag;
+
+   outSize = sizeof(UInt32);
+   err =  AudioDeviceGetProperty(info->output,
+                                 0,
+                                 IS_OUTPUT,
+                                 kAudioDevicePropertyPlayThru,
+                                 &outSize,
+                                 &flag);
+   return !err;
 }
 
 static PxVolume get_play_through(px_mixer *Px)

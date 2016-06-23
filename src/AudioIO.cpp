@@ -1059,6 +1059,7 @@ AudioIO::AudioIO()
 
 #if defined(USE_PORTMIXER)
    mPortMixer = NULL;
+   mHardwarePlaythrough = false;
    mPreviousHWPlaythrough = -1.0;
    HandleDeviceChange();
 #else
@@ -1081,12 +1082,13 @@ AudioIO::~AudioIO()
 #if defined(USE_PORTMIXER)
    if (mPortMixer) {
       #if __WXMAC__
-      if (Px_SupportsPlaythrough(mPortMixer) && mPreviousHWPlaythrough >= 0.0)
+      if (mHardwarePlaythrough && mPreviousHWPlaythrough >= 0.0)
          Px_SetPlaythrough(mPortMixer, mPreviousHWPlaythrough);
          mPreviousHWPlaythrough = -1.0;
       #endif
       Px_CloseMixer(mPortMixer);
       mPortMixer = NULL;
+      mHardwarePlaythrough = false;
    }
 #endif
    Pa_Terminate();
@@ -1178,6 +1180,11 @@ void AudioIO::GetMixer(int *recordDevice, float *recordVolume,
    *playbackVolume = mMixerOutputVol;
 }
 
+bool AudioIO::SupportsPlaythrough()
+{
+   return mHardwarePlaythrough;
+}
+
 bool AudioIO::InputMixerWorks()
 {
    return mInputMixerWorks;
@@ -1250,12 +1257,13 @@ void AudioIO::HandleDeviceChange()
       // on the Mac we must make sure that we restore the hardware playthrough
       // state of the sound device to what it was before, because there isn't
       // a UI for this (!)
-      if (Px_SupportsPlaythrough(mPortMixer) && mPreviousHWPlaythrough >= 0.0)
+      if (mHardwarePlaythrough && mPreviousHWPlaythrough >= 0.0)
          Px_SetPlaythrough(mPortMixer, mPreviousHWPlaythrough);
          mPreviousHWPlaythrough = -1.0;
       #endif
       Px_CloseMixer(mPortMixer);
       mPortMixer = NULL;
+      mHardwarePlaythrough = false;
    }
 
    // that might have given us no rates whatsoever, so we have to guess an
@@ -1361,6 +1369,9 @@ void AudioIO::HandleDeviceChange()
    // if it's still not working, give up
    if( error )
       return;
+
+   if(mPortMixer)
+      mHardwarePlaythrough = Px_SupportsPlaythrough(mPortMixer);
 
    // Set input source
 #if USE_PORTMIXER
@@ -1552,7 +1563,7 @@ bool AudioIO::StartPortAudioStream(double sampleRate,
    if (mPortStreamV19 != NULL && mLastPaError == paNoError) {
       #ifdef __WXMAC__
       if (mPortMixer) {
-         if (Px_SupportsPlaythrough(mPortMixer)) {
+         if (mHardwarePlaythrough) {
             bool playthrough;
 
             mPreviousHWPlaythrough = Px_GetPlaythrough(mPortMixer);
@@ -2323,7 +2334,7 @@ void AudioIO::StopStream()
   #if defined(USE_PORTMIXER)
    if( mPortMixer ) {
       #if __WXMAC__
-      if (Px_SupportsPlaythrough(mPortMixer) && mPreviousHWPlaythrough >= 0.0)
+      if (mHardwarePlaythrough && mPreviousHWPlaythrough >= 0.0)
          Px_SetPlaythrough(mPortMixer, mPreviousHWPlaythrough);
          mPreviousHWPlaythrough = -1.0;
       #endif
