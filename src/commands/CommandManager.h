@@ -20,6 +20,7 @@
 #include <wx/hashmap.h>
 
 #include "../AudacityApp.h"
+#include "../Project.h" // remove this
 #include "../xml/XMLTagHandler.h"
 
 #include "audacity/Types.h"
