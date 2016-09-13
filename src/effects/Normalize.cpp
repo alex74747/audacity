@@ -159,10 +159,7 @@ bool EffectNormalize::Process()
    //Iterate over each track
    this->CopyInputTracks(); // Set up mOutputTracks.
    bool bGoodResult = true;
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-   WaveTrack *track = (WaveTrack *) iter.First();
-   WaveTrack *prevTrack;
-   prevTrack = track;
+   WaveTrack *prevTrack {};
    mCurTrackNum = 0;
    wxString topMsg;
    if(mDC && mGain)
@@ -174,7 +171,10 @@ bool EffectNormalize::Process()
    else if(!mDC && !mGain)
       topMsg = wxT("Not doing anything)...\n");   // shouldn't get here
 
-   while (track) {
+   auto iters = mOutputTracks->SelectedTracks< WaveTrack >();
+   auto &iter = iters.first, &end = iters.second;
+   for ( ; iter != end; ++iter ) {
+      auto track = *iter;
       //Get start and end times from track
       double trackStart = track->GetStartTime();
       double trackEnd = track->GetEndTime();
@@ -201,7 +201,8 @@ bool EffectNormalize::Process()
             else
                mMult = 1.0;
             msg = topMsg + _("Processing: ") + trackName;
-            if(track->GetLinked() || prevTrack->GetLinked())  // only get here if there is a linked track but we are processing independently
+            if(track->GetLinked() ||
+               (prevTrack && prevTrack->GetLinked()))  // only get here if there is a linked track but we are processing independently
                msg = topMsg + _("Processing stereo channels independently: ") + trackName;
 
             if (!ProcessOne(track, msg))
@@ -218,7 +219,9 @@ bool EffectNormalize::Process()
             float offset1 = mOffset;   // remember ones from first track
             float min1 = mMin;
             float max1 = mMax;
-            track = (WaveTrack *) iter.Next();  // get the next one
+            auto nextTrack = * ++ iter;
+            auto oldTrack = track;
+            track = nextTrack;
             mCurTrackNum++;   // keeps progress bar correct
             msg = topMsg + _("Analyzing second track of stereo pair: ") + trackName;
             AnalyseTrack(track, msg);  // sets mOffset and offset-adjusted mMin and mMax
@@ -233,7 +236,7 @@ bool EffectNormalize::Process()
             else
                mMult = 1.0;
             mOffset = offset1;
-            track = (WaveTrack *) iter.Prev();  // go back to the first linked one
+            track = oldTrack;
             mCurTrackNum--;   // keeps progress bar correct
             msg = topMsg + _("Processing first track of stereo pair: ") + trackName;
             if (!ProcessOne(track, msg))
@@ -242,7 +245,7 @@ bool EffectNormalize::Process()
                break;
             }
             mOffset = offset2;
-            track = (WaveTrack *) iter.Next();  // go to the second linked one
+            track = nextTrack;
             mCurTrackNum++;   // keeps progress bar correct
             msg = topMsg + _("Processing second track of stereo pair: ") + trackName;
             if (!ProcessOne(track, msg))
@@ -255,7 +258,6 @@ bool EffectNormalize::Process()
 
       //Iterate to the next track
       prevTrack = track;
-      track = (WaveTrack *) iter.Next();
       mCurTrackNum++;
    }
 

@@ -350,6 +350,93 @@ track_cast(const Track *track)
       return nullptr;
 }
 
+// new track iterators can eliminate the need to cast the result
+template <
+   typename TrackType, // Track or a subclass, maybe const-qualified
+   typename Pred // copyable, takes const reference to TrackType
+> class TrackIter
+   : public std::iterator< std::bidirectional_iterator_tag, TrackType * >
+{
+public:
+   TrackIter( TrackNodePointer begin, TrackNodePointer iter,
+              TrackNodePointer end, Pred pred )
+      : mBegin( begin ), mIter( iter ), mEnd( end ), mPred( pred )
+   {
+      if (mIter != mEnd && !valid())
+         operator ++ ();
+   }
+
+   TrackIter &operator ++ ()
+   {
+      do
+         ++mIter;
+      while (mIter != mEnd && !valid() );
+      return *this;
+   }
+
+   TrackIter operator ++ (int)
+   {
+      TrackIter result { *this };
+      operator ++ ();
+      return result;
+   }
+
+   TrackIter &operator -- ()
+   {
+      do {
+         if (mIter == mBegin)
+            // Go circularly
+            mIter = mEnd;
+         else
+            --mIter;
+      } while (mIter != mEnd && !valid() );
+      return *this;
+   }
+
+   TrackIter operator -- (int)
+   {
+      TrackIter result { *this };
+      operator -- ();
+      return result;
+   }
+
+   TrackType *operator * () const
+   {
+      if (mIter == mEnd)
+         return nullptr;
+      else
+         // Other methods guarantee that the cast is correct
+         return static_cast< TrackType * >( &**mIter );
+   }
+
+   friend inline bool operator == (TrackIter a, TrackIter b)
+   {
+      return
+         a.mIter == b.mIter &&
+         a.mBegin == b.mBegin &&
+         a.mEnd == b.mEnd;
+   }
+
+   friend inline bool operator != (TrackIter a, TrackIter b)
+   {
+      return !(a == b);
+   }
+
+private:
+   bool valid() const
+   {
+      // assume mIter != mEnd
+      TrackType *pTrack = track_cast< TrackType * >( &**mIter );
+      if (!pTrack)
+         return false;
+      const TrackType &track = *pTrack;
+      return mPred( track );
+   }
+
+   TrackNodePointer mIter, mBegin, mEnd;
+   Pred mPred;
+};
+
 class AUDACITY_DLL_API TrackListIterator /* not final */
 {
  public:
@@ -525,6 +612,82 @@ class TrackList final : public wxEvtHandler, public ListOfTracks
    // Destructor
    virtual ~TrackList();
 
+   // Iteration
+private:
+   static inline bool TruePred (const Track &)
+      { return true; }
+   static inline bool SelectedPred (const Track &track)
+      { return track.GetSelected(); }
+
+public:
+   template < typename TrackType = Track >
+      IteratorRange< TrackIter< TrackType, decltype(&TruePred) > >
+   Tracks()
+   {
+      auto pred = &TruePred;
+      auto b = begin(), e = end();
+      return { { b, b, e, pred }, { b, e, e, pred } };
+   }
+
+   template < typename TrackType = Track, typename Pred >
+      IteratorRange< TrackIter< TrackType, Pred > >
+         Tracks( const Pred &pred )
+   {
+      auto b = begin(), e = end();
+      return { { b, b, e, pred }, { b, e, e, pred } };
+   }
+
+   template < typename TrackType = const Track >
+      IteratorRange< TrackIter< TrackType, decltype(&TruePred) > >
+         Tracks() const
+   {
+      // const access:  require TrackType to be const
+      using std::
+#ifdef __AUDACITY_OLD_STD__
+         tr1::
+#endif
+         is_const;
+      static_assert
+         ( is_const< TrackType >::value,
+           "const-qualified track subtype is required" );
+
+      auto pred = &TruePred;
+      auto b = begin(), e = end();
+      return { { b, b, e, pred }, { b, e, e, pred } };
+   }
+
+   template < typename TrackType = const Track, typename Pred >
+      IteratorRange< TrackIter< TrackType, Pred > >
+         Tracks( const Pred &pred = &TruePred ) const
+   {
+      // const access:  require TrackType to be const
+      using std::
+#ifdef __AUDACITY_OLD_STD__
+         tr1::
+#endif
+         is_const;
+      static_assert
+         ( is_const< TrackType >::value,
+           "const-qualified track subtype is required" );
+
+      auto b = begin(), e = end();
+      return { { b, b, e, pred }, { b, e, e, pred } };
+   }
+
+   template < typename TrackType = Track >
+      IteratorRange< TrackIter< TrackType, decltype(&SelectedPred) > >
+         SelectedTracks()
+   {
+      return Tracks< TrackType >( &SelectedPred );
+   }
+
+   template < typename TrackType = Track >
+      IteratorRange< TrackIter< const TrackType, decltype(&SelectedPred) > >
+         SelectedTracks() const
+   {
+      return Tracks< TrackType >( &SelectedPred );
+   }
+
    friend class Track;
    friend class TrackListIterator;
    friend class SyncLockedTracksIterator;
@@ -613,6 +776,7 @@ class TrackList final : public wxEvtHandler, public ListOfTracks
 #endif
 
 private:
+
    bool isNull(TrackNodePointer p) const
    { return p == end(); }
    void setNull(TrackNodePointer &p)

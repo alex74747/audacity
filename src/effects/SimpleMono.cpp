@@ -32,10 +32,8 @@ bool EffectSimpleMono::Process()
    this->CopyInputTracks(); // Set up mOutputTracks.
    bool bGoodResult = true;
 
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-   WaveTrack* pOutWaveTrack = (WaveTrack*)(iter.First());
    mCurTrackNum = 0;
-   while (pOutWaveTrack != NULL)
+   for( auto pOutWaveTrack : mOutputTracks->SelectedTracks< WaveTrack >() )
    {
       //Get start and end times from track
       double trackStart = pOutWaveTrack->GetStartTime();
@@ -66,8 +64,6 @@ bool EffectSimpleMono::Process()
          }
       }
 
-      //Iterate to the next track
-      pOutWaveTrack = (WaveTrack*)(iter.Next());
       mCurTrackNum++;
    }
 

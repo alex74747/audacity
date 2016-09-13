@@ -394,8 +394,7 @@ bool NyquistEffect::Init()
       AudacityProject *project = GetActiveProject();
       bool bAllowSpectralEditing = true;
 
-      SelectedTrackListOfKindIterator sel(TrackKind::Wave, project->GetTracks());
-      for (WaveTrack *t = (WaveTrack *) sel.First(); t; t = (WaveTrack *) sel.Next()) {
+      for ( auto t : project->GetTracks()->SelectedTracks< WaveTrack >() ) {
          if (t->GetDisplay() != WaveTrack::Spectrum ||
              !(t->GetSpectrogramSettings().SpectralSelectionEnabled())) {
             bAllowSpectralEditing = false;
@@ -456,8 +455,8 @@ bool NyquistEffect::Process()
    // correct sync-lock group behavior when the timeline is affected; then we just want
    // to operate on the selected wave tracks
    CopyInputTracks(TrackKind::All);
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-   mCurTrack[0] = (WaveTrack *) iter.First();
+   auto iters = mOutputTracks->SelectedTracks< WaveTrack >();
+   mCurTrack[0] = * iters.first;
    mOutputTime = 0;
    mCount = 0;
    mProgressIn = 0;
@@ -472,13 +471,17 @@ bool NyquistEffect::Process()
    mTrackIndex = 0;
 
    mNumSelectedChannels = 0;
-   SelectedTrackListOfKindIterator sel(TrackKind::Wave, mOutputTracks.get());
-   for (WaveTrack *t = (WaveTrack *) sel.First(); t; t = (WaveTrack *) sel.Next()) {
-      mNumSelectedChannels++;
-      if (mT1 >= mT0) {
-         if (t->GetLinked()) {
-            mNumSelectedChannels++;
-            sel.Next();
+   {
+      auto iters2 = iters;
+      auto &iter = iters.first, &end = iters.second;
+      for ( ; iter != end; ++iter ) {
+         auto t = *iters.first;
+         mNumSelectedChannels++;
+         if (mT1 >= mT0) {
+            if (t->GetLinked()) {
+               mNumSelectedChannels++;
+               ++iter;
+            }
          }
       }
    }
@@ -604,13 +607,14 @@ bool NyquistEffect::Process()
    mFirstInGroup = true;
    Track *gtLast = NULL;
 
-   while (mCurTrack[0]) {
+   for (auto &iter = iters.first, &end = iters.second; iter != end; ++iter) {
+      mCurTrack[0] = *iter;
       mCurNumChannels = 1;
       if (mT1 >= mT0) {
          if (mCurTrack[0]->GetLinked()) {
             mCurNumChannels = 2;
 
-            mCurTrack[1] = (WaveTrack *)iter.Next();
+            mCurTrack[1] = * ++ iter;
             if (mCurTrack[1]->GetRate() != mCurTrack[0]->GetRate()) {
                wxMessageBox(_("Sorry, cannot apply effect on stereo tracks where the tracks don't match."),
                             wxT("Nyquist"),
@@ -716,7 +720,6 @@ _("Selection too long for Nyquist code.\nMaximum allowed selection is %ld sample
          mProgressTot += mProgressIn + mProgressOut;
       }
 
-      mCurTrack[0] = (WaveTrack *) iter.Next();
       mCount += mCurNumChannels;
    }
 
@@ -1341,10 +1344,8 @@ double NyquistEffect::GetCtrlValue(const wxString &s)
    AudacityProject *project = GetActiveProject();
    double rate = INT_MAX;
    if (project && s.IsSameAs(wxT("half-srate"), false)) {
-      SelectedTrackListOfKindIterator sel(TrackKind::Wave, project->GetTracks());
-      for (WaveTrack *t = (WaveTrack *) sel.First(); t; t = (WaveTrack *) sel.Next()) {
+      for ( auto t : project->GetTracks()->SelectedTracks< WaveTrack >() )
          rate = std::min(t->GetRate(), rate);
-      }
       return (rate / 2.0);
    }
    */

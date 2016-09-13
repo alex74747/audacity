@@ -75,8 +75,8 @@ bool EffectStereoToMono::Process()
    this->CopyInputTracks(); // Set up mOutputTracks.
    bool bGoodResult = true;
 
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-   mLeftTrack = (WaveTrack *)iter.First();
+   auto iters = mOutputTracks->SelectedTracks< WaveTrack >();
+   mLeftTrack = *iters.first;
    bool refreshIter = false;
 
    if(mLeftTrack)
@@ -87,12 +87,12 @@ bool EffectStereoToMono::Process()
    }
 
    int count = 0;
-   while (mLeftTrack) {
+   while ( iters.first != iters.second ) {
       if (mLeftTrack->GetSelected() &&
          mLeftTrack->GetLinked()) {
 
          // Assume linked track is wave
-         mRightTrack = static_cast<WaveTrack*>(iter.Next());
+         mRightTrack = * ++ iters.first;
 
          if ((mLeftTrack->GetRate() == mRightTrack->GetRate())) {
             auto leftTrackStart = mLeftTrack->TimeToLongSamples(mLeftTrack->GetStartTime());
@@ -115,11 +115,12 @@ bool EffectStereoToMono::Process()
       }
 
       if (refreshIter) {
-         mLeftTrack = (WaveTrack *)iter.First();
+         iters = mOutputTracks->SelectedTracks< WaveTrack >();
+         mLeftTrack = *iters.first;
          refreshIter = false;
       }
       else {
-         mLeftTrack = (WaveTrack *)iter.Next();
+         mLeftTrack = * ++ iters.first;
       }
       count++;
    }

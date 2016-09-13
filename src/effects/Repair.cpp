@@ -74,10 +74,8 @@ bool EffectRepair::Process()
    this->CopyInputTracks(); // Set up mOutputTracks. //v This may be too much copying for EffectRepair.
    bool bGoodResult = true;
 
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-   WaveTrack *track = (WaveTrack *) iter.First();
    int count = 0;
-   while (track) {
+   for( auto track : mOutputTracks->SelectedTracks< WaveTrack >() ) {
       const
       double trackStart = track->GetStartTime();
       const double repair_t0 = std::max(mT0, trackStart);
@@ -120,7 +118,6 @@ bool EffectRepair::Process()
          }
       }
 
-      track = (WaveTrack *) iter.Next();
       count++;
    }
 

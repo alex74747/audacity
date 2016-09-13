@@ -50,9 +50,7 @@ bool ContrastDialog::GetDB(float &dB)
    double meanSq = 0.0;
 
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
-   WaveTrack *t = (WaveTrack *) iter.First();
-   while (t) {
+   for ( auto t : p->GetTracks()->SelectedTracks< WaveTrack >() ) {
       numberSelecteTracks++;
       if (numberSelecteTracks > 1 && !isStereo) {
          wxMessageDialog m(NULL, _("You can only measure one track at a time."), _("Error"), wxOK);
@@ -88,7 +86,6 @@ bool ContrastDialog::GetDB(float &dB)
 
       ((WaveTrack *)t)->GetRMS(&rms, mT0, mT1);
       meanSq += rms * rms;
-      t = (WaveTrack *) iter.Next();
    }
    // TODO: This works for stereo, provided the audio clips are in both channels.
    // We should really count gaps between clips as silence.
@@ -334,9 +331,8 @@ void ContrastDialog::OnClose(wxCommandEvent & WXUNUSED(event))
 void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
 {
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
 
-   for (Track *t = iter.First(); t; t = iter.Next()) {
+   for ( auto t : p->GetTracks()->SelectedTracks< WaveTrack >() ) {
       mForegroundStartT->SetValue(p->mViewInfo.selectedRegion.t0());
       mForegroundEndT->SetValue(p->mViewInfo.selectedRegion.t1());
    }
@@ -350,9 +346,8 @@ void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
 void ContrastDialog::OnGetBackground(wxCommandEvent & /*event*/)
 {
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
 
-   for (Track *t = iter.First(); t; t = iter.Next()) {
+   for ( auto t : p->GetTracks()->SelectedTracks< WaveTrack >() ) {
       mBackgroundStartT->SetValue(p->mViewInfo.selectedRegion.t0());
       mBackgroundEndT->SetValue(p->mViewInfo.selectedRegion.t1());
    }

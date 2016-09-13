@@ -380,12 +380,10 @@ bool EffectAutoDuck::Process()
    if (!cancel)
    {
       CopyInputTracks(); // Set up mOutputTracks.
-      SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-      Track *iterTrack = iter.First();
 
       int trackNumber = 0;
 
-      while (iterTrack)
+      for( auto iterTrack : mOutputTracks->SelectedTracks< WaveTrack >() )
       {
          WaveTrack* t = (WaveTrack*)iterTrack;
 
@@ -402,7 +400,6 @@ bool EffectAutoDuck::Process()
          if (cancel)
             break;
 
-         iterTrack = iter.Next();
          trackNumber++;
       }
    }

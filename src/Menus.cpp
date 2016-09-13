@@ -4440,41 +4440,41 @@ void AudacityProject::OnPasteNewLabel()
 {
    bool bPastedSomething = false;
 
-   SelectedTrackListOfKindIterator iter(TrackKind::Label, GetTracks());
-   Track *t = iter.First();
-   if (!t)
    {
-      // If there are no selected label tracks, try to choose the first label
-      // track after some other selected track
-      TrackListIterator iter1(GetTracks());
-      for (Track *t1 = iter1.First(); t1; t1 = iter1.Next()) {
-         if (t1->GetSelected()) {
-            // Look for a label track
-            while (nullptr != (t1 = iter1.Next())) {
-               if (track_cast<LabelTrack*>(t1)) {
-                  t = t1;
-                  break;
+      auto iters = GetTracks()->SelectedTracks< LabelTrack >();
+      if (! *iters.first)
+      {
+         Track *t {};
+         // If there are no selected label tracks, try to choose the first label
+         // track after some other selected track
+         TrackListIterator iter1(GetTracks());
+         for (Track *t1 = iter1.First(); t1; t1 = iter1.Next()) {
+            if (t1->GetSelected()) {
+               // Look for a label track
+               while (nullptr != (t1 = iter1.Next())) {
+                  if (track_cast<LabelTrack*>(t1)) {
+                     t = t1;
+                     break;
+                  }
                }
+               if (t)
+                  break;
             }
-            if (t)
-               break;
          }
-      }
 
-      // If no match found, add one
-      if (!t) {
-         t = mTracks->Add(GetTrackFactory()->NewLabelTrack());
-      }
+         // If no match found, add one
+         if (!t) {
+            t = mTracks->Add(GetTrackFactory()->NewLabelTrack());
+         }
 
-      // Select this track so the loop picks it up
-      t->SetSelected(true);
+         // Select this track so the loop picks it up
+         t->SetSelected(true);
+      }
    }
 
    LabelTrack *plt = NULL; // the previous track
-   for (Track *t = iter.First(); t; t = iter.Next())
+   for ( auto lt : GetTracks()->SelectedTracks< LabelTrack >() )
    {
-      LabelTrack *lt = (LabelTrack *)t;
-
       // Unselect the last label, so we'll have just one active label when
       // we're done
       if (plt)
@@ -4635,9 +4635,7 @@ void AudacityProject::OnJoin()
 
 void AudacityProject::OnSilence()
 {
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, GetTracks());
-
-   for (Track *n = iter.First(); n; n = iter.Next())
+   for ( auto n : GetTracks()->SelectedTracks< WaveTrack >() )
       n->Silence(mViewInfo.selectedRegion.t0(), mViewInfo.selectedRegion.t1());
 
    PushState(wxString::
@@ -4990,10 +4988,8 @@ void AudacityProject::OnToggleSpectralSelection()
 void AudacityProject::DoNextPeakFrequency(bool up)
 {
    // Find the first selected wave track that is in a spectrogram view.
-   WaveTrack *pTrack = 0;
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, GetTracks());
-   for (Track *t = iter.First(); t; t = iter.Next()) {
-      WaveTrack *const wt = static_cast<WaveTrack*>(t);
+   WaveTrack *pTrack {};
+   for ( auto wt : GetTracks()->SelectedTracks< WaveTrack >() ) {
       const int display = wt->GetDisplay();
       if (display == WaveTrack::Spectrum) {
          pTrack = wt;

@@ -294,10 +294,9 @@ bool EffectEqualization48x::Process(EffectEqualization* effectEqualization)
    if(sMathPath)  // !!! Filter MUST BE QUAD WORD ALIGNED !!!!
       mEffectEqualization->mM=(mEffectEqualization->mM&(~15))+1;
    AllocateBuffersWorkers(sMathPath&MATH_FUNCTION_THREADED);
-   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mEffectEqualization->mOutputTracks);
-   WaveTrack *track = (WaveTrack *) iter.First();
    int count = 0;
-   while (track) {
+   for( auto track :
+        mEffectEqualization->mOutputTracks->SelectedTracks< WaveTrack >() ) {
       double trackStart = track->GetStartTime();
       double trackEnd = track->GetEndTime();
       double t0 = mEffectEqualization->mT0 < trackStart? trackStart: mEffectEqualization->mT0;
@@ -311,7 +310,6 @@ bool EffectEqualization48x::Process(EffectEqualization* effectEqualization)
          if( bBreakLoop )
             break;
       }
-      track = (WaveTrack *) iter.Next();
       count++;
    }
    FreeBuffersWorkers();
@@ -354,15 +352,12 @@ bool EffectEqualization48x::TrackCompare()
       }
    }
 
-   for(int i=0;i<2;i++) {
-      SelectedTrackListOfKindIterator iter
-         (TrackKind::Wave, i
-          ? mEffectEqualization->mOutputTracks.get()
-          : &SecondOutputTracks);
+   for(int i = 0; i < 2; i++) {
       i?sMathPath=sMathPath:sMathPath=0;
-      WaveTrack *track = (WaveTrack *) iter.First();
       int count = 0;
-      while (track) {
+      for( auto track :
+           ( i ? mEffectEqualization->mOutputTracks.get()
+               : &SecondOutputTracks ) -> SelectedTracks< WaveTrack >() ) {
          double trackStart = track->GetStartTime();
          double trackEnd = track->GetEndTime();
          double t0 = mEffectEqualization->mT0 < trackStart? trackStart: mEffectEqualization->mT0;
@@ -376,16 +371,14 @@ bool EffectEqualization48x::TrackCompare()
             if( bBreakLoop )
                break;
          }
-         track = (WaveTrack *) iter.Next();
          count++;
       }
    }
-   SelectedTrackListOfKindIterator
-      iter(TrackKind::Wave, mEffectEqualization->mOutputTracks.get());
-   SelectedTrackListOfKindIterator iter2(TrackKind::Wave, &SecondOutputTracks);
-   WaveTrack *track =  (WaveTrack *) iter.First();
-   WaveTrack *track2 = (WaveTrack *) iter2.First();
-   while (track) {
+
+   auto iter2 = SecondOutputTracks.SelectedTracks< WaveTrack >().first;
+   auto track2 = *iter2;
+   for ( track :
+         mEffectEqualization->mOutputTracks->SelectedTracks< WaveTrack >() ) {
       double trackStart = track->GetStartTime();
       double trackEnd = track->GetEndTime();
       double t0 = mEffectEqualization->mT0 < trackStart? trackStart: mEffectEqualization->mT0;
@@ -397,8 +390,7 @@ bool EffectEqualization48x::TrackCompare()
          auto len = end - start;
          DeltaTrack(track, track2, start, len);
       }
-      track = (WaveTrack *) iter.Next();
-      track2 = (WaveTrack *) iter2.Next();
+      track2 = * ++iter2;
    }
    FreeBuffersWorkers();
    mEffectEqualization->ReplaceProcessedTracks(!bBreakLoop); 
@@ -446,12 +438,10 @@ bool EffectEqualization48x::Benchmark(EffectEqualization* effectEqualization)
    if(sMathPath)  // !!! Filter MUST BE QUAD WORD ALIGNED !!!!
       mEffectEqualization->mM=(mEffectEqualization->mM&(~15))+1;
    AllocateBuffersWorkers(MATH_FUNCTION_THREADED);
-   SelectedTrackListOfKindIterator
-      iter(TrackKind::Wave, mEffectEqualization->mOutputTracks.get());
    long times[] = { 0,0,0,0,0 };
    wxStopWatch timer;
-   mBenching=true;
-   for(int i=0;i<5 && !bBreakLoop;i++) {
+   mBenching = true;
+   for(int i = 0; i < 5 && !bBreakLoop; i++) {
       int localMathPath;
       switch(i) {
          case 0: localMathPath=MATH_FUNCTION_SSE|MATH_FUNCTION_THREADED;
@@ -470,11 +460,11 @@ bool EffectEqualization48x::Benchmark(EffectEqualization* effectEqualization)
             break;
          default: localMathPath=-1;
       }
-      if(localMathPath>=0) {
+      if(localMathPath >= 0) {
          timer.Start();
-         WaveTrack *track = (WaveTrack *) iter.First();
          int count = 0;
-         while (track) {
+         for (track :
+              mEffectEqualization->mOutputTracks->SelectedTracks< WaveTrack >() ) {
             double trackStart = track->GetStartTime();
             double trackEnd = track->GetEndTime();
             double t0 = mEffectEqualization->mT0 < trackStart? trackStart: mEffectEqualization->mT0;
@@ -488,7 +478,6 @@ bool EffectEqualization48x::Benchmark(EffectEqualization* effectEqualization)
                if( bBreakLoop )
                   break;
             }
-            track = (WaveTrack *) iter.Next();
             count++;
          }
          times[i]=timer.Time();

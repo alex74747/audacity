@@ -2259,21 +2259,10 @@ void Effect::CountWaveTracks()
    mNumTracks = 0;
    mNumGroups = 0;
 
-   TrackListOfKindIterator iter(TrackKind::Wave, mTracks);
-   Track *t = iter.First();
-
-   while(t) {
-      if (!t->GetSelected()) {
-         t = iter.Next();
-         continue;
-      }
-
-      if (track_cast<WaveTrack*>(t)) {
-         mNumTracks++;
-         if (!t->GetLinked())
-            mNumGroups++;
-      }
-      t = iter.Next();
+   for( auto t : mTracks->SelectedTracks< WaveTrack >() ) {
+      mNumTracks++;
+      if (!t->GetLinked())
+         mNumGroups++;
    }
 }
 
@@ -2585,12 +2574,8 @@ void Effect::Preview(bool dryOnly)
          WaveTrackConstArray playbackTracks;
          WaveTrackArray recordingTracks;
 
-         SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
-         WaveTrack *src = (WaveTrack *) iter.First();
-         while (src) {
+         for ( auto src : mTracks->SelectedTracks< WaveTrack >() )
             playbackTracks.push_back(src);
-            src = (WaveTrack *) iter.Next();
-         }
          // Some effects (Paulstretch) may need to generate more
          // than previewLen, so take the min.
          t1 = std::min(mT0 + previewLen, mT1);

@@ -305,10 +305,7 @@ bool EffectTruncSilence::ProcessIndependently()
 
    {
       unsigned iGroup = 0;
-      SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
-      for (Track *track = iter.First(); track;
-         ++iGroup, track = iter.Next(true) // skip linked tracks
-      ) {
+      for( auto track : mOutputTracks->SelectedTracks< WaveTrack >() ) {
          Track *const link = track->GetLink();
          Track *const last = link ? link : track;
 
@@ -331,6 +328,8 @@ bool EffectTruncSilence::ProcessIndependently()
          if (!DoRemoval(silences, iGroup, nGroups, groupFirst, groupLast, totalCutLen))
             return false;
          newT1 = std::max(newT1, mT1 - totalCutLen);
+
+         ++iGroup;
       }
    }
 
