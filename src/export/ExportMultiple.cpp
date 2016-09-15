@@ -149,25 +149,15 @@ void ExportMultiple::CountTracksAndLabels()
    TrackListConstIterator iter;
    for (pTrack = iter.First(mTracks); pTrack != NULL; pTrack = iter.Next())
    {
-      switch (pTrack->GetKind())
-      {
-         // Count WaveTracks, and for linked pairs, count only the second of the pair.
-         case Track::Wave:
-         {
-            if (!pTrack->GetMute() && !pTrack->GetLinked()) // Don't count muted tracks.
-               mNumWaveTracks++;
-            break;
-         }
-
-         // Only support one label track???
-         case Track::Label:
-         {
-            // Supports only one LabelTrack.
-            if (mLabels == NULL) {
-               mLabels = (LabelTrack*)pTrack;
-               mNumLabels = mLabels->GetNumLabels();
-            }
-            break;
+      if (track_cast<const WaveTrack*>(pTrack)) {
+         if (!pTrack->GetMute() && !pTrack->GetLinked()) // Don't count muted tracks.
+            mNumWaveTracks++;
+      }
+      else if (auto lt = track_cast<const LabelTrack*>(pTrack)) {
+         // Supports only one LabelTrack.
+         if (mLabels == NULL) {
+            mLabels = lt;
+            mNumLabels = mLabels->GetNumLabels();
          }
       }
    }
@@ -777,7 +767,8 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
    /* Remember which tracks were selected, and set them to unselected */
    TrackListIterator iter;
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
-      if (tr->GetKind() != Track::Wave) {
+      if (!track_cast<WaveTrack*>(tr)) {
+
          continue;
       }
 
@@ -795,7 +786,8 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
 
       // Want only non-muted wave tracks.
-      if ((tr->GetKind() != Track::Wave)  || tr->GetMute())
+      const auto wt = track_cast<WaveTrack*>(tr);
+      if (!wt || tr->GetMute())
          continue;
 
       // Get the times for the track
@@ -822,7 +814,7 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
       // number of export channels?
       // Needs to be per track.
       if (tr2 == NULL && tr->GetChannel() == WaveTrack::MonoChannel &&
-                 ((WaveTrack *)tr)->GetPan() == 0.0)
+                 wt->GetPan() == 0.0)
          setting.channels = 1;
       else
          setting.channels = 2;
@@ -882,7 +874,7 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
 
       // Want only non-muted wave tracks.
-      if ((tr->GetKind() != Track::Wave) || (tr->GetMute() == true)) {
+      if (!track_cast<WaveTrack*>(tr) || (tr->GetMute() == true)) {
          continue;
       }
 

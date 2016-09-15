@@ -180,7 +180,7 @@ bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
    while (tr)
    {
       //go over all tracks in the project
-      if (tr->GetKind() == Track::Wave)
+      if (track_cast<const WaveTrack *>(tr))
       {
          //look inside our task's track list for one that matches this projects one.
          mWaveTrackMutex.Lock();

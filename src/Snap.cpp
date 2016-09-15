@@ -119,9 +119,8 @@ void SnapManager::Reinit()
          continue;
       }
 
-      if (track->GetKind() == Track::Label)
+      if (const auto labelTrack = track_cast<const LabelTrack *>(track))
       {
-         LabelTrack *labelTrack = (LabelTrack *)track;
          for (int i = 0, cnt = labelTrack->GetNumLabels(); i < cnt; ++i)
          {
             const LabelStruct *label = labelTrack->GetLabel(i);
@@ -134,9 +133,8 @@ void SnapManager::Reinit()
             }
          }
       }
-      else if (track->GetKind() == Track::Wave)
+      else if (const auto waveTrack = track_cast<const WaveTrack*>(track))
       {
-         auto waveTrack = static_cast<const WaveTrack *>(track);
          for (const auto &clip: waveTrack->GetClips())
          {
             if (mClipExclusions)
@@ -163,7 +161,7 @@ void SnapManager::Reinit()
          }
       }
 #ifdef USE_MIDI
-      else if (track->GetKind() == Track::Note)
+      else if (track_cast<const NoteTrack *>(track))
       {
          CondListAdd(track->GetStartTime(), track);
          CondListAdd(track->GetEndTime(), track);

@@ -160,7 +160,7 @@ bool EffectAmplify::Init()
 {
    mPeak = 0.0;
 
-   SelectedTrackListOfKindIterator iter(Track::Wave, mTracks);
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
 
    for (Track *t = iter.First(); t; t = iter.Next())
    {

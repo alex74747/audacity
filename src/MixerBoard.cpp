@@ -162,17 +162,17 @@ MixerTrackCluster::MixerTrackCluster(wxWindow* parent,
    mMixerBoard = grandParent;
    mProject = project;
 #ifdef EXPERIMENTAL_MIDI_OUT
-   if (pLeftTrack->GetKind() == Track::Note) {
+   if (const auto nt = track_cast<NoteTrack*>(pLeftTrack)) {
       mLeftTrack = NULL;
-      mNoteTrack = (NoteTrack*) pLeftTrack;
+      mNoteTrack = nt;
       mTrack = pLeftTrack;
    } else {
-      wxASSERT(pLeftTrack->GetKind() == Track::Wave);
+      wxASSERT(track_cast<WaveTrack*>(pLeftTrack));
       mTrack = mLeftTrack = pLeftTrack;
       mNoteTrack = NULL;
    }
 #else
-   wxASSERT(pLeftTrack->GetKind() == Track::Wave);
+   wxASSERT(track_cast<WaveTrack*>(pLeftTrack));
    mLeftTrack = pLeftTrack;
 #endif
    mRightTrack = pRightTrack;
@@ -527,7 +527,7 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
    if (!mLeftTrack)
       return;
 #else
-   wxASSERT(mLeftTrack && (mLeftTrack->GetKind() == Track::Wave));
+   wxASSERT(track_cast<WaveTrack*>(mLeftTrack));
 #endif
 
    //vvv Vaughan, 2010-11-27:
@@ -1013,9 +1013,13 @@ void MixerBoard::UpdateTrackClusters()
    while (pLeftTrack) {
       pRightTrack = pLeftTrack->GetLinked() ? iterTracks.Next() : NULL;
 
-      if (pLeftTrack->GetKind() == Track::Wave
+      const auto wt = track_cast<WaveTrack*>(pLeftTrack);
 #ifdef EXPERIMENTAL_MIDI_OUT
-          || pLeftTrack->GetKind() == Track::Note
+      const auto nt = track_cast<NoteTrack*>(pLeftTrack);
+#endif
+      if (wt
+#ifdef EXPERIMENTAL_MIDI_OUT
+          || nt
 #endif
           )
       {
@@ -1026,15 +1030,10 @@ void MixerBoard::UpdateTrackClusters()
             // Track pointers can change for the "same" track for different states
             // on the undo stack, so update the pointers and display name.
 #ifdef EXPERIMENTAL_MIDI_OUT
-            if (pLeftTrack->GetKind() == Track::Note) {
-               mMixerTrackClusters[nClusterIndex]->mNoteTrack = (NoteTrack*)pLeftTrack;
-               mMixerTrackClusters[nClusterIndex]->mLeftTrack = NULL;
-            } else {
-               mMixerTrackClusters[nClusterIndex]->mNoteTrack = NULL;
-               mMixerTrackClusters[nClusterIndex]->mLeftTrack = (WaveTrack*)pLeftTrack;
-            }
+            mMixerTrackClusters[nClusterIndex]->mNoteTrack = nt;
+            mMixerTrackClusters[nClusterIndex]->mLeftTrack = wt;
 #else
-            mMixerTrackClusters[nClusterIndex]->mLeftTrack = (WaveTrack*)pLeftTrack;
+            mMixerTrackClusters[nClusterIndex]->mLeftTrack = wt;
 #endif
             // Assume linked track is wave or null
             mMixerTrackClusters[nClusterIndex]->mRightTrack =
@@ -1053,9 +1052,9 @@ void MixerBoard::UpdateTrackClusters()
             wxSize clusterSize(kMixerTrackClusterWidth, nClusterHeight);
             pMixerTrackCluster =
                safenew MixerTrackCluster(mScrolledWindow, this, mProject,
-                                       static_cast<WaveTrack*>(pLeftTrack),
-                                       // Assume linked track is wave or null
-                                       static_cast<WaveTrack*>(pRightTrack),
+                                       wt,
+                                        // Assume linked track is wave or null
+                                        static_cast<WaveTrack*>(pRightTrack),
                                        clusterPos, clusterSize);
             if (pMixerTrackCluster)
                mMixerTrackClusters.Add(pMixerTrackCluster);

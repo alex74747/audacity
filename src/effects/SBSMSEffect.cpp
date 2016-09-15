@@ -210,8 +210,8 @@ bool EffectSBSMS::Process()
    bool bGoodResult = true;
 
    //Iterate over each track
-   //Track::All is needed because this effect needs to introduce silence in the group tracks to keep sync
-   this->CopyInputTracks(Track::All); // Set up mOutputTracks.
+   //TrackKind::All is needed because this effect needs to introduce silence in the group tracks to keep sync
+   this->CopyInputTracks(TrackKind::All); // Set up mOutputTracks.
    TrackListIterator iter(mOutputTracks.get());
    Track* t;
    mCurTrackNum = 0;
@@ -226,18 +226,19 @@ bool EffectSBSMS::Process()
 
    t = iter.First();
    while (t != NULL) {
-      if (t->GetKind() == Track::Label &&
+      WaveTrack *leftTrack;
+      LabelTrack *lt;
+      if (nullptr != (lt = track_cast<LabelTrack*>(t)) &&
             (t->GetSelected() || (mustSync && t->IsSyncLockSelected())) )
       {
-         if (!ProcessLabelTrack(static_cast<LabelTrack*>(t))) {
+         if (!ProcessLabelTrack(lt)) {
             bGoodResult = false;
             break;
          }
       }
-      else if (t->GetKind() == Track::Wave && t->GetSelected() )
+      else if (nullptr != (leftTrack = track_cast<WaveTrack*>(t)) &&
+               t->GetSelected() )
       {
-         WaveTrack* leftTrack = (WaveTrack*)t;
-
          //Get start and end times from track
          mCurT0 = leftTrack->GetStartTime();
          mCurT1 = leftTrack->GetEndTime();

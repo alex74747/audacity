@@ -348,8 +348,8 @@ protected:
 
    // Use these two methods to copy the input tracks to mOutputTracks, if
    // doing the processing on them, and replacing the originals only on success (and not cancel).
-   void CopyInputTracks(); // trackType = Track::Wave
-   void CopyInputTracks(int trackType);
+   void CopyInputTracks(); // trackType = TrackKind::Wave
+   void CopyInputTracks(TrackKind trackType);
 
    // For the use of analyzers, which don't need to make output wave tracks,
    // but may need to add label tracks.
@@ -455,7 +455,7 @@ protected:
    sampleCount    mSampleCnt;
 
    // type of the tracks on mOutputTracks
-   int            mOutputTracksType;
+   TrackKind      mOutputTracksType;
 
  // Used only by the base Effect class
  //

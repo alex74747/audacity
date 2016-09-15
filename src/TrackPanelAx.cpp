@@ -306,19 +306,19 @@ wxAccStatus TrackPanelAx::GetName( int childId, wxString* name )
             name->Printf(_("Track %d"), TrackNum( t ) );
          }
 
-         if (t->GetKind() == Track::Label)
+         if (track_cast<LabelTrack*>(t))
          {
             /* i18n-hint: This is for screen reader software and indicates that
                this is a Label track.*/
             name->Append( wxT(" ") + wxString(_("Label Track")));
          }
-         else if (t->GetKind() == Track::Time)
+         else if (track_cast<TimeTrack*>(t))
          {
             /* i18n-hint: This is for screen reader software and indicates that
                this is a Time track.*/
             name->Append( wxT(" ") + wxString(_("Time Track")));
          }
-         else if (t->GetKind() == Track::Note)
+         else if (track_cast<NoteTrack*>(t))
          {
             /* i18n-hint: This is for screen reader software and indicates that
                this is a Note track.*/

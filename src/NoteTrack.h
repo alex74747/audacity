@@ -60,8 +60,6 @@ class AUDACITY_DLL_API NoteTrack final : public Track {
    using Holder = std::unique_ptr<NoteTrack>;
    Track::Holder Duplicate() const override;
 
-   int GetKind() const override { return Note; }
-
    double GetOffset() const override;
    double GetStartTime() const override;
    double GetEndTime() const override;
@@ -186,6 +184,8 @@ class AUDACITY_DLL_API NoteTrack final : public Track {
    void ClearVisibleChan(int c) { mVisibleChannels &= ~CHANNEL_BIT(c); }
    void ToggleVisibleChan(int c) { mVisibleChannels ^= CHANNEL_BIT(c); }
  private:
+   TrackKind GetKind() const override { return TrackKind::Note; }
+
    std::unique_ptr<Alg_seq> mSeq; // NULL means no sequence
    // when Duplicate() is called, assume that it is to put a copy
    // of the track into the undo stack or to redo/copy from the

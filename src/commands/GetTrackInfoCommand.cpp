@@ -104,13 +104,13 @@ bool GetTrackInfoCommand::Apply(CommandExecutionContext context)
    }
    else if (mode.IsSameAs(wxT("Pan")))
    {
-     if(t->GetKind() == Track::Wave)
-       Status(wxString::Format(wxT("%f"), static_cast<WaveTrack*>(t)->GetPan()));
+     if(const auto wt = track_cast<WaveTrack*>(t))
+       Status(wxString::Format(wxT("%f"), wt->GetPan()));
    }
    else if (mode.IsSameAs(wxT("Gain")))
    {
-      if(t->GetKind() == Track::Wave)
-         Status(wxString::Format(wxT("%f"), static_cast<WaveTrack*>(t)->GetGain()));
+      if (const auto wt = track_cast<WaveTrack*>(t))
+         Status(wxString::Format(wxT("%f"), wt->GetGain()));
    }
    else if (mode.IsSameAs(wxT("Focused")))
    {
@@ -127,14 +127,14 @@ bool GetTrackInfoCommand::Apply(CommandExecutionContext context)
    }
    else if (mode.IsSameAs(wxT("Solo")))
    {
-      if (t->GetKind() == Track::Wave)
+      if (track_cast<WaveTrack*>(t))
          SendBooleanStatus(t->GetSolo());
       else
          SendBooleanStatus(false);
    }
    else if (mode.IsSameAs(wxT("Mute")))
    {
-      if (t->GetKind() == Track::Wave)
+      if (track_cast<WaveTrack*>(t))
          SendBooleanStatus(t->GetMute());
       else
          SendBooleanStatus(false);

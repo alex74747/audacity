@@ -205,18 +205,17 @@ bool EffectAutoDuck::Init()
 
    while(t)
    {
-      if (lastWasSelectedWaveTrack && !t->GetSelected() &&
-          t->GetKind() == Track::Wave)
+      if (lastWasSelectedWaveTrack && !t->GetSelected())
       {
          // This could be the control track, so remember it
-         controlTrackCandidate = (WaveTrack*)t;
+         controlTrackCandidate = track_cast<const WaveTrack*>(t);
       }
 
       lastWasSelectedWaveTrack = false;
 
       if (t->GetSelected())
       {
-         if (t->GetKind() == Track::Wave)
+         if (track_cast<const WaveTrack *>(t))
          {
             lastWasSelectedWaveTrack = true;
          }
@@ -381,7 +380,7 @@ bool EffectAutoDuck::Process()
    if (!cancel)
    {
       CopyInputTracks(); // Set up mOutputTracks.
-      SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
+      SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
       Track *iterTrack = iter.First();
 
       int trackNumber = 0;

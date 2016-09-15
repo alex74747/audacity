@@ -524,7 +524,7 @@ void TranscriptionToolBar::OnStartOn(wxCommandEvent & WXUNUSED(event))
    AudacityProject *p = GetActiveProject();
 
    TrackList *tl = p->GetTracks();
-   TrackListOfKindIterator iter(Track::Wave, tl);
+   TrackListOfKindIterator iter(TrackKind::Wave, tl);
 
    Track *t = iter.First();   //Make a track
    if(t ) {
@@ -556,7 +556,7 @@ void TranscriptionToolBar::OnStartOff(wxCommandEvent & WXUNUSED(event))
    AudacityProject *p = GetActiveProject();
 
    TrackList *tl = p->GetTracks();
-   TrackListOfKindIterator iter(Track::Wave, tl);
+   TrackListOfKindIterator iter(TrackKind::Wave, tl);
 
    SetButton(false, mButtons[TTB_StartOff]);
    Track *t = iter.First();   //Make a track
@@ -590,7 +590,7 @@ void TranscriptionToolBar::OnEndOn(wxCommandEvent & WXUNUSED(event))
    mVk->AdjustThreshold(GetSensitivity());
    AudacityProject *p = GetActiveProject();
    TrackList *tl = p->GetTracks();
-   TrackListOfKindIterator iter(Track::Wave, tl);
+   TrackListOfKindIterator iter(TrackKind::Wave, tl);
 
    Track *t = iter.First();   //Make a track
    if(t) {
@@ -626,7 +626,7 @@ void TranscriptionToolBar::OnEndOff(wxCommandEvent & WXUNUSED(event))
    mVk->AdjustThreshold(GetSensitivity());
    AudacityProject *p = GetActiveProject();
    TrackList *tl = p->GetTracks();
-   TrackListOfKindIterator iter(Track::Wave, tl);
+   TrackListOfKindIterator iter(TrackKind::Wave, tl);
 
    Track *t = iter.First();   //Make a track
    if(t) {
@@ -746,7 +746,7 @@ void TranscriptionToolBar::OnCalibrate(wxCommandEvent & WXUNUSED(event))
 
    TrackList *tl = p->GetTracks();
    TrackListIterator iter(tl);
-   Track *t = iter.First();   //Get a track
+   const Track *t = iter.First();   //Get a track
 
    if(t)
       {

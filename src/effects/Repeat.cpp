@@ -97,8 +97,8 @@ bool EffectRepeat::SetAutomationParameters(EffectAutomationParameters & parms)
 bool EffectRepeat::Process()
 {
    // Set up mOutputTracks.
-   // This effect needs Track::All for sync-lock grouping.
-   CopyInputTracks(Track::All);
+   // This effect needs TrackKind::All for sync-lock grouping.
+   CopyInputTracks(TrackKind::All);
 
    int nTrack = 0;
    bool bGoodResult = true;
@@ -108,23 +108,21 @@ bool EffectRepeat::Process()
 
    for (Track *t = iter.First(); t && bGoodResult; t = iter.Next())
    {
-      if (t->GetKind() == Track::Label)
+      WaveTrack *track;
+      if (const auto ltrack = track_cast<LabelTrack*>(t))
       {
          if (t->GetSelected() || t->IsSyncLockSelected())
          {
-            LabelTrack* track = (LabelTrack*)t;
-
-            if (!track->Repeat(mT0, mT1, repeatCount))
+            if (!ltrack->Repeat(mT0, mT1, repeatCount))
             {
                bGoodResult = false;
                break;
             }
          }
       }
-      else if (t->GetKind() == Track::Wave && t->GetSelected())
+      else if (nullptr != (track = track_cast<WaveTrack*>(t)) &&
+               t->GetSelected())
       {
-         WaveTrack* track = (WaveTrack*)t;
-
          auto start = track->TimeToLongSamples(mT0);
          auto end = track->TimeToLongSamples(mT1);
          auto len = end - start;

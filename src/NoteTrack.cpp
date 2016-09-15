@@ -517,10 +517,10 @@ bool NoteTrack::Paste(double t, const Track *src)
    // the destination track).
 
    //Check that src is a non-NULL NoteTrack
-   if (src == NULL || src->GetKind() != Track::Note)
+   const auto other = track_cast<const NoteTrack*>(src);
+   if (src == NULL || other == NULL)
       return false;
 
-   NoteTrack* other = (NoteTrack*)src;
    if (other->mSeq == NULL)
       return false;
 

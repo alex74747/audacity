@@ -100,7 +100,7 @@ bool EffectFindClipping::Process()
    const wxString name{ _("Clipping") };
 
    LabelTrack *lt = NULL;
-   TrackListOfKindIterator iter(Track::Label, mTracks);
+   TrackListOfKindIterator iter(TrackKind::Label, mTracks);
    for (Track *t = iter.First(); t; t = iter.Next()) {
       if (t->GetName() == name) {
          lt = (LabelTrack *)t;
@@ -116,8 +116,8 @@ bool EffectFindClipping::Process()
    int count = 0;
 
    // JC: Only process selected tracks.
-   SelectedTrackListOfKindIterator waves(Track::Wave, mTracks);
-   WaveTrack *t = (WaveTrack *) waves.First();
+   SelectedTrackListOfKindIterator waves(TrackKind::Wave, mTracks);
+   const WaveTrack *t = static_cast<const WaveTrack *>(waves.First());
    while (t) {
       double trackStart = t->GetStartTime();
       double trackEnd = t->GetEndTime();

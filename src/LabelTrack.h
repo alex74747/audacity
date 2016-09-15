@@ -134,8 +134,6 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    int getSelectedIndex() const { return mSelIndex; }
    bool IsAdjustingLabel() const { return mIsAdjustingLabel; }
 
-   int GetKind() const override { return Label; }
-
    double GetOffset() const override;
    double GetStartTime() const override;
    double GetEndTime() const override;
@@ -240,6 +238,8 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    //mOldEdge is useful for telling us when there has been a state change.
    int mOldEdge;
  private:
+   TrackKind GetKind() const override { return TrackKind::Label; }
+
    void ShowContextMenu();
    void OnContextMenu(wxCommandEvent & evt);
 

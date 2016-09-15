@@ -294,7 +294,7 @@ bool EffectEqualization48x::Process(EffectEqualization* effectEqualization)
    if(sMathPath)  // !!! Filter MUST BE QUAD WORD ALIGNED !!!!
       mEffectEqualization->mM=(mEffectEqualization->mM&(~15))+1;
    AllocateBuffersWorkers(sMathPath&MATH_FUNCTION_THREADED);
-   SelectedTrackListOfKindIterator iter(Track::Wave, mEffectEqualization->mOutputTracks);
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mEffectEqualization->mOutputTracks);
    WaveTrack *track = (WaveTrack *) iter.First();
    int count = 0;
    while (track) {
@@ -338,14 +338,14 @@ bool EffectEqualization48x::TrackCompare()
    
    TrackList      SecondOutputTracks;
 
-   //iterate over tracks of type trackType (All types if Track::All)
+   //iterate over tracks of type trackType (All types if TrackKind::All)
    TrackListOfKindIterator aIt(mEffectEqualization->mOutputTracksType, mEffectEqualization->mTracks);
 
    for (Track *aTrack = aIt.First(); aTrack; aTrack = aIt.Next()) {
 
-      // Include selected tracks, plus sync-lock selected tracks for Track::All.
+      // Include selected tracks, plus sync-lock selected tracks for TrackKind::All.
       if (aTrack->GetSelected() ||
-         (mEffectEqualization->mOutputTracksType == Track::All && aTrack->IsSyncLockSelected()))
+         (mEffectEqualization->mOutputTracksType == TrackKind::All && aTrack->IsSyncLockSelected()))
       {
          auto o = aTrack->Duplicate();
          SecondIMap.push_back(aTrack);
@@ -356,7 +356,7 @@ bool EffectEqualization48x::TrackCompare()
 
    for(int i=0;i<2;i++) {
       SelectedTrackListOfKindIterator iter
-         (Track::Wave, i
+         (TrackKind::Wave, i
           ? mEffectEqualization->mOutputTracks.get()
           : &SecondOutputTracks);
       i?sMathPath=sMathPath:sMathPath=0;
@@ -381,8 +381,8 @@ bool EffectEqualization48x::TrackCompare()
       }
    }
    SelectedTrackListOfKindIterator
-      iter(Track::Wave, mEffectEqualization->mOutputTracks.get());
-   SelectedTrackListOfKindIterator iter2(Track::Wave, &SecondOutputTracks);
+      iter(TrackKind::Wave, mEffectEqualization->mOutputTracks.get());
+   SelectedTrackListOfKindIterator iter2(TrackKind::Wave, &SecondOutputTracks);
    WaveTrack *track =  (WaveTrack *) iter.First();
    WaveTrack *track2 = (WaveTrack *) iter2.First();
    while (track) {
@@ -447,7 +447,7 @@ bool EffectEqualization48x::Benchmark(EffectEqualization* effectEqualization)
       mEffectEqualization->mM=(mEffectEqualization->mM&(~15))+1;
    AllocateBuffersWorkers(MATH_FUNCTION_THREADED);
    SelectedTrackListOfKindIterator
-      iter(Track::Wave, mEffectEqualization->mOutputTracks.get());
+      iter(TrackKind::Wave, mEffectEqualization->mOutputTracks.get());
    long times[] = { 0,0,0,0,0 };
    wxStopWatch timer;
    mBenching=true;

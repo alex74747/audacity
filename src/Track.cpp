@@ -294,7 +294,8 @@ bool Track::IsSyncLockSelected() const
 
    if (!t) {
       // Not in a sync-locked group.
-      return ((this->GetKind() == Track::Wave) || (this->GetKind() == Track::Label)) && GetSelected();
+      return (track_cast<const WaveTrack*>(this) ||
+             track_cast<const LabelTrack*>(this)) && GetSelected();
    }
 
    for (; t; t = git.Next()) {
@@ -532,7 +533,7 @@ Track *TrackListCondIterator::Last(bool skiplinked)
 }
 
 // TrackListOfKindIterator
-TrackListOfKindIterator::TrackListOfKindIterator(int kind, TrackList * val)
+TrackListOfKindIterator::TrackListOfKindIterator(TrackKind kind, TrackList * val)
 :  TrackListCondIterator(val)
 {
    this->kind = kind;
@@ -540,7 +541,7 @@ TrackListOfKindIterator::TrackListOfKindIterator(int kind, TrackList * val)
 
 bool TrackListOfKindIterator::Condition(Track *t)
 {
-   return kind == Track::All || t->GetKind() == kind;
+   return kind == TrackKind::All || t->GetKind() == kind;
 }
 
 //SelectedTrackListOfKindIterator
@@ -586,13 +587,13 @@ Track *SyncLockedTracksIterator::StartWith(Track * member)
    // non-negative number of label tracks. Step back through any label tracks,
    // and then through the wave tracks above them.
 
-   while (member && member->GetKind() == Track::Label) {
+   while (member && track_cast<LabelTrack*>(member)) {
       member = l->GetPrev(member);
    }
 
-   while (member && (member->GetKind() == Track::Wave
+   while (member && (track_cast<WaveTrack*>(member)
 #ifdef USE_MIDI
-                  || member->GetKind() == Track::Note
+                  || track_cast<NoteTrack*>(member)
 #endif
                     )) {
       t = member;
@@ -622,20 +623,20 @@ Track *SyncLockedTracksIterator::Next(bool skiplinked)
       return NULL;
 
    // In the label section, encounter a non-label track
-   if (mInLabelSection && t->GetKind() != Track::Label) {
+   if (mInLabelSection && !track_cast<LabelTrack*>(t)) {
       l->setNull(cur);
       return NULL;
    }
 // This code block stops a group when a NoteTrack is encountered
 #ifndef USE_MIDI
    // Encounter a non-wave non-label track
-   if (t->GetKind() != Track::Wave && t->GetKind() != Track::Label) {
+   if (!track_cast<WaveTrack*>(t) && !track_cast<LabelTrack*>(t)) {
       l->setNull(cur);
       return NULL;
    }
 #endif
    // Otherwise, check if we're in the label section
-   mInLabelSection = (t->GetKind() == Track::Label);
+   mInLabelSection = (nullptr != track_cast<LabelTrack*>(t));
 
    return t;
 }
@@ -653,19 +654,19 @@ Track *SyncLockedTracksIterator::Prev(bool skiplinked)
       return NULL;
 
    // In wave section, encounter a label track
-   if (!mInLabelSection && t->GetKind() == Track::Label) {
+   if (!mInLabelSection && track_cast<LabelTrack*>(t)) {
       l->setNull(cur);
       return NULL;
    }
 #ifndef USE_MIDI
    // Encounter a non-wave non-label track
-   if (t->GetKind() != Track::Wave && t->GetKind() != Track::Label) {
+   if (!track_cast<WaveTrack*>(t) && !track_cast<LabelTrack*>(t)) {
       l->setNull(cur);
       return NULL;
    }
 #endif
    // Otherwise, check if we're in the label section
-   mInLabelSection = (t->GetKind() == Track::Label);
+   mInLabelSection = (nullptr != track_cast<LabelTrack*>(t));
 
    return t;
 }
@@ -677,14 +678,14 @@ Track *SyncLockedTracksIterator::Last(bool skiplinked)
 
    Track *t = cur->get();
 
-   while (l->GetNext(t)) {
+   while (auto next = l->GetNext(t)) {
       // Check if this is the last track in the sync-locked group.
-      int nextKind = l->GetNext(t)->GetKind();
-      if (mInLabelSection && nextKind != Track::Label)
+      if (mInLabelSection && !track_cast<LabelTrack*>(next))
          break;
-      if (nextKind != Track::Label && nextKind != Track::Wave
+      if (!track_cast<LabelTrack*>(next) &&
+          !track_cast<WaveTrack*>(next)
 #ifdef USE_MIDI
-          && nextKind != Track::Note
+          && !track_cast<NoteTrack*>(next)
 #endif
           )
          break;
@@ -1181,7 +1182,7 @@ int TrackList::GetCount() const
 TimeTrack *TrackList::GetTimeTrack()
 {
    auto iter = std::find_if(begin(), end(),
-      [] (const value_type &t) { return t->GetKind() == Track::Time; }
+      [] (const value_type &t) { return nullptr != track_cast<TimeTrack*>(t.get()); }
    );
    if (iter == end())
       return nullptr;
@@ -1207,7 +1208,8 @@ unsigned TrackList::GetNumExportChannels(bool selectionOnly) const
    for (tr = iter.First(this); tr != NULL; tr = iter.Next()) {
 
       // Want only unmuted wave tracks.
-      if ((tr->GetKind() != Track::Wave) || tr->GetMute())
+      const auto wt = track_cast<const WaveTrack*>(tr);
+      if (!wt || tr->GetMute())
          continue;
 
       // do we only want selected ones?
@@ -1228,7 +1230,7 @@ unsigned TrackList::GetNumExportChannels(bool selectionOnly) const
 
       // Found a mono channel, but it may be panned
       else if (tr->GetChannel() == Track::MonoChannel) {
-         float pan = ((WaveTrack*)tr)->GetPan();
+         float pan = wt->GetPan();
 
          // Figure out what kind of channel it should be
          if (pan == -1.0) {   // panned hard left
@@ -1264,10 +1266,11 @@ namespace {
 
       for (; p != end; ++p) {
          const auto &track = *p;
-         if (track->GetKind() == Track::Wave &&
+         WaveTrack *wt;
+         if (nullptr != (wt = track_cast<WaveTrack*>(track.get())) &&
             (includeMuted || !track->GetMute()) &&
             (track->GetSelected() || !selectionOnly)) {
-            waveTrackArray.push_back(static_cast<WaveTrack*>(track.get()));
+            waveTrackArray.push_back(wt);
          }
       }
 
@@ -1291,9 +1294,10 @@ NoteTrackArray TrackList::GetNoteTrackArray(bool selectionOnly)
    NoteTrackArray noteTrackArray;
 
    for(const auto &track : *this) {
-      if (track->GetKind() == Track::Note &&
+      const auto nt = track_cast<NoteTrack*>(track.get());
+      if (nt &&
          (track->GetSelected() || !selectionOnly)) {
-         noteTrackArray.push_back(static_cast<NoteTrack*>(track.get()));
+         noteTrackArray.push_back(nt);
       }
    }
 

@@ -31,8 +31,8 @@ bool Generator::Process()
 
 
    // Set up mOutputTracks.
-   // This effect needs Track::All for sync-lock grouping.
-   this->CopyInputTracks(Track::All);
+   // This effect needs TrackKind::All for sync-lock grouping.
+   this->CopyInputTracks(TrackKind::All);
 
    // Iterate over the tracks
    bool bGoodResult = true;
@@ -42,9 +42,8 @@ bool Generator::Process()
 
    while (t != NULL)
    {
-      if (t->GetKind() == Track::Wave && t->GetSelected()) {
-         WaveTrack* track = (WaveTrack*)t;
-
+      const auto track = track_cast<WaveTrack*>(t);
+      if (track && t->GetSelected()) {
          bool editClipCanMove;
          gPrefs->Read(wxT("/GUI/EditClipCanMove"), &editClipCanMove, true);
 

@@ -447,10 +447,8 @@ void TrackArtist::DrawTrack(const Track * t,
                             bool drawSliders,
                             bool hasSolo)
 {
-   switch (t->GetKind()) {
-   case Track::Wave:
+   if (const auto wt = track_cast<const WaveTrack*>(t))
    {
-      const WaveTrack* wt = static_cast<const WaveTrack*>(t);
       for (const auto &clip : wt->GetClips()) {
          clip->ClearDisplayRect();
       }
@@ -486,32 +484,25 @@ void TrackArtist::DrawTrack(const Track * t,
          dc.SetTextForeground(wxColour(255, 255, 0));
          dc.DrawText (wt->GetName(), rect.x+10, rect.y);  // move right 10 pixels to avoid overwriting <- symbol
       }
-      break;              // case Wave
    }
    #ifdef USE_MIDI
-   case Track::Note:
+   else if(const auto nt = track_cast<const NoteTrack*>(t))
    {
       bool muted = (hasSolo || t->GetMute()) && !t->GetSolo();
-      DrawNoteTrack((NoteTrack *)t, dc, rect, selectedRegion, zoomInfo, muted);
-      break;
+      DrawNoteTrack(nt, dc, rect, selectedRegion, zoomInfo, muted);
    }
    #endif // USE_MIDI
-   case Track::Label:
-      DrawLabelTrack((LabelTrack *)t, dc, rect, selectedRegion, zoomInfo);
-      break;
-   case Track::Time:
-      DrawTimeTrack((TimeTrack *)t, dc, rect, zoomInfo);
-      break;
-   }
+   else if (const auto lt = track_cast<const LabelTrack*>(t))
+      DrawLabelTrack(lt, dc, rect, selectedRegion, zoomInfo);
+   else if (const auto tt = track_cast<const TimeTrack*>(t))
+      DrawTimeTrack(tt, dc, rect, zoomInfo);
 }
 
 void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
 {
-   int kind = t->GetKind();
-
    // Label and Time tracks do not have a vruler
    // But give it a beveled area
-   if (kind == Track::Label) {
+   if (track_cast<const LabelTrack*>(t)) {
       wxRect bev = rect;
       bev.Inflate(-1, 0);
       bev.width += 1;
@@ -521,7 +512,7 @@ void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
    }
 
    // Time tracks
-   if (kind == Track::Time) {
+   if (track_cast<const TimeTrack*>(t)) {
       wxRect bev = rect;
       bev.Inflate(-1, 0);
       bev.width += 1;
@@ -545,7 +536,7 @@ void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
 
    // All waves have a ruler in the info panel
    // The ruler needs a bevelled surround.
-   if (kind == Track::Wave) {
+   if (track_cast<const WaveTrack*>(t)) {
       wxRect bev = rect;
       bev.Inflate(-1, 0);
       bev.width += 1;
@@ -569,7 +560,7 @@ void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
 
 #ifdef USE_MIDI
    // The note track draws a vertical keyboard to label pitches
-   if (kind == Track::Note) {
+   if (const auto track = track_cast<const NoteTrack*>(t)) {
       UpdateVRuler(t, rect);
 
       dc->SetPen(*wxTRANSPARENT_PEN);
@@ -582,8 +573,7 @@ void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
       rect.y += 1;
       rect.height -= 1;
 
-      //int bottom = GetBottom((NoteTrack *) t, rect);
-      const NoteTrack *track = (NoteTrack *) t;
+      //int bottom = GetBottom(track, rect);
       track->PrepareIPitchToY(rect);
 
       wxPen hilitePen;
@@ -668,13 +658,12 @@ void TrackArtist::DrawVRuler(const Track *t, wxDC * dc, wxRect & rect)
 void TrackArtist::UpdateVRuler(const Track *t, wxRect & rect)
 {
    // Label tracks do not have a vruler
-   if (t->GetKind() == Track::Label) {
+   if (track_cast<const LabelTrack*>(t)) {
       return;
    }
 
    // Time tracks
-   if (t->GetKind() == Track::Time) {
-      const TimeTrack *tt = (TimeTrack *)t;
+   if (const auto tt = track_cast<const TimeTrack*>(t)) {
       float min, max;
       min = tt->GetRangeLower() * 100.0;
       max = tt->GetRangeUpper() * 100.0;
@@ -690,8 +679,7 @@ void TrackArtist::UpdateVRuler(const Track *t, wxRect & rect)
 
    // All waves have a ruler in the info panel
    // The ruler needs a bevelled surround.
-   if (t->GetKind() == Track::Wave) {
-      const WaveTrack *wt = static_cast<const WaveTrack*>(t);
+   if (const auto wt = track_cast<const WaveTrack*>(t)) {
       const float dBRange =
          wt->GetWaveformSettings().dBRange;
 
@@ -904,7 +892,7 @@ void TrackArtist::UpdateVRuler(const Track *t, wxRect & rect)
 #ifdef USE_MIDI
    // The note track isn't drawing a ruler at all!
    // But it needs to!
-   else if (t->GetKind() == Track::Note) {
+   else if (track_cast<const NoteTrack*>(t)) {
       vruler->SetBounds(rect.x, rect.y, rect.x + 1, rect.y + rect.height-1);
       vruler->SetOrientation(wxVERTICAL);
    }

@@ -155,9 +155,9 @@ void WaveTrack::Init(const WaveTrack &orig)
 
 void WaveTrack::Merge(const Track &orig)
 {
-   if (orig.GetKind() == Wave)
+   if (const auto pwt = track_cast<const WaveTrack*>(&orig))
    {
-      const WaveTrack &wt = static_cast<const WaveTrack&>(orig);
+      const WaveTrack &wt = *pwt;
       mDisplay = wt.mDisplay;
       mGain    = wt.mGain;
       mPan     = wt.mPan;
@@ -1212,10 +1212,9 @@ bool WaveTrack::Paste(double t0, const Track *src)
    if( src == NULL )
       return false;
 
-   if (src->GetKind() != Track::Wave)
+   const auto other = track_cast<const WaveTrack*>(src);
+   if (!other)
       return false;
-
-   const WaveTrack* other = static_cast<const WaveTrack*>(src);
 
    //
    // Pasting is a bit complicated, because with the existence of multiclip mode,

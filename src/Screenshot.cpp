@@ -705,7 +705,7 @@ void ScreenFrame::SizeTracks(int h)
 {
    TrackListIterator iter(mContext.GetProject()->GetTracks());
    for (Track * t = iter.First(); t; t = iter.Next()) {
-      if (t->GetKind() == Track::Wave) {
+      if (track_cast<WaveTrack*>(t)) {
          if (t->GetLink()) {
             t->SetHeight(h);
          }
@@ -721,7 +721,7 @@ void ScreenFrame::OnShortTracks(wxCommandEvent & WXUNUSED(event))
 {
    TrackListIterator iter(mContext.GetProject()->GetTracks());
    for (Track * t = iter.First(); t; t = iter.Next()) {
-      if (t->GetKind() == Track::Wave) {
+      if (track_cast<WaveTrack*>(t)) {
          t->SetHeight(t->GetMinimizedHeight());
       }
    }

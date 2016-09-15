@@ -182,7 +182,7 @@ double EffectTruncSilence::CalcPreviewInputLength(double /* previewLength */)
    // Start with the whole selection silent
    silences.push_back(Region(mT0, mT1));
 
-   SelectedTrackListOfKindIterator iter(Track::Wave, mTracks);
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
    int whichTrack = 0;
 
    for (Track *t = iter.First(); t; t = iter.Next()) {
@@ -272,7 +272,7 @@ bool EffectTruncSilence::ProcessIndependently()
 
    // Check if it's permissible
    {
-      SelectedTrackListOfKindIterator iter(Track::Wave, mTracks);
+      SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
       for (Track *track = iter.First(); track;
          track = iter.Next(true) // skip linked tracks
       ) {
@@ -280,7 +280,7 @@ bool EffectTruncSilence::ProcessIndependently()
             Track *const link = track->GetLink();
             SyncLockedTracksIterator syncIter(mTracks);
             for (Track *track2 = syncIter.StartWith(track); track2; track2 = syncIter.Next()) {
-               if (track2->GetKind() == Track::Wave &&
+               if (track_cast<const WaveTrack *>(track2) &&
                   !(track2 == track || track2 == link) &&
                   track2->GetSelected()) {
                   ::wxMessageBox(_("When truncating independently, there may only be one selected audio track in each Sync-Locked Track Group."));
@@ -300,12 +300,12 @@ bool EffectTruncSilence::ProcessIndependently()
    // Now do the work
 
    // Copy tracks
-   CopyInputTracks(Track::All);
+   CopyInputTracks(TrackKind::All);
    double newT1 = 0.0;
 
    {
       unsigned iGroup = 0;
-      SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
+      SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
       for (Track *track = iter.First(); track;
          ++iGroup, track = iter.Next(true) // skip linked tracks
       ) {
@@ -342,13 +342,13 @@ bool EffectTruncSilence::ProcessIndependently()
 bool EffectTruncSilence::ProcessAll()
 {
    // Copy tracks
-   CopyInputTracks(Track::All);
+   CopyInputTracks(TrackKind::All);
 
    // Master list of silent regions.
    // This list should always be kept in order.
    RegionList silences;
 
-   SelectedTrackListOfKindIterator iter(Track::Wave, mTracks);
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
    if (FindSilences(silences, mTracks, iter.First(), iter.Last())) {
       TrackListIterator iterOut(mOutputTracks.get());
       double totalCutLen = 0.0;
@@ -369,7 +369,7 @@ bool EffectTruncSilence::FindSilences
    silences.push_back(Region(mT0, mT1));
 
    // Remove non-silent regions in each track
-   SelectedTrackListOfKindIterator iter(Track::Wave, list);
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, list);
    int whichTrack = 0;
    bool lastSeen = false;
    for (Track *t = iter.StartWith(firstTrack); !lastSeen && t; t = iter.Next())
@@ -483,10 +483,9 @@ bool EffectTruncSilence::DoRemoval
 
          double cutStart = (r->start + r->end - cutLen) / 2;
          double cutEnd = cutStart + cutLen;
-         if (t->GetKind() == Track::Wave)
+         if (const auto wt = track_cast<WaveTrack*>(t))
          {
             // In WaveTracks, clear with a cross-fade
-            WaveTrack *const wt = static_cast<WaveTrack*>(t);
             auto blendFrames = mBlendFrameCount;
             // Round start/end times to frame boundaries
             cutStart = wt->LongSamplesToTime(wt->TimeToLongSamples(cutStart));

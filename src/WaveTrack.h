@@ -34,7 +34,12 @@ class TimeWarper;
 #define WAVETRACK_MERGE_POINT_TOLERANCE 0.01
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
-#define MONO_WAVE_PAN(T) (T != NULL && T->GetChannel() == Track::MonoChannel && T->GetKind() == Track::Wave && ((WaveTrack *)T)->GetPan() != 0 && WaveTrack::mMonoAsVirtualStereo && ((WaveTrack *)T)->GetDisplay() == WaveTrack::WaveformDisplay)
+#define MONO_WAVE_PAN(T) \
+   (track_cast<WaveTrack*>(T) && \
+    T->GetChannel() == Track::MonoChannel && \
+    static_cast<WaveTrack*>(T)->GetPan() != 0 && \
+    WaveTrack::mMonoAsVirtualStereo && \
+    static_cast<WaveTrack*>(T)->GetDisplay() == WaveTrack::WaveformDisplay)
 
 #define MONO_PAN  (mPan != 0.0 && mChannel == MonoChannel && mDisplay == WaveformDisplay && mMonoAsVirtualStereo)
 #endif
@@ -112,7 +117,6 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    // Identifying the type of track
    //
 
-   int GetKind() const override { return Wave; }
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
    int GetMinimizedHeight() const override;
 #endif
@@ -139,7 +143,7 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
    void SetVirtualState(bool state, bool half=false);
 #endif
-   sampleFormat GetSampleFormat() { return mFormat; }
+   sampleFormat GetSampleFormat() const { return mFormat; }
    bool ConvertToSampleFormat(sampleFormat format);
 
    const SpectrogramSettings &GetSpectrogramSettings() const;
@@ -580,6 +584,7 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    //
 
  private:
+   TrackKind GetKind() const override { return TrackKind::Wave; }
 
    //
    // Private variables

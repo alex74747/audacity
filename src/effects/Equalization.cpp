@@ -484,8 +484,9 @@ bool EffectEqualization::Init()
    TrackListIterator iter(GetActiveProject()->GetTracks());
    Track *t = iter.First();
    while (t) {
-      if (t->GetSelected() && t->GetKind() == Track::Wave) {
-         WaveTrack *track = (WaveTrack *)t;
+      WaveTrack *track;
+      if (t->GetSelected() &&
+          nullptr != (track = track_cast<WaveTrack*>(t))) {
          if (selcount==0) {
             rate = track->GetRate();
          }
@@ -540,7 +541,7 @@ bool EffectEqualization::Process()
    this->CopyInputTracks(); // Set up mOutputTracks.
    bool bGoodResult = true;
 
-   SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, mOutputTracks.get());
    WaveTrack *track = (WaveTrack *) iter.First();
    int count = 0;
    while (track) {
@@ -600,8 +601,8 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
 
    LoadCurves();
 
-   TrackListOfKindIterator iter(Track::Wave, mTracks);
-   WaveTrack *t = (WaveTrack *) iter.First();
+   TrackListOfKindIterator iter(TrackKind::Wave, mTracks);
+   const WaveTrack *const t = static_cast<const WaveTrack *>(iter.First());
    mHiFreq = (t ? t->GetRate() : GetActiveProject()->GetRate()) / 2.0;
    mLoFreq = loFreqI;
 

@@ -81,7 +81,7 @@ void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
             continue;
 
          // Don't draw the indicator in label tracks
-         if (pTrack->GetKind() == Track::Label)
+         if (track_cast<LabelTrack*>(pTrack))
          {
             continue;
          }

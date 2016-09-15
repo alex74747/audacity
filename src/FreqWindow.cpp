@@ -557,8 +557,9 @@ void FreqWindow::GetAudio()
    TrackListIterator iter(p->GetTracks());
    Track *t = iter.First();
    while (t) {
-      if (t->GetSelected() && t->GetKind() == Track::Wave) {
-         WaveTrack *track = (WaveTrack *)t;
+      WaveTrack *track;
+      if (t->GetSelected() &&
+          nullptr != (track = track_cast<WaveTrack*>(t))) {
          if (selcount==0) {
             mRate = track->GetRate();
             auto start = track->TimeToLongSamples(p->mViewInfo.selectedRegion.t0());

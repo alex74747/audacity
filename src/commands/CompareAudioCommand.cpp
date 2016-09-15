@@ -52,7 +52,7 @@ bool CompareAudioCommand::GetSelection(AudacityProject &proj)
 
    // Get the selected tracks and check that there are at least two to
    // compare
-   SelectedTrackListOfKindIterator iter(Track::Wave, proj.GetTracks());
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, proj.GetTracks());
    mTrack0 = (WaveTrack*)(iter.First());
    if (mTrack0 == NULL)
    {

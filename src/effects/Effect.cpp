@@ -94,7 +94,7 @@ Effect::Effect()
    mWarper = NULL;
 
    mTracks = NULL;
-   mOutputTracksType = Track::None;
+   mOutputTracksType = TrackKind::None;
    mT0 = 0.0;
    mT1 = 0.0;
    mDuration = 0.0;
@@ -1253,7 +1253,7 @@ bool Effect::InitPass2()
 
 bool Effect::Process()
 {
-   CopyInputTracks(Track::All);
+   CopyInputTracks(TrackKind::All);
    bool bGoodResult = true;
 
    // It's possible that the number of channels the effect expects changed based on
@@ -1299,7 +1299,8 @@ bool Effect::ProcessPass()
 
    for (t = iter.First(); t; t = iter.Next())
    {
-      if (t->GetKind() != Track::Wave || !t->GetSelected())
+      const auto left = track_cast<WaveTrack*>(t);
+      if (!left || !t->GetSelected())
       {
          if (t->IsSyncLockSelected())
          {
@@ -1308,8 +1309,6 @@ bool Effect::ProcessPass()
          continue;
       }
 
-      WaveTrack *left = (WaveTrack *)t;
-      WaveTrack *right;
       sampleCount len;
       sampleCount leftStart;
       sampleCount rightStart;
@@ -1342,7 +1341,7 @@ bool Effect::ProcessPass()
       }
       map[1] = ChannelNameEOL;
 
-      right = NULL;
+      WaveTrack *right{};
       rightStart = 0;
       if (left->GetLinked() && mNumAudioIn > 1)
       {
@@ -2041,10 +2040,10 @@ TimeWarper *Effect::GetTimeWarper()
 // Copy the group tracks that have tracks selected
 void Effect::CopyInputTracks()
 {
-   CopyInputTracks(Track::Wave);
+   CopyInputTracks(TrackKind::Wave);
 }
 
-void Effect::CopyInputTracks(int trackType)
+void Effect::CopyInputTracks(TrackKind trackType)
 {
    // Reset map
    mIMap.clear();
@@ -2053,15 +2052,15 @@ void Effect::CopyInputTracks(int trackType)
    mOutputTracks = std::make_unique<TrackList>();
    mOutputTracksType = trackType;
 
-   //iterate over tracks of type trackType (All types if Track::All)
+   //iterate over tracks of type trackType (All types if TrackKind::All)
    TrackListOfKindIterator aIt(trackType, mTracks);
    t2bHash added;
 
    for (Track *aTrack = aIt.First(); aTrack; aTrack = aIt.Next())
    {
-      // Include selected tracks, plus sync-lock selected tracks for Track::All.
+      // Include selected tracks, plus sync-lock selected tracks for TrackKind::All.
       if (aTrack->GetSelected() ||
-            (trackType == Track::All && aTrack->IsSyncLockSelected()))
+            (trackType == TrackKind::All && aTrack->IsSyncLockSelected()))
       {
          Track *o = mOutputTracks->Add(aTrack->Duplicate());
          mIMap.push_back(aTrack);
@@ -2224,7 +2223,10 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
          // Swap the wavecache track the ondemand task uses, since now the NEW
          // one will be kept in the project
          if (ODManager::IsInstanceCreated()) {
-            ODManager::Instance()->ReplaceWaveTrack((WaveTrack *)t,
+            // Why is this static_cast justified?
+            // The track might not be a wave track, but the OD manager can
+            // find that it had pointer to the old track only in case it was.
+            ODManager::Instance()->ReplaceWaveTrack(static_cast<WaveTrack*>(t),
                                                     newTrack);
          }
       }
@@ -2249,7 +2251,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
 
    // The output list is no longer needed
    mOutputTracks.reset();
-   mOutputTracksType = Track::None;
+   mOutputTracksType = TrackKind::None;
 }
 
 void Effect::CountWaveTracks()
@@ -2257,7 +2259,7 @@ void Effect::CountWaveTracks()
    mNumTracks = 0;
    mNumGroups = 0;
 
-   TrackListOfKindIterator iter(Track::Wave, mTracks);
+   TrackListOfKindIterator iter(TrackKind::Wave, mTracks);
    Track *t = iter.First();
 
    while(t) {
@@ -2266,7 +2268,7 @@ void Effect::CountWaveTracks()
          continue;
       }
 
-      if (t->GetKind() == Track::Wave) {
+      if (track_cast<WaveTrack*>(t)) {
          mNumTracks++;
          if (!t->GetLinked())
             mNumGroups++;
@@ -2548,7 +2550,7 @@ void Effect::Preview(bool dryOnly)
          }
       }
       else {
-         TrackListOfKindIterator iter(Track::Wave, saveTracks);
+         TrackListOfKindIterator iter(TrackKind::Wave, saveTracks);
          WaveTrack *src = (WaveTrack *) iter.First();
          while (src)
          {
@@ -2583,7 +2585,7 @@ void Effect::Preview(bool dryOnly)
          WaveTrackConstArray playbackTracks;
          WaveTrackArray recordingTracks;
 
-         SelectedTrackListOfKindIterator iter(Track::Wave, mTracks);
+         SelectedTrackListOfKindIterator iter(TrackKind::Wave, mTracks);
          WaveTrack *src = (WaveTrack *) iter.First();
          while (src) {
             playbackTracks.push_back(src);

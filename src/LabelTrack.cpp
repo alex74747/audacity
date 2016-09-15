@@ -2409,7 +2409,8 @@ Track::Holder LabelTrack::Copy(double t0, double t1) const
 
 bool LabelTrack::PasteOver(double t, const Track * src)
 {
-   if (src->GetKind() != Track::Label)
+   const auto sl = track_cast<const LabelTrack*>(src);
+   if (!sl)
       return false;
 
    int len = mLabels.size();
@@ -2418,7 +2419,6 @@ bool LabelTrack::PasteOver(double t, const Track * src)
    while (pos < len && mLabels[pos].getT0() < t)
       pos++;
 
-   auto sl = static_cast<const LabelTrack *>(src);
    for (auto &labelStruct: sl->mLabels) {
       LabelStruct l {
          labelStruct.selectedRegion,
@@ -2435,10 +2435,9 @@ bool LabelTrack::PasteOver(double t, const Track * src)
 
 bool LabelTrack::Paste(double t, const Track *src)
 {
-   if (src->GetKind() != Track::Label)
+   const auto lt = track_cast<const LabelTrack*>(src);
+   if (!lt)
       return false;
-
-   LabelTrack *lt = (LabelTrack *)src;
 
    double shiftAmt = lt->mClipLen > 0.0 ? lt->mClipLen : lt->GetEndTime();
 

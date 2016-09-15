@@ -50,7 +50,7 @@ bool ContrastDialog::GetDB(float &dB)
    double meanSq = 0.0;
 
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(Track::Wave, p->GetTracks());
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
    WaveTrack *t = (WaveTrack *) iter.First();
    while (t) {
       numberSelecteTracks++;
@@ -334,7 +334,7 @@ void ContrastDialog::OnClose(wxCommandEvent & WXUNUSED(event))
 void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
 {
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(Track::Wave, p->GetTracks());
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
 
    for (Track *t = iter.First(); t; t = iter.Next()) {
       mForegroundStartT->SetValue(p->mViewInfo.selectedRegion.t0());
@@ -350,7 +350,7 @@ void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
 void ContrastDialog::OnGetBackground(wxCommandEvent & /*event*/)
 {
    AudacityProject *p = GetActiveProject();
-   SelectedTrackListOfKindIterator iter(Track::Wave, p->GetTracks());
+   SelectedTrackListOfKindIterator iter(TrackKind::Wave, p->GetTracks());
 
    for (Track *t = iter.First(); t; t = iter.Next()) {
       mBackgroundStartT->SetValue(p->mViewInfo.selectedRegion.t0());

@@ -213,9 +213,9 @@ bool EffectChangeSpeed::Process()
    // Similar to EffectSoundTouch::Process()
 
    // Iterate over each track.
-   // Track::All is needed because this effect needs to introduce
+   // TrackKind::All is needed because this effect needs to introduce
    // silence in the sync-lock group tracks to keep sync
-   CopyInputTracks(Track::All); // Set up mOutputTracks.
+   CopyInputTracks(TrackKind::All); // Set up mOutputTracks.
    bool bGoodResult = true;
 
    TrackListIterator iter(mOutputTracks.get());
@@ -228,18 +228,20 @@ bool EffectChangeSpeed::Process()
    t = iter.First();
    while (t != NULL)
    {
-      if (t->GetKind() == Track::Label) {
+      WaveTrack *pOutWaveTrack;
+      LabelTrack *lt;
+      if (nullptr != (lt = track_cast<LabelTrack*>(t))) {
          if (t->GetSelected() || t->IsSyncLockSelected())
          {
-            if (!ProcessLabelTrack(static_cast<LabelTrack*>(t))) {
+            if (!ProcessLabelTrack(lt)) {
                bGoodResult = false;
                break;
             }
          }
       }
-      else if (t->GetKind() == Track::Wave && t->GetSelected())
+      else if (nullptr != (pOutWaveTrack = track_cast<WaveTrack*>(t)) &&
+               t->GetSelected())
       {
-         WaveTrack *pOutWaveTrack = (WaveTrack*)t;
          //Get start and end times from track
          mCurT0 = pOutWaveTrack->GetStartTime();
          mCurT1 = pOutWaveTrack->GetEndTime();

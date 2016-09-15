@@ -56,7 +56,7 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
                               (mono or stereo) */
 
    TrackListIterator iter(tracks);
-   SelectedTrackListOfKindIterator usefulIter(Track::Wave, tracks);
+   SelectedTrackListOfKindIterator usefulIter(TrackKind::Wave, tracks);
    // this only iterates tracks which are relevant to this function, i.e.
    // selected WaveTracks. The tracklist is (confusingly) the list of all
    // tracks in the project
@@ -65,9 +65,11 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    int numMono = 0;  /* number of mono, centre-panned wave tracks in selection*/
    t = iter.First();
    while (t) {
-      if (t->GetSelected() && t->GetKind() == Track::Wave) {
+      const WaveTrack *wt;
+      if (t->GetSelected() &&
+          nullptr != (wt = track_cast<const WaveTrack*>(t))) {
          numWaves++;
-         float pan = ((WaveTrack*)t)->GetPan();
+         float pan = wt->GetPan();
          if (t->GetChannel() == Track::MonoChannel && pan == 0)
             numMono++;
       }
@@ -92,8 +94,10 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    t = iter.First();
 
    while (t) {
-      if (t->GetSelected() && t->GetKind() == Track::Wave) {
-         waveArray.push_back(static_cast<const WaveTrack *>(t));
+      const WaveTrack *wt;
+      if (t->GetSelected() &&
+          nullptr != (wt = track_cast<const WaveTrack *>(t))) {
+         waveArray.push_back(wt);
          tstart = t->GetStartTime();
          tend = t->GetEndTime();
          if (tend > mixEndTime)

@@ -422,7 +422,7 @@ bool Exporter::ExamineTracks()
    const Track *tr = iter1.First();
 
    while (tr) {
-      if (tr->GetKind() == Track::Wave) {
+      if (const auto wt = track_cast<const WaveTrack*>(tr)) {
          if ( (tr->GetSelected() || !mSelectedOnly) && !tr->GetMute() ) {  // don't count muted tracks
             mNumSelected++;
 
@@ -434,7 +434,7 @@ bool Exporter::ExamineTracks()
             }
             else if (tr->GetChannel() == Track::MonoChannel) {
                // It's a mono channel, but it may be panned
-               float pan = ((WaveTrack*)tr)->GetPan();
+               float pan = wt->GetPan();
 
                if (pan == -1.0)
                   mNumLeft++;
@@ -1240,7 +1240,8 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
 
    for( const Track *t = iter.First(); t; t = iter.Next() )
    {
-      if( t->GetKind() == Track::Wave && ( t->GetSelected() || !selectedOnly ) && !t->GetMute() )
+      if( track_cast<const WaveTrack*>(t) &&
+          ( t->GetSelected() || !selectedOnly ) && !t->GetMute() )
       {
          numTracks++;
          const wxString sTrackName = (t->GetName()).Left(20);

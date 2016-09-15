@@ -334,9 +334,8 @@ bool LabelDialog::TransferDataFromWindow()
 
    // Clear label tracks of labels
    for (t = iter.First(); t; t = iter.Next()) {
-      if (t->GetKind() == Track::Label) {
+      if (auto lt = track_cast<LabelTrack*>(t)) {
          ++tndx;
-         LabelTrack *lt = static_cast<LabelTrack*>(t);
          if (!mSelectedTrack) {
             for (i = lt->GetNumLabels() - 1; i >= 0 ; i--) {
                lt->DeleteLabel(i);
@@ -370,8 +369,9 @@ bool LabelDialog::TransferDataFromWindow()
 
       // Look for track with matching index
       tndx = 1;
+      LabelTrack *lt{};
       for (t = iter.First(); t; t = iter.Next()) {
-         if (t->GetKind() == Track::Label && rd.index == tndx++) {
+         if (nullptr != (lt = track_cast<LabelTrack*>(t)) && rd.index == tndx++) {
             break;
          }
       }
@@ -380,8 +380,8 @@ bool LabelDialog::TransferDataFromWindow()
          return false;
 
       // Add the label to it
-      static_cast<LabelTrack *>(t)->AddLabel(rd.selectedRegion, rd.title);
-      static_cast<LabelTrack *>(t)->Unselect();
+      lt->AddLabel(rd.selectedRegion, rd.title);
+      lt->Unselect();
    }
 
    return true;
@@ -417,8 +417,9 @@ void LabelDialog::FindAllLabels()
 
    // Add labels from all label tracks
    for (t = iter.First(); t; t = iter.Next()) {
-      if (t->GetKind() == Track::Label)
-         AddLabels(static_cast<const LabelTrack *>(t));
+      if (const auto lt = track_cast<const LabelTrack*>(t)) {
+         AddLabels(lt);
+      }
    }
 
    FindInitialRow();

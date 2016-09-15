@@ -73,6 +73,74 @@ using ListOfTracks = std::list<movable_ptr<Track>>;
 
 using TrackNodePointer = ListOfTracks::iterator;
 
+enum class TrackKind
+{
+   None,
+   Wave,
+#if defined(USE_MIDI)
+   Note,
+#endif
+   Label,
+   Time,
+   All
+};
+
+// This bit of metaprogramming lets track_cast work even when the track
+// subclasses are visible only as incomplete types
+template<typename T> struct track_traits {};
+
+template<> struct track_traits< Track * >
+{ static const TrackKind kind = TrackKind::None;
+   using Result = Track *;
+};
+template<> struct track_traits< LabelTrack * >
+{ static const TrackKind kind = TrackKind::Label;
+   using Result = LabelTrack *;
+};
+template<> struct track_traits< NoteTrack * >
+{ static const TrackKind kind = TrackKind::Note;
+   using Result = NoteTrack *;
+};
+template<> struct track_traits< TimeTrack * >
+{ static const TrackKind kind = TrackKind::Time;
+   using Result = TimeTrack *;
+};
+template<> struct track_traits< WaveTrack * >
+{ static const TrackKind kind = TrackKind::Wave;
+   using Result = WaveTrack *;
+};
+
+template<> struct track_traits< const Track * >
+{ static const TrackKind kind = TrackKind::None;
+   using Const_Result = const Track *;
+};
+template<> struct track_traits< const LabelTrack * >
+{ static const TrackKind kind = TrackKind::Label;
+   using Const_Result = const LabelTrack *;
+};
+template<> struct track_traits< const NoteTrack * >
+{ static const TrackKind kind = TrackKind::Note;
+   using Const_Result = const NoteTrack *;
+};
+template<> struct track_traits< const TimeTrack * >
+{ static const TrackKind kind = TrackKind::Time;
+   using Const_Result = const TimeTrack *;
+};
+template<> struct track_traits< const WaveTrack * >
+{ static const TrackKind kind = TrackKind::Wave;
+   using Const_Result = const WaveTrack *;
+};
+
+// forward declarations, so we can make them friends
+template<typename T>
+inline typename track_traits<T>::Result track_cast(Track *track);
+
+template<typename T>
+inline typename track_traits<T>::Const_Result track_cast(Track *track);
+
+template<typename T>
+inline typename track_traits<T>::Const_Result track_cast(const Track *track);
+
 class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
 {
    friend class TrackList;
@@ -157,18 +225,6 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
       MonoChannel = 2
    };
 
-   enum TrackKindEnum
-   {
-      None,
-      Wave,
-#if defined(USE_MIDI)
-      Note,
-#endif
-      Label,
-      Time,
-      All
-   };
-
    Track(const std::shared_ptr<DirManager> &projDirManager);
    Track(const Track &orig);
 
@@ -231,7 +287,19 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    virtual bool Silence(double WXUNUSED(t0), double WXUNUSED(t1)) {return false;}
    virtual bool InsertSilence(double WXUNUSED(t), double WXUNUSED(len)) {return false;}
 
-   virtual int GetKind() const { return None; }
+private:
+   virtual TrackKind GetKind() const { return TrackKind::None; }
+   template<typename T>
+   friend typename track_traits<T>::Result track_cast(Track *track);
+   template<typename T>
+   friend typename track_traits<T>::Const_Result track_cast(Track *track);
+   template<typename T>
+   friend typename track_traits<T>::Const_Result track_cast(const Track *track);
+   friend class TrackListOfKindIterator;
+
+public:
+   bool SameKindAs(const Track &track) const
+      { return GetKind() == track.GetKind(); }
 
    // XMLTagHandler callback methods -- NEW virtual for writing
    virtual void WriteXML(XMLWriter &xmlFile) = 0;
@@ -246,6 +314,41 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    // Checks if sync-lock is on and any track in its sync-lock group is selected.
    bool IsSyncLockSelected() const;
 };
+
+// Functions to encapsulate the checked down-casting of track pointers,
+// eliminating possibility of error -- and not quietly casting away const
+// typical usage:
+// if (auto wt = track_cast<WaveTrack*>(track)) { ... }
+template<typename T>
+inline typename track_traits<T>::Result
+track_cast(Track *track)
+{
+   if (track && track_traits<T>::kind == track->GetKind())
+      return (typename track_traits<T>::Result)(track);
+   else
+      return nullptr;
+}
+
+template<typename T>
+inline typename track_traits<T>::Const_Result
+track_cast(Track *track)
+{
+   if (track && track_traits<T>::kind == track->GetKind())
+      return (typename track_traits<T>::Const_Result)(track);
+   else
+      return nullptr;
+}
+
+// Overload for const pointers can cast only to other const pointer types
+template<typename T>
+inline typename track_traits<T>::Const_Result
+track_cast(const Track *track)
+{
+   if (track && track_traits<T>::kind == track->GetKind())
+      return (typename track_traits<T>::Const_Result)(track);
+   else
+      return nullptr;
+}
 
 class AUDACITY_DLL_API TrackListIterator /* not final */
 {
@@ -322,14 +425,14 @@ class AUDACITY_DLL_API TrackListCondIterator /* not final */ : public TrackListI
 class AUDACITY_DLL_API TrackListOfKindIterator /* not final */ : public TrackListCondIterator
 {
  public:
-   TrackListOfKindIterator(int kind, TrackList * val = NULL);
+   TrackListOfKindIterator(TrackKind kind, TrackList * val = nullptr);
    virtual ~TrackListOfKindIterator() {}
 
  protected:
    virtual bool Condition(Track *t) override;
 
  private:
-   int kind;
+   TrackKind kind;
 };
 
 //
@@ -340,7 +443,7 @@ class AUDACITY_DLL_API TrackListOfKindIterator /* not final */ : public TrackLis
 class AUDACITY_DLL_API SelectedTrackListOfKindIterator final : public TrackListOfKindIterator
 {
  public:
-    SelectedTrackListOfKindIterator(int kind, TrackList * val = NULL) : TrackListOfKindIterator(kind, val) {}
+   SelectedTrackListOfKindIterator(TrackKind kind, TrackList * val = NULL) : TrackListOfKindIterator(kind, val) {}
    virtual ~SelectedTrackListOfKindIterator() {}
 
  protected:

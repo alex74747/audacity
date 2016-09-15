@@ -1281,9 +1281,8 @@ void AudacityProject::RedrawProject(const bool bForceWaveTracks /*= false*/)
       Track* pTrack = iter.First();
       while (pTrack)
       {
-         if (pTrack->GetKind() == Track::Wave)
+         if (const auto pWaveTrack = track_cast<WaveTrack*>(pTrack))
          {
-            WaveTrack* pWaveTrack = static_cast<WaveTrack*>(pTrack);
             for (const auto &clip: pWaveTrack->GetClips())
                clip->MarkChanged();
          }
@@ -1484,7 +1483,7 @@ double AudacityProject::SSBL_GetRate() const
    // Return maximum of project rate and all track rates.
    double rate = mRate;
 
-   TrackListOfKindIterator iterWaveTrack(Track::Wave, mTracks.get());
+   TrackListOfKindIterator iterWaveTrack(TrackKind::Wave, mTracks.get());
    WaveTrack *pWaveTrack = static_cast<WaveTrack*>(iterWaveTrack.First());
    while (pWaveTrack)
    {
@@ -2521,8 +2520,8 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
       TrackListIterator iter(mLastSavedTracks.get());
       Track *t = iter.First();
       while (t) {
-         if (t->GetKind() == Track::Wave)
-            ((WaveTrack *) t)->CloseLock();
+         if (const auto wt = track_cast<WaveTrack*>(t))
+            wt->CloseLock();
          t = iter.Next();
       }
 
@@ -3095,10 +3094,10 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
             // Mark the wave tracks as changed and redraw.
             t = iter.First();
             while (t) {
-               if (t->GetKind() == Track::Wave)
+               if (const auto wt = track_cast<WaveTrack*>(t))
                {
                   // Only wave tracks have a notion of "changed".
-                  for (const auto &clip: static_cast<WaveTrack*>(t)->GetClips())
+                  for (const auto &clip: wt->GetClips())
                      clip->MarkChanged();
                }
                t = iter.Next();
@@ -3149,16 +3148,16 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
       //std::vector<ODDecodeTask*> decodeTasks;
       unsigned int createdODTasks=0;
       while (tr) {
-         if (tr->GetKind() == Track::Wave) {
+         if (const auto wt = track_cast<WaveTrack*>(tr)) {
             //check the track for blocks that need decoding.
             //There may be more than one type e.g. FLAC/FFMPEG/lame
             unsigned int odFlags;
-            odFlags=((WaveTrack*)tr)->GetODFlags();
+            odFlags = wt->GetODFlags();
 
             //add the track to the already created tasks that correspond to the od flags in the wavetrack.
             for(unsigned int i=0;i<newTasks.size();i++) {
                if(newTasks[i]->GetODType() & odFlags)
-                  newTasks[i]->AddWaveTrack((WaveTrack*)tr);
+                  newTasks[i]->AddWaveTrack(wt);
             }
 
             //create whatever NEW tasks we need to.
@@ -3184,7 +3183,7 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
                }
                if(newTask)
                {
-                  newTask->AddWaveTrack((WaveTrack*)tr);
+                  newTask->AddWaveTrack(wt);
                   newTasks.push_back(std::move(newTask));
                }
             }
@@ -3523,7 +3522,8 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile)
    t = iter.First();
    unsigned int ndx = 0;
    while (t) {
-      if ((t->GetKind() == Track::Wave) && mWantSaveCompressed)
+      pWaveTrack = track_cast<WaveTrack*>(t);
+      if (pWaveTrack && mWantSaveCompressed)
       {
          //vvv This should probably be a method, WaveTrack::WriteCompressedTrackXML().
          xmlFile.StartTag(wxT("import"));
@@ -3540,7 +3540,6 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile)
          xmlFile.WriteAttr(wxT("height"), t->GetActualHeight());
          xmlFile.WriteAttr(wxT("minimized"), t->GetMinimized());
 
-         pWaveTrack = (WaveTrack*)t;
          // Don't store "rate" tag because the importer can figure that out.
          //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
          xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
@@ -3551,9 +3550,8 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile)
          if (t->GetLinked())
             t = iter.Next();
       }
-      else if (t->GetKind() == Track::Wave)
+      else if (pWaveTrack)
       {
-         pWaveTrack = (WaveTrack*)t;
          pWaveTrack->SetAutoSaveIdent(mAutoSaving ? ++ndx : 0);
          t->WriteXML(xmlFile);
       }
@@ -3712,10 +3710,9 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
             TrackListIterator iter(mLastSavedTracks.get());
             Track *t = iter.First();
             while (t) {
-               if (t->GetKind() == Track::Wave)
+               if (auto wt = track_cast<WaveTrack*>(t))
                   lockers.push_back(
-                     make_movable<WaveTrack::Locker>(
-                        static_cast<const WaveTrack*>(t)));
+                     make_movable<WaveTrack::Locker>(wt));
                t = iter.Next();
             }
          }
@@ -3804,8 +3801,8 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
 
          //only after the xml has been saved we can mark it saved.
          //thus is because the OD blockfiles change on  background thread while this is going on.
-         //         if(dupT->GetKind() == Track::Wave)
-         //         ((WaveTrack*)dupT)->MarkSaved();
+         //         if(const auto wt = track_cast<WaveTrack*>(dupT))
+         //         wt->MarkSaved();
 
          t = iter.Next();
       }
@@ -3834,7 +3831,7 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
       // Copy the tracks because we're going to do some state changes before exporting.
       Track* pTrack;
       WaveTrack* pWaveTrack;
-      TrackListOfKindIterator iter(Track::Wave, GetTracks());
+      TrackListOfKindIterator iter(TrackKind::Wave, GetTracks());
       unsigned int numWaveTracks = 0;
 
       TrackList pSavedTrackList;
@@ -3874,7 +3871,7 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
       wxFileName uniqueTrackFileName;
       for (pTrack = iter.First(); ((pTrack != NULL) && bSuccess); pTrack = iter.Next())
       {
-         if (pTrack->GetKind() == Track::Wave)
+         if (track_cast<WaveTrack*>(pTrack))
          {
             pTrack->SetSelected(true);
             if (pTrack->GetLinked())
@@ -3934,8 +3931,10 @@ void AudacityProject::AddImportedTracks(const wxString &fileName,
       ++i;
 
       auto newTrack = mTracks->Add(std::move(uNewTrack));
-      if (newRate == 0 && newTrack->GetKind() == Track::Wave) {
-         newRate = ((WaveTrack *)newTrack)->GetRate();
+      WaveTrack *wt;
+      if (newRate == 0 &&
+          nullptr != (wt = track_cast<WaveTrack*>(newTrack))) {
+         newRate = wt->GetRate();
       }
       newTrack->SetSelected(true);
       //we need to check link status based on the first channel only.
@@ -3950,9 +3949,9 @@ void AudacityProject::AddImportedTracks(const wxString &fileName,
 
       // Check if NEW track contains aliased blockfiles and if yes,
       // remember this to show a warning later
-      if (newTrack->GetKind() == WaveTrack::Wave)
+      if (wt)
       {
-         WaveClip* clip = ((WaveTrack*)newTrack)->GetClipByIndex(0);
+         WaveClip* clip = wt->GetClipByIndex(0);
          BlockArray &blocks = clip->GetSequence()->GetBlockArray();
          if (clip && blocks.size())
          {
@@ -4074,8 +4073,8 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
    // because AddImportedTracks deletes newTracks.
    if (pTrackArray) {
       for (const auto &newTrack : newTracks) {
-         if (newTrack->GetKind() == Track::Wave) {
-            pTrackArray->push_back(static_cast<WaveTrack *>(newTrack.get()));
+         if (const auto wt = track_cast<WaveTrack*>(newTrack.get())) {
+            pTrackArray->push_back(wt);
          }
       }
    }
@@ -4326,7 +4325,7 @@ void AudacityProject::PopState(const UndoState &state)
       auto copyTrack = mTracks->Add(t->Duplicate());
 
       //add the track to OD if the manager exists.  later we might do a more rigorous check...
-      if (copyTrack->GetKind() == Track::Wave)
+      if (const auto wt = track_cast<WaveTrack*>(copyTrack))
       {
          //if the ODManager hasn't been initialized, there's no chance this track has OD blocks since this
          //is a "Redo" operation.
@@ -4342,7 +4341,7 @@ void AudacityProject::PopState(const UndoState &state)
                computeTask = make_movable<ODComputeSummaryTask>();
                odUsed=true;
             }
-            computeTask->AddWaveTrack((WaveTrack*)copyTrack);
+            computeTask->AddWaveTrack(wt);
          }
       }
       t = iter.Next();
@@ -4382,7 +4381,7 @@ void AudacityProject::UpdateLyrics()
    if (!mLyricsWindow)
       return;
 
-   TrackListOfKindIterator iter(Track::Label, GetTracks());
+   TrackListOfKindIterator iter(TrackKind::Label, GetTracks());
    LabelTrack* pLabelTrack = (LabelTrack*)(iter.First()); // Lyrics come from only the first label track.
    if (!pLabelTrack)
       return;
@@ -4738,18 +4737,19 @@ void AudacityProject::GetRegionsByLabel( Regions &regions )
    Track *n;
 
    //determine labelled regions
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Label && n->GetSelected() )
+   for (n = iter.First(); n; n = iter.Next()) {
+      const auto lt = track_cast<LabelTrack*>(n);
+      if (lt && n->GetSelected())
       {
-         LabelTrack *lt = ( LabelTrack* )n;
-         for( int i = 0; i < lt->GetNumLabels(); i++ )
+         for (int i = 0; i < lt->GetNumLabels(); i++)
          {
-            const LabelStruct *ls = lt->GetLabel( i );
-            if( ls->selectedRegion.t0() >= mViewInfo.selectedRegion.t0() &&
-                ls->selectedRegion.t1() <= mViewInfo.selectedRegion.t1() )
+            const LabelStruct *ls = lt->GetLabel(i);
+            if (ls->selectedRegion.t0() >= mViewInfo.selectedRegion.t0() &&
+               ls->selectedRegion.t1() <= mViewInfo.selectedRegion.t1())
                regions.push_back(Region(ls->getT0(), ls->getT1()));
          }
       }
+   }
 
    //anything to do ?
    if( regions.size() == 0 )
@@ -4794,12 +4794,14 @@ void AudacityProject::EditByLabel( EditFunction action,
 
    // if at least one wave track is selected
    // apply only on the selected track
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Wave && n->GetSelected() )
+   for (n = iter.First(); n; n = iter.Next()) {
+      const auto nt = track_cast<WaveTrack*>(n);
+      if (nt && n->GetSelected())
       {
          allTracks = false;
          break;
       }
+   }
 
    //Apply action on wavetracks starting from
    //labeled regions in the end. This is to correctly perform
@@ -4807,10 +4809,10 @@ void AudacityProject::EditByLabel( EditFunction action,
    n = iter.First();
    while (n)
    {
-      if ((n->GetKind() == Track::Wave) &&
+      const auto wt = track_cast<WaveTrack*>(n);
+      if (wt &&
             (allTracks || n->GetSelected() || (bSyncLockedTracks && n->IsSyncLockSelected())))
       {
-         WaveTrack *wt = ( WaveTrack* )n;
          for (int i = (int)regions.size() - 1; i >= 0; i--) {
             const Region &region = regions.at(i);
             (wt->*action)(region.start, region.end);
@@ -4840,12 +4842,14 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
 
    // if at least one wave track is selected
    // apply only on the selected track
-   for( n = iter.First(); n; n = iter.Next() )
-      if( n->GetKind() == Track::Wave && n->GetSelected() )
+   for (n = iter.First(); n; n = iter.Next()) {
+      const auto wt = track_cast<WaveTrack*>(n);
+      if (wt && n->GetSelected())
       {
          allTracks = false;
          break;
       }
+   }
 
    ClearClipboard();
    //Apply action on wavetracks starting from
@@ -4853,9 +4857,9 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
    //actions like 'Cut' which collapse the track area.
    for( n = iter.First(); n; n = iter.Next() )
    {
-      if( n->GetKind() == Track::Wave && ( allTracks || n->GetSelected() ) )
+      const auto wt = track_cast<WaveTrack*>(n);
+      if( wt && ( allTracks || n->GetSelected() ) )
       {
-         WaveTrack *wt = ( WaveTrack* )n;
          Track::Holder merged;
          for( int i = ( int )regions.size() - 1; i >= 0; i-- )
          {
@@ -5281,12 +5285,12 @@ void AudacityProject::RemoveTrack(Track * toRemove)
    wxString name = toRemove->GetName();
    Track *partner = toRemove->GetLink();
 
-   if (toRemove->GetKind() == Track::Wave)
+   if (const auto wt = track_cast<WaveTrack*>(toRemove))
    {
       // Update mixer board displayed tracks.
       MixerBoard* pMixerBoard = this->GetMixerBoard();
       if (pMixerBoard)
-         pMixerBoard->RemoveTrackCluster((WaveTrack*)toRemove); // Will remove partner shown in same cluster.
+         pMixerBoard->RemoveTrackCluster(wt); // Will remove partner shown in same cluster.
    }
 
    mTracks->Remove(toRemove);

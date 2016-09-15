@@ -417,9 +417,9 @@ void ControlToolBar::EnableDisableButtons()
    if (p) {
       TrackListIterator iter( p->GetTracks() );
       for (Track *t = iter.First(); t; t = iter.Next()) {
-         if (t->GetKind() == Track::Wave
+         if (track_cast<WaveTrack*>(t)
 #if defined(USE_MIDI)
-         || t->GetKind() == Track::Note
+         || track_cast<NoteTrack*>(t)
 #endif
          ) {
             tracks = true;
@@ -553,9 +553,9 @@ int ControlToolBar::PlayPlayRegion(const SelectedRegion &selectedRegion,
    bool hasaudio = false;
    TrackListIterator iter(t);
    for (Track *trk = iter.First(); trk; trk = iter.Next()) {
-      if (trk->GetKind() == Track::Wave
+      if (track_cast<const WaveTrack*>(trk)
 #ifdef EXPERIMENTAL_MIDI_OUT
-         || trk->GetKind() == Track::Note
+         || track_cast<NoteTrack*>(trk)
 #endif
          ) {
          hasaudio = true;
@@ -930,8 +930,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          // Find whether any tracks were selected.  (If any are selected,
          // record only into them; else if tracks exist, record into all.)
          for (Track *tt = it.First(); tt; tt = it.Next()) {
-            if (tt->GetKind() == Track::Wave) {
-               WaveTrack *wt = static_cast<WaveTrack *>(tt);
+            if (const auto wt = track_cast<WaveTrack*>(tt)) {
                if (wt->GetEndTime() > allt0) {
                   allt0 = wt->GetEndTime();
                }
@@ -954,8 +953,8 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          // Remove recording tracks from the list of tracks for duplex ("overdub")
          // playback.
          for (Track *tt = it.First(); tt; tt = it.Next()) {
-            if (tt->GetKind() == Track::Wave && (tt->GetSelected() || !sel)) {
-               WaveTrack *wt = static_cast<WaveTrack *>(tt);
+            const auto wt = track_cast<WaveTrack*>(tt);
+            if (wt && (tt->GetSelected() || !sel)) {
                if (duplex) {
                   auto end = playbackTracks.end();
                   auto it = std::find(playbackTracks.begin(), end, wt);
@@ -995,7 +994,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          int numTracks = 0;
 
          for (Track *tt = it.First(); tt; tt = it.Next()) {
-            if (tt->GetKind() == Track::Wave && !tt->GetLinked())
+            if (track_cast<WaveTrack*>(tt) && !tt->GetLinked())
                numTracks++;
          }
          numTracks++;
@@ -1184,7 +1183,7 @@ void ControlToolBar::SetupCutPreviewTracks(double WXUNUSED(playStart), double cu
       TrackListIterator it(p->GetTracks());
       for (Track *t = it.First(); t; t = it.Next())
       {
-         if (t->GetKind() == Track::Wave && t->GetSelected())
+         if (track_cast<WaveTrack*>(t) && t->GetSelected())
          {
             track1 = t;
             track2 = t->GetLink();
