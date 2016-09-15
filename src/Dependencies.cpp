@@ -61,6 +61,7 @@ static void GetAllSeqBlocks(AudacityProject *project,
    TrackList *tracks = project->GetTracks();
    TrackListIterator iter(tracks);
    Track *t = iter.First();
+   // HERE
    while (t) {
       if (const auto waveTrack = track_cast<WaveTrack*>(t)) {
          for(const auto &clip : waveTrack->GetAllClips()) {

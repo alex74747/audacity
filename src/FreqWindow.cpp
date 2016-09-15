@@ -556,6 +556,7 @@ void FreqWindow::GetAudio()
    bool warning = false;
    TrackListIterator iter(p->GetTracks());
    Track *t = iter.First();
+   // HERE
    while (t) {
       WaveTrack *track;
       if (t->GetSelected() &&

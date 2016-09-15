@@ -483,6 +483,7 @@ bool EffectEqualization::Init()
    double rate = 0.0;
    TrackListIterator iter(GetActiveProject()->GetTracks());
    Track *t = iter.First();
+   // HERE
    while (t) {
       WaveTrack *track;
       if (t->GetSelected() &&

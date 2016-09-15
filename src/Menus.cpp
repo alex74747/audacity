@@ -3340,6 +3340,7 @@ double AudacityProject::NearestZeroCrossing(double t0)
 
    TrackListIterator iter(GetTracks());
    Track *track = iter.First();
+   // HERE
    while (track) {
       WaveTrack *one;
       if (!track->GetSelected() ||
@@ -3458,6 +3459,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    //double prevEndTime = mTracks->GetEndTime();
    int count = 0;
    bool clean = true;
+   // HERE
    while (t) {
       if (t->GetSelected() && track_cast<WaveTrack*>(t)) {
          if (t->GetEndTime() != 0.0) clean = false;
@@ -3654,6 +3656,7 @@ void AudacityProject::OnExportLabels()
 
    wxString fName = _("labels.txt");
    t = iter.First();
+   // HERE
    while (t) {
       if (track_cast<LabelTrack*>(t))
       {
@@ -3704,6 +3707,7 @@ void AudacityProject::OnExportLabels()
    }
 
    t = iter.First();
+   // HERE
    while (t) {
       if (const auto lt = track_cast<LabelTrack*>(t))
          lt->Export(f);
@@ -3725,6 +3729,7 @@ void AudacityProject::OnExportMIDI(){
 
    // Iterate through once to make sure that there is
    // exactly one NoteTrack selected.
+   // HERE
    while (t) {
       if (t->GetSelected()) {
          if (nullptr != (nt = track_cast<NoteTrack*>(t))) {
@@ -3937,6 +3942,7 @@ void AudacityProject::OnCut()
    // cutting the _text_ inside of labels, i.e. if you're
    // in the middle of editing the label text and select "Cut".
 
+   // HERE
    while (n) {
       if (n->GetSelected()) {
          if (const auto lt = track_cast<LabelTrack*>(n)) {
@@ -4063,6 +4069,7 @@ void AudacityProject::OnCopy()
 
    Track *n = iter.First();
 
+   // HERE
    while (n) {
       if (n->GetSelected()) {
          if (const auto lt = track_cast<LabelTrack*>(n)) {
@@ -4451,6 +4458,7 @@ void AudacityProject::OnPasteNewLabel()
          for (Track *t1 = iter1.First(); t1; t1 = iter1.Next()) {
             if (t1->GetSelected()) {
                // Look for a label track
+               // HERE
                while (nullptr != (t1 = iter1.Next())) {
                   if (track_cast<LabelTrack*>(t1)) {
                      t = t1;
@@ -4589,6 +4597,7 @@ void AudacityProject::OnDisjoin()
 
    Track *n = iter.First();
 
+   // HERE
    while (n) {
       if (n->GetSelected()) {
          if (const auto wt = track_cast<WaveTrack*>(n))
@@ -4614,6 +4623,7 @@ void AudacityProject::OnJoin()
 
    Track *n = iter.First();
 
+   // HERE
    while (n) {
       if (n->GetSelected()) {
          if (const auto wt = track_cast<WaveTrack*>(n))
@@ -4842,6 +4852,7 @@ void AudacityProject::OnSplit()
    double sel0 = mViewInfo.selectedRegion.t0();
    double sel1 = mViewInfo.selectedRegion.t1();
 
+   // HERE
    for (Track* n=iter.First(); n; n = iter.Next())
    {
       if (const auto wt = track_cast<WaveTrack*>(n))
@@ -5283,6 +5294,7 @@ void AudacityProject::DoZoomFitV()
 
    TrackListIterator iter2(GetTracks());
    t = iter2.First();
+   // HERE
    while (t) {
       if (track_cast<WaveTrack*>(t) &&
           !t->GetMinimized())
@@ -6492,6 +6504,7 @@ int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus
       else
          t = iter.First();
 
+      // HERE
       while (t && !lt) {
          lt = track_cast<LabelTrack*>(t);
          t = iter.Next();
@@ -6799,6 +6812,7 @@ void AudacityProject::OnMuteAllTracks()
    TrackListIterator iter(GetTracks());
    Track *t = iter.First();
 
+   // HERE
    while (t)
    {
       if (track_cast<WaveTrack*>(t))
@@ -6920,6 +6934,7 @@ void AudacityProject::OnResample()
    }
 
    int ndx = 0;
+   // HERE
    for (Track *t = iter.First(); t; t = iter.Next())
    {
       wxString msg;

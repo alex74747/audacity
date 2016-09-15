@@ -177,6 +177,7 @@ bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
    TrackListIterator iter1(tracks);
    Track *tr = iter1.First();
 
+   // HERE
    while (tr)
    {
       //go over all tracks in the project

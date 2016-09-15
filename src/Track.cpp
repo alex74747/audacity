@@ -1205,6 +1205,7 @@ unsigned TrackList::GetNumExportChannels(bool selectionOnly) const
    const Track *tr;
    TrackListConstIterator iter;
 
+   // HERE
    for (tr = iter.First(this); tr != NULL; tr = iter.Next()) {
 
       // Want only unmuted wave tracks.
@@ -1264,6 +1265,7 @@ namespace {
    {
       Array waveTrackArray;
 
+      // HERE
       for (; p != end; ++p) {
          const auto &track = *p;
          WaveTrack *wt;
@@ -1293,6 +1295,7 @@ NoteTrackArray TrackList::GetNoteTrackArray(bool selectionOnly)
 {
    NoteTrackArray noteTrackArray;
 
+   // HERE
    for(const auto &track : *this) {
       const auto nt = track_cast<NoteTrack*>(track.get());
       if (nt &&

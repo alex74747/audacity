@@ -766,6 +766,7 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
 
    /* Remember which tracks were selected, and set them to unselected */
    TrackListIterator iter;
+   // HERE
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
       if (!track_cast<WaveTrack*>(tr)) {
 
@@ -783,6 +784,7 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
    }
 
    /* Examine all tracks in turn, collecting export information */
+   // HERE
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
 
       // Want only non-muted wave tracks.
@@ -871,6 +873,7 @@ int ExportMultiple::ExportMultipleByTrack(bool byName,
    // loop
    int count = 0; // count the number of sucessful runs
    ExportKit activeSetting;  // pointer to the settings in use for this export
+   // HERE
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
 
       // Want only non-muted wave tracks.

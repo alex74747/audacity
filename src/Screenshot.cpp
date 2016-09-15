@@ -704,6 +704,7 @@ void ScreenFrame::OnOneHour(wxCommandEvent & WXUNUSED(event))
 void ScreenFrame::SizeTracks(int h)
 {
    TrackListIterator iter(mContext.GetProject()->GetTracks());
+   // HERE
    for (Track * t = iter.First(); t; t = iter.Next()) {
       if (track_cast<WaveTrack*>(t)) {
          if (t->GetLink()) {
@@ -720,6 +721,7 @@ void ScreenFrame::SizeTracks(int h)
 void ScreenFrame::OnShortTracks(wxCommandEvent & WXUNUSED(event))
 {
    TrackListIterator iter(mContext.GetProject()->GetTracks());
+   // HERE
    for (Track * t = iter.First(); t; t = iter.Next()) {
       if (track_cast<WaveTrack*>(t)) {
          t->SetHeight(t->GetMinimizedHeight());

@@ -421,6 +421,7 @@ bool Exporter::ExamineTracks()
    TrackListConstIterator iter1(tracks);
    const Track *tr = iter1.First();
 
+   // HERE
    while (tr) {
       if (const auto wt = track_cast<const WaveTrack*>(tr)) {
          if ( (tr->GetSelected() || !mSelectedOnly) && !tr->GetMute() ) {  // don't count muted tracks
@@ -1238,6 +1239,7 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
    unsigned numTracks = 0;
    TrackListConstIterator iter( tracks );
 
+   // HERE
    for( const Track *t = iter.First(); t; t = iter.Next() )
    {
       if( track_cast<const WaveTrack*>(t) &&

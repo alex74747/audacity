@@ -333,6 +333,7 @@ bool LabelDialog::TransferDataFromWindow()
    int tndx = 0;
 
    // Clear label tracks of labels
+   // HERE
    for (t = iter.First(); t; t = iter.Next()) {
       if (auto lt = track_cast<LabelTrack*>(t)) {
          ++tndx;
@@ -370,6 +371,7 @@ bool LabelDialog::TransferDataFromWindow()
       // Look for track with matching index
       tndx = 1;
       LabelTrack *lt{};
+      // HERE
       for (t = iter.First(); t; t = iter.Next()) {
          if (nullptr != (lt = track_cast<LabelTrack*>(t)) && rd.index == tndx++) {
             break;
@@ -416,6 +418,7 @@ void LabelDialog::FindAllLabels()
 
 
    // Add labels from all label tracks
+   // HERE
    for (t = iter.First(); t; t = iter.Next()) {
       if (const auto lt = track_cast<const LabelTrack*>(t)) {
          AddLabels(lt);

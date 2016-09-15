@@ -730,6 +730,7 @@ void TrackPanel::UpdateVirtualStereoOrder()
    Track *t;
    int temp;
 
+   // HERE
    for (t = iter.First(); t; t = iter.Next()) {
       const auto wt = track_cast<WaveTrack*>(t);
       if(t->GetChannel() == Track::MonoChannel){
@@ -6340,6 +6341,7 @@ bool TrackPanel::HandleLabelTrackClick(LabelTrack * lTrack, wxRect &rect, wxMous
       TrackListIterator iter(GetTracks());
       Track *n = iter.First();
 
+      // HERE
       while (n) {
          const auto lt = track_cast<LabelTrack*>(n);
          if (lt && lTrack != n) {
@@ -8039,6 +8041,7 @@ void TrackPanel::SplitStereo(bool stereo)
       //On Demand - have each channel add it's own.
       WaveTrack *pwt;
       if (ODManager::IsInstanceCreated() &&
+          // HERE
           nullptr != (pwt = track_cast<WaveTrack*>(partner)))
          ODManager::Instance()->MakeWaveTrackIndependent(pwt);
    }

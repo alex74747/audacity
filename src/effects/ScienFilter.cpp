@@ -337,6 +337,7 @@ bool EffectScienFilter::Init()
 
    mNyquist = (t ? t->GetRate() : GetActiveProject()->GetRate()) / 2.0;
 
+   // HERE
    while (t)
    {
       if (t->GetSelected() &&

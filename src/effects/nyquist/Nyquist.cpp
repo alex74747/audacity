@@ -1127,6 +1127,7 @@ bool NyquistEffect::ProcessOne()
       LabelTrack *ltrack = NULL;
 
       TrackListIterator iter(mOutputTracks.get());
+      // HERE
       for (Track *t = iter.First(); t; t = iter.Next()) {
          if (nullptr != (ltrack = track_cast<LabelTrack*>(t))) {
             break;

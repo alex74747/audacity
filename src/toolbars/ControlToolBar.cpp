@@ -929,6 +929,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          // Find the maximum end time of selected and all wave tracks
          // Find whether any tracks were selected.  (If any are selected,
          // record only into them; else if tracks exist, record into all.)
+         // HERE
          for (Track *tt = it.First(); tt; tt = it.Next()) {
             if (const auto wt = track_cast<WaveTrack*>(tt)) {
                if (wt->GetEndTime() > allt0) {
@@ -952,6 +953,8 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          // Pad selected/all wave tracks to make them all the same length
          // Remove recording tracks from the list of tracks for duplex ("overdub")
          // playback.
+         // here
+         // HERE
          for (Track *tt = it.First(); tt; tt = it.Next()) {
             const auto wt = track_cast<WaveTrack*>(tt);
             if (wt && (tt->GetSelected() || !sel)) {
@@ -993,6 +996,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          // Count the tracks.  
          int numTracks = 0;
 
+         // HERE
          for (Track *tt = it.First(); tt; tt = it.Next()) {
             if (track_cast<WaveTrack*>(tt) && !tt->GetLinked())
                numTracks++;
@@ -1181,6 +1185,7 @@ void ControlToolBar::SetupCutPreviewTracks(double WXUNUSED(playStart), double cu
       // Find first selected track (stereo or mono) and duplicate it
       Track *track1 = NULL, *track2 = NULL;
       TrackListIterator it(p->GetTracks());
+      // HERE
       for (Track *t = it.First(); t; t = it.Next())
       {
          if (track_cast<WaveTrack*>(t) && t->GetSelected())

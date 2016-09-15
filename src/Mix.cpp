@@ -64,6 +64,7 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    int numWaves = 0; /* number of wave tracks in the selection */
    int numMono = 0;  /* number of mono, centre-panned wave tracks in selection*/
    t = iter.First();
+   // HERE
    while (t) {
       const WaveTrack *wt;
       if (t->GetSelected() &&
@@ -93,6 +94,7 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    WaveTrackConstArray waveArray;
    t = iter.First();
 
+   // HERE
    while (t) {
       const WaveTrack *wt;
       if (t->GetSelected() &&

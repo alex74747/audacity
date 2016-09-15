@@ -1279,6 +1279,7 @@ void AudacityProject::RedrawProject(const bool bForceWaveTracks /*= false*/)
    {
       TrackListIterator iter(GetTracks());
       Track* pTrack = iter.First();
+      // HERE
       while (pTrack)
       {
          if (const auto pWaveTrack = track_cast<WaveTrack*>(pTrack))
@@ -2519,6 +2520,7 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
    if (mLastSavedTracks) {
       TrackListIterator iter(mLastSavedTracks.get());
       Track *t = iter.First();
+      // HERE
       while (t) {
          if (const auto wt = track_cast<WaveTrack*>(t))
             wt->CloseLock();
@@ -3093,6 +3095,7 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
          {
             // Mark the wave tracks as changed and redraw.
             t = iter.First();
+            // HERE
             while (t) {
                if (const auto wt = track_cast<WaveTrack*>(t))
                {
@@ -3147,6 +3150,7 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
       std::vector<movable_ptr<ODTask>> newTasks;
       //std::vector<ODDecodeTask*> decodeTasks;
       unsigned int createdODTasks=0;
+      // HERE
       while (tr) {
          if (const auto wt = track_cast<WaveTrack*>(tr)) {
             //check the track for blocks that need decoding.
@@ -3709,6 +3713,7 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
             lockers.reserve(mLastSavedTracks->size());
             TrackListIterator iter(mLastSavedTracks.get());
             Track *t = iter.First();
+            // HERE
             while (t) {
                if (auto wt = track_cast<WaveTrack*>(t))
                   lockers.push_back(
@@ -3869,6 +3874,7 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
       Exporter theExporter;
       Track* pRightTrack;
       wxFileName uniqueTrackFileName;
+      // HERE
       for (pTrack = iter.First(); ((pTrack != NULL) && bSuccess); pTrack = iter.Next())
       {
          if (track_cast<WaveTrack*>(pTrack))
@@ -4072,6 +4078,7 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
    // Have to set up newTrackList before calling AddImportedTracks,
    // because AddImportedTracks deletes newTracks.
    if (pTrackArray) {
+      // HERE
       for (const auto &newTrack : newTracks) {
          if (const auto wt = track_cast<WaveTrack*>(newTrack.get())) {
             pTrackArray->push_back(wt);
@@ -4737,6 +4744,7 @@ void AudacityProject::GetRegionsByLabel( Regions &regions )
    Track *n;
 
    //determine labelled regions
+   // HERE
    for (n = iter.First(); n; n = iter.Next()) {
       const auto lt = track_cast<LabelTrack*>(n);
       if (lt && n->GetSelected())
@@ -4794,6 +4802,7 @@ void AudacityProject::EditByLabel( EditFunction action,
 
    // if at least one wave track is selected
    // apply only on the selected track
+   // HERE
    for (n = iter.First(); n; n = iter.Next()) {
       const auto nt = track_cast<WaveTrack*>(n);
       if (nt && n->GetSelected())
@@ -4807,6 +4816,7 @@ void AudacityProject::EditByLabel( EditFunction action,
    //labeled regions in the end. This is to correctly perform
    //actions like 'Delete' which collapse the track area.
    n = iter.First();
+   // HERE
    while (n)
    {
       const auto wt = track_cast<WaveTrack*>(n);
@@ -4842,6 +4852,7 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
 
    // if at least one wave track is selected
    // apply only on the selected track
+   // HERE
    for (n = iter.First(); n; n = iter.Next()) {
       const auto wt = track_cast<WaveTrack*>(n);
       if (wt && n->GetSelected())
@@ -4855,6 +4866,7 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
    //Apply action on wavetracks starting from
    //labeled regions in the end. This is to correctly perform
    //actions like 'Cut' which collapse the track area.
+   // HERE
    for( n = iter.First(); n; n = iter.Next() )
    {
       const auto wt = track_cast<WaveTrack*>(n);
