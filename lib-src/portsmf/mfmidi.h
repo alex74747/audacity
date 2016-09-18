@@ -46,7 +46,7 @@ protected:
     virtual void Mf_chanprefix(int) = 0;
     virtual void Mf_portprefix(int) = 0;
     virtual void Mf_eot() = 0;
-    virtual void Mf_error(char *) = 0;
+    virtual void Mf_error(const char *) = 0;
     virtual void Mf_header(int,int,int) = 0;
     virtual void Mf_on(int,int,int) = 0;
     virtual void Mf_off(int,int,int) = 0;

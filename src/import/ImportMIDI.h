@@ -50,7 +50,7 @@ class MIDIParser {
    int check_aborted(void);
 
    int Mf_getc(void);
-   void Mf_error(char *);
+   void Mf_error(const char *);
    void Mf_on(int, int, int);
    void Mf_off(int, int, int);
    void Mf_header(int, int, int);

@@ -76,7 +76,7 @@ class NyqTextCtrl:public wxTextCtrl
    wxTextAttr mOn;
    wxTextAttr mOff;
 
-   DECLARE_EVENT_TABLE();
+   DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class NyqBench:public wxFrame
 
    wxRect mLastSize;
 
-   DECLARE_EVENT_TABLE();
+   DECLARE_EVENT_TABLE()
 };
 
 #endif

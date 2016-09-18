@@ -338,12 +338,12 @@ void FileDialog::ShowWindowModal()
 
 void FileDialog::DoOnFilterSelected(int index)
 {
-    if (index == wxNOT_FOUND)
+    if (index < 0)
     {
       return;
     }
 
-    NSArray* types = GetTypesFromExtension(m_filterExtensions[index],m_currentExtensions);
+    NSArray* types = GetTypesFromExtension(m_filterExtensions[(size_t)index],m_currentExtensions);
     NSSavePanel* panel = (NSSavePanel*) GetWXWindow();
     [panel setAllowedFileTypes:types];
 
@@ -565,7 +565,7 @@ int FileDialog::ShowModal()
     m_firstFileTypeFilter = wxNOT_FOUND;
 
     if ( m_useFileTypeFilter
-        && m_filterIndex >= 0 && m_filterIndex < m_filterExtensions.GetCount() )
+        && m_filterIndex >= 0 && m_filterIndex < (int)m_filterExtensions.GetCount() )
     {
         m_firstFileTypeFilter = m_filterIndex;
     }
@@ -579,7 +579,7 @@ int FileDialog::ShowModal()
             if ( m_currentExtensions.GetCount() == 0 )
             {
                 useDefault = false;
-                m_firstFileTypeFilter = i;
+                m_firstFileTypeFilter = (int)i;
                 break;
             }
             
@@ -587,7 +587,7 @@ int FileDialog::ShowModal()
             {
                 if ( m_fileName.EndsWith(m_currentExtensions[j]) )
                 {
-                    m_firstFileTypeFilter = i;
+                    m_firstFileTypeFilter = (int)i;
                     useDefault = false;
                     break;
                 }
@@ -631,7 +631,7 @@ int FileDialog::ShowModal()
                           wxTheClipboard->Close();
                           wxString text = data.GetText();
                           auto rawText = text.utf8_str();
-                          auto length = text.Length();
+                          // auto length = text.Length();
                           NSString *myString = [[NSString alloc]
                              initWithBytes:rawText.data()
                               length: rawText.length()

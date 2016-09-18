@@ -39,7 +39,7 @@ void (*Mf_endtrack)(NOARGS) = 0;
 int (*Mf_getc)(NOARGS) = 0;
 void (*Mf_eot)(NOARGS) = 0;
 #ifdef PROTOTYPES
-void (*Mf_error)(char *) = 0;
+void (*Mf_error)(const char *) = 0;
 void (*Mf_header)(int,int,int) = 0;
 void (*Mf_on)(int,int,int) = 0;
 void (*Mf_off)(int,int,int) = 0;

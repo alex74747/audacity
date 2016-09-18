@@ -91,12 +91,12 @@ wxString FileSelector(const wxString& title,
     // if filter is of form "All files (*)|*|..." set correct filter index
     if ( !defaultExtension.empty() && filter2.find(wxT('|')) != wxString::npos )
     {
-        int filterIndex = 0;
+        size_t filterIndex = 0;
 
         wxArrayString descriptions, filters;
         // don't care about errors, handled already by FileDialog
         (void)wxParseCommonDialogsFilter(filter2, descriptions, filters);
-        for (size_t n=0; n<filters.GetCount(); n++)
+        for (size_t n = 0; n < filters.GetCount(); n++)
         {
             if (filters[n].Contains(defaultExtension))
             {
@@ -106,7 +106,7 @@ wxString FileSelector(const wxString& title,
         }
 
         if (filterIndex > 0)
-            fileDialog.SetFilterIndex(filterIndex);
+            fileDialog.SetFilterIndex((int)filterIndex);
     }
 
     wxString filename;

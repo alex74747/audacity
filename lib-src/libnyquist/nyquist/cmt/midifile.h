@@ -21,7 +21,7 @@ extern void (*Mf_smpte)(int,int,int,int,int);
 extern void (*Mf_tempo)(int);
 extern void (*Mf_keysig)(int,int);
 extern void (*Mf_arbitrary)(int,char*);
-extern void (*Mf_error)(char *);
+extern void (*Mf_error)(const char *);
 extern long Mf_currtime;
 extern int Mf_nomerge;
 extern int Mf_skipinit;

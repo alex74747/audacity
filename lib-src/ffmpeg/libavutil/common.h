@@ -136,7 +136,7 @@ static av_always_inline av_const int64_t av_clip64_c(int64_t a, int64_t amin, in
  */
 static av_always_inline av_const uint8_t av_clip_uint8_c(int a)
 {
-    if (a&(~0xFF)) return (-a)>>31;
+    if (a&(~0xFF)) return (uint8_t)((-a)>>31);
     else           return a;
 }
 
@@ -158,7 +158,7 @@ static av_always_inline av_const int8_t av_clip_int8_c(int a)
  */
 static av_always_inline av_const uint16_t av_clip_uint16_c(int a)
 {
-    if (a&(~0xFFFF)) return (-a)>>31;
+    if (a&(~0xFFFF)) return (uint16_t)((-a)>>31);
     else             return a;
 }
 
@@ -180,7 +180,7 @@ static av_always_inline av_const int16_t av_clip_int16_c(int a)
  */
 static av_always_inline av_const int32_t av_clipl_int32_c(int64_t a)
 {
-    if ((a+0x80000000u) & ~UINT64_C(0xFFFFFFFF)) return (int32_t)((a>>63) ^ 0x7FFFFFFF);
+    if (((uint64_t)a+0x80000000u) & ~UINT64_C(0xFFFFFFFF)) return (int32_t)((a>>63) ^ 0x7FFFFFFF);
     else                                         return (int32_t)a;
 }
 
@@ -193,7 +193,7 @@ static av_always_inline av_const int32_t av_clipl_int32_c(int64_t a)
 static av_always_inline av_const unsigned av_clip_uintp2_c(int a, int p)
 {
     if (a & ~((1<<p) - 1)) return -a >> 31 & ((1<<p) - 1);
-    else                   return  a;
+    else                   return  (unsigned)a;
 }
 
 /**
@@ -260,7 +260,7 @@ static av_always_inline av_const double av_clipd_c(double a, double amin, double
  */
 static av_always_inline av_const int av_ceil_log2_c(int x)
 {
-    return av_log2((x - 1) << 1);
+    return av_log2((unsigned)((x - 1) << 1));
 }
 
 /**
