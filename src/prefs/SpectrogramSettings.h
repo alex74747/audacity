@@ -108,14 +108,14 @@ public:
 private:
    int windowSize;
 public:
-   size_t WindowSize() const { return windowSize; }
+   size_t WindowSize() const { return size_t(windowSize); }
 
 #ifdef EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
 private:
    int zeroPaddingFactor;
 public:
    size_t ZeroPaddingFactor() const {
-      return algorithm == algPitchEAC ? 1 : zeroPaddingFactor;
+      return algorithm == algPitchEAC ? 1 : size_t(zeroPaddingFactor);
    }
 #endif
 

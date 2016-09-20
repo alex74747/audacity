@@ -101,53 +101,53 @@ public:
 
    static inline float hzToMel(float hz)
    {
-      return 1127 * log(1 + hz / 700);
+      return 1127 * logf(1 + hz / 700.0f);
    }
 
    static inline float melToHz(float mel)
    {
-      return 700 * (exp(mel / 1127) - 1);
+      return 700 * (expf(mel / 1127) - 1);
    }
 
    static inline float hzToBark(float hz)
    {
       // Traunmueller's formula
-      const float z1 = 26.81 * hz / (1960 + hz) - 0.53;
-      if (z1 < 2.0)
-         return z1 + 0.15 * (2.0 - z1);
-      else if (z1 > 20.1)
-         return z1 + 0.22 * (z1 - 20.1);
+      const float z1 = 26.81f * hz / (1960 + hz) - 0.53f;
+      if (z1 < 2.0f)
+         return z1 + 0.15f * (2.0f - z1);
+      else if (z1 > 20.1f)
+         return z1 + 0.22f * (z1 - 20.1f);
       else
          return z1;
    }
 
    static inline float barkToHz(float z1)
    {
-      if (z1 < 2.0)
-         z1 = 2.0 + (z1 - 2.0) / 0.85;
-      else if (z1 > 20.1)
-         z1 = 20.1 + (z1 - 20.1) / 1.22;
-      return 1960 * (z1 + 0.53) / (26.28 - z1);
+      if (z1 < 2.0f)
+         z1 = 2.0f + (z1 - 2.0f) / 0.85f;
+      else if (z1 > 20.1f)
+         z1 = 20.1f + (z1 - 20.1f) / 1.22f;
+      return 1960 * (z1 + 0.53f) / (26.28f - z1);
    }
 
    static inline float hzToErb(float hz)
    {
-      return 11.17268 * log(1 + (46.06538 * hz) / (hz + 14678.49));
+      return 11.17268f * log(1 + (46.06538f * hz) / (hz + 14678.49f));
    }
 
    static inline float erbToHz(float erb)
    {
-      return 676170.4 / (47.06538 - exp(0.08950404 * erb)) - 14678.49;
+      return 676170.4f / (47.06538f - exp(0.08950404f * erb)) - 14678.49f;
    }
 
    static inline float hzToPeriod(float hz)
    {
-      return -1.0 / std::max (1.0f, hz);
+      return -1.0f / std::max (1.0f, hz);
    }
 
    static inline float periodToHz(float u)
    {
-      return -1.0 / u;
+      return -1.0f / u;
    }
 
    // Random access
@@ -159,7 +159,7 @@ public:
       case nstLinear:
          return mValue0 + pp * (mValue1 - mValue0);
       case nstLogarithmic:
-         return exp(mValue0 + pp * (mValue1 - mValue0));
+         return expf(mValue0 + pp * (mValue1 - mValue0));
       case nstMel:
          return melToHz(mValue0 + pp * (mValue1 - mValue0));
       case nstBark:
@@ -243,7 +243,7 @@ public:
          return Iterator
             (mType,
              nPositions == 1 ? 1 : exp((mValue1 - mValue0) / (nPositions - 1)),
-             exp(mValue0));
+             expf(mValue0));
       }
    }
 
@@ -256,7 +256,7 @@ public:
       case nstLinear:
          return ((val - mValue0) / (mValue1 - mValue0));
       case nstLogarithmic:
-         return ((log(val) - mValue0) / (mValue1 - mValue0));
+         return ((logf(val) - mValue0) / (mValue1 - mValue0));
       case nstMel:
          return ((hzToMel(val) - mValue0) / (mValue1 - mValue0));
       case nstBark:
