@@ -1612,9 +1612,9 @@ bool LV2Effect::BuildPlain()
             gridSizer->AddGrowableCol(3);
 
             const wxArrayInt & params = mGroupMap[mGroups[i]];
-            for (size_t pi = 0, cnt = params.GetCount(); pi < cnt; pi++)
+            for (size_t pj = 0, pcnt = params.GetCount(); pj < pcnt; pj++)
             {
-               int p = params[pi];
+               int p = params[pj];
                LV2Port & ctrl = mControls[p];
                wxString labelText = ctrl.mName;
                if (!ctrl.mUnits.IsEmpty())
@@ -1870,9 +1870,9 @@ bool LV2Effect::TransferDataToWindow()
    for (size_t i = 0, cnt = mGroups.GetCount(); i < cnt; i++)
    {
       const wxArrayInt & params = mGroupMap[mGroups[i]];
-      for (size_t pi = 0, cnt = params.GetCount(); pi < cnt; pi++)
+      for (size_t pj = 0, pcnt = params.GetCount(); pj < pcnt; pj++)
       {
-         int p = params[pi];
+         int p = params[pj];
          LV2Port & ctrl = mControls[p];
 
          if (ctrl.mTrigger)

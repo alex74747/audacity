@@ -142,31 +142,31 @@ public:
       return Write(key, f);
    }
 
-   bool ReadEnum(const wxString & key, int *pi, const wxArrayString & choices) const
+   bool ReadEnum(const wxString & key, int *pIndex, const wxArrayString & choices) const
    {
       wxString s;
       if (!wxFileConfig::Read(key, &s))
       {
          return false;
       }
-      *pi = choices.Index(s);
+      *pIndex = choices.Index(s);
       return true;
    }
 
-   bool ReadEnum(const wxString & key, int *pi, int defVal, const wxArrayString & choices) const
+   bool ReadEnum(const wxString & key, int *pIndex, int defVal, const wxArrayString & choices) const
    {
-      if (!ReadEnum(key, pi, choices))
+      if (!ReadEnum(key, pIndex, choices))
       {
-         *pi = defVal;
+         *pIndex = defVal;
       }
       return true;
    }
 
-   bool ReadEnum(const wxString & key, int *pi, const wxString & defVal, const wxArrayString & choices) const
+   bool ReadEnum(const wxString & key, int *pIndex, const wxString & defVal, const wxArrayString & choices) const
    {
-      if (!ReadEnum(key, pi, choices))
+      if (!ReadEnum(key, pIndex, choices))
       {
-         *pi = choices.Index(defVal);
+         *pIndex = choices.Index(defVal);
       }
       return true;
    }
