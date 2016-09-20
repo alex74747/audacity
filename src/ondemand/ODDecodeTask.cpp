@@ -89,10 +89,10 @@ void ODDecodeTask::DoSomeInternal()
          //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
          //the next iteration at the same sample window.
          mWaveTrackMutex.Lock();
-         for(size_t i=0;i<mWaveTracks.size();i++)
+         for(size_t j = 0; j < mWaveTracks.size(); j++)
          {
-            if(success && mWaveTracks[i])
-               mWaveTracks[i]->AddInvalidRegion(blockStartSample,blockEndSample);
+            if(success && mWaveTracks[j])
+               mWaveTracks[j]->AddInvalidRegion(blockStartSample, blockEndSample);
          }
          mWaveTrackMutex.Unlock();
       }

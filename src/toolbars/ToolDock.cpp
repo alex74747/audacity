@@ -695,13 +695,13 @@ ToolBarConfiguration::Position
    {
       struct Stop {};
 
-      Inserter(Position &p, wxRect &r, const wxPoint &pt, ToolBar *t)
-         : result(p), rect(r), point(pt), tb(t)
+      Inserter(Position &p, wxRect &r, const wxPoint &pt, ToolBar *toolbar)
+         : result(p), rect(r), point(pt), tb(toolbar)
       {}
 
       void ModifySize
          (ToolBar *ct,
-          const wxRect &rect,
+          const wxRect &newRect,
           ToolBarConfiguration::Position prevPosition,
           ToolBarConfiguration::Position position,
           wxSize &sz)
@@ -711,16 +711,16 @@ ToolBarConfiguration::Position
          // and is in the right place.
 
          // Does the location fall within this bar?
-         if (rect.Contains(point))
+         if (newRect.Contains(point))
          {
             sz = tb->GetDockedSize();
             // Choose a position always, if there is a bar to displace.
             // Else, only if the fit is possible.
-            if (ct || (sz.x <= rect.width && sz.y <= rect.height)) {
+            if (ct || (sz.x <= newRect.width && sz.y <= newRect.height)) {
                // May choose current or previous.
                if (ct &&
-                   (sz.y < rect.height ||
-                    point.y < (rect.GetTop() + rect.GetBottom()) / 2))
+                   (sz.y < newRect.height ||
+                    point.y < (newRect.GetTop() + newRect.GetBottom()) / 2))
                   // "Wedge" the bar into a crack alone, not adopting others,
                   // if either a short bar displaces a tall one, or else
                   // the displacing bar is at least at tall, but the pointer is
@@ -734,13 +734,13 @@ ToolBarConfiguration::Position
       }
 
       void Visit
-         (ToolBar *, wxPoint point)
+         (ToolBar *, wxPoint pt)
          override
       {
          if (result != ToolBarConfiguration::UnspecifiedPosition) {
             // If we've placed it, we're done.
-            rect.x = point.x;
-            rect.y = point.y;
+            rect.x = pt.x;
+            rect.y = pt.y;
             if (usedPrev)
                rect.y -= tb->GetDockedSize().GetHeight() / 2;
 
@@ -760,8 +760,9 @@ ToolBarConfiguration::Position
          if (result == ToolBarConfiguration::UnspecifiedPosition) {
             // Default of all other placements.
             result = finalPosition;
-            wxPoint point { finalRect.GetLeft(), finalRect.GetBottom() };
-            rect.SetPosition(point);
+            rect.SetPosition(
+               wxPoint { finalRect.GetLeft(), finalRect.GetBottom() }
+            );
          }
       }
 

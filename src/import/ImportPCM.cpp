@@ -662,9 +662,9 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
                else if (frame->nfields == 3) {
                   ustr = id3_field_getstring(&frame->fields[1]);
                   if (ustr) {
-                     char *str = (char *)id3_ucs4_utf8duplicate(ustr);
-                     n = UTF8CTOWX(str);
-                     free(str);
+                     char *newstr = (char *)id3_ucs4_utf8duplicate(ustr);
+                     n = UTF8CTOWX(newstr);
+                     free(newstr);
                   }
 
                   ustr = id3_field_getstring(&frame->fields[2]);
@@ -674,9 +674,9 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
                }
 
                if (ustr) {
-                  char *str = (char *)id3_ucs4_utf8duplicate(ustr);
-                  v = UTF8CTOWX(str);
-                  free(str);
+                  char *newstr = (char *)id3_ucs4_utf8duplicate(ustr);
+                  v = UTF8CTOWX(newstr);
+                  free(newstr);
                }
 
                if (!n.IsEmpty() && !v.IsEmpty()) {

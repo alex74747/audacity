@@ -1657,11 +1657,11 @@ bool Effect::ProcessTrack(int count,
          else if (curDelay > 0)
          {
             // curDelay is bounded by curBlockSize:
-            auto delay = curDelay.as_size_t();
-            curBlockSize -= delay;
+            auto scurDelay = curDelay.as_size_t();
+            curBlockSize -= scurDelay;
             for (size_t i = 0; i < chans; i++)
             {
-               memmove(mOutBufPos[i], mOutBufPos[i] + delay, sizeof(float) * curBlockSize);
+               memmove(mOutBufPos[i], mOutBufPos[i] + scurDelay, sizeof(float) * curBlockSize);
             }
             curDelay = 0;
          }

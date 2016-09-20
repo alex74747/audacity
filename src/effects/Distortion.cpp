@@ -1167,8 +1167,8 @@ void EffectDistortion::Leveller()
       for (int i = 0; i < numPasses; i++) {
          // Find the highest index for gain adjustment
          int index = numPoints - 1;
-         for (int i = index; i >= 0 && mTable[n] < gainLimits[i]; i--) {
-            index = i;
+         for (int j = index; j >= 0 && mTable[n] < gainLimits[j]; j--) {
+            index = j;
          }
          // the whole number of 'repeats'
          mTable[n] = (mTable[n] * gainFactors[index]) + addOnValues[index];

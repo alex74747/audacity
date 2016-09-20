@@ -1341,8 +1341,8 @@ namespace {
       auto iter = list.begin();
       double acc = (**iter++.*memfn)();
       return std::accumulate(iter, list.end(), acc,
-         [=](double acc, const ListOfTracks::value_type &pTrack) {
-         return combine(acc, (*pTrack.*memfn)());
+         [=](double acc_, const ListOfTracks::value_type &pTrack) {
+         return combine(acc_, (*pTrack.*memfn)());
       });
    }
 }

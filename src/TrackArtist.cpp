@@ -1758,19 +1758,19 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
    // the envelope and using a colored pen for the selected
    // part of the waveform
    {
-      double t0, t1;
+      double st0, st1;
       if (track->GetSelected() || track->IsSyncLockSelected()) {
-         t0 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t0())),
-            t1 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t1()));
+         st0 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t0())),
+            st1 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t1()));
       }
       else
-         t0 = t1 = 0.0;
+         st0 = st1 = 0.0;
       DrawWaveformBackground(dc, leftOffset, mid,
          env,
          zoomMin, zoomMax,
          track->ZeroLevelYCoordinate(mid),
          dB, dBRange,
-         t0, t1, zoomInfo, drawEnvelope,
+         st0, st1, zoomInfo, drawEnvelope,
          !track->GetSelected());
    }
 

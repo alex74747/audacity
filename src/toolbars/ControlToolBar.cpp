@@ -968,9 +968,9 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
                WaveTrack *wt = static_cast<WaveTrack *>(tt);
                if (duplex) {
                   auto end = playbackTracks.end();
-                  auto it = std::find(playbackTracks.begin(), end, wt);
-                  if (it != end)
-                     playbackTracks.erase(it);
+                  auto iter = std::find(playbackTracks.begin(), end, wt);
+                  if (iter != end)
+                     playbackTracks.erase(iter);
                }
                t1 = wt->GetEndTime();
                if (t1 < t0) {

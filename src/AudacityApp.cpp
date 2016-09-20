@@ -1849,10 +1849,10 @@ bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
             sock->Connect(addr, true);
             if (sock->IsConnected())
             {
-               for (size_t i = 0, cnt = parser->GetParamCount(); i < cnt; i++)
+               for (size_t j = 0, cnt = parser->GetParamCount(); j < cnt; j++)
                {
                   // Send the filename
-                  wxString param = parser->GetParam(i);
+                  wxString param = parser->GetParam(j);
                   sock->WriteMsg((const wxChar *) param.c_str(), (param.Len() + 1) * sizeof(wxChar));
                }
 

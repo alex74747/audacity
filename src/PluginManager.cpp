@@ -991,9 +991,9 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
             {
                if (mm.RegisterPlugin(item.plugs[j]->GetProviderID(), path))
                {
-                  for (size_t j = 0, cnt = item.plugs.GetCount(); j < cnt; j++)
+                  for (size_t k = 0, kcnt = item.plugs.GetCount(); k < kcnt; k++)
                   {
-                     pm.mPlugins.erase(item.plugs[j]->GetProviderID() + wxT("_") + path);
+                     pm.mPlugins.erase(item.plugs[k]->GetProviderID() + wxT("_") + path);
                   }
                   break;
                }

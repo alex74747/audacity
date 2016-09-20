@@ -637,9 +637,9 @@ bool Exporter::GetFilename()
       // Also, this can only happen for uncompressed audio.
       bool overwritingMissingAlias;
       overwritingMissingAlias = false;
-      for (size_t i = 0; i < gAudacityProjects.size(); i++) {
+      for (const auto &pProject : gAudacityProjects) {
          AliasedFileArray aliasedFiles;
-         FindDependencies(gAudacityProjects[i].get(), aliasedFiles);
+         FindDependencies(pProject.get(), aliasedFiles);
          for (const auto &aliasedFile : aliasedFiles) {
             if (mFilename.GetFullPath() == aliasedFile.mFileName.GetFullPath() &&
                 !mFilename.FileExists()) {

@@ -1050,13 +1050,13 @@ bool LadspaEffect::SetAutomationParameters(EffectAutomationParameters & parms)
       if (LADSPA_IS_PORT_CONTROL(d) && LADSPA_IS_PORT_INPUT(d))
       {
          wxString labelText = LAT1CTOWX(mData->PortNames[p]);
-         double d = 0.0;
-         if (!parms.Read(labelText, &d))
+         double dd = 0.0;
+         if (!parms.Read(labelText, &dd))
          {
             return false;
          }
 
-         mInputControls[p] = d;
+         mInputControls[p] = dd;
       }
    }
 

@@ -7411,8 +7411,7 @@ void TrackPanel::OnPrevTrack( bool shift )
          wxBell();
          if( mCircularTrackNavigation )
          {
-            TrackListIterator iter( GetTracks() );
-            p = iter.Last();
+            p = TrackListIterator{ GetTracks() }.Last();
          }
          else
          {
@@ -7464,8 +7463,8 @@ void TrackPanel::OnPrevTrack( bool shift )
          wxBell();
          if( mCircularTrackNavigation )
          {
-            TrackListIterator iter( GetTracks() );
-            for( Track *d = iter.First(); d; d = iter.Next( true ) )
+            TrackListIterator it( GetTracks() );
+            for( Track *d = it.First(); d; d = it.Next( true ) )
             {
                p = d;
             }
@@ -7518,8 +7517,7 @@ void TrackPanel::OnNextTrack( bool shift )
          wxBell();
          if( mCircularTrackNavigation )
          {
-            TrackListIterator iter( GetTracks() );
-            n = iter.First();
+            n = TrackListIterator{ GetTracks() }.First();
          }
          else
          {
@@ -7570,8 +7568,7 @@ void TrackPanel::OnNextTrack( bool shift )
          wxBell();
          if( mCircularTrackNavigation )
          {
-            TrackListIterator iter( GetTracks() );
-            n = iter.First();
+            n = TrackListIterator{ GetTracks() }.First();
             SetFocusedTrack( n );   // Wrap to the first track
             EnsureVisible( n );
             MakeParentModifyState(false);

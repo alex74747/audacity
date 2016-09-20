@@ -42,14 +42,14 @@ public:
          // This is the less evil one but watch out for redefinition of the base class
          struct Contents
          {
-            void swap(Contents &that) {
-               m_volume.swap(that.m_volume);
-               m_dirs.swap(that.m_dirs);
-               m_name.swap(that.m_name);
-               m_ext.swap(that.m_ext);
-               std::swap(m_relative, that.m_relative);
-               std::swap(m_hasExt, that.m_hasExt);
-               std::swap(m_dontFollowLinks, that.m_dontFollowLinks);
+            void swap(Contents &other) {
+               m_volume.swap(other.m_volume);
+               m_dirs.swap(other.m_dirs);
+               m_name.swap(other.m_name);
+               m_ext.swap(other.m_ext);
+               std::swap(m_relative, other.m_relative);
+               std::swap(m_hasExt, other.m_hasExt);
+               std::swap(m_dontFollowLinks, other.m_dontFollowLinks);
             };
 
             wxString        m_volume;

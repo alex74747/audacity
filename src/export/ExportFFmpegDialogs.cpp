@@ -1687,20 +1687,20 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, wxString *selfm
          if (tofmt != NULL) mShownFormatLongNames.Add(wxString::Format(wxT("%s - %s"),CompatibilityList[i].fmt,wxString::FromUTF8(tofmt->long_name).c_str()));
       }
    }
-   bool found = false;
+   bool foundFormat = false;
    if (selfmt != NULL)
    {
       for (int i = 0; CompatibilityList[i].fmt != NULL; i++)
       {
          if (!selfmt->Cmp(CompatibilityList[i].fmt))
          {
-            found = true;
+            foundFormat = true;
             break;
          }
       }
    }
    // Format was in the compatibility list
-   if (found)
+   if (foundFormat)
    {
       // Find all formats which have this codec as default and which are not in the list yet and add them too
       while ((ofmt = av_oformat_next(ofmt))!=NULL)

@@ -173,14 +173,14 @@ const float Dither::SHAPED_BS[] = { 2.033f, -2.165f, 1.959f, -1.590f, 0.6149f };
 // Note: The variable 'x' is needed for the STORE_... macros
 #define DITHER_LOOP(dither, store, load, dst, dstFormat, dstStride, src, srcFormat, srcStride, len) \
     do { \
-       char *d, *s; \
-       unsigned int i; \
+       char *d_, *s_; \
+       unsigned int i_; \
        int x; \
-       for (d = (char*)dst, s = (char*)src, i = 0; \
-            i < len; \
-            i++, d += SAMPLE_SIZE(dstFormat) * dstStride, \
-                 s += SAMPLE_SIZE(srcFormat) * srcStride) \
-          DITHER_STEP(dither, store, load, d, s); \
+       for (d_ = (char*)dst, s_ = (char*)src, i_ = 0; \
+            i_ < len; \
+            i_++, d_ += SAMPLE_SIZE(dstFormat) * dstStride, \
+                 s_ += SAMPLE_SIZE(srcFormat) * srcStride) \
+          DITHER_STEP(dither, store, load, d_, s_); \
    } while (0)
 
 // Shortcuts to dithering loops
