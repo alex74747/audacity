@@ -161,7 +161,7 @@ bool LadspaEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
    wxArrayString pathList = GetSearchPaths();
    wxArrayString files;
 
-   for (int i = 0; i < WXSIZEOF(kShippedEffects); i++)
+   for (size_t i = 0; i < WXSIZEOF(kShippedEffects); i++)
    {
       files.Clear();
       pm.FindFilesInPathList(kShippedEffects[i], pathList, files);
@@ -906,12 +906,12 @@ bool LadspaEffect::ProcessFinalize()
 
 size_t LadspaEffect::ProcessBlock(float **inBlock, float **outBlock, size_t blockLen)
 {
-   for (int i = 0; i < mAudioIns; i++)
+   for (size_t i = 0; i < mAudioIns; i++)
    {
       mData->connect_port(mMaster, mInputPorts[i], inBlock[i]);
    }
 
-   for (int i = 0; i < mAudioOuts; i++)
+   for (size_t i = 0; i < mAudioOuts; i++)
    {
       mData->connect_port(mMaster, mOutputPorts[i], outBlock[i]);
    }
@@ -972,12 +972,12 @@ size_t LadspaEffect::RealtimeProcess(int group,
                                           float **outbuf,
                                           size_t numSamples)
 {
-   for (int i = 0; i < mAudioIns; i++)
+   for (size_t i = 0; i < mAudioIns; i++)
    {
       mData->connect_port(mSlaves[group], mInputPorts[i], inbuf[i]);
    }
 
-   for (int i = 0; i < mAudioOuts; i++)
+   for (size_t i = 0; i < mAudioOuts; i++)
    {
       mData->connect_port(mSlaves[group], mOutputPorts[i], outbuf[i]);
    }

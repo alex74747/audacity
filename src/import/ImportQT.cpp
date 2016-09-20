@@ -326,8 +326,7 @@ ProgressResult QTImportFileHandle::Import(TrackFactory *trackFactory,
    
       TrackHolders channels{ numchan };
    
-      int c;
-      for (c = 0; c < numchan; c++) {
+      for (size_t c = 0; c < numchan; c++) {
          abl->mBuffers[c].mNumberChannels = 1;
          abl->mBuffers[c].mDataByteSize = sizeof(float) * bufsize;
          abl->mBuffers[c].mData = malloc(abl->mBuffers[c].mDataByteSize);
@@ -359,7 +358,7 @@ ProgressResult QTImportFileHandle::Import(TrackFactory *trackFactory,
             break;
          }
    
-         for (c = 0; c < numchan; c++) {
+         for (size_t c = 0; c < numchan; c++) {
             channels[c]->Append((char *) abl->mBuffers[c].mData, floatSample, numFrames);
          }
    
@@ -384,7 +383,7 @@ ProgressResult QTImportFileHandle::Import(TrackFactory *trackFactory,
          outTracks.swap(channels);
       }
    
-      for (c = 0; c < numchan; c++) {
+      for (size_t c = 0; c < numchan; c++) {
          free(abl->mBuffers[c].mData);
       }
       free(abl);
@@ -444,7 +443,7 @@ void QTImportFileHandle::AddMetadata(Tags *tags)
       return;
    }
 
-   for (int i = 0; i < WXSIZEOF(names); i++) {
+   for (size_t i = 0; i < WXSIZEOF(names); i++) {
       QTMetaDataItem item = kQTMetaDataItemUninitialized;
       // OSType key = names[i].key;
 

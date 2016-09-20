@@ -2012,8 +2012,8 @@ bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
       {
          wxASSERT( format==floatSample );
          float * pBuffer = (float*)buffer;
-         for(int i=0;i<len;i++)
-            pBuffer[i]=2.0f;
+         for(size_t i = 0; i < len; i++)
+            pBuffer[i] = 2.0f;
       }
       else
       {

@@ -1106,8 +1106,7 @@ bool NyquistEffect::ProcessOne()
       cmd += mCmd;
    }
 
-   int i;
-   for (i = 0; i < mCurNumChannels; i++) {
+   for (size_t i = 0; i < mCurNumChannels; i++) {
       mCurBuffer[i].Free();
    }
 
@@ -1222,7 +1221,7 @@ bool NyquistEffect::ProcessOne()
    }
 
    double rate = mCurTrack[0]->GetRate();
-   for (i = 0; i < outChannels; i++) {
+   for (int i = 0; i < outChannels; i++) {
       sampleFormat format = mCurTrack[i]->GetSampleFormat();
 
       if (outChannels == (int)mCurNumChannels) {
@@ -1236,13 +1235,13 @@ bool NyquistEffect::ProcessOne()
    int success = nyx_get_audio(StaticPutCallback, (void *)this);
 
    if (!success) {
-      for(i = 0; i < outChannels; i++) {
+      for(int i = 0; i < outChannels; i++) {
          mOutputTrack[i].reset();
       }
       return false;
    }
 
-   for (i = 0; i < outChannels; i++) {
+   for (int i = 0; i < outChannels; i++) {
       mOutputTrack[i]->Flush();
       mCurBuffer[i].Free();
       mOutputTime = mOutputTrack[i]->GetEndTime();
@@ -1258,7 +1257,7 @@ bool NyquistEffect::ProcessOne()
       }
    }
 
-   for (i = 0; i < mCurNumChannels; i++) {
+   for (size_t i = 0; i < mCurNumChannels; i++) {
       WaveTrack *out;
 
       if (outChannels == (int)mCurNumChannels) {
@@ -1294,7 +1293,7 @@ bool NyquistEffect::ProcessOne()
       mFirstInGroup = false;
    }
 
-   for (i = 0; i < outChannels; i++) {
+   for (int i = 0; i < outChannels; i++) {
       mOutputTrack[i].reset();
    }
    mProjectChanged = true;
@@ -1479,7 +1478,7 @@ void NyquistEffect::Parse(const wxString &line)
    }
 
    if (len >= 2 && tokens[0] == wxT("debugflags")) {
-      for (int i = 1; i < len; i++) {
+      for (size_t  i = 1; i < len; i++) {
          // Note: "trace" and "notrace" are overridden by "Debug" and "OK"
          // buttons if the plug-in generates a dialog box by using controls
          if (tokens[i] == wxT("trace")) {

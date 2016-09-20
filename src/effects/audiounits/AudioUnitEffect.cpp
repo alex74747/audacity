@@ -975,7 +975,7 @@ bool AudioUnitEffect::SupportsAutomation()
       return false;
    }
 
-   for (int i = 0; i < cnt; i++)
+   for (size_t i = 0; i < cnt; i++)
    {
       AudioUnitParameterInfoEx info;
       dataSize = sizeof(info);
@@ -1102,7 +1102,7 @@ bool AudioUnitEffect::SetHost(EffectHostInterface *host)
       }
 
       // Register them as something we're interested in
-      for (int i = 0; i < cnt; i++)
+      for (size_t i = 0; i < cnt; i++)
       {
          event.mArgument.mParameter.mParameterID = array[i];
          result = AUEventListenerAddEventType(mEventListenerRef,
@@ -1477,7 +1477,7 @@ bool AudioUnitEffect::GetAutomationParameters(EffectAutomationParameters & parms
       return false;
    }
 
-   for (int i = 0; i < cnt; i++)
+   for (size_t i = 0; i < cnt; i++)
    {
       AudioUnitParameterInfoEx info;
       dataSize = sizeof(info);
@@ -1550,7 +1550,7 @@ bool AudioUnitEffect::SetAutomationParameters(EffectAutomationParameters & parms
       return false;
    }
 
-   for (int i = 0; i < cnt; i++)
+   for (size_t i = 0; i < cnt; i++)
    {
       AudioUnitParameterInfoEx info;
       dataSize = sizeof(info);
@@ -2223,7 +2223,7 @@ void AudioUnitEffect::GetChannelCounts()
    mAudioOuts = 2;
 
    // Look only for exact channel constraints
-   for (int i = 0; i < dataSize / sizeof(AUChannelInfo); i++)
+   for (size_t i = 0; i < dataSize / sizeof(AUChannelInfo); i++)
    {
       AUChannelInfo *ci = &info[i];
 

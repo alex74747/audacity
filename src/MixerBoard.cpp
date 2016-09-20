@@ -647,7 +647,7 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
       meterFloatsArray = Floats{ 2 * nFrames };
 
       // Interleave for stereo. Left/mono first.
-      for (int index = 0; index < nFrames; index++)
+      for (size_t index = 0; index < nFrames; index++)
          meterFloatsArray[2 * index] = tempFloatsArray[index];
 
       if (mRightTrack)
@@ -655,7 +655,7 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
 
       if (bSuccess)
          // Interleave right channel, or duplicate same signal for "right" channel in mono case.
-         for (int index = 0; index < nFrames; index++)
+         for (size_t index = 0; index < nFrames; index++)
             meterFloatsArray[(2 * index) + 1] = tempFloatsArray[index];
    }
 
@@ -666,17 +666,17 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
       //vvv Need to apply envelope, too? See Mixer::MixSameRate.
       float gain = mLeftTrack->GetChannelGain(0);
       if (gain < 1.0)
-         for (int index = 0; index < nFrames; index++)
+         for (size_t index = 0; index < nFrames; index++)
             meterFloatsArray[2 * index] *= gain;
       if (mRightTrack)
          gain = mRightTrack->GetChannelGain(1);
       else
          gain = mLeftTrack->GetChannelGain(1);
       if (gain < 1.0)
-         for (int index = 0; index < nFrames; index++)
+         for (size_t index = 0; index < nFrames; index++)
             meterFloatsArray[(2 * index) + 1] *= gain;
       // Clip to [-1.0, 1.0] range.
-      for (int index = 0; index < 2 * nFrames; index++)
+      for (size_t index = 0; index < 2 * nFrames; index++)
          if (meterFloatsArray[index] < -1.0)
             meterFloatsArray[index] = -1.0;
          else if (meterFloatsArray[index] > 1.0)

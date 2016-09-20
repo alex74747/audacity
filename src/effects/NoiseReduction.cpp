@@ -700,11 +700,11 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
       std::fill(pScratch, pScratch + mSpectrumSize, 0.0f);
    }
 
-   for (int ii = 0; ii < mSpectrumSize; ++ii)
+   for (size_t ii = 0; ii < mSpectrumSize; ++ii)
       gains[ii] = log(gains[ii]);
 
-   for (int ii = 0; ii < mSpectrumSize; ++ii) {
-      const int j0 = std::max(0, ii - (int)mFreqSmoothingBins);
+   for (size_t ii = 0; ii < mSpectrumSize; ++ii) {
+      const int j0 = std::max(0, (int)ii - (int)mFreqSmoothingBins);
       const int j1 = std::min(mSpectrumSize - 1, ii + mFreqSmoothingBins);
       for(int jj = j0; jj <= j1; ++jj) {
          mFreqSmoothingScratch[ii] += gains[jj];
@@ -712,7 +712,7 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
       mFreqSmoothingScratch[ii] /= (j1 - j0 + 1);
    }
 
-   for (int ii = 0; ii < mSpectrumSize; ++ii)
+   for (size_t ii = 0; ii < mSpectrumSize; ++ii)
       gains[ii] = exp(mFreqSmoothingScratch[ii]);
 }
 
@@ -957,7 +957,7 @@ void EffectNoiseReduction::Worker::FillFirstHistoryWindow()
       float *pPower = &record.mSpectrums[1];
       int *pBitReversed = &hFFT->BitReversed[1];
       const auto last = mSpectrumSize - 1;
-      for (int ii = 1; ii < last; ++ii) {
+      for (size_t ii = 1; ii < last; ++ii) {
          const int kk = *pBitReversed++;
          const float realPart = *pReal++ = mFFTBuffer[kk];
          const float imagPart = *pImag++ = mFFTBuffer[kk + 1];
@@ -1033,7 +1033,7 @@ void EffectNoiseReduction::Worker::GatherStatistics(Statistics &statistics)
       // NEW statistics
       const float *pPower = &mQueue[0]->mSpectrums[0];
       float *pSum = &statistics.mSums[0];
-      for (int jj = 0; jj < mSpectrumSize; ++jj) {
+      for (size_t jj = 0; jj < mSpectrumSize; ++jj) {
          *pSum++ += *pPower++;
       }
    }
@@ -1170,7 +1170,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
 
       // First, the attack, which goes backward in time, which is,
       // toward higher indices in the queue.
-      for (int jj = 0; jj < mSpectrumSize; ++jj) {
+      for (size_t jj = 0; jj < mSpectrumSize; ++jj) {
          for (unsigned ii = mCenter + 1; ii < mHistoryLen; ++ii) {
             const float minimum =
                std::max(mNoiseAttenFactor,
@@ -1250,7 +1250,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          float *pOut = &mOutOverlapBuffer[0];
          float *pWindow = &mOutWindow[0];
          int *pBitReversed = &hFFT->BitReversed[0];
-         for (int jj = 0; jj < last; ++jj) {
+         for (size_t jj = 0; jj < last; ++jj) {
             int kk = *pBitReversed++;
             *pOut++ += mFFTBuffer[kk] * (*pWindow++);
             *pOut++ += mFFTBuffer[kk + 1] * (*pWindow++);
@@ -1259,7 +1259,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
       else {
          float *pOut = &mOutOverlapBuffer[0];
          int *pBitReversed = &hFFT->BitReversed[0];
-         for (int jj = 0; jj < last; ++jj) {
+         for (size_t jj = 0; jj < last; ++jj) {
             int kk = *pBitReversed++;
             *pOut++ += mFFTBuffer[kk];
             *pOut++ += mFFTBuffer[kk + 1];

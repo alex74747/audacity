@@ -1491,7 +1491,7 @@ size_t VSTEffect::RealtimeProcess(int group, float **inbuf, float **outbuf, size
 {
    wxASSERT(numSamples <= mBlockSize);
 
-   for (int c = 0; c < mAudioIns; c++)
+   for (size_t c = 0; c < mAudioIns; c++)
    {
       for (decltype(numSamples) s = 0; s < numSamples; s++)
       {

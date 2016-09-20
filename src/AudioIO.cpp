@@ -3410,8 +3410,6 @@ wxString AudioIO::GetDeviceInfo()
 // (which communicates with the audio device).
 void AudioIO::FillBuffers()
 {
-   unsigned int i;
-
    if (mPlaybackTracks.size() > 0)
    {
       // Though extremely unlikely, it is possible that some buffers
@@ -3477,7 +3475,7 @@ void AudioIO::FillBuffers()
             if (!progress)
                frames = available;
 
-            for (i = 0; i < mPlaybackTracks.size(); i++)
+            for (size_t i = 0; i < mPlaybackTracks.size(); i++)
             {
                // The mixer here isn't actually mixing: it's just doing
                // resampling, format conversion, and possibly time track
@@ -3558,7 +3556,7 @@ void AudioIO::FillBuffers()
                         endTime = endSample.as_double() / mRate;
                         auto diff = (endSample - startSample).as_long_long();
                         speed = double(std::abs(diff)) / mScrubDuration.as_double();
-                        for (i = 0; i < mPlaybackTracks.size(); i++)
+                        for (size_t i = 0; i < mPlaybackTracks.size(); i++)
                            mPlaybackMixers[i]->SetTimesAndSpeed(startTime, endTime, speed);
                      }
                   }
@@ -3573,7 +3571,7 @@ void AudioIO::FillBuffers()
                // and if yes, restart from the beginning.
                if (mWarpedTime >= mWarpedLength)
                {
-                  for (i = 0; i < mPlaybackTracks.size(); i++)
+                  for (size_t i = 0; i < mPlaybackTracks.size(); i++)
                      mPlaybackMixers[i]->Restart();
                   mWarpedTime = 0.0;
                }
@@ -3604,7 +3602,7 @@ void AudioIO::FillBuffers()
          AutoSaveFile blockFileLog;
          auto numChannels = mCaptureTracks.size();
 
-         for( i = 0; (int)i < numChannels; i++ )
+         for(size_t i = 0; i < numChannels; i++ )
          {
             auto avail = commonlyAvail;
             sampleFormat trackFormat = mCaptureTracks[i]->GetSampleFormat();
@@ -4091,7 +4089,7 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
                                   float *outputBuffer,
                                   int len)
 {
-   for (int i=0; i < inputChannels; i++) {
+   for (size_t i = 0; i < inputChannels; i++) {
       samplePtr inputPtr = ((samplePtr)inputBuffer) + (i * SAMPLE_SIZE(inputFormat));
       samplePtr outputPtr = ((samplePtr)outputBuffer) + (i * SAMPLE_SIZE(floatSample));
 
@@ -4326,7 +4324,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
          const WaveTrack **chans = (const WaveTrack **) alloca(numPlaybackChannels * sizeof(WaveTrack *));
          float **tempBufs = (float **) alloca(numPlaybackChannels * sizeof(float *));
-         for (int c = 0; c < numPlaybackChannels; c++)
+         for (size_t c = 0; c < numPlaybackChannels; c++)
          {
             tempBufs[c] = (float *) alloca(framesPerBuffer * sizeof(float));
          }

@@ -590,7 +590,7 @@ size_t BlockFile::CommonReadData(
       // significant bytes -- we want it in the 3 least
       // significant bytes.
       int *intPtr = (int *)data;
-      for( int i = 0; i < framesRead; i++ )
+      for( size_t i = 0; i < framesRead; i++ )
          intPtr[i] = intPtr[i] >> 8;
    }
    else if (format == int16Sample &&

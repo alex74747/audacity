@@ -699,7 +699,7 @@ void EditChainsDialog::FitColumns()
    // wxMac uses a hard coded width of 150 when wxLIST_AUTOSIZE_USEHEADER
    // is specified, so we calculate the width ourselves. This method may
    // work equally well on other platforms.
-   for (size_t c = 1; c < mList->GetColumnCount(); c++) {
+   for (int c = 1; c < mList->GetColumnCount(); c++) {
       wxListItem info;
       int width;
 

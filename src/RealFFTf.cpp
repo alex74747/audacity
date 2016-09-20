@@ -152,9 +152,9 @@ HFFT GetFFT(size_t fftlen)
 /* Release a previously requested handle to the FFT tables */
 void ReleaseFFT(HFFT hFFT)
 {
-   int h;
-   for(h=0; (h<MAX_HFFT) && (hFFTArray[h] != hFFT); h++);
-   if(h<MAX_HFFT) {
+   size_t h;
+   for(h = 0; (h < MAX_HFFT) && (hFFTArray[h] != hFFT); h++);
+   if(h < MAX_HFFT) {
       nFFTLockCount[h]--;
    } else {
       EndFFT(hFFT);
@@ -164,8 +164,7 @@ void ReleaseFFT(HFFT hFFT)
 /* Deallocate any unused FFT tables */
 void CleanupFFT()
 {
-   int h;
-   for(h=0; (h<MAX_HFFT); h++) {
+   for(size_t h = 0; (h < MAX_HFFT); h++) {
       if((nFFTLockCount[h] <= 0) && (hFFTArray[h] != NULL)) {
          EndFFT(hFFTArray[h]);
          hFFTArray[h] = NULL;

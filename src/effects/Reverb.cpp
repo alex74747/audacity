@@ -173,7 +173,7 @@ bool EffectReverb::ProcessInitialize(sampleCount WXUNUSED(totalLen), ChannelName
 
    mP = (Reverb_priv_t *) calloc(sizeof(*mP), mNumChans);
 
-   for (int i = 0; i < mNumChans; i++)
+   for (size_t i = 0; i < mNumChans; i++)
    {
       reverb_create(&mP[i].reverb,
                     mSampleRate,
@@ -194,7 +194,7 @@ bool EffectReverb::ProcessInitialize(sampleCount WXUNUSED(totalLen), ChannelName
 
 bool EffectReverb::ProcessFinalize()
 {
-   for (int i = 0; i < mNumChans; i++)
+   for (size_t i = 0; i < mNumChans; i++)
    {
       reverb_delete(&mP[i].reverb);
    }
@@ -209,7 +209,7 @@ size_t EffectReverb::ProcessBlock(float **inBlock, float **outBlock, size_t bloc
    float *ichans[2] = {NULL, NULL};
    float *ochans[2] = {NULL, NULL};
 
-   for (int c = 0; c < mNumChans; c++)
+   for (size_t c = 0; c < mNumChans; c++)
    {
       ichans[c] = inBlock[c];
       ochans[c] = outBlock[c];
@@ -222,7 +222,7 @@ size_t EffectReverb::ProcessBlock(float **inBlock, float **outBlock, size_t bloc
    while (remaining)
    {
       auto len = std::min(remaining, decltype(remaining)(BLOCK));
-      for (int c = 0; c < mNumChans; c++)
+      for (size_t c = 0; c < mNumChans; c++)
       {
          // Write the input samples to the reverb fifo.  Returned value is the address of the
          // fifo buffer which contains a copy of the input samples.
@@ -255,7 +255,7 @@ size_t EffectReverb::ProcessBlock(float **inBlock, float **outBlock, size_t bloc
 
       remaining -= len;
 
-      for (int c = 0; c < mNumChans; c++)
+      for (size_t c = 0; c < mNumChans; c++)
       {
          ichans[c] += len;
          ochans[c] += len;
