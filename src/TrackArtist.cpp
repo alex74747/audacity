@@ -1706,7 +1706,7 @@ void FindWavePortions
 void TrackArtist::DrawClipWaveform(const WaveTrack *track,
                                    const WaveClip *clip,
                                    wxDC & dc,
-                                   const wxRect & rect,
+                                   const wxRect & wholeRect,
                                    const SelectedRegion &selectedRegion,
                                    const ZoomInfo &zoomInfo,
                                    bool drawEnvelope,
@@ -1718,7 +1718,7 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
    Profiler profiler;
 #endif
 
-   const ClipParameters params(false, track, clip, rect, selectedRegion, zoomInfo);
+   const ClipParameters params(false, track, clip, wholeRect, selectedRegion, zoomInfo);
    const wxRect &hiddenMid = params.hiddenMid;
    // The "hiddenMid" rect contains the part of the display actually
    // containing the waveform, as it appears without the fisheye.  If it's empty, we're done.
@@ -1783,7 +1783,7 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
    // For each portion separately, we will decide to draw
    // it as min/max/rms or as individual samples.
    std::vector<WavePortion> portions;
-   FindWavePortions(portions, rect, zoomInfo, params);
+   FindWavePortions(portions, wholeRect, zoomInfo, params);
    const unsigned nPortions = portions.size();
 
    // Require at least 1/2 pixel per sample for drawing individual samples.
@@ -1906,13 +1906,13 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
 
    if (drawEnvelope) {
       DrawEnvelope(dc, mid, env, zoomMin, zoomMax, dB, dBRange);
-      clip->GetEnvelope()->DrawPoints(dc, rect, zoomInfo, dB, dBRange, zoomMin, zoomMax, true);
+      clip->GetEnvelope()->DrawPoints(dc, wholeRect, zoomInfo, dB, dBRange, zoomMin, zoomMax, true);
    }
 
    // Draw arrows on the left side if the track extends to the left of the
    // beginning of time.  :)
    if (h == 0.0 && tOffset < 0.0) {
-      DrawNegativeOffsetTrackArrows(dc, rect);
+      DrawNegativeOffsetTrackArrows(dc, wholeRect);
    }
 
    // Draw clip edges
@@ -1920,12 +1920,12 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
    if (tpre < 0) {
       AColor::Line(dc,
                    mid.x - 1, mid.y,
-                   mid.x - 1, mid.y + rect.height);
+                   mid.x - 1, mid.y + wholeRect.height);
    }
    if (tpost > t1) {
       AColor::Line(dc,
                    mid.x + mid.width, mid.y,
-                   mid.x + mid.width, mid.y + rect.height);
+                   mid.x + mid.width, mid.y + wholeRect.height);
    }
 }
 

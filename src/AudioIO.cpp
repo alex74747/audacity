@@ -4142,8 +4142,6 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    gAudioIO->mNumFrames += framesPerBuffer;
 #endif
 
-   unsigned int i;
-
    /* Send data to recording VU meter if applicable */
 
    if (gAudioIO->mInputMeter &&
@@ -4233,7 +4231,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          bool linkFlag = false;
 
          float *outputFloats = (float *)outputBuffer;
-         for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
+         for(size_t i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
@@ -4244,7 +4242,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
          // Copy the results to outputMeterFloats if necessary
          if (outputMeterFloats != outputFloats) {
-            for (i = 0; i < framesPerBuffer*numPlaybackChannels; ++i) {
+            for (size_t i = 0; i < framesPerBuffer*numPlaybackChannels; ++i) {
                outputMeterFloats[i] = outputFloats[i];
             }
          }
@@ -4286,7 +4284,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
             gAudioIO->mWarpedTime = std::abs(gAudioIO->mWarpedTime);
 
             // Reset mixer positions and flush buffers for all tracks
-            for (i = 0; i < numPlaybackTracks; i++)
+            for (size_t i = 0; i < numPlaybackTracks; i++)
             {
                gAudioIO->mPlaybackMixers[i]->Reposition(gAudioIO->mTime);
                const auto toDiscard =
@@ -4507,7 +4505,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          //
          // Clip output to [-1.0,+1.0] range (msmeyer)
          //
-         for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
+         for(size_t i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
          {
             float f = outputFloats[i];
             if (f > 1.0)
@@ -4519,7 +4517,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          // Same for meter output
          if (outputMeterFloats != outputFloats)
          {
-            for (i = 0; i < framesPerBuffer*numPlaybackChannels; ++i)
+            for (size_t i = 0; i < framesPerBuffer*numPlaybackChannels; ++i)
             {
                float f = outputMeterFloats[i];
                if (f > 1.0)
@@ -4560,7 +4558,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                switch(gAudioIO->mCaptureFormat) {
                case floatSample: {
                   float *inputFloats = (float *)inputBuffer;
-                  for( i = 0; i < len; i++)
+                  for(size_t i = 0; i < len; i++)
                      tempFloats[i] =
                         inputFloats[numCaptureChannels*i+t];
                } break;
@@ -4574,7 +4572,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                case int16Sample: {
                   short *inputShorts = (short *)inputBuffer;
                   short *tempShorts = (short *)tempBuffer;
-                  for( i = 0; i < len; i++) {
+                  for(size_t i = 0; i < len; i++) {
                      float tmp = inputShorts[numCaptureChannels*i+t];
                      if (tmp > 32767)
                         tmp = 32767;
@@ -4660,7 +4658,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
       if( outputBuffer && (numPlaybackChannels > 0) ) {
          float *outputFloats = (float *)outputBuffer;
-         for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
+         for(size_t i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
@@ -4671,7 +4669,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
          // Copy the results to outputMeterFloats if necessary
          if (outputMeterFloats != outputFloats) {
-            for (i = 0; i < framesPerBuffer*numPlaybackChannels; ++i) {
+            for (size_t i = 0; i < framesPerBuffer*numPlaybackChannels; ++i) {
                outputMeterFloats[i] = outputFloats[i];
             }
          }

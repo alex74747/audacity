@@ -104,17 +104,14 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
          if (mCurT1 > mCurT0) {
 
             if (leftTrack->GetLinked()) {
-               double t;
                // Assume linked track is wave
                WaveTrack* rightTrack = static_cast<WaveTrack*>(iter.Next());
 
                //Adjust bounds by the right tracks markers
-               t = rightTrack->GetStartTime();
-               t = wxMax(mT0, t);
-               mCurT0 = wxMin(mCurT0, t);
-               t = rightTrack->GetEndTime();
-               t = wxMin(mT1, t);
-               mCurT1 = wxMax(mCurT1, t);
+               auto time = std::max(mT0, rightTrack->GetStartTime());
+               mCurT0 = std::min(mCurT0, time);
+               time = std::min(mT1, rightTrack->GetEndTime());
+               mCurT1 = std::max(mCurT1, time);
 
                //Transform the marker timepoints to samples
                auto start = leftTrack->TimeToLongSamples(mCurT0);

@@ -1531,7 +1531,6 @@ void Meter::DrawMeterBar(wxDC &dc, MeterBar *bar)
    wxCoord y = bar->r.GetTop();
    wxCoord w = bar->r.GetWidth();
    wxCoord h = bar->r.GetHeight();
-   wxCoord ht;
    wxCoord wd;
 
    // Setup for erasing the background
@@ -1549,7 +1548,7 @@ void Meter::DrawMeterBar(wxDC &dc, MeterBar *bar)
          // Copy as much of the predrawn meter bar as is required for the
          // current peak.
          // (h - 1) corresponds to the mRuler.SetBounds() in HandleLayout()
-         ht = (int)(bar->peak * (h - 1) + 0.5);
+         auto ht = (int)(bar->peak * (h - 1) + 0.5);
 
          // Blank out the rest
          if (h - ht)
@@ -1642,7 +1641,7 @@ void Meter::DrawMeterBar(wxDC &dc, MeterBar *bar)
       {
          // Calculate the peak position
          // (h - 1) corresponds to the mRuler.SetBounds() in HandleLayout()
-         ht = (int)(bar->peak * (h - 1) + 0.5);
+         auto ht = (int)(bar->peak * (h - 1) + 0.5);
 
          // Blank out the rest
          if (h - ht)
@@ -1663,7 +1662,7 @@ void Meter::DrawMeterBar(wxDC &dc, MeterBar *bar)
          // Draw the "recent" peak hold line
          // (h - 1) corresponds to the mRuler.SetBounds() in HandleLayout()
          dc.SetPen(mPen);
-         int ht = (int)(bar->peakHold * (h - 1) + 0.5);
+         ht = (int)(bar->peakHold * (h - 1) + 0.5);
          if (ht > 0)
          {
             AColor::Line(dc, x, y + h - ht - 1, x + w - 1, y + h - ht - 1);

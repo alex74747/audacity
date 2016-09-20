@@ -449,23 +449,25 @@ ProgressResult FLACImportFileHandle::Import(TrackFactory *trackFactory,
 
    mChannels.resize(mNumChannels);
 
-   auto iter = mChannels.begin();
-   for (size_t c = 0; c < mNumChannels; ++iter, ++c) {
-      *iter = trackFactory->NewWaveTrack(mFormat, mSampleRate);
+   {
+      auto iter = mChannels.begin();
+      for (size_t c = 0; c < mNumChannels; ++iter, ++c) {
+         *iter = trackFactory->NewWaveTrack(mFormat, mSampleRate);
 
-      if (mNumChannels == 2) {
-         switch (c) {
-         case 0:
-            iter->get()->SetChannel(Track::LeftChannel);
-            iter->get()->SetLinked(true);
-            break;
-         case 1:
-            iter->get()->SetChannel(Track::RightChannel);
-            break;
+         if (mNumChannels == 2) {
+            switch (c) {
+               case 0:
+                  iter->get()->SetChannel(Track::LeftChannel);
+                  iter->get()->SetLinked(true);
+                  break;
+               case 1:
+                  iter->get()->SetChannel(Track::RightChannel);
+                  break;
+            }
          }
-      }
-      else {
-         iter->get()->SetChannel(Track::MonoChannel);
+         else {
+            iter->get()->SetChannel(Track::MonoChannel);
+         }
       }
    }
 

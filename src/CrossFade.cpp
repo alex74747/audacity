@@ -87,10 +87,9 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
    std::vector<Sequence*> tmpSequence(numclips);
 
 
-   unsigned int i = 0;
    //Now, go through the clips and load up the vectors.
-   for(const auto &tmpclip: mClips)
-   {
+   { size_t i = 0; // never incremented??
+      for(const auto &tmpclip: mClips) {
       tmpSequence[i] = tmpclip->GetSequence();
 
 
@@ -122,7 +121,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
          << " "
          << ( clipLength[i] - clipStart[i] ).as_long_long()
          <<  std::endl;
-   }
+   } }
    std::cout << "-------------\n";
 
    //Now, determine the sample format:

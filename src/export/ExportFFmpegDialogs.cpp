@@ -566,29 +566,31 @@ void FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
       if (action == wxNO) return;
    }
 
-   wxWindow *wnd;
-   wxListBox *lb;
-
-   wnd = dynamic_cast<wxWindow*>(parent)->FindWindowById(FEFormatID,parent);
-   lb = dynamic_cast<wxListBox*>(wnd);
-   if (lb->GetSelection() < 0)
    {
-      wxMessageBox(_("Please select format before saving a profile"));
-      return;
-   }
-   format = lb->GetStringSelection();
+      wxWindow *wnd;
+      wxListBox *lb;
 
-   wnd = dynamic_cast<wxWindow*>(parent)->FindWindowById(FECodecID,parent);
-   lb = dynamic_cast<wxListBox*>(wnd);
-   if (lb->GetSelection() < 0)
-   {
-      wxMessageBox(_("Please select codec before saving a profile"));
-      return;
-   }
-   codec = lb->GetStringSelection();
+      wnd = dynamic_cast<wxWindow*>(parent)->FindWindowById(FEFormatID,parent);
+      lb = dynamic_cast<wxListBox*>(wnd);
+      if (lb->GetSelection() < 0)
+      {
+         wxMessageBox(_("Please select format before saving a profile"));
+         return;
+      }
+      format = lb->GetStringSelection();
 
-   preset = &mPresets[name];
-   preset->mPresetName = name;
+      wnd = dynamic_cast<wxWindow*>(parent)->FindWindowById(FECodecID,parent);
+      lb = dynamic_cast<wxListBox*>(wnd);
+      if (lb->GetSelection() < 0)
+      {
+         wxMessageBox(_("Please select codec before saving a profile"));
+         return;
+      }
+      codec = lb->GetStringSelection();
+      
+      preset = &mPresets[name];
+      preset->mPresetName = name;
+   }
 
    wxSpinCtrl *sc;
    wxTextCtrl *tc;

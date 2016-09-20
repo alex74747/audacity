@@ -259,11 +259,11 @@ public:
          LoadInvalidRegion(i, sequence, updateODCount);
    }
 
-   int CountODPixels(size_t start, size_t end)
+   int CountODPixels(size_t from, size_t to)
    {
       using namespace std;
       const int *begin = &bl[0];
-      return count_if(begin + start, begin + end, bind2nd(less<int>(), 0));
+      return count_if(begin + from, begin + to, bind2nd(less<int>(), 0));
    }
 
 protected:
@@ -828,7 +828,6 @@ bool SpecCache::CalculateOneSpectrum
    bool result = false;
    const bool reassignment =
       (settings.algorithm == SpectrogramSettings::algReassignment);
-   const size_t windowSize = settings.WindowSize();
 
    sampleCount from;
 
@@ -1054,8 +1053,6 @@ void SpecCache::Populate
 {
    Allocate( settings );
 
-   const int &frequencyGain = settings.frequencyGain;
-   const size_t windowSize = settings.WindowSize();
    const bool autocorrelation =
       settings.algorithm == SpectrogramSettings::algPitchEAC;
    const bool reassignment =
@@ -1125,32 +1122,34 @@ void SpecCache::Populate
          // Need to look beyond the edges of the range to accumulate more
          // time reassignments.
          // I'm not sure what's a good stopping criterion?
-         auto xx = lowerBoundX;
-         const double pixelsPerSample = pixelsPerSecond / rate;
-         const int limit = std::min((int)(0.5 + fftLen * pixelsPerSample), 100);
-         for (int ii = 0; ii < limit; ++ii)
          {
-            const bool result =
+            auto xx = lowerBoundX;
+            const double pixelsPerSample = pixelsPerSecond / rate;
+            const int limit = std::min((int)(0.5 + fftLen * pixelsPerSample), 100);
+            for (int ii = 0; ii < limit; ++ii)
+            {
+               const bool result =
                CalculateOneSpectrum(
-                  settings, waveTrackCache, --xx, numSamples,
-                  offset, rate, pixelsPerSecond,
-                  lowerBoundX, upperBoundX,
-                  gainFactors, &scratch[0], &freq[0]);
-            if (!result)
-               break;
-         }
+                                    settings, waveTrackCache, --xx, numSamples,
+                                    offset, rate, pixelsPerSecond,
+                                    lowerBoundX, upperBoundX,
+                                    gainFactors, &scratch[0], &freq[0]);
+               if (!result)
+                  break;
+            }
 
-         xx = upperBoundX;
-         for (int ii = 0; ii < limit; ++ii)
-         {
-            const bool result =
+            xx = upperBoundX;
+            for (int ii = 0; ii < limit; ++ii)
+            {
+               const bool result =
                CalculateOneSpectrum(
-                  settings, waveTrackCache, xx++, numSamples,
-                  offset, rate, pixelsPerSecond,
-                  lowerBoundX, upperBoundX,
-                  gainFactors, &scratch[0], &freq[0]);
-            if (!result)
-               break;
+                                    settings, waveTrackCache, xx++, numSamples,
+                                    offset, rate, pixelsPerSecond,
+                                    lowerBoundX, upperBoundX,
+                                    gainFactors, &scratch[0], &freq[0]);
+               if (!result)
+                  break;
+            }
          }
 
          // Now Convert to dB terms.  Do this only after accumulating

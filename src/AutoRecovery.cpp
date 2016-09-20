@@ -802,14 +802,14 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_Name:
          {
-            short len;
+            short length;
 
             in.Read(&id, sizeof(id));
-            in.Read(&len, sizeof(len));
-            WxChars name{ len / sizeof(wxChar) };
-            in.Read(name.get(), len);
+            in.Read(&len, sizeof(length));
+            WxChars name{ length / sizeof(wxChar) };
+            in.Read(name.get(), length);
 
-            mIds[id] = wxString(name.get(), len / sizeof(wxChar));
+            mIds[id] = wxString(name.get(), length / sizeof(wxChar));
          }
          break;
 
@@ -831,14 +831,14 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_String:
          {
-            int len;
+            int length;
 
             in.Read(&id, sizeof(id));
-            in.Read(&len, sizeof(len));
-            WxChars val{ len / sizeof(wxChar) };
-            in.Read(val.get(), len);
+            in.Read(&length, sizeof(length));
+            WxChars val{ length / sizeof(wxChar) };
+            in.Read(val.get(), length);
 
-            out.WriteAttr(mIds[id], wxString(val.get(), len / sizeof(wxChar)));
+            out.WriteAttr(mIds[id], wxString(val.get(), length / sizeof(wxChar)));
          }
          break;
 
@@ -925,25 +925,25 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_Data:
          {
-            int len;
+            int length;
 
-            in.Read(&len, sizeof(len));
-            WxChars val{ len / sizeof(wxChar) };
-            in.Read(val.get(), len);
+            in.Read(&length, sizeof(length));
+            WxChars val{ length / sizeof(wxChar) };
+            in.Read(val.get(), length);
 
-            out.WriteData(wxString(val.get(), len / sizeof(wxChar)));
+            out.WriteData(wxString(val.get(), length / sizeof(wxChar)));
          }
          break;
 
          case FT_Raw:
          {
-            int len;
+            int length;
 
-            in.Read(&len, sizeof(len));
-            WxChars val{ len / sizeof(wxChar) };
-            in.Read(val.get(), len);
+            in.Read(&length, sizeof(length));
+            WxChars val{ length / sizeof(wxChar) };
+            in.Read(val.get(), length);
 
-            out.Write(wxString(val.get(), len / sizeof(wxChar)));
+            out.Write(wxString(val.get(), length / sizeof(wxChar)));
          }
          break;
 

@@ -367,7 +367,6 @@ namespace
    {
       // Create the requested window function
       window = Floats{ fftLen };
-      int ii;
 
       const bool extra = padding > 0;
       wxASSERT(windowSize % 2 == 0);
@@ -376,13 +375,16 @@ namespace
          ++windowSize;
       const int endOfWindow = padding + windowSize;
       // Left and right padding
-      for (ii = 0; ii < padding; ++ii) {
-         window[ii] = 0.0;
-         window[fftLen - ii - 1] = 0.0;
+      {
+         size_t ii;
+         for (ii = 0; ii < padding; ++ii) {
+            window[ii] = 0.0;
+            window[fftLen - ii - 1] = 0.0;
+         }
+         // Default rectangular window in the middle
+         for (; ii < endOfWindow; ++ii)
+            window[ii] = 1.0;
       }
-      // Default rectangular window in the middle
-      for (; ii < endOfWindow; ++ii)
-         window[ii] = 1.0;
       // Overwrite middle as needed
       switch (which) {
       case WINDOW:
@@ -402,12 +404,12 @@ namespace
       // Scale the window function to give 0dB spectrum for 0dB sine tone
       if (which == WINDOW) {
          scale = 0.0;
-         for (ii = padding; ii < endOfWindow; ++ii)
+         for (size_t ii = padding; ii < endOfWindow; ++ii)
             scale += window[ii];
          if (scale > 0)
             scale = 2.0 / scale;
       }
-      for (ii = padding; ii < endOfWindow; ++ii)
+      for (size_t ii = padding; ii < endOfWindow; ++ii)
          window[ii] *= scale;
    }
 }
@@ -487,7 +489,8 @@ size_t SpectrogramSettings::NBins() const
    return GetFFTLength() / 2;
 }
 
-NumberScale SpectrogramSettings::GetScale( float minFreq, float maxFreq ) const
+NumberScale SpectrogramSettings::GetScale
+(float minimum, float maximum) const
 {
    NumberScaleType type = nstLinear;
 
@@ -510,7 +513,7 @@ NumberScale SpectrogramSettings::GetScale( float minFreq, float maxFreq ) const
       type = nstPeriod; break;
    }
 
-   return NumberScale(type, minFreq, maxFreq);
+   return NumberScale(type, minimum, maximum);
 }
 
 bool SpectrogramSettings::SpectralSelectionEnabled() const

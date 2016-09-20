@@ -786,10 +786,11 @@ bool ExportFFmpeg::EncodeAudioFrame(int16_t *pFrame, size_t frameSize)
    while ((ret = av_fifo_size(mEncAudioFifo.get())) >= nAudioFrameSizeOut)
    {
       ret = av_fifo_generic_read(mEncAudioFifo.get(), mEncAudioFifoOutBuf.get(), nAudioFrameSizeOut, NULL);
+      // ret not checked??
 
       AVPacketEx pkt;
 
-      int ret= encode_audio(mEncAudioCodecCtx.get(),
+      ret = encode_audio(mEncAudioCodecCtx.get(),
          &pkt,                          // out
          mEncAudioFifoOutBuf.get(), // in
          default_frame_size);

@@ -75,14 +75,14 @@ public:
 
 class SBSMSEffectInterface final : public SBSMSInterfaceSliding {
 public:
-   SBSMSEffectInterface(Resampler *resampler,
+   SBSMSEffectInterface(Resampler *resampler_,
                         Slide *rateSlide, Slide *pitchSlide,
                         bool bReferenceInput,
                         long samples, long preSamples,
                         SBSMSQuality *quality)
       : SBSMSInterfaceSliding(rateSlide,pitchSlide,bReferenceInput,samples,preSamples,quality)
    {
-      this->resampler = resampler;
+      this->resampler = resampler_;
    }
    virtual ~SBSMSEffectInterface() {}
 
@@ -140,19 +140,19 @@ long postResampleCB(void *cb_data, SBSMSFrame *data)
    return count;
 }
 
-void EffectSBSMS :: setParameters(double rateStart, double rateEnd, double pitchStart, double pitchEnd,
-                                  SlideType rateSlideType, SlideType pitchSlideType,
-                                  bool bLinkRatePitch, bool bRateReferenceInput, bool bPitchReferenceInput)
+void EffectSBSMS :: setParameters(double rateStart_, double rateEnd_, double pitchStart_, double pitchEnd_,
+                                  SlideType rateSlideType_, SlideType pitchSlideType_,
+                                  bool bLinkRatePitch_, bool bRateReferenceInput_, bool bPitchReferenceInput_)
 {
-   this->rateStart = rateStart;
-   this->rateEnd = rateEnd;
-   this->pitchStart = pitchStart;
-   this->pitchEnd = pitchEnd;
-   this->bLinkRatePitch = bLinkRatePitch;
-   this->rateSlideType = rateSlideType;
-   this->pitchSlideType = pitchSlideType;
-   this->bRateReferenceInput = bRateReferenceInput;
-   this->bPitchReferenceInput = bPitchReferenceInput;
+   this->rateStart = rateStart_;
+   this->rateEnd = rateEnd_;
+   this->pitchStart = pitchStart_;
+   this->pitchEnd = pitchEnd_;
+   this->bLinkRatePitch = bLinkRatePitch_;
+   this->rateSlideType = rateSlideType_;
+   this->pitchSlideType = pitchSlideType_;
+   this->bRateReferenceInput = bRateReferenceInput_;
+   this->bPitchReferenceInput = bPitchReferenceInput_;
 }
 
 void EffectSBSMS::setParameters(double tempoRatio, double pitchRatio)
@@ -254,17 +254,14 @@ bool EffectSBSMS::Process()
 
             WaveTrack* rightTrack = NULL;
             if (leftTrack->GetLinked()) {
-               double t;
                // Assume linked track is wave or null
                rightTrack = static_cast<WaveTrack*>(iter.Next());
 
                //Adjust bounds by the right tracks markers
-               t = rightTrack->GetStartTime();
-               t = wxMax(mT0, t);
-               mCurT0 = wxMin(mCurT0, t);
-               t = rightTrack->GetEndTime();
-               t = wxMin(mT1, t);
-               mCurT1 = wxMax(mCurT1, t);
+               auto time = std::max(mT0, rightTrack->GetStartTime());
+               mCurT0 = std::min(mCurT0, time);
+               time = std::min(mT1, rightTrack->GetEndTime());
+               mCurT1 = std::max(mCurT1, time);
 
                //Transform the marker timepoints to samples
                start = leftTrack->TimeToLongSamples(mCurT0);

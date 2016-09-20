@@ -4558,8 +4558,9 @@ void AudacityProject::OnPasteNewLabel()
    bool bPastedSomething = false;
 
    SelectedTrackListOfKindIterator iter(Track::Label, GetTracks());
-   Track *t = iter.First();
-   if (!t)
+   if (Track *t = iter.First())
+      ;
+   else
    {
       // If there are no selected label tracks, try to choose the first label
       // track after some other selected track
@@ -6003,7 +6004,6 @@ void AudacityProject::OnCursorSelEnd()
 
 void AudacityProject::HandleAlign(int index, bool moveSel)
 {
-   TrackListIterator iter(GetTracks());
    wxString action;
    wxString shortAction;
    double offset;
@@ -6013,15 +6013,17 @@ void AudacityProject::HandleAlign(int index, bool moveSel)
    bool bRightChannel = false;
    double avgOffset = 0.0;
    int numSelected = 0;
-   Track *t = iter.First();
    double delta = 0.0;
    double newPos = -1.0;
    wxArrayDouble trackStartArray;
    wxArrayDouble trackEndArray;
    double firstTrackOffset=0.0f;
 
-   while (t) {
-      // We only want Wave and Note tracks here.
+   {
+      TrackListIterator iter(GetTracks());
+      Track *t = iter.First();
+      while (t) {
+         // We only want Wave and Note tracks here.
 #if defined(USE_MIDI)
       if (t->GetSelected() && ((t->GetKind() == Track::Wave) ||
                                (t->GetKind() == Track::Note)))
@@ -6049,12 +6051,13 @@ void AudacityProject::HandleAlign(int index, bool moveSel)
          trackStartArray.Add(t->GetStartTime());
          trackEndArray.Add(t->GetEndTime());
 
-         if (offset < minOffset)
-            minOffset = offset;
-         if (t->GetEndTime() > maxEndOffset)
-            maxEndOffset = t->GetEndTime();
+               if (offset < minOffset)
+                  minOffset = offset;
+               if (t->GetEndTime() > maxEndOffset)
+                  maxEndOffset = t->GetEndTime();
+            }
+         t = iter.Next();
       }
-      t = iter.Next();
    }
 
    avgOffset /= numSelected;  // numSelected is mono/stereo tracks not channels.

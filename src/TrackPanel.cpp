@@ -3252,19 +3252,21 @@ void TrackPanel::ForwardEventToWaveTrackEnvelope(wxMouseEvent & event)
 
       // AS: Then forward our mouse event to the envelope.
       // It'll recalculate and then tell us whether or not to redraw.
-      wxRect envRect = mCapturedRect;
-      float zoomMin, zoomMax;
-      pwavetrack->GetDisplayBounds(&zoomMin, &zoomMax);
-      if (event.ButtonDown()) {
-         mEnvelopeEditor = std::make_unique<EnvelopeEditor>(*penvelope, true);
-         mEnvelopeEditorRight.reset();
+      {
+         wxRect envRect = mCapturedRect;
+         float zoomMin, zoomMax;
+         pwavetrack->GetDisplayBounds(&zoomMin, &zoomMax);
+         if (event.ButtonDown()) {
+            mEnvelopeEditor = std::make_unique<EnvelopeEditor>(*penvelope, true);
+            mEnvelopeEditorRight.reset();
+         }
+         needUpdate =
+            mEnvelopeEditor &&
+            mEnvelopeEditor->MouseEvent(
+            event, envRect,
+            *mViewInfo,
+            dB, dBRange, zoomMin, zoomMax);
       }
-      needUpdate =
-         mEnvelopeEditor &&
-         mEnvelopeEditor->MouseEvent(
-         event, envRect,
-         *mViewInfo,
-         dB, dBRange, zoomMin, zoomMax);
 
       // If this track is linked to another track, make the identical
       // change to the linked envelope:
@@ -3650,8 +3652,6 @@ void TrackPanel::AddClipsToCaptured(Track *t, double t0, double t1)
 // samples functionality based on sample rate.
 void TrackPanel::DoSlide(wxMouseEvent & event)
 {
-   unsigned int i;
-
    // find which track the mouse is currently in (mouseTrack) -
    // this may not be the same as the one we started in...
 
@@ -3676,7 +3676,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
    if (mCapturedClip)
 #endif
    {
-      for(i=0; i<mCapturedClipArray.size(); i++) {
+      for(size_t i = 0; i < mCapturedClipArray.size(); i++) {
          if (mCapturedClipArray[i].clip)
             mCapturedClipArray[i].clip->Offset(-mHSlideAmount);
          else
@@ -3883,8 +3883,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
       do { // loop to compute allowed, does not actually move anything yet
          initialAllowed = mHSlideAmount;
 
-         unsigned int i, j;
-         for(i=0; i<mCapturedClipArray.size(); i++) {
+         for(size_t i = 0; i < mCapturedClipArray.size(); i++) {
             WaveTrack *track = (WaveTrack *)mCapturedClipArray[i].track;
             WaveClip *clip = mCapturedClipArray[i].clip;
 
@@ -3893,7 +3892,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
                // temporarily because they're all moving together and
                // we want to find out if OTHER clips are in the way,
                // not one of the moving ones
-               for(j=0; j<mCapturedClipArray.size(); j++) {
+               for(size_t j = 0; j < mCapturedClipArray.size(); j++) {
                   WaveClip *clip2 = mCapturedClipArray[j].clip;
                   if (clip2 && clip2 != clip)
                      clip2->Offset(-safeBigDistance);
@@ -3910,7 +3909,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
                   mSnapLeft = mSnapRight = -1; // see bug 1067
                }
 
-               for(j=0; j<mCapturedClipArray.size(); j++) {
+               for(size_t j = 0; j < mCapturedClipArray.size(); j++) {
                   WaveClip *clip2 = mCapturedClipArray[j].clip;
                   if (clip2 && clip2 != clip)
                      clip2->Offset(safeBigDistance);
@@ -3920,8 +3919,7 @@ void TrackPanel::DoSlide(wxMouseEvent & event)
       } while (mHSlideAmount != initialAllowed);
 
       if (mHSlideAmount != 0.0) { // finally, here is where clips are moved
-         unsigned int i;
-         for(i=0; i<mCapturedClipArray.size(); i++) {
+         for(size_t i = 0; i < mCapturedClipArray.size(); i++) {
             Track *track = mCapturedClipArray[i].track;
             WaveClip *clip = mCapturedClipArray[i].clip;
             if (clip)
@@ -4224,13 +4222,14 @@ void TrackPanel::HandleWaveTrackVZoom
    float min, max, minBand = 0;
    const double rate = track->GetRate();
    const float halfrate = rate / 2;
-   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
    NumberScale scale;
    const bool spectral = (track->GetDisplay() == WaveTrack::Spectrum);
-   const bool spectrumLinear = spectral &&
-      (track->GetSpectrogramSettings().scaleType == SpectrogramSettings::stLinear);
+   bool spectrumLinear = false;
 
    if (spectral) {
+      const SpectrogramSettings &settings = track->GetSpectrogramSettings();
+      spectrumLinear = spectral &&
+         (settings.scaleType == SpectrogramSettings::stLinear);
       track->GetSpectrumBounds(&min, &max);
       scale = settings.GetScale( min, max );
       const auto fftLength = settings.GetFFTLength();
@@ -5807,12 +5806,12 @@ void TrackPanel::HandleWheelRotationInVRuler
             float newdBRange = settings.dBRange;
 
             if (partner) {
-               WaveformSettings &settings = partner->GetIndependentWaveformSettings();
+               WaveformSettings &wsettings = partner->GetIndependentWaveformSettings();
                if (steps < 0)
                   // Zoom out
-                  settings.NextLowerDBRange();
+                  wsettings.NextLowerDBRange();
                else
-                  settings.NextHigherDBRange();
+                  wsettings.NextHigherDBRange();
             }
 
             // Is y coordinate within the rectangle half-height centered about
@@ -7031,12 +7030,12 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
 #endif
 
       if (region.Contains(0, trackRect.y, GetLeftOffset(), trackRect.height)) {
-         wxRect rect = trackRect;
-         rect.x += GetVRulerOffset();
-         rect.y += kTopMargin;
-         rect.width = GetVRulerWidth();
-         rect.height -= (kTopMargin + kBottomMargin);
-         mTrackArtist->DrawVRuler(t, dc, rect);
+         wxRect vrect = trackRect;
+         vrect.x += GetVRulerOffset();
+         vrect.y += kTopMargin;
+         vrect.width = GetVRulerWidth();
+         vrect.height -= (kTopMargin + kBottomMargin);
+         mTrackArtist->DrawVRuler(t, dc, vrect);
       }
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY

@@ -59,10 +59,9 @@ static const size_t kRMSWindowSize = 100u;  // samples in circular RMS window bu
 
 struct AutoDuckRegion
 {
-   AutoDuckRegion(double t0, double t1)
+   AutoDuckRegion(double t0_, double t1_)
+      : t0{ t0_ }, t1{ t1_ }
    {
-      this->t0 = t0;
-      this->t1 = t1;
    }
 
    double t0;

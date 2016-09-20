@@ -178,7 +178,7 @@ bool VampEffect::GetAutomationParameters(EffectAutomationParameters & parms)
          wxArrayString choices;
          int val = 0;
 
-         for (size_t i = 0, cnt = mParameters[p].valueNames.size(); i < cnt; i++)
+         for (size_t i = 0, icnt = mParameters[p].valueNames.size(); i < icnt; i++)
          {
             wxString choice = wxString::FromUTF8(mParameters[p].valueNames[i].c_str());
             if (size_t(value - mParameters[p].minValue + 0.5) == i)
@@ -225,7 +225,7 @@ bool VampEffect::SetAutomationParameters(EffectAutomationParameters & parms)
          wxArrayString choices;
          int val;
 
-         for (size_t i = 0, cnt = mParameters[p].valueNames.size(); i < cnt; i++)
+         for (size_t i = 0, icnt = mParameters[p].valueNames.size(); i < icnt; i++)
          {
             wxString choice = wxString::FromUTF8(mParameters[p].valueNames[i].c_str());
             choices.Add(choice);
@@ -271,7 +271,7 @@ bool VampEffect::SetAutomationParameters(EffectAutomationParameters & parms)
          wxArrayString choices;
          int val;
 
-         for (size_t i = 0, cnt = mParameters[p].valueNames.size(); i < cnt; i++)
+         for (size_t i = 0, icnt = mParameters[p].valueNames.size(); i < icnt; i++)
          {
             wxString choice = wxString::FromUTF8(mParameters[p].valueNames[i].c_str());
             choices.Add(choice);

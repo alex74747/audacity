@@ -526,10 +526,10 @@ bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const 
 
       int total = mBlockFileHash.size();
 
-      BlockHash::iterator iter = mBlockFileHash.begin();
       bool success = true;
       int count = 0;
-      while ((iter != mBlockFileHash.end()) && success)
+      for (BlockHash::iterator iter = mBlockFileHash.begin();
+           (iter != mBlockFileHash.end()) && success; ++iter)
       {
          BlockFilePtr b = iter->second.lock();
          if (b) {
@@ -548,7 +548,6 @@ bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const 
             progress.Update(count, total);
             count++;
          }
-         ++iter;
       }
 
       // in case there are any nulls
@@ -854,16 +853,17 @@ void DirManager::BalanceInfoDel(const wxString &file)
       unsigned int midkey=topnum<<8|midnum;
 
       // look for midkey in the mid pool
-      if(dirMidFull.find(midkey) != dirMidFull.end()){
+      if(dirMidFull.find(midkey) != dirMidFull.end()) {
          // in the full pool
 
-         if(--dirMidFull[midkey]<256){
+         if(--dirMidFull[midkey]<256) {
             // move out of full into available
             dirMidPool[midkey]=dirMidFull[midkey];
             dirMidFull.erase(midkey);
          }
-      }else{
-         if(--dirMidPool[midkey]<1){
+      }
+      else {
+         if(--dirMidPool[midkey]<1) {
             // erasing the key here is OK; we have provision to add it
             // back if its needed (unlike the dirTopPool hash)
             dirMidPool.erase(midkey);
@@ -880,19 +880,20 @@ void DirManager::BalanceInfoDel(const wxString &file)
             // also need to remove from toplevel
             if(dirTopFull.find(topnum) != dirTopFull.end()){
                // in the full pool
-               if(--dirTopFull[topnum]<256){
+               if(--dirTopFull[topnum]<256) {
                   // move out of full into available
                   dirTopPool[topnum]=dirTopFull[topnum];
                   dirTopFull.erase(topnum);
                }
-            }else{
-               if(--dirTopPool[topnum]<1){
+            }
+            else {
+               if(--dirTopPool[topnum]<1) {
                   // do *not* erase the hash entry from dirTopPool
                   // *do* DELETE the actual directory
-                  wxString dir=(projFull != wxT("")? projFull: mytemp);
-                  dir += wxFILE_SEP_PATH;
-                  dir += file.Mid(0,3);
-                  wxFileName::Rmdir(dir);
+                  auto directory = (projFull != wxT("")? projFull: mytemp);
+                  directory += wxFILE_SEP_PATH;
+                  directory += file.Mid(0,3);
+                  wxFileName::Rmdir(directory);
                }
             }
          }
@@ -1443,10 +1444,9 @@ bool DirManager::EnsureSafeFilename(const wxFileName &fName)
          // just in case!!!
 
          // Put things back where they were
-         BlockHash::iterator iter = mBlockFileHash.begin();
-         while (iter != mBlockFileHash.end())
+         for (const auto &pair : mBlockFileHash)
          {
-            BlockFilePtr b = iter->second.lock();
+            BlockFilePtr b = pair.second.lock();
             if (b) {
                auto ab = static_cast< AliasBlockFile * > ( &*b );
                auto db = static_cast< ODDecodeBlockFile * > ( &*b );
@@ -1456,7 +1456,6 @@ bool DirManager::EnsureSafeFilename(const wxFileName &fName)
                if (!b->IsDataAvailable() && (db->GetEncodedAudioFilename() == fName))
                   db->UnlockRead();
             }
-            ++iter;
          }
 
          // Print error message and cancel the export
@@ -1468,10 +1467,9 @@ bool DirManager::EnsureSafeFilename(const wxFileName &fName)
       else
       {
          //point the aliases to the NEW filename.
-         BlockHash::iterator iter = mBlockFileHash.begin();
-         while (iter != mBlockFileHash.end())
+         for (const auto &pair : mBlockFileHash)
          {
-            BlockFilePtr b = iter->second.lock();
+            BlockFilePtr b = pair.second.lock();
             if (b) {
                auto ab = static_cast< AliasBlockFile * > ( &*b );
                auto db = static_cast< ODDecodeBlockFile * > ( &*b );
@@ -1489,7 +1487,6 @@ bool DirManager::EnsureSafeFilename(const wxFileName &fName)
                   db->UnlockRead();
                }
             }
-            ++iter;
          }
 
       }

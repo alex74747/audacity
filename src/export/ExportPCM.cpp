@@ -256,7 +256,7 @@ void ExportPCMOptions::OnHeaderChoice(wxCommandEvent & WXUNUSED(evt))
          mEncodingFormats.Add(enc);
          for (j = 0; j < sfnum; j++)
          {
-            int enc = sfs[j];
+            enc = sfs[j];
             if ((sel == wxNOT_FOUND) && (fmt == enc))
             {
                sel = mEncodingFormats.GetCount()-1;

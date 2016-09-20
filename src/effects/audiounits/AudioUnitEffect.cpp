@@ -1021,7 +1021,7 @@ bool AudioUnitEffect::SetHost(EffectHostInterface *host)
 
    SetRateAndChannels();
 
-   // Retrieve the desired number of frames per slice
+   // Retrieve the desired number of frames per slice as mBlockSize
    UInt32 dataSize = sizeof(mBlockSize);
    mBlockSize = 512;
    AudioUnitGetProperty(mUnit,
@@ -1071,7 +1071,6 @@ bool AudioUnitEffect::SetHost(EffectHostInterface *host)
       event.mArgument.mParameter.mScope = kAudioUnitScope_Global;
       event.mArgument.mParameter.mElement = 0;
 
-      UInt32 dataSize;
       Boolean isWritable;
 
       // Retrieve the list of properties

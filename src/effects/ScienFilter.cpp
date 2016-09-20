@@ -648,9 +648,11 @@ bool EffectScienFilter::CalcFilter()
       else
       {
          // Odd order - first do the 1st-order section
-         float fSPoleX = -fC;
-         float fSPoleY = 0;
-         BilinTransform (fSPoleX, fSPoleY, &fZPoleX, &fZPoleY);
+         {
+            float fSPoleX = -fC;
+            float fSPoleY = 0;
+            BilinTransform (fSPoleX, fSPoleY, &fZPoleX, &fZPoleY);
+         }
          mpBiquad[0].fNumerCoeffs [0] = 1;
          if (mFilterSubtype == kLowPass)		// LOWPASS
             mpBiquad[0].fNumerCoeffs [1] = 1;

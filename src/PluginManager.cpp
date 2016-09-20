@@ -323,14 +323,14 @@ wxAccStatus CheckListAx::GetState( int childId, long *state )
       {
          flag |= wxACC_STATE_SYSTEM_SELECTABLE;
 
-         long state = item.GetState();
+         long itemState = item.GetState();
 
-         if( state & wxLIST_STATE_FOCUSED )
+         if( itemState & wxLIST_STATE_FOCUSED )
          {
             flag |= wxACC_STATE_SYSTEM_FOCUSED;
          }
 
-         if( state & wxLIST_STATE_SELECTED )
+         if( itemState & wxLIST_STATE_SELECTED )
          {
             flag |= wxACC_STATE_SYSTEM_SELECTED;
          }
@@ -910,11 +910,13 @@ void PluginRegistrationDialog::OnEnable(wxCommandEvent & WXUNUSED(evt))
 {
    wxArrayLong items;
 
-   long i = mEffects->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-   while (i != wxNOT_FOUND)
    {
-      items.Insert(i, 0);
-      i = mEffects->GetNextItem(i, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      long i = mEffects->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      while (i != wxNOT_FOUND)
+      {
+         items.Insert(i, 0);
+         i = mEffects->GetNextItem(i, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      }
    }
 
    for (size_t i = 0, cnt = items.GetCount(); i < cnt; i++)
@@ -927,11 +929,13 @@ void PluginRegistrationDialog::OnDisable(wxCommandEvent & WXUNUSED(evt))
 {
    wxArrayLong items;
 
-   long i = mEffects->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-   while (i != wxNOT_FOUND)
    {
-      items.Insert(i, 0);
-      i = mEffects->GetNextItem(i, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      long i = mEffects->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      while (i != wxNOT_FOUND)
+      {
+         items.Insert(i, 0);
+         i = mEffects->GetNextItem(i, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+      }
    }
 
    for (size_t i = 0, cnt = items.GetCount(); i < cnt; i++)
@@ -2142,10 +2146,10 @@ void PluginManager::CheckForUpdates(bool bFast)
    // to register the plugin.
    for (PluginMap::iterator iter = mPlugins.begin(); iter != mPlugins.end(); ++iter)
    {
-      PluginDescriptor & plug = iter->second;
-      const PluginID & plugID = plug.GetID();
-      const wxString & plugPath = plug.GetPath();
-      PluginType plugType = plug.GetPluginType();
+      PluginDescriptor & desc = iter->second;
+      const PluginID & plugID = desc.GetID();
+      const wxString & plugPath = desc.GetPath();
+      PluginType plugType = desc.GetPluginType();
 
       // Bypass 2.1.0 placeholders...remove this after a few releases past 2.1.0
       if (plugType == PluginTypeNone)
@@ -2161,8 +2165,8 @@ void PluginManager::CheckForUpdates(bool bFast)
          } 
          else if (!mm.IsProviderValid(plugID, plugPath))
          {
-            plug.SetEnabled(false);
-            plug.SetValid(false);
+            desc.SetEnabled(false);
+            desc.SetValid(false);
          }
          else
          {
@@ -2187,10 +2191,10 @@ void PluginManager::CheckForUpdates(bool bFast)
       }
       else if (plugType != PluginTypeNone && plugType != PluginTypeStub)
       {
-         plug.SetValid(mm.IsPluginValid(plug.GetProviderID(), plugPath, bFast));
-         if (!plug.IsValid())
+         desc.SetValid(mm.IsPluginValid(desc.GetProviderID(), plugPath, bFast));
+         if (!desc.IsValid())
          {
-            plug.SetEnabled(false);
+            desc.SetEnabled(false);
          }
       }
    }

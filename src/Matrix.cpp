@@ -322,9 +322,11 @@ bool InvertMatrix(const Matrix& input, Matrix& Minv)
       }
 
       // Divide this row by the value of M[i][i]
-      double factor = 1.0 / M[i][i];
-      M[i] = M[i] * factor;
-      Minv[i] = Minv[i] * factor;
+      {
+         double factor = 1.0 / M[i][i];
+         M[i] = M[i] * factor;
+         Minv[i] = Minv[i] * factor;
+      }
 
       // Eliminate the rest of the column
       for(unsigned j = 0; j < N; j++) {

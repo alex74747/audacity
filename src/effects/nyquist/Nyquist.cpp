@@ -1400,13 +1400,12 @@ void NyquistEffect::Parse(const wxString &line)
 {
    wxArrayString tokens;
 
-   int i;
-   int len = line.Length();
+   auto len = line.Length();
    bool sl = false;
    bool q = false;
    wxString tok = wxT("");
 
-   for (i = 1; i < len; i++) {
+   for (size_t i = 1; i < len; i++) {
       wxChar c = line[i];
 
       if (c == wxT('\\')) {

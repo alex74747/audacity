@@ -106,7 +106,6 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
 
    {
       SF_INFO sndInfo;
-      int result;
 
       unsigned numChannels = 0;
 
@@ -166,11 +165,14 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
          return;
       }
 
-      result = sf_command(sndFile.get(), SFC_SET_RAW_START_OFFSET, &offset, sizeof(offset));
-      if (result != 0) {
-         char str[1000];
-         sf_error_str(sndFile.get(), str, 1000);
-         printf("%s\n", str);
+      {
+         auto result =
+            sf_command(sndFile.get(), SFC_SET_RAW_START_OFFSET, &offset, sizeof(offset));
+         if (result != 0) {
+            char str[1000];
+            sf_error_str(sndFile.get(), str, 1000);
+            printf("%s\n", str);
+         }
       }
 
       SFCall<sf_count_t>(sf_seek, sndFile.get(), 0, SEEK_SET);
@@ -196,22 +198,24 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
 
       channels.resize(numChannels);
 
-      auto iter = channels.begin();
-      for (decltype(numChannels) c = 0; c < numChannels; ++iter, ++c) {
-         const auto channel =
-         (*iter = trackFactory->NewWaveTrack(format, rate)).get();
+      {
+         auto iter = channels.begin();
+         for (decltype(numChannels) c = 0; c < numChannels; ++iter, ++c) {
+            const auto channel =
+            (*iter = trackFactory->NewWaveTrack(format, rate)).get();
 
-         if (numChannels > 1)
-            switch (c) {
-               case 0:
-                  channel->SetChannel(Track::LeftChannel);
-                  break;
-               case 1:
-                  channel->SetChannel(Track::RightChannel);
-                  break;
-               default:
-                  channel->SetChannel(Track::MonoChannel);
-            }
+            if (numChannels > 1)
+               switch (c) {
+                  case 0:
+                     channel->SetChannel(Track::LeftChannel);
+                     break;
+                  case 1:
+                     channel->SetChannel(Track::RightChannel);
+                     break;
+                  default:
+                     channel->SetChannel(Track::MonoChannel);
+               }
+         }
       }
 
       const auto firstChannel = channels.begin()->get();

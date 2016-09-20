@@ -639,13 +639,13 @@ BEGIN_EVENT_TABLE(EffectCompressorPanel, wxPanelWrapper)
 END_EVENT_TABLE()
 
 EffectCompressorPanel::EffectCompressorPanel(wxWindow *parent,
-                                             double & threshold,
-                                             double & noiseFloor,
-                                             double & ratio)
+                                             double & threshold_,
+                                             double & noiseFloor_,
+                                             double & ratio_)
 :  wxPanelWrapper(parent),
-   threshold(threshold),
-   noiseFloor(noiseFloor),
-   ratio(ratio)
+   threshold(threshold_),
+   noiseFloor(noiseFloor_),
+   ratio(ratio_)
 {
 }
 
