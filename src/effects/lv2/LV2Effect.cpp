@@ -308,7 +308,7 @@ LV2Effect::LV2Effect(const LilvPlugin *plug)
    mSuilInstance = NULL;
 
    mSampleRate = 44100;
-   mBlockSize = 512;
+   mBlockSize = 512u;
 
    mLatencyPort = -1;
    mLatencyDone = false;

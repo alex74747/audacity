@@ -312,7 +312,7 @@ private:
 
    sampleCount       mInSampleCount;
    sampleCount       mOutStepCount;
-   int                   mInWavePos;
+   size_t                   mInWavePos;
 
    float     mOneBlockAttack;
    float     mOneBlockRelease;

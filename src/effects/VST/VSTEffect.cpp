@@ -95,6 +95,8 @@
 #include "VSTEffect.h"
 #include "../../MemoryX.h"
 
+static const size_t defaultBlockSize = 8192u;
+
 // NOTE:  To debug the subprocess, use wxLogDebug and, on Windows, Debugview
 //        from TechNet (Sysinternals).
 
@@ -725,7 +727,7 @@ VSTEffectOptionsDialog::VSTEffectOptionsDialog(wxWindow * parent, EffectHostInte
 {
    mHost = host;
 
-   mHost->GetSharedConfig(wxT("Options"), wxT("BufferSize"), mBufferSize, 8192);
+   mHost->GetSharedConfig(wxT("Options"), wxT("BufferSize"), mBufferSize, (int)defaultBlockSize);
    mHost->GetSharedConfig(wxT("Options"), wxT("UseLatency"), mUseLatency, true);
    mHost->GetSharedConfig(wxT("Options"), wxT("UseGUI"), mUseGUI, true);
 
@@ -1087,7 +1089,7 @@ VSTEffect::VSTEffect(const wxString & path, VSTEffect *master)
    mMidiIns = 0;
    mMidiOuts = 0;
    mSampleRate = 44100;
-   mBlockSize = mUserBlockSize = 8192;
+   mBlockSize = mUserBlockSize = defaultBlockSize;
    mBufferDelay = 0;
    mProcessLevel = 1;         // in GUI thread
    mHasPower = false;
@@ -1269,6 +1271,11 @@ bool VSTEffect::SetHost(EffectHostInterface *host)
       mHost->GetSharedConfig(wxT("Options"), wxT("BufferSize"), userBlockSize, 8192);
       mUserBlockSize = std::max( 1, userBlockSize );
       mHost->GetSharedConfig(wxT("Options"), wxT("UseLatency"), mUseLatency, true);
+      if (blockSize <= 0)
+         // ?? default it
+         blockSize = (int)defaultBlockSize;
+
+      mUserBlockSize = (size_t)blockSize;
 
       mBlockSize = mUserBlockSize;
 
@@ -1353,7 +1360,7 @@ bool VSTEffect::ProcessInitialize(sampleCount WXUNUSED(totalLen), ChannelNames W
 
    // Set processing parameters...power must be off for this
    callDispatcher(effSetSampleRate, 0, 0, NULL, mSampleRate);
-   callDispatcher(effSetBlockSize, 0, mBlockSize, NULL, 0.0);
+   callDispatcher(effSetBlockSize, 0, (intptr_t)mBlockSize, NULL, 0.0);
 
    // Turn on the power
    PowerOn();
@@ -1555,7 +1562,7 @@ bool VSTEffect::ShowInterface(wxWindow *parent, bool forceModal)
    if (!IsReady())
    {
       mSampleRate = 44100;
-      mBlockSize = 8192;
+      mBlockSize = defaultBlockSize;
       ProcessInitialize(0, NULL);
    }
 

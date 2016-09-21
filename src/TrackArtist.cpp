@@ -2103,7 +2103,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
    const wxRect &hiddenMid = params.hiddenMid;
    // The "hiddenMid" rect contains the part of the display actually
    // containing the waveform, as it appears without the fisheye.  If it's empty, we're done.
-   if (hiddenMid.width <= 0) {
+   if (hiddenMid.width <= 0 || hiddenMid.height <= 0) {
       return;
    }
 
@@ -2212,7 +2212,8 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
 #endif //EXPERIMENTAL_FFT_Y_GRID
 
    if (!updated && clip->mSpecPxCache->valid &&
-      (clip->mSpecPxCache->len == hiddenMid.height * hiddenMid.width)
+       // Note guard at top of function, so that hiddenMid's area is positive
+      ((int)clip->mSpecPxCache->len == hiddenMid.height * hiddenMid.width)
       && scaleType == clip->mSpecPxCache->scaleType
       && gain == clip->mSpecPxCache->gain
       && range == clip->mSpecPxCache->range
@@ -2445,7 +2446,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
       }
       else {
           int specIndex = (xx - fisheyeLeft) * nBins;
-          wxASSERT(specIndex >= 0 && specIndex < specCache.freq.size());
+          wxASSERT(specIndex >= 0 && specIndex < (int)specCache.freq.size());
           uncached = &specCache.freq[specIndex];
       }
 

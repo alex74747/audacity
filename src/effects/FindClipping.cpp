@@ -150,16 +150,13 @@ bool EffectFindClipping::ProcessOne(LabelTrack * lt,
                                     sampleCount start,
                                     sampleCount len)
 {
-   bool bGoodResult = true;
-   size_t blockSize = (mStart * 1000);
-
    if (len < mStart) {
       return true;
    }
 
    Floats buffer;
    try {
-      if (blockSize < mStart)
+      if (blockSize < uStart)
          // overflow
          throw std::bad_alloc{};
       buffer.reinit(blockSize);

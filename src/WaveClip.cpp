@@ -120,30 +120,26 @@ public:
    void AddInvalidRegion(sampleCount sampleStart, sampleCount sampleEnd)
    {
       //use pps to figure out where we are.  (pixels per second)
-      if(pps ==0)
+      if (pps == 0)
          return;
       double samplesPerPixel = rate/pps;
       //rate is SR, start is first time of the waveform (in second) on cache
-      long invalStart = (sampleStart.as_double() - start*rate) / samplesPerPixel ;
+      sampleCount iStart { (sampleStart.as_double() - start*rate) / samplesPerPixel };
 
-      long invalEnd = (sampleEnd.as_double() - start*rate)/samplesPerPixel +1; //we should cover the end..
+      sampleCount iEnd { (sampleEnd.as_double() - start*rate)/samplesPerPixel + 1}; //we should cover the end..
 
       //if they are both off the cache boundary in the same direction, the cache is missed,
       //so we are safe, and don't need to track this one.
-      if((invalStart<0 && invalEnd <0) || (invalStart>=len && invalEnd >= len))
+      if((iStart < 0 && iEnd < 0) ||
+         (iStart >= (int)len && iEnd >= (int)len))
          return;
 
-      //in all other cases, we need to clip the boundries so they make sense with the cache.
+      //in all other cases, we need to clip the boundaries so they make sense with the cache.
       //for some reason, the cache is set up to access up to array[len], not array[len-1]
-      if(invalStart <0)
-         invalStart =0;
-      else if(invalStart > len)
-         invalStart = len;
-
-      if(invalEnd <0)
-         invalEnd =0;
-      else if(invalEnd > len)
-         invalEnd = len;
+      size_t invalStart =
+         std::max<size_t>(0, std::min<sampleCount>(len, iStart).as_size_t());
+      size_t invalEnd =
+         std::max<size_t>(0, std::min<sampleCount>(len, iEnd).as_size_t());
 
 
       ODLocker locker(&mRegionsMutex);
@@ -153,11 +149,11 @@ public:
       bool added=false;
       if(mRegions.size())
       {
-         for(size_t i=0;i<mRegions.size();i++)
+         for(size_t i = 0; i < mRegions.size(); i++)
          {
             //if the regions intersect OR are pixel adjacent
             InvalidRegion &region = mRegions[i];
-            if(region.start <= invalEnd+1
+            if(region.start <= invalEnd + 1
                && region.end + 1 >= invalStart)
             {
                //take the union region
@@ -165,7 +161,7 @@ public:
                   region.start = invalStart;
                if(region.end < invalEnd)
                   region.end = invalEnd;
-               added=true;
+               added = true;
                break;
             }
 
@@ -190,12 +186,12 @@ public:
 
 
       //now we must go and patch up all the regions that overlap.  Overlapping regions will be adjacent.
-      for(size_t i=1;i<mRegions.size();i++)
+      for(size_t i = 1; i < mRegions.size(); i++)
       {
          //if the regions intersect OR are pixel adjacent
          InvalidRegion &region = mRegions[i];
          InvalidRegion &prevRegion = mRegions[i - 1];
-         if(region.start <= prevRegion.end+1
+         if(region.start <= prevRegion.end + 1
             && region.end + 1 >= prevRegion.start)
          {
             //take the union region
@@ -204,7 +200,7 @@ public:
             if(region.end < prevRegion.end)
                region.end = prevRegion.end;
 
-            mRegions.erase(mRegions.begin()+i-1);
+            mRegions.erase(mRegions.begin() + i - 1);
                //musn't forget to reset cursor
                i--;
          }
@@ -839,9 +835,9 @@ bool SpecCache::CalculateOneSpectrum
       from = sampleCount(
          where[0].as_double() + xx * (rate / pixelsPerSecond)
       );
-   else if (xx > len)
+   else if (xx > (int)len)
       from = sampleCount(
-         where[len].as_double() + (xx - len) * (rate / pixelsPerSecond)
+         where[len].as_double() + (xx - (int)len) * (rate / pixelsPerSecond)
       );
    else
       from = where[xx];
@@ -854,7 +850,7 @@ bool SpecCache::CalculateOneSpectrum
    auto nBins = settings.NBins();
 
    if (from < 0 || from >= numSamples) {
-      if (xx >= 0 && xx < len) {
+      if (xx >= 0 && xx < (int)len) {
          // Pixel column is out of bounds of the clip!  Should not happen.
          float *const results = &out[nBins * xx];
          std::fill(results, results + nBins, 0.0f);
@@ -980,7 +976,7 @@ bool SpecCache::CalculateOneSpectrum
             }
 
             const int bin = (int)(ii + freqCorrection + 0.5f);
-            if (bin >= 0 && bin < hFFT->Points) {
+            if (bin >= 0 && bin < (int)hFFT->Points) {
                double timeCorrection;
                {
                   const float

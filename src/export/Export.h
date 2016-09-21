@@ -236,7 +236,7 @@ private:
    MixerSpec *mMixerSpec;
    ArrayOf<wxRect> mChannelRects;
    ArrayOf<wxRect> mTrackRects;
-   int mSelectedTrack, mSelectedChannel;
+   int mSelectedTrack, mSelectedChannel; // may be negative for invalid value
    wxArrayString mTrackNames;
    int mBoxWidth, mChannelHeight, mTrackHeight;
 

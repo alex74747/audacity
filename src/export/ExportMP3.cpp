@@ -836,7 +836,8 @@ public:
    wxString GetLibraryPath();
    wxString GetLibraryTypeString();
 
-   /* returns the number of samples PER CHANNEL to send for each call to EncodeBuffer */
+   /* returns the number of samples PER CHANNEL to send for each call to EncodeBuffer,
+      or negative if there is an error */
    int InitializeStream(unsigned channels, int sampleRate);
 
    /* In bytes. must be called AFTER InitializeStream */
@@ -1779,11 +1780,12 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
       exporter.SetChannel(CHANNEL_STEREO);
    }
 
-   auto inSamples = exporter.InitializeStream(channels, rate);
-   if (((int)inSamples) < 0) {
+   auto intInSamples = exporter.InitializeStream(channels, rate);
+   if (((int)intInSamples) < 0) {
       wxMessageBox(_("Unable to initialize MP3 stream"));
       return ProgressResult::Cancelled;
    }
+   unsigned inSamples = (unsigned)intInSamples;
 
    // Put ID3 tags at beginning of file
    if (metadata == NULL)

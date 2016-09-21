@@ -422,14 +422,14 @@ PaulStretch::~PaulStretch()
 void PaulStretch::process(float *smps, size_t nsmps)
 {
    //add NEW samples to the pool
-   if ((smps != NULL) && (nsmps != 0)) {
+   if ((smps != NULL) && (nsmps != 0u)) {
       if (nsmps > poolsize) {
          nsmps = poolsize;
       }
-      int nleft = poolsize - nsmps;
+      auto nleft = poolsize - nsmps;
 
       //move left the samples from the pool to make room for NEW samples
-      for (int i = 0; i < nleft; i++)
+      for (size_t i = 0; i < nleft; i++)
          in_pool[i] = in_pool[i + nsmps];
 
       //add NEW samples to the pool

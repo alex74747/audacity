@@ -373,7 +373,7 @@ namespace
       if (extra)
          // For windows that do not go to 0 at the edges, this improves symmetry
          ++windowSize;
-      const int endOfWindow = padding + windowSize;
+      const auto endOfWindow = padding + windowSize;
       // Left and right padding
       {
          size_t ii;
@@ -392,8 +392,11 @@ namespace
          break;
       case TWINDOW:
          NewWindowFunc(windowType, windowSize, extra, window.get() + padding);
-         for (int ii = padding, multiplier = -(int)windowSize / 2; ii < endOfWindow; ++ii, ++multiplier)
-            window[ii] *= multiplier;
+         {
+            auto multiplier = -(int)windowSize / 2;
+            for (auto ii = padding; ii < endOfWindow; ++ii, ++multiplier)
+               window[ii] *= multiplier;
+         }
          break;
       case DWINDOW:
          DerivativeOfWindowFunc(windowType, windowSize, extra, window.get() + padding);

@@ -301,7 +301,7 @@ Mixer::Mixer(const WaveTrackConstArray &inputTracks,
    // But cut the queue into blocks of this finer size
    // for variable rate resampling.  Each block is resampled at some
    // constant rate.
-   mProcessLen = 1024;
+   mProcessLen = 1024u;
 
    // Position in each queue of the start of the next block to resample.
    mQueueStart.reinit(mNumInputTracks);
@@ -331,8 +331,8 @@ Mixer::Mixer(const WaveTrackConstArray &inputTracks,
       }
 
       mResample[i] = std::make_unique<Resample>(mHighQuality, minFactor, maxFactor);
-      mQueueStart[i] = 0;
-      mQueueLen[i] = 0;
+      mQueueStart[i] = 0u;
+      mQueueLen[i] = 0u;
    }
 
    const auto envLen = std::max(mQueueMaxLen, mInterleavedBufferSize);
@@ -386,7 +386,7 @@ void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
 
 size_t Mixer::MixVariableRates(int *channelFlags, WaveTrackCache &cache,
                                     sampleCount *pos, float *queue,
-                                    int *queueStart, int *queueLen,
+                                    size_t *queueStart, size_t *queueLen,
                                     Resample * pResample)
 {
    const WaveTrack *const track = cache.GetTrack();
@@ -418,7 +418,7 @@ size_t Mixer::MixVariableRates(int *channelFlags, WaveTrackCache &cache,
    const auto endPos = track->TimeToLongSamples(tEnd);
    // Find the time corresponding to the start of the queue, for use with time track
    double t = ((*pos).as_long_long() +
-               (backwards ? *queueLen : - *queueLen)) / trackRate;
+               *queueLen * (backwards ? 1.0 : -1.0)) / trackRate;
 
    while (out < mMaxOut) {
       if (*queueLen < mProcessLen) {
@@ -716,8 +716,8 @@ void Mixer::Reposition(double t)
 
    for(size_t i=0; i<mNumInputTracks; i++) {
       mSamplePos[i] = mInputTrack[i].GetTrack()->TimeToLongSamples(mTime);
-      mQueueStart[i] = 0;
-      mQueueLen[i] = 0;
+      mQueueStart[i] = 0u;
+      mQueueLen[i] = 0u;
    }
 }
 

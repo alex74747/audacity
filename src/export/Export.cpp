@@ -1103,7 +1103,7 @@ void ExportMixerPanel::OnPaint(wxPaintEvent & WXUNUSED(event))
       mTrackRects[ i ].width = mBoxWidth;
       mTrackRects[ i ].height = mTrackHeight;
 
-      memDC.SetPen( mSelectedTrack == i ? *wxRED_PEN : *wxBLACK_PEN );
+      memDC.SetPen( mSelectedTrack == (int)i ? *wxRED_PEN : *wxBLACK_PEN );
       memDC.DrawRectangle( mTrackRects[ i ] );
 
       memDC.GetTextExtent( mTrackNames[ i ], &w, &h );
@@ -1131,7 +1131,7 @@ void ExportMixerPanel::OnPaint(wxPaintEvent & WXUNUSED(event))
       mChannelRects[ i ].width = mBoxWidth;
       mChannelRects[ i ].height = mChannelHeight;
 
-      memDC.SetPen( mSelectedChannel == i ? *wxRED_PEN : *wxBLACK_PEN );
+      memDC.SetPen( mSelectedChannel == (int)i ? *wxRED_PEN : *wxBLACK_PEN );
       memDC.DrawRectangle( mChannelRects[ i ] );
 
       memDC.DrawText( wxString::Format( _( "Channel: %2d" ), i + 1 ),
@@ -1172,11 +1172,11 @@ void ExportMixerPanel::OnMouseEvent(wxMouseEvent & event)
          if( mTrackRects[ i ].Contains( event.m_x, event.m_y ) )
          {
             reset = false;
-            if( mSelectedTrack == i )
+            if( mSelectedTrack == (int)i )
                mSelectedTrack = -1;
             else
             {
-               mSelectedTrack = i;
+               mSelectedTrack = (int)i;
                if( mSelectedChannel != -1 )
                   mMixerSpec->mMap[ mSelectedTrack ][ mSelectedChannel ] =
                      !mMixerSpec->mMap[ mSelectedTrack ][ mSelectedChannel ];
@@ -1189,7 +1189,7 @@ void ExportMixerPanel::OnMouseEvent(wxMouseEvent & event)
          if( mChannelRects[ i ].Contains( event.m_x, event.m_y ) )
          {
             reset = false;
-            if( mSelectedChannel == i )
+            if( mSelectedChannel == (int)i )
                mSelectedChannel = -1;
             else
             {

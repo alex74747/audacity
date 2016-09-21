@@ -1198,7 +1198,9 @@ bool NyquistEffect::ProcessOne()
       return false;
    }
 
-   int outChannels = nyx_get_audio_num_channels();
+   // This may return a negative value:
+   auto outChannels = nyx_get_audio_num_channels();
+   wxASSERT(outChannels >= 0);
    if (outChannels > (int)mCurNumChannels) {
       wxMessageBox(_("Nyquist returned too many audio channels.\n"),
                    wxT("Nyquist"),
@@ -1778,7 +1780,8 @@ int NyquistEffect::GetCallback(float *buffer, int ch,
       mCurBufferStart[ch] = (mCurStart[ch] + start);
       mCurBufferLen[ch] = mCurTrack[ch]->GetBestBlockSize(mCurBufferStart[ch]);
 
-      if (mCurBufferLen[ch] < len) {
+      // len is int as imposed by the nyquist library
+      if ((int)mCurBufferLen[ch] < len) {
          mCurBufferLen[ch] = mCurTrack[ch]->GetIdealBlockSize();
       }
 

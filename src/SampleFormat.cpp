@@ -95,7 +95,7 @@ void ClearSamples(samplePtr src, sampleFormat format,
 void ReverseSamples(samplePtr src, sampleFormat format,
                   int start, int len)
 {
-   auto size = SAMPLE_SIZE(format);
+   size_t size = SAMPLE_SIZE(format);
    samplePtr first = src + start * size;
    samplePtr last = src + (start + len - 1) * size;
    enum : size_t { fixedSize = SAMPLE_SIZE(floatSample) };

@@ -145,7 +145,7 @@ class AUDACITY_DLL_API Mixer {
 
    size_t MixVariableRates(int *channelFlags, WaveTrackCache &cache,
                                 sampleCount *pos, float *queue,
-                                int *queueStart, int *queueLen,
+                                size_t *queueStart, size_t *queueLen,
                                 Resample * pResample);
 
  private:
@@ -162,11 +162,11 @@ class AUDACITY_DLL_API Mixer {
    double           mT1; // Stop time (none if mT0==mT1)
    double           mTime;  // Current time (renamed from mT to mTime for consistency with AudioIO - mT represented warped time there)
    ArrayOf<std::unique_ptr<Resample>> mResample;
-   size_t           mQueueMaxLen;
+   const size_t     mQueueMaxLen;
    FloatBuffers     mSampleQueue;
    ArrayOf<int>     mQueueStart;
    ArrayOf<int>     mQueueLen;
-   size_t           mProcessLen;
+   const size_t     mProcessLen;
    MixerSpec        *mMixerSpec;
 
    // Output

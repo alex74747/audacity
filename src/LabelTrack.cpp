@@ -1241,7 +1241,7 @@ void LabelStruct::MoveLabel( int iEdge, double fNewTime)
    updated = true;
 }
 
-LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
+LabelStruct LabelStruct::Import(wxTextFile &file, size_t &index)
 {
    SelectedRegion sr;
    wxString title;
@@ -1286,7 +1286,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
 
    // Advance index over all continuation lines first, before we might throw
    // any exceptions.
-   int index2 = index;
+   auto index2 = index;
    while (index < file.GetLineCount() &&
           file.GetLine(index).StartsWith(continuation))
       ++index;
@@ -2164,7 +2164,7 @@ void LabelTrack::Export(wxTextFile & f) const
 /// Import labels, handling files with or without end-times.
 void LabelTrack::Import(wxTextFile & in)
 {
-   int lines = in.GetLineCount();
+   auto lines = in.GetLineCount();
 
    mLabels.clear();
    mLabels.reserve(lines);
@@ -2172,7 +2172,7 @@ void LabelTrack::Import(wxTextFile & in)
    //Currently, we expect a tag file to have two values and a label
    //on each line. If the second token is not a number, we treat
    //it as a single-value label.
-   for (int index = 0; index < lines;) {
+   for (size_t index = 0; index < lines;) {
       try {
          // Let LabelStruct::Import advance index
          LabelStruct l { LabelStruct::Import(in, index) };
