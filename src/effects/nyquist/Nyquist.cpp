@@ -1015,7 +1015,7 @@ bool NyquistEffect::ProcessOne()
       // increased with a nyquist comment directive.
       // See the parsing of "maxlen"
 
-      auto curLen = long(mCurLen.as_long_long());
+      auto curLen = (long)(mCurLen.as_long_long());
       nyx_set_audio_params(mCurTrack[0]->GetRate(), curLen);
 
       nyx_set_input_audio(StaticGetCallback, (void *)this,

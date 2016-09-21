@@ -415,7 +415,7 @@ void DependencyDialog::PopulateList()
          mFileListCtrl->SetItemTextColour(i, *wxRED);
       }
       mFileListCtrl->SetItem(i, 1, Internat::FormatSize(byteCount));
-      mFileListCtrl->SetItemData(i, long(bOriginalExists));
+      mFileListCtrl->SetItemData(i, (long)(bOriginalExists));
 
       ++i;
    }

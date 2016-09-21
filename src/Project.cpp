@@ -3273,7 +3273,7 @@ bool AudacityProject::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 
       if (mViewInfo.ReadXMLAttribute(attr, value)) {
          // We need to save vpos now and restore it below
-         longVpos = std::max(longVpos, long(mViewInfo.vpos));
+         longVpos = std::max(longVpos, (long)(mViewInfo.vpos));
          continue;
       }
 

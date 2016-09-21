@@ -97,8 +97,8 @@ void WaveformSettings::LoadPrefs()
 
 void WaveformSettings::SavePrefs()
 {
-   gPrefs->Write(wxT("/Waveform/ScaleType"), long(scaleType));
-   gPrefs->Write(wxT("/Waveform/dBRange"), long(dBRange));
+   gPrefs->Write(wxT("/Waveform/ScaleType"), (long)(scaleType));
+   gPrefs->Write(wxT("/Waveform/dBRange"), (long)(dBRange));
 }
 
 void WaveformSettings::Update()

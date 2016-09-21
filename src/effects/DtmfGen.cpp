@@ -546,7 +546,7 @@ bool EffectDtmf::MakeDtmfTone(float *buffer, size_t len, float fs, wxChar tone, 
       // we are at the last buffer of 'len' size, so, offset is to
       // backup 'A' samples, from 'len'
       A = (fs / kFadeInOut);
-      auto offset = long(len) - long(fs / kFadeInOut);
+      auto offset = (long)(len) - (long)(fs / kFadeInOut);
       // protect against negative offset, which can occur if too a
       // small selection is made
       if (offset >= 0) {

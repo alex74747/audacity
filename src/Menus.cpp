@@ -4815,7 +4815,7 @@ void AudacityProject::OnCutLabels()
   // the clear, so we do these actions separately.
   EditClipboardByLabel( &WaveTrack::CopyNonconst );
 
-  if( gPrefs->Read( wxT( "/GUI/EnableCutLines" ), ( long )0 ) )
+  if( gPrefs->Read( wxT( "/GUI/EnableCutLines" ), (long)0 ) )
      EditByLabel( &WaveTrack::ClearAndAddCutLine, true );
   else
      EditByLabel( &WaveTrack::Clear, true );

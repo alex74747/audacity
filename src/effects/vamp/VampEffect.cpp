@@ -484,7 +484,7 @@ bool VampEffect::Process()
          // UNSAFE_SAMPLE_COUNT_TRUNCATION
          // Truncation in case of very long tracks!
          Vamp::RealTime timestamp = Vamp::RealTime::frame2RealTime(
-            long( ls.as_long_long() ),
+            (long)( ls.as_long_long() ),
             (int)(mRate + 0.5)
          );
 

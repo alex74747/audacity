@@ -41,7 +41,7 @@ void DCUnchanger::operator () (wxDC *pDC) const
 
 ADCChanger::ADCChanger(wxDC *pDC)
    : Base{ pDC, ::DCUnchanger{ pDC->GetBrush(), pDC->GetPen(),
-      long(pDC->GetLogicalFunction()) } }
+      (long)(pDC->GetLogicalFunction()) } }
 {}
 
 bool AColor::inited = false;
