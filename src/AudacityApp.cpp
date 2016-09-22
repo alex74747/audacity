@@ -860,7 +860,7 @@ void AudacityApp::OnMRUClear(wxCommandEvent& WXUNUSED(event))
 // Better, for example, to check the file type early on.
 void AudacityApp::OnMRUFile(wxCommandEvent& event) {
    int n = event.GetId() - ID_RECENT_FIRST;
-   const wxString &fullPathStr = mRecentFiles->GetHistoryFile(n);
+   const wxString &fullPathStr = mRecentFiles->GetHistoryFile((size_t)n);
 
    // Try to open only if not already open.
    // Test IsAlreadyOpen() here even though AudacityProject::MRUOpen() also now checks,
@@ -868,7 +868,7 @@ void AudacityApp::OnMRUFile(wxCommandEvent& event) {
    // and AudacityApp::OnMacOpenFile() calls MRUOpen() directly.
    // that method does not return the bad result.
    if (!AudacityProject::IsAlreadyOpen(fullPathStr) && !MRUOpen(fullPathStr))
-      mRecentFiles->RemoveFileFromHistory(n);
+      mRecentFiles->RemoveFileFromHistory((size_t)n);
 }
 
 void AudacityApp::OnTimer(wxTimerEvent& WXUNUSED(event))
@@ -1364,7 +1364,8 @@ bool AudacityApp::OnInit()
 #endif
 
    // TODO - read the number of files to store in history from preferences
-   mRecentFiles = std::make_unique<FileHistory>(ID_RECENT_LAST - ID_RECENT_FIRST + 1, ID_RECENT_CLEAR);
+   mRecentFiles = std::make_unique<FileHistory>
+      ((size_t)(ID_RECENT_LAST - ID_RECENT_FIRST + 1), ID_RECENT_CLEAR);
    mRecentFiles->Load(*gPrefs, wxT("RecentFiles"));
 
    theTheme.EnsureInitialised();
@@ -1418,7 +1419,7 @@ bool AudacityApp::OnInit()
          exit(1);
       }
 
-      Sequence::SetMaxDiskBlockSize(lval);
+      Sequence::SetMaxDiskBlockSize((size_t)lval);
    }
 
    wxString fileName;

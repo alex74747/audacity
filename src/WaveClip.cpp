@@ -546,7 +546,7 @@ bool WaveClip::GetWaveDisplay(WaveDisplay &display, double t0,
 {
    const bool allocated = (display.where != 0);
 
-   const size_t numPixels = (int)display.width;
+   const size_t numPixels = (size_t)display.width;
 
    size_t p0 = 0;         // least column requiring computation
    size_t p1 = numPixels; // greatest column requiring computation, plus one

@@ -153,7 +153,7 @@ using WaveClipConstPointers = std::vector < const WaveClip* >;
 class WaveDisplay
 {
 public:
-   int width;
+   size_t width;
    sampleCount *where;
    float *min, *max, *rms;
    int* bl;
@@ -163,8 +163,8 @@ public:
    std::vector<int> ownBl;
 
 public:
-   WaveDisplay(int w)
-      : width(w), where(0), min(0), max(0), rms(0), bl(0)
+   WaveDisplay(size_t w)
+      : width{ w }, where(0), min(0), max(0), rms(0), bl(0)
    {
    }
 

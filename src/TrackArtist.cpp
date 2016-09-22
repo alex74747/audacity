@@ -1774,7 +1774,7 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
          !track->GetSelected());
    }
 
-   WaveDisplay display(hiddenMid.width);
+   WaveDisplay display((size_t)hiddenMid.width);
    bool isLoadingOD = false;//true if loading on demand block in sequence.
 
    const double pps =
@@ -1826,7 +1826,7 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
 
       float *useMin = 0, *useMax = 0, *useRms = 0;
       int *useBl = 0;
-      WaveDisplay fisheyeDisplay(rect.width);
+      WaveDisplay fisheyeDisplay((size_t)rect.width);
       int skipped = 0, skippedLeft = 0, skippedRight = 0;
       if (portion.inFisheye) {
          if (!showIndividualSamples) {
