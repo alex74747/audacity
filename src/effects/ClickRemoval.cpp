@@ -255,65 +255,68 @@ bool EffectClickRemoval::ProcessOne(int count, WaveTrack * track, sampleCount st
 bool EffectClickRemoval::RemoveClicks(size_t len, float *buffer)
 {
    bool bResult = false; // This effect usually does nothing.
-   int i;
-   int j;
-   int left = 0;
+   size_t left = 0;
 
    float msw;
-   int ww;
-   int s2 = sep/2;
+   size_t ww;
+   auto s2 = sep / 2;
    Floats ms_seq{ len };
    Floats b2{ len };
 
-   for( i=0; i<len; i++)
-      b2[i] = buffer[i]*buffer[i];
+   for(size_t i=0; i<len; i++)
+      b2[i] = buffer[i] * buffer[i];
 
    /* Shortcut for rms - multiple passes through b2, accumulating
     * as we go.
     */
-   for(i=0;i<len;i++)
-      ms_seq[i]=b2[i];
+   for(size_t i = 0; i < len; i++)
+      ms_seq[i] = b2[i];
 
-   for(i=1; i < sep; i *= 2) {
-      for(j=0;j<len-i; j++)
-         ms_seq[j] += ms_seq[j+i];
+   {
+      size_t i;
+      for(i = 1; i < sep; i *= 2) {
+         for(size_t j = 0; j < len - i; j++)
+            ms_seq[j] += ms_seq[j+i];
       }
 
       /* Cheat by truncating sep to next-lower power of two... */
       sep = i;
+   }
 
-      for( i=0; i<len-sep; i++ ) {
-         ms_seq[i] /= sep;
-      }
-      /* ww runs from about 4 to mClickWidth.  wrc is the reciprocal;
-       * chosen so that integer roundoff doesn't clobber us.
-       */
-      int wrc;
-      for(wrc=mClickWidth/4; wrc>=1; wrc /= 2) {
-         ww = mClickWidth/wrc;
+   for( size_t i = 0; i < len - sep; i++ ) {
+      ms_seq[i] /= sep;
+   }
 
-         for( i=0; i<len-sep; i++ ){
-            msw = 0;
-            for( j=0; j<ww; j++) {
-               msw += b2[i+s2+j];
+   /* ww runs from about 4 to mClickWidth.  wrc is the reciprocal;
+    * chosen so that integer roundoff doesn't clobber us.
+    */
+   for(size_t wrc = (size_t)mClickWidth / 4; wrc >= 1; wrc /= 2) {
+      ww = (size_t)mClickWidth / wrc;
+
+      for(size_t i = 0; i < len - sep; i++ ) {
+         msw = 0;
+         for(size_t j = 0; j < ww; j++) {
+            msw += b2[i + s2 + j];
+         }
+         msw /= ww;
+
+         if(msw >= mThresholdLevel * ms_seq[i]/10) {
+            if( left == 0 ) {
+               left = i + s2;
             }
-            msw /= ww;
-
-            if(msw >= mThresholdLevel * ms_seq[i]/10) {
-               if( left == 0 ) {
-                  left = i+s2;
+         } else {
+            if(left != 0 && i + s2 <= ww * 2 + left) {
+               float lv = buffer[left];
+               float rv = buffer[i + ww + s2];
+               for(size_t j = left; j < i + ww + s2; j++) {
+                  bResult = true;
+                  buffer[j]=
+                     (rv * (j - left) + lv * (i + ww + s2 - j))/
+                     (float)(i + ww + s2 - left);
+                  b2[j] = buffer[j] * buffer[j];
                }
-            } else {
-               if(left != 0 && i-left+s2 <= ww*2) {
-                  float lv = buffer[left];
-                  float rv = buffer[i+ww+s2];
-                  for(j=left; j<i+ww+s2; j++) {
-                     bResult = true;
-                     buffer[j]= (rv*(j-left) + lv*(i+ww+s2-j))/(float)(i+ww+s2-left);
-                     b2[j] = buffer[j]*buffer[j];
-                  }
-                  left=0;
-               } else if(left != 0) {
+               left = 0;
+            } else if(left != 0) {
                left = 0;
             }
          }

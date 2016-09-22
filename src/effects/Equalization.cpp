@@ -338,7 +338,7 @@ bool EffectEqualization::SetAutomationParameters(EffectAutomationParameters & pa
    ReadAndVerifyFloat(dBMin);
    ReadAndVerifyFloat(dBMax);
 
-   mM = FilterLength;
+   mM = (size_t)FilterLength;
    mCurveName = CurveName;
    mLin = InterpLin;
    mInterp = InterpMeth;
@@ -433,7 +433,7 @@ bool EffectEqualization::Startup()
       // These get saved to the current preset
       int filterLength;
       gPrefs->Read(base + wxT("FilterLength"), &filterLength, 4001);
-      mM = std::max(0, filterLength);
+      mM = (size_t)std::max(0, filterLength);
       if ((mM < 21) || (mM > 8191)) {  // corrupted Prefs?
          mM = 4001;  //default
       }
@@ -1480,8 +1480,8 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
       wxLogError(wxT("Error in EQDefaultCurves.xml"));
    }
 
-   int numUserCurves = userCurves.GetCount();
-   int numDefaultCurves = defaultCurves.GetCount();
+   auto numUserCurves = userCurves.GetCount();
+   auto numDefaultCurves = defaultCurves.GetCount();
    EQCurve tempCurve(wxT("test"));
 
    if (updateAll) {
@@ -1490,11 +1490,11 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
       mCurves = defaultCurves;
       mCurves.Sort(SortCurvesByName);
       // then add remaining user curves:
-      for (int curveCount = 0; curveCount < numUserCurves; curveCount++) {
+      for (size_t curveCount = 0; curveCount < numUserCurves; curveCount++) {
          bool isCustom = true;
          tempCurve = userCurves[curveCount];
          // is the name in the dfault set?
-         for (int defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
+         for (size_t defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
             if (tempCurve.Name == mCurves[defCurveCount].Name) {
                isCustom = false;
                break;
@@ -1508,10 +1508,10 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
    }
    else {
       // Import NEW factory defaults but retain all user modified curves.
-      for (int defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
+      for (size_t defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
          bool isUserCurve = false;
          // Add if the curve is in the user's set (preserve user's copy)
-         for (int userCurveCount = 0; userCurveCount < numUserCurves; userCurveCount++) {
+         for (size_t userCurveCount = 0; userCurveCount < numUserCurves; userCurveCount++) {
             if (userCurves[userCurveCount].Name == defaultCurves[defCurveCount].Name) {
                isUserCurve = true;
                mCurves.Add(userCurves[userCurveCount]);
@@ -1524,10 +1524,10 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
       }
       mCurves.Sort(SortCurvesByName);
       // now add the rest of the user's curves.
-      for (int userCurveCount = 0; userCurveCount < numUserCurves; userCurveCount++) {
+      for (size_t userCurveCount = 0; userCurveCount < numUserCurves; userCurveCount++) {
          bool isDefaultCurve = false;
          tempCurve = userCurves[userCurveCount];
-         for (int defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
+         for (size_t defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
             if (tempCurve.Name == defaultCurves[defCurveCount].Name) {
                isDefaultCurve = true;
                break;
@@ -2062,18 +2062,16 @@ void EffectEqualization::WriteXML(XMLWriter &xmlFile) const
    xmlFile.StartTag( wxT( "equalizationeffect" ) );
 
    // Write all curves
-   int numCurves = mCurves.GetCount();
-   int curve;
-   for( curve = 0; curve < numCurves; curve++ )
+   auto numCurves = mCurves.GetCount();
+   for( size_t curve = 0; curve < numCurves; curve++ )
    {
       // Start a NEW curve
       xmlFile.StartTag( wxT( "curve" ) );
       xmlFile.WriteAttr( wxT( "name" ), mCurves[ curve ].Name );
 
       // Write all points
-      int numPoints = mCurves[ curve ].points.GetCount();
-      int point;
-      for( point = 0; point < numPoints; point++ )
+      auto numPoints = mCurves[ curve ].points.GetCount();
+      for( size_t point = 0; point < numPoints; point++ )
       {
          // Write NEW point
          xmlFile.StartTag( wxT( "point" ) );
@@ -2160,14 +2158,14 @@ void EffectEqualization::UpdateDraw()
       mLogEnvelope->GetPoints( when.get(), value.get(), numPoints );
       for (size_t j = 0; j + 2 < numPoints; j++)
       {
-         dx = when[j+2+numDeleted] - when[j+numDeleted];
-         dy = value[j+2+numDeleted] - value[j+numDeleted];
-         dx1 = when[j+numDeleted+1] - when[j+numDeleted];
+         dx = when[j + 2 + numDeleted] - when[j + numDeleted];
+         dy = value[j + 2 + numDeleted] - value[j + numDeleted];
+         dx1 = when[j + numDeleted + 1] - when[j + numDeleted];
          dy1 = dy * dx1 / dx;
-         err = fabs(value[j+numDeleted+1] - (value[j+numDeleted] + dy1));
+         err = fabs(value[j + numDeleted + 1] - (value[j + numDeleted] + dy1));
          if( err < deltadB )
          {   // within < deltadB dB?
-            mLogEnvelope->Delete(j+1);
+            mLogEnvelope->Delete(j + 1);
             numPoints--;
             numDeleted++;
             flag = true;
@@ -2310,12 +2308,12 @@ void EffectEqualization::EnvLinToLog(void)
 
    for (size_t i = 0; i < numPoints; i++)
    {
-      if( when[i]*mHiFreq >= 20 )
+      if( when[i] * mHiFreq >= 20 )
       {
          // Caution: on Linux, when when == 20, the log calulation rounds
          // to just under zero, which causes an assert error.
-         double flog = (log10(when[i]*mHiFreq)-loLog)/denom;
-         mLogEnvelope->Insert(std::max(0.0, flog) , value[i]);
+         double flog = (log10(when[i] * mHiFreq) - loLog) / denom;
+         mLogEnvelope->Insert(std::max(0.0, flog), value[i]);
       }
       else
       {  //get the first point as close as we can to the last point requested
@@ -3298,8 +3296,8 @@ long EditCurvesDialog::GetPreviousItem(long item)  // wx doesn't have this
 void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
 {
    wxString name;
-   int numCurves = mEditCurves.GetCount();
-   int curve = 0;
+   auto numCurves = mEditCurves.GetCount();
+   size_t curve = 0;
 
    // Setup list of characters that aren't allowed
    wxArrayString exclude;
@@ -3373,7 +3371,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
          mEditCurves[ curve ].points = mEditCurves[ item ].points;
          // if renaming the unnamed item, then select it,
          // otherwise get rid of the item we've renamed.
-         if( item == (numCurves-1) )
+         if( item == (numCurves - 1) )
             mList->SetItem(curve, 0, name);
          else
          {
@@ -3381,7 +3379,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
             numCurves--;
          }
       }
-      else if( item == (numCurves-1) ) // renaming 'unnamed'
+      else if( item == (numCurves - 1) ) // renaming 'unnamed'
       {  // Create a NEW entry
          mEditCurves.Add( EQCurve( wxT("unnamed") ) );
          // Copy over the points

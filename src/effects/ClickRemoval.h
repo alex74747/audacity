@@ -75,7 +75,7 @@ private:
    size_t windowSize;
    int mThresholdLevel;
    int mClickWidth;
-   int sep;
+   size_t sep;
 
    wxSlider *mWidthS;
    wxSlider *mThreshS;

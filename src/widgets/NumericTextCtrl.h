@@ -129,7 +129,7 @@ protected:
    double         mSampleRate;
    bool           mNtscDrop;
 
-   int            mFocusedDigit;
+   size_t         mFocusedDigit;
    DigitInfoArray mDigits;
 
    const BuiltinFormatString *mBuiltinFormatStrings;
@@ -164,7 +164,7 @@ class NumericTextCtrl final : public wxControl, public NumericConverter
    void SetFormatString(const wxString & formatString);
    void SetFormatName(const wxString & formatName);
 
-   void SetFieldFocus(int /* digit */);
+   void SetFieldFocus(size_t /* digit */);
 
    void SetReadOnly(bool readOnly = true);
    void EnableMenu(bool enable = true);
@@ -175,8 +175,8 @@ class NumericTextCtrl final : public wxControl, public NumericConverter
    // this control returns to the program, so you can specify.
    void SetInvalidValue(double invalidValue);
 
-   int GetFocusedField() { return mLastField; }
-   int GetFocusedDigit() { return mFocusedDigit; }
+   size_t GetFocusedField() { return mLastField; }
+   size_t GetFocusedDigit() { return mFocusedDigit; }
 
 private:
 
@@ -220,7 +220,7 @@ private:
    int            mHeight;
    int            mButtonWidth;
 
-   int            mLastField;
+   size_t         mLastField;
 
    // If true, the focus will be set to the first non-zero digit
    bool           mAutoPos;
