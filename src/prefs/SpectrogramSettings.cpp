@@ -423,15 +423,15 @@ void SpectrogramSettings::CacheWindows() const
 
       double scale;
       const auto fftLen = WindowSize() * ZeroPaddingFactor();
-      const auto padding = (WindowSize() * (zeroPaddingFactor - 1)) / 2;
+      const auto padding = (WindowSize() * (ZeroPaddingFactor() - 1)) / 2;
 
       if (hFFT != NULL)
          EndFFT(hFFT);
       hFFT = InitializeFFT(fftLen);
-      RecreateWindow(window, WINDOW, fftLen, padding, windowType, windowSize, scale);
+      RecreateWindow(window, WINDOW, fftLen, padding, windowType, WindowSize(), scale);
       if (algorithm == algReassignment) {
-         RecreateWindow(tWindow, TWINDOW, fftLen, padding, windowType, windowSize, scale);
-         RecreateWindow(dWindow, DWINDOW, fftLen, padding, windowType, windowSize, scale);
+         RecreateWindow(tWindow, TWINDOW, fftLen, padding, windowType, WindowSize(), scale);
+         RecreateWindow(dWindow, DWINDOW, fftLen, padding, windowType, WindowSize(), scale);
       }
    }
 }
@@ -479,9 +479,9 @@ float SpectrogramSettings::findBin( float frequency, float binUnit ) const
 
 size_t SpectrogramSettings::GetFFTLength() const
 {
-   return windowSize
+   return WindowSize()
 #ifdef EXPERIMENTAL_ZERO_PADDED_SPECTROGRAMS
-      * ((algorithm != algPitchEAC) ? zeroPaddingFactor : 1);
+      * ((algorithm != algPitchEAC) ? ZeroPaddingFactor() : 1u);
 #endif
    ;
 }

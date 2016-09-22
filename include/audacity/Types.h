@@ -66,7 +66,7 @@ public:
 
    // Allow implicit conversion from integral types
    sampleCount ( type v ) : value { v } {}
-   sampleCount ( unsigned long long v ) : value ( v ) {}
+   sampleCount ( unsigned long long v ) : value ( (long long)v ) {}
    sampleCount ( int v ) : value { v } {}
    sampleCount ( unsigned v ) : value { v } {}
    sampleCount ( long v ) : value { v } {}

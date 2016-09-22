@@ -178,7 +178,7 @@ public:
          return false;
       }
 
-      return wxFileConfig::Write(key, choices[value]);
+      return wxFileConfig::Write(key, choices[(size_t)value]);
    }
 
    bool ReadAndVerify(const wxString & key, float *val, float defVal, float min, float max) const
