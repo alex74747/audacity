@@ -160,7 +160,7 @@ bool EffectBassTreble::RealtimeFinalize()
    return true;
 }
 
-size_t EffectBassTreble::RealtimeProcess(int group,
+size_t EffectBassTreble::RealtimeProcess(unsigned group,
                                               float **inbuf,
                                               float **outbuf,
                                               size_t numSamples)

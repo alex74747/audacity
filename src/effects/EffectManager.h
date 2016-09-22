@@ -104,12 +104,12 @@ public:
    void RealtimeRemoveEffect(Effect *effect);
    void RealtimeSetEffects(const EffectArray & mActive);
    void RealtimeInitialize();
-   void RealtimeAddProcessor(int group, unsigned chans, float rate);
+   void RealtimeAddProcessor(unsigned group, unsigned chans, float rate);
    void RealtimeFinalize();
    void RealtimeSuspend();
    void RealtimeResume();
    void RealtimeProcessStart();
-   size_t RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples);
+   size_t RealtimeProcess(unsigned group, unsigned chans, float **buffers, size_t numSamples);
    void RealtimeProcessEnd();
    int GetRealtimeLatency();
 

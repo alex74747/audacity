@@ -484,7 +484,7 @@ void EffectManager::RealtimeInitialize()
    RealtimeResume();
 }
 
-void EffectManager::RealtimeAddProcessor(int group, unsigned chans, float rate)
+void EffectManager::RealtimeAddProcessor(unsigned group, unsigned chans, float rate)
 {
    for (auto e : mRealtimeEffects)
       e->RealtimeAddProcessor(group, chans, rate);
@@ -580,7 +580,7 @@ void EffectManager::RealtimeProcessStart()
 //
 // This will be called in a different thread than the main GUI thread.
 //
-size_t EffectManager::RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples)
+size_t EffectManager::RealtimeProcess(unsigned group, unsigned chans, float **buffers, size_t numSamples)
 {
    // Protect ourselves from the main thread
    mRealtimeLock.Enter();

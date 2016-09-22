@@ -1494,7 +1494,7 @@ bool VSTEffect::RealtimeProcessStart()
    return true;
 }
 
-size_t VSTEffect::RealtimeProcess(int group, float **inbuf, float **outbuf, size_t numSamples)
+size_t VSTEffect::RealtimeProcess(unsigned group, float **inbuf, float **outbuf, size_t numSamples)
 {
    wxASSERT(numSamples <= mBlockSize);
 

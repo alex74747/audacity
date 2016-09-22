@@ -1389,7 +1389,7 @@ bool AudioUnitEffect::RealtimeProcessStart()
    return true;
 }
 
-size_t AudioUnitEffect::RealtimeProcess(int group,
+size_t AudioUnitEffect::RealtimeProcess(unsigned group,
                                              float **inbuf,
                                              float **outbuf,
                                              size_t numSamples)

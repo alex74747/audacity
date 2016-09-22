@@ -123,7 +123,7 @@ class VSTEffect final : public wxEvtHandler,
    bool RealtimeSuspend() override;
    bool RealtimeResume() override;
    bool RealtimeProcessStart() override;
-   size_t RealtimeProcess(int group,
+   size_t RealtimeProcess(unsigned group,
                                        float **inbuf,
                                        float **outbuf,
                                        size_t numSamples) override;

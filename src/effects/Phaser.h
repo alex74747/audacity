@@ -71,7 +71,7 @@ public:
    bool RealtimeInitialize() override;
    bool RealtimeAddProcessor(unsigned numChannels, float sampleRate) override;
    bool RealtimeFinalize() override;
-   size_t RealtimeProcess(int group,
+   size_t RealtimeProcess(unsigned group,
                                        float **inbuf,
                                        float **outbuf,
                                        size_t numSamples) override;

@@ -487,7 +487,7 @@ bool Effect::RealtimeProcessStart()
    return true;
 }
 
-size_t Effect::RealtimeProcess(int group,
+size_t Effect::RealtimeProcess(unsigned group,
                                     float **inbuf,
                                     float **outbuf,
                                     size_t numSamples)
@@ -2225,7 +2225,7 @@ double Effect::CalcPreviewInputLength(double previewLength)
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor index, so updates to one should
 // be reflected in the other.
-bool Effect::RealtimeAddProcessor(int group, unsigned chans, float rate)
+bool Effect::RealtimeAddProcessor(unsigned group, unsigned chans, float rate)
 {
    auto ichans = chans;
    auto ochans = chans;
@@ -2235,11 +2235,11 @@ bool Effect::RealtimeAddProcessor(int group, unsigned chans, float rate)
    if (group == 0)
    {
       mCurrentProcessor = 0;
-      mGroupProcessor.Clear();
+      mGroupProcessor.clear();
    }
 
    // Remember the processor starting index
-   mGroupProcessor.Add(mCurrentProcessor);
+   mGroupProcessor.push_back(mCurrentProcessor);
 
    // Call the client until we run out of input or output channels
    while (ichans > 0 && ochans > 0)
@@ -2290,7 +2290,7 @@ bool Effect::RealtimeAddProcessor(int group, unsigned chans, float rate)
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor group, so updates to one should
 // be reflected in the other.
-size_t Effect::RealtimeProcess(int group,
+size_t Effect::RealtimeProcess(unsigned group,
                                     unsigned chans,
                                     float **inbuf,
                                     float **outbuf,
@@ -2315,7 +2315,7 @@ size_t Effect::RealtimeProcess(int group,
    unsigned indx = 0;
    unsigned ondx = 0;
 
-   int processor = mGroupProcessor[group];
+   auto processor = mGroupProcessor[group];
 
    // Call the client until we run out of input or output channels
    while (ichans > 0 && ochans > 0)
@@ -3211,7 +3211,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       auto sub = std::make_unique<wxMenu>();
       for (size_t i = 0, cnt = mUserPresets.GetCount(); i < cnt; i++)
       {
-         sub->Append(kUserPresetsID + i, mUserPresets[i]);
+         sub->Append(kUserPresetsID + (int)i, mUserPresets[i]);
       }
       menu.Append(0, _("User Presets"), sub.release());
    }
@@ -3227,7 +3227,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       auto sub = std::make_unique<wxMenu>();
       for (size_t i = 0, cnt = mUserPresets.GetCount(); i < cnt; i++)
       {
-         sub->Append(kDeletePresetID + i, mUserPresets[i]);
+         sub->Append(kDeletePresetID + (int)i, mUserPresets[i]);
       }
       menu.Append(0, _("Delete Preset"), sub.release());
    }
@@ -3250,7 +3250,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
                label = _("None");
             }
 
-            sub->Append(kFactoryPresetsID + i, label);
+            sub->Append(kFactoryPresetsID + (int)i, label);
          }
       }
       menu.Append(0, _("Factory Presets"), sub.release());
@@ -3451,7 +3451,7 @@ void EffectUIHost::OnCapture(wxCommandEvent & evt)
 
 void EffectUIHost::OnUserPreset(wxCommandEvent & evt)
 {
-   int preset = evt.GetId() - kUserPresetsID;
+   auto preset = (size_t)(evt.GetId() - kUserPresetsID);
 
    mEffect->LoadUserPreset(mEffect->GetUserPresetsGroup(mUserPresets[preset]));
 
@@ -3467,7 +3467,7 @@ void EffectUIHost::OnFactoryPreset(wxCommandEvent & evt)
 
 void EffectUIHost::OnDeletePreset(wxCommandEvent & evt)
 {
-   wxString preset = mUserPresets[evt.GetId() - kDeletePresetID];
+   wxString preset = mUserPresets[(size_t)(evt.GetId() - kDeletePresetID)];
 
    int res = wxMessageBox(wxString::Format(_("Are you sure you want to delete \"%s\"?"), preset.c_str()),
                           _("Delete Preset"),
@@ -3910,7 +3910,7 @@ void EffectPresetsDialog::UpdateUI()
       selected = 0;
       mType->SetSelection(selected);
    }
-   wxString type = mType->GetString(selected);
+   wxString type = mType->GetString((unsigned)selected);
 
    if (type.IsSameAs(_("User Presets")))
    {
@@ -3924,7 +3924,7 @@ void EffectPresetsDialog::UpdateUI()
       mPresets->Append(mUserPresets);
       mPresets->Enable(true);
       mPresets->SetSelection(selected);
-      mSelection = Effect::kUserPresetIdent + mPresets->GetString(selected);
+      mSelection = Effect::kUserPresetIdent + mPresets->GetString((unsigned)selected);
    }
    else if (type.IsSameAs(_("Factory Presets")))
    {
@@ -3946,7 +3946,7 @@ void EffectPresetsDialog::UpdateUI()
       }
       mPresets->Enable(true);
       mPresets->SetSelection(selected);
-      mSelection = Effect::kFactoryPresetIdent + mPresets->GetString(selected);
+      mSelection = Effect::kFactoryPresetIdent + mPresets->GetString((unsigned)selected);
    }
    else if (type.IsSameAs(_("Current Settings")))
    {

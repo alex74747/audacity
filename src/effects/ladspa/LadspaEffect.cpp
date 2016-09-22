@@ -967,7 +967,7 @@ bool LadspaEffect::RealtimeProcessStart()
    return true;
 }
 
-size_t LadspaEffect::RealtimeProcess(int group,
+size_t LadspaEffect::RealtimeProcess(unsigned group,
                                           float **inbuf,
                                           float **outbuf,
                                           size_t numSamples)

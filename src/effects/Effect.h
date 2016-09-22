@@ -120,7 +120,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    bool RealtimeSuspend() override;
    bool RealtimeResume() override;
    bool RealtimeProcessStart() override;
-   size_t RealtimeProcess(int group,
+   size_t RealtimeProcess(unsigned group,
                                        float **inbuf,
                                        float **outbuf,
                                        size_t numSamples) override;
@@ -245,8 +245,8 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
       wxWindow *parent, SelectedRegion *selectedRegion, bool shouldPrompt);
 
    // Realtime Effect Processing
-   /* not virtual */ bool RealtimeAddProcessor(int group, unsigned chans, float rate);
-   /* not virtual */ size_t RealtimeProcess(int group,
+   /* not virtual */ bool RealtimeAddProcessor(unsigned group, unsigned chans, float rate);
+   /* not virtual */ size_t RealtimeProcess(unsigned group,
                                unsigned chans,
                                float **inbuf,
                                float **outbuf,
@@ -514,8 +514,8 @@ private:
    size_t mBlockSize;
    unsigned mNumChannels;
 
-   wxArrayInt mGroupProcessor;
-   int mCurrentProcessor;
+   std::vector<unsigned> mGroupProcessor;
+   unsigned mCurrentProcessor;
 
    wxCriticalSection mRealtimeSuspendLock;
    int mRealtimeSuspendCount;

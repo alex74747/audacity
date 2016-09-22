@@ -183,7 +183,7 @@ bool EffectPhaser::RealtimeFinalize()
    return true;
 }
 
-size_t EffectPhaser::RealtimeProcess(int group,
+size_t EffectPhaser::RealtimeProcess(unsigned group,
                                           float **inbuf,
                                           float **outbuf,
                                           size_t numSamples)

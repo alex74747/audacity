@@ -874,15 +874,15 @@ bool LV2Effect::RealtimeProcessStart()
    return true;
 }
 
-size_t LV2Effect::RealtimeProcess(int group,
+size_t LV2Effect::RealtimeProcess(unsigned group,
                                        float **inbuf,
                                        float **outbuf,
                                        size_t numSamples)
 {
-   wxASSERT(group >= 0 && group < (int) mSlaves.GetCount());
+   wxASSERT(group < mSlaves.GetCount());
    wxASSERT(numSamples <= mBlockSize);
 
-   if (group < 0 || group >= (int) mSlaves.GetCount())
+   if (group >= mSlaves.GetCount())
    {
       return 0;
    }

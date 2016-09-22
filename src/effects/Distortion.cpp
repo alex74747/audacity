@@ -258,7 +258,7 @@ bool EffectDistortion::RealtimeFinalize()
    return true;
 }
 
-size_t EffectDistortion::RealtimeProcess(int group,
+size_t EffectDistortion::RealtimeProcess(unsigned group,
                                               float **inbuf,
                                               float **outbuf,
                                               size_t numSamples)

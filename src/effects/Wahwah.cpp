@@ -175,7 +175,7 @@ bool EffectWahwah::RealtimeFinalize()
    return true;
 }
 
-size_t EffectWahwah::RealtimeProcess(int group,
+size_t EffectWahwah::RealtimeProcess(unsigned group,
                                           float **inbuf,
                                           float **outbuf,
                                           size_t numSamples)

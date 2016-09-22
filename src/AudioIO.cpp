@@ -1946,7 +1946,7 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
       // The following adds a NEW effect processor for each logical track and the
       // group determination should mimic what is done in audacityAudioCallback()
       // when calling RealtimeProcess().
-      int group = 0;
+      unsigned group = 0;
       for (size_t i = 0, cnt = mPlaybackTracks.size(); i < cnt; i++)
       {
          const WaveTrack *vt = gAudioIO->mPlaybackTracks[i];
@@ -4331,8 +4331,8 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          em.RealtimeProcessStart();
 
          bool selected = false;
-         int group = 0;
-         int chanCnt = 0;
+         unsigned group = 0;
+         unsigned chanCnt = 0;
          decltype(framesPerBuffer) maxLen = 0;
          for (unsigned t = 0; t < numPlaybackTracks; t++)
          {
@@ -4445,7 +4445,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
             if (cut) // no samples to process, they've been discarded
                continue;
 
-            for (int c = 0; c < chanCnt; c++)
+            for (unsigned c = 0; c < chanCnt; c++)
             {
                vt = chans[c];
 
@@ -4458,14 +4458,14 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                   // apply volume, then copy to the output buffer
                   if (outputMeterFloats != outputFloats)
                      for (decltype(len) i = 0; i < len; ++i)
-                        outputMeterFloats[numPlaybackChannels*i] +=
-                           gain*tempFloats[i];
+                        outputMeterFloats[numPlaybackChannels * i] +=
+                           gain * tempFloats[i];
 
                   if (gAudioIO->mEmulateMixerOutputVol)
                      gain *= gAudioIO->mMixerOutputVol;
 
                   for(decltype(len) i = 0; i < len; i++)
-                     outputFloats[numPlaybackChannels*i] += gain*tempBufs[c][i];
+                     outputFloats[numPlaybackChannels * i] += gain*tempBufs[c][i];
                }
 
                if (vt->GetChannel() == Track::RightChannel ||
@@ -4476,14 +4476,14 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                   // Output volume emulation (as above)
                   if (outputMeterFloats != outputFloats)
                      for (decltype(len) i = 0; i < len; ++i)
-                        outputMeterFloats[numPlaybackChannels*i+1] +=
-                           gain*tempFloats[i];
+                        outputMeterFloats[numPlaybackChannels * i + 1] +=
+                           gain * tempFloats[i];
 
                   if (gAudioIO->mEmulateMixerOutputVol)
                      gain *= gAudioIO->mMixerOutputVol;
 
                   for(decltype(len) i = 0; i < len; i++)
-                     outputFloats[numPlaybackChannels*i+1] += gain*tempBufs[c][i];
+                     outputFloats[numPlaybackChannels*i+1] += gain * tempBufs[c][i];
                }
             }
 
