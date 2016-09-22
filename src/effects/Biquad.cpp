@@ -2,7 +2,7 @@
 
 #define square(a) ((a)*(a))
 
-void Biquad_Process (BiquadStruct* pBQ, int iNumSamples)
+void Biquad_Process (BiquadStruct* pBQ, size_t iNumSamples)
 {
    float* pfIn = pBQ->pfIn;
    float* pfOut = pBQ->pfOut;
@@ -10,7 +10,7 @@ void Biquad_Process (BiquadStruct* pBQ, int iNumSamples)
    float fPrevPrevIn = pBQ->fPrevPrevIn;
    float fPrevOut = pBQ->fPrevOut;
    float fPrevPrevOut = pBQ->fPrevPrevOut;
-   for (int i = 0; i < iNumSamples; i++)
+   for (size_t i = 0; i < iNumSamples; i++)
    {
       float fIn = *pfIn++;
       *pfOut = fIn * pBQ->fNumerCoeffs [0] +

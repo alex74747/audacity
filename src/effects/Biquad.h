@@ -1,5 +1,6 @@
 #ifndef __BIQUAD_H__
 #define __BIQUAD_H__
+#include <cstddef>
 typedef struct {
    float* pfIn {};
    float* pfOut {};
@@ -10,7 +11,7 @@ typedef struct {
    float fPrevOut {};
    float fPrevPrevOut {};
 } BiquadStruct;
-void Biquad_Process (BiquadStruct* pBQ, int iNumSamples);
+void Biquad_Process (BiquadStruct* pBQ, size_t iNumSamples);
 void ComplexDiv (float fNumerR, float fNumerI, float fDenomR, float fDenomI, float* pfQuotientR, float* pfQuotientI);
 bool BilinTransform (float fSX, float fSY, float* pfZX, float* pfZY);
 float Calc2D_DistSqr (float fX1, float fY1, float fX2, float fY2);

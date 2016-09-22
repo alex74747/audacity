@@ -274,7 +274,7 @@ private:
    void FillFirstHistoryWindow();
    void ApplyFreqSmoothing(FloatVector &gains);
    void GatherStatistics(Statistics &statistics);
-   inline bool Classify(const Statistics &statistics, int band);
+   inline bool Classify(const Statistics &statistics, size_t band);
    void ReduceNoise(const Statistics &statistics, WaveTrack *outputTrack);
    void RotateHistoryWindows();
    void FinishTrackStatistics(Statistics &statistics);
@@ -300,8 +300,8 @@ private:
    FloatVector mFreqSmoothingScratch;
    const size_t mFreqSmoothingBins;
    // When spectral selection limits the affected band:
-   int mBinLow;  // inclusive lower bound
-   int mBinHigh; // exclusive upper bound
+   size_t mBinLow;  // inclusive lower bound
+   size_t mBinHigh; // exclusive upper bound
 
    const int mNoiseReductionChoice;
    const unsigned mStepsPerWindow;
@@ -704,9 +704,10 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
       gains[ii] = logf(gains[ii]);
 
    for (size_t ii = 0; ii < mSpectrumSize; ++ii) {
-      const int j0 = std::max(0, (int)ii - (int)mFreqSmoothingBins);
-      const int j1 = std::min(mSpectrumSize - 1, ii + mFreqSmoothingBins);
-      for(int jj = j0; jj <= j1; ++jj) {
+      const size_t j0 =
+         size_t( std::max(0, (int)ii - (int)mFreqSmoothingBins) );
+      const size_t j1 = std::min(mSpectrumSize - 1, ii + mFreqSmoothingBins);
+      for(size_t jj = j0; jj <= j1; ++jj) {
          mFreqSmoothingScratch[ii] += gains[jj];
       }
       mFreqSmoothingScratch[ii] /= (j1 - j0 + 1);
@@ -736,7 +737,7 @@ EffectNoiseReduction::Worker::Worker
 
 , mSpectrumSize(1 + mWindowSize / 2)
 , mFreqSmoothingScratch(mSpectrumSize)
-, mFreqSmoothingBins((int)(settings.mFreqSmoothingBands))
+, mFreqSmoothingBins((size_t)(settings.mFreqSmoothingBands))
 , mBinLow(0)
 , mBinHigh(mSpectrumSize)
 
@@ -763,8 +764,10 @@ EffectNoiseReduction::Worker::Worker
 #endif
 
    const double noiseGain = -settings.mNoiseGain;
-   const unsigned nAttackBlocks = 1 + (int)(settings.mAttackTime * sampleRate / mStepSize);
-   const unsigned nReleaseBlocks = 1 + (int)(settings.mReleaseTime * sampleRate / mStepSize);
+   const unsigned nAttackBlocks =
+      1 + (unsigned)(settings.mAttackTime * sampleRate / mStepSize);
+   const unsigned nReleaseBlocks =
+      1 + (unsigned)(settings.mReleaseTime * sampleRate / mStepSize);
    // Applies to amplitudes, divide by 20:
    mNoiseAttenFactor = DB_TO_LINEAR(noiseGain);
    // Apply to gain factors which apply to amplitudes, divide by 20:
@@ -774,7 +777,7 @@ EffectNoiseReduction::Worker::Worker
    mOldSensitivityFactor = pow(10.0, settings.mOldSensitivity / 10.0);
 
    mNWindowsToExamine = (mMethod == DM_OLD_METHOD)
-      ? std::max(2, (int)(minSignalTime * sampleRate / mStepSize))
+      ? std::max(2u, (unsigned)(minSignalTime * sampleRate / mStepSize))
       : 1 + mStepsPerWindow;
 
    mCenter = mNWindowsToExamine / 2;
@@ -958,7 +961,7 @@ void EffectNoiseReduction::Worker::FillFirstHistoryWindow()
       int *pBitReversed = &hFFT->BitReversed[1];
       const auto last = mSpectrumSize - 1;
       for (size_t ii = 1; ii < last; ++ii) {
-         const int kk = *pBitReversed++;
+         const size_t kk = (size_t)(*pBitReversed++);
          const float realPart = *pReal++ = mFFTBuffer[kk];
          const float imagPart = *pImag++ = mFFTBuffer[kk + 1];
          *pPower++ = realPart * realPart + imagPart * imagPart;
@@ -995,7 +998,7 @@ void EffectNoiseReduction::Worker::FinishTrackStatistics(Statistics &statistics)
 
    // Combine averages in case of multiple profile tracks.
    if (windows)
-      for (int ii = 0, nn = statistics.mMeans.size(); ii < nn; ++ii) {
+      for (size_t ii = 0, nn = statistics.mMeans.size(); ii < nn; ++ii) {
          float &mean = statistics.mMeans[ii];
          float &sum = statistics.mSums[ii];
          mean = (mean * multiplier + sum) / denom;
@@ -1063,7 +1066,7 @@ void EffectNoiseReduction::Worker::GatherStatistics(Statistics &statistics)
 // Return true iff the given band of the "center" window looks like noise.
 // Examine the band in a few neighboring windows to decide.
 inline
-bool EffectNoiseReduction::Worker::Classify(const Statistics &statistics, int band)
+bool EffectNoiseReduction::Worker::Classify(const Statistics &statistics, size_t band)
 {
    switch (mMethod) {
 #ifdef OLD_METHOD_AVAILABLE
@@ -1143,7 +1146,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          std::fill(pGain, pGain + mBinLow, 0.0f);
          std::fill(pGain + mBinHigh, pGain + mSpectrumSize, 0.0f);
          pGain += mBinLow;
-         for (int jj = mBinLow; jj < mBinHigh; ++jj) {
+         for (size_t jj = mBinLow; jj < mBinHigh; ++jj) {
                const bool isNoise = Classify(statistics, jj);
             *pGain++ = isNoise ? 1.0 : 0.0;
          }
@@ -1153,7 +1156,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          std::fill(pGain, pGain + mBinLow, 1.0f);
          std::fill(pGain + mBinHigh, pGain + mSpectrumSize, 1.0f);
          pGain += mBinLow;
-         for (int jj = mBinLow; jj < mBinHigh; ++jj) {
+         for (size_t jj = mBinLow; jj < mBinHigh; ++jj) {
             const bool isNoise = Classify(statistics, jj);
             if (!isNoise) 
                *pGain = 1.0;
@@ -1191,7 +1194,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
       {
          float *pNextGain = &mQueue[mCenter - 1]->mGains[0];
          const float *pThisGain = &mQueue[mCenter]->mGains[0];
-         for (int nn = mSpectrumSize; nn--;) {
+         for (auto nn = mSpectrumSize; nn--;) {
             *pNextGain =
                std::max(*pNextGain,
                         std::max(mNoiseAttenFactor,
@@ -1251,7 +1254,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          float *pWindow = &mOutWindow[0];
          int *pBitReversed = &hFFT->BitReversed[0];
          for (size_t jj = 0; jj < last; ++jj) {
-            int kk = *pBitReversed++;
+            size_t kk = (size_t)(*pBitReversed++);
             *pOut++ += mFFTBuffer[kk] * (*pWindow++);
             *pOut++ += mFFTBuffer[kk + 1] * (*pWindow++);
          }
@@ -1260,7 +1263,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          float *pOut = &mOutOverlapBuffer[0];
          int *pBitReversed = &hFFT->BitReversed[0];
          for (size_t jj = 0; jj < last; ++jj) {
-            int kk = *pBitReversed++;
+            size_t kk = (size_t)(*pBitReversed++);
             *pOut++ += mFFTBuffer[kk];
             *pOut++ += mFFTBuffer[kk + 1];
          }
