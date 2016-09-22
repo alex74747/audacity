@@ -377,7 +377,7 @@ bool ModuleManager::DiscoverProviders()
 
    PluginManager & pm = PluginManager::Get();
 
-   for (int i = 0, cnt = provList.GetCount(); i < cnt; i++)
+   for (size_t i = 0, cnt = provList.GetCount(); i < cnt; i++)
    {
       ModuleInterface *module = LoadModule(provList[i]);
       if (module)
