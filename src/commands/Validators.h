@@ -112,13 +112,12 @@ public:
    wxString GetDescription() const override
    {
       wxString desc = wxT("one of: ");
-      int optionCount = mOptions.GetCount();
-      int i = 0;
-      for (i = 0; i+1 < optionCount; ++i)
+      auto optionCount = mOptions.GetCount();
+      for (size_t i = 0; i + 1 < optionCount; ++i)
       {
          desc += mOptions[i] + wxT(", ");
       }
-      desc += mOptions[optionCount-1];
+      desc += mOptions[optionCount - 1];
       return desc;
    }
    Holder GetClone() const override
