@@ -131,14 +131,14 @@ class Envelope final : public XMLTagHandler {
     *
     * This is much faster than calling GetValue() multiple times if you need
     * more than one value in a row. */
-   void GetValues(double *buffer, int len, double t0, double tstep) const;
+   void GetValues(double *buffer, size_t len, double t0, double tstep) const;
 
    /** \brief Get many envelope points at once, but don't assume uniform time step.
    */
    void GetValues
-      (double *buffer, int bufferLen, int leftOffset, const ZoomInfo &zoomInfo) const;
+      (double *buffer, size_t bufferLen, int leftOffset, const ZoomInfo &zoomInfo) const;
 
-   int NumberOfPointsAfter(double t) const;
+   size_t NumberOfPointsAfter(double t) const;
    double NextPointAfter(double t) const;
 
    double Average( double t0, double t1 ) const;
@@ -153,7 +153,7 @@ class Envelope final : public XMLTagHandler {
    bool IsDirty() const;
 
    /** \brief Add a point at a particular spot */
-   int Insert(double when, double value);
+   size_t Insert(double when, double value);
 
    /** \brief Move a point at when to value
     *
@@ -161,10 +161,10 @@ class Envelope final : public XMLTagHandler {
    int Move(double when, double value);
 
    /** \brief DELETE a point by its position in array */
-   void Delete(int point);
+   void Delete(size_t point);
 
    /** \brief insert a point */
-   void Insert(int point, const EnvPoint &p);
+   void Insert(size_t point, const EnvPoint &p);
 
    /** \brief Return number of points */
    size_t GetNumberOfPoints() const;
@@ -172,7 +172,7 @@ class Envelope final : public XMLTagHandler {
 private:
    friend class EnvelopeEditor;
    /** \brief Accessor for points */
-   EnvPoint &operator[] (int index)
+   EnvPoint &operator[] (size_t index)
    {
       return mEnv[index];
    }
@@ -181,7 +181,7 @@ public:
    /** \brief Returns the sets of when and value pairs */
    void GetPoints(double *bufferWhen,
       double *bufferValue,
-      int bufferLen) const;
+      size_t bufferLen) const;
 
    // UI-related
    // The drag point needs to display differently.
@@ -199,7 +199,7 @@ public:
 
 private:
    EnvPoint *  AddPointAtEnd( double t, double val );
-   void BinarySearchForTime( int &Lo, int &Hi, double t ) const;
+   void BinarySearchForTime( size_t &Lo, size_t &Hi, double t ) const;
    double GetInterpolationStartValueAtPoint( int iPoint ) const;
 
    // Possibly inline functions:
