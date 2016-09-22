@@ -81,11 +81,11 @@ protected:
     // Return true if pressing a '-' key is acceptable for the current control
     // contents and insertion point. This is meant to be called from the
     // derived class IsCharOk() implementation.
-    bool IsMinusOk(const wxString& val, int pos) const;
+    bool IsMinusOk(const wxString& val, size_t pos) const;
 
     // Return the string which would result from inserting the given character
     // at the specified position.
-    wxString GetValueAfterInsertingChar(const wxString &valArg, int pos, wxChar ch) const
+    wxString GetValueAfterInsertingChar(const wxString &valArg, size_t pos, wxChar ch) const
     {
         wxString val(valArg);
         val.insert(pos, ch);
@@ -102,7 +102,7 @@ private:
     //
     // Notice that the base class checks for '-' itself so it's never passed to
     // this function.
-    virtual bool IsCharOk(const wxString& val, int pos, wxChar ch) const = 0;
+    virtual bool IsCharOk(const wxString& val, size_t pos, wxChar ch) const = 0;
 
     // NormalizeString the contents of the string if it's a valid number, return
     // empty string otherwise.
@@ -120,7 +120,7 @@ private:
     
 
     // Determine the current insertion point and text in the associated control.
-    void GetCurrentValueAndInsertionPoint(wxString& val, int& pos) const;
+    void GetCurrentValueAndInsertionPoint(wxString& val, size_t& pos) const;
 
 
     // Combination of wxVAL_NUM_XXX values.
@@ -315,7 +315,7 @@ protected:
     }
 
     // Implement NumValidatorBase pure virtual method.
-    bool IsCharOk(const wxString& val, int pos, wxChar ch) const override;
+    bool IsCharOk(const wxString& val, size_t pos, wxChar ch) const override;
     bool DoValidateNumber(wxString * errMsg) const override;
 
 private:
@@ -412,7 +412,7 @@ protected:
     }
 
     // Implement NumValidatorBase pure virtual method.
-    bool IsCharOk(const wxString& val, int pos, wxChar ch) const override;
+    bool IsCharOk(const wxString& val, size_t pos, wxChar ch) const override;
     bool DoValidateNumber(wxString * errMsg) const override;
 
     //Checks that it doesn't have too many decimal digits.
@@ -449,7 +449,7 @@ public:
     }
 
     // Ctor specifying an explicit precision.
-    FloatingPointValidator(int precision,
+    FloatingPointValidator(unsigned precision,
                       ValueType *value = NULL,
                       int style = NUM_VAL_DEFAULT)
         : Base(value, style)
@@ -490,7 +490,7 @@ MakeFloatingPointValidator(T *value, int style = NUM_VAL_DEFAULT)
 
 template <typename T>
 inline FloatingPointValidator<T>
-MakeFloatingPointValidator(int precision, T *value, int style = NUM_VAL_DEFAULT)
+MakeFloatingPointValidator(unsigned precision, T *value, int style = NUM_VAL_DEFAULT)
 {
     return FloatingPointValidator<T>(precision, value, style);
 }

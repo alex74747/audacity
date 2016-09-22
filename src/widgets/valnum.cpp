@@ -107,7 +107,7 @@ bool NumValidatorBase::Validate(wxWindow *parent)
 
 void
 NumValidatorBase::GetCurrentValueAndInsertionPoint(wxString& val,
-                                                   int& pos) const
+                                                   size_t& pos) const
 {
    wxTextEntry * const control = GetTextEntry();
    if ( !control )
@@ -137,7 +137,7 @@ NumValidatorBase::GetCurrentValueAndInsertionPoint(wxString& val,
    }
 }
 
-bool NumValidatorBase::IsMinusOk(const wxString& val, int pos) const
+bool NumValidatorBase::IsMinusOk(const wxString& val, size_t pos) const
 {
    // Minus is only ever accepted in the beginning of the string.
    if ( pos != 0 )
@@ -188,7 +188,7 @@ void NumValidatorBase::OnChar(wxKeyEvent& event)
 
    // Check if this character is allowed in the current state.
    wxString val;
-   int pos;
+   size_t pos;
    GetCurrentValueAndInsertionPoint(val, pos);
 
    if ( !IsCharOk(val, pos, ch) )
@@ -226,7 +226,7 @@ void NumValidatorBase::OnPaste(wxClipboardTextEvent& event)
 
    wxString toPaste = data.GetText();
    wxString val;
-   int pos;
+   size_t pos;
    GetCurrentValueAndInsertionPoint(val, pos);
 
    for (size_t i = 0, cnt = toPaste.Length(); i < cnt; i++)
@@ -303,7 +303,7 @@ IntegerValidatorBase::FromString(const wxString& s, LongestValueType *value)
 }
 
 bool
-IntegerValidatorBase::IsCharOk(const wxString& val, int pos, wxChar ch) const
+IntegerValidatorBase::IsCharOk(const wxString& val, size_t pos, wxChar ch) const
 {
    // We may accept minus sign if we can represent negative numbers at all.
    if ( ch == '-' )
@@ -398,7 +398,7 @@ FloatingPointValidatorBase::FromString(const wxString& s,
 
 bool
 FloatingPointValidatorBase::IsCharOk(const wxString& val,
-                                       int pos,
+                                       size_t pos,
                                        wxChar ch) const
 {
    if ( ch == '-' )
