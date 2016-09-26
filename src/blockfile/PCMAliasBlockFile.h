@@ -22,17 +22,17 @@ class PCMAliasBlockFile /* not final */ : public AliasBlockFile
    PCMAliasBlockFile(wxFileNameWrapper &&baseFileName,
                      wxFileNameWrapper &&aliasedFileName,
                      sampleCount aliasStart,
-                     size_t aliasLen, int aliasChannel);
+                     size_t aliasLen, unsigned aliasChannel);
    ///Constructs a PCMAliasBlockFile with the option of not writing to disk
    PCMAliasBlockFile(wxFileNameWrapper &&fileName,
                      wxFileNameWrapper &&aliasedFileName,
                      sampleCount aliasStart,
-                     size_t aliasLen, int aliasChannel,bool writeSummary);
+                     size_t aliasLen, unsigned aliasChannel,bool writeSummary);
 
    PCMAliasBlockFile(wxFileNameWrapper &&existingSummaryFileName,
                      wxFileNameWrapper &&aliasedFileName,
                      sampleCount aliasStart,
-                     size_t aliasLen, int aliasChannel,
+                     size_t aliasLen, unsigned aliasChannel,
                      float min, float max, float rms);
    virtual ~PCMAliasBlockFile();
 

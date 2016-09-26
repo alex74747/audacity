@@ -152,7 +152,7 @@ public:
    virtual bool SaveUserPreset(const wxString & name) = 0;
 
    virtual wxArrayString GetFactoryPresets() = 0;
-   virtual bool LoadFactoryPreset(int id) = 0;
+   virtual bool LoadFactoryPreset(unsigned id) = 0;
    virtual bool LoadFactoryDefaults() = 0;
 };
 

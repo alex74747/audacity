@@ -115,9 +115,9 @@ private:
 private:
    bool mUseSBSMS;
    // effect parameters
-   int    m_nFromPitch;          // per PitchIndex()
+   unsigned m_nFromPitch;          // per PitchIndex()
    int    m_nFromOctave;         // per PitchOctave()
-   int    m_nToPitch;            // per PitchIndex()
+   unsigned m_nToPitch;            // per PitchIndex()
    int    m_nToOctave;           // per PitchOctave()
 
    double m_FromFrequency;       // starting frequency of selection

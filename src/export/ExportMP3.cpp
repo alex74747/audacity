@@ -267,7 +267,7 @@ class ExportMP3Options final : public wxPanelWrapper
 {
 public:
 
-   ExportMP3Options(wxWindow *parent, int format);
+   ExportMP3Options(wxWindow *parent, unsigned format);
    virtual ~ExportMP3Options();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -317,7 +317,7 @@ END_EVENT_TABLE()
 
 ///
 ///
-ExportMP3Options::ExportMP3Options(wxWindow *parent, int WXUNUSED(format))
+ExportMP3Options::ExportMP3Options(wxWindow *parent, unsigned WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
    InitMP3_Statics();
@@ -845,11 +845,11 @@ public:
 
    /* returns the number of bytes written. input is interleaved if stereo*/
    int EncodeBuffer(short int inbuffer[], unsigned char outbuffer[]);
-   int EncodeRemainder(short int inbuffer[], int nSamples,
+   int EncodeRemainder(short int inbuffer[], size_t nSamples,
                        unsigned char outbuffer[]);
 
    int EncodeBufferMono(short int inbuffer[], unsigned char outbuffer[]);
-   int EncodeRemainderMono(short int inbuffer[], int nSamples,
+   int EncodeRemainderMono(short int inbuffer[], size_t nSamples,
                            unsigned char outbuffer[]);
 
    int FinishStream(unsigned char outbuffer[]);
@@ -1225,7 +1225,7 @@ int MP3Exporter::InitializeStream(unsigned channels, int sampleRate)
    }
 
    lame_set_error_protection(mGF, false);
-   lame_set_num_channels(mGF, channels);
+   lame_set_num_channels(mGF, (int)channels);
    lame_set_in_samplerate(mGF, sampleRate);
    lame_set_out_samplerate(mGF, sampleRate);
    lame_set_disable_reservoir(mGF, false);
@@ -1336,14 +1336,14 @@ int MP3Exporter::EncodeBuffer(short int inbuffer[], unsigned char outbuffer[])
       outbuffer, mOutBufferSize);
 }
 
-int MP3Exporter::EncodeRemainder(short int inbuffer[], int nSamples,
+int MP3Exporter::EncodeRemainder(short int inbuffer[], size_t nSamples,
                   unsigned char outbuffer[])
 {
    if (!mEncoding) {
       return -1;
    }
 
-   return lame_encode_buffer_interleaved(mGF, inbuffer, nSamples, outbuffer,
+   return lame_encode_buffer_interleaved(mGF, inbuffer, (int)nSamples, outbuffer,
       mOutBufferSize);
 }
 
@@ -1357,14 +1357,14 @@ int MP3Exporter::EncodeBufferMono(short int inbuffer[], unsigned char outbuffer[
       outbuffer, mOutBufferSize);
 }
 
-int MP3Exporter::EncodeRemainderMono(short int inbuffer[], int nSamples,
+int MP3Exporter::EncodeRemainderMono(short int inbuffer[], size_t nSamples,
                   unsigned char outbuffer[])
 {
    if (!mEncoding) {
       return -1;
    }
 
-   return lame_encode_buffer(mGF, inbuffer, inbuffer, nSamples, outbuffer,
+   return lame_encode_buffer(mGF, inbuffer, inbuffer, (int)nSamples, outbuffer,
       mOutBufferSize);
 }
 
@@ -1598,11 +1598,11 @@ class ExportMP3 final : public ExportPlugin
 public:
 
    ExportMP3();
-   bool CheckFileName(wxFileName & filename, int format);
+   bool CheckFileName(wxFileName & filename, size_t format);
 
    // Required
 
-   wxWindow *OptionsCreate(wxWindow *parent, int format);
+   wxWindow *OptionsCreate(wxWindow *parent, unsigned format) override;
    ProgressResult Export(AudacityProject *project,
                unsigned channels,
                const wxString &fName,
@@ -1611,14 +1611,14 @@ public:
                double t1,
                MixerSpec *mixerSpec = NULL,
                const Tags *metadata = NULL,
-               int subformat = 0) override;
+               unsigned subformat = 0) override;
 
 private:
 
    int FindValue(CHOICES *choices, int cnt, int needle, int def);
    wxString FindName(CHOICES *choices, int cnt, int needle);
    int AskResample(int bitrate, int rate, int lowrate, int highrate);
-   int AddTags(AudacityProject *project, char **buffer, bool *endOfFile, const Tags *tags);
+   size_t AddTags(AudacityProject *project, char **buffer, bool *endOfFile, const Tags *tags);
 #ifdef USE_LIBID3TAG
    void AddFrame(struct id3_tag *tp, const wxString & n, const wxString & v, const char *name);
 #endif
@@ -1630,14 +1630,14 @@ ExportMP3::ExportMP3()
 {
    InitMP3_Statics();
    AddFormat();
-   SetFormat(wxT("MP3"),0);
-   AddExtension(wxT("mp3"),0);
-   SetMaxChannels(2,0);
-   SetCanMetaData(true,0);
-   SetDescription(_("MP3 Files"),0);
+   SetFormat(wxT("MP3"), 0);
+   AddExtension(wxT("mp3"), 0);
+   SetMaxChannels(2, 0);
+   SetCanMetaData(true, 0);
+   SetDescription(_("MP3 Files"), 0);
 }
 
-bool ExportMP3::CheckFileName(wxFileName & WXUNUSED(filename), int WXUNUSED(format))
+bool ExportMP3::CheckFileName(wxFileName & WXUNUSED(filename), size_t WXUNUSED(format))
 {
 #ifndef DISABLE_DYNAMIC_LOADING_LAME
    MP3Exporter exporter;
@@ -1671,7 +1671,7 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
                        double t1,
                        MixerSpec *mixerSpec,
                        const Tags *metadata,
-                       int WXUNUSED(subformat))
+                       unsigned WXUNUSED(subformat))
 {
    int rate = lrint(project->GetRate());
 #ifndef DISABLE_DYNAMIC_LOADING_LAME
@@ -1799,9 +1799,8 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
    }
 
    char *id3buffer = NULL;
-   int id3len;
    bool endOfFile;
-   id3len = AddTags(project, &id3buffer, &endOfFile, metadata);
+   auto id3len = AddTags(project, &id3buffer, &endOfFile, metadata);
    if (id3len && !endOfFile) {
      outFile.Write(id3buffer, id3len);
    }
@@ -1878,7 +1877,7 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
             break;
          }
 
-         outFile.Write(buffer.get(), bytes);
+         outFile.Write(buffer.get(), (size_t)bytes);
 
          updateResult = progress.Update(mixer->MixGetCurrentTime() - t0, t1 - t0);
       }
@@ -1886,8 +1885,13 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
 
    bytes = exporter.FinishStream(buffer.get());
 
-   if (bytes) {
-      outFile.Write(buffer.get(), bytes);
+   if (bytes < 0) {
+      wxString msg;
+      msg.Printf(_("Error %ld returned from MP3 encoder"), bytes);
+      wxMessageBox(msg);
+   }
+   else if (bytes) {
+      outFile.Write(buffer, (size_t)bytes);
    }
 
    // Write ID3 tag if it was supposed to be at the end of the file
@@ -1913,7 +1917,7 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
    return updateResult;
 }
 
-wxWindow *ExportMP3::OptionsCreate(wxWindow *parent, int format)
+wxWindow *ExportMP3::OptionsCreate(wxWindow *parent, unsigned format)
 {
    wxASSERT(parent); // to justify safenew
    return safenew ExportMP3Options(parent, format);
@@ -2011,7 +2015,7 @@ int ExportMP3::AskResample(int bitrate, int rate, int lowrate, int highrate)
 }
 
 // returns buffer len; caller frees
-int ExportMP3::AddTags(AudacityProject *WXUNUSED(project), char **buffer, bool *endOfFile, const Tags *tags)
+size_t ExportMP3::AddTags(AudacityProject *WXUNUSED(project), char **buffer, bool *endOfFile, const Tags *tags)
 {
 #ifdef USE_LIBID3TAG
    struct id3_tag *tp = id3_tag_new();
@@ -2060,9 +2064,7 @@ int ExportMP3::AddTags(AudacityProject *WXUNUSED(project), char **buffer, bool *
 
    *endOfFile = false;
 
-   id3_length_t len;
-
-   len = id3_tag_render(tp, 0);
+   auto len = id3_tag_render(tp, 0);
    *buffer = (char *)malloc(len);
    len = id3_tag_render(tp, (id3_byte_t *)*buffer);
 

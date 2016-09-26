@@ -122,7 +122,7 @@ void SnapManager::Reinit()
       if (track->GetKind() == Track::Label)
       {
          LabelTrack *labelTrack = (LabelTrack *)track;
-         for (int i = 0, cnt = labelTrack->GetNumLabels(); i < cnt; ++i)
+         for (size_t i = 0, cnt = labelTrack->GetNumLabels(); i < cnt; ++i)
          {
             const LabelStruct *label = labelTrack->GetLabel(i);
             const double t0 = label->getT0();
@@ -385,11 +385,11 @@ bool SnapManager::Snap(Track *currentTrack,
    return values;
 }
 
-/* static */ const wxString & SnapManager::GetSnapValue(int index)
+/* static */ const wxString & SnapManager::GetSnapValue(size_t index)
 {
    wxArrayString values = SnapManager::GetSnapValues();
 
-   if (index >= 0 && index < (int) values.GetCount())
+   if (index < values.GetCount())
    {
       return values[index];
    }

@@ -53,7 +53,7 @@ public:
 
 private:
 
-   int FindTrack() const;
+   unsigned FindTrack() const;
 
    AudacityProject* mProject;
    int mChannel;

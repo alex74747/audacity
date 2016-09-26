@@ -481,7 +481,7 @@ bool BlockFile::Read64K(float *buffer,
    CopySamples(summary.get() + mSummaryInfo.offset64K +
                (start * mSummaryInfo.bytesPerFrame),
                mSummaryInfo.format,
-               (samplePtr)buffer, floatSample, len*mSummaryInfo.fields);
+               (samplePtr)buffer, floatSample, len * mSummaryInfo.fields);
 
    if (mSummaryInfo.fields == 2) {
       // No RMS info; make guess
@@ -594,23 +594,23 @@ size_t BlockFile::CommonReadData(
          intPtr[i] = intPtr[i] >> 8;
    }
    else if (format == int16Sample &&
-            !sf_subtype_more_than_16_bits(info.format)) {
+            !sf_subtype_more_than_16_bits((unsigned)info.format)) {
       // Special case: if the file is in 16-bit (or less) format,
       // and the calling method wants 16-bit data, go ahead and
       // read 16-bit data directly.  This is a pretty common
       // case, as most audio files are 16-bit.
-      SampleBuffer buffer(len * channels, int16Sample);
+      SampleBuffer buffer(len * (unsigned)channels, int16Sample);
       framesRead = SFCall<sf_count_t>(
          sf_readf_short, sf.get(), (short *)buffer.ptr(), len);
       for (int i = 0; i < framesRead; i++)
          ((short *)data)[i] =
-         ((short *)buffer.ptr())[(channels * i) + channel];
+         ((short *)buffer.ptr())[((unsigned)channels * i) + channel];
    }
    else {
       // Otherwise, let libsndfile handle the conversion and
       // scaling, and pass us normalized data as floats.  We can
       // then convert to whatever format we want.
-      SampleBuffer buffer(len * channels, floatSample);
+      SampleBuffer buffer(len * (unsigned)channels, floatSample);
       framesRead = SFCall<sf_count_t>(
          sf_readf_float, sf.get(), (float *)buffer.ptr(), len);
       auto bufferPtr = (samplePtr)((float *)buffer.ptr() + channel);
@@ -618,7 +618,7 @@ size_t BlockFile::CommonReadData(
                   (samplePtr)data, format,
                   framesRead,
                   true /* high quality by default */,
-                  channels /* source stride */);
+                  (unsigned)channels /* source stride */);
    }
 
    return framesRead;
@@ -646,7 +646,7 @@ size_t BlockFile::CommonReadData(
 AliasBlockFile::AliasBlockFile(wxFileNameWrapper &&baseFileName,
                                wxFileNameWrapper &&aliasedFileName,
                                sampleCount aliasStart,
-                               size_t aliasLen, int aliasChannel):
+                               size_t aliasLen, unsigned aliasChannel):
    BlockFile {
       (baseFileName.SetExt(wxT("auf")), std::move(baseFileName)),
       aliasLen
@@ -662,7 +662,7 @@ AliasBlockFile::AliasBlockFile(wxFileNameWrapper &&existingSummaryFileName,
                                wxFileNameWrapper &&aliasedFileName,
                                sampleCount aliasStart,
                                size_t aliasLen,
-                               int aliasChannel,
+                               unsigned aliasChannel,
                                float min, float max, float rms):
    BlockFile{ std::move(existingSummaryFileName), aliasLen },
    mAliasedFileName(std::move(aliasedFileName)),
@@ -760,6 +760,6 @@ void AliasBlockFile::ChangeAliasedFileName(wxFileNameWrapper &&newAliasedFile)
 auto AliasBlockFile::GetSpaceUsage() const -> DiskByteCount
 {
    wxFFile summaryFile(mFileName.GetFullPath());
-   return summaryFile.Length();
+   return (DiskByteCount)summaryFile.Length();
 }
 

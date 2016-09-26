@@ -331,7 +331,7 @@ LV2Effect::~LV2Effect()
 {
    if (mURIMap)
    {
-      for (int i = 0; i < mNumURIMap; i++)
+      for (size_t i = 0; i < mNumURIMap; i++)
       {
          free(mURIMap[i]);
       }
@@ -614,7 +614,7 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
             ctrl.mInput = false;
             if (lilv_port_has_property(mPlug, port, gLatency))
             {
-               mLatencyPort = i;
+               mLatencyPort = (int)i;
             }
             else
             {
@@ -690,12 +690,12 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
 
 unsigned LV2Effect::GetAudioInCount()
 {
-   return mAudioInputs.GetCount();
+   return mAudioInputs.size();
 }
 
 unsigned LV2Effect::GetAudioOutCount()
 {
-   return mAudioOutputs.GetCount();
+   return mAudioOutputs.size();
 }
 
 int LV2Effect::GetMidiInCount()
@@ -805,12 +805,12 @@ bool LV2Effect::ProcessFinalize()
 
 size_t LV2Effect::ProcessBlock(float **inbuf, float **outbuf, size_t size)
 {
-   for (size_t p = 0, cnt = mAudioInputs.GetCount(); p < cnt; p++)
+   for (size_t p = 0, cnt = mAudioInputs.size(); p < cnt; p++)
    {
       lilv_instance_connect_port(mProcess, mAudioInputs[p], inbuf[p]);
    }
 
-   for (size_t p = 0, cnt = mAudioOutputs.GetCount(); p < cnt; p++)
+   for (size_t p = 0, cnt = mAudioOutputs.size(); p < cnt; p++)
    {
       lilv_instance_connect_port(mProcess, mAudioOutputs[p], outbuf[p]);
    }
@@ -887,7 +887,7 @@ size_t LV2Effect::RealtimeProcess(unsigned group,
       return 0;
    }
 
-   for (size_t p = 0, cnt = mAudioInputs.GetCount(); p < cnt; p++)
+   for (size_t p = 0, cnt = mAudioInputs.size(); p < cnt; p++)
    {
       for (decltype(numSamples) s = 0; s < numSamples; s++)
       {
@@ -898,12 +898,12 @@ size_t LV2Effect::RealtimeProcess(unsigned group,
 
    LilvInstance *slave = mSlaves[group];
 
-   for (size_t p = 0, cnt = mAudioInputs.GetCount(); p < cnt; p++)
+   for (size_t p = 0, cnt = mAudioInputs.size(); p < cnt; p++)
    {
       lilv_instance_connect_port(slave, mAudioInputs[p], inbuf[p]);
    }
 
-   for (size_t p = 0, cnt = mAudioOutputs.GetCount(); p < cnt; p++)
+   for (size_t p = 0, cnt = mAudioOutputs.size(); p < cnt; p++)
    {
       lilv_instance_connect_port(slave, mAudioOutputs[p], outbuf[p]);
    }
@@ -1197,9 +1197,9 @@ wxArrayString LV2Effect::GetFactoryPresets()
    return mFactoryPresetNames;
 }
 
-bool LV2Effect::LoadFactoryPreset(int id)
+bool LV2Effect::LoadFactoryPreset(unsigned id)
 {
-   if (id < 0 || id >= (int) mFactoryPresetUris.GetCount())
+   if (id >= mFactoryPresetUris.GetCount())
    {
       return false;
    }
@@ -1302,7 +1302,7 @@ bool LV2Effect::SaveParameters(const wxString & group)
 
 size_t LV2Effect::AddOption(const char *key, uint32_t size, const char *type, void *value)
 {
-   int ndx = mNumOptions;
+   auto ndx = mNumOptions;
 
    mNumOptions += 1;
    mOptions = (LV2_Options_Option *) realloc(mOptions, mNumOptions * sizeof(LV2_Options_Option));
@@ -1363,7 +1363,7 @@ LilvInstance *LV2Effect::InitInstance(float sampleRate)
 
    if (mLatencyPort >= 0)
    {
-      lilv_instance_connect_port(handle, mLatencyPort, &mLatency);
+      lilv_instance_connect_port(handle, (uint32_t)mLatencyPort, &mLatency);
    }
 
    return handle;
@@ -1611,11 +1611,11 @@ bool LV2Effect::BuildPlain()
             auto gridSizer = std::make_unique<wxFlexGridSizer>(numCols, 5, 5);
             gridSizer->AddGrowableCol(3);
 
-            const wxArrayInt & params = mGroupMap[mGroups[i]];
-            for (size_t pj = 0, pcnt = params.GetCount(); pj < pcnt; pj++)
+            const LV2GroupMap::mapped_type & params = mGroupMap[mGroups[i]];
+            for (size_t pj = 0, pcnt = params.size(); pj < pcnt; pj++)
             {
-               int p = params[pj];
-               LV2Port & ctrl = mControls[p];
+               auto p = (int)params[pj];
+               LV2Port & ctrl = mControls[(size_t)p];
                wxString labelText = ctrl.mName;
                if (!ctrl.mUnits.IsEmpty())
                {
@@ -1654,10 +1654,10 @@ bool LV2Effect::BuildPlain()
                }
                else if (ctrl.mEnumeration)      // Check before integer
                {
-                  int s;
-                  for (s = (int)ctrl.mScaleValues.GetCount() - 1; s >= 0; s--)
+                  auto s = (int)ctrl.mScaleValues.GetCount();
+                  for (; s-- > 0;)
                   {
-                     if (ctrl.mVal >= ctrl.mScaleValues[s])
+                     if (ctrl.mVal >= ctrl.mScaleValues[(size_t)s])
                      {
                         break;
                      }
@@ -1775,7 +1775,7 @@ bool LV2Effect::BuildPlain()
 
          // Calculate the maximum width of all columns (bypass Generator sizer)
          wxArrayInt widths;
-         widths.Add(0, numCols);
+         widths.Add(0, (size_t)numCols);
 
          size_t cnt = innerSizer->GetChildren().GetCount();
          for (size_t i = (GetType() == EffectTypeGenerate); i < cnt; i++)
@@ -1785,11 +1785,12 @@ bool LV2Effect::BuildPlain()
 
             size_t items = gridSizer->GetChildren().GetCount();
             int cols = gridSizer->GetCols();
+            wxASSERT(cols > 0);
 
             for (size_t j = 0; j < items; j++)
             {
                wxSizerItem *item = gridSizer->GetItem(j);
-               widths[j % cols] = wxMax(widths[j % cols], item->GetSize().GetWidth());
+               widths[j % (unsigned)cols] = wxMax(widths[j % (unsigned)cols], item->GetSize().GetWidth());
             }
          }
 
@@ -1801,6 +1802,7 @@ bool LV2Effect::BuildPlain()
 
             size_t items = gridSizer->GetChildren().GetCount();
             int cols = gridSizer->GetCols();
+            wxASSERT(cols > 0);
 
             for (size_t j = 0; j < items; j++)
             {
@@ -1822,7 +1824,7 @@ bool LV2Effect::BuildPlain()
                }
                item->SetFlag(flags);
 
-               item->SetBorder(widths[j % cols] - item->GetMinSize().GetWidth());
+               item->SetBorder(widths[j % (unsigned)cols] - item->GetMinSize().GetWidth());
             }
          }
 
@@ -1869,10 +1871,10 @@ bool LV2Effect::TransferDataToWindow()
 
    for (size_t i = 0, cnt = mGroups.GetCount(); i < cnt; i++)
    {
-      const wxArrayInt & params = mGroupMap[mGroups[i]];
-      for (size_t pj = 0, pcnt = params.GetCount(); pj < pcnt; pj++)
+      const LV2GroupMap::mapped_type & params = mGroupMap[mGroups[i]];
+      for (size_t pj = 0, pcnt = params.size(); pj < pcnt; pj++)
       {
-         int p = params[pj];
+         auto p = params[pj];
          LV2Port & ctrl = mControls[p];
 
          if (ctrl.mTrigger)
@@ -1882,15 +1884,15 @@ bool LV2Effect::TransferDataToWindow()
 
          if (ctrl.mToggle)
          {
-            wxCheckBox *c = wxDynamicCast(mParent->FindWindow(ID_Toggles + p), wxCheckBox);
+            wxCheckBox *c = wxDynamicCast(mParent->FindWindow(ID_Toggles + (long)p), wxCheckBox);
             c->SetValue(ctrl.mVal > 0);
          }
          else if (ctrl.mEnumeration)      // Check before integer
          {
-            int s;
-            for (s = (int) ctrl.mScaleValues.GetCount() - 1; s >= 0; s--)
+            auto s = (int)ctrl.mScaleValues.GetCount();
+            for (; s-- > 0;)
             {
-               if (ctrl.mVal >= ctrl.mScaleValues[s])
+               if (ctrl.mVal >= ctrl.mScaleValues[(size_t)s])
                {
                   break;
                }
@@ -1901,7 +1903,7 @@ bool LV2Effect::TransferDataToWindow()
                s = 0;
             }
 
-            wxChoice *c = wxDynamicCast(mParent->FindWindow(ID_Choices + p), wxChoice);
+            wxChoice *c = wxDynamicCast(mParent->FindWindow(ID_Choices + (long)p), wxChoice);
             c->SetSelection(s);
          }
          else if (ctrl.mInput)
@@ -1948,31 +1950,31 @@ void LV2Effect::SetSlider(wxSlider *slider, const LV2Port & ctrl)
 
 void LV2Effect::OnTrigger(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Triggers;
+   auto p = (size_t)(evt.GetId() - ID_Triggers);
 
    mControls[p].mVal = mControls[p].mDef;
 }
 
 void LV2Effect::OnToggle(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Toggles;
+   auto p = (size_t)(evt.GetId() - ID_Toggles);
 
    mControls[p].mVal = evt.GetInt() ? 1.0 : 0.0;
 }
 
 void LV2Effect::OnChoice(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Choices;
+   auto p = (size_t)(evt.GetId() - ID_Choices);
 
-   mControls[p].mVal = mControls[p].mScaleValues[evt.GetInt()];
+   mControls[p].mVal = mControls[p].mScaleValues[(size_t)evt.GetInt()];
 }
 
 void LV2Effect::OnText(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Texts;
+   auto p = (size_t)(evt.GetId() - ID_Texts);
    LV2Port & ctrl = mControls[p];
 
-   if (mParent->FindWindow(ID_Texts + p)->GetValidator()->TransferFromWindow())
+   if (mParent->FindWindow(ID_Texts + (long)p)->GetValidator()->TransferFromWindow())
    {
       ctrl.mVal = ctrl.mSampleRate ? ctrl.mTmp / mSampleRate : ctrl.mTmp;
 
@@ -1982,7 +1984,7 @@ void LV2Effect::OnText(wxCommandEvent & evt)
 
 void LV2Effect::OnSlider(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Sliders;
+   auto p = (size_t)(evt.GetId() - ID_Sliders);
    LV2Port & ctrl = mControls[p];
 
    float lo = ctrl.mLo;
@@ -2002,7 +2004,7 @@ void LV2Effect::OnSlider(wxCommandEvent & evt)
 
    ctrl.mVal = ctrl.mSampleRate ? ctrl.mTmp / mSampleRate : ctrl.mTmp;
 
-   mParent->FindWindow(ID_Texts + p)->GetValidator()->TransferToWindow();
+   mParent->FindWindow(ID_Texts + (long)p)->GetValidator()->TransferToWindow();
 }
 
 void LV2Effect::OnIdle(wxIdleEvent & WXUNUSED(evt))
@@ -2033,7 +2035,7 @@ LV2_URID LV2Effect::urid_map(LV2_URID_Map_Handle handle, const char *uri)
 
 LV2_URID LV2Effect::URID_Map(const char *uri)
 {
-   for (int i = 0; i < mNumURIMap; i++)
+   for (LV2_URID i = 0; i < mNumURIMap; i++)
    {
       if (strcmp(mURIMap[i], uri) == 0)
       {
@@ -2098,7 +2100,7 @@ void LV2Effect::UIWrite(uint32_t port_index,
       return;
    }
 
-   wxLongToLongHashMap::iterator it = mControlsMap.find(port_index);
+   auto it = mControlsMap.find(port_index);
    if (it != mControlsMap.end())
    {
       mControls[(it->second)].mVal = *((const float *)buffer);

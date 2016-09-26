@@ -83,7 +83,7 @@ private:
 
 private:
    // track related
-   int    mCurTrackNum;
+   unsigned mCurTrackNum;
    double mMaxNewLength;
    double mCurT0;
    double mCurT1;

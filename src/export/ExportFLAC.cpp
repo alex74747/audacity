@@ -51,7 +51,7 @@ class ExportFLACOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportFLACOptions(wxWindow *parent, int format);
+   ExportFLACOptions(wxWindow *parent, unsigned format);
    virtual ~ExportFLACOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -61,7 +61,7 @@ public:
 
 ///
 ///
-ExportFLACOptions::ExportFLACOptions(wxWindow *parent, int WXUNUSED(format))
+ExportFLACOptions::ExportFLACOptions(wxWindow *parent, unsigned WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
    ShuttleGui S(this, eIsCreatingFromPrefs);
@@ -181,7 +181,7 @@ public:
 
    // Required
 
-   wxWindow *OptionsCreate(wxWindow *parent, int format);
+   wxWindow *OptionsCreate(wxWindow *parent, unsigned format) override;
    ProgressResult Export(AudacityProject *project,
                unsigned channels,
                const wxString &fName,
@@ -190,7 +190,7 @@ public:
                double t1,
                MixerSpec *mixerSpec = NULL,
                const Tags *metadata = NULL,
-               int subformat = 0) override;
+               unsigned subformat = 0) override;
 
 private:
 
@@ -205,11 +205,11 @@ ExportFLAC::ExportFLAC()
 :  ExportPlugin()
 {
    AddFormat();
-   SetFormat(wxT("FLAC"),0);
-   AddExtension(wxT("flac"),0);
-   SetMaxChannels(FLAC__MAX_CHANNELS,0);
-   SetCanMetaData(true,0);
-   SetDescription(_("FLAC Files"),0);
+   SetFormat(wxT("FLAC"), 0);
+   AddExtension(wxT("flac"), 0);
+   SetMaxChannels(FLAC__MAX_CHANNELS, 0);
+   SetCanMetaData(true, 0);
+   SetDescription(_("FLAC Files"), 0);
 }
 
 ProgressResult ExportFLAC::Export(AudacityProject *project,
@@ -220,7 +220,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
                         double t1,
                         MixerSpec *mixerSpec,
                         const Tags *metadata,
-                        int WXUNUSED(subformat))
+                        unsigned WXUNUSED(subformat))
 {
    double    rate    = project->GetRate();
    const TrackList *tracks = project->GetTracks();
@@ -240,7 +240,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
    encoder.set_filename(OSOUTPUT(fName));
 #endif
    encoder.set_channels(numChannels);
-   encoder.set_sample_rate(lrint(rate));
+   encoder.set_sample_rate((unsigned)lrint(rate));
 
    // See note in GetMetadata() about a bug in libflac++ 1.1.2
    if (!GetMetadata(project, metadata)) {
@@ -349,7 +349,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
    return updateResult;
 }
 
-wxWindow *ExportFLAC::OptionsCreate(wxWindow *parent, int format)
+wxWindow *ExportFLAC::OptionsCreate(wxWindow *parent, unsigned format)
 {
    wxASSERT(parent); // to justify safenew
    return safenew ExportFLACOptions(parent, format);

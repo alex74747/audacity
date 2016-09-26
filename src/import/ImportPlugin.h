@@ -159,13 +159,13 @@ public:
                       Tags *tags) = 0;
 
    // Return number of elements in stream list
-   virtual wxInt32 GetStreamCount() = 0;
+   virtual unsigned GetStreamCount() = 0;
 
    // Return stream descriptions list
    virtual const wxArrayString &GetStreamInfo() = 0;
 
    // Set stream "import/don't import" flag
-   virtual void SetStreamUsage(wxInt32 StreamID, bool Use) = 0;
+   virtual void SetStreamUsage(unsigned StreamID, bool Use) = 0;
 
 protected:
    wxString mFilename;

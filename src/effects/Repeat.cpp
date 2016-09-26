@@ -100,7 +100,7 @@ bool EffectRepeat::Process()
    // This effect needs Track::All for sync-lock grouping.
    CopyInputTracks(Track::All);
 
-   int nTrack = 0;
+   unsigned nTrack = 0;
    bool bGoodResult = true;
    double maxDestLen = 0.0; // used to change selection to generated bit
 

@@ -24,7 +24,7 @@ LegacyAliasBlockFile::LegacyAliasBlockFile(wxFileNameWrapper &&fileName,
                                            wxFileNameWrapper &&aliasedFileName,
                                            sampleCount aliasStart,
                                            size_t aliasLen,
-                                           int aliasChannel,
+                                           unsigned aliasChannel,
                                            size_t summaryLen,
                                            bool noRMS)
 : PCMAliasBlockFile{ std::move(fileName), std::move(aliasedFileName), aliasStart, aliasLen,
@@ -71,7 +71,7 @@ void LegacyAliasBlockFile::SaveXML(XMLWriter &xmlFile)
    xmlFile.WriteAttr(wxT("aliasstart"),
                      mAliasStart.as_long_long() );
    xmlFile.WriteAttr(wxT("aliaslen"), mLen);
-   xmlFile.WriteAttr(wxT("aliaschannel"), mAliasChannel);
+   xmlFile.WriteAttr(wxT("aliaschannel"), (int)mAliasChannel);
    xmlFile.WriteAttr(wxT("summarylen"), mSummaryInfo.totalSummaryBytes);
    if (mSummaryInfo.fields < 3)
       xmlFile.WriteAttr(wxT("norms"), 1);
@@ -86,8 +86,10 @@ BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const wxString &projDir, const w
 {
    wxFileNameWrapper summaryFileName;
    wxFileNameWrapper aliasFileName;
-   int aliasStart=0, aliasLen=0, aliasChannel=0;
-   int summaryLen=0;
+   sampleCount aliasStart = 0;
+   size_t aliasLen = 0;
+   unsigned aliasChannel = 0;
+   size_t summaryLen = 0;
    bool noRMS = false;
    long nValue;
    long long nnValue;
@@ -127,11 +129,11 @@ BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const wxString &projDir, const w
       else if (XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
-            aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
-            aliasChannel = nValue;
+            aliasLen = (size_t)nValue;
+         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(nValue))
+            aliasChannel = (unsigned)nValue;
          else if (!wxStricmp(attr, wxT("summarylen")) && (nValue > 0))
-            summaryLen = nValue;
+            summaryLen = (size_t)nValue;
          else if (!wxStricmp(attr, wxT("norms")))
             noRMS = (nValue != 0);
       }

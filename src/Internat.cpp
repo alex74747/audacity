@@ -123,7 +123,7 @@ wxString Internat::ToDisplayString(double numberToConvert,
       if (result.Find(decSep) != -1)
       {
          // Strip trailing zeros, but leave one, and decimal separator.
-         int pos = result.Length() - 1;
+         auto pos = result.Length() - 1;
          while ((pos > 1) &&
                   (result.GetChar(pos) == wxT('0')) &&
                   (result.GetChar(pos - 1) != decSep))

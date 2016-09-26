@@ -88,7 +88,7 @@ public:
        WaveTrackCache &waveTrackCache,
        int xx, sampleCount numSamples,
        double offset, double rate, double pixelsPerSecond,
-       int lowerBoundX, int upperBoundX,
+       size_t lowerBoundX, size_t upperBoundX,
        const std::vector<float> &gainFactors,
        float* __restrict scratch,
        float* __restrict out) const;
@@ -97,7 +97,7 @@ public:
 
    void Populate
       (const SpectrogramSettings &settings, WaveTrackCache &waveTrackCache,
-       int copyBegin, int copyEnd, size_t numPixels,
+       size_t copyBegin, size_t copyEnd, size_t numPixels,
        sampleCount numSamples,
        double offset, double rate, double pixelsPerSecond);
 
@@ -300,10 +300,10 @@ public:
    bool Flush();
 
    bool AppendAlias(const wxString &fName, sampleCount start,
-                    size_t len, int channel,bool useOD);
+                    size_t len, unsigned channel, bool useOD);
 
    bool AppendCoded(const wxString &fName, sampleCount start,
-                            size_t len, int channel, int decodeType);
+                            size_t len, unsigned channel, unsigned decodeType);
 
    /// This name is consistent with WaveTrack::Clear. It performs a "Cut"
    /// operation (but without putting the cutted audio to the clipboard)

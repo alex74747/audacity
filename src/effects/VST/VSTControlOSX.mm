@@ -119,7 +119,9 @@ bool VSTControl::Create(wxWindow *parent, VSTEffectLink *link)
 
 void VSTControl::CreateCocoa()
 {
-   if ((mLink->callDispatcher(effCanDo, 0, 0, (void *) "hasCockosViewAsConfig", 0.0) & 0xffff0000) != 0xbeef0000)
+   if (((unsigned long)mLink->callDispatcher
+           (effCanDo, 0, 0, (void *) "hasCockosViewAsConfig", 0.0)
+        & 0xffff0000) != 0xbeef0000)
    {
       return;
    }

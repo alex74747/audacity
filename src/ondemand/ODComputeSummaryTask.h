@@ -74,7 +74,7 @@ protected:
    //mBlockFiles is touched on several threads- the OD terminate thread, and the task thread, so we need to mutex it.
    ODLock  mBlockFilesMutex;
    std::vector< std::weak_ptr< ODPCMAliasBlockFile > > mBlockFiles;
-   int mMaxBlockFiles;
+   size_t mMaxBlockFiles;
    ODLock  mHasUpdateRanMutex;
    bool mHasUpdateRan;
 };

@@ -46,7 +46,7 @@ public:
 private:
    // EffectStereoToMono implementation
 
-   bool ProcessOne(int count);
+   bool ProcessOne(unsigned count);
 
 private:
    sampleCount mStart;

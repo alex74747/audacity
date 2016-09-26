@@ -157,7 +157,7 @@ public:
    ProgressResult Import(TrackFactory *trackFactory, TrackHolders &outTracks,
               Tags *tags) override;
 
-   wxInt32 GetStreamCount() override { return 1; }
+   unsigned GetStreamCount() override { return 1; }
 
    const wxArrayString &GetStreamInfo() override
    {
@@ -165,8 +165,7 @@ public:
       return empty;
    }
 
-   void SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUSED(Use)) override
-   {}
+   void SetStreamUsage(unsigned WXUNUSED(StreamID), bool WXUNUSED(Use)) override {}
 
 private:
    sampleFormat          mFormat;
@@ -301,7 +300,6 @@ std::unique_ptr<ImportFileHandle> FLACImportPlugin::Open(const wxString &filenam
 {
    // First check if it really is a FLAC file
 
-   int cnt;
    wxFile binaryFile;
    if (!binaryFile.Open(filename)) {
       return nullptr; // File not found
@@ -312,8 +310,8 @@ std::unique_ptr<ImportFileHandle> FLACImportPlugin::Open(const wxString &filenam
 #ifdef USE_LIBID3TAG
    // Skip any ID3 tags that might be present
    id3_byte_t query[ID3_TAG_QUERYSIZE];
-   cnt = binaryFile.Read(query, sizeof(query));
-   cnt = id3_tag_query(query, cnt);
+   auto cnt = binaryFile.Read(query, sizeof(query));
+   cnt = id3_tag_query(query, (size_t)cnt);
    binaryFile.Seek(cnt);
 #endif
 

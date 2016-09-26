@@ -49,7 +49,7 @@ static const wxString kPassStrings[kNumPasses] =
 // Define keys, defaults, minimums, and maximums for the effect parameters
 //
 //     Name    Type  Key            Def        Min   Max                        Scale
-Param( Level,  int,  XO("dB"),      10,        0,    Enums::NumDbChoices - 1,   1  );
+Param( Level,  int,  XO("dB"),      10,        0,    (int)Enums::NumDbChoices - 1,   1  );
 Param( Passes, int,  XO("Passes"),  kModerate, 0,    kNumPasses - 1,            1  );
 
 //
@@ -138,7 +138,7 @@ bool EffectLeveller::SetAutomationParameters(EffectAutomationParameters & parms)
    passChoices.Insert(wxT("4"), 3);
    passChoices.Insert(wxT("5"), 4);
 
-   ReadAndVerifyEnum(Level, wxArrayString(Enums::NumDbChoices,Enums::GetDbChoices()));
+   ReadAndVerifyEnum(Level, wxArrayString(Enums::NumDbChoices, Enums::GetDbChoices()));
    ReadAndVerifyEnum(Passes, passChoices);
 
    mDbIndex = Level;
@@ -181,7 +181,7 @@ bool EffectLeveller::Startup()
          mNumPasses = 1;
       }
       mDbIndex = gPrefs->Read(base + wxT("LevellerDbChoiceIndex"), 10L);
-      if ((mDbIndex < 0) || (mDbIndex >= Enums::NumDbChoices))
+      if ((mDbIndex < 0) || (mDbIndex >= (int)Enums::NumDbChoices))
       {  // cor
          mDbIndex = 0;  //Least dB
       }
@@ -206,7 +206,7 @@ void EffectLeveller::PopulateOrExchange(ShuttleGui & S)
       passChoices.Add(wxGetTranslation(kPassStrings[i]));
    }
 
-   wxArrayString dBChoices(Enums::NumDbChoices,Enums::GetDbChoices());
+   wxArrayString dBChoices(Enums::NumDbChoices, Enums::GetDbChoices());
 
    S.SetBorder(5);
 

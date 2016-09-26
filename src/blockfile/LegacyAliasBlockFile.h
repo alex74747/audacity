@@ -26,7 +26,7 @@ class LegacyAliasBlockFile final : public PCMAliasBlockFile
                         wxFileNameWrapper &&aliasedFileName,
                         sampleCount aliasStart,
                         size_t aliasLen,
-                        int aliasChannel,
+                        unsigned aliasChannel,
                         size_t summaryLen,
                         bool noRMS);
    virtual ~LegacyAliasBlockFile();

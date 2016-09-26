@@ -42,7 +42,7 @@ public:
 private:
    // EffectRepair implementaion
 
-   bool ProcessOne(int count, WaveTrack * track,
+   bool ProcessOne(unsigned count, WaveTrack * track,
                    sampleCount start,
                    size_t len,
                    size_t repairStart, // offset relative to start

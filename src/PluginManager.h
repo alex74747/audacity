@@ -301,8 +301,8 @@ private:
    // The PluginID must be kept unique.  Since the wxFileConfig class does not preserve
    // case, we use base64 encoding.
    wxString ConvertID(const PluginID & ID);
-   wxString b64encode(const void *in, int len);
-   int b64decode(const wxString &in, void *out);
+   wxString b64encode(const void *in, size_t len);
+   size_t b64decode(const wxString &in, void *out);
 
 private:
    friend std::default_delete<PluginManager>;

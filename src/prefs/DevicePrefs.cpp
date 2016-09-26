@@ -171,7 +171,7 @@ void DevicePrefs::OnHost(wxCommandEvent & e)
 
    // Find the index for the host API selected
    int index = -1;
-   wxString apiName = mHostNames[mHost->GetCurrentSelection()];
+   wxString apiName = mHostNames[(size_t)mHost->GetCurrentSelection()];
    int nHosts = Pa_GetHostApiCount();
    for (int i = 0; i < nHosts; ++i) {
       wxString name = wxSafeConvertMB2WX(Pa_GetHostApiInfo(i)->name);
@@ -216,7 +216,8 @@ void DevicePrefs::OnHost(wxCommandEvent & e)
          devindex = mRecord->Append(device);
          // We need to const cast here because SetClientData is a wx function
          // It is okay beause the original variable is non-const.
-         mRecord->SetClientData(devindex, const_cast<DeviceSourceMap *>(&inMaps[i]));
+         wxASSERT(devindex >= 0);
+         mRecord->SetClientData((unsigned)devindex, const_cast<DeviceSourceMap *>(&inMaps[i]));
          if (device == recDevice) {  /* if this is the default device, select it */
             mRecord->SetSelection(devindex);
          }
@@ -228,7 +229,8 @@ void DevicePrefs::OnHost(wxCommandEvent & e)
       if (index == outMaps[i].hostIndex) {
          device   = MakeDeviceSourceString(&outMaps[i]);
          devindex = mPlay->Append(device);
-         mPlay->SetClientData(devindex, const_cast<DeviceSourceMap *>(&outMaps[i]));
+         wxASSERT(devindex >= 0);
+         mPlay->SetClientData((unsigned)devindex, const_cast<DeviceSourceMap *>(&outMaps[i]));
          if (device == mPlayDevice) {  /* if this is the default device, select it */
             mPlay->SetSelection(devindex);
          }
@@ -278,15 +280,16 @@ void DevicePrefs::OnHost(wxCommandEvent & e)
 
 void DevicePrefs::OnDevice(wxCommandEvent & WXUNUSED(event))
 {
-   int ndx = mRecord->GetCurrentSelection();
-   if (ndx == wxNOT_FOUND) {
+   auto ndx = mRecord->GetCurrentSelection();
+   if (ndx < 0) {
       ndx = 0;
    }
 
    int sel = mChannels->GetSelection();
    int cnt = 0;
 
-   DeviceSourceMap *inMap = (DeviceSourceMap *) mRecord->GetClientData(ndx);
+   DeviceSourceMap *inMap =
+      (DeviceSourceMap *) mRecord->GetClientData((unsigned)ndx);
    if (inMap != NULL) {
       cnt = inMap->numChannels;
    }
@@ -348,8 +351,9 @@ bool DevicePrefs::Apply()
    DeviceSourceMap *map = NULL;
 
    if (mPlay->GetCount() > 0) {
-      map = (DeviceSourceMap *) mPlay->GetClientData(
-            mPlay->GetSelection());
+      auto n = mPlay->GetSelection();
+      wxASSERT(n >= 0);
+      map = (DeviceSourceMap *) mPlay->GetClientData((unsigned)n);
    }
    if (map) {
       gPrefs->Write(wxT("/AudioIO/PlaybackDevice"), map->deviceString);
@@ -357,7 +361,9 @@ bool DevicePrefs::Apply()
 
    map = NULL;
    if (mRecord->GetCount() > 0) {
-      map = (DeviceSourceMap *) mRecord->GetClientData(mRecord->GetSelection());
+      auto n = mRecord->GetSelection();
+      wxASSERT(n >= 0);
+      map = (DeviceSourceMap *) mRecord->GetClientData((unsigned)n);
    }
    if (map) {
       gPrefs->Write(wxT("/AudioIO/RecordingDevice"),

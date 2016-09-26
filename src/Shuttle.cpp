@@ -70,7 +70,7 @@ preferences.
 //#include "commands/CommandManager.h"
 //#include "effects/Effect.h"
 
-const int Enums::NumDbChoices = 13;
+const unsigned Enums::NumDbChoices = 13;
 
 const wxString Enums::DbChoices[] =
    {wxT("-20 dB"), wxT("-25 dB"), wxT("-30 dB"),
@@ -296,20 +296,20 @@ bool ShuttleCli::ExchangeWithMaster(const wxString & Name)
    {
       int i;
       mParams = wxT(" ")+mParams;
-      i=mParams.Find( wxT(" ")+Name+wxT("=") );
+      i = mParams.Find( wxT(" ") + Name + wxT("=") );
       if( i>=0 )
       {
-         int j=i+2+Name.Length();
+         auto j = (size_t)i + 2 + Name.Length();
          wxString terminator = wxT(' ');
          if(mParams.GetChar(j) == wxT('"')) //Strings are surrounded by quotes
          {
             terminator = wxT('"');
             j++;
          }
-         i=j;
-         while( j<(int)mParams.Length() && mParams.GetChar(j) != terminator )
+         i = (int)j;
+         while( j < mParams.Length() && mParams.GetChar(j) != terminator )
             j++;
-         mValueString = mParams.Mid(i,j-i);
+         mValueString = mParams.Mid((size_t)i, j - (size_t)i);
          return true;
       }
       return false;

@@ -53,7 +53,7 @@ class HistoryWindow final : public wxDialogWrapper {
    wxSpinCtrl        *mLevels;
    wxButton          *mDiscard;
 
-   int               mSelected;
+   unsigned          mSelected;
    bool              mAudioIOBusy;
 
  public:

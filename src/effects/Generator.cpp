@@ -36,7 +36,7 @@ bool Generator::Process()
 
    // Iterate over the tracks
    bool bGoodResult = true;
-   int ntrack = 0;
+   unsigned ntrack = 0;
    TrackListIterator iter(mOutputTracks.get());
    Track* t = iter.First();
 
@@ -116,7 +116,7 @@ bool Generator::Process()
 
 bool BlockGenerator::GenerateTrack(WaveTrack *tmp,
                                    const WaveTrack &track,
-                                   int ntrack)
+                                   unsigned ntrack)
 {
    bool bGoodResult = true;
    numSamples = track.TimeToLongSamples(GetDuration());

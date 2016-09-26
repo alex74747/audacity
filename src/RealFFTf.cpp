@@ -57,7 +57,7 @@
 */
 HFFT InitializeFFT(size_t fftlen)
 {
-   int temp;
+   unsigned temp;
    HFFT h;
 
    if((h=(HFFT)malloc(sizeof(FFTParam)))==NULL)
@@ -78,7 +78,7 @@ HFFT InitializeFFT(size_t fftlen)
       exit(8);
    }
 
-   if((h->BitReversed=(int *)malloc(h->Points*sizeof(int)))==NULL)
+   if((h->BitReversed=(unsigned *)malloc(h->Points*sizeof(int)))==NULL)
    {
       fprintf(stderr,"Error allocating memory for BitReversed.\n");
       exit(8);
@@ -88,7 +88,7 @@ HFFT InitializeFFT(size_t fftlen)
    {
       temp = 0;
       for(size_t mask = h->Points / 2; mask > 0; mask >>= 1)
-         temp = (temp >> 1) + (i & mask ? h->Points : 0);
+         temp = (temp >> 1) + (i & mask ? h->Points : 0u);
 
       h->BitReversed[i] = temp;
    }
@@ -195,7 +195,7 @@ void RealFFTf(fft_type *buffer,HFFT h)
    fft_type *A,*B;
    const fft_type *sptr;
    const fft_type *endptr1,*endptr2;
-   const int *br1,*br2;
+   const unsigned *br1,*br2;
    fft_type HRplus,HRminus,HIplus,HIminus;
    fft_type v1,v2,sin,cos;
 
@@ -297,7 +297,7 @@ void InverseRealFFTf(fft_type *buffer,HFFT h)
    fft_type *A,*B;
    const fft_type *sptr;
    const fft_type *endptr1,*endptr2;
-   const int *br1;
+   const unsigned *br1;
    fft_type HRplus,HRminus,HIplus,HIminus;
    fft_type v1,v2,sin,cos;
 

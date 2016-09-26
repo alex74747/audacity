@@ -102,14 +102,16 @@ class AUDACITY_DLL_API UndoManager {
    void ModifyState(const TrackList * l,
                     const SelectedRegion &selectedRegion, const std::shared_ptr<Tags> &tags);
    void ClearStates();
-   void RemoveStates(int num);  // removes the 'num' oldest states
-   void RemoveStateAt(int n);   // removes the n'th state (1 is oldest)
+   void RemoveStates(size_t num);  // removes the 'num' oldest states
+   void RemoveStateAt(size_t n);   // removes the n'th state (1 is oldest)
    unsigned int GetNumStates();
+
+   // This counts 1-based:
    unsigned int GetCurrentState();
 
    void GetShortDescription(unsigned int n, wxString *desc);
    // Return value must first be calculated by CalculateSpaceUsage():
-   wxLongLong_t GetLongDescription(unsigned int n, wxString *desc, wxString *size);
+   unsigned long long GetLongDescription(unsigned int n, wxString *desc, wxString *size);
    void SetLongDescription(unsigned int n, const wxString &desc);
 
    const UndoState &SetStateTo(unsigned int n, SelectedRegion *selectedRegion);
@@ -138,7 +140,7 @@ class AUDACITY_DLL_API UndoManager {
    void ResetODChangesFlag();
 
  private:
-   int current;
+   int current; // never less than -1
    int saved;
    UndoStack stack;
 

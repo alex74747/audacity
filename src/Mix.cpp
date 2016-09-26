@@ -357,7 +357,7 @@ void Mixer::Clear()
 
 void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
                 samplePtr src, SampleBuffer *dests,
-                int len, bool interleaved)
+                size_t len, bool interleaved)
 {
    for (size_t c = 0; c < numChannels; c++) {
       if (!channelFlags[c])
@@ -377,7 +377,7 @@ void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
       float gain = gains[c];
       float *dest = (float *)destPtr;
       float *temp = (float *)src;
-      for (int j = 0; j < len; j++) {
+      for (size_t j = 0; j < len; j++) {
          *dest += temp[j] * gain;   // the actual mixing process
          dest += skip;
       }
@@ -682,7 +682,7 @@ samplePtr Mixer::GetBuffer()
    return mBuffer[0].ptr();
 }
 
-samplePtr Mixer::GetBuffer(int channel)
+samplePtr Mixer::GetBuffer(unsigned channel)
 {
    return mBuffer[channel].ptr();
 }

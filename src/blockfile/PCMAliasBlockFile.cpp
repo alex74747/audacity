@@ -32,7 +32,7 @@ PCMAliasBlockFile::PCMAliasBlockFile(
       wxFileNameWrapper &&fileName,
       wxFileNameWrapper &&aliasedFileName,
       sampleCount aliasStart,
-      size_t aliasLen, int aliasChannel)
+      size_t aliasLen, unsigned aliasChannel)
 : AliasBlockFile{ std::move(fileName), std::move(aliasedFileName),
                   aliasStart, aliasLen, aliasChannel }
 {
@@ -43,7 +43,7 @@ PCMAliasBlockFile::PCMAliasBlockFile(
       wxFileNameWrapper&& fileName,
       wxFileNameWrapper&& aliasedFileName,
       sampleCount aliasStart,
-      size_t aliasLen, int aliasChannel,bool writeSummary)
+      size_t aliasLen, unsigned aliasChannel,bool writeSummary)
 : AliasBlockFile{ std::move(fileName), std::move(aliasedFileName),
                   aliasStart, aliasLen, aliasChannel }
 {
@@ -55,7 +55,7 @@ PCMAliasBlockFile::PCMAliasBlockFile(
       wxFileNameWrapper &&existingSummaryFileName,
       wxFileNameWrapper &&aliasedFileName,
       sampleCount aliasStart,
-      size_t aliasLen, int aliasChannel,
+      size_t aliasLen, unsigned aliasChannel,
       float min, float max, float rms)
 : AliasBlockFile{ std::move(existingSummaryFileName), std::move(aliasedFileName),
                   aliasStart, aliasLen,
@@ -109,7 +109,7 @@ void PCMAliasBlockFile::SaveXML(XMLWriter &xmlFile)
    xmlFile.WriteAttr(wxT("aliasstart"),
                      mAliasStart.as_long_long());
    xmlFile.WriteAttr(wxT("aliaslen"), mLen);
-   xmlFile.WriteAttr(wxT("aliaschannel"), mAliasChannel);
+   xmlFile.WriteAttr(wxT("aliaschannel"), (int)mAliasChannel);
    xmlFile.WriteAttr(wxT("min"), mMin);
    xmlFile.WriteAttr(wxT("max"), mMax);
    xmlFile.WriteAttr(wxT("rms"), mRMS);
@@ -124,7 +124,9 @@ BlockFilePtr PCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **attr
 {
    wxFileNameWrapper summaryFileName;
    wxFileNameWrapper aliasFileName;
-   int aliasStart=0, aliasLen=0, aliasChannel=0;
+   sampleCount aliasStart = 0;
+   size_t aliasLen = 0;
+   unsigned aliasChannel = 0;
    float min = 0.0f, max = 0.0f, rms = 0.0f;
    double dblValue;
    long nValue;
@@ -169,9 +171,9 @@ BlockFilePtr PCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **attr
       else if (XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
-            aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
-            aliasChannel = nValue;
+            aliasLen = (size_t)nValue;
+         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(nValue))
+            aliasChannel = (size_t)nValue;
          else if (!wxStricmp(attr, wxT("min")))
             min = nValue;
          else if (!wxStricmp(attr, wxT("max")))

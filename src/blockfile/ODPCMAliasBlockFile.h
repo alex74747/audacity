@@ -49,10 +49,10 @@ class ODPCMAliasBlockFile final : public PCMAliasBlockFile
    /// Constructs a PCMAliasBlockFile, writing the summary to disk
    ODPCMAliasBlockFile(wxFileNameWrapper &&baseFileName,
                         wxFileNameWrapper &&aliasedFileName, sampleCount aliasStart,
-                        size_t aliasLen, int aliasChannel);
+                        size_t aliasLen, unsigned aliasChannel);
    ODPCMAliasBlockFile(wxFileNameWrapper &&existingSummaryFileName,
                         wxFileNameWrapper &&aliasedFileName, sampleCount aliasStart,
-                        size_t aliasLen, int aliasChannel,
+                        size_t aliasLen, unsigned aliasChannel,
                         float min, float max, float rms, bool summaryAvailable);
    virtual ~ODPCMAliasBlockFile();
 

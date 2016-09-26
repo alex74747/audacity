@@ -321,9 +321,9 @@ void Ruler::OfflimitsPixels(int start, int end)
 {
    if (!mUserBits) {
       if (mOrientation == wxHORIZONTAL)
-         mLength = mRight-mLeft;
+         mLength = (size_t)std::max(0, mRight - mLeft);
       else
-         mLength = mBottom-mTop;
+         mLength = (size_t)std::max(0, mBottom - mTop);
       if( mLength < 0 )
          return;
       mUserBits.reinit(static_cast<size_t>(mLength+1), true);
@@ -335,10 +335,10 @@ void Ruler::OfflimitsPixels(int start, int end)
 
    if (start < 0)
       start = 0;
-   if (end > mLength)
-      end = mLength;
+   if (end > (int)mLength)
+      end = (int)mLength;
 
-   for(int i = start; i <= end; i++)
+   for(auto i = start; i <= end; i++)
       mUserBits[i] = 1;
 }
 
@@ -360,9 +360,9 @@ void Ruler::Invalidate()
    mValid = false;
 
    if (mOrientation == wxHORIZONTAL)
-      mLength = mRight-mLeft;
+      mLength = (size_t)std::max(0, mRight - mLeft);
    else
-      mLength = mBottom-mTop;
+      mLength = (size_t)std::max(0, mBottom - mTop);
 
    mBits.reset();
    if (mUserBits && mLength+1 != mUserBitLen) {
@@ -721,7 +721,7 @@ wxString Ruler::LabelString(double d, bool major)
    return s;
 }
 
-void Ruler::Tick(int pos, double d, bool major, bool minor)
+void Ruler::Tick(size_t pos, double d, bool major, bool minor)
 {
    wxString l;
    wxCoord strW, strH, strD, strL;
@@ -756,35 +756,31 @@ void Ruler::Tick(int pos, double d, bool major, bool minor)
 
    if (mOrientation == wxHORIZONTAL) {
       strLen = strW;
-      strPos = pos - strW/2;
-      if (strPos < 0)
-         strPos = 0;
-      if (strPos + strW >= mLength)
-         strPos = mLength - strW;
+      strPos = std::min((int)mLength - strLen, std::max(0,
+         (int)pos - strLen/2
+      ));
       strLeft = mLeft + strPos;
       if (mFlip) {
          strTop = mTop + 4;
          mMaxHeight = max(mMaxHeight, strH + 4);
       }
       else {
-         strTop =-strH-mLead;
+         strTop = -strH - mLead;
          mMaxHeight = max(mMaxHeight, strH + 6);
       }
    }
    else {
       strLen = strH;
-      strPos = pos - strH/2;
-      if (strPos < 0)
-         strPos = 0;
-      if (strPos + strH >= mLength)
-         strPos = mLength - strH;
+      strPos = std::min((int)mLength - strLen, std::max(0,
+         (int)pos - strLen/2
+      ));
       strTop = mTop + strPos;
       if (mFlip) {
          strLeft = mLeft + 5;
          mMaxWidth = max(mMaxWidth, strW + 5);
       }
       else
-         strLeft =-strW-6;
+         strLeft = -strW - 6;
    }
 
 
@@ -816,9 +812,7 @@ void Ruler::Tick(int pos, double d, bool major, bool minor)
    strPos -= leftMargin;
    strLen += leftMargin;
 
-   int rightMargin = mSpacing;
-   if (strPos + strLen > mLength - mSpacing)
-      rightMargin = mLength - strPos - strLen;
+   auto rightMargin = std::min(mSpacing, (int)mLength - strPos - strLen);
    strLen += rightMargin;
 
    for(i=0; i<strLen; i++)
@@ -829,13 +823,12 @@ void Ruler::Tick(int pos, double d, bool major, bool minor)
 
 }
 
-void Ruler::TickCustom(int labelIdx, bool major, bool minor)
+void Ruler::TickCustom(size_t labelIdx, bool major, bool minor)
 {
    //This should only used in the mCustom case
    // Many code comes from 'Tick' method: this should
    // be optimized.
 
-   int pos;
    wxString l;
    wxCoord strW, strH, strD, strL;
    int strPos, strLen, strLeft, strTop;
@@ -856,7 +849,7 @@ void Ruler::TickCustom(int labelIdx, bool major, bool minor)
       label = &mMinorMinorLabels[labelIdx];
 
    label->value = 0.0;
-   pos = label->pos;         // already stored in label class
+   auto pos = label->pos;         // already stored in label class
    l   = label->text;
    label->lx = mLeft - 1000; // don't display
    label->ly = mTop - 1000;  // don't display
@@ -867,11 +860,9 @@ void Ruler::TickCustom(int labelIdx, bool major, bool minor)
 
    if (mOrientation == wxHORIZONTAL) {
       strLen = strW;
-      strPos = pos - strW/2;
-      if (strPos < 0)
-         strPos = 0;
-      if (strPos + strW >= mLength)
-         strPos = mLength - strW;
+      strPos = std::min((int)mLength - strLen, std::max(0,
+         (int)pos - strLen/2
+      ));
       strLeft = mLeft + strPos;
       if (mFlip) {
          strTop = mTop + 4;
@@ -885,11 +876,10 @@ void Ruler::TickCustom(int labelIdx, bool major, bool minor)
    }
    else {
       strLen = strH;
-      strPos = pos - strH/2;
-      if (strPos < 0)
-         strPos = 0;
-      if (strPos + strH >= mLength)
-         strPos = mLength - strH;
+      strLen = strW;
+      strPos = std::min((int)mLength - strLen, std::max(0,
+         (int)pos - strLen/2
+      ));
       strTop = mTop + strPos;
       if (mFlip) {
          strLeft = mLeft + 5;
@@ -929,9 +919,7 @@ void Ruler::TickCustom(int labelIdx, bool major, bool minor)
    strPos -= leftMargin;
    strLen += leftMargin;
 
-   int rightMargin = mSpacing;
-   if (strPos + strLen > mLength - mSpacing)
-      rightMargin = mLength - strPos - strLen;
+   auto rightMargin = std::min(mSpacing, (int)mLength - strPos - strLen);
    strLen += rightMargin;
 
    for(i=0; i<strLen; i++)
@@ -957,9 +945,6 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
    // This gets called when something has been changed
    // (i.e. we've been invalidated).  Recompute all
    // tick positions and font size.
-
-   int i;
-   int j;
 
    if (!mUserFonts) {
       int fontSize = 4;
@@ -1014,14 +999,14 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       return;
 
    if (mOrientation == wxHORIZONTAL) {
-      mMaxWidth = mLength;
+      mMaxWidth = (int)mLength;
       mMaxHeight = 0;
-      mRect = wxRect(0,0, mLength,0);
+      mRect = wxRect(0,0, mMaxWidth, 0);
    }
    else {
       mMaxWidth = 0;
-      mMaxHeight = mLength;
-      mRect = wxRect(0,0, 0,mLength);
+      mMaxHeight = (int)mLength;
+      mRect = wxRect(0,0, 0, mMaxHeight);
    }
 
    // FIXME: Surely we do not need to allocate storage for the labels?
@@ -1043,10 +1028,10 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
    mBits.reinit(size);
    if (mUserBits)
-      for(i=0; i<=mLength; i++)
+      for(size_t i = 0; i <= mLength; i++)
          mBits[i] = mUserBits[i];
    else
-      for(i=0; i<=mLength; i++)
+      for(size_t i = 0; i <= mLength; i++)
          mBits[i] = 0;
 
    // *************** Label calculation routine **************
@@ -1055,10 +1040,10 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // SET PARAMETER IN MCUSTOM CASE
       // Works only with major labels
 
-      int numLabel = mNumMajor;
+      auto numLabel = mNumMajor;
 
-      i = 0;
-      while((i<numLabel) && (i<=mLength)) {
+      size_t i = 0;
+      while((i < numLabel) && (i <= mLength)) {
 
          TickCustom(i, true, false);
          i++;
@@ -1070,7 +1055,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // That may make a difference with fisheye.
       // Otherwise you may see the tick size for the whole ruler change
       // when the fisheye approaches start or end.
-      double UPP = (mHiddenMax-mHiddenMin)/mLength;  // Units per pixel
+      double UPP = (mHiddenMax - mHiddenMin) / mLength;  // Units per pixel
       FindLinearTickSizes(UPP);
 
       // Left and Right Edges
@@ -1085,11 +1070,11 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
          if (zoomInfo != NULL)
             mid = zoomInfo->TimeToPosition(0.0, mLeftOffset);
          else
-            mid = mLength * (mMin / (mMin - mMax)) + 0.5;
+            mid = (mLength * (mMin / (mMin - mMax)) + 0.5);
          const int iMaxPos = (mOrientation == wxHORIZONTAL) ? mRight : mBottom - 5;
          if (mid >= 0 && mid < iMaxPos)
-            // Narrowing mid to int is safe
-            Tick((int)mid, 0.0, true, false);
+            // Narrowing mid to size_t is safe
+            Tick((size_t)mid, 0.0, true, false);
       }
 
       double sg = UPP > 0.0? 1.0: -1.0;
@@ -1097,7 +1082,6 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // Major and minor ticks
       for (int jj = 0; jj < 2; ++jj) {
          const double denom = jj == 0 ? mMajor : mMinor;
-         i = -1;
          wxInt64 j = 0;
          double d, warpedD, nextD;
 
@@ -1117,8 +1101,9 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
          // using ints doesn't work, as
          // this will overflow and be negative at high zoom.
          double step = floor(sg * warpedD / denom);
-         while (i <= mLength) {
-            i++;
+         for (size_t i = 0;
+              i <= mLength + 1; // why + 1 ?
+              ++i) {
             if (zoomInfo)
             {
                prevTime = time;
@@ -1166,14 +1151,15 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
       // Major ticks are the decades
       double decade = startDecade;
-      double delta=hiLog-loLog, steps=fabs(delta);
-      double step = delta>=0 ? 10 : 0.1;
-      double rMin=std::min(mMin, mMax), rMax=std::max(mMin, mMax);
-      for(i=0; i<=steps; i++)
+      double delta = hiLog - loLog, steps = fabs(delta);
+      double step = delta >=0 ? 10 : 0.1;
+      double rMin = std::min(mMin, mMax), rMax = std::max(mMin, mMax);
+      for(size_t i = 0; i <= steps; i++)
       {  // if(i!=0)
          {  val = decade;
             if(val >= rMin && val < rMax) {
-               const int pos(0.5 + mLength * numberScale.ValueToPosition(val));
+               const auto pos =
+                  (size_t)std::max(0.0, (0.5 + mLength * numberScale.ValueToPosition(val)));
                Tick(pos, val, true, false);
             }
          }
@@ -1184,16 +1170,16 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       decade = startDecade;
       float start, end, mstep;
       if (delta > 0)
-      {  start=2; end=10; mstep=1;
-      }else
-      {  start=9; end=1; mstep=-1;
-      }
+         start = 2, end = 10, mstep = 1;
+      else
+         start = 9, end = 1, mstep = -1;
       steps++;
-      for(i=0; i<=steps; i++) {
-         for(j=start; j!=end; j+=mstep) {
+      for(size_t i = 0; i <= steps; i++) {
+         for(auto j = start; j != end; j += mstep) {
             val = decade * j;
             if(val >= rMin && val < rMax) {
-               const int pos(0.5 + mLength * numberScale.ValueToPosition(val));
+               const auto pos =
+                  (size_t)std::max(0.0, 0.5 + mLength * numberScale.ValueToPosition(val));
                Tick(pos, val, false, true);
             }
          }
@@ -1203,19 +1189,19 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // MinorMinor ticks are multiples of decades
       decade = startDecade;
       if (delta > 0)
-      {  start= 10; end=100; mstep= 1;
-      }else
-      {  start=100; end= 10; mstep=-1;
-      }
+         start = 10, end = 100, mstep = 1;
+      else
+         start = 100, end = 10, mstep = -1;
       steps++;
-      for (i = 0; i <= steps; i++) {
+      for (size_t i = 0; i <= steps; i++) {
          // PRL:  Bug1038.  Don't label 1.6, rounded, as a duplicate tick for "2"
          if (!(mFormat == IntFormat && decade < 10.0)) {
             for (int f = start; f != (int)(end); f += mstep) {
                if ((int)(f / 10) != f / 10.0f) {
                   val = decade * f / 10;
                   if (val >= rMin && val < rMax) {
-                     const int pos(0.5 + mLength * numberScale.ValueToPosition(val));
+                     const auto pos =
+                        (size_t)std::max(0.0, 0.5 + mLength * numberScale.ValueToPosition(val));
                      Tick(pos, val, false, false);
                   }
                }
@@ -1225,44 +1211,44 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       }
    }
 
-   int displacementx=0, displacementy=0;
+   int displacementx = 0, displacementy = 0;
    if (!mFlip) {
-      if (mOrientation==wxHORIZONTAL) {
-         int d=mTop+mRect.GetHeight()+5;
+      if (mOrientation == wxHORIZONTAL) {
+         int d = mTop + mRect.GetHeight() + 5;
          mRect.Offset(0,d);
          mRect.Inflate(0,5);
-         displacementx=0;
-         displacementy=d;
+         displacementx = 0;
+         displacementy = d;
       }
       else {
-         int d=mLeft-mRect.GetLeft()+5;
+         int d = mLeft - mRect.GetLeft() + 5;
          mRect.Offset(d,0);
          mRect.Inflate(5,0);
-         displacementx=d;
-         displacementy=0;
+         displacementx = d;
+         displacementy = 0;
       }
    }
    else {
-      if (mOrientation==wxHORIZONTAL) {
+      if (mOrientation == wxHORIZONTAL) {
          mRect.Inflate(0,5);
-         displacementx=0;
-         displacementy=0;
+         displacementx = 0;
+         displacementy = 0;
       }
    }
-   for(i=0; i<mNumMajor; i++) {
-      mMajorLabels[i].lx+= displacementx;
-      mMajorLabels[i].ly+= displacementy;
+   for(size_t i = 0; i < mNumMajor; i++) {
+      mMajorLabels[i].lx += displacementx;
+      mMajorLabels[i].ly += displacementy;
    }
-   for(i=0; i<mNumMinor; i++) {
-      mMinorLabels[i].lx+= displacementx;
-      mMinorLabels[i].ly+= displacementy;
+   for(size_t i = 0; i < mNumMinor; i++) {
+      mMinorLabels[i].lx += displacementx;
+      mMinorLabels[i].ly += displacementy;
    }
-   for(i=0; i<mNumMinorMinor; i++) {
-      mMinorMinorLabels[i].lx+= displacementx;
-      mMinorMinorLabels[i].ly+= displacementy;
+   for(size_t i = 0; i < mNumMinorMinor; i++) {
+      mMinorMinorLabels[i].lx += displacementx;
+      mMinorMinorLabels[i].ly += displacementy;
    }
    mMaxWidth = mRect.GetWidth ();
-   mMaxHeight= mRect.GetHeight();
+   mMaxHeight = mRect.GetHeight();
    mValid = true;
 }
 
@@ -1308,8 +1294,6 @@ void Ruler::Draw(wxDC& dc, const TimeTrack* timetrack)
       }
    }
 
-   int i;
-
    mDC->SetFont(*mMajorFont);
 
    // We may want to not show the ticks at the extremes,
@@ -1318,10 +1302,10 @@ void Ruler::Draw(wxDC& dc, const TimeTrack* timetrack)
    // button, since otherwise the tick is drawn on the bevel.
    int iMaxPos = (mOrientation==wxHORIZONTAL)? mRight : mBottom-5;
 
-   for(i=0; i<mNumMajor; i++) {
-      int pos = mMajorLabels[i].pos;
+   for(size_t i = 0; i < mNumMajor; i++) {
+      auto pos = (int)mMajorLabels[i].pos;
 
-      if( mbTicksAtExtremes || ((pos!=0)&&(pos!=iMaxPos)))
+      if( mbTicksAtExtremes || ((pos != 0) && (pos != iMaxPos)))
       {
          if (mOrientation == wxHORIZONTAL) {
             if (mFlip)
@@ -1346,9 +1330,9 @@ void Ruler::Draw(wxDC& dc, const TimeTrack* timetrack)
 
    if(mbMinor == true) {
       mDC->SetFont(*mMinorFont);
-      for(i=0; i<mNumMinor; i++) {
-         int pos = mMinorLabels[i].pos;
-         if( mbTicksAtExtremes || ((pos!=0)&&(pos!=iMaxPos)))
+      for(size_t i = 0; i < mNumMinor; i++) {
+         auto pos = (int)mMinorLabels[i].pos;
+         if( mbTicksAtExtremes || ((pos != 0) && (pos != iMaxPos)))
          {
             if (mOrientation == wxHORIZONTAL)
             {
@@ -1375,12 +1359,12 @@ void Ruler::Draw(wxDC& dc, const TimeTrack* timetrack)
 
    mDC->SetFont(*mMinorMinorFont);
 
-   for(i=0; i<mNumMinorMinor; i++) {
+   for(size_t i = 0; i < mNumMinorMinor; i++) {
       if (mMinorMinorLabels[i].text != wxT(""))
       {
-         int pos = mMinorMinorLabels[i].pos;
+         auto pos = (int)mMinorMinorLabels[i].pos;
 
-         if( mbTicksAtExtremes || ((pos!=0)&&(pos!=iMaxPos)))
+         if( mbTicksAtExtremes || ((pos != 0) && (pos != iMaxPos)))
          {
             if (mOrientation == wxHORIZONTAL)
             {
@@ -1416,21 +1400,20 @@ void Ruler::DrawGrid(wxDC& dc, int length, bool minor, bool major, int xOffset, 
 
    Update();
 
-   int gridPos;
    wxPen gridPen;
 
    if(mbMinor && (mMinorGrid && (mGridLineLength != 0 ))) {
       gridPen.SetColour(178, 178, 178); // very light grey
       mDC->SetPen(gridPen);
-      for(int i=0; i<mNumMinor; i++) {
-         gridPos = mMinorLabels[i].pos;
+      for(size_t i = 0; i < mNumMinor; i++) {
+         auto gridPos = (int)mMinorLabels[i].pos;
          if(mOrientation == wxHORIZONTAL) {
             if((gridPos != 0) && (gridPos != mGridLineLength))
-               mDC->DrawLine(gridPos+xOffset, yOffset, gridPos+xOffset, mGridLineLength+yOffset);
+               mDC->DrawLine(gridPos + xOffset, yOffset, gridPos + xOffset, mGridLineLength + yOffset);
          }
          else {
             if((gridPos != 0) && (gridPos != mGridLineLength))
-               mDC->DrawLine(xOffset, gridPos+yOffset, mGridLineLength+xOffset, gridPos+yOffset);
+               mDC->DrawLine(xOffset, gridPos + yOffset, mGridLineLength + xOffset, gridPos + yOffset);
          }
       }
    }
@@ -1438,15 +1421,15 @@ void Ruler::DrawGrid(wxDC& dc, int length, bool minor, bool major, int xOffset, 
    if(mMajorGrid && (mGridLineLength != 0 )) {
       gridPen.SetColour(127, 127, 127); // light grey
       mDC->SetPen(gridPen);
-      for(int i=0; i<mNumMajor; i++) {
-         gridPos = mMajorLabels[i].pos;
+      for(size_t i = 0; i < mNumMajor; i++) {
+         auto gridPos = (int)mMajorLabels[i].pos;
          if(mOrientation == wxHORIZONTAL) {
             if((gridPos != 0) && (gridPos != mGridLineLength))
-               mDC->DrawLine(gridPos+xOffset, yOffset, gridPos+xOffset, mGridLineLength+yOffset);
+               mDC->DrawLine(gridPos + xOffset, yOffset, gridPos + xOffset, mGridLineLength + yOffset);
          }
          else {
             if((gridPos != 0) && (gridPos != mGridLineLength))
-               mDC->DrawLine(xOffset, gridPos+yOffset, mGridLineLength+xOffset, gridPos+yOffset);
+               mDC->DrawLine(xOffset, gridPos + yOffset, mGridLineLength + xOffset, gridPos + yOffset);
          }
       }
 
@@ -1466,9 +1449,9 @@ void Ruler::DrawGrid(wxDC& dc, int length, bool minor, bool major, int xOffset, 
    }
 }
 
-int Ruler::FindZero(Label * label, const int len)
+int Ruler::FindZero(Label * label, const size_t len)
 {
-   int i = 0;
+   size_t i = 0;
    double d = 1.0;   // arbitrary
 
    do {
@@ -1477,7 +1460,7 @@ int Ruler::FindZero(Label * label, const int len)
    } while( (i < len) && (d != 0.0) );
 
    if(d == 0.0)
-      return (label[i - 1].pos) ;
+      return (int)label[i - 1].pos;
    else
       return -1;
 }
@@ -1509,26 +1492,26 @@ void Ruler::GetMaxSize(wxCoord *width, wxCoord *height)
 
 void Ruler::SetCustomMode(bool value) { mCustom = value; }
 
-void Ruler::SetCustomMajorLabels(wxArrayString *label, size_t numLabel, int start, int step)
+void Ruler::SetCustomMajorLabels(wxArrayString *label, size_t numLabel, size_t start, size_t step)
 {
    mNumMajor = numLabel;
    mMajorLabels.reinit(numLabel);
 
    for(size_t i = 0; i<numLabel; i++) {
       mMajorLabels[i].text = label->Item(i);
-      mMajorLabels[i].pos  = start + i*step;
+      mMajorLabels[i].pos  = start + i * step;
    }
    //Remember: DELETE majorlabels....
 }
 
-void Ruler::SetCustomMinorLabels(wxArrayString *label, size_t numLabel, int start, int step)
+void Ruler::SetCustomMinorLabels(wxArrayString *label, size_t numLabel, size_t start, size_t step)
 {
    mNumMinor = numLabel;
    mMinorLabels.reinit(numLabel);
 
    for(size_t i = 0; i<numLabel; i++) {
       mMinorLabels[i].text = label->Item(i);
-      mMinorLabels[i].pos  = start + i*step;
+      mMinorLabels[i].pos  = start + i * step;
    }
    //Remember: DELETE majorlabels....
 }

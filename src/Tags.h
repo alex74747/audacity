@@ -95,8 +95,8 @@ class AUDACITY_DLL_API Tags final : public XMLTagHandler {
    void LoadDefaultGenres();
    void LoadGenres();
 
-   int GetNumUserGenres();
-   wxString GetUserGenre(int value);
+   size_t GetNumUserGenres();
+   wxString GetUserGenre(size_t value);
 
    wxString GetGenre(int value);
    int GetGenre(const wxString & name);

@@ -21,7 +21,7 @@ class AUDACITY_DLL_API CommandFunctor /* not final */
 public:
    CommandFunctor(){};
    virtual ~CommandFunctor(){};
-   virtual void operator()(int index, const wxEvent *e) = 0;
+   virtual void operator()(size_t index, const wxEvent *e) = 0;
 };
 
 using CommandFunctorPointer = std::shared_ptr <CommandFunctor>;
@@ -39,7 +39,7 @@ class VoidFunctor final : public CommandFunctor
 public:
    explicit VoidFunctor(OBJ *This, audCommandFunction<OBJ> pfn)
    : mThis{ This }, mCommandFunction{ pfn } {}
-   void operator () (int, const wxEvent *) override
+   void operator () (size_t, const wxEvent *) override
    { (mThis->*mCommandFunction) (); }
 private:
    OBJ *const mThis;
@@ -55,7 +55,7 @@ class KeyFunctor final : public CommandFunctor
 public:
    explicit KeyFunctor(OBJ *This, audCommandKeyFunction<OBJ> pfn)
    : mThis{ This }, mCommandKeyFunction{ pfn } {}
-   void operator () (int, const wxEvent *evt) override
+   void operator () (size_t, const wxEvent *evt) override
    { (mThis->*mCommandKeyFunction) (evt); }
 private:
    OBJ *const mThis;
@@ -73,7 +73,7 @@ class PopupFunctor final : public CommandFunctor
 public:
    explicit PopupFunctor(OBJ *This, audCommandPopupFunction<OBJ> pfn)
    : mThis{ This }, mCommandPopupFunction{ pfn } {}
-   void operator () (int, const wxEvent *) override
+   void operator () (size_t, const wxEvent *) override
    { wxCommandEvent dummy; (mThis->*mCommandPopupFunction) (dummy); }
 private:
    OBJ *const mThis;
@@ -81,7 +81,7 @@ private:
 };
 
 template<typename OBJ>
-using audCommandListFunction = void (OBJ::*)(int);
+using audCommandListFunction = void (OBJ::*)(size_t);
 
 template<typename OBJ>
 class ListFunctor final : public CommandFunctor
@@ -89,7 +89,7 @@ class ListFunctor final : public CommandFunctor
 public:
    explicit ListFunctor(OBJ *This, audCommandListFunction<OBJ> pfn)
    : mThis{ This }, mCommandListFunction{ pfn } {}
-   void operator () (int index, const wxEvent *) override
+   void operator () (size_t index, const wxEvent *) override
    { (mThis->*mCommandListFunction)(index); }
 private:
    OBJ *const mThis;
@@ -105,7 +105,7 @@ class PluginFunctor final : public CommandFunctor
 public:
    explicit PluginFunctor(OBJ *This, const PluginID &id, audCommandPluginFunction<OBJ> pfn)
    : mPluginID{ id }, mThis{ This }, mCommandPluginFunction{ pfn } {}
-   void operator () (int, const wxEvent *) override
+   void operator () (size_t, const wxEvent *) override
    { (mThis->*mCommandPluginFunction)
       (mPluginID,
        0 // AudacityProject::OnEffectFlags::kNone

@@ -61,36 +61,36 @@ public:
    ExportPlugin();
    virtual ~ExportPlugin();
 
-   int AddFormat();
-   void SetFormat(const wxString & format, int index);
-   void SetDescription(const wxString & description, int index);
-   void AddExtension(const wxString &extension,int index);
-   void SetExtensions(const wxArrayString & extensions, int index);
-   void SetMask(const wxString & mask, int index);
-   void SetMaxChannels(unsigned maxchannels, unsigned index);
-   void SetCanMetaData(bool canmetadata, int index);
+   size_t AddFormat();
+   void SetFormat(const wxString & format, size_t index);
+   void SetDescription(const wxString & description, size_t index);
+   void AddExtension(const wxString &extension, size_t index);
+   void SetExtensions(const wxArrayString & extensions, size_t index);
+   void SetMask(const wxString & mask, size_t index);
+   void SetMaxChannels(unsigned maxchannels, size_t index);
+   void SetCanMetaData(bool canmetadata, size_t index);
 
-   virtual int GetFormatCount();
-   virtual wxString GetFormat(int index);
-   virtual wxString GetDescription(int index);
+   virtual size_t GetFormatCount();
+   virtual wxString GetFormat(size_t index);
+   virtual wxString GetDescription(size_t index);
    /** @brief Return the (first) file name extension for the sub-format.
     * @param index The sub-format for which the extension is wanted */
-   virtual wxString GetExtension(int index = 0);
+   virtual wxString GetExtension(size_t index = 0);
    /** @brief Return all the file name extensions used for the sub-format.
     * @param index the sub-format for which the extension is required */
-   virtual wxArrayString GetExtensions(int index = 0);
-   virtual wxString GetMask(int index);
-   virtual unsigned GetMaxChannels(int index);
-   virtual bool GetCanMetaData(int index);
+   virtual wxArrayString GetExtensions(size_t index = 0);
+   virtual wxString GetMask(size_t index);
+   virtual unsigned GetMaxChannels(size_t index);
+   virtual bool GetCanMetaData(size_t index);
 
-   virtual bool IsExtension(const wxString & ext, int index);
+   virtual bool IsExtension(const wxString & ext, size_t index);
 
-   virtual bool DisplayOptions(wxWindow *parent, int format = 0);
+   virtual bool DisplayOptions(wxWindow *parent, unsigned format = 0);
    
    // Precondition: parent != NULL
-   virtual wxWindow *OptionsCreate(wxWindow *parent, int format) = 0;
+   virtual wxWindow *OptionsCreate(wxWindow *parent, unsigned format) = 0;
 
-   virtual bool CheckFileName(wxFileName &filename, int format = 0);
+   virtual bool CheckFileName(wxFileName &filename, size_t format = 0);
    /** @brief Exporter plug-ins may override this to specify the number
     * of channels in exported file. -1 for unspecified */
    virtual int SetNumExportChannels() { return -1; }
@@ -117,13 +117,13 @@ public:
                        double t1,
                        MixerSpec *mixerSpec = NULL,
                        const Tags *metadata = NULL,
-                       int subformat = 0) = 0;
+                       unsigned subformat = 0) = 0;
 
 protected:
    std::unique_ptr<Mixer> CreateMixer(const WaveTrackConstArray &inputTracks,
          const TimeTrack *timeTrack,
          double startTime, double stopTime,
-         unsigned numOutChannels, int outBufferSize, bool outInterleaved,
+         unsigned numOutChannels, size_t outBufferSize, bool outInterleaved,
          double outRate, sampleFormat outFormat,
          bool highQuality = true, MixerSpec *mixerSpec = NULL);
 
@@ -145,7 +145,7 @@ public:
    virtual ~Exporter();
 
    void SetFileDialogTitle( const wxString & DialogTitle );
-   void SetDefaultFormat( const wxString & Format ){ mFormatName = Format;};
+   void SetDefaultFormat( const wxString & Format ){ mFormatName = Format;}
    void RegisterPlugin(movable_ptr<ExportPlugin> &&plugin);
 
    bool Process(AudacityProject *project, bool selectedOnly,
@@ -154,8 +154,8 @@ public:
                 const wxChar *type, const wxString & filename,
                 bool selectedOnly, double t0, double t1);
 
-   void DisplayOptions(int index);
-   int FindFormatIndex(int exportindex);
+   void DisplayOptions(unsigned index);
+   size_t FindFormatIndex(int exportindex);
 
    const ExportPluginArray &GetPlugins();
 
@@ -165,13 +165,13 @@ public:
                                   double t0,
                                   double t1,
                                   wxFileName fnFile,
-                                  int iFormat,
-                                  int iSubFormat,
-                                  int iFilterIndex);
+                                  unsigned iFormat,
+                                  unsigned iSubFormat,
+                                  unsigned iFilterIndex);
    bool SetAutoExportOptions(AudacityProject *project);
-   int GetAutoExportFormat();
-   int GetAutoExportSubFormat();
-   int GetAutoExportFilterIndex();
+   unsigned GetAutoExportFormat();
+   unsigned GetAutoExportSubFormat();
+   unsigned GetAutoExportFilterIndex();
    wxFileName GetAutoExportFileName();
 
 private:
@@ -199,9 +199,10 @@ private:
 
    double mT0;
    double mT1;
-   int mFilterIndex;
-   int mFormat;
-   int mSubFormat;
+   unsigned mFilterIndex;
+   bool mFormatValid { false };
+   size_t mFormat;
+   size_t mSubFormat;
    int mNumSelected;
    unsigned mNumLeft;
    unsigned mNumRight;
@@ -231,16 +232,16 @@ public:
 private:
    std::unique_ptr<wxBitmap> mBitmap;
    wxRect mEnvRect;
-   int mWidth;
-   int mHeight;
+   unsigned mWidth;
+   unsigned mHeight;
    MixerSpec *mMixerSpec;
    ArrayOf<wxRect> mChannelRects;
    ArrayOf<wxRect> mTrackRects;
    int mSelectedTrack, mSelectedChannel; // may be negative for invalid value
    wxArrayString mTrackNames;
-   int mBoxWidth, mChannelHeight, mTrackHeight;
+   unsigned mBoxWidth, mChannelHeight, mTrackHeight;
 
-   void SetFont( wxMemoryDC &memDC, const wxString &text, int width, int height );
+   void SetFont( wxMemoryDC &memDC, const wxString &text, unsigned width, unsigned height );
    double Distance( wxPoint &a, wxPoint &b );
    bool IsOnLine( wxPoint p, wxPoint la, wxPoint lb );
 

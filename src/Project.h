@@ -288,8 +288,8 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    // Timer Record Auto Save/Export Routines
    bool SaveFromTimerRecording(wxFileName fnFile);
-   bool ExportFromTimerRecording(wxFileName fnFile, int iFormat, int iSubFormat, int iFilterIndex);
-   int GetOpenProjectCount();
+   bool ExportFromTimerRecording(wxFileName fnFile, unsigned iFormat, unsigned iSubFormat, unsigned iFilterIndex);
+   unsigned GetOpenProjectCount();
    bool IsProjectSaved();
 
    bool ProjectHasTracks();

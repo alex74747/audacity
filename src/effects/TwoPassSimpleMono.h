@@ -67,12 +67,12 @@ protected:
    void DisableSecondPass() { mSecondPassDisabled = true; }
 
    // Other useful information
-   int    mCurTrackNum;
+   unsigned mCurTrackNum;
    double mCurRate;
    double mCurT0;
    double mCurT1;
-   int    mCurChannel;
-   int    mPass;
+   // unsigned mCurChannel;
+   unsigned mPass;
    bool   mSecondPassDisabled;
 
 private:

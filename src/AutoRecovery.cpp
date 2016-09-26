@@ -280,13 +280,14 @@ RecordingRecoveryHandler::RecordingRecoveryHandler(AudacityProject* proj)
    mNumChannels = -1;
 }
 
-int RecordingRecoveryHandler::FindTrack() const
+unsigned RecordingRecoveryHandler::FindTrack() const
 {
+   size_t index;
    WaveTrackArray tracks = mProject->GetTracks()->GetWaveTrackArray(false);
-   int index;
+   auto nTracks = tracks.size();
    if (mAutoSaveIdent)
    {
-      for (index = 0; index < (int)tracks.size(); index++)
+      for (index = 0; index < nTracks; index++)
       {
          if (tracks[index]->GetAutoSaveIdent() == mAutoSaveIdent)
          {
@@ -296,7 +297,10 @@ int RecordingRecoveryHandler::FindTrack() const
    }
    else
    {
-      index = tracks.size() - mNumChannels + mChannel;
+      wxASSERT(mChannel >= 0 && mNumChannels > mChannel);
+      auto diff = unsigned(mNumChannels - mChannel);
+      wxASSERT(nTracks >= diff);
+      index = tracks.size() - diff;
    }
 
    return index;
@@ -316,10 +320,10 @@ bool RecordingRecoveryHandler::HandleXMLTag(const wxChar *tag,
       }
 
       WaveTrackArray tracks = mProject->GetTracks()->GetWaveTrackArray(false);
-      int index = FindTrack();
+      auto index = FindTrack();
       // We need to find the track and sequence where the blockfile belongs
 
-      if (index < 0 || index >= (int)tracks.size())
+      if (index >= tracks.size())
       {
          // This should only happen if there is a bug
          wxASSERT(false);
@@ -403,10 +407,10 @@ void RecordingRecoveryHandler::HandleXMLEndTag(const wxChar *tag)
       return;
 
    WaveTrackArray tracks = mProject->GetTracks()->GetWaveTrackArray(false);
-   int index = FindTrack();
+   auto index = FindTrack();
    // We need to find the track and sequence where the blockfile belongs
 
-   if (index < 0 || index >= (int)tracks.size()) {
+   if (index >= tracks.size()) {
       // This should only happen if there is a bug
       wxASSERT(false);
    }
@@ -512,7 +516,7 @@ void AutoSaveFile::WriteAttr(const wxString & name, const wxString & value)
    mBuffer.PutC(FT_String);
    WriteName(name);
 
-   int len = value.Length() * sizeof(wxChar);
+   auto len = value.Length() * sizeof(wxChar);
 
    mBuffer.Write(&len, sizeof(len));
    mBuffer.Write(value.wx_str(), len);
@@ -580,7 +584,7 @@ void AutoSaveFile::WriteData(const wxString & value)
 {
    mBuffer.PutC(FT_Data);
 
-   int len = value.Length() * sizeof(wxChar);
+   auto len = value.Length() * sizeof(wxChar);
 
    mBuffer.Write(&len, sizeof(len));
    mBuffer.Write(value.wx_str(), len);
@@ -590,7 +594,7 @@ void AutoSaveFile::Write(const wxString & value)
 {
    mBuffer.PutC(FT_Raw);
 
-   int len = value.Length() * sizeof(wxChar);
+   auto len = value.Length() * sizeof(wxChar);
 
    mBuffer.Write(&len, sizeof(len));
    mBuffer.Write(value.wx_str(), len);
@@ -650,7 +654,7 @@ void AutoSaveFile::CheckSpace(wxMemoryOutputStream & os)
 void AutoSaveFile::WriteName(const wxString & name)
 {
    wxASSERT(name.Length() * sizeof(wxChar) <= SHRT_MAX);
-   short len = name.Length() * sizeof(wxChar);
+   unsigned short len = name.Length() * sizeof(wxChar);
    short id;
 
    if (mNames.count(name))
@@ -802,7 +806,7 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_Name:
          {
-            short length;
+            unsigned short length;
 
             in.Read(&id, sizeof(id));
             in.Read(&len, sizeof(length));
@@ -831,7 +835,7 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_String:
          {
-            int length;
+            unsigned length;
 
             in.Read(&id, sizeof(id));
             in.Read(&length, sizeof(length));
@@ -925,7 +929,7 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_Data:
          {
-            int length;
+            unsigned length;
 
             in.Read(&length, sizeof(length));
             WxChars val{ length / sizeof(wxChar) };
@@ -937,7 +941,7 @@ bool AutoSaveFile::Decode(const wxString & fileName)
 
          case FT_Raw:
          {
-            int length;
+            unsigned length;
 
             in.Read(&length, sizeof(length));
             WxChars val{ length / sizeof(wxChar) };

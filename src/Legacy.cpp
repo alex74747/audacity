@@ -130,10 +130,10 @@ static bool ConvertLegacyTrack(wxTextFile *f, XMLFileWriter &xmlFile)
          return false;
 
       size_t envStart = f->GetCurrentLine();
-      if (f->GetLineCount() < envStart+(2*envLen)+1)
+      if (f->GetLineCount() < envStart + (2 * (size_t)envLen) + 1)
          return false;
 
-      f->GoToLine(envStart+(2*envLen));
+      f->GoToLine(envStart + (2 * (size_t)envLen));
       if (f->GetNextLine() != wxT("EnvEnd"))
          return false;
       if (f->GetNextLine() != wxT("numSamples"))
@@ -150,11 +150,10 @@ static bool ConvertLegacyTrack(wxTextFile *f, XMLFileWriter &xmlFile)
          xmlFile.StartTag(wxT("envelope"));
          xmlFile.WriteAttr(wxT("numpoints"), envLen);
 
-         long i;
-         for(i=0; i<envLen; i++) {
+         for(size_t i = 0; (long)i < envLen; i++) {
             xmlFile.StartTag(wxT("controlpoint"));
-            xmlFile.WriteAttr(wxT("t"), f->GetLine(envStart + 2*i + 1));
-            xmlFile.WriteAttr(wxT("val"), f->GetLine(envStart + 2*i + 2));
+            xmlFile.WriteAttr(wxT("t"), f->GetLine(envStart + 2 * i + 1));
+            xmlFile.WriteAttr(wxT("val"), f->GetLine(envStart + 2 * i + 2));
             xmlFile.EndTag(wxT("controlpoint"));
          }
 

@@ -206,14 +206,14 @@ class Grid final : public wxGrid
 
 #if wxUSE_ACCESSIBILITY
    void ClearGrid();
-   bool InsertRows(int pos = 0, int numRows = 1, bool updateLabels = true);
-   bool AppendRows(int numRows = 1, bool updateLabels = true);
-   bool DeleteRows(int pos = 0, int numRows = 1, bool updateLabels = true);
-   bool InsertCols(int pos = 0, int numCols = 1, bool updateLabels = true);
-   bool AppendCols(int numCols = 1, bool updateLabels = true);
-   bool DeleteCols(int pos = 0, int numCols = 1, bool updateLabels = true);
+   bool InsertRows(size_t pos = 0, size_t numRows = 1, bool updateLabels = true);
+   bool AppendRows(size_t numRows = 1, bool updateLabels = true);
+   bool DeleteRows(size_t pos = 0, size_t numRows = 1, bool updateLabels = true);
+   bool InsertCols(size_t pos = 0, size_t numCols = 1, bool updateLabels = true);
+   bool AppendCols(size_t numCols = 1, bool updateLabels = true);
+   bool DeleteCols(size_t pos = 0, size_t numCols = 1, bool updateLabels = true);
 
-   GridAx *GetNextAx(GridAx *parent, wxAccRole role, int row, int col);
+   GridAx *GetNextAx(GridAx *parent, wxAccRole role, size_t row, size_t col);
 #endif
 
  protected:

@@ -842,7 +842,7 @@ const int AudioIO::RatesToTry[] = {
    352800,
    384000
 };
-const int AudioIO::NumRatesToTry = sizeof(AudioIO::RatesToTry) /
+const unsigned AudioIO::NumRatesToTry = sizeof(AudioIO::RatesToTry) /
                                       sizeof(AudioIO::RatesToTry[0]);
 
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
@@ -1271,7 +1271,7 @@ void AudioIO::HandleDeviceChange()
 
    // that might have given us no rates whatsoever, so we have to guess an
    // answer to do the next bit
-   int numrates = mCachedSampleRates.GetCount();
+   auto numrates = mCachedSampleRates.GetCount();
    int highestSampleRate;
    if (numrates > 0)
    {
@@ -1503,7 +1503,7 @@ bool AudioIO::StartPortAudioStream(double sampleRate,
       // regardless of source formats, we always mix to float
       playbackParameters.sampleFormat = paFloat32;
       playbackParameters.hostApiSpecificStreamInfo = NULL;
-      playbackParameters.channelCount = mNumPlaybackChannels;
+      playbackParameters.channelCount = (int)mNumPlaybackChannels;
 
       if (mSoftwarePlaythrough)
          playbackParameters.suggestedLatency =
@@ -1533,7 +1533,7 @@ bool AudioIO::StartPortAudioStream(double sampleRate,
          AudacityToPortAudioSampleFormat(mCaptureFormat);
 
       captureParameters.hostApiSpecificStreamInfo = NULL;
-      captureParameters.channelCount = mNumCaptureChannels;
+      captureParameters.channelCount = (int)mNumCaptureChannels;
 
       if (mSoftwarePlaythrough)
          captureParameters.suggestedLatency =
@@ -2669,7 +2669,6 @@ wxArrayLong AudioIO::GetSupportedPlaybackRates(int devIndex, double rate)
    wxArrayLong supported;
    int irate = (int)rate;
    const PaDeviceInfo* devInfo = NULL;
-   int i;
 
    devInfo = Pa_GetDeviceInfo(devIndex);
 
@@ -2693,7 +2692,7 @@ wxArrayLong AudioIO::GetSupportedPlaybackRates(int devIndex, double rate)
    pars.hostApiSpecificStreamInfo = NULL;
 
    // JKC: PortAudio Errors handled OK here.  No need to report them
-   for (i = 0; i < NumRatesToTry; i++)
+   for (size_t i = 0; i < NumRatesToTry; i++)
    {
       // LLL: Remove when a proper method of determining actual supported
       //      DirectSound rate is devised.
@@ -2706,7 +2705,9 @@ wxArrayLong AudioIO::GetSupportedPlaybackRates(int devIndex, double rate)
    {
       // LLL: Remove when a proper method of determining actual supported
       //      DirectSound rate is devised.
-      if (!(isDirectSound && RatesToTry[i] > 200000))
+      if (!(isDirectSound
+            // && RatesToTry[i] > 200000 // PRL: why was this conjunct here?
+            ))
       if (Pa_IsFormatSupported(NULL, &pars, irate) == 0)
          supported.Add(irate);
    }
@@ -2759,7 +2760,7 @@ wxArrayLong AudioIO::GetSupportedCaptureRates(int devIndex, double rate)
    pars.suggestedLatency = latencyDuration / 1000.0;
    pars.hostApiSpecificStreamInfo = NULL;
 
-   for (i = 0; i < NumRatesToTry; i++)
+   for (size_t i = 0; i < NumRatesToTry; i++)
    {
       // LLL: Remove when a proper method of determining actual supported
       //      DirectSound rate is devised.
@@ -2801,12 +2802,11 @@ wxArrayLong AudioIO::GetSupportedSampleRates(int playDevice, int recDevice, doub
 
    wxArrayLong playback = GetSupportedPlaybackRates(playDevice, rate);
    wxArrayLong capture = GetSupportedCaptureRates(recDevice, rate);
-   int i;
 
    // Return only sample rates which are in both arrays
    wxArrayLong result;
 
-   for (i = 0; i < (int)playback.GetCount(); i++)
+   for (size_t i = 0; i < playback.GetCount(); i++)
       if (capture.Index(playback[i]) != wxNOT_FOUND)
          result.Add(playback[i]);
 
@@ -2898,8 +2898,7 @@ double AudioIO::GetBestRate(bool capturing, bool playing, double sampleRate)
       retval = 0.0;
       goto finished;
    }
-   int i;
-   for (i = 0; i < (int)rates.GetCount(); i++)  // for each supported rate
+   for (size_t i = 0; i < rates.GetCount(); i++)  // for each supported rate
          {
          if (rates[i] > rate) {
             // supported rate is greater than requested rate
@@ -3224,7 +3223,7 @@ wxString AudioIO::GetDeviceInfo()
       wxArrayLong rates = GetSupportedPlaybackRates(j, 0.0);
 
       s << wxT("Supported Rates:") << e;
-      for (int k = 0; k < (int) rates.GetCount(); k++) {
+      for (size_t k = 0; k < rates.GetCount(); k++) {
          s << wxT("    ") << (int)rates[k] << e;
       }
 
@@ -3265,7 +3264,7 @@ wxString AudioIO::GetDeviceInfo()
       supportedSampleRates = GetSupportedSampleRates(playDeviceNum, recDeviceNum);
 
       s << wxT("Supported Rates:") << e;
-      for (int k = 0; k < (int) supportedSampleRates.GetCount(); k++) {
+      for (size_t k = 0; k < supportedSampleRates.GetCount(); k++) {
          s << wxT("    ") << (int)supportedSampleRates[k] << e;
       }
    }else{
@@ -3432,11 +3431,11 @@ void AudioIO::FillBuffers()
       if (nAvailable >= (int)mPlaybackSamplesToCopy ||
           (mPlayMode == PLAY_STRAIGHT &&
            nAvailable > 0 &&
-           mWarpedTime+(nAvailable/mRate) >= mWarpedLength))
+           mWarpedTime + (nAvailable / mRate) >= mWarpedLength))
       {
          // Limit maximum buffer size (increases performance)
          auto available =
-            std::min<size_t>( nAvailable, mPlaybackSamplesToCopy );
+            std::min( (size_t)nAvailable, mPlaybackSamplesToCopy );
 
          // msmeyer: When playing a very short selection in looped
          // mode, the selection must be copied to the buffer multiple
@@ -3622,7 +3621,7 @@ void AudioIO::FillBuffers()
             }
             else
             {
-               size_t size = lrint(avail * mFactor);
+               auto size = (size_t)lrint(avail * mFactor);
                SampleBuffer temp1(avail, floatSample);
                SampleBuffer temp2(size, floatSample);
                const auto got =
@@ -4087,7 +4086,7 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
                                   sampleFormat inputFormat,
                                   unsigned inputChannels,
                                   float *outputBuffer,
-                                  int len)
+                                  size_t len)
 {
    for (size_t i = 0; i < inputChannels; i++) {
       samplePtr inputPtr = ((samplePtr)inputBuffer) + (i * SAMPLE_SIZE(inputFormat));
@@ -4100,8 +4099,8 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
 
    // One mono input channel goes to both output channels...
    if (inputChannels == 1)
-      for (int i=0; i < len; i++)
-         outputBuffer[2*i + 1] = outputBuffer[2*i];
+      for (size_t i = 0; i < len; i++)
+         outputBuffer[2 * i + 1] = outputBuffer[2 * i];
 }
 
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
@@ -4212,7 +4211,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
                                   numCaptureChannels,
-                                  (float *)outputBuffer, (int)framesPerBuffer);
+                                  (float *)outputBuffer, framesPerBuffer);
          }
       }
 
@@ -4237,7 +4236,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
                                   numCaptureChannels,
-                                  (float *)outputBuffer, (int)framesPerBuffer);
+                                  (float *)outputBuffer, framesPerBuffer);
          }
 
          // Copy the results to outputMeterFloats if necessary
@@ -4664,7 +4663,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
                                   numCaptureChannels,
-                                  (float *)outputBuffer, (int)framesPerBuffer);
+                                  (float *)outputBuffer, framesPerBuffer);
          }
 
          // Copy the results to outputMeterFloats if necessary

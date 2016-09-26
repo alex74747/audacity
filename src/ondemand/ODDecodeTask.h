@@ -69,7 +69,7 @@ class ODDecodeTask /* not final */ : public ODTask
    ///be called from the decoding thread.
    // NEW virtuals:
    virtual ODFileDecoder* GetOrCreateMatchingFileDecoder(ODDecodeBlockFile* blockFile);
-   virtual int GetNumFileDecoders();
+   virtual size_t GetNumFileDecoders();
 
 
 protected:
@@ -92,7 +92,7 @@ protected:
    std::vector<std::weak_ptr<ODDecodeBlockFile>> mBlockFiles;
    std::vector<movable_ptr<ODFileDecoder>> mDecoders;
 
-   int mMaxBlockFiles;
+   size_t mMaxBlockFiles;
 
 };
 

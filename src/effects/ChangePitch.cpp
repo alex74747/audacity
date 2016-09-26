@@ -378,10 +378,14 @@ bool EffectChangePitch::TransferDataFromWindow()
    }
 
    // from/to pitch controls
-   m_nFromPitch = m_pChoice_FromPitch->GetSelection();
+   auto fromPitch = m_pChoice_FromPitch->GetSelection();
+   wxASSERT(fromPitch >= 0);
+   m_nFromPitch = (unsigned)fromPitch;
    m_nFromOctave = m_pSpin_FromOctave->GetValue();
 
-   m_nToPitch = m_pChoice_ToPitch->GetSelection();
+   auto toPitch = m_pChoice_ToPitch->GetSelection();
+   wxASSERT(toPitch >= 0);
+   m_nToPitch = (unsigned)toPitch;
 
    // No need to update Slider_PercentChange here because TextCtrl_PercentChange
    // always tracks it & is more precise (decimal points).
@@ -406,13 +410,13 @@ void EffectChangePitch::DeduceFrequencies()
       // Aim for around 2048 samples at 44.1 kHz (good down to about 100 Hz).
       // To detect single notes, analysis period should be about 0.2 seconds.
       // windowSize must be a power of 2.
-      const size_t windowSize =
+      const auto windowSize = (size_t)
          // windowSize < 256 too inaccurate
          std::max(256, wxRound(pow(2.0, floor((log(rate / 20.0)/log(2.0)) + 0.5))));
 
       // we want about 0.2 seconds to catch the first note.
       // number of windows rounded to nearest integer >= 1.
-      const unsigned numWindows =
+      const auto numWindows = (unsigned)
          std::max(1, wxRound((double)(rate / (5.0f * windowSize))));
 
       double trackStart = track->GetStartTime();
@@ -457,11 +461,12 @@ void EffectChangePitch::DeduceFrequencies()
 
 void EffectChangePitch::Calc_ToPitch()
 {
-   int nSemitonesChange =
+   auto nSemitonesChange =
       (int)(m_dSemitonesChange + ((m_dSemitonesChange < 0.0) ? -0.5 : 0.5));
-   m_nToPitch = (m_nFromPitch + nSemitonesChange) % 12;
-   if (m_nToPitch < 0)
-      m_nToPitch += 12;
+   auto toPitch = ((int)m_nFromPitch + nSemitonesChange) % 12;
+   if (toPitch < 0)
+      toPitch += 12;
+   m_nToPitch = (unsigned)toPitch;
 }
 
 void EffectChangePitch::Calc_ToOctave()
@@ -499,7 +504,9 @@ void EffectChangePitch::OnChoice_FromPitch(wxCommandEvent & WXUNUSED(evt))
    if (m_bLoopDetect)
       return;
 
-   m_nFromPitch = m_pChoice_FromPitch->GetSelection();
+   auto fromPitch = m_pChoice_FromPitch->GetSelection();
+   wxASSERT(fromPitch >= 0);
+   m_nFromPitch = (size_t)fromPitch;
    m_FromFrequency = PitchToFreq(m_nFromPitch, m_nFromOctave);
 
    Calc_ToPitch();
@@ -543,7 +550,9 @@ void EffectChangePitch::OnChoice_ToPitch(wxCommandEvent & WXUNUSED(evt))
    if (m_bLoopDetect)
       return;
 
-   m_nToPitch = m_pChoice_ToPitch->GetSelection();
+   auto toPitch = m_pChoice_ToPitch->GetSelection();
+   wxASSERT(toPitch >= 0);
+   m_nToPitch = (unsigned)toPitch;
 
    Calc_SemitonesChange_fromPitches();
    Calc_PercentChange(); // Call *after* m_dSemitonesChange is updated.
@@ -755,7 +764,7 @@ void EffectChangePitch::OnSlider_PercentChange(wxCommandEvent & WXUNUSED(evt))
 
 void EffectChangePitch::Update_Choice_FromPitch()
 {
-   m_pChoice_FromPitch->SetSelection(m_nFromPitch);
+   m_pChoice_FromPitch->SetSelection((int)m_nFromPitch);
 }
 
 void EffectChangePitch::Update_Spin_FromOctave()
@@ -765,7 +774,7 @@ void EffectChangePitch::Update_Spin_FromOctave()
 
 void EffectChangePitch::Update_Choice_ToPitch()
 {
-   m_pChoice_ToPitch->SetSelection(m_nToPitch);
+   m_pChoice_ToPitch->SetSelection((int)m_nToPitch);
 }
 
 void EffectChangePitch::Update_Spin_ToOctave()

@@ -129,8 +129,8 @@ class AUDACITY_DLL_API Ruler {
    // If this is the case, you should provide a wxString array of labels, start
    // label position, and labels step. The range eventually specified will be
    // ignored.
-   void SetCustomMajorLabels(wxArrayString *label, size_t numLabel, int start, int step);
-   void SetCustomMinorLabels(wxArrayString *label, size_t numLabel, int start, int step);
+   void SetCustomMajorLabels(wxArrayString *label, size_t numLabel, size_t start, size_t step);
+   void SetCustomMinorLabels(wxArrayString *label, size_t numLabel, size_t start, size_t step);
 
    void SetUseZoomInfo(int leftOffset, const ZoomInfo *zoomInfo);
 
@@ -160,10 +160,10 @@ class AUDACITY_DLL_API Ruler {
    void FindLinearTickSizes(double UPP);
    wxString LabelString(double d, bool major);
 
-   void Tick(int pos, double d, bool major, bool minor);
+   void Tick(size_t pos, double d, bool major, bool minor);
 
    // Another tick generator for custom ruler case (noauto) .
-   void TickCustom(int labelIdx, bool major, bool minor);
+   void TickCustom(size_t labelIdx, bool major, bool minor);
 
 public:
    bool mbTicksOnly; // true => no line the length of the ruler
@@ -176,8 +176,8 @@ private:
 
    int          mMaxWidth, mMaxHeight;
    int          mLeft, mTop, mRight, mBottom, mLead;
-   int          mLength;
-   int          mLengthOld;
+   size_t       mLength;
+   size_t       mLengthOld;
    wxDC        *mDC;
 
    std::unique_ptr<wxFont> mMinorFont, mMajorFont, mMinorMinorFont;
@@ -193,29 +193,29 @@ private:
 
    ArrayOf<int> mUserBits;
    ArrayOf<int> mBits;
-   int          mUserBitLen;
+   size_t       mUserBitLen;
 
    bool         mValid;
 
    class Label {
     public:
       double value;
-      int pos;
+      size_t pos;
       int lx, ly;
       wxString text;
 
       void Draw(wxDC &dc, bool twoTone) const;
    };
 
-   int          mNumMajor;
+   size_t       mNumMajor;
    ArrayOf<Label> mMajorLabels;
-   int          mNumMinor;
+   size_t       mNumMinor;
    ArrayOf<Label> mMinorLabels;
-   int          mNumMinorMinor;
+   size_t       mNumMinorMinor;
    ArrayOf<Label> mMinorMinorLabels;
 
    // Returns 'zero' label coordinate (for grid drawing)
-   int FindZero(Label * label, int len);
+   int FindZero(Label * label, size_t len);
 
    public:
    int GetZeroPosition();

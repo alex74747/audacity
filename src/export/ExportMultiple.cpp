@@ -217,22 +217,23 @@ void ExportMultiple::PopulateOrExchange(ShuttleGui& S)
    wxString defaultFormat = gPrefs->Read(wxT("/Export/Format"), wxT("WAV"));
 
    wxArrayString formats;
-   mPluginIndex = -1;
+   int pluginIndex = -1;
    mFilterIndex = 0;
 
    {
-      int i = -1;
+      size_t i = 0; --i;
       for (const auto &pPlugin : mPlugins)
       {
          ++i;
-         for (int j = 0; j < pPlugin->GetFormatCount(); j++)
+         for (size_t j = 0; j < pPlugin->GetFormatCount(); j++)
          {
             formats.Add(mPlugins[i]->GetDescription(j));
             if (mPlugins[i]->GetFormat(j) == defaultFormat) {
-               mPluginIndex = i;
+               pluginIndex = (int)i;
                mSubFormatIndex = j;
             }
-            if (mPluginIndex == -1) mFilterIndex++;
+            if (pluginIndex == -1)
+               mFilterIndex++;
          }
       }
    }
@@ -248,12 +249,14 @@ void ExportMultiple::PopulateOrExchange(ShuttleGui& S)
 #endif
    wxString DefaultPath = filename.GetPath();
 
-   if (mPluginIndex == -1)
+   if (pluginIndex == -1)
    {
       mPluginIndex = 0;
       mFilterIndex = 0;
       mSubFormatIndex = 0;
    }
+   else
+      mPluginIndex = (unsigned)pluginIndex;
 
    S.SetBorder(5);
    S.StartHorizontalLay(wxEXPAND, true);
@@ -286,12 +289,14 @@ void ExportMultiple::PopulateOrExchange(ShuttleGui& S)
                mBook = safenew wxSimplebook(S.GetParent(), OptionsID, wxDefaultPosition, wxDefaultSize, wxBORDER_STATIC);
                for (const auto &pPlugin : mPlugins)
                {
-                  for (int j = 0; j < pPlugin->GetFormatCount(); j++)
+                  for (size_t j = 0; j < pPlugin->GetFormatCount(); j++)
                   {
                      mBook->AddPage(pPlugin->OptionsCreate(mBook, j), wxEmptyString);
                   }
                }
-               mBook->ChangeSelection(mFormat->GetSelection());
+               auto selection = mFormat->GetSelection();
+               wxASSERT(selection >= 0);
+               mBook->ChangeSelection((size_t)selection);
             }
             S.AddWindow(mBook);
             S.AddVariableText(wxT(""), false);
@@ -434,7 +439,9 @@ void ExportMultiple::EnableControls()
 
 void ExportMultiple::OnFormat(wxCommandEvent& WXUNUSED(event))
 {
-   mBook->ChangeSelection(mFormat->GetSelection());
+   auto selection = mFormat->GetSelection();
+   wxASSERT(selection >= 0);
+   mBook->ChangeSelection((size_t)selection);
 
    EnableControls();
 }
@@ -445,11 +452,11 @@ void ExportMultiple::OnOptions(wxCommandEvent& WXUNUSED(event))
    if (sel != wxNOT_FOUND)
    {
      size_t c = 0;
-     int i = -1;
+     size_t i = 0; --i;
      for (const auto &pPlugin : mPlugins)
      {
        ++i;
-       for (int j = 0; j < pPlugin->GetFormatCount(); j++)
+       for (size_t j = 0; j < pPlugin->GetFormatCount(); j++)
        {
          if ((size_t)sel == c)
          {
@@ -460,7 +467,7 @@ void ExportMultiple::OnOptions(wxCommandEvent& WXUNUSED(event))
        }
      }
    }
-   mPlugins[mPluginIndex]->DisplayOptions(this,mSubFormatIndex);
+   mPlugins[mPluginIndex]->DisplayOptions(this, mSubFormatIndex);
 }
 
 void ExportMultiple::OnCreate(wxCommandEvent& WXUNUSED(event))
@@ -544,17 +551,18 @@ void ExportMultiple::OnExport(wxCommandEvent& WXUNUSED(event))
       return;
    }
 
-   mFilterIndex = mFormat->GetSelection();
-   if (mFilterIndex != wxNOT_FOUND)
+   auto filterIndex = mFormat->GetSelection();
+   if (filterIndex >= 0)
    {
+      mFilterIndex = (unsigned)filterIndex;
       size_t c = 0;
-      int i = -1;
+      size_t i = 0; --i;
       for (const auto &pPlugin : mPlugins)
       {
          ++i;
-         for (int j = 0; j < pPlugin->GetFormatCount(); j++, c++)
+         for (size_t j = 0; j < pPlugin->GetFormatCount(); j++, c++)
          {
-            if ((size_t)mFilterIndex == c)
+            if (mFilterIndex == c)
             {  // this is the selected format. Store the plug-in and sub-format
                // needed to acheive it.
                mPluginIndex = i;
@@ -642,7 +650,7 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
 {
    wxASSERT(mProject);
    bool tagsPrompt = mProject->GetShowId3Dialog();
-   int numFiles = mNumLabels;
+   auto numFiles = mNumLabels;
    int l = 0;        // counter for files done
    ExportKitArray exportSettings; // dynamic array for settings.
    exportSettings.Alloc(numFiles); // Allocate some guessed space to use.
@@ -669,7 +677,7 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
    const LabelStruct *info = NULL;
    /* Examine all labels a first time, sort out all data but don't do any
     * exporting yet (so this run is quick but interactive) */
-   while( l < mNumLabels ) {
+   while( l < (int)mNumLabels ) {
 
       // Get file name and starting time
       if( l < 0 ) {
@@ -677,7 +685,7 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
          name = (mFirstFileName->GetValue());
          setting.t0 = 0.0;
       } else {
-         info = mLabels->GetLabel(l);
+         info = mLabels->GetLabel((size_t)l);
          name = (info->title);
          setting.t0 = info->selectedRegion.t0();
       }
@@ -685,9 +693,9 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
       // Figure out the ending time
       if( info && !info->selectedRegion.isPoint() ) {
          setting.t1 = info->selectedRegion.t1();
-      } else if( l < mNumLabels-1 ) {
+      } else if( l < (int)mNumLabels - 1 ) {
          // Use start of next label as end
-         const LabelStruct *info1 = mLabels->GetLabel(l+1);
+         const LabelStruct *info1 = mLabels->GetLabel((size_t)l + 1);
          setting.t1 = info1->selectedRegion.t0();
       } else {
          setting.t1 = mTracks->GetEndTime();
@@ -741,12 +749,11 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
       l++;  // next label, count up one
    }
 
-   auto ok = ProgressResult::Success;   // did it work?
-   int count = 0; // count the number of sucessful runs
+   auto ok = eProgressSuccess;   // did it work?
    ExportKit activeSetting;  // pointer to the settings in use for this export
    /* Go round again and do the exporting (so this run is slow but
     * non-interactive) */
-   for (count = 0; count < numFiles; count++) {
+   for (size_t count = 0; count < numFiles; count++) {
       /* get the settings to use for the export from the array */
       activeSetting = exportSettings[count];
       // Bug 1440 fix.
@@ -883,7 +890,7 @@ ProgressResult ExportMultiple::ExportMultipleByTrack(bool byName,
    }
    // end of user-interactive data gathering loop, start of export processing
    // loop
-   int count = 0; // count the number of sucessful runs
+   size_t count = 0; // count the number of sucessful runs
    ExportKit activeSetting;  // pointer to the settings in use for this export
    for (tr = iter.First(mTracks); tr != NULL; tr = iter.Next()) {
 

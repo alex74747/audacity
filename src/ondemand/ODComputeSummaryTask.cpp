@@ -69,7 +69,7 @@ void ODComputeSummaryTask::DoSomeInternal()
    bool success =false;
 
    mBlockFilesMutex.Lock();
-   for(size_t i=0; i < mWaveTracks.size() && mBlockFiles.size();i++)
+   for(size_t i=0; i < mWaveTracks.size() && mBlockFiles.size(); i++)
    {
       const auto bf = mBlockFiles[0].lock();
 
@@ -119,12 +119,12 @@ void ODComputeSummaryTask::DoSomeInternal()
 ///We want to do a constant number of blockfiles.
 float ODComputeSummaryTask::ComputeNextWorkUntilPercentageComplete()
 {
-   if(mMaxBlockFiles==0)
+   if(mMaxBlockFiles == 0)
      return 1.0;
 
    float nextPercent;
    mPercentCompleteMutex.Lock();
-   nextPercent=mPercentComplete + ((float)kNumBlockFilesPerDoSome/(mMaxBlockFiles+1));
+   nextPercent = mPercentComplete + ((float)kNumBlockFilesPerDoSome / (mMaxBlockFiles + 1));
    mPercentCompleteMutex.Unlock();
 
    return nextPercent;
@@ -152,7 +152,7 @@ void ODComputeSummaryTask::CalculatePercentComplete()
    hasUpdateRan = HasUpdateRan();
    mPercentCompleteMutex.Lock();
    if(hasUpdateRan)
-      mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
+      mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles + 1));
    else
       mPercentComplete =0.0;
    mPercentCompleteMutex.Unlock();
@@ -186,11 +186,10 @@ void ODComputeSummaryTask::Update()
             //of the respective mWaveTrackMutex lock and LockDeleteUpdateMutex() call.
             blocks = clip->GetSequenceBlockArray();
             int i;
-            int insertCursor;
 
-            insertCursor =0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
+            size_t insertCursor = 0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
 
-            for(i=0; i<(int)blocks->size(); i++)
+            for(size_t i = 0; i < blocks->size(); i++)
             {
                //if there is data but no summary, this blockfile needs summarizing.
                SeqBlock &block = (*blocks)[i];
@@ -207,14 +206,14 @@ void ODComputeSummaryTask::Update()
                   //these will always be linear within a sequence-lets take advantage of this by keeping a cursor.
                   {
                      std::shared_ptr< ODPCMAliasBlockFile > ptr;
-                     while(insertCursor < (int)tempBlocks.size() &&
+                     while(insertCursor < tempBlocks.size() &&
                            (!(ptr = tempBlocks[insertCursor].lock()) ||
                             ptr->GetStart() + ptr->GetClipOffset() <
                             odpcmaFile->GetStart() + odpcmaFile->GetClipOffset()))
                         insertCursor++;
                   }
 
-                  tempBlocks.insert(tempBlocks.begin() + insertCursor++, odpcmaFile);
+                  tempBlocks.insert(tempBlocks.begin() + (int)insertCursor++, odpcmaFile);
                }
             }
          }
@@ -269,7 +268,7 @@ void ODComputeSummaryTask::OrderBlockFiles
                firstBlock = ptr;
             mBlockFiles.push_back(unorderedBlocks[i]);
          }
-         if(mMaxBlockFiles< (int) mBlockFiles.size())
+         if(mMaxBlockFiles < mBlockFiles.size())
             mMaxBlockFiles = mBlockFiles.size();
       }
       else

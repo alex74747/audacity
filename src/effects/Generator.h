@@ -32,7 +32,7 @@ protected:
    // Postcondition: <tmp> is filled with the data intended for <track>
    virtual bool GenerateTrack(WaveTrack *tmp,
                               const WaveTrack &track,
-                              int ntrack) = 0;
+                              unsigned ntrack) = 0;
 
    bool Init()  override { return true; }
 
@@ -69,7 +69,7 @@ protected:
                               size_t block) = 0;
 
    // Generate the track, one block at a time, & adding the results to tmp
-   bool GenerateTrack(WaveTrack *tmp, const WaveTrack &track, int ntrack) override;
+   bool GenerateTrack(WaveTrack *tmp, const WaveTrack &track, unsigned ntrack) override;
 };
 
 #endif

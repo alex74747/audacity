@@ -1493,7 +1493,7 @@ void AudacityProject::AddEffectMenuItemGroup(CommandManager *c,
                                              const std::vector<CommandFlag> & flags,
                                              bool isDefault)
 {
-   int namesCnt = (int) names.GetCount();
+   auto namesCnt = names.GetCount();
    int perGroup;
 
 #if defined(__WXGTK__)
@@ -1502,8 +1502,8 @@ void AudacityProject::AddEffectMenuItemGroup(CommandManager *c,
    gPrefs->Read(wxT("/Effects/MaxPerGroup"), &perGroup, 0);
 #endif
 
-   int groupCnt = namesCnt;
-   for (int i = 0; i < namesCnt; i++)
+   auto groupCnt = namesCnt;
+   for (size_t i = 0; i < namesCnt; i++)
    {
       while (i + 1 < namesCnt && names[i].IsSameAs(names[i + 1]))
       {
@@ -1518,20 +1518,20 @@ void AudacityProject::AddEffectMenuItemGroup(CommandManager *c,
       perGroup = 0;
    }
 
-   int max = perGroup;
-   int items = perGroup;
+   auto max = (unsigned)perGroup;
+   auto items = max;
 
    if (max > groupCnt)
    {
       max = 0;
    }
 
-   int groupNdx = 0;
-   for (int i = 0; i < namesCnt; i++)
+   size_t groupNdx = 0;
+   for (size_t i = 0; i < namesCnt; i++)
    {
       if (max > 0 && items == max)
       {
-         int end = groupNdx + max;
+         auto end = groupNdx + max;
          if (end + 1 > groupCnt)
          {
             end = groupCnt;
@@ -1605,7 +1605,7 @@ void AudacityProject::CreateRecentFilesMenu(CommandManager *c)
 void AudacityProject::ModifyUndoMenuItems()
 {
    wxString desc;
-   int cur = GetUndoManager()->GetCurrentState();
+   auto cur = GetUndoManager()->GetCurrentState();
 
    if (GetUndoManager()->UndoAvailable()) {
       GetUndoManager()->GetShortDescription(cur, &desc);
@@ -1619,7 +1619,7 @@ void AudacityProject::ModifyUndoMenuItems()
    }
 
    if (GetUndoManager()->RedoAvailable()) {
-      GetUndoManager()->GetShortDescription(cur+1, &desc);
+      GetUndoManager()->GetShortDescription(cur + 1, &desc);
       mCommandManager.Modify(wxT("Redo"),
                              wxString::Format(_("&Redo %s"),
                                               desc.c_str()));
@@ -1744,7 +1744,7 @@ CommandFlag AudacityProject::GetUpdateFlags(bool checkActive)
 
          if (lt->GetSelected()) {
             flags |= TracksSelectedFlag;
-            for (int i = 0; i < lt->GetNumLabels(); i++) {
+            for (size_t i = 0; i < lt->GetNumLabels(); i++) {
                const LabelStruct *ls = lt->GetLabel(i);
                if (ls->getT0() >= mViewInfo.selectedRegion.t0() &&
                    ls->getT1() <= mViewInfo.selectedRegion.t1()) {
@@ -2522,8 +2522,7 @@ double AudacityProject::GetTime(const Track *t)
       stime = w->GetEndTime();
 
       WaveClip *c;
-      int ndx;
-      for (ndx = 0; ndx < w->GetNumClips(); ndx++) {
+      for (size_t ndx = 0; ndx < w->GetNumClips(); ndx++) {
          c = w->GetClipByIndex(ndx);
          if (c->GetNumSamples() == 0)
             continue;
@@ -2609,7 +2608,7 @@ void AudacityProject::SortTracks(int flags)
             }
          }
       }
-      arr.insert(arr.begin() + ndx, iter);
+      arr.insert(arr.begin() + (int)ndx, iter);
 
       lastTrackLinked = track->GetLinked();
    }
@@ -2935,7 +2934,7 @@ void AudacityProject::NextOrPrevFrame(bool forward)
 
    // helper functions
    auto IndexOf = [&](wxWindow *pWindow) {
-      return std::find(begin, end, pWindow) - begin;
+      return (unsigned)(std::find(begin, end, pWindow) - begin);
    };
 
    auto FindAncestor = [&]() {
@@ -3471,12 +3470,12 @@ double AudacityProject::NearestZeroCrossing(double t0)
       oneDist[0] = fabs(.75 * oneDist[0] + .25 * oneDist[1]);
       for(size_t i=1; i + 1 < oneWindowSize; i++)
       {
-         newVal = fabs(.25 * oldVal + .5 * oneDist[i] + .25 * oneDist[i+1]);
+         newVal = fabs(.25 * oldVal + .5 * oneDist[i] + .25 * oneDist[i + 1]);
          oldVal = oneDist[i];
          oneDist[i] = newVal;
       }
-      oneDist[oneWindowSize-1] = fabs(.25 * oldVal +
-            .75 * oneDist[oneWindowSize-1]);
+      oneDist[oneWindowSize - 1] = fabs(.25 * oldVal +
+            .75 * oneDist[oneWindowSize - 1]);
 
       // TODO: The mixed rate zero crossing code is broken,
       // if oneWindowSize > windowSize we'll miss out some
@@ -3484,7 +3483,7 @@ double AudacityProject::NearestZeroCrossing(double t0)
       for(size_t i = 0; i < windowSize; i++) {
          size_t j;
          if (windowSize != oneWindowSize)
-            j = i * (oneWindowSize-1) / (windowSize-1);
+            j = i * (oneWindowSize - 1) / (windowSize - 1);
          else
             j = i;
 
@@ -3497,7 +3496,7 @@ double AudacityProject::NearestZeroCrossing(double t0)
    }
 
    // Find minimum
-   int argmin = 0;
+   size_t argmin = 0;
    float min = 3.0;
    for(size_t i=0; i<windowSize; i++) {
       if (dist[i] < min) {
@@ -3506,7 +3505,7 @@ double AudacityProject::NearestZeroCrossing(double t0)
       }
    }
 
-   return t0 + (argmin - (int)windowSize/2)/GetRate();
+   return t0 + ((int)argmin - (int)windowSize/2)/GetRate();
 }
 
 void AudacityProject::OnZeroCrossing()
@@ -3643,7 +3642,7 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
    return true;
 }
 
-void AudacityProject::OnRepeatLastEffect(int WXUNUSED(index))
+void AudacityProject::OnRepeatLastEffect()
 {
    if (!mLastEffect.IsEmpty())
    {
@@ -3693,7 +3692,7 @@ void AudacityProject::OnManageAnalyzers()
 
 
 
-void AudacityProject::OnStereoToMono(int WXUNUSED(index))
+void AudacityProject::OnStereoToMono()
 {
    OnEffect(EffectManager::Get().GetEffectByIdentifier(wxT("StereoToMono")),
             OnEffectFlags::kConfigured);
@@ -6002,7 +6001,7 @@ void AudacityProject::OnCursorSelEnd()
    mTrackPanel->Refresh(false);
 }
 
-void AudacityProject::HandleAlign(int index, bool moveSel)
+void AudacityProject::HandleAlign(size_t index, bool moveSel)
 {
    wxString action;
    wxString shortAction;
@@ -6100,14 +6099,14 @@ void AudacityProject::HandleAlign(int index, bool moveSel)
       shortAction = _("Together");
    }
 
-   if ((unsigned)index >= mAlignLabelsCount) { // This is an alignLabelsNoSync command.
+   if (index >= mAlignLabelsCount) { // This is an alignLabelsNoSync command.
       TrackListIterator iter(GetTracks());
       Track *t = iter.First();
       double leftChannelStart = 0.0;
       double leftChannelEnd = 0.0;
       double rightChannelStart = 0.0;
       double rightChannelEnd = 0.0;
-      int arrayIndex = 0;
+      size_t arrayIndex = 0;
       while (t) {
          // This shifts different tracks in different ways, so no sync-lock move.
          // Only align Wave and Note tracks end to end.
@@ -6123,8 +6122,8 @@ void AudacityProject::HandleAlign(int index, bool moveSel)
             if (t->GetLinked()) {   // Left channel of stereo track.
                leftChannelStart = trackStartArray[arrayIndex];
                leftChannelEnd = trackEndArray[arrayIndex];
-               rightChannelStart = trackStartArray[1+arrayIndex];
-               rightChannelEnd = trackEndArray[1+arrayIndex];
+               rightChannelStart = trackStartArray[1 + arrayIndex];
+               rightChannelEnd = trackEndArray[1 + arrayIndex];
                bRightChannel = true;   // next track is the right channel.
                // newPos is the offset for the earlier channel.
                // If right channel started first, offset the left channel.
@@ -6185,18 +6184,18 @@ void AudacityProject::HandleAlign(int index, bool moveSel)
    RedrawProject();
 }
 
-void AudacityProject::OnAlignNoSync(int index)
+void AudacityProject::OnAlignNoSync(size_t index)
 {
    // Add length of alignLabels array so that we can handle this in AudacityProject::HandleAlign.
    HandleAlign(index + mAlignLabelsCount, false);
 }
 
-void AudacityProject::OnAlign(int index)
+void AudacityProject::OnAlign(size_t index)
 {
    HandleAlign(index, false);
 }
 
-void AudacityProject::OnAlignMoveSel(int index)
+void AudacityProject::OnAlignMoveSel(size_t index)
 {
    HandleAlign(index, true);
 }
@@ -6625,7 +6624,7 @@ void AudacityProject::OnRescanDevices()
    DeviceManager::Instance()->Rescan();
 }
 
-int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus)
+size_t AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus)
 {
    LabelTrack *lt = NULL;
 
@@ -6682,7 +6681,7 @@ int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus
          focusTrackNumber = -1;
    }
 
-   int index = lt->AddLabel(region, wxString(), focusTrackNumber);
+   auto index = lt->AddLabel(region, wxString(), focusTrackNumber);
 
    PushState(_("Added label"), _("Label"));
 

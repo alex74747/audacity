@@ -79,7 +79,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
    //this could be 'optimized' by getting all of the sequences and then
    //iterating through each of them.
 
-   int numclips = mClips.size();
+   auto numclips = mClips.size();
 
    //create vectors to store the important info for each clip.
    std::vector<sampleCount> clipStart(numclips);
@@ -133,7 +133,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
       vector<short*> shortSeq;
 
       //Copy the sequences over to the NEW vector, casting as you go.
-      for(int i = 0; i < numclips; i++)
+      for(size_t i = 0; i < numclips; i++)
          // PRL: what the ... ?  This cast is just wrong!
          shortSeq.push_back((short*)tmpSequence[i]);
 
@@ -145,7 +145,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
       {
 
          //Go through each clip
-         for(int i = 0; i < numclips; i++)
+         for(size_t i = 0; i < numclips; i++)
          {
             clips = 0;
             f = 0;
@@ -183,7 +183,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
 
 
       //Copy the sequences over to the NEW vector, casting as you go.
-      for(int i = 0; i < numclips; i++)
+      for(size_t i = 0; i < numclips; i++)
          // Murder most foul!  As in the best it is,
          // But this most foul, strange, and unnatural.
          intSeq.push_back((int*)tmpSequence[i]);
@@ -194,7 +194,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
       for (size_t j = 0; j < len; j++) {
 
          //go through each clip.
-         for(int i= 0; i < numclips; i++)
+         for(size_t i = 0; i < numclips; i++)
          {
             clips = 0;
             f = 0;
@@ -238,7 +238,7 @@ bool CrossFader::CrossFadeMix(samplePtr buffer, sampleFormat format, sampleCount
          clips = 0;
          f = 0;
 
-         for(int i = 0; i < numclips; i++)
+         for(size_t i = 0; i < numclips; i++)
          {
 
             cout << numclips << " " ;

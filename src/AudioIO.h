@@ -482,7 +482,7 @@ private:
     * as I can think of (to try and work out what the card can do) */
    static const int RatesToTry[];
    /** \brief How many sample rates to try */
-   static const int NumRatesToTry;
+   static const unsigned NumRatesToTry;
 
    bool ReversedTime() const
    {

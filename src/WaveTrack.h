@@ -145,7 +145,7 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    void SetPan(float newPan);
 #endif
    // Takes gain and pan into account
-   float GetChannelGain(int channel) const;
+   float GetChannelGain(unsigned channel) const;
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
    void SetVirtualState(bool state, bool half=false);
 #endif
@@ -223,14 +223,14 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    bool Flush();
 
    bool AppendAlias(const wxString &fName, sampleCount start,
-                    size_t len, int channel,bool useOD);
+                    size_t len, unsigned channel, bool useOD);
 
    ///for use with On-Demand decoding of compressed files.
    ///decodeType should be an enum from ODDecodeTask that specifies what
    ///Type of encoded file this is, such as eODFLAC
    //vvv Why not use the ODTypeEnum typedef to enforce that for the parameter?
    bool AppendCoded(const wxString &fName, sampleCount start,
-                            size_t len, int channel, int decodeType);
+                            size_t len, unsigned channel, unsigned decodeType);
 
    ///gets an int with OD flags so that we can determine which ODTasks should be run on this track after save/open, etc.
    unsigned int GetODFlags() const;
@@ -447,17 +447,17 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    */
    WaveClip* RightmostOrNewClip();
 
-   // Get the linear index of a given clip (-1 if the clip is not found)
-   int GetClipIndex(const WaveClip* clip) const;
+   // Get the linear index of a given clip (past the end if the clip is not found)
+   size_t GetClipIndex(const WaveClip* clip) const;
 
    // Get the nth clip in this WaveTrack (will return NULL if not found).
    // Use this only in special cases (like getting the linked clip), because
    // it is much slower than GetClipIterator().
-   WaveClip *GetClipByIndex(int index);
-   const WaveClip* GetClipByIndex(int index) const;
+   WaveClip *GetClipByIndex(size_t index);
+   const WaveClip* GetClipByIndex(size_t index) const;
 
    // Get number of clips in this WaveTrack
-   int GetNumClips() const;
+   size_t GetNumClips() const;
 
    // Add all wave clips to the given array 'clips' and sort the array by
    // clip start time. The array is emptied prior to adding the clips.
@@ -485,7 +485,7 @@ class AUDACITY_DLL_API WaveTrack final : public Track {
    // Merge two clips, that is append data from clip2 to clip1,
    // then remove clip2 from track.
    // clipidx1 and clipidx2 are indices into the clip list.
-   bool MergeClips(int clipidx1, int clipidx2);
+   bool MergeClips(size_t clipidx1, size_t clipidx2);
 
    // Cache special locations (e.g. cut lines) for later speedy access
    void UpdateLocationsCache() const;

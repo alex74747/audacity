@@ -66,8 +66,8 @@ struct CommandListEntry
    wxMenu *menu;
    CommandFunctorPointer callback;
    bool multi;
-   int index;
-   int count;
+   size_t index;
+   size_t count;
    bool enabled;
    bool skipKeydown;
    bool wantKeyup;
@@ -211,7 +211,7 @@ class AUDACITY_DLL_API CommandManager final : public XMLTagHandler
    //
 
    void SetKeyFromName(const wxString &name, const wxString &key);
-   void SetKeyFromIndex(int i, const wxString &key);
+   void SetKeyFromIndex(size_t i, const wxString &key);
 
    //
    // Executing commands
@@ -268,16 +268,16 @@ protected:
                                    wxMenu *menu,
                                    const CommandFunctorPointer &callback,
                                    bool multi,
-                                   int index,
-                                   int count);
+                                   size_t index,
+                                   size_t count);
    CommandListEntry *NewIdentifier(const wxString & name,
                                    const wxString & label,
                                    const wxString & accel,
                                    wxMenu *menu,
                                    const CommandFunctorPointer &callback,
                                    bool multi,
-                                   int index,
-                                   int count);
+                                   size_t index,
+                                   size_t count);
 
    //
    // Executing commands

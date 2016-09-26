@@ -43,7 +43,7 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
                               bool noRMS,bool Silent,
                               float *min, float *max, float *rms)
 {
-   int fields = 3; /* min, max, rms */
+   unsigned fields = 3; /* min, max, rms */
 
    if (noRMS)
       fields = 2;
@@ -54,7 +54,7 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
       SAMPLE_SIZE(info->format) * fields;
    info->totalSummaryBytes = summaryLen;
    info->offset64K = 20; /* legacy header tag len */
-   info->frames64K = (summaryLen-20) /
+   info->frames64K = (std::max<size_t>(20, summaryLen) - 20) /
       (info->bytesPerFrame * 256);
    info->offset256 = info->offset64K +
       (info->frames64K * info->bytesPerFrame);
@@ -72,7 +72,7 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
    SampleBuffer data(info->frames64K * fields,
       info->format);
 
-   int read;
+   size_t read;
    {
       Maybe<wxLogNull> silence{};
       const wxString fullPath{ fileName.GetFullPath() };
@@ -88,7 +88,7 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
          read = info->frames64K * info->bytesPerFrame;
          memset(data.ptr(), 0, read);
       }
-      else{
+      else {
          // FIXME: TRAP_ERR Seek in summary file could fail.
          summaryFile.Seek(info->offset64K);
          read = summaryFile.Read(data.ptr(),
@@ -97,7 +97,7 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
       }
    }
 
-   int count = read / info->bytesPerFrame;
+   auto count = read / info->bytesPerFrame;
 
    CopySamples(data.ptr(), info->format,
                (samplePtr)summary.get(), floatSample, count);
@@ -106,13 +106,13 @@ void ComputeLegacySummaryInfo(const wxFileName &fileName,
    (*max) = FLT_MIN;
    float sumsq = 0;
 
-   for(int i=0; i<count; i++) {
-      if (summary[fields*i] < (*min))
-         (*min) = summary[fields*i];
-      if (summary[fields*i+1] > (*max))
-         (*max) = summary[fields*i+1];
+   for(size_t i = 0; i < count; i++) {
+      if (summary[fields * i] < (*min))
+         (*min) = summary[fields * i];
+      if (summary[fields * i + 1] > (*max))
+         (*max) = summary[fields * i + 1];
       if (fields >= 3)
-         sumsq += summary[fields*i+2]*summary[fields*i+2];
+         sumsq += summary[fields * i + 2] * summary[fields * i + 2];
    }
    if (fields >= 3)
       (*rms) = sqrt(sumsq / count);
@@ -237,14 +237,14 @@ BlockFilePtr LegacyBlockFile::BuildFromXML(const wxString &projDir, const wxChar
       else if (XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
       {  // integer parameters
          if (!wxStrcmp(attr, wxT("len")) && (nValue >= 0))
-            len = nValue;
+            len = (size_t)nValue;
          else if (!wxStrcmp(attr, wxT("norms")))
             noRMS = (nValue != 0);
          else if (!wxStrcmp(attr, wxT("format")) && XMLValueChecker::IsValidSampleFormat(nValue))
             format = (sampleFormat)nValue;
          else if (!wxStrcmp(attr, wxT("summarylen")) && (nValue > 0))
             // Note attribute "summarylen" was written as int, no need for 64 bits
-            summaryLen = nValue;
+            summaryLen = (size_t)nValue;
       }
    }
 
@@ -266,7 +266,7 @@ BlockFilePtr LegacyBlockFile::Copy(wxFileNameWrapper &&newFileName)
 auto LegacyBlockFile::GetSpaceUsage() const -> DiskByteCount
 {
    wxFFile dataFile(mFileName.GetFullPath());
-   return dataFile.Length();
+   return (DiskByteCount)dataFile.Length();
 }
 
 void LegacyBlockFile::Recover()

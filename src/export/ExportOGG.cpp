@@ -46,7 +46,7 @@ class ExportOGGOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportOGGOptions(wxWindow *parent, int format);
+   ExportOGGOptions(wxWindow *parent, unsigned format);
    virtual ~ExportOGGOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -60,7 +60,7 @@ private:
 
 ///
 ///
-ExportOGGOptions::ExportOGGOptions(wxWindow *parent, int WXUNUSED(format))
+ExportOGGOptions::ExportOGGOptions(wxWindow *parent, unsigned WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
    mOggQualityUnscaled = gPrefs->Read(wxT("/FileFormats/OggExportQuality"),50)/10;
@@ -130,7 +130,7 @@ public:
    ExportOGG();
 
    // Required
-   wxWindow *OptionsCreate(wxWindow *parent, int format) override;
+   wxWindow *OptionsCreate(wxWindow *parent, unsigned format) override;
 
    ProgressResult Export(AudacityProject *project,
                unsigned channels,
@@ -140,7 +140,7 @@ public:
                double t1,
                MixerSpec *mixerSpec = NULL,
                const Tags *metadata = NULL,
-               int subformat = 0) override;
+               unsigned subformat = 0) override;
 
 private:
 
@@ -151,11 +151,11 @@ ExportOGG::ExportOGG()
 :  ExportPlugin()
 {
    AddFormat();
-   SetFormat(wxT("OGG"),0);
-   AddExtension(wxT("ogg"),0);
-   SetMaxChannels(255,0);
-   SetCanMetaData(true,0);
-   SetDescription(_("Ogg Vorbis Files"),0);
+   SetFormat(wxT("OGG"), 0);
+   AddExtension(wxT("ogg"), 0);
+   SetMaxChannels(255, 0);
+   SetCanMetaData(true, 0);
+   SetDescription(_("Ogg Vorbis Files"), 0);
 }
 
 ProgressResult ExportOGG::Export(AudacityProject *project,
@@ -166,7 +166,7 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
                        double t1,
                        MixerSpec *mixerSpec,
                        const Tags *metadata,
-                       int WXUNUSED(subformat))
+                       unsigned WXUNUSED(subformat))
 {
    double    rate    = project->GetRate();
    const TrackList *tracks = project->GetTracks();
@@ -195,7 +195,7 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
 
    // Encoding setup
    vorbis_info_init(&info);
-   vorbis_encode_init_vbr(&info, numChannels, (int)(rate + 0.5), quality);
+   vorbis_encode_init_vbr(&info, (long)numChannels, (int)(rate + 0.5), quality);
 
    // Retrieve tags
    if (!FillComment(project, &comment, metadata)) {
@@ -209,7 +209,7 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
    // Set up packet->stream encoder.  According to encoder example,
    // a random serial number makes it more likely that you can make
    // chained streams with concatenation.
-   srand(time(NULL));
+   srand((unsigned)time(NULL));
    ogg_stream_init(&stream, rand());
 
    // First we need to write the required headers:
@@ -235,8 +235,8 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
    // Flushing these headers now guarentees that audio data will
    // start on a NEW page, which apparently makes streaming easier
    while (ogg_stream_flush(&stream, &page)) {
-      outFile.Write(page.header, page.header_len);
-      outFile.Write(page.body, page.body_len);
+      outFile.Write(page.header, (size_t)page.header_len);
+      outFile.Write(page.body, (size_t)page.body_len);
    }
 
    const WaveTrackConstArray waveTracks =
@@ -269,7 +269,7 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
             }
 
             // tell the encoder how many samples we have
-            vorbis_analysis_wrote(&dsp, samplesThisRun);
+            vorbis_analysis_wrote(&dsp, (int)samplesThisRun);
          }
 
          // I don't understand what this call does, so here is the comment
@@ -299,8 +299,8 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
                      break;
                   }
 
-                  outFile.Write(page.header, page.header_len);
-                  outFile.Write(page.body, page.body_len);
+                  outFile.Write(page.header, (size_t)page.header_len);
+                  outFile.Write(page.body, (size_t)page.body_len);
 
                   if (ogg_page_eos(&page)) {
                      eos = 1;
@@ -325,7 +325,7 @@ ProgressResult ExportOGG::Export(AudacityProject *project,
    return updateResult;
 }
 
-wxWindow *ExportOGG::OptionsCreate(wxWindow *parent, int format)
+wxWindow *ExportOGG::OptionsCreate(wxWindow *parent, unsigned format)
 {
    wxASSERT(parent); // to justify safenew
    return safenew ExportOGGOptions(parent, format);

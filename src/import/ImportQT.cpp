@@ -142,7 +142,7 @@ class QTImportFileHandle final : public ImportFileHandle
    wxString GetFileDescription() override;
    ByteCount GetFileUncompressedBytes() override;
 
-   wxInt32 GetStreamCount() override
+   unsigned GetStreamCount() override
    {
       return 1;
    }
@@ -153,7 +153,7 @@ class QTImportFileHandle final : public ImportFileHandle
       return empty;
    }
 
-   void SetStreamUsage(wxInt32 StreamID, bool Use) override
+   void SetStreamUsage(unsigned StreamID, bool Use) override
    {
    }
 

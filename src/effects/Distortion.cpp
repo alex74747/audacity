@@ -313,9 +313,9 @@ wxArrayString EffectDistortion::GetFactoryPresets()
    return names;
 }
 
-bool EffectDistortion::LoadFactoryPreset(int id)
+bool EffectDistortion::LoadFactoryPreset(unsigned id)
 {
-   if (id < 0 || id >= (int) WXSIZEOF(FactoryPresets))
+   if (id >= WXSIZEOF(FactoryPresets))
    {
       return false;
    }

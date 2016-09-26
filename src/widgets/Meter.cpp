@@ -898,9 +898,8 @@ static float ToDB(float v, float range)
    return ClipZeroToOne((db + range) / range);
 }
 
-void Meter::UpdateDisplay(unsigned numChannels, int numFrames, float *sampleData)
+void Meter::UpdateDisplay(unsigned numChannels, size_t numFrames, float *sampleData)
 {
-   int i;
    float *sptr = sampleData;
    auto num = std::min(numChannels, mNumBars);
    MeterUpdateMsg msg;
@@ -908,7 +907,7 @@ void Meter::UpdateDisplay(unsigned numChannels, int numFrames, float *sampleData
    memset(&msg, 0, sizeof(msg));
    msg.numFrames = numFrames;
 
-   for(i=0; i<numFrames; i++) {
+   for(size_t i = 0; i < numFrames; i++) {
       for(size_t j = 0; j < num; j++) {
          msg.peak[j] = floatMax(msg.peak[j], fabs(sptr[j]));
          msg.rms[j] += sptr[j]*sptr[j];
@@ -917,8 +916,8 @@ void Meter::UpdateDisplay(unsigned numChannels, int numFrames, float *sampleData
          // samples in a row, also send the number of peaked samples
          // at the head and tail, in case there's a run of peaked samples
          // that crosses block boundaries
-         if (fabs(sptr[j])>=MAX_AUDIO) {
-            if (msg.headPeakCount[j]==i)
+         if (fabs(sptr[j]) >= MAX_AUDIO) {
+            if (msg.headPeakCount[j] == i)
                msg.headPeakCount[j]++;
             msg.tailPeakCount[j]++;
             if (msg.tailPeakCount[j] > mNumPeakSamplesToClip)
@@ -1044,7 +1043,7 @@ void Meter::OnMeterUpdate(wxTimerEvent & WXUNUSED(event))
             mBar[j].peakPeakHold = mBar[j].peak;
 
          if (msg.clipping[j] ||
-             mBar[j].tailPeakCount+msg.headPeakCount[j] >=
+             mBar[j].tailPeakCount + msg.headPeakCount[j] >=
              mNumPeakSamplesToClip){
             mBar[j].clipping = true;
             mBar[j].isclipping = true;
@@ -2031,7 +2030,7 @@ void Meter::OnPreferences(wxCommandEvent & WXUNUSED(event))
       style.Add(wxT("HorizontalStereo"));
       style.Add(wxT("VerticalStereo"));
 
-      int s = 0;
+      unsigned s = 0;
       s = automatic->GetValue() ? 0 : s;
       s = horizontal->GetValue() ? 1 : s;
       s = vertical->GetValue() ? 2 : s;

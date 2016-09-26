@@ -366,7 +366,7 @@ wxAccStatus CheckListAx::GetValue( int childId, wxString *strValue )
 //
 // ============================================================================
 
-enum
+enum : unsigned
 {
    STATE_Enabled,
    STATE_Disabled,
@@ -382,7 +382,7 @@ struct ItemData
    DescriptorArray plugs;
    wxString name;
    wxString path;
-   int state;
+   unsigned state;
    bool valid;
    int nameWidth;
    int pathWidth;
@@ -600,7 +600,7 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
       colWidths.Add(0);
    }
 
-   for (int i = 0, cnt = mStates.GetCount(); i < cnt; i++)
+   for (size_t i = 0, cnt = mStates.GetCount(); i < cnt; i++)
    {
       int x;
       mEffects->GetTextExtent(mStates[i], &x, NULL);
@@ -659,7 +659,7 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
    int maxW = 0;
    for (int i = 0, cnt = mEffects->GetColumnCount(); i < cnt; i++)
    {
-      int w = colWidths[i] + /* fudge */ 10;
+      int w = colWidths[(size_t)i] + /* fudge */ 10;
       mEffects->SetColumnWidth(i, w);
       maxW += w;
    }
@@ -699,7 +699,7 @@ void PluginRegistrationDialog::RegenerateEffectsList(int filter)
 
    mEffects->DeleteAllItems();
 
-   int i = 0;
+   size_t i = 0;
    for (ItemDataMap::iterator iter = mItems.begin(); iter != mItems.end(); ++iter)
    {
       ItemData & item = iter->second;
@@ -732,16 +732,16 @@ void PluginRegistrationDialog::RegenerateEffectsList(int filter)
 
       if (add)
       {
-         mEffects->InsertItem(i, item.name);
-         mEffects->SetItem(i, COL_State, mStates[item.state]);
-         mEffects->SetItem(i, COL_Path, item.path);
-         mEffects->SetItemPtrData(i, (wxUIntPtr) &item);
+         mEffects->InsertItem((long)i, item.name);
+         mEffects->SetItem((long)i, COL_State, mStates[item.state]);
+         mEffects->SetItem((long)i, COL_Path, item.path);
+         mEffects->SetItemPtrData((long)i, (wxUIntPtr) &item);
 
          ++i;
       }
    }
 
-   mEffects->SortItems(SortCompare, (wxUIntPtr) this);
+   mEffects->SortItems(SortCompare, (wxIntPtr) this);
 
    if (mEffects->GetItemCount() > 0)
    {
@@ -861,7 +861,7 @@ void PluginRegistrationDialog::OnSort(wxListEvent & evt)
    }
 
    mSortColumn = col;
-   mEffects->SortItems(SortCompare, (wxUIntPtr) this);
+   mEffects->SortItems(SortCompare, (wxIntPtr) this);
 }
 
 void PluginRegistrationDialog::OnListChar(wxKeyEvent & evt)
@@ -2820,16 +2820,16 @@ wxString PluginManager::ConvertID(const PluginID & ID)
 const static wxChar cset[] = wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 const static char padc = wxT('=');
 
-wxString PluginManager::b64encode(const void *in, int len)
+wxString PluginManager::b64encode(const void *in, size_t len)
 {
    unsigned char *p = (unsigned char *) in;
    wxString out;
 
    unsigned long temp;
-   for (int i = 0; i < len / 3; i++)
+   for (size_t i = 0; i < len / 3; i++)
    {
-      temp  = (*p++) << 16; //Convert to big endian
-      temp += (*p++) << 8;
+      temp  = (unsigned long)((*p++) << 16); //Convert to big endian
+      temp += (unsigned long)((*p++) << 8);
       temp += (*p++);
       out += cset[(temp & 0x00FC0000) >> 18];
       out += cset[(temp & 0x0003F000) >> 12];
@@ -2840,7 +2840,7 @@ wxString PluginManager::b64encode(const void *in, int len)
    switch (len % 3)
    {
       case 1:
-         temp  = (*p++) << 16; //Convert to big endian
+         temp  = (unsigned long)((*p++) << 16); //Convert to big endian
          out += cset[(temp & 0x00FC0000) >> 18];
          out += cset[(temp & 0x0003F000) >> 12];
          out += padc;
@@ -2848,8 +2848,8 @@ wxString PluginManager::b64encode(const void *in, int len)
       break;
 
       case 2:
-         temp  = (*p++) << 16; //Convert to big endian
-         temp += (*p++) << 8;
+         temp  = (unsigned long)((*p++) << 16); //Convert to big endian
+         temp += (unsigned long)((*p++) << 8);
          out += cset[(temp & 0x00FC0000) >> 18];
          out += cset[(temp & 0x0003F000) >> 12];
          out += cset[(temp & 0x00000FC0) >> 6];
@@ -2860,9 +2860,9 @@ wxString PluginManager::b64encode(const void *in, int len)
    return out;
 }
 
-int PluginManager::b64decode(const wxString &in, void *out)
+size_t PluginManager::b64decode(const wxString &in, void *out)
 {
-   int len = in.length();
+   auto len = in.length();
    unsigned char *p = (unsigned char *) out;
 
    if (len % 4)  //Sanity check
@@ -2878,7 +2878,7 @@ int PluginManager::b64decode(const wxString &in, void *out)
          padding++;
       }
 
-      if (in[len - 2] == padc)
+      if (len > 1 && in[len - 2] == padc)
       {
          padding++;
       }
@@ -2887,7 +2887,7 @@ int PluginManager::b64decode(const wxString &in, void *out)
    //const char *a = in.mb_str();
    //Setup a vector to hold the result
    unsigned long temp = 0; //Holds decoded quanta
-   int i = 0;
+   size_t i = 0;
    while (i < len)
    {
       for (int quantumPosition = 0; quantumPosition < 4; quantumPosition++)
@@ -2922,10 +2922,10 @@ int PluginManager::b64decode(const wxString &in, void *out)
                case 1: //One pad character
                   *p++ = (temp >> 16) & 0x000000FF;
                   *p++ = (temp >> 8) & 0x000000FF;
-                  return p - (unsigned char *) out;
+                  return (size_t)(p - (unsigned char *) out);
                case 2: //Two pad characters
                   *p++ = (temp >> 10) & 0x000000FF;
-                  return p - (unsigned char *) out;
+                  return (size_t)(p - (unsigned char *) out);
             }
          }
          i++;
@@ -2935,5 +2935,5 @@ int PluginManager::b64decode(const wxString &in, void *out)
       *p++ = temp & 0x000000FF;
    }
 
-   return p - (unsigned char *) out;
+   return (size_t)(p - (unsigned char *) out);
 }

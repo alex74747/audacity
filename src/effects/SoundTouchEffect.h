@@ -70,7 +70,7 @@ private:
                               WaveTrack* outputLeftTrack,
                               WaveTrack* outputRightTrack);
 
-   int    mCurTrackNum;
+   unsigned mCurTrackNum;
 
    double m_maxNewLength;
 };

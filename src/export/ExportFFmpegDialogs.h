@@ -63,7 +63,7 @@ class ExportFFmpegAC3Options final : public wxPanelWrapper
 {
 public:
 
-   ExportFFmpegAC3Options(wxWindow *parent, int format);
+   ExportFFmpegAC3Options(wxWindow *parent, unsigned format);
    virtual ~ExportFFmpegAC3Options();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -89,7 +89,7 @@ class ExportFFmpegAACOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportFFmpegAACOptions(wxWindow *parent, int format);
+   ExportFFmpegAACOptions(wxWindow *parent, unsigned format);
    virtual ~ExportFFmpegAACOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -105,7 +105,7 @@ class ExportFFmpegAMRNBOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportFFmpegAMRNBOptions(wxWindow *parent, int format);
+   ExportFFmpegAMRNBOptions(wxWindow *parent, unsigned format);
    virtual ~ExportFFmpegAMRNBOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -127,7 +127,7 @@ class ExportFFmpegWMAOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportFFmpegWMAOptions(wxWindow *parent, int format);
+   ExportFFmpegWMAOptions(wxWindow *parent, unsigned format);
    ~ExportFFmpegWMAOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -150,7 +150,7 @@ class ExportFFmpegCustomOptions final : public wxPanelWrapper
 {
 public:
 
-   ExportFFmpegCustomOptions(wxWindow *parent, int format);
+   ExportFFmpegCustomOptions(wxWindow *parent, unsigned format);
    ~ExportFFmpegCustomOptions();
 
    void PopulateOrExchange(ShuttleGui & S);

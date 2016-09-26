@@ -165,7 +165,7 @@ void ToolBarConfiguration::InsertAtPath
 
    // Guarantee the existence of nodes
    for (auto ii : path) {
-      Forest::size_type uu = std::max(0, ii);
+      Forest::size_type uu = (unsigned)std::max(0, ii);
       pForest->resize(std::max(uu + 1, pForest->size()));
       pTree = &(*pForest)[uu];
       pForest = &pTree->children;
@@ -249,7 +249,7 @@ bool ToolBarConfiguration::Read
          // Legacy preferences
          while (pLegacy->bars.size() <= size_t(ord))
             pLegacy->bars.push_back(nullptr);
-         pLegacy->bars[ord] = bar;
+         pLegacy->bars[(size_t)ord] = bar;
       }
       else {
          wxString strPath;
@@ -278,7 +278,7 @@ void ToolBarConfiguration::RemoveNulls(Forest &forest)
 {
    for (size_t ii = 0; ii < forest.size(); ++ii) {
       if(forest[ii].pBar == nullptr)
-         Remove(forest, forest.begin() + ii--);
+         Remove(forest, forest.begin() + (int)ii--);
    }
 
    // Now do the same recursively

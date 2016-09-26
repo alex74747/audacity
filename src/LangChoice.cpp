@@ -79,8 +79,8 @@ LangChoiceDialog::LangChoiceDialog(wxWindow * parent,
    int ndx = mLangCodes.Index(GetSystemLanguageCode());
    wxString lang;
 
-   if (ndx != wxNOT_FOUND) {
-      lang = mLangNames[ndx];
+   if (ndx >= 0) {
+      lang = mLangNames[(size_t)ndx];
    }
 
    ShuttleGui S(this, eIsCreating);
@@ -107,20 +107,21 @@ LangChoiceDialog::LangChoiceDialog(wxWindow * parent,
 void LangChoiceDialog::OnOk(wxCommandEvent & WXUNUSED(event))
 {
    int ndx = mChoice->GetSelection();
-   mLang = mLangCodes[ndx];
+   wxASSERT(ndx >= 0);
+   mLang = mLangCodes[(size_t)ndx];
 
    wxString slang = GetSystemLanguageCode();
    int sndx = mLangCodes.Index(slang);
    wxString sname;
 
-   if (sndx == wxNOT_FOUND) {
+   if (sndx < 0) {
       const wxLanguageInfo *sinfo = wxLocale::FindLanguageInfo(slang);
       if (sinfo) {
          sname = sinfo->Description;
       }
    }
    else {
-      sname = mLangNames[sndx];
+      sname = mLangNames[(size_t)sndx];
    }
 
    if (mLang.Left(2) != slang.Left(2)) {
@@ -128,7 +129,7 @@ void LangChoiceDialog::OnOk(wxCommandEvent & WXUNUSED(event))
       /* i18n-hint: The %s's are replaced by translated and untranslated
        * versions of language names. */
       msg.Printf(_("The language you have chosen, %s (%s), is not the same as the system language, %s (%s)."),
-                 mLangNames[ndx].c_str(),
+                 mLangNames[(size_t)ndx].c_str(),
                  mLang.c_str(),
                  sname.c_str(),
                  slang.c_str());

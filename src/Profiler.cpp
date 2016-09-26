@@ -39,7 +39,7 @@ Profiler::~Profiler()
       fprintf(log,"%s",ctime(&now));
       fprintf(log,"****************************************\n");
       //print out the tasks
-      for(int i=0;i<(int)mTasks.size();i++)
+      for(size_t i = 0;i < mTasks.size(); i++)
       {
          if(mTasks[i]->mNumHits>0)
          {
@@ -48,7 +48,7 @@ Profiler::~Profiler()
             fprintf(log,"Total run time (seconds): %f\n", (double)mTasks[i]->mCumTime/CLOCKS_PER_SEC);
             fprintf(log,"Average run time (seconds): %f\n",mTasks[i]->ComputeAverageRunTime());
 
-            if(i < ((int)mTasks.size()) -1)
+            if(i + 1 < mTasks.size())
                fprintf(log,"----------------------------\n");
          }
       }
@@ -89,7 +89,7 @@ Profiler* Profiler::Instance()
 ///find a taskProfile for the given task, otherwise create
 TaskProfile* Profiler::GetOrCreateTaskProfile(const char* fileName, int lineNum)
 {
-   for(int i=0;i<(int)mTasks.size();i++)
+   for(size_t i = 0; i < mTasks.size(); i++)
    {
       if(strcmp(fileName, mTasks[i]->mFileName.get())==0 && lineNum == mTasks[i]->mLine)
          return mTasks[i].get();
@@ -102,7 +102,7 @@ TaskProfile* Profiler::GetOrCreateTaskProfile(const char* fileName, int lineNum)
 
 TaskProfile* Profiler::GetTaskProfileByDescription(const char* description)
 {
-   for(int i=0;i<(int)mTasks.size();i++)
+   for(size_t i = 0; i < mTasks.size(); i++)
    {
       if(strcmp(description, mTasks[i]->mDescription.get())==0)
          return mTasks[i].get();

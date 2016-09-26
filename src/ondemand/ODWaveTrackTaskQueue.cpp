@@ -111,7 +111,7 @@ void ODWaveTrackTaskQueue::AddTask(movable_ptr<ODTask> &&mtask)
 
    //take all of the tracks in the task.
    mTracksMutex.Lock();
-   for(int i=0;i<task->GetNumWaveTracks();i++)
+   for(size_t i = 0; i < task->GetNumWaveTracks(); i++)
    {
       //task->GetWaveTrack(i) may return NULL, but we handle it by checking before using.
       //The other worry that the WaveTrack returned and was deleted in the meantime is also
@@ -132,14 +132,14 @@ void ODWaveTrackTaskQueue::RemoveWaveTrack(WaveTrack* track)
    {
 
       mTasksMutex.Lock();
-      for(unsigned int i=0;i<mTasks.size();i++)
+      for(unsigned int i = 0; i < mTasks.size(); i++)
          mTasks[i]->StopUsingWaveTrack(track);
       mTasksMutex.Unlock();
 
       mTracksMutex.Lock();
-      for(unsigned int i=0;i<mTracks.size();i++)
-         if(mTracks[i]==track)
-            mTracks.erase(mTracks.begin()+i--);//decrement i after the removal.
+      for(unsigned int i = 0; i < mTracks.size(); i++)
+         if(mTracks[i] == track)
+            mTracks.erase(mTracks.begin() + (int)i--);//decrement i after the removal.
 
       mTracksMutex.Unlock();
    }
@@ -234,21 +234,21 @@ WaveTrack* ODWaveTrackTaskQueue::GetWaveTrack(size_t x)
 }
 
 ///returns the number of wavetracks in this queue.
-int ODWaveTrackTaskQueue::GetNumWaveTracks()
+size_t ODWaveTrackTaskQueue::GetNumWaveTracks()
 {
-   int ret = 0;
+   size_t ret = 0;
    mTracksMutex.Lock();
-   ret=mTracks.size();
+   ret = mTracks.size();
    mTracksMutex.Unlock();
    return ret;
 }
 
 ///returns the number of ODTasks in this queue
-int ODWaveTrackTaskQueue::GetNumTasks()
+unsigned ODWaveTrackTaskQueue::GetNumTasks()
 {
-   int ret = 0;
+   unsigned ret = 0;
    mTasksMutex.Lock();
-   ret=mTasks.size();
+   ret = mTasks.size();
    mTasksMutex.Unlock();
    return ret;
 }

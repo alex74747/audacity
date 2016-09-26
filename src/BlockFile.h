@@ -31,13 +31,13 @@ class SummaryInfo {
  public:
    SummaryInfo(size_t samples);
 
-   int            fields; /* Usually 3 for Min, Max, RMS */
+   unsigned       fields; /* Usually 3 for Min, Max, RMS */
    sampleFormat   format;
-   int            bytesPerFrame;
+   size_t         bytesPerFrame;
    size_t         frames64K;
-   int            offset64K;
+   size_t         offset64K;
    size_t         frames256;
-   int            offset256;
+   size_t         offset256;
    size_t         totalSummaryBytes;
 };
 
@@ -223,10 +223,10 @@ class AliasBlockFile /* not final */ : public BlockFile
    /// Constructs an AliasBlockFile
    AliasBlockFile(wxFileNameWrapper &&baseFileName,
                   wxFileNameWrapper &&aliasedFileName, sampleCount aliasStart,
-                  size_t aliasLen, int aliasChannel);
+                  size_t aliasLen, unsigned aliasChannel);
    AliasBlockFile(wxFileNameWrapper &&existingSummaryFileName,
                   wxFileNameWrapper &&aliasedFileName, sampleCount aliasStart,
-                  size_t aliasLen, int aliasChannel,
+                  size_t aliasLen, unsigned aliasChannel,
                   float min, float max, float RMS);
    virtual ~AliasBlockFile();
 
@@ -254,7 +254,7 @@ class AliasBlockFile /* not final */ : public BlockFile
 
    wxFileNameWrapper mAliasedFileName;
    sampleCount mAliasStart;
-   const int         mAliasChannel;
+   const unsigned      mAliasChannel;
    mutable bool        mSilentAliasLog;
 };
 

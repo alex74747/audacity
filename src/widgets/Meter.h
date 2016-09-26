@@ -40,19 +40,19 @@ struct MeterBar {
    wxRect rClip;
    bool   clipping;
    bool   isclipping; //ANSWER-ME: What's the diff between these bools?! "clipping" vs "isclipping" is not clear.
-   int    tailPeakCount;
+   size_t tailPeakCount;
    float  peakPeakHold;
 };
 
 class MeterUpdateMsg
 {
    public:
-   int numFrames;
+   size_t numFrames;
    float peak[kMaxMeterBars];
    float rms[kMaxMeterBars];
    bool clipping[kMaxMeterBars];
-   int headPeakCount[kMaxMeterBars];
-   int tailPeakCount[kMaxMeterBars];
+   size_t headPeakCount[kMaxMeterBars];
+   size_t tailPeakCount[kMaxMeterBars];
 
    /* neither constructor nor destructor do anything */
    MeterUpdateMsg() { }
@@ -154,7 +154,7 @@ class Meter final : public wxPanelWrapper
     * The second overload is for ease of use in MixerBoard.
     */
    void UpdateDisplay(unsigned numChannels,
-                      int numFrames, float *sampleData);
+                      size_t numFrames, float *sampleData);
 
    // Vaughan, 2010-11-29: This not currently used. See comments in MixerTrackCluster::UpdateMeter().
    //void UpdateDisplay(int numChannels, int numFrames,
@@ -246,7 +246,7 @@ class Meter final : public wxPanelWrapper
    bool      mDecay;
    float     mDecayRate; // dB/sec
    bool      mClip;
-   int       mNumPeakSamplesToClip;
+   size_t    mNumPeakSamplesToClip;
    double    mPeakHoldDuration;
    double    mT;
    double    mRate;

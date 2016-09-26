@@ -60,7 +60,7 @@ class ImportRawDialog final : public wxDialogWrapper {
 
   public:
    ImportRawDialog(wxWindow * parent,
-                   int encoding, unsigned channels,
+                   unsigned encoding, unsigned channels,
                    int offset, double rate);
    ~ImportRawDialog();
 
@@ -70,7 +70,7 @@ class ImportRawDialog final : public wxDialogWrapper {
    void OnChoice(wxCommandEvent & event);
 
    // in and out
-   int mEncoding;
+   unsigned mEncoding;
    unsigned mChannels;
    int mOffset;
    double mRate;
@@ -86,7 +86,7 @@ class ImportRawDialog final : public wxDialogWrapper {
    wxTextCtrl *mPercentText;
    wxTextCtrl *mRateText;
 
-   int         mNumEncodings;
+   unsigned    mNumEncodings;
    ArrayOf<int> mEncodingSubtype;
 
    DECLARE_EVENT_TABLE()
@@ -96,7 +96,7 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
               TrackFactory *trackFactory, TrackHolders &outTracks)
 {
    outTracks.clear();
-   int encoding = 0; // Guess Format
+   unsigned encoding = 0; // Guess Format
    sampleFormat format;
    sf_count_t offset = 0;
    double rate = 44100.0;
@@ -144,7 +144,7 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
       memset(&sndInfo, 0, sizeof(SF_INFO));
       sndInfo.samplerate = (int)rate;
       sndInfo.channels = (int)numChannels;
-      sndInfo.format = encoding | SF_FORMAT_RAW;
+      sndInfo.format = (int)(encoding | SF_FORMAT_RAW);
 
       wxFile f;   // will be closed when it goes out of scope
       SFFile sndFile;
@@ -319,7 +319,7 @@ BEGIN_EVENT_TABLE(ImportRawDialog, wxDialogWrapper)
 END_EVENT_TABLE()
 
 ImportRawDialog::ImportRawDialog(wxWindow * parent,
-                                 int encoding, unsigned channels,
+                                 unsigned encoding, unsigned channels,
                                  int offset, double rate)
 :  wxDialogWrapper(parent, wxID_ANY, _("Import Raw Data"),
             wxDefaultPosition, wxDefaultSize,
@@ -337,23 +337,19 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent,
    wxArrayString encodings;
    wxArrayString endians;
    wxArrayString chans;
-   int num;
-   int selection;
-   int endian;
-   int i;
 
-   num = sf_num_encodings();
+   auto num = sf_num_encodings();
    mNumEncodings = 0;
    mEncodingSubtype.reinit(static_cast<size_t>(num));
 
-   selection = 0;
-   for (i=0; i<num; i++) {
+   size_t selection = 0;
+   for (unsigned i = 0; i < num; i++) {
       SF_INFO info;
 
       memset(&info, 0, sizeof(SF_INFO));
 
-      int subtype = sf_encoding_index_to_subtype(i);
-      info.format = SF_FORMAT_RAW + SF_ENDIAN_LITTLE + subtype;
+      auto subtype = sf_encoding_index_to_subtype(i);
+      info.format = (int)(SF_FORMAT_RAW + SF_ENDIAN_LITTLE + subtype);
       info.channels = 1;
       info.samplerate = 44100;
 
@@ -381,6 +377,7 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent,
       know the correct technical word. */
    endians.Add(_("Default endianness"));
 
+   unsigned endian;
    switch (mEncoding & (SF_FORMAT_ENDMASK))
    {
       default:
@@ -400,7 +397,7 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent,
 
    chans.Add(_("1 Channel (Mono)"));
    chans.Add(_("2 Channels (Stereo)"));
-   for (i=2; i<16; i++) {
+   for (auto i = 2; i < 16; i++) {
       chans.Add(wxString::Format(_("%d Channels"), i + 1));
    }
 
@@ -475,8 +472,8 @@ void ImportRawDialog::OnOK(wxCommandEvent & WXUNUSED(event))
    long l;
 
    mEncoding = mEncodingSubtype[mEncodingChoice->GetSelection()];
-   mEncoding += (mEndianChoice->GetSelection() * 0x10000000);
-   mChannels = mChannelChoice->GetSelection() + 1;
+   mEncoding += ((unsigned)mEndianChoice->GetSelection() * 0x10000000);
+   mChannels = (unsigned)mChannelChoice->GetSelection() + 1;
    mOffsetText->GetValue().ToLong(&l);
    mOffset = l;
    mPercentText->GetValue().ToDouble(&mPercent);
@@ -514,9 +511,9 @@ void ImportRawDialog::OnChoice(wxCommandEvent & WXUNUSED(event))
    memset(&info, 0, sizeof(SF_INFO));
 
    mEncoding = mEncodingSubtype[mEncodingChoice->GetSelection()];
-   mEncoding += (mEndianChoice->GetSelection() * 0x10000000);
+   mEncoding += ((unsigned)mEndianChoice->GetSelection() * 0x10000000);
 
-   info.format = mEncoding | SF_FORMAT_RAW;
+   info.format = (int)(mEncoding | SF_FORMAT_RAW);
    info.channels = mChannelChoice->GetSelection() + 1;
    info.samplerate = 44100;
 

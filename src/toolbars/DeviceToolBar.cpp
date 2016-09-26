@@ -224,7 +224,7 @@ void DeviceToolBar::UpdatePrefs()
 
 
    int hostSelectionIndex = mHost->GetSelection();
-   wxString oldHost = hostSelectionIndex >= 0 ? mHost->GetString(hostSelectionIndex) :
+   wxString oldHost = hostSelectionIndex >= 0 ? mHost->GetString((unsigned)hostSelectionIndex) :
                                                 wxT("");
    hostName = gPrefs->Read(wxT("/AudioIO/Host"), wxT(""));
 
@@ -595,7 +595,7 @@ int DeviceToolBar::ChangeHost()
    hostSelectionIndex = mHost->GetSelection();
 
    wxString oldHost = gPrefs->Read(wxT("/AudioIO/Host"), wxT(""));
-   wxString newHost = hostSelectionIndex >= 0 ? mHost->GetString(hostSelectionIndex) :
+   wxString newHost = hostSelectionIndex >= 0 ? mHost->GetString((unsigned)hostSelectionIndex) :
                                                 oldHost;
 
    if (oldHost == newHost)
@@ -621,15 +621,14 @@ void DeviceToolBar::FillInputChannels()
 
    gPrefs->Read(wxT("/AudioIO/RecordChannels"), &oldChannels);
    int index = -1;
-   size_t i, j;
    mInputChannels->Clear();
-   for (i = 0; i < inMaps.size(); i++) {
+   for (size_t i = 0; i < inMaps.size(); i++) {
       if (source == inMaps[i].sourceString &&
           device == inMaps[i].deviceString &&
           host   == inMaps[i].hostString) {
 
          // add one selection for each channel of this source
-         for (j = 0; j < (unsigned int) inMaps[i].numChannels; j++) {
+         for (int j = 0; j < inMaps[i].numChannels; j++) {
             wxString name;
 
             if (j == 0) {
@@ -650,7 +649,7 @@ void DeviceToolBar::FillInputChannels()
             mInputChannels->SetSelection(newChannels - 1);
          gPrefs->Write(wxT("/AudioIO/RecordChannels"), newChannels);
          mInputChannels->Enable(mInputChannels->GetCount() ? true : false);
-         index = i;
+         index = (int)i;
          break;
       }
    }
@@ -705,7 +704,7 @@ void DeviceToolBar::ChangeDevice(bool isInput)
          wxString name;
          name = MakeDeviceSourceString(&maps[i]);
          if (name == newDevice && maps[i].hostString == host) {
-            newIndex = i;
+            newIndex = (int)i;
          }
       }
    }
@@ -715,8 +714,8 @@ void DeviceToolBar::ChangeDevice(bool isInput)
       return;
    }
 
-   SetDevices(isInput ? &maps[newIndex] : NULL,
-              isInput ? NULL            : &maps[newIndex]);
+   SetDevices(isInput ? &maps[(unsigned)newIndex] : NULL,
+              isInput ? NULL            : &maps[(unsigned)newIndex]);
 }
 
 void DeviceToolBar::OnChoice(wxCommandEvent &event)

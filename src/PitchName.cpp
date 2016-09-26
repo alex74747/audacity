@@ -44,7 +44,7 @@ unsigned int PitchIndex(const double dMIDInote)
    if (nPitchIndex < 0)
       nPitchIndex += 12;
 
-   return nPitchIndex;
+   return (unsigned)nPitchIndex;
 }
 
 int PitchOctave(const double dMIDInote)

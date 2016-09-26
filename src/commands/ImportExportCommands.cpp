@@ -98,12 +98,12 @@ bool ExportCommand::Apply(CommandExecutionContext context)
       Error(wxT("Export filename must have an extension!"));
       return false;
    }
-   wxString extension = filename.Mid(splitAt+1).MakeUpper();
+   wxString extension = filename.Mid((size_t)splitAt + 1).MakeUpper();
 
    Exporter exporter;
 
    bool exportSuccess = exporter.Process(context.GetProject(),
-                                         std::max(0L, numChannels),
+                                         (size_t)std::max(0L, numChannels),
                                          extension.c_str(), filename,
                                          selection, t0, t1);
 

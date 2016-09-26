@@ -220,7 +220,6 @@ ImageArray ImageRoll::SplitV(const wxImage &src, wxColour magicColor)
 void ImageRoll::Init(RollType type, const wxImage &src, wxColour magicColor)
 {
    ImageArray images;
-   int i;
 
    mType = type;
 
@@ -233,7 +232,7 @@ void ImageRoll::Init(RollType type, const wxImage &src, wxColour magicColor)
       mMaxSize.x = 9999;
       mMaxSize.y = src.GetHeight();
 
-      for(i=0; i<(int)images.GetCount(); i++) {
+      for(size_t i = 0; i < images.GetCount(); i++) {
          if (images[i].Ok()) {
             mPieces.Add(wxBitmap(images[i]));
             mMinSize.x += mPieces[i].GetWidth();
@@ -251,7 +250,7 @@ void ImageRoll::Init(RollType type, const wxImage &src, wxColour magicColor)
       mMaxSize.x = src.GetWidth();
       mMaxSize.y = 9999;
 
-      for(i=0; i<(int)images.GetCount(); i++) {
+      for(size_t i = 0; i < images.GetCount(); i++) {
          if (images[i].Ok()) {
             mPieces.Add(wxBitmap(images[i]));
             mMinSize.y += mPieces[i].GetHeight();
@@ -317,25 +316,24 @@ void ImageRoll::Draw(wxDC &dc, wxRect rect, wxRasterOperationMode WXUNUSED(logic
 {
    int width = rect.width;
    int height = rect.height;
-   int num = (int)mPieces.GetCount();
-   int i, j;
+   auto num = mPieces.GetCount();
 
    switch(mType) {
    case HorizontalRoll: {
       // The pieces alternate fixed, rolling, fixed, rolling...
 
       int fixedWidth = 0;
-      for(i=0; i<num; i+=2)
+      for(size_t i = 0; i < num; i += 2)
          fixedWidth += (mPieces[i].Ok() ? mPieces[i].GetWidth() : 0);
 
       int rollingSpace = width - fixedWidth;
       int numRolling = num / 2;
       int x = 0;
 
-      for(i=0; i<num; i++) {
+      for(size_t i = 0; i < num; i++) {
          int w = (mPieces[i].Ok() ? mPieces[i].GetWidth() : 0);
 
-         if (i%2==0) {
+         if (i % 2 == 0) {
             // fixed
 
             if (mPieces[i].Ok())
@@ -346,10 +344,10 @@ void ImageRoll::Draw(wxDC &dc, wxRect rect, wxRasterOperationMode WXUNUSED(logic
             // rolling
 
             int space =
-               ((1+(i/2))*rollingSpace / numRolling) -
-               ((i/2)*rollingSpace / numRolling);
+               ((1 + ((int)i / 2)) * rollingSpace / numRolling) -
+               (((int)i / 2) * rollingSpace / numRolling);
 
-            j = 0;
+            int j = 0;
             while(j < space) {
                if (mPieces[i].Ok())
                   DrawBitmap(dc, mPieces[i], rect.x + x + j, rect.y);
@@ -365,17 +363,17 @@ void ImageRoll::Draw(wxDC &dc, wxRect rect, wxRasterOperationMode WXUNUSED(logic
       // The pieces alternate fixed, rolling, fixed, rolling...
 
       int fixedHeight = 0;
-      for(i=0; i<num; i+=2)
+      for(size_t i = 0; i < num; i += 2)
          fixedHeight += (mPieces[i].Ok() ? mPieces[i].GetHeight() : 0);
 
       int rollingSpace = height - fixedHeight;
       int numRolling = num / 2;
       int y = 0;
 
-      for(i=0; i<num; i++) {
+      for(size_t i = 0; i < num; i++) {
          int h = (mPieces[i].Ok() ? mPieces[i].GetHeight() : 0);
 
-         if (i%2==0) {
+         if (i % 2 == 0) {
             // fixed
 
             if (mPieces[i].Ok())
@@ -386,10 +384,10 @@ void ImageRoll::Draw(wxDC &dc, wxRect rect, wxRasterOperationMode WXUNUSED(logic
             // rolling
 
             int space =
-               ((1+(i/2))*rollingSpace / numRolling) -
-               ((i/2)*rollingSpace / numRolling);
+               ((1 + ((int)i / 2)) * rollingSpace / numRolling) -
+               (((int)i / 2) * rollingSpace / numRolling);
 
-            j = 0;
+            int j = 0;
             while(j < space) {
                if (mPieces[i].Ok())
                   DrawBitmap(dc, mPieces[i], rect.x, rect.y + y + j);

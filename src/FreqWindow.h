@@ -67,7 +67,7 @@ public:
       FreqGauge *progress = NULL);
 
    const float *GetProcessed() const;
-   int GetProcessedSize() const;
+   size_t GetProcessedSize() const;
 
    float GetProcessedValue(float freq0, float freq1) const;
    float FindPeak(float xPos, float *pY) const;
@@ -88,19 +88,19 @@ class FreqGauge final : public wxStatusBar
 public:
    FreqGauge(wxWindow * parent);
 
-   void SetRange(int range, int bar = 12, int gap = 3);
-   void SetValue(int value);
+   void SetRange(size_t range, size_t bar = 12, size_t gap = 3);
+   void SetValue(size_t value);
    void Reset();
 
 private:
    wxRect mRect;
-   int mRange;
+   size_t mRange;
    int mCur;
    int mLast;
-   int mInterval;
-   int mBar;
-   int mGap;
-   int mMargin;
+   size_t mInterval;
+   size_t mBar;
+   size_t mGap;
+   size_t mMargin;
 };
 
 class FreqPlot final : public wxWindow

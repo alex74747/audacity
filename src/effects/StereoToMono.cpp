@@ -86,7 +86,7 @@ bool EffectStereoToMono::Process()
       mOutTrack = p->GetTrackFactory()->NewWaveTrack(floatSample, mLeftTrack->GetRate());
    }
 
-   int count = 0;
+   unsigned count = 0;
    while (mLeftTrack) {
       if (mLeftTrack->GetKind() == Track::Wave &&
          mLeftTrack->GetSelected() &&
@@ -130,7 +130,7 @@ bool EffectStereoToMono::Process()
    return bGoodResult;
 }
 
-bool EffectStereoToMono::ProcessOne(int count)
+bool EffectStereoToMono::ProcessOne(unsigned count)
 {
    float  curLeftFrame;
    float  curRightFrame;

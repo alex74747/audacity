@@ -169,7 +169,7 @@ public:
 
 private:
    ImportFileHandle *mFile;
-   wxInt32 scount;
+   unsigned scount;
    wxListBox *StreamList;
 
 private:

@@ -265,7 +265,7 @@ private:
    bool ProcessOne(EffectNoiseReduction &effect,
                    Statistics &statistics,
                    TrackFactory &factory,
-                   int count, WaveTrack *track,
+                   size_t count, WaveTrack *track,
                    sampleCount start, sampleCount len);
 
    void StartNewTrack();
@@ -647,7 +647,7 @@ bool EffectNoiseReduction::Worker::Process
 (EffectNoiseReduction &effect, Statistics &statistics, TrackFactory &factory,
  SelectedTrackListOfKindIterator &iter, double mT0, double mT1)
 {
-   int count = 0;
+   size_t count = 0;
    WaveTrack *track = (WaveTrack *) iter.First();
    while (track) {
       if (track->GetRate() != mSampleRate) {
@@ -958,7 +958,7 @@ void EffectNoiseReduction::Worker::FillFirstHistoryWindow()
       float *pReal = &record.mRealFFTs[1];
       float *pImag = &record.mImagFFTs[1];
       float *pPower = &record.mSpectrums[1];
-      int *pBitReversed = &hFFT->BitReversed[1];
+      auto pBitReversed = &hFFT->BitReversed[1];
       const auto last = mSpectrumSize - 1;
       for (size_t ii = 1; ii < last; ++ii) {
          const size_t kk = (size_t)(*pBitReversed++);
@@ -1252,7 +1252,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
       if (mOutWindow.size() > 0) {
          float *pOut = &mOutOverlapBuffer[0];
          float *pWindow = &mOutWindow[0];
-         int *pBitReversed = &hFFT->BitReversed[0];
+         auto pBitReversed = &hFFT->BitReversed[0];
          for (size_t jj = 0; jj < last; ++jj) {
             size_t kk = (size_t)(*pBitReversed++);
             *pOut++ += mFFTBuffer[kk] * (*pWindow++);
@@ -1261,7 +1261,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
       }
       else {
          float *pOut = &mOutOverlapBuffer[0];
-         int *pBitReversed = &hFFT->BitReversed[0];
+         auto pBitReversed = &hFFT->BitReversed[0];
          for (size_t jj = 0; jj < last; ++jj) {
             size_t kk = (size_t)(*pBitReversed++);
             *pOut++ += mFFTBuffer[kk];
@@ -1283,7 +1283,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
 
 bool EffectNoiseReduction::Worker::ProcessOne
 (EffectNoiseReduction &effect,  Statistics &statistics, TrackFactory &factory,
- int count, WaveTrack * track, sampleCount start, sampleCount len)
+ size_t count, WaveTrack * track, sampleCount start, sampleCount len)
 {
    if (track == NULL)
       return false;

@@ -118,7 +118,7 @@ public:
 
    void SetBrushColour( wxBrush & Brush, int iIndex );
    void SetPenColour(   wxPen & Pen, int iIndex );
-   void SetFlags( int flags ){ mFlow.mFlags = flags;};
+   void SetFlags( int flags ) { mFlow.mFlags = flags; }
 
    // Utility function that combines a bitmap and a mask, both in XPM format.
    wxImage MaskedImage( char const ** pXpm, char const ** pMask );

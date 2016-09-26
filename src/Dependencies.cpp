@@ -67,8 +67,7 @@ static void GetAllSeqBlocks(AudacityProject *project,
          for(const auto &clip : waveTrack->GetAllClips()) {
             Sequence *sequence = clip->GetSequence();
             BlockArray &blocks = sequence->GetBlockArray();
-            int i;
-            for (i = 0; i < (int)blocks.size(); i++)
+            for (size_t i = 0; i < blocks.size(); i++)
                outBlocks->push_back(&blocks[i]);
          }
       }
@@ -88,8 +87,7 @@ static void ReplaceBlockFiles(AudacityProject *project,
    BlockPtrArray blocks;
    GetAllSeqBlocks(project, &blocks);
 
-   int i;
-   for (i = 0; i < (int)blocks.size(); i++) {
+   for (size_t i = 0; i < blocks.size(); i++) {
       auto &f = blocks[i]->f;
       const auto src = &*f;
       if (hash.count( src ) > 0) {

@@ -349,7 +349,7 @@ ToolManager::ToolManager( AudacityProject *parent, wxWindow *topDockParent )
    pt[ 2 ].y = 0;
 
    // Create the shaped region
-   mDown = std::make_unique<wxRegion>( 3, &pt[0] );
+   mDown = std::make_unique<wxRegion>( 3u, &pt[0] );
 
    // Create the down arrow
    pt[ 0 ].x = 9;
@@ -360,7 +360,7 @@ ToolManager::ToolManager( AudacityProject *parent, wxWindow *topDockParent )
    pt[ 2 ].y = 18;
 
    // Create the shaped region
-   mLeft = std::make_unique<wxRegion>( 3, &pt[0] );
+   mLeft = std::make_unique<wxRegion>( 3u, &pt[0] );
 
    // Create the indicator frame
    // parent is null but FramePtr ensures destruction
@@ -812,7 +812,7 @@ void ToolManager::ReadConfig()
 
       // Add all unordered toolbars
       bool deviceWasPositioned = false;
-      for( int ord = 0; ord < (int) unordered[ dock ].GetCount(); ord++ )
+      for( size_t ord = 0; ord < unordered[ dock ].GetCount(); ord++ )
       {
          ToolBar *t = mBars[ unordered[ dock ][ ord ] ].get();
 

@@ -815,7 +815,7 @@ void GetNextWindowPlacement(wxRect *nextRect, bool *pMaximized, bool *pIconized)
    // top left corner of nextRect (and defaulting to rect of screen 0 otherwise).
    wxPoint p = nextRect->GetLeftTop();
    int scr = std::max( 0, wxDisplay::GetFromPoint( p ));
-   wxDisplay d( scr );
+   wxDisplay d( (unsigned)scr );
    screenRect = d.GetClientArea();
 
    // Now we (possibly) start trimming our rectangle down.
@@ -2752,12 +2752,12 @@ wxArrayString AudacityProject::ShowOpenDialog(const wxString &extraformat, const
    wxString type = gPrefs->Read(wxT("/DefaultOpenType"),mask.BeforeFirst(wxT('|')));
 
    // Convert the type to the filter index
-   int index = mask.First(type + wxT("|"));
-   if (index == wxNOT_FOUND) {
+   auto index = mask.First(type + wxT("|"));
+   if (index < 0) {
       index = 0;
    }
    else {
-      index = mask.Left(index).Freq(wxT('|')) / 2;
+      index = mask.Left((size_t)index).Freq(wxT('|')) / 2;
       if (index < 0) {
          index = 0;
       }
@@ -2945,7 +2945,7 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
             _("Error opening file"),
             wxOK | wxCENTRE, this);
       }
-      int numRead = ff.Read(buf, 15);
+      auto numRead = ff.Read(buf, 15);
       if (numRead != 15) {
          wxMessageBox(wxString::Format(_("File may be invalid or corrupted: \n%s"),
             (const wxChar*)fileName), _("Error Opening File or Project"),
@@ -3605,7 +3605,7 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile)
       else if (t->GetKind() == Track::Wave)
       {
          pWaveTrack = (WaveTrack*)t;
-         pWaveTrack->SetAutoSaveIdent(mAutoSaving ? ++ndx : 0);
+         pWaveTrack->SetAutoSaveIdent(mAutoSaving ? (int) ++ndx : 0);
          t->WriteXML(xmlFile);
       }
       else
@@ -4745,7 +4745,7 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
    else if(ODManager::IsInstanceCreated())
    {
       //if we have some tasks running, we should say something about it.
-      int numTasks = ODManager::Instance()->GetTotalNumTasks();
+      auto numTasks = ODManager::Instance()->GetTotalNumTasks();
       if(numTasks)
       {
          wxString msg;
@@ -4763,12 +4763,12 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
             mStatusBar->SetStatusText(msg, mainStatusBarField);
 
          }
-         else if(numTasks>1)
+         else if(numTasks  >1)
             msg.Printf(_("Import(s) complete. Running %d on-demand waveform calculations. Overall %2.0f%% complete."),
-              numTasks,ratioComplete*100.0);
+              numTasks, ratioComplete * 100.0);
          else
             msg.Printf(_("Import complete. Running an on-demand waveform calculation. %2.0f%% complete."),
-             ratioComplete*100.0);
+             ratioComplete * 100.0);
 
 
          mStatusBar->SetStatusText(msg, mainStatusBarField);
@@ -4789,7 +4789,7 @@ void AudacityProject::GetRegionsByLabel( Regions &regions )
       if( n->GetKind() == Track::Label && n->GetSelected() )
       {
          LabelTrack *lt = ( LabelTrack* )n;
-         for( int i = 0; i < lt->GetNumLabels(); i++ )
+         for( size_t i = 0; i < lt->GetNumLabels(); i++ )
          {
             const LabelStruct *ls = lt->GetLabel( i );
             if( ls->selectedRegion.t0() >= mViewInfo.selectedRegion.t0() &&
@@ -4813,7 +4813,7 @@ void AudacityProject::GetRegionsByLabel( Regions &regions )
       {
          if( cur.end > last.end )
             last.end = cur.end;
-         regions.erase( regions.begin() + selected );
+         regions.erase( regions.begin() + (int)selected );
       }
       else
          selected++;
@@ -4858,7 +4858,7 @@ void AudacityProject::EditByLabel( EditFunction action,
             (allTracks || n->GetSelected() || (bSyncLockedTracks && n->IsSyncLockSelected())))
       {
          WaveTrack *wt = ( WaveTrack* )n;
-         for (int i = (int)regions.size() - 1; i >= 0; i--) {
+         for (auto i = regions.size(); i-- > 0;) {
             const Region &region = regions.at(i);
             (wt->*action)(region.start, region.end);
          }
@@ -4905,7 +4905,7 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
          WaveTrack *wt = ( WaveTrack* )n;
          // This track accumulates the needed clips, right to left:
          Track::Holder merged;
-         for( int i = (int)regions.size() - 1; i >= 0; i-- )
+         for( auto i = regions.size(); i-- > 0; )
          {
             const Region &region = regions.at(i);
             auto dest = ( wt->*action )( region.start, region.end );
@@ -4918,7 +4918,7 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
                {
                   // Paste to the beginning; unless this is the first region,
                   // offset the track to account for time between the regions
-                  if (i < (int)regions.size() - 1)
+                  if (i < regions.size() - 1)
                      merged->Offset(
                         regions.at(i + 1).start - region.end);
 
@@ -4933,7 +4933,7 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
                }
             }
             else  // nothing copied but there is a 'region', so the 'region' must be a 'point label' so offset
-               if (i < (int)regions.size() - 1)
+               if (i < regions.size() - 1)
                   if (merged)
                      merged->Offset(
                         regions.at(i + 1).start - region.end);
@@ -5532,7 +5532,7 @@ void AudacityProject::ReleaseKeyboard(wxWindow * /* handler */)
    return;
 }
 
-bool AudacityProject::ExportFromTimerRecording(wxFileName fnFile, int iFormat, int iSubFormat, int iFilterIndex)
+bool AudacityProject::ExportFromTimerRecording(wxFileName fnFile, unsigned iFormat, unsigned iSubFormat, unsigned iFilterIndex)
 {
    Exporter e;
 
@@ -5540,7 +5540,7 @@ bool AudacityProject::ExportFromTimerRecording(wxFileName fnFile, int iFormat, i
    return e.ProcessFromTimerRecording(this, false, 0.0, mTracks->GetEndTime(), fnFile, iFormat, iSubFormat, iFilterIndex);
 }
 
-int AudacityProject::GetOpenProjectCount() {
+unsigned AudacityProject::GetOpenProjectCount() {
    return gAudacityProjects.size();
 }
 

@@ -53,7 +53,7 @@ public:
    void DrawText( wxDC & dc, const wxRect & r) const;
    void DrawTextBox( wxDC & dc, const wxRect & r) const;
    void DrawHighlight( wxDC & dc, wxInt64 xPos1, wxInt64 xPos2, int charHeight) const;
-   void getXPos( wxDC & dc, wxInt64 * xPos1, int cursorPos) const;
+   void getXPos( wxDC & dc, wxInt64 * xPos1, size_t cursorPos) const;
    const SelectedRegion &getSelectedRegion() const { return selectedRegion; }
    double getDuration() const { return selectedRegion.duration(); }
    double getT0() const { return selectedRegion.t0(); }
@@ -191,17 +191,17 @@ class AUDACITY_DLL_API LabelTrack final : public Track
 
    bool IsSelected() const;
 
-   int GetNumLabels() const;
-   const LabelStruct *GetLabel(int index) const;
+   size_t GetNumLabels() const;
+   const LabelStruct *GetLabel(size_t index) const;
 
    //This returns the index of the label we just added.
-   int AddLabel(const SelectedRegion &region, const wxString &title = wxT(""),
+   size_t AddLabel(const SelectedRegion &region, const wxString &title = wxT(""),
       int restoreFocus = -1);
    //And this tells us the index, if there is a label already there.
    int GetLabelIndex(double t, double t1);
 
    //This deletes the label at given index.
-   void DeleteLabel(int index);
+   void DeleteLabel(size_t index);
 
    //get current cursor position,
    // relative to the left edge of the track panel
@@ -255,8 +255,8 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    static wxBitmap mBoundaryGlyphs[NUM_GLYPH_CONFIGS * NUM_GLYPH_HIGHLIGHTS];
 
    static int mFontHeight;
-   int mCurrentCursorPos;                      /// current cursor position
-   int mInitialCursorPos;                      /// initial cursor position
+   size_t mCurrentCursorPos;                      /// current cursor position
+   size_t mInitialCursorPos;                      /// initial cursor position
 
    bool mRightDragging;                        /// flag to tell if it's a valid dragging
    bool mDrawCursor;                           /// flag to tell if drawing the
@@ -270,13 +270,12 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    int miLastLabel;                 // used by FindNextLabel and FindPrevLabel
 
    void ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) const;
-   void ComputeTextPosition(const wxRect & r, int index) const;
-
-public:
-   int FindCurrentCursorPosition(int xPos);
-   void SetCurrentCursorPosition(int xPos);
+   void ComputeTextPosition(const wxRect & r, size_t index) const;
 
 private:
+   size_t FindCurrentCursorPosition(int xPos);
+   void SetCurrentCursorPosition(int xPos);
+
    void calculateFontHeight(wxDC & dc) const;
    void RemoveSelectedText();
 

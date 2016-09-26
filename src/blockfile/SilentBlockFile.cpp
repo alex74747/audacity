@@ -68,7 +68,7 @@ BlockFilePtr SilentBlockFile::BuildFromXML(DirManager & WXUNUSED(dm), const wxCh
             XMLValueChecker::IsGoodInt(strValue) &&
             strValue.ToLong(&nValue) &&
             nValue > 0)
-         len = nValue;
+         len = (size_t)nValue;
    }
 
    return make_blockfile<SilentBlockFile>(len);

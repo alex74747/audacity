@@ -81,27 +81,27 @@ BatchCommands::BatchCommands()
    }
 }
 
-wxString BatchCommands::GetCommand(int index)
+wxString BatchCommands::GetCommand(size_t index)
 {
-   if (index < 0 || index >= (int)mCommandChain.GetCount()) {
+   if (index >= mCommandChain.GetCount()) {
       return wxT("");
    }
 
    return mCommandChain[index];
 }
 
-wxString BatchCommands::GetParams(int index)
+wxString BatchCommands::GetParams(size_t index)
 {
-   if (index < 0 || index >= (int)mParamsChain.GetCount()) {
+   if (index >= mParamsChain.GetCount()) {
       return wxT("");
    }
 
    return mParamsChain[index];
 }
 
-int BatchCommands::GetCount()
+size_t BatchCommands::GetCount()
 {
-   return (int)mCommandChain.GetCount();
+   return mCommandChain.GetCount();
 }
 
 bool BatchCommands::ReadChain(const wxString & chain)
@@ -123,9 +123,9 @@ bool BatchCommands::ReadChain(const wxString & chain)
    }
 
    // Load commands from the file
-   int lines = tf.GetLineCount();
+   auto lines = tf.GetLineCount();
    if (lines > 0) {
-      for (int i = 0; i < lines; i++) {
+      for (size_t i = 0; i < lines; i++) {
 
          // Find the command name terminator...ingore line if not found
          int splitAt = tf[i].Find(wxT(':'));
@@ -134,8 +134,8 @@ bool BatchCommands::ReadChain(const wxString & chain)
          }
 
          // Parse and clean
-         wxString cmd = tf[i].Left(splitAt).Strip(wxString::both);
-         wxString parm = tf[i].Mid(splitAt + 1).Strip(wxString::trailing);
+         wxString cmd = tf[i].Left((size_t)splitAt).Strip(wxString::both);
+         wxString parm = tf[i].Mid((size_t)splitAt + 1).Strip(wxString::trailing);
 
          // Backward compatibility for old Chain scripts
          // Please comment the version of audacity these are introduced in, so
@@ -192,8 +192,8 @@ bool BatchCommands::WriteChain(const wxString & chain)
    tf.Clear();
 
    // Copy over the commands
-   int lines = mCommandChain.GetCount();
-   for (int i = 0; i < lines; i++) {
+   auto lines = mCommandChain.GetCount();
+   for (size_t i = 0; i < lines; i++) {
       // restore deprecated commands in chain script
       if (mCommandChain[i] == wxT("ExportMP3_56k_before"))
          mCommandChain[i] = wxT("SaveMP3_56k_before");
@@ -503,7 +503,7 @@ bool BatchCommands::WriteMp3File( const wxString & Name, int bitrate )
 // and think again.
 // ======= IMPORTANT ========
 // CLEANSPEECH remnant
-bool BatchCommands::ApplySpecialCommand(int WXUNUSED(iCommand), const wxString & command,const wxString & params)
+bool BatchCommands::ApplySpecialCommand(size_t WXUNUSED(iCommand), const wxString & command,const wxString & params)
 {
    if (ReportAndSkip(command, params))
       return true;
@@ -620,11 +620,9 @@ bool BatchCommands::ApplyEffectCommand(const PluginID & ID, const wxString & com
 
 bool BatchCommands::ApplyCommand(const wxString & command, const wxString & params)
 {
-
-   unsigned int i;
    // Test for a special command.
    // CLEANSPEECH remnant
-   for(i=0;i<sizeof(SpecialCommands)/sizeof(SpecialCommands[0]);i++)
+   for(size_t i = 0 ; i < sizeof(SpecialCommands) / sizeof(SpecialCommands[0]); i++)
    {
       if( command == SpecialCommands[i] )
          return ApplySpecialCommand( i, command, params );
@@ -716,24 +714,25 @@ void BatchCommands::AbortBatch()
    mAbort = true;
 }
 
-void BatchCommands::AddToChain(const wxString &command, int before)
+void BatchCommands::AddToChain(const wxString &command)
+{
+   AddToChain(command, GetCurrentParamsFor(command), mCommandChain.GetCount());
+}
+
+void BatchCommands::AddToChain(const wxString &command, size_t before)
 {
    AddToChain(command, GetCurrentParamsFor(command), before);
 }
 
-void BatchCommands::AddToChain(const wxString &command, const wxString &params, int before)
+void BatchCommands::AddToChain(const wxString &command, const wxString &params, size_t before)
 {
-   if (before == -1) {
-      before = (int)mCommandChain.GetCount();
-   }
-
    mCommandChain.Insert(command, before);
    mParamsChain.Insert(params, before);
 }
 
-void BatchCommands::DeleteFromChain(int index)
+void BatchCommands::DeleteFromChain(size_t index)
 {
-   if (index < 0 || index >= (int)mCommandChain.GetCount()) {
+   if (index >= mCommandChain.GetCount()) {
       return;
    }
 
@@ -818,8 +817,8 @@ void BatchCommands::Split(const wxString & str, wxString & command, wxString & p
       return;
    }
 
-   command = str.Mid(0, splitAt);
-   param = str.Mid(splitAt + 1);
+   command = str.Mid(0, (size_t)splitAt);
+   param = str.Mid((size_t)splitAt + 1);
 
    return;
 }

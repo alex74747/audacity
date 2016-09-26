@@ -136,7 +136,7 @@ public:
    ProgressResult Import(TrackFactory *trackFactory, TrackHolders &outTracks,
               Tags *tags) override;
 
-   wxInt32 GetStreamCount() override { return 1; }
+   unsigned GetStreamCount() override { return 1; }
 
    const wxArrayString &GetStreamInfo() override
    {
@@ -144,8 +144,7 @@ public:
       return empty;
    }
 
-   void SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUSED(Use)) override
-   {}
+   void SetStreamUsage(unsigned WXUNUSED(StreamID), bool WXUNUSED(Use)) override {}
 
 private:
    void ImportID3(Tags *tags);
@@ -436,7 +435,7 @@ enum mad_flow input_cb(void *_data, struct mad_stream *stream)
     *  mad_stream_buffer()"
     *           -- Rob Leslie, on the mad-dev mailing list */
 
-   int unconsumedBytes;
+   unsigned int unconsumedBytes;
    if(stream->next_frame ) {
       /* we must use inputBufferFill instead of INPUT_BUFFER_SIZE here
          because the final buffer of the file may be only partially
@@ -482,10 +481,9 @@ enum mad_flow output_cb(void *_data,
                         struct mad_header const * WXUNUSED(header),
                         struct mad_pcm *pcm)
 {
-   int samplerate;
    struct private_data *data = (struct private_data *)_data;
 
-   samplerate= pcm->samplerate;
+   auto samplerate = pcm->samplerate;
    auto channels  = pcm->channels;
    const auto samples   = pcm->length;
 

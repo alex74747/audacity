@@ -34,7 +34,7 @@ Resample::Resample(const bool useBestMethod, const double dMinFactor, const doub
    if (dMinFactor == dMaxFactor)
    {
       mbWantConstRateResampling = true; // constant rate resampling
-      q_spec = soxr_quality_spec("\0\1\4\6"[mMethod], 0);
+      q_spec = soxr_quality_spec((unsigned long)"\0\1\4\6"[mMethod], 0);
    }
    else
    {
@@ -103,8 +103,10 @@ std::pair<size_t, size_t>
 
 void Resample::SetMethod(const bool useBestMethod)
 {
+   int method;
    if (useBestMethod)
-      mMethod = gPrefs->Read(GetBestMethodKey(), GetBestMethodDefault());
+      method = gPrefs->Read(GetBestMethodKey(), GetBestMethodDefault());
    else
-      mMethod = gPrefs->Read(GetFastMethodKey(), GetFastMethodDefault());
+      method = gPrefs->Read(GetFastMethodKey(), GetFastMethodDefault());
+   mMethod = (unsigned)std::max(0, std::min(GetNumMethods(), method));
 }

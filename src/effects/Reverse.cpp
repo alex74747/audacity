@@ -70,7 +70,7 @@ bool EffectReverse::Process()
 
    TrackListIterator iter(mOutputTracks.get());
    Track *t = iter.First();
-   int count = 0;
+   unsigned count = 0;
    while (t) {
       if (t->GetKind() == Track::Wave &&
             (t->GetSelected() || t->IsSyncLockSelected()))
@@ -103,7 +103,7 @@ bool EffectReverse::Process()
    return bGoodResult;
 }
 
-bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount start, sampleCount len)
+bool EffectReverse::ProcessOneWave(unsigned count, WaveTrack * track, sampleCount start, sampleCount len)
 {
    bool rValue = true; // return value
 
@@ -212,7 +212,7 @@ bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount sta
    return rValue;
 }
 
-bool EffectReverse::ProcessOneClip(int count, WaveTrack *track,
+bool EffectReverse::ProcessOneClip(unsigned count, WaveTrack *track,
                                sampleCount start, sampleCount len,
                                sampleCount originalStart, sampleCount originalEnd)
 {

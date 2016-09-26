@@ -551,7 +551,7 @@ bool EffectDtmf::MakeDtmfTone(float *buffer, size_t len, float fs, wxChar tone, 
       // small selection is made
       if (offset >= 0) {
          for(size_t i = 0; i < A; i++) {
-            buffer[i + offset] *= (1 - (i / A));
+            buffer[i + (unsigned long)offset] *= (1 - (i / A));
          }
       }
    }

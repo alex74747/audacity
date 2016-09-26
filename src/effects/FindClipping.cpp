@@ -111,7 +111,7 @@ bool EffectFindClipping::Process()
    else
       modifiedTrack.create(ModifyAnalysisTrack(lt, name)), lt = modifiedTrack->get();
 
-   int count = 0;
+   unsigned count = 0;
 
    // JC: Only process selected tracks.
    SelectedTrackListOfKindIterator waves(Track::Wave, inputTracks());
@@ -145,7 +145,7 @@ bool EffectFindClipping::Process()
 }
 
 bool EffectFindClipping::ProcessOne(LabelTrack * lt,
-                                    int count,
+                                    unsigned count,
                                     const WaveTrack * wt,
                                     sampleCount start,
                                     sampleCount len)

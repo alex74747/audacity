@@ -164,7 +164,7 @@ bool EffectClickRemoval::Process()
 
    SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
    WaveTrack *track = (WaveTrack *) iter.First();
-   int count = 0;
+   unsigned count = 0;
    while (track) {
       double trackStart = track->GetStartTime();
       double trackEnd = track->GetEndTime();
@@ -196,7 +196,7 @@ bool EffectClickRemoval::Process()
    return bGoodResult && mbDidSomething;
 }
 
-bool EffectClickRemoval::ProcessOne(int count, WaveTrack * track, sampleCount start, sampleCount len)
+bool EffectClickRemoval::ProcessOne(unsigned count, WaveTrack * track, sampleCount start, sampleCount len)
 {
    if (len <= windowSize / 2)
    {

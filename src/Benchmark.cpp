@@ -308,27 +308,31 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
    // This code will become part of libaudacity,
    // and this class will be phased out.
-   long blockSize, numEdits, dataSize, randSeed;
+   long bs, numEdits, ds, randSeed;
 
-   mBlockSizeStr.ToLong(&blockSize);
+   mBlockSizeStr.ToLong(&bs);
    mNumEditsStr.ToLong(&numEdits);
-   mDataSizeStr.ToLong(&dataSize);
+   mDataSizeStr.ToLong(&ds);
    mRandSeedStr.ToLong(&randSeed);
 
-   if (blockSize < 1 || blockSize > 1024) {
+   if (bs < 1 || bs > 1024) {
       wxMessageBox(wxT("Block size should be in the range 1 - 1024 KB."));
       return;
    }
+
+   auto blockSize = (size_t)bs;
 
    if (numEdits < 1 || numEdits > 10000) {
       wxMessageBox(wxT("Number of edits should be in the range 1 - 10000."));
       return;
    }
 
-   if (dataSize < 1 || dataSize > 2000) {
+   if (ds < 1 || ds > 2000) {
       wxMessageBox(wxT("Test data size should be in the range 1 - 2000 MB."));
       return;
    }
+
+   auto dataSize = (size_t)ds;
 
    bool editClipCanMove = true;
    gPrefs->Read(wxT("/GUI/EditClipCanMove"), &editClipCanMove);
@@ -352,7 +356,7 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
    t->SetRate(1);
 
-   srand(randSeed);
+   srand((unsigned)randSeed);
 
    size_t nChunks, chunkSize;
    //chunkSize = 7500 + (rand() % 1000);
@@ -369,7 +373,7 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
    // do some testing of when edit chunks cross blockfile boundaries.
    Printf(wxT("Using %d chunks of %d samples each, for a total of ")
           wxT("%.1f MB.\n"),
-          nChunks, chunkSize, nChunks*chunkSize*sizeof(short)/1048576.0);
+          nChunks, chunkSize, nChunks * chunkSize * sizeof(short) / 1048576.0);
 
    int trials = numEdits;
 
@@ -527,7 +531,7 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
    Printf(wxT("At 44100 Hz, 16-bits per sample, the estimated number of\n")
           wxT("simultaneous tracks that could be played at once: %.1f\n"),
-          (nChunks*chunkSize/44100.0)/(elapsed/1000.0));
+          (nChunks * chunkSize / 44100.0) / (elapsed / 1000.0));
 
    goto success;
 

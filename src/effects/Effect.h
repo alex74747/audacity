@@ -135,7 +135,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    bool SaveUserPreset(const wxString & name) override;
 
    wxArrayString GetFactoryPresets() override;
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
    bool LoadFactoryDefaults() override;
 
    // EffectUIClientInterface implementation
@@ -285,7 +285,7 @@ protected:
    virtual bool ProcessPass();
    virtual bool InitPass1();
    virtual bool InitPass2();
-   virtual int GetPass();
+   virtual unsigned GetPass();
 
    // clean up any temporary memory
    virtual void End();
@@ -316,13 +316,13 @@ protected:
 
    // Pass a fraction between 0.0 and 1.0, for the current track
    // (when doing one track at a time)
-   bool TrackProgress(int whichTrack, double frac, const wxString & = wxEmptyString);
+   bool TrackProgress(unsigned whichTrack, double frac, const wxString & = wxEmptyString);
 
    // Pass a fraction between 0.0 and 1.0, for the current track group
    // (when doing stereo groups at a time)
-   bool TrackGroupProgress(int whichGroup, double frac, const wxString & = wxEmptyString);
+   bool TrackGroupProgress(unsigned whichGroup, double frac, const wxString & = wxEmptyString);
 
-   int GetNumWaveTracks() { return mNumTracks; }
+   unsigned GetNumWaveTracks() { return mNumTracks; }
 
    int GetNumWaveGroups() { return mNumGroups; }
 
@@ -445,7 +445,7 @@ protected:
 #endif
    wxArrayString  mPresetNames;
    wxArrayString  mPresetValues;
-   int            mPass;
+   unsigned       mPass;
 
    // UI
    wxDialog       *mUIDialog;
@@ -464,7 +464,7 @@ protected:
    void CountWaveTracks();
 
    // Driver for client effects
-   bool ProcessTrack(int count,
+   bool ProcessTrack(unsigned count,
                      ChannelNames map,
                      WaveTrack *left,
                      WaveTrack *right,
@@ -497,7 +497,7 @@ private:
    std::vector<Track*> mIMap;
    std::vector<Track*> mOMap;
 
-   int mNumTracks; //v This is really mNumWaveTracks, per CountWaveTracks() and GetNumWaveTracks().
+   unsigned mNumTracks; //v This is really mNumWaveTracks, per CountWaveTracks() and GetNumWaveTracks().
    int mNumGroups;
 
    // For client driver

@@ -93,7 +93,7 @@ void ClearSamples(samplePtr src, sampleFormat format,
 }
 
 void ReverseSamples(samplePtr src, sampleFormat format,
-                  int start, int len)
+                  size_t start, size_t len)
 {
    size_t size = SAMPLE_SIZE(format);
    samplePtr first = src + start * size;

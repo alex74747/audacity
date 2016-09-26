@@ -17,7 +17,7 @@
 class Enums {
 public:
    static const wxString * GetDbChoices();
-   static const int    NumDbChoices;
+   static const unsigned NumDbChoices;
    static const double Db2Signal[];
    static const wxString DbChoices[];
 };

@@ -77,18 +77,18 @@ static wxString LinkExpand( const wxString & Text )
 {
    wxString Temp = Text;
    int i,j,k;
-   while( (i=Temp.First( wxT("[[") ))!= wxNOT_FOUND )
+   while( (i = Temp.First( wxT("[[") )) >= 0 )
    {
-      wxString Key = Temp.Mid(i+2);
+      wxString Key = Temp.Mid((unsigned)i + 2);
       j = Key.First( wxT("|") );
-      if( j==wxNOT_FOUND )
+      if( j < 0 )
          return Temp;
-      wxString LinkText = Key.Mid( j+1);
+      wxString LinkText = Key.Mid((unsigned)j + 1);
       k = LinkText.First( wxT("]]") );
-      if( k==wxNOT_FOUND )
+      if( k < 0 )
          return Temp;
-      Key = Key.Mid( 0, j );
-      LinkText = LinkText.Mid( 0, k );
+      Key = Key.Mid( 0, (unsigned)j );
+      LinkText = LinkText.Mid( 0, (unsigned)k );
 
       wxString Replacement;
       if( Key.StartsWith( wxT("wiki:") ))
@@ -116,7 +116,8 @@ static wxString LinkExpand( const wxString & Text )
          Replacement = Link( Key, LinkText );
       }
 
-      Temp = Temp.Mid( 0, i ) + Replacement + Temp.Mid( i + j + k + 5 );// 5 for the [[|]]
+      Temp = Temp.Mid( 0, (unsigned)i ) + Replacement +
+         Temp.Mid( (unsigned)(i + j + k + 5) );// 5 for the [[|]]
    }
    return Temp;
 }

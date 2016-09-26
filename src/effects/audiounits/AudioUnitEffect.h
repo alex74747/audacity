@@ -109,7 +109,7 @@ public:
    bool LoadUserPreset(const wxString & name) override;
    bool SaveUserPreset(const wxString & name) override;
 
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
    bool LoadFactoryDefaults() override;
    wxArrayString GetFactoryPresets() override;
 

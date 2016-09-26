@@ -283,7 +283,7 @@ bool EffectAutoDuck::Process()
    // adjust the threshold so we can compare it to the rmsSum value
    threshold = threshold * threshold * kRMSWindowSize;
 
-   int rmsPos = 0;
+   size_t rmsPos = 0;
    float rmsSum = 0;
    // to make the progress bar appear more natural, we first look for all
    // duck regions and apply them all at once afterwards

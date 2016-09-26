@@ -184,7 +184,7 @@ bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
       {
          //look inside our task's track list for one that matches this projects one.
          mWaveTrackMutex.Lock();
-         for(int i=0;i<(int)mWaveTracks.size();i++)
+         for(size_t i = 0; i < mWaveTracks.size(); i++)
          {
             if(mWaveTracks[i]==tr)
             {
@@ -258,11 +258,11 @@ bool ODTask::IsComplete()
 }
 
 
-WaveTrack* ODTask::GetWaveTrack(int i)
+WaveTrack* ODTask::GetWaveTrack(size_t i)
 {
    WaveTrack* track = NULL;
    mWaveTrackMutex.Lock();
-   if(i<(int)mWaveTracks.size())
+   if(i < mWaveTracks.size())
       track = mWaveTracks[i];
    mWaveTrackMutex.Unlock();
    return track;
@@ -276,11 +276,11 @@ void ODTask::AddWaveTrack(WaveTrack* track)
 }
 
 
-int ODTask::GetNumWaveTracks()
+size_t ODTask::GetNumWaveTracks()
 {
-   int num;
+   size_t num;
    mWaveTrackMutex.Lock();
-   num = (int)mWaveTracks.size();
+   num = mWaveTracks.size();
    mWaveTrackMutex.Unlock();
    return num;
 }

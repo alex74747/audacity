@@ -251,8 +251,9 @@ void TimeTrack::Draw(wxDC & dc, const wxRect & r, const ZoomInfo &zoomInfo) cons
    mRuler->SetFlip(GetHeight() > 75 ? true : true); // MB: so why don't we just call Invalidate()? :)
    mRuler->Draw(dc, this);
 
+   wxASSERT(mid.width >= 0);
    Doubles envValues{ size_t(mid.width) };
-   GetEnvelope()->GetValues(envValues.get(), mid.width, 0, zoomInfo);
+   GetEnvelope()->GetValues(envValues.get(), (size_t)mid.width, 0, zoomInfo);
 
    dc.SetPen(AColor::envelopePen);
 

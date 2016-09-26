@@ -149,9 +149,9 @@ void ExtImportPrefs::PopulateOrExchange(ShuttleGui & S)
 
             auto &items = Importer::Get().GetImportItems();
             {
-               int i = -1;
+               size_t i = 0;
                for (const auto &item : items)
-                  AddItemToTable (++i, item.get());
+                  AddItemToTable (i++, item.get());
             }
             if (!items.empty())
             {
@@ -212,6 +212,9 @@ void ExtImportPrefs::OnPluginKeyDown(wxListEvent& event)
 
 void ExtImportPrefs::SwapPluginRows (int row1, int row2)
 {
+   wxASSERT(row1 >= 0);
+   wxASSERT(row2 >= 0);
+
    wxString t, t2;
    long d, d2;
    ImportPlugin *ip1, *ip2;
@@ -219,16 +222,16 @@ void ExtImportPrefs::SwapPluginRows (int row1, int row2)
    auto &items = Importer::Get().GetImportItems();
    ExtImportItem *item = NULL;
    if( last_selected >= 0 )
-      item = items[last_selected].get();
+      item = items[(size_t)last_selected].get();
 
    t = PluginList->GetItemText (row1);
-   d = PluginList->GetItemData (row1);
-   d2 = PluginList->GetItemData (row2);
+   d = (int)PluginList->GetItemData (row1);
+   d2 = (int)PluginList->GetItemData (row2);
    PluginList->SetItemText (row1, PluginList->GetItemText (row2));
    PluginList->SetItemText (row2, t);
    if (d == -1 || d2 == -1)
    {
-      PluginList->SetItemData (row1, PluginList->GetItemData (row2));
+      PluginList->SetItemData (row1, (long)PluginList->GetItemData (row2));
       PluginList->SetItemData (row2, d);
       if( !item )
          return;
@@ -245,14 +248,15 @@ void ExtImportPrefs::SwapPluginRows (int row1, int row2)
    {
       if( !item )
          return;
-      ip1 = item->filter_objects[d];
-      ip2 = item->filter_objects[d2];
-      item->filter_objects[d] = ip2;
-      item->filter_objects[d2] = ip1;
-      t = item->filters[d];
-      t2 = item->filters[d2];
-      item->filters[d] = t2;
-      item->filters[d2] = t;
+      auto ud = (size_t)d, ud2 = (size_t)d2;
+      ip1 = item->filter_objects[ud];
+      ip2 = item->filter_objects[ud2];
+      item->filter_objects[ud] = ip2;
+      item->filter_objects[ud2] = ip1;
+      t = item->filters[ud];
+      t2 = item->filters[ud2];
+      item->filters[ud] = t2;
+      item->filters[ud2] = t;
    }
 }
 
@@ -265,18 +269,18 @@ bool ExtImportPrefs::DoOnPluginKeyDown (int code)
    long itemIndex2 = -1;
    itemIndex = PluginList->GetNextItem(itemIndex,
          wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-   if (itemIndex == -1)
+   if (itemIndex < 0)
          return false;
 
-   if (last_selected == -1)
+   if (last_selected < 0)
          return false;
 
    auto &items = Importer::Get().GetImportItems();
-   ExtImportItem *item = items[last_selected].get();
+   ExtImportItem *item = items[(size_t)last_selected].get();
 
    if (code == WXK_UP && itemIndex == 0)
       return false;
-   else if (code == WXK_DOWN && itemIndex == PluginList->GetItemCount() - 1)
+   else if (code == WXK_DOWN && itemIndex >= PluginList->GetItemCount() - 1)
       return false;
 
    if (code == WXK_UP)
@@ -293,13 +297,13 @@ bool ExtImportPrefs::DoOnPluginKeyDown (int code)
       PluginList->SetItemState (itemIndex, 0, wxLIST_STATE_SELECTED);
       PluginList->SetItemState (itemIndex2, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
    }
-   int fcount = item->filter_objects.Count();
-   if (item->divider >= fcount)
+   auto fcount = item->filter_objects.Count();
+   if (item->divider >= (int)fcount)
    {
       item->divider = -1;
    }
    if (item->divider < -1)
-      item->divider = item->filter_objects.Count() - 1;
+      item->divider = (int)(item->filter_objects.Count() - 1);
 
    return true;
 }
@@ -307,20 +311,18 @@ bool ExtImportPrefs::DoOnPluginKeyDown (int code)
 
 void ExtImportPrefs::SwapRows (int row1, int row2)
 {
-   int t;
+   wxASSERT(row1 >= 0);
+   wxASSERT(row2 >= 0);
    wxString ts;
    if (row1 == row2)
       return;
    if (row1 > row2)
-   {
-      t = row1;
-      row1 = row2;
-      row2 = t;
-   }
+      std::swap(row1, row2);
+
    auto &items = Importer::Get().GetImportItems();
 
-   auto &t1 = items[row1];
-   auto &t2 = items[row2];
+   auto &t1 = items[(size_t)row1];
+   auto &t2 = items[(size_t)row2];
    std::swap(t1, t2);
 
    for (int i = 0; i < RuleTable->GetNumberCols(); i++)
@@ -425,40 +427,39 @@ void ExtImportPrefs::DoOnRuleTableSelect (int toprow)
 {
    auto &items = Importer::Get().GetImportItems();
 
-   if (toprow < 0 || toprow > (int)items.size())
+   if (toprow < 0 || toprow >= (int)items.size())
    {
       return;
    }
 
-   ExtImportItem *item = items[toprow].get();
+   ExtImportItem *item = items[(size_t)toprow].get();
    PluginList->DeleteAllItems();
 
-   int fcount;
-   fcount = item->filters.Count();
+   auto fcount = item->filters.Count();
    int shift = 0;
-   for (int i = 0; i < fcount; i++)
+   for (size_t i = 0; i < fcount; i++)
    {
-      if (item->divider == i)
+      if (item->divider == (long)i)
       {
-         PluginList->InsertItem (i, _("Unused filters:"));
-         PluginList->SetItemData (i, -1);
+         PluginList->InsertItem (item->divider, _("Unused filters:"));
+         PluginList->SetItemData (item->divider, -1);
          shift = 1;
       }
       if (item->filter_objects[i] != NULL)
       {
-         PluginList->InsertItem (i + shift,
+         PluginList->InsertItem ((long)i + shift,
                item->filter_objects[i]->GetPluginFormatDescription());
       }
       else
       {
-         PluginList->InsertItem (i + shift, item->filters[i]);
+         PluginList->InsertItem ((long)i + shift, item->filters[i]);
       }
-      PluginList->SetItemData (i + shift, i);
+      PluginList->SetItemData ((long)i + shift, (long)i);
    }
    if (item->divider == -1)
    {
-      PluginList->InsertItem (fcount, _("Unused filters:"));
-      PluginList->SetItemData (fcount, -1);
+      PluginList->InsertItem ((long)fcount, _("Unused filters:"));
+      PluginList->SetItemData ((long)fcount, -1);
    }
    wxListItem info;
    info.SetId (0);
@@ -476,7 +477,8 @@ void ExtImportPrefs::OnRuleTableEdit (wxGridEvent& event)
    int row = event.GetRow();
    int col = event.GetCol();
    auto &items = Importer::Get().GetImportItems();
-   ExtImportItem *item = items[row].get();
+   wxASSERT(row >= 0);
+   ExtImportItem *item = items[(size_t)row].get();
    RuleTable->SaveEditControlValue();
 
    wxString val = RuleTable->GetCellValue (row, col);
@@ -546,7 +548,7 @@ Audacity to trim spaces for you?"
    RuleTable->AutoSizeColumns ();
 }
 
-void ExtImportPrefs::AddItemToTable (int index, const ExtImportItem *item)
+void ExtImportPrefs::AddItemToTable (size_t index, const ExtImportItem *item)
 {
    wxString extensions, mime_types;
    if (item->extensions.Count() > 0)
@@ -569,7 +571,7 @@ void ExtImportPrefs::AddItemToTable (int index, const ExtImportItem *item)
    }
 
    RuleTable->InsertRows (index, 1);
-   RuleTable->SetCellValue (index, 0, extensions);
+   RuleTable->SetCellValue ((int)index, 0, extensions);
 #if EXTIMPORT_MIME_SUPPORT
    RuleTable->SetCellValue (index, 1, mime_types);
 #endif
@@ -582,10 +584,12 @@ void ExtImportPrefs::OnAddRule(wxCommandEvent& WXUNUSED(event))
    auto uitem = Importer::Get().CreateDefaultImportItem();
    auto item = uitem.get();
    items.push_back(std::move(uitem));
-   AddItemToTable (RuleTable->GetNumberRows (), item);
+   auto rows = RuleTable->GetNumberRows();
+   wxASSERT(rows >= 0);
+   AddItemToTable ((size_t)rows, item);
 
-   RuleTable->SelectRow(RuleTable->GetNumberRows () - 1);
-   RuleTable->SetGridCursor (RuleTable->GetNumberRows () - 1, 0);
+   RuleTable->SelectRow(rows);
+   RuleTable->SetGridCursor (rows, 0);
    RuleTable->SetFocus();
 }
 
@@ -600,7 +604,7 @@ void ExtImportPrefs::OnDelRule(wxCommandEvent& WXUNUSED(event))
    if (msgres == wxNO || msgres != wxYES)
       return;
 
-   RuleTable->DeleteRows (last_selected);
+   RuleTable->DeleteRows((size_t)last_selected);
    items.erase (items.begin() + last_selected);
    RuleTable->AutoSizeColumns ();
    if (last_selected >= RuleTable->GetNumberRows ())
@@ -782,7 +786,7 @@ wxDragResult ExtImportPrefsDropTarget::OnDragOver(wxCoord x, wxCoord y,
       long selected = -1;
       selected = PluginList->GetNextItem(selected,
             wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-      if (selected == -1)
+      if (selected < 0)
             return wxDragNone;
 
       if (item != selected)

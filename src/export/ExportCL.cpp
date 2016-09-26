@@ -43,7 +43,7 @@
 class ExportCLOptions final : public wxPanelWrapper
 {
 public:
-   ExportCLOptions(wxWindow *parent, int format);
+   ExportCLOptions(wxWindow *parent, unsigned format);
    virtual ~ExportCLOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -67,7 +67,7 @@ END_EVENT_TABLE()
 
 ///
 ///
-ExportCLOptions::ExportCLOptions(wxWindow *parent, int WXUNUSED(format))
+ExportCLOptions::ExportCLOptions(wxWindow *parent, unsigned WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
    mHistory.Load(*gPrefs, wxT("/FileFormats/ExternalProgramHistory"));
@@ -282,7 +282,7 @@ public:
    ExportCL();
 
    // Required
-   wxWindow *OptionsCreate(wxWindow *parent, int format);
+   wxWindow *OptionsCreate(wxWindow *parent, unsigned format) override;
 
    ProgressResult Export(AudacityProject *project,
                unsigned channels,
@@ -292,18 +292,18 @@ public:
                double t1,
                MixerSpec *mixerSpec = NULL,
                const Tags *metadata = NULL,
-               int subformat = 0) override;
+               unsigned subformat = 0) override;
 };
 
 ExportCL::ExportCL()
 :  ExportPlugin()
 {
    AddFormat();
-   SetFormat(wxT("CL"),0);
-   AddExtension(wxT(""),0);
-   SetMaxChannels(255,0);
-   SetCanMetaData(false,0);
-   SetDescription(_("(external program)"),0);
+   SetFormat(wxT("CL"), 0);
+   AddExtension(wxT(""), 0);
+   SetMaxChannels(255, 0);
+   SetCanMetaData(false, 0);
+   SetDescription(_("(external program)"), 0);
 }
 
 ProgressResult ExportCL::Export(AudacityProject *project,
@@ -314,7 +314,7 @@ ProgressResult ExportCL::Export(AudacityProject *project,
                       double t1,
                       MixerSpec *mixerSpec,
                       const Tags *WXUNUSED(metadata),
-                      int WXUNUSED(subformat))
+                      unsigned WXUNUSED(subformat))
 {
    wxString output;
    wxString cmd;
@@ -375,9 +375,9 @@ ProgressResult ExportCL::Export(AudacityProject *project,
    wxLogNull nolog;
 
    // establish parameters
-   int rate = lrint(project->GetRate());
+   auto rate = (unsigned long)lrint(project->GetRate());
    const size_t maxBlockLen = 44100 * 5;
-   unsigned long totalSamples = lrint((t1 - t0) * rate);
+   auto totalSamples = (unsigned long)lrint((t1 - t0) * rate);
    unsigned long sampleBytes = totalSamples * channels * SAMPLE_SIZE(int16Sample);
 
    // fill up the wav header
@@ -469,7 +469,7 @@ ProgressResult ExportCL::Export(AudacityProject *project,
          }
 
          // Don't write too much at once...pipes may not be able to handle it
-         size_t bytes = wxMin(numBytes, 4096);
+         auto bytes = std::min<size_t>(numBytes, 4096);
          numBytes -= bytes;
 
          while (bytes > 0) {
@@ -524,7 +524,7 @@ ProgressResult ExportCL::Export(AudacityProject *project,
    return updateResult;
 }
 
-wxWindow *ExportCL::OptionsCreate(wxWindow *parent, int format)
+wxWindow *ExportCL::OptionsCreate(wxWindow *parent, unsigned format)
 {
    wxASSERT(parent); // to justify safenew
    return safenew ExportCLOptions(parent, format);

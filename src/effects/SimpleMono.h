@@ -38,11 +38,11 @@ protected:
 
 protected:
    // Other useful information
-   int    mCurTrackNum;
+   unsigned mCurTrackNum;
    double mCurRate;
    double mCurT0;
    double mCurT1;
-   int    mCurChannel;
+   // unsigned mCurChannel;
 
 private:
    bool ProcessOne(WaveTrack * t, sampleCount start, sampleCount end);

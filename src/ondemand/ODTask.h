@@ -88,8 +88,8 @@ class ODTask /* not final */
 
     ///Adds a WaveTrack to do the task for
    void AddWaveTrack(WaveTrack* track);
-   virtual int GetNumWaveTracks();
-   virtual WaveTrack* GetWaveTrack(int i);
+   virtual size_t GetNumWaveTracks();
+   virtual WaveTrack* GetWaveTrack(size_t i);
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
    virtual void DemandTrackUpdate(WaveTrack* track, double seconds);

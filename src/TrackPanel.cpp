@@ -2776,8 +2776,8 @@ void TrackPanel::Stretch(int mouseXCoordinate, int trackLeftEdge,
       // Undo will change tracks, so convert pTrack, mCapturedTrack to index
       // values, then look them up after the Undo
       TrackListIterator iter(GetTracks());
-      int pTrackIndex = pTrack->GetIndex();
-      int capturedTrackIndex =
+      auto pTrackIndex = pTrack->GetIndex();
+      auto capturedTrackIndex =
          (mCapturedTrack ? mCapturedTrack->GetIndex() : 0);
 
       GetProject()->OnUndo();
@@ -2788,10 +2788,12 @@ void TrackPanel::Stretch(int mouseXCoordinate, int trackLeftEdge,
       mViewInfo->selectedRegion.setTimes(mStretchSel0, mStretchSel1);
 
       mStretched = false;
-      int index = 0;
+      unsigned index = 0;
       for (Track *t = iter.First(GetTracks()); t; t = iter.Next()) {
-         if (index == pTrackIndex) pTrack = t;
-         if (mCapturedTrack && index == capturedTrackIndex) mCapturedTrack = t;
+         if (index == pTrackIndex)
+            pTrack = t;
+         if (mCapturedTrack && index == capturedTrackIndex)
+            mCapturedTrack = t;
          index++;
       }
    }
@@ -6297,7 +6299,8 @@ bool TrackPanel::HandleTrackLocationMouseEvent(WaveTrack * track, const wxRect &
                // Don't assume correspondence of merge points across channels!
                int idx = FindMergeLine(linked, pos);
                if (idx >= 0) {
-                  WaveTrack::Location location = linked->GetCachedLocations()[idx];
+                  WaveTrack::Location location =
+                     linked->GetCachedLocations()[(size_t)idx];
                   if (!linked->MergeClips(location.clipidx1, location.clipidx2))
                      return false;
                }
@@ -6510,11 +6513,11 @@ void TrackPanel::HandleTextDragRelease(LabelTrack * lTrack, wxMouseEvent & event
             mLabelTrackStartXPos = event.m_x;
             mLabelTrackStartYPos = event.m_y;
 
-            if ((lTrack->getSelectedIndex() != -1) &&
+            if ((lTrack->getSelectedIndex() >= 0) &&
                lTrack->OverTextBox(
-               lTrack->GetLabel(lTrack->getSelectedIndex()),
-               mLabelTrackStartXPos,
-               mLabelTrackStartYPos))
+                  lTrack->GetLabel((size_t)lTrack->getSelectedIndex()),
+                  mLabelTrackStartXPos,
+                  mLabelTrackStartYPos))
             {
                mLabelTrackStartYPos = -1;
             }
@@ -7973,7 +7976,7 @@ wxString TrackPanel::TrackSubText(WaveTrack * t)
 
 /// Handle the menu options that change a track between
 /// left channel, right channel, and mono.
-static int channels[] = { Track::LeftChannel, Track::RightChannel,
+static unsigned channels[] = { Track::LeftChannel, Track::RightChannel,
    Track::MonoChannel
 };
 
@@ -7986,7 +7989,7 @@ void TrackPanel::OnChannelChange(wxCommandEvent & event)
    int id = event.GetId();
    wxASSERT(id >= OnChannelLeftID && id <= OnChannelMonoID);
    wxASSERT(mPopupMenuTarget);
-   mPopupMenuTarget->SetChannel(channels[id - OnChannelLeftID]);
+   mPopupMenuTarget->SetChannel(channels[(unsigned)(id - OnChannelLeftID)]);
    MakeParentPushState(wxString::Format(_("Changed '%s' to %s"),
                         mPopupMenuTarget->GetName().c_str(),
                         channelmsgs[id - OnChannelLeftID]),

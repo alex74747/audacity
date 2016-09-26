@@ -348,7 +348,7 @@ void Tags::AllowEditTrackNumber(bool editTrackNumber)
    mEditTrackNumber = editTrackNumber;
 }
 
-int Tags::GetNumUserGenres()
+size_t Tags::GetNumUserGenres()
 {
    return mGenres.GetCount();
 }
@@ -373,15 +373,15 @@ void Tags::LoadGenres()
 
    mGenres.Clear();
 
-   int cnt = tf.GetLineCount();
-   for (int i = 0; i < cnt; i++) {
+   auto cnt = tf.GetLineCount();
+   for (size_t i = 0; i < cnt; i++) {
       mGenres.Add(tf.GetLine(i));
    }
 }
 
-wxString Tags::GetUserGenre(int i)
+wxString Tags::GetUserGenre(size_t i)
 {
-   if (i >= 0 && i < GetNumUserGenres()) {
+   if (i < GetNumUserGenres()) {
       return mGenres[i];
    }
 
@@ -963,19 +963,19 @@ bool TagsEditor::TransferDataFromWindow()
 
 bool TagsEditor::TransferDataToWindow()
 {
-   size_t i;
    TagMap popTagMap;
 
    // Disable redrawing until we're done
    mGrid->BeginBatch();
 
    // Delete all rows
-   if (mGrid->GetNumberRows()) {
-      mGrid->DeleteRows(0, mGrid->GetNumberRows());
+   if (mGrid->GetNumberRows() > 0) {
+      mGrid->DeleteRows(0, (size_t)mGrid->GetNumberRows());
    }
 
    // Populate the static rows
-   for (i = 0; i < STATICCNT; i++) {
+   int i;
+   for (i = 0; i < (int)STATICCNT; i++) {
       mGrid->AppendRows();
 
       mGrid->SetReadOnly(i, 0);
@@ -1035,7 +1035,7 @@ void TagsEditor::OnChange(wxGridEvent & event)
    }
 
    wxString n = mGrid->GetCellValue(event.GetRow(), 0);
-   for (size_t i = 0; i < STATICCNT; i++) {
+   for (int i = 0; i < (int)STATICCNT; i++) {
       if (n.CmpNoCase(labelmap[i].label) == 0) {
          ischanging = true;
          wxBell();
@@ -1073,12 +1073,12 @@ void TagsEditor::OnEdit(wxCommandEvent & WXUNUSED(event))
    S.AddStandardButtons();
 
    wxSortedArrayString g;
-   int cnt = mLocal.GetNumUserGenres();
-   for (int i = 0; i < cnt; i++) {
+   auto cnt = mLocal.GetNumUserGenres();
+   for (size_t i = 0; i < cnt; i++) {
       g.Add(mLocal.GetUserGenre(i));
    }
 
-   for (int i = 0; i < cnt; i++) {
+   for (size_t i = 0; i < cnt; i++) {
       tc->AppendText(g[i] + wxT("\n"));
    }
 
@@ -1123,8 +1123,8 @@ void TagsEditor::OnReset(wxCommandEvent & WXUNUSED(event))
    }
 
    tf.Clear();
-   int cnt = mLocal.GetNumUserGenres();
-   for (int i = 0; i < cnt; i++) {
+   auto cnt = mLocal.GetNumUserGenres();
+   for (size_t i = 0; i < cnt; i++) {
       tf.AddLine(mLocal.GetUserGenre(i));
    }
 
@@ -1312,7 +1312,7 @@ void TagsEditor::OnAdd(wxCommandEvent & WXUNUSED(event))
 
 void TagsEditor::OnRemove(wxCommandEvent & WXUNUSED(event))
 {
-   size_t row = mGrid->GetGridCursorRow();
+   auto row = mGrid->GetGridCursorRow();
 
    if (!mEditTitle && mGrid->GetCellValue(row, 0).CmpNoCase(LABEL_TITLE) == 0) {
       return;
@@ -1320,11 +1320,11 @@ void TagsEditor::OnRemove(wxCommandEvent & WXUNUSED(event))
    else if (!mEditTrack && mGrid->GetCellValue(row, 0).CmpNoCase(LABEL_TRACK) == 0) {
       return;
    }
-   else if (row < STATICCNT) {
+   else if (row < (int)STATICCNT) {
       mGrid->SetCellValue(row, 1, wxEmptyString);
    }
-   else if (row >= STATICCNT) {
-      mGrid->DeleteRows(row, 1);
+   else if (row >= (int)STATICCNT) {
+      mGrid->DeleteRows((size_t)row, 1);
    }
 }
 
@@ -1403,16 +1403,15 @@ void TagsEditor::SetEditors()
 
 void TagsEditor::PopulateGenres()
 {
-   int cnt = mLocal.GetNumUserGenres();
-   int i;
+   auto cnt = mLocal.GetNumUserGenres();
    wxString parm;
    wxSortedArrayString g;
 
-   for (i = 0; i < cnt; i++) {
+   for (size_t i = 0; i < cnt; i++) {
       g.Add(mLocal.GetUserGenre(i));
    }
 
-   for (i = 0; i < cnt; i++) {
+   for (size_t i = 0; i < cnt; i++) {
       parm = parm + (i == 0 ? wxT("") : wxT(",")) + g[i];
    }
 

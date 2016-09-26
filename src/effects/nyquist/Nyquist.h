@@ -143,9 +143,9 @@ private:
    static void StaticOSCallback(void *userdata);
 
    int GetCallback(float *buffer, int channel,
-                   long start, long len, long totlen);
+                   size_t start, size_t len, long totlen);
    int PutCallback(float *buffer, int channel,
-                   long start, long len, long totlen);
+                   size_t start, size_t len, long totlen);
    void OutputCallback(int c);
    void OSCallback();
 

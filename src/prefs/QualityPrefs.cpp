@@ -127,6 +127,7 @@ void QualityPrefs::PopulateOrExchange(ShuttleGui & S)
          {
             // If the value in Prefs isn't in the list, then we want
             // the last item, 'Other...' to be shown.
+            wxASSERT(!mSampleRateNames.empty());
             S.SetNoMatchSelector(mSampleRateNames.GetCount() - 1);
             // First the choice...
             // We make sure it uses the ID we want, so that we get changes

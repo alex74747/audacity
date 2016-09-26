@@ -65,7 +65,7 @@ public:
    bool GetAutomationParameters(EffectAutomationParameters & parms) override;
    bool SetAutomationParameters(EffectAutomationParameters & parms) override;
    wxArrayString GetFactoryPresets() override;
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
 
    // Effect implementation
 

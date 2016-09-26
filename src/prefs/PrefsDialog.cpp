@@ -222,9 +222,9 @@ PrefsDialog::PrefsDialog
             S.AddWindow(mCategories, wxEXPAND);
 
             {
-               typedef std::pair<int, int> IntPair;
+               typedef std::pair<size_t, int> IntPair;
                std::vector<IntPair> stack;
-               int iPage = 0;
+               size_t iPage = 0;
                for (Factories::const_iterator it = factories.begin(), end = factories.end();
                   it != end; ++it, ++iPage)
                {
@@ -282,7 +282,7 @@ PrefsDialog::PrefsDialog
    // Collapse nodes only after layout so the tree is wide enough
    if (mCategories)
    {
-      int iPage = 0;
+      size_t iPage = 0;
       for (Factories::const_iterator it = factories.begin(), end = factories.end();
          it != end; ++it, ++iPage)
          mCategories->ExpandNode(iPage, it->expanded);
@@ -331,7 +331,8 @@ int PrefsDialog::ShowModal()
       long selected = GetPreferredPage();
       if (selected < 0 || size_t(selected) >= mCategories->GetPageCount())
          selected = 0;  // clamp to available range of tabs
-      mCategories->SetSelection(selected);
+      if (selected >= 0)
+         mCategories->SetSelection((size_t)selected);
    }
    else {
       wxString Temp = mTitlePrefix + mUniquePage->GetLabel();
@@ -494,7 +495,7 @@ void PrefsDialog::RecordExpansionState()
    // Remember expansion state of the tree control
    if (mCategories)
    {
-      int iPage = 0;
+      size_t iPage = 0;
       for (Factories::iterator it = mFactories.begin(), end = mFactories.end();
          it != end; ++it, ++iPage)
          it->expanded = mCategories->IsNodeExpanded(iPage);

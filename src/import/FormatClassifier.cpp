@@ -97,9 +97,9 @@ FormatClassifier::FormatClassT FormatClassifier::GetResultFormat()
    return mResultFormat;
 }
 
-int FormatClassifier::GetResultFormatLibSndfile()
+unsigned FormatClassifier::GetResultFormatLibSndfile()
 {
-   int format = SF_FORMAT_RAW;
+   unsigned format = SF_FORMAT_RAW;
    
    switch(mResultFormat.format)
    {

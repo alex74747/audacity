@@ -119,7 +119,7 @@ void AButton::Listener::OnKeyUp(wxKeyEvent & event)
 
    if (!mButton->IsDown())
    {
-      int idx = 0;
+      unsigned idx = 0;
       // Ignore the event, consult key states.  One modifier key might
       // have gone up but another remained down.
       // Note that CMD (or CTRL) takes precedence over Shift if both are down

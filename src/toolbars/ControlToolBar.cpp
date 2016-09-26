@@ -152,7 +152,7 @@ AButton *ControlToolBar::MakeButton(teBmps eEnabledUp, teBmps eEnabledDown, teBm
 }
 
 // static
-void ControlToolBar::MakeAlternateImages(AButton &button, int idx,
+void ControlToolBar::MakeAlternateImages(AButton &button, unsigned idx,
                                          teBmps eEnabledUp,
                                          teBmps eEnabledDown,
                                          teBmps eDisabled)
@@ -454,7 +454,7 @@ void ControlToolBar::SetPlay(bool down, PlayAppearance appearance)
    if (down) {
       mPlay->SetShift(appearance == PlayAppearance::Looped);
       mPlay->SetControl(appearance == PlayAppearance::CutPreview);
-      mPlay->SetAlternateIdx(static_cast<int>(appearance));
+      mPlay->SetAlternateIdx(static_cast<unsigned>(appearance));
       mPlay->PushDown();
    }
    else {

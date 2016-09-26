@@ -320,9 +320,9 @@ wxArrayString EffectReverb::GetFactoryPresets()
    return names;
 }
 
-bool EffectReverb::LoadFactoryPreset(int id)
+bool EffectReverb::LoadFactoryPreset(unsigned id)
 {
-   if (id < 0 || id >= (int) WXSIZEOF(FactoryPresets))
+   if (id >= WXSIZEOF(FactoryPresets))
    {
       return false;
    }

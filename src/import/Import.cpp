@@ -201,7 +201,7 @@ void Importer::ReadImportItems()
          /* Filters are stored in one list, but the position at which
           * unused filters start is remembered
           */
-         new_item->divider = new_item->filters.Count();
+         new_item->divider = (int)new_item->filters.Count();
          StringToList (unused_filters, delims, new_item->filters);
       }
       else
@@ -239,9 +239,8 @@ void Importer::ReadImportItems()
          /* Add these filters at the bottom of used filter list */
          if (!found)
          {
-            int index = new_item->divider;
-            if (new_item->divider < 0)
-               index = new_item->filters.Count();
+            auto index = (new_item->divider < 0)
+               ? new_item->filters.Count() : (size_t)new_item->divider;
             new_item->filters.Insert(importPlugin->GetPluginStringID(),index);
             new_item->filter_objects.Insert (importPlugin.get(), index);
             if (new_item->divider >= 0)
@@ -284,7 +283,7 @@ void Importer::WriteImportItems()
       if (item->divider >= 0)
       {
          val.Append (wxT("\\"));
-         for (size_t j = item->divider; j < item->filters.Count(); j++)
+         for (auto j = (size_t)item->divider; j < item->filters.Count(); j++)
          {
             val.Append (item->filters[j]);
             if (j < item->filters.Count() - 1)
@@ -706,7 +705,7 @@ wxDialogWrapper( parent, id, title, position, size, style | wxRESIZE_BORDER )
 
    mFile = _mFile;
    scount = mFile->GetStreamCount();
-   for (wxInt32 i = 0; i < scount; i++)
+   for (unsigned i = 0; i < scount; i++)
       mFile->SetStreamUsage(i, FALSE);
 
    wxBoxSizer *vertSizer;
@@ -740,8 +739,9 @@ void ImportStreamDialog::OnOk(wxCommandEvent & WXUNUSED(event))
 {
    wxArrayInt selitems;
    int sels = StreamList->GetSelections(selitems);
-   for (wxInt32 i = 0; i < sels; i++)
-      mFile->SetStreamUsage(selitems[i],TRUE);
+   for (size_t i = 0; (int)i < sels; i++)
+      if (selitems[i] >= 0)
+         mFile->SetStreamUsage((unsigned)selitems[i],TRUE);
    EndModal( wxID_OK );
 }
 

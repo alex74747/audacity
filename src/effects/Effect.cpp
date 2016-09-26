@@ -617,7 +617,7 @@ wxArrayString Effect::GetFactoryPresets()
    return wxArrayString();
 }
 
-bool Effect::LoadFactoryPreset(int id)
+bool Effect::LoadFactoryPreset(unsigned id)
 {
    if (mClient)
    {
@@ -1021,7 +1021,8 @@ bool Effect::SetAutomationParameters(const wxString & parms)
    {
       preset.Replace(kFactoryPresetIdent, wxEmptyString, false);
       wxArrayString presets = GetFactoryPresets();
-      success = LoadFactoryPreset(presets.Index(preset));
+      auto index = presets.Index(preset);
+      success = index >= 0 && LoadFactoryPreset((unsigned)index);
    }
    else if (preset.StartsWith(kCurrentSettingsIdent))
    {
@@ -1237,7 +1238,7 @@ bool Effect::PromptUser(wxWindow *parent)
    return ShowInterface(parent, IsBatchProcessing());
 }
 
-int Effect::GetPass()
+unsigned Effect::GetPass()
 {
    return mPass;
 }
@@ -1294,7 +1295,7 @@ bool Effect::ProcessPass()
    mBlockSize = 0;
 
    TrackListIterator iter(mOutputTracks.get());
-   int count = 0;
+   unsigned count = 0;
    bool clear = false;
    Track* t = iter.First();
 
@@ -1453,7 +1454,7 @@ bool Effect::ProcessPass()
    return bGoodResult;
 }
 
-bool Effect::ProcessTrack(int count,
+bool Effect::ProcessTrack(unsigned count,
                           ChannelNames map,
                           WaveTrack *left,
                           WaveTrack *right,
@@ -1929,7 +1930,7 @@ bool Effect::TotalProgress(double frac)
    return (updateResult != ProgressResult::Success);
 }
 
-bool Effect::TrackProgress(int whichTrack, double frac, const wxString &msg)
+bool Effect::TrackProgress(unsigned whichTrack, double frac, const wxString &msg)
 {
    auto updateResult = (mProgress ?
       mProgress->Update(whichTrack + frac, (double) mNumTracks, msg) :
@@ -1937,7 +1938,7 @@ bool Effect::TrackProgress(int whichTrack, double frac, const wxString &msg)
    return (updateResult != ProgressResult::Success);
 }
 
-bool Effect::TrackGroupProgress(int whichGroup, double frac, const wxString &msg)
+bool Effect::TrackGroupProgress(unsigned whichGroup, double frac, const wxString &msg)
 {
    auto updateResult = (mProgress ?
       mProgress->Update(whichGroup + frac, (double) mNumGroups, msg) :
@@ -3460,7 +3461,7 @@ void EffectUIHost::OnUserPreset(wxCommandEvent & evt)
 
 void EffectUIHost::OnFactoryPreset(wxCommandEvent & evt)
 {
-   mEffect->LoadFactoryPreset(evt.GetId() - kFactoryPresetsID);
+   mEffect->LoadFactoryPreset((unsigned)(evt.GetId() - kFactoryPresetsID));
 
    return;
 }

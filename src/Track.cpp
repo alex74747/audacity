@@ -145,12 +145,12 @@ int Track::GetMinimizedHeight() const
    return 40;
 }
 
-int Track::GetIndex() const
+unsigned Track::GetIndex() const
 {
    return mIndex;
 }
 
-void Track::SetIndex(int index)
+void Track::SetIndex(unsigned index)
 {
    mIndex = index;
 }
@@ -773,7 +773,7 @@ void TrackList::RecalcPositions(TrackNodePointer node)
       return;
    }
    Track *t;
-   int i = 0;
+   unsigned i = 0;
    int y = 0;
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -1168,9 +1168,9 @@ bool TrackList::IsEmpty() const
    return empty();
 }
 
-int TrackList::GetCount() const
+unsigned TrackList::GetCount() const
 {
-   int cnt = 0;
+   unsigned cnt = 0;
 
    if (!empty()) {
       cnt = back()->GetIndex() + 1;

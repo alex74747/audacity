@@ -69,7 +69,7 @@ class ODWaveTrackTaskQueue final
    WaveTrack* GetWaveTrack(size_t x);
 
    ///returns the number of wavetracks in this queue.
-   int GetNumWaveTracks();
+   size_t GetNumWaveTracks();
 
    ///Add a task to the queue.
    void AddTask(movable_ptr<ODTask> &&mtask);
@@ -87,7 +87,7 @@ class ODWaveTrackTaskQueue final
    ODTask* GetFrontTask();
 
    ///returns the number of ODTasks in this queue
-   int GetNumTasks();
+   unsigned GetNumTasks();
 
    ///returns a ODTask at position x
    ODTask* GetTask(size_t x);

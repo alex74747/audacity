@@ -101,7 +101,7 @@ class AUDACITY_DLL_API XMLTagHandler /* not final */ {
    // conversion and then pass the data to the handlers above.
    bool ReadXMLTag(const char *tag, const char **attrs);
    void ReadXMLEndTag(const char *tag);
-   void ReadXMLContent(const char *s, int len);
+   void ReadXMLContent(const char *s, size_t len);
    XMLTagHandler *ReadXMLChild(const char *tag);
 };
 

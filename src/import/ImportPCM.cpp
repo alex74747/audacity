@@ -96,7 +96,7 @@ public:
    ProgressResult Import(TrackFactory *trackFactory, TrackHolders &outTracks,
               Tags *tags) override;
 
-   wxInt32 GetStreamCount() override { return 1; }
+   unsigned GetStreamCount() override { return 1; }
 
    const wxArrayString &GetStreamInfo() override
    {
@@ -104,8 +104,7 @@ public:
       return empty;
    }
 
-   void SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUSED(Use)) override
-   {}
+   void SetStreamUsage(unsigned WXUNUSED(StreamID), bool WXUNUSED(Use)) override {}
 
 private:
    SFFile                mFile;
@@ -208,18 +207,21 @@ PCMImportFileHandle::PCMImportFileHandle(wxString name,
       gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleFormat"), floatSample);
 
    if (mFormat != floatSample &&
-       sf_subtype_more_than_16_bits(mInfo.format))
+       sf_subtype_more_than_16_bits((unsigned)mInfo.format))
       mFormat = floatSample;
 }
 
 wxString PCMImportFileHandle::GetFileDescription()
 {
-   return SFCall<wxString>(sf_header_name, mInfo.format);
+   return SFCall<wxString>(sf_header_name, (unsigned)mInfo.format);
 }
 
 auto PCMImportFileHandle::GetFileUncompressedBytes() -> ByteCount
 {
-   return mInfo.frames * mInfo.channels * SAMPLE_SIZE(mFormat);
+   wxASSERT(mInfo.channels >= 0);
+   wxASSERT(mInfo.frames >= 0);
+   return (unsigned long long)mInfo.frames *
+      (unsigned)mInfo.channels * SAMPLE_SIZE(mFormat);
 }
 
 // returns "copy" or "edit" (aliased) as the user selects.
@@ -346,7 +348,8 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
 
    CreateProgress();
 
-   TrackHolders channels(mInfo.channels);
+   wxASSERT(mInfo.channels >= 0);
+   TrackHolders channels((size_t)mInfo.channels);
 
    {
       auto iter = channels.begin();
@@ -398,8 +401,8 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
             limitSampleBufferSize( maxBlockSize, fileTotalFrames - i );
 
          auto iter = channels.begin();
-         for (int c = 0; c < mInfo.channels; ++iter, ++c)
-            iter->get()->AppendAlias(mFilename, i, blockLen, c,useOD);
+         for (unsigned c = 0; (int)c < mInfo.channels; ++iter, ++c)
+            iter->get()->AppendAlias(mFilename, i, blockLen, c, useOD);
 
          if (++updateCounter == 50) {
             updateResult = mProgress->Update(
@@ -446,16 +449,17 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
       using type = decltype(maxBlockSize);
       if (mInfo.channels < 1)
          return ProgressResult::Failed;
+      wxASSERT(mInfo.channels >= 0);
       auto maxBlock = std::min(maxBlockSize,
          std::numeric_limits<type>::max() /
-            (mInfo.channels * SAMPLE_SIZE(mFormat))
+            ((unsigned)mInfo.channels * SAMPLE_SIZE(mFormat))
       );
       if (maxBlock < 1)
          return ProgressResult::Failed;
 
       SampleBuffer srcbuffer, buffer;
       wxASSERT(mInfo.channels >= 0);
-      while (NULL == srcbuffer.Allocate(maxBlock * mInfo.channels, mFormat).ptr() ||
+      while (NULL == srcbuffer.Allocate(maxBlock * (unsigned)mInfo.channels, mFormat).ptr() ||
              NULL == buffer.Allocate(maxBlock, mFormat).ptr())
       {
          maxBlock /= 2;
@@ -465,7 +469,7 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
 
       decltype(fileTotalFrames) framescompleted = 0;
 
-      long block;
+      sf_count_t block;
       do {
          block = maxBlock;
 
@@ -475,18 +479,20 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
          else
             block = SFCall<sf_count_t>(sf_readf_float, mFile.get(), (float *)srcbuffer.ptr(), block);
 
+         // Assume block still fits in size_t because no more than maxBlock
+
          if (block) {
             auto iter = channels.begin();
-            for(int c=0; c<mInfo.channels; ++iter, ++c) {
-               if (mFormat==int16Sample) {
-                  for(int j=0; j<block; j++)
+            for(size_t c = 0; (int)c < mInfo.channels; ++iter, ++c) {
+               if (mFormat == int16Sample) {
+                  for(size_t j = 0; j < block; j++)
                      ((short *)buffer.ptr())[j] =
-                        ((short *)srcbuffer.ptr())[mInfo.channels*j+c];
+                        ((short *)srcbuffer.ptr())[(unsigned)mInfo.channels * j + c];
                }
                else {
-                  for(int j=0; j<block; j++)
+                  for(size_t j = 0; j < block; j++)
                      ((float *)buffer.ptr())[j] =
-                        ((float *)srcbuffer.ptr())[mInfo.channels*j+c];
+                        ((float *)srcbuffer.ptr())[(unsigned)mInfo.channels * j + c];
                }
 
                iter->get()->Append(buffer.ptr(), (mFormat == int16Sample)?int16Sample:floatSample, block);

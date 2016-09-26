@@ -1369,7 +1369,7 @@ void NyquistEffect::Stop()
 wxString NyquistEffect::UnQuote(const wxString &s)
 {
    wxString out;
-   int len = s.Length();
+   auto len = s.Length();
 
    if (len >= 2 && s[0] == wxT('\"') && s[len - 1] == wxT('\"')) {
       return s.Mid(1, len - 2);
@@ -1762,11 +1762,13 @@ int NyquistEffect::StaticGetCallback(float *buffer, int channel,
                                      void *userdata)
 {
    NyquistEffect *This = (NyquistEffect *)userdata;
-   return This->GetCallback(buffer, channel, start, len, totlen);
+   wxASSERT(start >= 0);
+   wxASSERT(len >= 0);
+   return This->GetCallback(buffer, channel, (size_t)start, (size_t)len, totlen);
 }
 
 int NyquistEffect::GetCallback(float *buffer, int ch,
-                               long start, long len, long WXUNUSED(totlen))
+                               size_t start, size_t len, long WXUNUSED(totlen))
 {
    if (mCurBuffer[ch].ptr()) {
       if ((mCurStart[ch] + start) < mCurBufferStart[ch] ||
@@ -1781,7 +1783,7 @@ int NyquistEffect::GetCallback(float *buffer, int ch,
       mCurBufferLen[ch] = mCurTrack[ch]->GetBestBlockSize(mCurBufferStart[ch]);
 
       // len is int as imposed by the nyquist library
-      if ((int)mCurBufferLen[ch] < len) {
+      if (mCurBufferLen[ch] < len) {
          mCurBufferLen[ch] = mCurTrack[ch]->GetIdealBlockSize();
       }
 
@@ -1808,7 +1810,7 @@ int NyquistEffect::GetCallback(float *buffer, int ch,
 
    if (ch == 0) {
       double progress = mScale *
-         ( (start+len)/ mCurLen.as_double() );
+         ( (start+len) / mCurLen.as_double() );
 
       if (progress > mProgressIn) {
          mProgressIn = progress;
@@ -1827,20 +1829,22 @@ int NyquistEffect::StaticPutCallback(float *buffer, int channel,
                                      void *userdata)
 {
    NyquistEffect *This = (NyquistEffect *)userdata;
-   return This->PutCallback(buffer, channel, start, len, totlen);
+   wxASSERT(start >= 0);
+   wxASSERT(len >= 0);
+   return This->PutCallback(buffer, channel, (size_t)start, (size_t)len, totlen);
 }
 
 int NyquistEffect::PutCallback(float *buffer, int channel,
-                               long start, long len, long totlen)
+                               size_t start, size_t len, long totlen)
 {
    if (channel == 0) {
-      double progress = mScale*((float)(start+len)/totlen);
+      double progress = mScale * ((float)(start +len) / totlen);
 
       if (progress > mProgressOut) {
          mProgressOut = progress;
       }
 
-      if (TotalProgress(mProgressIn+mProgressOut+mProgressTot)) {
+      if (TotalProgress(mProgressIn + mProgressOut + mProgressTot)) {
          return -1;
       }
    }
@@ -1942,7 +1946,7 @@ bool NyquistEffect::TransferDataToEffectWindow()
             val = 0;
          }
 
-         wxChoice *c = (wxChoice *) mUIParent->FindWindow(ID_Choice + i);
+         wxChoice *c = (wxChoice *) mUIParent->FindWindow(ID_Choice + (long)i);
          c->SetSelection(val);
       }
       else if (ctrl.type == NYQ_CTRL_INT || ctrl.type == NYQ_CTRL_REAL)
@@ -1950,7 +1954,7 @@ bool NyquistEffect::TransferDataToEffectWindow()
          // wxTextCtrls are handled by the validators
          double range = ctrl.high - ctrl.low;
          int val = (int)(0.5 + ctrl.ticks * (ctrl.val - ctrl.low) / range);
-         wxSlider *s = (wxSlider *) mUIParent->FindWindow(ID_Slider + i);
+         wxSlider *s = (wxSlider *) mUIParent->FindWindow(ID_Slider + (long)i);
          s->SetValue(val);
       }
    }
@@ -2091,7 +2095,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
             {
                S.AddSpace(10, 10);
             
-               wxTextCtrl *item = S.Id(ID_Text + i).AddTextBox(wxT(""), wxT(""), 12);
+               wxTextCtrl *item = S.Id(ID_Text + (long)i).AddTextBox(wxT(""), wxT(""), 12);
                item->SetValidator(wxGenericValidator(&ctrl.valStr));
             }
             else if (ctrl.type == NYQ_CTRL_CHOICE)
@@ -2099,7 +2103,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                S.AddSpace(10, 10);
 
                wxArrayString choices = wxStringTokenize(ctrl.label, wxT(","));
-               S.Id(ID_Choice + i).AddChoice(wxT(""), wxT(""), &choices);
+               S.Id(ID_Choice + (long)i).AddChoice(wxT(""), wxT(""), &choices);
             }
             else
             {
@@ -2109,7 +2113,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                   S.AddSpace(10, 10);
                }
 
-               wxTextCtrl *item = S.Id(ID_Text+i).AddTextBox(wxT(""), wxT(""), 
+               wxTextCtrl *item = S.Id(ID_Text + (long)i).AddTextBox(wxT(""), wxT(""),
                                                              (ctrl.type == NYQ_CTRL_INT_TEXT ||
                                                               ctrl.type == NYQ_CTRL_FLOAT_TEXT) ? 25 : 12);
 
@@ -2139,7 +2143,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                if (ctrl.type == NYQ_CTRL_INT || ctrl.type == NYQ_CTRL_REAL)
                {
                   S.SetStyle(wxSL_HORIZONTAL);
-                  S.Id(ID_Slider + i).AddSlider(wxT(""), 0, ctrl.ticks, 0);
+                  S.Id(ID_Slider + (long)i).AddSlider(wxT(""), 0, ctrl.ticks, 0);
                   S.SetSizeHints(150, -1);
                }
             }
@@ -2228,7 +2232,7 @@ void NyquistEffect::OnSave(wxCommandEvent & WXUNUSED(evt))
 
 void NyquistEffect::OnSlider(wxCommandEvent & evt)
 {
-   int i = evt.GetId() - ID_Slider;
+   auto i = (size_t)(evt.GetId() - ID_Slider);
    NyqControl & ctrl = mControls[i];
 
    int val = evt.GetInt();
@@ -2254,18 +2258,18 @@ void NyquistEffect::OnSlider(wxCommandEvent & evt)
 
       ctrl.val = newVal;
 
-      mUIParent->FindWindow(ID_Text + i)->GetValidator()->TransferToWindow();
+      mUIParent->FindWindow(ID_Text + (long)i)->GetValidator()->TransferToWindow();
    }
 }
 
 void NyquistEffect::OnChoice(wxCommandEvent & evt)
 {
-   mControls[evt.GetId() - ID_Choice].val = (double) evt.GetInt();
+   mControls[(size_t)(evt.GetId() - ID_Choice)].val = (double) evt.GetInt();
 }
 
 void NyquistEffect::OnText(wxCommandEvent & evt)
 {
-   int i = evt.GetId() - ID_Text;
+   auto i = (size_t)(evt.GetId() - ID_Text);
 
    NyqControl & ctrl = mControls[i];
 
@@ -2276,7 +2280,7 @@ void NyquistEffect::OnText(wxCommandEvent & evt)
          int pos = (int)floor((ctrl.val - ctrl.low) /
                               (ctrl.high - ctrl.low) * ctrl.ticks + 0.5);
 
-         wxSlider *slider = (wxSlider *)mUIParent->FindWindow(ID_Slider + i);
+         wxSlider *slider = (wxSlider *)mUIParent->FindWindow(ID_Slider + (int)i);
          slider->SetValue(pos);
       }
    }

@@ -83,7 +83,7 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
  protected:
    TrackList     *mList;
    TrackNodePointer mNode{};
-   int            mIndex;
+   unsigned       mIndex;
    int            mY;
    int            mHeight;
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -108,8 +108,8 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    virtual int GetMinimizedHeight() const;
    int GetActualHeight() const { return mHeight; }
 
-   int GetIndex() const;
-   void SetIndex(int index);
+   unsigned GetIndex() const;
+   void SetIndex(unsigned index);
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
    int GetY(bool vStereo = false) const;
    void SetY(int y, bool vStereo = false);
@@ -138,7 +138,7 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
  // Keep in Track
 
  protected:
-   int                 mChannel;
+   unsigned            mChannel;
    double              mOffset;
    bool                mMute;
    bool                mSolo;
@@ -150,7 +150,7 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    void ReorderList(bool resize = true);
 #endif
 
-   enum
+   enum : unsigned
    {
       LeftChannel = 0,
       RightChannel = 1,
@@ -198,13 +198,13 @@ class AUDACITY_DLL_API Track /* not final */ : public XMLTagHandler
    void SetLinked  (bool l);
    void SetSolo    (bool s) { mSolo     = s; }
 
-   int    GetChannel() const { return mChannel; }
+   unsigned GetChannel() const { return mChannel; }
    virtual double GetOffset() const = 0;
 
    void Offset(double t) { SetOffset(GetOffset() + t); }
    virtual void SetOffset (double o) { mOffset = o; }
 
-   void SetChannel(int    c) { mChannel = c; }
+   void SetChannel(unsigned c) { mChannel = c; }
 
    // AS: Note that the dirManager is mutable.  This is
    // mostly to support "Duplicate" of const objects,
@@ -496,7 +496,7 @@ class TrackList final : public wxEvtHandler, public ListOfTracks
    bool Contains(const Track * t) const;
 
    bool IsEmpty() const;
-   int GetCount() const;
+   unsigned GetCount() const;
 
    double GetStartTime() const;
    double GetEndTime() const;

@@ -872,7 +872,7 @@ double VoiceKey::TestEnergy (
 
 
 //This will update RMSE by adding one element and subtracting another
-void VoiceKey::TestEnergyUpdate (double & prevErg, int len, const float & drop, const float & add)
+void VoiceKey::TestEnergyUpdate (double & prevErg, size_t len, const float & drop, const float & add)
 {
    //This is an updating formula for RMSE. It will only recalculate what's changed.
    prevErg =  prevErg + (double)(fabs(add) - fabs(drop))/len;
@@ -923,7 +923,7 @@ double VoiceKey::TestSignChanges(
    return (double)signchanges / originalLen.as_double();
 }
 
-void VoiceKey::TestSignChangesUpdate(double & currentsignchanges, int len,
+void VoiceKey::TestSignChangesUpdate(double & currentsignchanges, size_t len,
                                      const float & a1,
                                      const float & a2,
                                      const float & z1,
@@ -985,7 +985,7 @@ double VoiceKey::TestDirectionChanges(
 
 // This method does an updating by looking at the trends
 // This will change currentdirections and atrend/trend, so be warned.
-void VoiceKey::TestDirectionChangesUpdate(double & currentdirectionchanges, int len,
+void VoiceKey::TestDirectionChangesUpdate(double & currentdirectionchanges, size_t len,
                                           int & atrend, const float & a1, const float & a2,
                                           int & ztrend, const float & z1, const float & z2)
 {

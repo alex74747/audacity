@@ -156,7 +156,7 @@ bool EffectPaulstretch::Process()
    SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
    WaveTrack *track = (WaveTrack *) iter.First();
    m_t1=mT1;
-   int count=0;
+   unsigned count = 0;
    while (track) {
       double trackStart = track->GetStartTime();
       double trackEnd = track->GetEndTime();
@@ -164,14 +164,14 @@ bool EffectPaulstretch::Process()
       double t1 = mT1 > trackEnd? trackEnd: mT1;
 
       if (t1 > t0) {
-         if (!ProcessOne(track, t0,t1,count))
+         if (!ProcessOne(track, t0, t1, count))
             return false;
       }
 
       track = (WaveTrack *) iter.Next();
       count++;
    }
-   mT1=m_t1;
+   mT1 = m_t1;
 
    ReplaceProcessedTracks(true);
 
@@ -244,7 +244,7 @@ size_t EffectPaulstretch::GetBufferSize(double rate)
    return std::max<size_t>(stmp, 128);
 }
 
-bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int count)
+bool EffectPaulstretch::ProcessOne(WaveTrack *track, double t0, double t1, unsigned count)
 {
    auto badAllocMessage = _("Requested value exceeds memory capacity.");
 

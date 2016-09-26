@@ -83,7 +83,7 @@ static size_t NumberOfBitsNeeded(size_t PowerOfTwo)
    return i;
 }
 
-int ReverseBits(size_t index, size_t NumBits)
+size_t ReverseBits(size_t index, size_t NumBits)
 {
    size_t i, rev;
 
@@ -383,10 +383,10 @@ void NewWindowFunc(int whichFunction, size_t NumSamples, bool extraSample, float
    case eWinFuncBartlett:
    {
       // Bartlett (triangular) window
-      const int nPairs = (NumSamples - 1) / 2; // whether even or odd NumSamples, this is correct
+      const auto nPairs = (NumSamples - 1) / 2; // whether even or odd NumSamples, this is correct
       const float denom = NumSamples / 2.0f;
       in[0] = 0.0f;
-      for (int ii = 1;
+      for (size_t ii = 1;
            ii <= nPairs; // Yes, <=
            ++ii) {
          const float value = ii / denom;
@@ -559,12 +559,12 @@ void DerivativeOfWindowFunc(int whichFunction, size_t NumSamples, bool extraSamp
    {
       // Bartlett (triangular) window
       // There are discontinuities in the derivative at the ends, and maybe at the midpoint
-      const int nPairs = (NumSamples - 1) / 2; // whether even or odd NumSamples, this is correct
+      const auto nPairs = (NumSamples - 1) / 2; // whether even or odd NumSamples, this is correct
       const float value = 2.0f / NumSamples;
       in[0] *=
          // Average the two limiting values of discontinuous derivative
          value / 2.0f;
-      for (int ii = 1;
+      for (size_t ii = 1;
          ii <= nPairs; // Yes, <=
          ++ii) {
          in[ii] *= value;

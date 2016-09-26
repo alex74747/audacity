@@ -112,8 +112,7 @@ void ModulePrefs::PopulateOrExchange(ShuttleGui & S)
       S.StartScroller();
       {
         S.StartMultiColumn( 2 );
-        int i;
-        for(i=0;i<(int)mModules.GetCount();i++)
+        for(unsigned i = 0; i < mModules.GetCount(); i++)
            S.TieChoice( mModules[i], mStatuses[i], &StatusChoices );
         S.EndMultiColumn();
       }
@@ -130,8 +129,7 @@ bool ModulePrefs::Apply()
 {
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
-   int i;
-   for(i=0;i<(int)mPaths.GetCount();i++)
+   for(unsigned i = 0; i < mPaths.GetCount(); i++)
       SetModuleStatus( mPaths[i], mStatuses[i] );
    return true;
 }

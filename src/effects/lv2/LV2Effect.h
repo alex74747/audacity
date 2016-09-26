@@ -90,7 +90,7 @@ public:
 };
 
 WX_DECLARE_OBJARRAY(LV2Port, LV2PortArray);
-WX_DECLARE_STRING_HASH_MAP(wxArrayInt, LV2GroupMap);
+using LV2GroupMap = std::map<wxString, std::vector<unsigned>>;
 WX_DEFINE_ARRAY_PTR(LilvInstance *, LV2SlaveArray);
 
 class LV2EffectSettingsDialog;
@@ -173,7 +173,7 @@ public:
    bool SaveUserPreset(const wxString & name) override;
 
    wxArrayString GetFactoryPresets() override;
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
    bool LoadFactoryDefaults() override;
 
    bool CanExportPresets() override;
@@ -261,10 +261,10 @@ private:
    size_t mBlockSize;
    double mSampleRate;
 
-   wxLongToLongHashMap mControlsMap;
+   std::map<size_t, size_t> mControlsMap;
    LV2PortArray mControls;
-   wxArrayInt mAudioInputs;
-   wxArrayInt mAudioOutputs;
+   std::vector<uint32_t> mAudioInputs;
+   std::vector<uint32_t> mAudioOutputs;
 
    LV2GroupMap mGroupMap;
    wxArrayString mGroups;
@@ -290,7 +290,7 @@ private:
    bool mUseGUI;
 
    char **mURIMap;
-   int mNumURIMap;
+   size_t mNumURIMap;
 
    LV2_URI_Map_Feature mUriMapFeature;
    LV2_URID_Map mURIDMapFeature;
@@ -303,7 +303,7 @@ private:
 
    LV2_Options_Interface *mOptionsInterface;
    LV2_Options_Option *mOptions;
-   int mNumOptions;
+   unsigned mNumOptions;
 
    std::vector<movable_ptr<LV2_Feature>> mFeatures;
    std::vector<LV2_Feature*> mFeaturePtrs;

@@ -5,7 +5,7 @@
 
 #define fft_type float
 struct FFTParam {
-   int *BitReversed;
+   unsigned *BitReversed;
    fft_type *SinTable;
    size_t Points;
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED

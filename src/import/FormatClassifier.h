@@ -97,7 +97,7 @@ public:
    ~FormatClassifier();
 
    FormatClassT GetResultFormat();
-   int GetResultFormatLibSndfile();
+   unsigned GetResultFormatLibSndfile();
    unsigned GetResultChannels();
 private:
    void Run();

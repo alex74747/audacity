@@ -112,10 +112,10 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    bool Delete(sampleCount start, sampleCount len);
    bool AppendAlias(const wxString &fullPath,
                     sampleCount start,
-                    size_t len, int channel, bool useOD);
+                    size_t len, unsigned channel, bool useOD);
 
    bool AppendCoded(const wxString &fName, sampleCount start,
-                            size_t len, int channel, int decodeType);
+                            size_t len, unsigned channel, unsigned decodeType);
 
    ///gets an int with OD flags so that we can determine which ODTasks should be run on this track after save/open, etc.
    unsigned int GetODFlags();
@@ -244,7 +244,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    // Private methods
    //
 
-   int FindBlock(sampleCount pos) const;
+   size_t FindBlock(sampleCount pos) const;
 
    bool AppendBlock(const SeqBlock &b);
 
@@ -258,7 +258,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
 
    void Blockify(BlockArray &list, sampleCount start, samplePtr buffer, size_t len);
 
-   bool Get(int b, samplePtr buffer, sampleFormat format,
+   bool Get(size_t b, samplePtr buffer, sampleFormat format,
       sampleCount start, size_t len) const;
 
  public:

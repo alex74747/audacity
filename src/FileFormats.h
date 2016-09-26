@@ -26,7 +26,7 @@
 /** @brief Get the number of container formats supported by libsndfile
  *
  * Uses SFC_GET_FORMAT_MAJOR_COUNT in sf_command interface */
-int sf_num_headers();
+unsigned sf_num_headers();
 
 /** @brief Get the name of a container format from libsndfile
  *
@@ -35,21 +35,21 @@ int sf_num_headers();
  * @param format_num The libsndfile format number for the container format
  * required
  */
-wxString sf_header_index_name(int format_num);
+wxString sf_header_index_name(unsigned format_num);
 
-unsigned int sf_header_index_to_type(int format_num);
+unsigned int sf_header_index_to_type(unsigned format_num);
 
 //
 // enumerating encodings
 //
 /** @brief Get the number of data encodings libsndfile supports (in any
  * container or none */
-int sf_num_encodings();
+unsigned sf_num_encodings();
 /** @brief Get the string name of the data encoding of the requested format
  *
  * uses SFC_GET_FORMAT_SUBTYPE */
-wxString sf_encoding_index_name(int encoding_num);
-unsigned int sf_encoding_index_to_subtype(int encoding_num);
+wxString sf_encoding_index_name(unsigned encoding_num);
+unsigned sf_encoding_index_to_subtype(unsigned encoding_num);
 
 //
 // getting info about an actual SF format
@@ -60,42 +60,42 @@ unsigned int sf_encoding_index_to_subtype(int encoding_num);
  * then use SFC_GET_FORMAT_INFO to get the description
  * @param format the libsndfile format to get the name for (only the container
  * part is used) */
-wxString sf_header_name(int format);
+wxString sf_header_name(unsigned format);
 /** @brief Get an abbreviated form of the string name of the specified format
  *
  * Do sf_header_name() then truncate the string at the first space in the name
  * to get just the first word of the format name.
  * @param format the libsndfile format to get the name for (only the container
  * part is used) */
-wxString sf_header_shortname(int format);
+wxString sf_header_shortname(unsigned format);
 /** @brief Get the most common file extension for the given format
  *
  * AND the given format with SF_FORMAT_TYPEMASK to get just the container
  * format, then retreive the most common extension using SFC_GET_FORMAT_INFO.
  * @param format the libsndfile format to get the name for (only the container
  * part is used) */
-wxString sf_header_extension(int format);
+wxString sf_header_extension(unsigned format);
 /** @brief Get the string name of the specified data encoding
  *
  * AND encoding_num with SF_FORMAT_SUBMASK to get only the data encoding and
  * then use SFC_GET_FORMAT_INFO to get the description
  * @param encoding_num the libsndfile encoding to get the name for (only the
  * data encoding is used) */
-wxString sf_encoding_name(int encoding_num);
+wxString sf_encoding_name(unsigned encoding_num);
 
 //
 // simple formats
 //
 
-int sf_num_simple_formats();
-SF_FORMAT_INFO *sf_simple_format(int i);
+unsigned sf_num_simple_formats();
+SF_FORMAT_INFO *sf_simple_format(unsigned i);
 
 //
 // other utility functions
 //
 
-bool sf_subtype_more_than_16_bits(unsigned int format);
-bool sf_subtype_is_integer(unsigned int format);
+bool sf_subtype_more_than_16_bits(unsigned format);
+bool sf_subtype_is_integer(unsigned format);
 
 wxArrayString sf_get_all_extensions();
 
@@ -112,7 +112,7 @@ wxString sf_normalize_name(const char *name);
 #  include <Types.h>
 # endif
 
-OSType sf_header_mactype(int format);
+OSType sf_header_mactype(unsigned format);
 #endif
 
 // This function wrapper uses a mutex to serialize calls to the SndFile library.

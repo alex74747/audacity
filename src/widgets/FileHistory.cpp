@@ -46,8 +46,8 @@ void FileHistory::AddFileToHistory(const wxString & file, bool update)
    int i = mHistory.Index(file, true);
 #endif
 
-   if (i != wxNOT_FOUND) {
-      mHistory.RemoveAt(i);
+   if (i >= 0) {
+      mHistory.RemoveAt((size_t)i);
    }
 
    if (mMaxFiles == mHistory.GetCount()) {
@@ -149,7 +149,7 @@ void FileHistory::Save(wxConfigBase & config, const wxString & group)
    config.SetPath(group);
 
    // Stored in reverse order
-   int n = mHistory.GetCount() - 1;
+   auto n = mHistory.GetCount() - 1;
    for (size_t i = 1; i <= mHistory.GetCount(); i++) {
       config.Write(wxString::Format(wxT("file%02d"), (int)i), mHistory[n--]);
    }
@@ -170,7 +170,7 @@ void FileHistory::AddFilesToMenu(wxMenu *menu)
       menu->Destroy(*iter++);
 
    for (size_t i = 0; i < mHistory.GetCount(); i++) {
-      menu->Append(mIDBase + 1 + i, mHistory[i]);
+      menu->Append(mIDBase + 1 + (int)i, mHistory[i]);
    }
 
    if (mHistory.GetCount() > 0) {

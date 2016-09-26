@@ -99,7 +99,7 @@ private:
    TimerRecordPathCtrl *NewPathControl(wxWindow *wParent, const int iID, const wxString &sCaption, const wxString &sValue);
 
    int ExecutePostRecordActions(bool bWasStopped);
-   ProgressResult PreActionDelay(int iActionIndex, TimerRecordCompletedActions eCompletedActions);
+   ProgressResult PreActionDelay(unsigned iActionIndex, TimerRecordCompletedActions eCompletedActions);
 
 private:
    wxDateTime m_DateTime_Start;
@@ -136,9 +136,9 @@ private:
    wxFileName m_fnAutoSaveFile;
    bool m_bAutoExportEnabled;
    wxFileName m_fnAutoExportFile;
-   int m_iAutoExportFormat;
-   int m_iAutoExportSubFormat;
-   int m_iAutoExportFilterIndex;
+   unsigned m_iAutoExportFormat;
+   unsigned m_iAutoExportSubFormat;
+   unsigned m_iAutoExportFilterIndex;
    bool m_bProjectAlreadySaved;
 
    // Variables for After Timer Recording Option

@@ -1872,7 +1872,7 @@ wxAccStatus NumericTextCtrlAx::GetChild(int childId, wxAccessible **child)
 // Gets the number of children.
 wxAccStatus NumericTextCtrlAx::GetChildCount(int *childCount)
 {
-   *childCount = mCtrl->mDigits.GetCount();
+   *childCount = (int)mCtrl->mDigits.GetCount();
 
    return wxACC_OK;
 }
@@ -1905,7 +1905,7 @@ wxAccStatus NumericTextCtrlAx::GetDescription(int WXUNUSED(childId), wxString *d
 // If this object has the focus, child should be 'this'.
 wxAccStatus NumericTextCtrlAx::GetFocus(int *childId, wxAccessible **child)
 {
-   *childId = mCtrl->GetFocusedDigit();
+   *childId = (int)mCtrl->GetFocusedDigit();
    *child = this;
 
    return wxACC_OK;
@@ -1948,7 +1948,7 @@ wxAccStatus NumericTextCtrlAx::GetLocation(wxRect & rect, int elementId)
    {
 //      rect.x += mCtrl->mFields[elementId - 1].fieldX;
 //      rect.width =  mCtrl->mFields[elementId - 1].fieldW;
-        rect = mCtrl->mDigits[elementId - 1].digitBox;
+        rect = mCtrl->mDigits[(size_t)elementId - 1].digitBox;
         rect.SetPosition(mCtrl->ClientToScreen(rect.GetPosition()));
    }
    else
@@ -1967,7 +1967,7 @@ wxAccStatus NumericTextCtrlAx::GetName(int childId, wxString *name)
    NumericFieldArray & mFields = mCtrl->mFields;
 
    wxString value = mCtrl->GetString();
-   int field = mCtrl->GetFocusedField();
+   auto field = mCtrl->GetFocusedField();
 
    // Return the entire string including the control label
    // when the requested child ID is wxACC_SELF.  (Mainly when
@@ -1987,9 +1987,9 @@ wxAccStatus NumericTextCtrlAx::GetName(int childId, wxString *name)
    }
    // The user has moved from one field of the time to another so
    // report the value of the field and the field's label.
-   else if (mLastField != field) {
+   else if (mLastField != (int)field) {
       wxString label = mFields[field - 1].label;
-      int cnt = mFields.GetCount();
+      auto cnt = mFields.GetCount();
       wxString decimal = wxLocale::GetInfo(wxLOCALE_DECIMAL_POINT, wxLOCALE_CAT_NUMBER);
 
       // If the NEW field is the last field, then check it to see if
@@ -2024,7 +2024,7 @@ wxAccStatus NumericTextCtrlAx::GetName(int childId, wxString *name)
       }
       // If the field following this one represents fractions of a
       // second then use that label instead of the decimal point.
-      else if (label == decimal && field == cnt - 1) {
+      else if (label == decimal && field + 1 == cnt) {
          label = mFields[field].label;
       }
 
@@ -2032,14 +2032,14 @@ wxAccStatus NumericTextCtrlAx::GetName(int childId, wxString *name)
               wxT(" ") +
               label +
               wxT(", ") +     // comma inserts a slight pause
-              mCtrl->GetString().at(mCtrl->mDigits[childId - 1].pos);
-      mLastField = field;
+              mCtrl->GetString().at(mCtrl->mDigits[(size_t)childId - 1].pos);
+      mLastField = (int)field;
       mLastDigit = childId;
    }
    // The user has moved from one digit to another within a field so
    // just report the digit under the cursor.
    else if (mLastDigit != childId) {
-      *name = mCtrl->GetString().at(mCtrl->mDigits[childId - 1].pos);
+      *name = mCtrl->GetString().at(mCtrl->mDigits[(size_t)childId - 1].pos);
       mLastDigit = childId;
    }
    // The user has updated the value of a field, so report the field's

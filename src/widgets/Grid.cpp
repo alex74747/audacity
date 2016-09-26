@@ -337,7 +337,7 @@ bool ChoiceEditor::EndEdit(int WXUNUSED(row), int WXUNUSED(col),
       return false;
    }
 
-   wxString val = mChoices[sel];
+   wxString val = mChoices[(size_t)sel];
    bool changed = val != mOld;
 
    if (changed)
@@ -366,7 +366,9 @@ void ChoiceEditor::SetChoices(const wxArrayString &choices)
 
 wxString ChoiceEditor::GetValue() const
 {
-   return mChoices[Choice()->GetSelection()];
+   auto choice = Choice()->GetSelection();
+   wxASSERT(choice >= 0);
+   return mChoices[(size_t)choice];
 }
 
 ///
@@ -411,7 +413,7 @@ Grid::Grid(wxWindow *parent,
 Grid::~Grid()
 {
 #if wxUSE_ACCESSIBILITY
-   int cnt = mChildren.size();
+   auto cnt = mChildren.size();
    while (cnt--) {
       // PRL: I found this loop destroying right-to-left.
       // Is the sequence of destruction important?
@@ -567,54 +569,54 @@ void Grid::ClearGrid()
    return;
 }
 
-bool Grid::InsertRows(int pos, int numRows, bool updateLabels)
+bool Grid::InsertRows(size_t pos, size_t numRows, bool updateLabels)
 {
-   bool res = wxGrid::InsertRows(pos, numRows, updateLabels);
+   bool res = wxGrid::InsertRows((int)pos, (int)numRows, updateLabels);
 
    mAx->TableUpdated();
 
    return res;
 }
 
-bool Grid::AppendRows(int numRows, bool updateLabels)
+bool Grid::AppendRows(size_t numRows, bool updateLabels)
 {
-   bool res = wxGrid::AppendRows(numRows, updateLabels);
+   bool res = wxGrid::AppendRows((int)numRows, updateLabels);
 
    mAx->TableUpdated();
 
    return res;
 }
 
-bool Grid::DeleteRows(int pos, int numRows, bool updateLabels)
+bool Grid::DeleteRows(size_t pos, size_t numRows, bool updateLabels)
 {
-   bool res = wxGrid::DeleteRows(pos, numRows, updateLabels);
+   bool res = wxGrid::DeleteRows((int)pos, (int)numRows, updateLabels);
 
    mAx->TableUpdated();
 
    return res;
 }
 
-bool Grid::InsertCols(int pos, int numCols, bool updateLabels)
+bool Grid::InsertCols(size_t pos, size_t numCols, bool updateLabels)
 {
-   bool res = wxGrid::InsertCols(pos, numCols, updateLabels);
+   bool res = wxGrid::InsertCols((int)pos, (int)numCols, updateLabels);
 
    mAx->TableUpdated();
 
    return res;
 }
 
-bool Grid::AppendCols(int numCols, bool updateLabels)
+bool Grid::AppendCols(size_t numCols, bool updateLabels)
 {
-   bool res = wxGrid::AppendCols(numCols, updateLabels);
+   bool res = wxGrid::AppendCols((int)numCols, updateLabels);
 
    mAx->TableUpdated();
 
    return res;
 }
 
-bool Grid::DeleteCols(int pos, int numCols, bool updateLabels)
+bool Grid::DeleteCols(size_t pos, size_t numCols, bool updateLabels)
 {
-   bool res = wxGrid::DeleteCols(pos, numCols, updateLabels);
+   bool res = wxGrid::DeleteCols((int)pos, (int)numCols, updateLabels);
 
    mAx->TableUpdated();
 

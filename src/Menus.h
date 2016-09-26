@@ -47,7 +47,7 @@ double NearestZeroCrossing(double t0);
 
 public:
 //Adds label and returns index of label in labeltrack.
-int DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
+size_t DoAddLabel(const SelectedRegion& region, bool preserveFocus = false);
 
 private:
 
@@ -367,10 +367,10 @@ void OnCursorTrackEnd();
 void OnCursorSelStart();
 void OnCursorSelEnd();
 
-void OnAlignNoSync(int index);
-void OnAlign(int index);
-void OnAlignMoveSel(int index);
-void HandleAlign(int index, bool moveSel);
+void OnAlignNoSync(size_t index);
+void OnAlign(size_t index);
+void OnAlignMoveSel(size_t index);
+void HandleAlign(size_t index, bool moveSel);
 size_t mAlignLabelsCount;
 
 #ifdef EXPERIMENTAL_SCOREALIGN
@@ -407,10 +407,10 @@ public:
 };
 
 bool OnEffect(const PluginID & ID, int flags = OnEffectFlags::kNone);
-void OnRepeatLastEffect(int index);
+void OnRepeatLastEffect();
 void OnApplyChain();
 void OnEditChains();
-void OnStereoToMono(int index);
+void OnStereoToMono();
 void OnManagePluginsMenu(EffectType Type);
 void OnManageGenerators();
 void OnManageEffects();

@@ -297,10 +297,12 @@ OSType AudioUnitEffectsModule::ToOSType(const wxString & type)
 {
    wxCharBuffer buf = type.ToUTF8();
 
-   OSType rev = ((unsigned char)buf.data()[0]) << 24 |
-                ((unsigned char)buf.data()[1]) << 16 |
-                ((unsigned char)buf.data()[2]) << 8 |
-                ((unsigned char)buf.data()[3]);
+   auto rev = (OSType)(
+      ((unsigned char)buf.data()[0]) << 24 |
+      ((unsigned char)buf.data()[1]) << 16 |
+      ((unsigned char)buf.data()[2]) << 8 |
+      ((unsigned char)buf.data()[3])
+   );
 
    return rev;
 }
@@ -517,7 +519,7 @@ void AudioUnitEffectExportDialog::PopulateOrExchange(ShuttleGui & S)
 
    for (size_t i = 0, cnt = presets.GetCount(); i < cnt; i++)
    {
-      mList->InsertItem(i, presets[i]);
+      mList->InsertItem((long)i, presets[i]);
    }
 
    mList->SetColumnWidth(0, wxLIST_AUTOSIZE);
@@ -708,8 +710,8 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    for (size_t i = 0, cnt = presets.GetCount(); i < cnt; i++)
    {
       fn = presets[i];
-      mList->InsertItem(i, fn.GetName());
-      mList->SetItem(i, 1, fn.GetPath());
+      mList->InsertItem((long)i, fn.GetName());
+      mList->SetItem((long)i, 1, fn.GetPath());
    }
 
    mList->SetColumnWidth(0, wxLIST_AUTOSIZE);
@@ -990,7 +992,7 @@ bool AudioUnitEffect::SupportsAutomation()
          return false;
       }
 
-      if (info.flags & kAudioUnitParameterFlag_IsWritable)
+      if (info.flags & (unsigned long)kAudioUnitParameterFlag_IsWritable)
       {
          // All we need is one
          return true;
@@ -1615,7 +1617,7 @@ bool AudioUnitEffect::SaveUserPreset(const wxString & name)
    return SaveParameters(name);
 }
 
-bool AudioUnitEffect::LoadFactoryPreset(int id)
+bool AudioUnitEffect::LoadFactoryPreset(unsigned id)
 {
    OSStatus result;
 
@@ -1634,12 +1636,12 @@ bool AudioUnitEffect::LoadFactoryPreset(int id)
       return false;
    }
 
-   if (id < 0 || id >= CFArrayGetCount(array))
+   if ((long)id >= CFArrayGetCount(array))
    {
       return false;
    }
 
-   AUPreset *preset = (AUPreset *) CFArrayGetValueAtIndex(array, id);
+   AUPreset *preset = (AUPreset *) CFArrayGetValueAtIndex(array, (long)id);
 
    result = AudioUnitSetProperty(mUnit,
                                  kAudioUnitProperty_PresentPreset,

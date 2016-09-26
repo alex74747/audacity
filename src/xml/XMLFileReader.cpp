@@ -55,7 +55,7 @@ bool XMLFileReader::Parse(XMLTagHandler *baseHandler,
    do {
       size_t len = fread(buffer, 1, bufferSize, theXMLFile.fp());
       done = (len < bufferSize);
-      if (!XML_Parse(mParser, buffer, len, done)) {
+      if (!XML_Parse(mParser, buffer, (int)len, done)) {
          mErrorStr.Printf(_("Error: %hs at line %lu"),
                           XML_ErrorString(XML_GetErrorCode(mParser)),
                           (long unsigned int)XML_GetCurrentLineNumber(mParser));
@@ -126,6 +126,8 @@ void XMLFileReader::charHandler(void *userData, const char *s, int len)
    XMLFileReader *This = (XMLFileReader *)userData;
    Handlers &handlers = This->mHandler;
 
-   if (XMLTagHandler *const handler = handlers.back())
-      handler->ReadXMLContent(s, len);
+   if (XMLTagHandler *const handler = handlers.back()) {
+      wxASSERT(len >= 0);
+      handler->ReadXMLContent(s, (size_t)len);
+   }
 }

@@ -135,7 +135,7 @@ class AUDACITY_DLL_API Mixer {
    samplePtr GetBuffer();
 
    /// Retrieve one of the non-interleaved buffers
-   samplePtr GetBuffer(int channel);
+   samplePtr GetBuffer(unsigned channel);
 
  private:
 

@@ -203,9 +203,9 @@ void XMLWriter::WriteSubTree(const wxString &value)
 wxString XMLWriter::XMLEsc(const wxString & s)
 {
    wxString result;
-   int len = s.Length();
+   auto len = s.Length();
 
-   for(int i=0; i<len; i++) {
+   for(size_t i = 0; i < len; i++) {
       wxUChar c = s.GetChar(i);
 
       switch (c) {

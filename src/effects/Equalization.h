@@ -132,7 +132,7 @@ private:
    // low range of human hearing
    enum {loFreqI=20};
 
-   bool ProcessOne(int count, WaveTrack * t,
+   bool ProcessOne(unsigned count, WaveTrack * t,
                    sampleCount start, sampleCount len);
    bool CalcFilter();
    void Filter(size_t len, float *buffer);
@@ -147,8 +147,8 @@ private:
    void SaveCurves(const wxString &fileName = wxEmptyString);
    // Merge NEW curves only or update all factory presets.
    void UpdateDefaultCurves( bool updateAll = false);
-   void Select(int sel);
-   void setCurve(int currentCurve);
+   void Select(size_t sel);
+   void setCurve(size_t currentCurve);
    void setCurve(const wxString &curveName);
    void setCurve(void);
    bool GetDefaultFileName(wxFileName &fileName);

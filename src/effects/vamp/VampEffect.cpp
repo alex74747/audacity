@@ -183,7 +183,7 @@ bool VampEffect::GetAutomationParameters(EffectAutomationParameters & parms)
             wxString choice = wxString::FromUTF8(mParameters[p].valueNames[i].c_str());
             if (size_t(value - mParameters[p].minValue + 0.5) == i)
             {
-               val = i;
+               val = (int)i;
             }
             choices.Add(choice);
          }
@@ -359,7 +359,7 @@ bool VampEffect::Process()
 
    TrackListOfKindIterator iter(Track::Wave, inputTracks());
 
-   int count = 0;
+   unsigned count = 0;
 
    WaveTrack *left = (WaveTrack *)iter.First();
 
@@ -485,7 +485,7 @@ bool VampEffect::Process()
          // Truncation in case of very long tracks!
          Vamp::RealTime timestamp = Vamp::RealTime::frame2RealTime(
             (long)( ls.as_long_long() ),
-            (int)(mRate + 0.5)
+            (unsigned)(mRate + 0.5)
          );
 
          Vamp::Plugin::FeatureSet features = mPlugin->process(
@@ -617,7 +617,7 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                    mParameters[p].minValue == 0.0 &&
                    mParameters[p].maxValue == 1.0)
                {
-                  S.Id(ID_Toggles + p);
+                  S.Id(ID_Toggles + (long)p);
                   mToggles[p] = S.AddCheckBox(wxT(""),
                                               value > 0.5 ? wxT("true") : wxT("false"));
                   mToggles[p]->SetName(labelText);
@@ -650,7 +650,7 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                      choices.Add(choice);
                   }
 
-                  S.Id(ID_Choices + p);
+                  S.Id(ID_Choices + (long)p);
                   mChoices[p] = S.AddChoice(wxT(""), selected, &choices);
                   mChoices[p]->SetName(labelText);
                   mChoices[p]->SetSizeHints(-1, -1);
@@ -677,7 +677,7 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                               NUM_VAL_ONE_TRAILING_ZERO;
                   vld.SetStyle(style);
 
-                  S.Id(ID_Texts + p);
+                  S.Id(ID_Texts + (long)p);
                   mFields[p] = S.AddTextBox(wxT(""), wxT(""), 12);
                   mFields[p]->SetName(labelText);
                   mFields[p]->SetValidator(vld);
@@ -692,7 +692,7 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                   S.AddPrompt(str);
 
                   S.SetStyle(wxSL_HORIZONTAL);
-                  S.Id(ID_Sliders + p);
+                  S.Id(ID_Sliders + (long)p);
                   mSliders[p] = S.AddSlider(wxT(""), 0, 1000, 0);
                   mSliders[p]->SetName(labelText);
                   mSliders[p]->SetSizeHints(150, -1);
@@ -788,7 +788,7 @@ void VampEffect::UpdateFromPlugin()
                mParameters[p].quantizeStep == 1.0 &&
                !mParameters[p].valueNames.empty())
       {
-         mChoices[p]->SetSelection(size_t(value - mParameters[p].minValue + 0.5));
+         mChoices[p]->SetSelection((int)(value - mParameters[p].minValue + 0.5));
       }
       else
       {
@@ -816,7 +816,7 @@ void VampEffect::UpdateFromPlugin()
 
 void VampEffect::OnCheckBox(wxCommandEvent &event)
 {
-   int p = event.GetId() - ID_Toggles;
+   auto p = (size_t)(event.GetId() - ID_Toggles);
 
    mPlugin->setParameter(mParameters[p].identifier, mToggles[p]->GetValue());
 }
@@ -829,17 +829,19 @@ void VampEffect::OnChoice(wxCommandEvent & evt)
    if (p == ID_Program)
    {
       Vamp::Plugin::ProgramList programs = mPlugin->getPrograms();
-      mPlugin->selectProgram(programs[evt.GetInt()]);
+      auto index = evt.GetInt();
+      wxASSERT(index >= 0);
+      mPlugin->selectProgram(programs[(size_t)index]);
       UpdateFromPlugin();
       return;
    }
 
-   mPlugin->setParameter(mParameters[p - ID_Choices].identifier, evt.GetInt());
+   mPlugin->setParameter(mParameters[(size_t)(p - ID_Choices)].identifier, evt.GetInt());
 }
 
 void VampEffect::OnSlider(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Sliders;
+   auto p = (size_t)(evt.GetId() - ID_Sliders);
 
    float lower = mParameters[p].minValue;
    float upper = mParameters[p].maxValue;
@@ -866,7 +868,7 @@ void VampEffect::OnSlider(wxCommandEvent & evt)
 
 void VampEffect::OnTextCtrl(wxCommandEvent & evt)
 {
-   int p = evt.GetId() - ID_Texts;
+   auto p = (size_t)(evt.GetId() - ID_Texts);
 
    mFields[p]->GetValidator()->TransferFromWindow();
 

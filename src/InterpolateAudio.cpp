@@ -8,6 +8,7 @@
 
 **********************************************************************/
 
+#include <algorithm>
 #include <math.h>
 #include <stdlib.h>
 
@@ -17,33 +18,20 @@
 #include "Matrix.h"
 #include "SampleFormat.h"
 
-static inline int imin(int x, int y)
-{
-   return x<y? x: y;
-}
-
-static inline int imax(int x, int y)
-{
-   return x>y? x: y;
-}
-
 // This function is a really dumb, simple way to interpolate audio,
 // if the more general InterpolateAudio function below doesn't have
 // enough data to work with.  If the bad samples are in the middle,
 // it's literally linear.  If it's on either edge, we add some decay
 // back to zero.
-static void LinearInterpolateAudio(float *buffer, int len,
-                                   int firstBad, int numBad)
+static void LinearInterpolateAudio(float *buffer, size_t len,
+                                   size_t firstBad, size_t numBad)
 {
-   int i;
-
    float decay = 0.9f;
 
-   if (firstBad==0) {
-      float delta = buffer[numBad] - buffer[numBad+1];
+   if (firstBad == 0) {
+      float delta = buffer[numBad] - buffer[numBad + 1];
       float value = buffer[numBad];
-      i = numBad - 1;
-      while (i >= 0) {
+      for (auto i = numBad; i--;) {
          value += delta;
          buffer[i] = value;
          value *= decay;
@@ -51,10 +39,11 @@ static void LinearInterpolateAudio(float *buffer, int len,
          i--;
       }
    }
+   // ???????
    else if (firstBad + numBad == len) {
-      float delta = buffer[firstBad-1] - buffer[firstBad-2];
-      float value = buffer[firstBad-1];
-      i = firstBad;
+      float delta = buffer[firstBad - 1] - buffer[firstBad - 2];
+      float value = buffer[firstBad - 1];
+      auto i = firstBad;
       while (i < firstBad + numBad) {
          value += delta;
          buffer[i] = value;
@@ -64,11 +53,11 @@ static void LinearInterpolateAudio(float *buffer, int len,
       }
    }
    else {
-      float v1 = buffer[firstBad-1];
-      float v2 = buffer[firstBad+numBad];
+      float v1 = buffer[firstBad - 1];
+      float v2 = buffer[firstBad + numBad];
       float value = v1;
-      float delta = (v2 - v1) / (numBad+1);
-      i = firstBad;
+      float delta = (v2 - v1) / (numBad + 1);
+      auto i = firstBad;
       while (i < firstBad + numBad) {
          value += delta;
          buffer[i] = value;
@@ -89,8 +78,14 @@ void InterpolateAudio(float *buffer, const size_t len,
             numBad < len &&
             firstBad+numBad <= len);
 
-   if(numBad >= len)
+   if(len > 0 &&
+      numBad < len - 1 &&
+      firstBad + numBad < len)
+      ;
+   else {
+      wxASSERT(false);
       return;  //should never have been called!
+   }
 
    if (firstBad == 0) {
       // The algorithm below has a weird asymmetry in that it
@@ -158,8 +153,8 @@ void InterpolateAudio(float *buffer, const size_t len,
    // which encodes the autoregressive relationship between
    // elements of the sequence.
    Matrix A(N-P, N);
-   for(size_t row=0; row<N-P; row++) {
-      for(size_t col=0; col<P; col++)
+   for(size_t row = 0; row + P < N; row++) {
+      for(size_t col = 0; col < P; col++)
          A[row][row+col] = -a[col];
       A[row][row+P] = 1;
    }
@@ -170,10 +165,10 @@ void InterpolateAudio(float *buffer, const size_t len,
    // not contiguous, but currently it assumes they are.
    //   "u" is for unknown (bad)
    //   "k" is for known (good)
-   Matrix Au = MatrixSubset(A, 0, N-P, firstBad, numBad);
-   Matrix A_left = MatrixSubset(A, 0, N-P, 0, firstBad);
-   Matrix A_right = MatrixSubset(A, 0, N-P,
-                                 firstBad+numBad, N-(firstBad+numBad));
+   Matrix Au = MatrixSubset(A, 0, N - P, firstBad, numBad);
+   Matrix A_left = MatrixSubset(A, 0, N - P, 0, firstBad);
+   Matrix A_right = MatrixSubset(A, 0, N - P,
+                                 firstBad + numBad, N - (firstBad + numBad));
    Matrix Ak = MatrixConcatenateCols(A_left, A_right);
 
    const Vector &s_left = VectorSubset(s, 0, firstBad);

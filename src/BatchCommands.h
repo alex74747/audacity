@@ -27,7 +27,7 @@ class BatchCommands final {
    bool ApplyChain(const wxString & filename = wxT(""));
    bool ApplyCommand( const wxString & command, const wxString & params );
    bool ApplyCommandInBatchMode(const wxString & command, const wxString &params);
-   bool ApplySpecialCommand(int iCommand, const wxString & command,const wxString & params);
+   bool ApplySpecialCommand(size_t iCommand, const wxString & command,const wxString & params);
    bool ApplyEffectCommand(const PluginID & ID, const wxString & command, const wxString & params);
    bool ReportAndSkip( const wxString & command, const wxString & params );
    void AbortBatch();
@@ -55,12 +55,13 @@ class BatchCommands final {
    bool DeleteChain(const wxString & name);
    bool RenameChain(const wxString & oldchain, const wxString & newchain);
 
-   void AddToChain(const wxString & command, int before = -1);
-   void AddToChain(const wxString & command, const wxString & params, int before = -1);
-   void DeleteFromChain(int index);
-   wxString GetCommand(int index);
-   wxString GetParams(int index);
-   int GetCount();
+   void AddToChain(const wxString & command);
+   void AddToChain(const wxString & command, size_t before);
+   void AddToChain(const wxString & command, const wxString & params, size_t before);
+   void DeleteFromChain(size_t index);
+   wxString GetCommand(size_t index);
+   wxString GetParams(size_t index);
+   size_t GetCount();
 
    void SetWavToMp3Chain();
 

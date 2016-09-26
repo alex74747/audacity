@@ -138,7 +138,7 @@ class VSTEffect final : public wxEvtHandler,
    bool SaveUserPreset(const wxString & name) override;
 
    wxArrayString GetFactoryPresets() override;
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
    bool LoadFactoryDefaults() override;
 
    // EffectUIClientInterface implementation
@@ -180,7 +180,7 @@ private:
    bool SaveParameters(const wxString & group);
 
    // Base64 encoding and decoding
-   static wxString b64encode(const void *in, int len);
+   static wxString b64encode(const void *in, size_t len);
    static int b64decode(const wxString &in, void *out);
 
    // Realtime
@@ -210,7 +210,7 @@ private:
    bool LoadFXB(const wxFileName & fn);
    bool LoadFXP(const wxFileName & fn);
    bool LoadXML(const wxFileName & fn);
-   bool LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bool dryrun);
+   bool LoadFXProgram(unsigned char **bptr, size_t & len, int index, bool dryrun);
    void SaveFXB(const wxFileName & fn);
    void SaveFXP(const wxFileName & fn);
    void SaveXML(const wxFileName & fn);

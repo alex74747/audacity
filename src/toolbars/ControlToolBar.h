@@ -120,7 +120,7 @@ class ControlToolBar final : public ToolBar {
       const wxChar *label);
 
    static
-   void MakeAlternateImages(AButton &button, int idx,
+   void MakeAlternateImages(AButton &button, unsigned idx,
                             teBmps eEnabledUp,
                             teBmps eEnabledDown,
                             teBmps eDisabled);

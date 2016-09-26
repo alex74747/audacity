@@ -1750,9 +1750,10 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
    float zoomMin, zoomMax;
    track->GetDisplayBounds(&zoomMin, &zoomMax);
 
-   std::vector<double> vEnv(mid.width);
+   wxASSERT(mid.width >= 0);
+   std::vector<double> vEnv((size_t)mid.width);
    double *const env = &vEnv[0];
-   clip->GetEnvelope()->GetValues(env, mid.width, leftOffset, zoomInfo);
+   clip->GetEnvelope()->GetValues(env, (size_t)mid.width, leftOffset, zoomInfo);
 
    // Draw the background of the track, outlining the shape of
    // the envelope and using a colored pen for the selected
@@ -1856,7 +1857,9 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
             if (jj > 0)
                fisheyeDisplay.where[jj - skippedLeft] =
                1 + fisheyeDisplay.where[jj - skippedLeft - 1];
-            fisheyeDisplay.width -= skipped;
+            // skipped is not more than rect.width
+            // which equals fisheyeDisplay.width
+            fisheyeDisplay.width -= (unsigned)skipped;
             // Get a wave display for the fisheye, uncached.
             if (rect.width > 0)
                if (!clip->GetWaveDisplay(
@@ -1881,9 +1884,9 @@ void TrackArtist::DrawClipWaveform(const WaveTrack *track,
 
       if (rect.width > 0) {
          if (!showIndividualSamples) {
-            std::vector<double> vEnv2(rect.width);
+            std::vector<double> vEnv2((size_t)rect.width);
             double *const env2 = &vEnv2[0];
-            clip->GetEnvelope()->GetValues(env2, rect.width, leftOffset, zoomInfo);
+            clip->GetEnvelope()->GetValues(env2, (size_t)rect.width, leftOffset, zoomInfo);
             DrawMinMaxRMS(dc, rect, env2,
                zoomMin, zoomMax,
                dB, dBRange,
@@ -2013,7 +2016,7 @@ static inline float findValue
    if ((int)(bin1) == (int)(bin0)) {
       value = spectrum[(int)(bin0)];
    } else {
-      float binwidth= bin1 - bin0;
+      float binwidth = bin1 - bin0;
       value = spectrum[(int)(bin0)] * (1.f - bin0 + (int)bin0);
 
       bin0 = 1 + (int)(bin0);
@@ -2032,7 +2035,7 @@ static inline float findValue
 #else
    // Maximum method, and no apportionment of any single bins over multiple pixel rows
    // See Bug971
-   int index, limitIndex;
+   unsigned index, limitIndex;
    if (autocorrelation) {
       // bin = 2 * nBins / (nBins - 1 - array_index);
       // Solve for index
@@ -2173,7 +2176,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
 
    // nearest frequency to each pixel row from number scale, for selecting
    // the desired fft bin(s) for display on that row
-   float *bins = (float*)alloca(sizeof(*bins)*(hiddenMid.height + 1));
+   float *bins = (float*)alloca(sizeof(*bins)*((unsigned)hiddenMid.height + 1));
    {
       const NumberScale numberScale( settings.GetScale( minFreq, maxFreq ) );
 
@@ -2234,7 +2237,9 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
    }
    else {
       // Update the spectrum pixel cache
-      clip->mSpecPxCache = std::make_unique<SpecPxCache>(hiddenMid.width * hiddenMid.height);
+      clip->mSpecPxCache =
+         std::make_unique<SpecPxCache>
+            ((size_t)(hiddenMid.width * hiddenMid.height));
       clip->mSpecPxCache->valid = true;
       clip->mSpecPxCache->scaleType = scaleType;
       clip->mSpecPxCache->gain = gain;
@@ -2273,7 +2278,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-      for (int xx = 0; xx < hiddenMid.width; ++xx) {
+      for (unsigned xx = 0; (int)xx < hiddenMid.width; ++xx) {
 #ifdef EXPERIMENTAL_FIND_NOTES
          int maximas = 0;
          const int x0 = nBins * xx;
@@ -2384,7 +2389,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
                   value = findValue
                      (freq + nBins * xx, bin, nextBin, nBins, autocorrelation, gain, range);
                }
-               clip->mSpecPxCache->values[xx * hiddenMid.height + yy] = value;
+               clip->mSpecPxCache->values[xx * (unsigned)hiddenMid.height + yy] = value;
             } // logF
          } // each yy
       } // each xx
@@ -2398,10 +2403,10 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
 
    const bool isSpectral = settings.SpectralSelectionEnabled();
    const bool hidden = (ZoomInfo::HIDDEN == zoomInfo.GetFisheyeState());
-   const int begin = hidden
+   const auto begin = (size_t)(hidden
       ? 0
-      : std::max(0, (int)(zoomInfo.GetFisheyeLeftBoundary(-leftOffset)));
-   const int end = hidden
+      : std::max(0, (int)(zoomInfo.GetFisheyeLeftBoundary(-leftOffset))));
+   const auto end = (size_t)(hidden
       ? 0
       : std::min(mid.width, (int)(zoomInfo.GetFisheyeRightBoundary(-leftOffset)));
    const size_t numPixels = std::max(0, end - begin);
@@ -2411,7 +2416,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
        t0, settings.windowType,
        settings.WindowSize(), zeroPaddingFactor, settings.frequencyGain);
    if (numPixels > 0) {
-      for (int ii = begin; ii < end; ++ii) {
+      for (auto ii = begin; ii < end; ++ii) {
          const double time = zoomInfo.PositionToTime(ii, -leftOffset) - tOffset;
          specCache.where[ii - begin] = sampleCount(0.5 + rate * time);
       }
@@ -2445,7 +2450,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
           uncached = 0;
       }
       else {
-          int specIndex = (xx - fisheyeLeft) * nBins;
+          auto specIndex = (xx - fisheyeLeft) * nBins;
           wxASSERT(specIndex >= 0 && specIndex < (int)specCache.freq.size());
           uncached = &specCache.freq[specIndex];
       }

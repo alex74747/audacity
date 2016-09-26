@@ -127,10 +127,10 @@ public:
    ProgressResult Import(TrackFactory *trackFactory, TrackHolders &outTracks,
               Tags *tags) override;
 
-   wxInt32 GetStreamCount() override
+   unsigned GetStreamCount() override
    {
-      if (mVorbisFile)
-         return mVorbisFile->links;
+      if (mVorbisFile && mVorbisFile->links >= 0)
+         return (unsigned)mVorbisFile->links;
       else
          return 0;
    }
@@ -140,11 +140,11 @@ public:
       return mStreamInfo;
    }
 
-   void SetStreamUsage(wxInt32 StreamID, bool Use) override
+   void SetStreamUsage(unsigned StreamID, bool Use) override
    {
       if (mVorbisFile)
       {
-         if (StreamID < mVorbisFile->links)
+         if ((int)StreamID < mVorbisFile->links)
             mStreamUsage[StreamID] = (Use ? 1 : 0);
       }
    }
@@ -240,7 +240,8 @@ ProgressResult OggImportFileHandle::Import(TrackFactory *trackFactory, TrackHold
 
    //Number of streams used may be less than mVorbisFile->links,
    //but this way bitstream matches array index.
-   mChannels.resize(mVorbisFile->links);
+   if (mVorbisFile->links >= 0)
+      mChannels.resize((size_t)mVorbisFile->links);
 
    int i = -1;
    for (auto &link : mChannels)
@@ -257,7 +258,8 @@ ProgressResult OggImportFileHandle::Import(TrackFactory *trackFactory, TrackHold
 
       vorbis_info *vi = ov_info(mVorbisFile.get(), i);
 
-      link.resize(vi->channels);
+      if (vi->channels >= 0)
+         link.resize((size_t)vi->channels);
 
       int c = -1;
       for (auto &channel : link) {
@@ -341,7 +343,15 @@ ProgressResult OggImportFileHandle::Import(TrackFactory *trackFactory, TrackHold
             break;
          }
 
-         samplesRead = bytesRead / mVorbisFile->vi[bitstream].channels / sizeof(short);
+         /*else if (bits < 0)
+         continue;
+
+      auto bitstream = (unsigned)bits;
+      if (mVorbisFile->vi[bitstream].channels <= 0)
+         continue;
+          */
+
+         samplesRead = (unsigned long)bytesRead / mVorbisFile->vi[bitstream].channels / sizeof(short);
 
          /* give the data to the wavetracks */
          auto iter = mChannels.begin();

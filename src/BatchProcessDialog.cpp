@@ -116,8 +116,8 @@ void BatchProcessDialog::PopulateOrExchange(ShuttleGui &S)
    S.EndVerticalLay();
 
    wxArrayString names = mBatchCommands.GetNames();
-   for (int i = 0; i < (int)names.GetCount(); i++) {
-      mChains->InsertItem(i, names[i]);
+   for (size_t i = 0; i < names.GetCount(); i++) {
+      mChains->InsertItem((long)i, names[i]);
    }
 
    // Get and validate the currently active chain
@@ -267,11 +267,11 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    wxString type = gPrefs->Read(wxT("/DefaultOpenType"),mask.BeforeFirst(wxT('|')));
    // Convert the type to the filter index
    int index = mask.First(type + wxT("|"));
-   if (index == wxNOT_FOUND) {
+   if (index < 0) {
       index = 0;
    }
    else {
-      index = mask.Left(index).Freq(wxT('|')) / 2;
+      index = mask.Left((size_t)index).Freq(wxT('|')) / 2;
       if (index < 0) {
          index = 0;
       }
@@ -323,9 +323,8 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    }
    S.EndVerticalLay();
 
-   int i;
-   for (i = 0; i < (int)files.GetCount(); i++ ) {
-      mList->InsertItem(i, files[i], i == 0);
+   for (size_t i = 0; i < files.GetCount(); i++ ) {
+      mList->InsertItem((long)i, files[i], i == 0);
    }
 
    // Set the column size for the files list.
@@ -347,14 +346,14 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    Hide();
 
    mBatchCommands.ReadChain(name);
-   for (i = 0; i < (int)files.GetCount(); i++) {
+   for (size_t i = 0; i < files.GetCount(); i++) {
       wxWindowDisabler wd(pD);
       if (i > 0) {
          //Clear the arrow in previous item.
-         mList->SetItemImage(i - 1, 0, 0);
+         mList->SetItemImage((long)i - 1, 0, 0);
       }
-      mList->SetItemImage(i, 1, 1);
-      mList->EnsureVisible(i);
+      mList->SetItemImage((long)i, 1, 1);
+      mList->EnsureVisible((long)i);
 
       project->Import(files[i]);
       project->OnSelectAll();
@@ -577,11 +576,10 @@ void EditChainsDialog::PopulateOrExchange(ShuttleGui & S)
 void EditChainsDialog::PopulateChains()
 {
    wxArrayString names = mBatchCommands.GetNames();
-   int i;
 
    mChains->DeleteAllItems();
-   for (i = 0; i < (int)names.GetCount(); i++) {
-      mChains->InsertItem(i, names[i]);
+   for (size_t i = 0; i < names.GetCount(); i++) {
+      mChains->InsertItem((long)i, names[i]);
    }
 
    int item = mChains->FindItem(-1, mActiveChain);
@@ -599,7 +597,7 @@ void EditChainsDialog::PopulateList()
 {
    mList->DeleteAllItems();
 
-   for (int i = 0; i < mBatchCommands.GetCount(); i++) {
+   for (size_t i = 0; i < mBatchCommands.GetCount(); i++) {
       AddItem(mBatchCommands.GetCommand(i),
               mBatchCommands.GetParams(i));
    }
@@ -607,10 +605,10 @@ void EditChainsDialog::PopulateList()
    AddItem(_("- END -"), wxT(""));
 
    // Select the name in the list...this will fire an event.
-   if (mSelectedCommand >= (int)mList->GetItemCount()) {
+   if ((int)mSelectedCommand >= mList->GetItemCount()) {
       mSelectedCommand = 0;
    }
-   mList->SetItemState(mSelectedCommand, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+   mList->SetItemState((long)mSelectedCommand, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
 }
 
 /// Add one item into mList
@@ -857,7 +855,10 @@ void EditChainsDialog::OnRename(wxCommandEvent & WXUNUSED(event))
 /// Bring up a dialog to allow its parameters to be edited.
 void EditChainsDialog::OnCommandActivated(wxListEvent &event)
 {
-   int item = event.GetIndex();
+   auto it = event.GetIndex();
+   if (it < 0)
+      return;
+   auto item = (size_t)it;
 
    BatchCommandDialog d(this, wxID_ANY);
    d.SetCommandAndParams(mBatchCommands.GetCommand(item),
@@ -885,7 +886,7 @@ void EditChainsDialog::OnInsert(wxCommandEvent & WXUNUSED(event))
    long item = mList->GetNextItem(-1,
                                   wxLIST_NEXT_ALL,
                                   wxLIST_STATE_SELECTED);
-   if (item == -1) {
+   if (item < 0) {
       return;
    }
 
@@ -899,10 +900,10 @@ void EditChainsDialog::OnInsert(wxCommandEvent & WXUNUSED(event))
    {
       mBatchCommands.AddToChain(d.mSelectedCommand,
                                 d.mSelectedParameters,
-                                item);
+                                (size_t)item);
       mChanged = true;
 
-      mSelectedCommand = item + 1;
+      mSelectedCommand = (size_t)item + 1;
 
       PopulateList();
    }
@@ -914,11 +915,11 @@ void EditChainsDialog::OnDelete(wxCommandEvent & WXUNUSED(event))
    long item = mList->GetNextItem(-1,
                                   wxLIST_NEXT_ALL,
                                   wxLIST_STATE_SELECTED);
-   if (item == -1 || item + 1 == mList->GetItemCount()) {
+   if (item < 0 || item + 1 == mList->GetItemCount()) {
       return;
    }
 
-   mBatchCommands.DeleteFromChain(item);
+   mBatchCommands.DeleteFromChain((size_t)item);
 
    mChanged = true;
 
@@ -926,7 +927,7 @@ void EditChainsDialog::OnDelete(wxCommandEvent & WXUNUSED(event))
       item--;
    }
 
-   mSelectedCommand = item;
+   mSelectedCommand = (size_t)item;
 
    PopulateList();
 }
@@ -934,12 +935,14 @@ void EditChainsDialog::OnDelete(wxCommandEvent & WXUNUSED(event))
 ///
 void EditChainsDialog::OnUp(wxCommandEvent & WXUNUSED(event))
 {
-   long item = mList->GetNextItem(-1,
+   long it = mList->GetNextItem(-1,
                                   wxLIST_NEXT_ALL,
                                   wxLIST_STATE_SELECTED);
-   if (item == -1 || item == 0 || item + 1 == mList->GetItemCount()) {
+   if (it <= 0 || it + 1 == mList->GetItemCount()) {
       return;
    }
+
+   auto item = (size_t)it;
 
    mBatchCommands.AddToChain(mBatchCommands.GetCommand(item),
                              mBatchCommands.GetParams(item),
@@ -956,13 +959,14 @@ void EditChainsDialog::OnUp(wxCommandEvent & WXUNUSED(event))
 ///
 void EditChainsDialog::OnDown(wxCommandEvent & WXUNUSED(event))
 {
-   long item = mList->GetNextItem(-1,
+   long it = mList->GetNextItem(-1,
                                   wxLIST_NEXT_ALL,
                                   wxLIST_STATE_SELECTED);
-   if (item == -1 || item + 2 >= mList->GetItemCount()) {
+   if (it < 0|| it + 2 >= mList->GetItemCount()) {
       return;
    }
 
+   auto item = (size_t) it;
    mBatchCommands.AddToChain(mBatchCommands.GetCommand(item),
                              mBatchCommands.GetParams(item),
                              item + 2);

@@ -145,7 +145,7 @@ class ToolBar /* not final */ : public wxPanelWrapper
                        wxSize size);
 
    static
-   void MakeAlternateImages(AButton &button, int idx,
+   void MakeAlternateImages(AButton &button, unsigned idx,
                             teBmps eUp,
                             teBmps eDown,
                             teBmps eHilite,

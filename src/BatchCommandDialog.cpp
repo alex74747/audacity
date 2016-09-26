@@ -120,11 +120,10 @@ void BatchCommandDialog::PopulateCommandList()
 {
    wxArrayString commandList = BatchCommands::GetAllCommands();
 
-   unsigned int i;
    mChoices->DeleteAllItems();
-   for( i=0;i<commandList.GetCount();i++)
+   for( size_t i = 0; i < commandList.GetCount(); i++)
    {
-      mChoices->InsertItem( i, commandList[i]);
+      mChoices->InsertItem( (long)i, commandList[i]);
    }
 }
 

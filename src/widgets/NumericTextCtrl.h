@@ -175,7 +175,7 @@ class NumericTextCtrl final : public wxControl, public NumericConverter
    // this control returns to the program, so you can specify.
    void SetInvalidValue(double invalidValue);
 
-   size_t GetFocusedField() { return mLastField; }
+   size_t GetFocusedField() { return mLastField; } // Always at least 1
    size_t GetFocusedDigit() { return mFocusedDigit; }
 
 private:

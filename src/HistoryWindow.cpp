@@ -110,7 +110,7 @@ HistoryWindow::HistoryWindow(AudacityProject *parent, UndoManager *manager):
                                      wxDefaultSize,
                                      wxSP_ARROW_KEYS,
                                      0,
-                                     mManager->GetCurrentState() - 1,
+                                     (int)mManager->GetCurrentState() - 1,
                                      0);
             S.AddWindow(mLevels);
             /* i18n-hint: (verb)*/
@@ -187,31 +187,29 @@ void HistoryWindow::UpdateDisplay()
 
 void HistoryWindow::DoUpdate()
 {
-   int i;
-
    mManager->CalculateSpaceUsage();
 
    mList->DeleteAllItems();
 
-   wxLongLong_t total = 0;
+   unsigned long long total = 0;
    mSelected = mManager->GetCurrentState() - 1;
-   for (i = 0; i < (int)mManager->GetNumStates(); i++) {
+   for (unsigned i = 0; i < mManager->GetNumStates(); i++) {
       wxString desc, size;
 
       total += mManager->GetLongDescription(i + 1, &desc, &size);
-      mList->InsertItem(i, desc, i == mSelected ? 1 : 0);
-      mList->SetItem(i, 1, size);
+      mList->InsertItem((long)i, desc, i == mSelected ? 1 : 0);
+      mList->SetItem((long)i, 1, size);
    }
 
-   mTotal->SetValue(Internat::FormatSize(total));
+   mTotal->SetValue(Internat::FormatSize((long long)total));
 
    auto clipboardUsage = mManager->GetClipboardSpaceUsage();
    mClipboard->SetValue(Internat::FormatSize(clipboardUsage));
    FindWindowById(ID_DISCARD_CLIPBOARD)->Enable(clipboardUsage > 0);
 
-   mList->EnsureVisible(mSelected);
+   mList->EnsureVisible((long)mSelected);
 
-   mList->SetItemState(mSelected,
+   mList->SetItemState((long)mSelected,
                        wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED,
                        wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED);
 
@@ -223,8 +221,8 @@ void HistoryWindow::UpdateLevels()
    wxWindow *focus;
    int value = mLevels->GetValue();
 
-   if (value > mSelected) {
-      value = mSelected;
+   if (value > (int)mSelected) {
+      value = (int)mSelected;
    }
 
    if (value == 0) {
@@ -232,7 +230,7 @@ void HistoryWindow::UpdateLevels()
    }
 
    mLevels->SetValue(value);
-   mLevels->SetRange(1, mSelected);
+   mLevels->SetRange(1, (int)mSelected);
 
    mAvail->SetValue(wxString::Format(wxT("%d"), mSelected));
 
@@ -247,14 +245,15 @@ void HistoryWindow::UpdateLevels()
 
 void HistoryWindow::OnDiscard(wxCommandEvent & WXUNUSED(event))
 {
-   int i = mLevels->GetValue();
+   auto i = (unsigned)mLevels->GetValue();
 
+   wxASSERT(i <= mSelected);
    mSelected -= i;
    mManager->RemoveStates(i);
    mProject->SetStateTo(mSelected + 1);
 
-   while(--i >= 0)
-      mList->DeleteItem(i);
+   while(i-- > 0)
+      mList->DeleteItem((int)i);
 
    DoUpdate();
 }
@@ -268,23 +267,22 @@ void HistoryWindow::OnDiscardClipboard(wxCommandEvent & WXUNUSED(event))
 void HistoryWindow::OnItemSelected(wxListEvent &event)
 {
    if (mAudioIOBusy) {
-      mList->SetItemState(mSelected,
+      mList->SetItemState((long)mSelected,
                        wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED,
                        wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED);
       return;
    }
 
-   int selected = event.GetIndex();
-   int i;
+   auto selected = (unsigned)event.GetIndex();
 
-   for (i = 0; i < mList->GetItemCount(); i++) {
+   for (int i = 0; i < mList->GetItemCount(); i++) {
       mList->SetItemImage(i, 0);
-      if (i > selected)
+      if (i > (long)selected)
          mList->SetItemTextColour(i, *wxLIGHT_GREY);
       else
          mList->SetItemTextColour(i, mList->GetTextColour());
    }
-   mList->SetItemImage(selected, 1);
+   mList->SetItemImage((long)selected, 1);
 
    // Do not do a SetStateTo() if we're not actually changing the selected
    // entry.  Doing so can cause unnecessary delays upon initial load or while
@@ -307,7 +305,7 @@ void HistoryWindow::OnSize(wxSizeEvent & WXUNUSED(event))
    Layout();
    mList->SetColumnWidth(0, mList->GetClientSize().x - mList->GetColumnWidth(1));
    if (mList->GetItemCount() > 0)
-      mList->EnsureVisible(mSelected);
+      mList->EnsureVisible((long)mSelected);
 }
 
 void HistoryWindow::OnChar(wxKeyEvent &event)

@@ -340,14 +340,15 @@ wxImage ThemeBase::MaskedImage( char const ** pXpm, char const ** pMask )
    wxASSERT( Bmp1.GetDepth()==-1 || Bmp1.GetDepth()==24);
    wxASSERT( Bmp1.GetDepth()==-1 || Bmp2.GetDepth()==24);
 
-   int i,nBytes;
-   nBytes = Bmp1.GetWidth() * Bmp1.GetHeight();
+   int i;
+   int nBytes = Bmp1.GetWidth() * Bmp1.GetHeight();
+   wxASSERT(nBytes >= 0);
    wxImage Img1( Bmp1.ConvertToImage());
    wxImage Img2( Bmp2.ConvertToImage());
 
 //   unsigned char *src = Img1.GetData();
    unsigned char *mk = Img2.GetData();
-   unsigned char *alpha = (unsigned char*)malloc( nBytes );
+   unsigned char *alpha = (unsigned char*)malloc( (size_t)nBytes );
 
    // Extract alpha channel from second XPM.
    for(i=0;i<nBytes;i++)
@@ -400,7 +401,7 @@ void ThemeBase::RegisterImage( int &iIndex, const wxImage &Image, const wxString
 
    mBitmapNames.Add( Name );
    mBitmapFlags.Add( mFlow.mFlags );
-   iIndex = mBitmaps.GetCount()-1;
+   iIndex = (int)mBitmaps.GetCount() - 1;
 }
 
 void ThemeBase::RegisterColour( int &iIndex, const wxColour &Clr, const wxString & Name )
@@ -408,7 +409,7 @@ void ThemeBase::RegisterColour( int &iIndex, const wxColour &Clr, const wxString
    wxASSERT( iIndex == -1 ); // Don't initialise same colour twice!
    mColours.Add( Clr );
    mColourNames.Add( Name );
-   iIndex = mColours.GetCount()-1;
+   iIndex = (int)mColours.GetCount() - 1;
 }
 
 void FlowPacker::Init(int width)
@@ -567,8 +568,6 @@ void ThemeBase::CreateImageCache( bool bBinarySave )
       ImageCache.InitAlpha();
    }
 
-   int i;
-
    mFlow.Init( ImageCacheWidth );
 
 //#define IMAGE_MAP
@@ -578,7 +577,7 @@ void ThemeBase::CreateImageCache( bool bBinarySave )
 #endif
 
    // Save the bitmaps
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       wxImage &SrcImage = mImages[i];
       mFlow.mFlags = mBitmapFlags[i];
@@ -601,16 +600,16 @@ void ThemeBase::CreateImageCache( bool bBinarySave )
 
    mFlow.SetColourGroup();
    const int iColSize = 10;
-   for(i=0;i<(int)mColours.GetCount();i++)
+   for(size_t i = 0; i < mColours.GetCount(); i++)
    {
       mFlow.GetNextPosition( iColSize, iColSize );
       wxColour c = mColours[i];
       ImageCache.SetRGB( mFlow.Rect(), c.Red(), c.Green(), c.Blue() );
 
       // YUCK!  No function in wxWidgets to set a rectangle of alpha...
-      for(x=0;x<iColSize;x++)
+      for(x = 0; x < iColSize; x++)
       {
-         for(y=0;y<iColSize;y++)
+         for(y = 0; y < iColSize; y++)
          {
             ImageCache.SetAlpha( mFlow.mxPos + x, mFlow.myPos+y, 255);
          }
@@ -693,7 +692,6 @@ void ThemeBase::WriteImageMap( )
    EnsureInitialised();
    wxBusyCursor busy;
 
-   int i;
    mFlow.Init( ImageCacheWidth );
 
    wxFFile File( FileNames::ThemeCacheHtm(), wxT("wb") );// I'll put in NEW lines explicitly.
@@ -705,7 +703,7 @@ void ThemeBase::WriteImageMap( )
    File.Write( wxT("<img src=\"ImageCache.png\" usemap=\"#map1\">\r\n" ));
    File.Write( wxT("<map name=\"map1\">\r\n") );
 
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       wxImage &SrcImage = mImages[i];
       mFlow.mFlags = mBitmapFlags[i];
@@ -723,7 +721,7 @@ void ThemeBase::WriteImageMap( )
    // Now save the colours.
    mFlow.SetColourGroup();
    const int iColSize = 10;
-   for(i=0;i<(int)mColours.GetCount();i++)
+   for(size_t i = 0; i < mColours.GetCount(); i++)
    {
       mFlow.GetNextPosition( iColSize, iColSize );
       // No href in html.  Uses title not alt.
@@ -744,12 +742,11 @@ void ThemeBase::WriteImageDefs( )
    EnsureInitialised();
    wxBusyCursor busy;
 
-   int i;
    wxFFile File( FileNames::ThemeImageDefsAsCee(), wxT("wb") );
    if( !File.IsOpened() )
       return;
    teResourceFlags PrevFlags = (teResourceFlags)-1;
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       wxImage &SrcImage = mImages[i];
       // No href in html.  Uses title not alt.
@@ -840,10 +837,9 @@ bool ThemeBase::ReadImageCache( bool bBinaryRead, bool bOkIfNotFound)
       }
    }
 
-   int i;
    mFlow.Init(ImageCacheWidth);
    // Load the bitmaps
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       wxImage &Image = mImages[i];
       mFlow.mFlags = mBitmapFlags[i];
@@ -862,7 +858,7 @@ bool ThemeBase::ReadImageCache( bool bBinaryRead, bool bOkIfNotFound)
    mFlow.SetColourGroup();
    wxColour TempColour;
    const int iColSize=10;
-   for(i=0;i<(int)mColours.GetCount();i++)
+   for(size_t i = 0; i < mColours.GetCount(); i++)
    {
       mFlow.GetNextPosition( iColSize, iColSize );
       mFlow.RectMid( x, y );
@@ -892,10 +888,9 @@ void ThemeBase::LoadComponents( bool bOkIfNotFound )
       return;
 
    wxBusyCursor busy;
-   int i;
    int n=0;
    wxString FileName;
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
 
       if( (mBitmapFlags[i] & resFlagInternal)==0)
@@ -961,10 +956,9 @@ void ThemeBase::SaveComponents()
    }
 
    wxBusyCursor busy;
-   int i;
    int n=0;
    wxString FileName;
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       if( (mBitmapFlags[i] & resFlagInternal)==0)
       {
@@ -990,7 +984,7 @@ void ThemeBase::SaveComponents()
          return;
    }
 
-   for(i=0;i<(int)mImages.GetCount();i++)
+   for(size_t i = 0; i < mImages.GetCount(); i++)
    {
       if( (mBitmapFlags[i] & resFlagInternal)==0)
       {
@@ -1034,7 +1028,7 @@ wxColour & ThemeBase::Colour( int iIndex )
 {
    wxASSERT( iIndex >= 0 );
    EnsureInitialised();
-   return mColours[iIndex];
+   return mColours[(size_t)iIndex];
 }
 
 void ThemeBase::SetBrushColour( wxBrush & Brush, int iIndex )
@@ -1053,20 +1047,20 @@ wxBitmap & ThemeBase::Bitmap( int iIndex )
 {
    wxASSERT( iIndex >= 0 );
    EnsureInitialised();
-   return mBitmaps[iIndex];
+   return mBitmaps[(size_t)iIndex];
 }
 
 wxImage  & ThemeBase::Image( int iIndex )
 {
    wxASSERT( iIndex >= 0 );
    EnsureInitialised();
-   return mImages[iIndex];
+   return mImages[(size_t)iIndex];
 }
 wxSize  ThemeBase::ImageSize( int iIndex )
 {
    wxASSERT( iIndex >= 0 );
    EnsureInitialised();
-   wxImage & Image = mImages[iIndex];
+   wxImage & Image = mImages[(size_t)iIndex];
    return wxSize( Image.GetWidth(), Image.GetHeight());
 }
 

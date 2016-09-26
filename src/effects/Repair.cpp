@@ -76,7 +76,7 @@ bool EffectRepair::Process()
 
    SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
    WaveTrack *track = (WaveTrack *) iter.First();
-   int count = 0;
+   unsigned count = 0;
    while (track) {
       const
       double trackStart = track->GetStartTime();
@@ -133,7 +133,7 @@ bool EffectRepair::Process()
    return bGoodResult;
 }
 
-bool EffectRepair::ProcessOne(int count, WaveTrack * track,
+bool EffectRepair::ProcessOne(unsigned count, WaveTrack * track,
                               sampleCount start,
                               size_t len,
                               size_t repairStart, size_t repairLen)

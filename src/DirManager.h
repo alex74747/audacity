@@ -77,15 +77,15 @@ class PROFILE_DLL_API DirManager final : public XMLTagHandler {
 
    BlockFilePtr
       NewAliasBlockFile( const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel);
+                                 size_t aliasLen, unsigned aliasChannel);
 
    BlockFilePtr
       NewODAliasBlockFile( const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel);
+                                 size_t aliasLen, unsigned aliasChannel);
 
    BlockFilePtr
       NewODDecodeBlockFile( const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel, int decodeType);
+                                 size_t aliasLen, unsigned aliasChannel, unsigned decodeType);
 
    /// Returns true if the blockfile pointed to by b is contained by the DirManager
    bool ContainsBlockFile(const BlockFile *b) const;

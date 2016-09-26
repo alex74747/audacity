@@ -49,8 +49,8 @@ void HighlightTextCtrl::OnMouseEvent(wxMouseEvent& event)
       long from, to;
       this->GetSelection(&from, &to);
 
-      int nCurSyl = mLyrics->GetCurrentSyllableIndex();
-      int nNewSyl = mLyrics->FindSyllable(from);
+      auto nCurSyl = mLyrics->GetCurrentSyllableIndex();
+      auto nNewSyl = mLyrics->FindSyllable(from);
       if (nNewSyl != nCurSyl)
       {
          Syllable* pCurSyl = mLyrics->GetSyllable(nNewSyl);
@@ -134,7 +134,7 @@ void Lyrics::Clear()
 
 void Lyrics::AddLabels(const LabelTrack *pLT)
 {
-   const size_t numLabels = pLT->GetNumLabels();
+   const auto numLabels = pLT->GetNumLabels();
    wxString highlightText;
    for (size_t ii = 0; ii < numLabels; ++ii) {
       const LabelStruct *const pLabel = pLT->GetLabel(ii);
@@ -145,9 +145,10 @@ void Lyrics::AddLabels(const LabelTrack *pLT)
 
 void Lyrics::Add(double t, const wxString &syllable, wxString &highlightText)
 {
-   int i = mSyllables.GetCount();
+   auto i = mSyllables.GetCount();
 
    {
+      // There are always at least two starting syllables
       Syllable &prevSyllable = mSyllables[i - 1];
 
       if (prevSyllable.t == t) {
@@ -180,7 +181,7 @@ void Lyrics::Add(double t, const wxString &syllable, wxString &highlightText)
    mText += thisSyllable.textWithSpace;
    thisSyllable.char1 = mText.Length();
 
-   int nTextLen = thisSyllable.textWithSpace.Length();
+   auto nTextLen = thisSyllable.textWithSpace.Length();
    if ((nTextLen > 0) && (thisSyllable.textWithSpace.Right(1) == wxT("_")))
       highlightText += (thisSyllable.textWithSpace.Left(nTextLen - 1) + wxT("\n"));
    else
@@ -190,7 +191,7 @@ void Lyrics::Add(double t, const wxString &syllable, wxString &highlightText)
 void Lyrics::Finish(double finalT)
 {
    // Add 3 dummy syllables at the end
-   int i = mSyllables.GetCount();
+   auto i = mSyllables.GetCount();
    mSyllables.Add(Syllable());
    mSyllables[i].t = finalT + 1.0;
    mSyllables.Add(Syllable());
@@ -205,15 +206,13 @@ void Lyrics::Finish(double finalT)
 }
 
 // Binary-search for the syllable syllable whose char0 <= startChar <= char1.
-int Lyrics::FindSyllable(long startChar)
+size_t Lyrics::FindSyllable(long startChar)
 {
-   int i1, i2;
-
-   i1 = 0;
-   i2 = mSyllables.GetCount();
+   size_t i1 = 0;
+   auto i2 = mSyllables.GetCount();
    while (i2 > i1+1) {
-      int pmid = (i1+i2)/2;
-      if (mSyllables[pmid].char0 > startChar)
+      auto pmid = (i1+i2)/2;
+      if ((long)mSyllables[pmid].char0 > startChar)
          i2 = pmid;
       else
          i1 = pmid;
@@ -221,7 +220,8 @@ int Lyrics::FindSyllable(long startChar)
 
    if (i1 < 2)
       i1 = 2;
-   if (i1 > (int)(mSyllables.GetCount()) - 3)
+   // There are always three dummy syllables at the end
+   if (i1 > mSyllables.GetCount() - 3)
       i1 = mSyllables.GetCount() - 3;
 
    return i1;
@@ -247,12 +247,12 @@ unsigned int Lyrics::GetDefaultFontSize() const
 
 void Lyrics::SetDrawnFont(wxDC *dc)
 {
-   dc->SetFont(wxFont(mKaraokeFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+   dc->SetFont(wxFont((int)mKaraokeFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 }
 
 void Lyrics::SetHighlightFont() // for kHighlightLyrics
 {
-   wxFont newFont(mKaraokeFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+   wxFont newFont((int)mKaraokeFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
    mHighlightTextCtrl->SetDefaultStyle(wxTextAttr(wxNullColour, wxNullColour, newFont));
    mHighlightTextCtrl->SetStyle(0, mHighlightTextCtrl->GetLastPosition(),
                                  wxTextAttr(wxNullColour, wxNullColour, newFont));
@@ -313,14 +313,12 @@ void Lyrics::Measure(wxDC *dc) // only for drawn text
 }
 
 // Binary-search for the syllable with the largest time not greater than t
-int Lyrics::FindSyllable(double t)
+size_t Lyrics::FindSyllable(double t)
 {
-   int i1, i2;
-
-   i1 = 0;
-   i2 = mSyllables.GetCount();
+   size_t i1 = 0;
+   auto i2 = mSyllables.GetCount();
    while (i2 > i1+1) {
-      int pmid = (i1+i2)/2;
+      auto pmid = (i1+i2)/2;
       if (mSyllables[pmid].t > t)
          i2 = pmid;
       else
@@ -329,7 +327,8 @@ int Lyrics::FindSyllable(double t)
 
    if (i1 < 2)
       i1 = 2;
-   if (i1 > (int)(mSyllables.GetCount()) - 3)
+   // There are always three dummy syllables at the end
+   if (i1 > mSyllables.GetCount() - 3)
       i1 = mSyllables.GetCount() - 3;
 
    return i1;
@@ -351,11 +350,10 @@ void Lyrics::GetKaraokePosition(double t,
    if (t < mSyllables[I_FIRST_REAL_SYLLABLE].t || t > mSyllables[mSyllables.GetCount()-3].t)
       return;
 
-   int i0, i1, i2, i3;
    int x0, x1, x2, x3;
    double t0, t1, t2, t3;
-   i1 = FindSyllable(t);
-   i2 = i1 + 1;
+   auto i1 = FindSyllable(t);
+   auto i2 = i1 + 1;
 
    // Because we've padded the syllables with two dummies at the beginning
    // and end, we know that i0...i3 will always exist.  Also, we've made
@@ -368,8 +366,8 @@ void Lyrics::GetKaraokePosition(double t,
    // index: i0           i1                 i2              i3
    // vel:               vel1               vel2
 
-   i0 = i1 - 1;
-   i3 = i2 + 1;
+   auto i0 = i1 - 1;
+   auto i3 = i2 + 1;
 
    x0 = mSyllables[i0].x;
    x1 = mSyllables[i1].x;
@@ -435,7 +433,7 @@ void Lyrics::Update(double t)
       this->Refresh(false, &karaokeRect);
    }
 
-   int i = FindSyllable(mT);
+   auto i = FindSyllable(mT);
    if (i == mCurrentSyllable)
       return;
 
@@ -443,7 +441,7 @@ void Lyrics::Update(double t)
 
    if (mLyricsStyle == kHighlightLyrics)
    {
-      mHighlightTextCtrl->SetSelection(mSyllables[i].char0, mSyllables[i].char1);
+      mHighlightTextCtrl->SetSelection((long)mSyllables[i].char0, (long)mSyllables[i].char1);
 
       //v No trail for now.
       //// Leave a trail behind the selection, by highlighting.
@@ -505,7 +503,8 @@ void Lyrics::OnSize(wxSizeEvent & WXUNUSED(event))
    mKaraokeHeight = mHeight;
 
    mKaraokeFontSize =
-      (int)((float)(this->GetDefaultFontSize() * mHeight) / (float)LYRICS_DEFAULT_HEIGHT);
+      (unsigned)((float)(this->GetDefaultFontSize() *
+                         (unsigned)std::max(0, mHeight)) / (float)LYRICS_DEFAULT_HEIGHT);
    // Usually don't get the size window we want, usually less than
    // LYRICS_DEFAULT_HEIGHT, so bump it a little.
    mKaraokeFontSize += 2;

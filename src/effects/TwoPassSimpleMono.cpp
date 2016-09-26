@@ -69,7 +69,7 @@ bool EffectTwoPassSimpleMono::ProcessPass()
 
          //Get the track rate and samples
          mCurRate = track->GetRate();
-         mCurChannel = track->GetChannel();
+         // mCurChannel = track->GetChannel();
 
          //NewTrackPass1/2() returns true by default
          bool ret;

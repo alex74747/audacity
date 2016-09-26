@@ -239,7 +239,7 @@ public:
 
    ///! Called by Import.cpp
    ///\return number of readable streams in the file
-   wxInt32 GetStreamCount() override
+   unsigned GetStreamCount() override
    {
       return mNumStreams;
    }
@@ -254,7 +254,7 @@ public:
    ///! Called by Import.cpp
    ///\param StreamID - index of the stream in mStreamInfo and mScs arrays
    ///\param Use - true if this stream should be imported, false otherwise
-   void SetStreamUsage(wxInt32 StreamID, bool Use) override
+   void SetStreamUsage(unsigned StreamID, bool Use) override
    {
       if (StreamID < mNumStreams)
          mScs->get()[StreamID]->m_use = Use;
@@ -264,7 +264,7 @@ private:
 
    std::shared_ptr<FFmpegContext> mContext; // An object that does proper IO shutdown in its destructor; may be shared with decoder task.
    AVFormatContext      *mFormatContext; //!< Format description, also contains metadata and some useful info
-   int                   mNumStreams;    //!< mNumstreams is less or equal to mFormatContext->nb_streams
+   unsigned              mNumStreams;    //!< mNumstreams is less or equal to mFormatContext->nb_streams
    ScsPtr                mScs;           //!< Points to array of pointers to stream contexts, which may be shared with a decoder task.
    wxArrayString         mStreamInfo;    //!< Array of stream descriptions. Length is mNumStreams
 
@@ -476,11 +476,11 @@ ProgressResult FFmpegImportFileHandle::Import(TrackFactory *trackFactory,
 
    // Remove stream contexts which are not marked for importing and adjust mScs and mNumStreams accordingly
    const auto scs = mScs->get();
-   for (int i = 0; i < mNumStreams;)
+   for (unsigned i = 0; i < mNumStreams;)
    {
       if (!scs[i]->m_use)
       {
-         for (int j = i; j < mNumStreams - 1; j++)
+         for (auto j = i; j < mNumStreams - 1; j++)
          {
             scs[j] = std::move(scs[j+1]);
          }
@@ -513,8 +513,9 @@ ProgressResult FFmpegImportFileHandle::Import(TrackFactory *trackFactory,
       }
 
       // There is a possibility that number of channels will change over time, but we do not have WaveTracks for NEW channels. Remember the number of channels and stick to it.
-      sc->m_initialchannels = sc->m_stream->codec->channels;
-      stream.resize(sc->m_stream->codec->channels);
+      sc->m_initialchannels =
+         (unsigned)(std::max(0, sc->m_stream->codec->channels));
+      stream.resize(sc->m_initialchannels);
       int c = -1;
       for (auto &channel : stream)
       {
@@ -599,7 +600,7 @@ ProgressResult FFmpegImportFileHandle::Import(TrackFactory *trackFactory,
          //      printf(" OD duration samples %qi, sr %d, secs %d\n",sampleDuration, (int)sc->m_stream->codec->sample_rate, (int)sampleDuration/sc->m_stream->codec->sample_rate);
 
          //for each wavetrack within the stream add coded blockfiles
-         for (int c = 0; c < sc->m_stream->codec->channels; c++) {
+         for (unsigned c = 0; c < sc->m_stream->codec->channels; c++) {
             WaveTrack *t = stream[c].get();
             odTask->AddWaveTrack(t);
 
@@ -660,7 +661,7 @@ ProgressResult FFmpegImportFileHandle::Import(TrackFactory *trackFactory,
    // Flush the decoders.
    if ((mNumStreams != 0) && (res == ProgressResult::Success || res == ProgressResult::Stopped))
    {
-      for (int i = 0; i < mNumStreams; i++)
+      for (unsigned i = 0; i < mNumStreams; i++)
       {
          auto sc = scs[i].get();
          sc->m_pkt.create();
@@ -714,39 +715,45 @@ int FFmpegImportFileHandle::DecodeFrame(streamContext *sc, bool flushing)
 ProgressResult FFmpegImportFileHandle::WriteData(streamContext *sc)
 {
    // Find the stream index in mScs array
-   int streamid = -1;
+   unsigned streamid = 0;
    auto iter = mChannels.begin();
    auto scs = mScs->get();
-   for (int i = 0; i < mNumStreams; ++iter, ++i)
    {
-      if (scs[i].get() == sc)
+      unsigned i = 0;
+      for (; i < mNumStreams; ++iter, ++i)
       {
-         streamid = i;
-         break;
+         if (scs[i].get() == sc)
+         {
+            streamid = i;
+            break;
+         }
       }
-   }
-   // Stream is not found. This should not really happen
-   if (streamid == -1)
-   {
-      return ProgressResult::Success;
+      // Stream is not found. This should not really happen
+      if (i == mNumStreams)
+      {
+         return ProgressResult::Success;
+      }
    }
 
    // Allocate the buffer to store audio.
-   int insamples = sc->m_decodedAudioSamplesValidSiz / sc->m_samplesize;
-   int nChannels = sc->m_stream->codec->channels < sc->m_initialchannels ? sc->m_stream->codec->channels : sc->m_initialchannels;
+   auto insamples = sc->m_decodedAudioSamplesValidSiz / sc->m_samplesize;
+   auto nChannels = (unsigned)std::min(
+      std::max(0, sc->m_stream->codec->channels),
+      (int)sc->m_initialchannels
+   );
    uint8_t **tmp = (uint8_t **) malloc(sizeof(uint8_t *) * nChannels);
-   for (int chn = 0; chn < nChannels; chn++)
+   for (unsigned chn = 0; chn < nChannels; chn++)
    {
       tmp[chn] = (uint8_t *) malloc(sc->m_osamplesize * (insamples / nChannels));
    }
 
    // Separate the channels and convert input sample format to 16-bit
    uint8_t *in = sc->m_decodedAudioSamples.get();
-   int index = 0;
-   int pos = 0;
+   size_t index = 0;
+   size_t pos = 0;
    while (pos < insamples)
    {
-      for (int chn = 0; chn < sc->m_stream->codec->channels; chn++)
+      for (unsigned chn = 0; (int)chn < sc->m_stream->codec->channels; chn++)
       {
          if (chn < nChannels)
          {
@@ -779,7 +786,7 @@ ProgressResult FFmpegImportFileHandle::WriteData(streamContext *sc)
 
                default:
                   wxLogError(wxT("Stream %d has unrecognized sample format %d."), streamid, sc->m_samplefmt);
-                  for (int jchn = 0; jchn < nChannels; jchn++)
+                  for (unsigned jchn = 0; jchn < nChannels; jchn++)
                   {
                      free(tmp[jchn]);
                   }
@@ -796,9 +803,9 @@ ProgressResult FFmpegImportFileHandle::WriteData(streamContext *sc)
 
    // Write audio into WaveTracks
    auto iter2 = iter->begin();
-   for (int chn=0; chn < nChannels; ++iter2, ++chn)
+   for (unsigned chn = 0; chn < nChannels; ++iter2, ++chn)
    {
-      iter2->get()->Append((samplePtr)tmp[chn],sc->m_osamplefmt,index);
+      iter2->get()->Append((samplePtr)tmp[chn],sc->m_osamplefmt, index);
       free(tmp[chn]);
    }
 

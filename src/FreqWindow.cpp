@@ -244,8 +244,9 @@ FreqWindow::FreqWindow(wxWindow * parent, wxWindowID id,
 
    long size;
    gPrefs->Read(wxT("/FreqWindow/SizeChoice"), &mSize, 3);
-   sizeChoices[mSize].ToLong(&size);
-   mWindowSize = size;
+   wxASSERT(mSize >= 0);
+   sizeChoices[(size_t)mSize].ToLong(&size);
+   mWindowSize = (size_t)size;
 
    int alg;
    gPrefs->Read(wxT("/FreqWindow/AlgChoice"), &alg, 0);
@@ -825,7 +826,8 @@ void FreqWindow::OnSizeChoice(wxCommandEvent & WXUNUSED(event))
 {
    long windowSize = 0;
    mSizeChoice->GetStringSelection().ToLong(&windowSize);
-   mWindowSize = windowSize;
+   wxASSERT(windowSize >= 0);
+   mWindowSize = (size_t)windowSize;
 
    SendRecalcEvent();
 }
@@ -1036,17 +1038,17 @@ void FreqWindow::OnExport(wxCommandEvent & WXUNUSED(event))
       return;
    }
 
-   const int processedSize = mAnalyst->GetProcessedSize();
+   const auto processedSize = mAnalyst->GetProcessedSize();
    const float *const processed = mAnalyst->GetProcessed();
    if (mAlgChoice->GetSelection() == 0) {
       f.AddLine(_("Frequency (Hz)\tLevel (dB)"));
-      for (int i = 1; i < processedSize; i++)
+      for (size_t i = 1; i < processedSize; i++)
          f.AddLine(wxString::
                    Format(wxT("%f\t%f"), i * mRate / mWindowSize,
                           processed[i]));
    } else {
       f.AddLine(_("Lag (seconds)\tFrequency (Hz)\tLevel"));
-      for (int i = 1; i < processedSize; i++)
+      for (size_t i = 1; i < processedSize; i++)
          f.AddLine(wxString::Format(wxT("%f\t%f\t%f"),
                                     i / mRate, mRate / i, processed[i]));
    }
@@ -1118,7 +1120,7 @@ FreqGauge::FreqGauge(wxWindow * parent)
    mRange = 0;
 }
 
-void FreqGauge::SetRange(int range, int bar, int gap)
+void FreqGauge::SetRange(size_t range, size_t bar, size_t gap)
 {
    mRange = range;
    mBar = bar;
@@ -1127,17 +1129,17 @@ void FreqGauge::SetRange(int range, int bar, int gap)
    GetFieldRect(0, mRect);
    mRect.Inflate(-1);
 
-   mInterval = mRange / (mRect.width / (mBar + mGap));
-   mRect.width = mBar;
-   mMargin = mRect.x;
+   mInterval = mRange / ((unsigned)mRect.width / (mBar + mGap));
+   mRect.width = (int)mBar;
+   mMargin = (unsigned)mRect.x;
    mLast = -1;
 
    Update();
 }
 
-void FreqGauge::SetValue(int value)
+void FreqGauge::SetValue(size_t value)
 {
-   mCur = value / mInterval;
+   mCur = (int)(value / mInterval);
 
    if (mCur != mLast)
    {
@@ -1148,7 +1150,7 @@ void FreqGauge::SetValue(int value)
       while (mLast < mCur)
       {
          mLast++;
-         mRect.x = mMargin + mLast * (mBar + mGap);
+         mRect.x = ((int)mMargin + mLast * (int)(mBar + mGap));
          dc.DrawRectangle(mRect);
       }
       Update();
@@ -1413,7 +1415,7 @@ const float *SpectrumAnalyst::GetProcessed() const
    return &mProcessed[0];
 }
 
-int SpectrumAnalyst::GetProcessedSize() const
+size_t SpectrumAnalyst::GetProcessedSize() const
 {
    return mProcessed.size() / 2;
 }
@@ -1435,11 +1437,9 @@ float SpectrumAnalyst::GetProcessedValue(float freq0, float freq1) const
 
    if (binwidth < 1.0) {
       float binmid = (bin0 + bin1) / 2.0;
-      int ibin = (int)(binmid) - 1;
-      if (ibin < 1)
-         ibin = 1;
+      auto ibin = (size_t)std::max(1, (int)(binmid) - 1);
       if (ibin >= GetProcessedSize() - 3)
-         ibin = std::max(0, GetProcessedSize() - 4);
+         ibin = (size_t)std::max(0, (int)GetProcessedSize() - 4);
 
       value = CubicInterpolate(mProcessed[ibin],
                                mProcessed[ibin + 1],
@@ -1452,14 +1452,16 @@ float SpectrumAnalyst::GetProcessedValue(float freq0, float freq1) const
       if (bin1 >= GetProcessedSize())
          bin1 = GetProcessedSize() - 1;
 
-      if ((int)(bin1) > (int)(bin0))
-         value += mProcessed[(int)(bin0)] * ((int)(bin0) + 1 - bin0);
-      bin0 = 1 + (int)(bin0);
-      while (bin0 < (int)(bin1)) {
-         value += mProcessed[(int)(bin0)];
+      auto ibin0 = (size_t)bin0;
+      auto ibin1 = (size_t)bin1;
+      if (ibin1 > ibin0)
+         value += mProcessed[ibin0] * (ibin0 + 1 - bin0);
+      ++ibin0;
+      while (ibin0 < ibin1) {
+         value += mProcessed[ibin0];
          bin0 += 1.0;
       }
-      value += mProcessed[(int)(bin1)] * (bin1 - (int)(bin1));
+      value += mProcessed[ibin1] * (bin1 - ibin1);
 
       value /= binwidth;
    }
@@ -1474,11 +1476,11 @@ float SpectrumAnalyst::FindPeak(float xPos, float *pY) const
    if (GetProcessedSize() > 1) {
       bool up = (mProcessed[1] > mProcessed[0]);
       float bestdist = 1000000;
-      for (int bin = 3; bin < GetProcessedSize() - 1; bin++) {
+      for (size_t bin = 3; bin + 1 < GetProcessedSize(); bin++) {
          bool nowUp = mProcessed[bin] > mProcessed[bin - 1];
          if (!nowUp && up) {
             // Local maximum.  Find actual value by cubic interpolation
-            int leftbin = bin - 2;
+            auto leftbin = bin - 2;
             /*
             if (leftbin < 1)
                leftbin = 1;

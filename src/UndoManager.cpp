@@ -145,7 +145,7 @@ void UndoManager::CalculateSpaceUsage()
    //TIMER_STOP( space_calc );
 }
 
-wxLongLong_t UndoManager::GetLongDescription(unsigned int n, wxString *desc,
+unsigned long long UndoManager::GetLongDescription(unsigned int n, wxString *desc,
                                              wxString *size)
 {
    n -= 1; // 1 based to zero based
@@ -178,15 +178,15 @@ void UndoManager::SetLongDescription(unsigned int n, const wxString &desc)
    stack[n]->description = desc;
 }
 
-void UndoManager::RemoveStateAt(int n)
+void UndoManager::RemoveStateAt(size_t n)
 {
-   stack.erase(stack.begin() + n);
+   stack.erase(stack.begin() + (int)n);
 }
 
 
-void UndoManager::RemoveStates(int num)
+void UndoManager::RemoveStates(size_t num)
 {
-   for (int i = 0; i < num; i++) {
+   for (size_t i = 0; i < num; i++) {
       RemoveStateAt(0);
 
       current -= 1;
@@ -206,7 +206,7 @@ unsigned int UndoManager::GetNumStates()
 
 unsigned int UndoManager::GetCurrentState()
 {
-   return current + 1;  // the array is 0 based, the abstraction is 1 based
+   return (unsigned)(current + 1);  // the array is 0 based, the abstraction is 1 based
 }
 
 bool UndoManager::UndoAvailable()
@@ -223,13 +223,13 @@ void UndoManager::ModifyState(const TrackList * l,
                               const SelectedRegion &selectedRegion,
                               const std::shared_ptr<Tags> &tags)
 {
-   if (current == wxNOT_FOUND) {
+   if (current < 0) {
       return;
    }
 
    SonifyBeginModifyState();
    // Delete current -- not necessary, but let's reclaim space early
-   stack[current]->state.tracks.reset();
+   stack[(size_t)current]->state.tracks.reset();
 
    // Duplicate
    auto tracksCopy = std::make_unique<TrackList>();
@@ -241,10 +241,10 @@ void UndoManager::ModifyState(const TrackList * l,
    }
 
    // Replace
-   stack[current]->state.tracks = std::move(tracksCopy);
-   stack[current]->state.tags = tags;
+   stack[(size_t)current]->state.tracks = std::move(tracksCopy);
+   stack[(size_t)current]->state.tags = tags;
 
-   stack[current]->state.selectedRegion = selectedRegion;
+   stack[(size_t)current]->state.selectedRegion = selectedRegion;
    SonifyEndModifyState();
 }
 
@@ -255,7 +255,7 @@ void UndoManager::PushState(const TrackList * l,
                             const wxString &shortDescription,
                             UndoPush flags)
 {
-   unsigned int i;
+   size_t i;
 
    // If consolidate is set to true, group up to 3 identical operations.
    if (((flags & UndoPush::CONSOLIDATE) != UndoPush::MINIMAL) && lastAction == longDescription &&
@@ -272,7 +272,7 @@ void UndoManager::PushState(const TrackList * l,
 
    consolidationCount = 0;
 
-   i = current + 1;
+   i = (size_t)(current + 1);
    while (i < stack.size()) {
       RemoveStateAt(i);
    }
@@ -305,23 +305,24 @@ void UndoManager::PushState(const TrackList * l,
 const UndoState &UndoManager::SetStateTo
    (unsigned int n, SelectedRegion *selectedRegion)
 {
+   wxASSERT(n >= 1);
    n -= 1;
 
    wxASSERT(n < stack.size());
 
-   current = n;
+   current = (int)n;
 
-   if (current == (int)(stack.size()-1)) {
-      *selectedRegion = stack[current]->state.selectedRegion;
+   if (n == (stack.size()-1)) {
+      *selectedRegion = stack[n]->state.selectedRegion;
    }
    else {
-      *selectedRegion = stack[current + 1]->state.selectedRegion;
+      *selectedRegion = stack[n + 1]->state.selectedRegion;
    }
 
    lastAction = wxT("");
    consolidationCount = 0;
 
-   return stack[current]->state;
+   return stack[n]->state;
 }
 
 const UndoState &UndoManager::Undo(SelectedRegion *selectedRegion)
@@ -330,12 +331,12 @@ const UndoState &UndoManager::Undo(SelectedRegion *selectedRegion)
 
    current--;
 
-   *selectedRegion = stack[current]->state.selectedRegion;
+   *selectedRegion = stack[(size_t)current]->state.selectedRegion;
 
    lastAction = wxT("");
    consolidationCount = 0;
 
-   return stack[current]->state;
+   return stack[(size_t)current]->state;
 }
 
 const UndoState &UndoManager::Redo(SelectedRegion *selectedRegion)
@@ -344,7 +345,7 @@ const UndoState &UndoManager::Redo(SelectedRegion *selectedRegion)
 
    current++;
 
-   *selectedRegion = stack[current]->state.selectedRegion;
+   *selectedRegion = stack[(size_t)current]->state.selectedRegion;
 
    /*
    if (!RedoAvailable()) {
@@ -362,7 +363,7 @@ const UndoState &UndoManager::Redo(SelectedRegion *selectedRegion)
    lastAction = wxT("");
    consolidationCount = 0;
 
-   return stack[current]->state;
+   return stack[(size_t)current]->state;
 }
 
 bool UndoManager::UnsavedChanges()

@@ -141,19 +141,19 @@ void CommandBuilder::BuildCommand(const wxString &cmdName,
          Failure(wxT("Parameter string is missing '='"));
          return;
       }
-      wxString paramName = cmdParams.Left(splitAt);
+      wxString paramName = cmdParams.Left((size_t)splitAt);
       if (params.find(paramName) == params.end())
       {
          Failure(wxT("Unrecognized parameter: '") + paramName + wxT("'"));
          return;
       }
-      cmdParams = cmdParams.Mid(splitAt+1);
+      cmdParams = cmdParams.Mid((size_t)splitAt + 1);
       splitAt = cmdParams.Find(wxT(' '));
       if (splitAt < 0)
       {
-         splitAt = cmdParams.Len();
+         splitAt = (int)cmdParams.Len();
       }
-      cmdParams = cmdParams.Mid(splitAt);
+      cmdParams = cmdParams.Mid((size_t)splitAt);
    }
 
    Success(std::make_shared<ApplyAndSendResponse>(mCommand));
@@ -167,15 +167,19 @@ void CommandBuilder::BuildCommand(const wxString &cmdStringArg)
    // no terminator, the command is badly formed
    cmdString.Trim(true); cmdString.Trim(false);
    int splitAt = cmdString.Find(wxT(':'));
-   if (splitAt < 0 && cmdString.Find(wxT(' ')) >= 0) {
-      mError = wxT("Command is missing ':'");
-      ScriptCommandRelay::SendResponse(wxT("\n"));
-      mValid = false;
-      return;
+   if (splitAt < 0) {
+      if(cmdString.Find(wxT(' ')) >= 0) {
+         mError = wxT("Command is missing ':'");
+         ScriptCommandRelay::SendResponse(wxT("\n"));
+         mValid = false;
+         return;
+      }
+      else
+         splitAt = (int)cmdString.Length();
    }
 
-   wxString cmdName = cmdString.Left(splitAt);
-   wxString cmdParams = cmdString.Mid(splitAt+1);
+   wxString cmdName = cmdString.Left((size_t)splitAt);
+   wxString cmdParams = cmdString.Mid((size_t)splitAt + 1);
    cmdName.Trim(true);
    cmdParams.Trim(false);
 

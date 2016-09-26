@@ -113,6 +113,9 @@ std::unique_ptr<wxImage> OverlayImage(wxImage * background, wxImage * foreground
    int mkWidth = mask->GetWidth();
    int mkHeight = mask->GetHeight();
 
+   if ( bgWidth < 0 || bgHeight < 0 )
+      return {};
+
 
    //Now, determine the dimensions of the images to be masked together
    //on top of the background.  This should be equal to the area of the
@@ -133,7 +136,7 @@ std::unique_ptr<wxImage> OverlayImage(wxImage * background, wxImage * foreground
    //Make a NEW image the size of the background
    auto dstImage = std::make_unique<wxImage>(bgWidth, bgHeight);
    unsigned char *dst = dstImage->GetData();
-   memcpy(dst, bg, bgWidth * bgHeight * 3);
+   memcpy(dst, bg, (size_t)(bgWidth * bgHeight * 3));
 
 
    // Go through the foreground image bit by bit and mask it on to the
@@ -189,6 +192,9 @@ std::unique_ptr<wxImage> OverlayImage(teBmps eBack, teBmps eForeground,
    int fgWidth = imgFore.GetWidth();
    int fgHeight = imgFore.GetHeight();
 
+   if (bgWidth < 0 || bgHeight < 0)
+      return {};
+
 
    //Now, determine the dimensions of the images to be masked together
    //on top of the background.  This should be equal to the area of the
@@ -208,7 +214,7 @@ std::unique_ptr<wxImage> OverlayImage(teBmps eBack, teBmps eForeground,
    //Make a NEW image the size of the background
    auto dstImage = std::make_unique<wxImage>(bgWidth, bgHeight);
    unsigned char *dst = dstImage->GetData();
-   memcpy(dst, bg, bgWidth * bgHeight * 3);
+   memcpy(dst, bg, (size_t)(bgWidth * bgHeight * 3));
 
    // Go through the foreground image bit by bit and mask it on to the
    // background, at an offset of xoff,yoff.
@@ -308,24 +314,25 @@ void PasteSubImage( wxImage * background, wxImage * foreground, int xoff, int yo
    int fgWidth = foreground->GetWidth();
    int fgHeight = foreground->GetHeight();
 
-   int wCutoff = fgWidth;
-   int hCutoff = fgHeight;
+   if (fgWidth <= 0 || fgHeight <= 0)
+      return;
+   if (xoff >= bgWidth || yoff >= bgHeight)
+      return;
 
    // If the masked foreground + offset is bigger than the background, masking
    // should only occur within these bounds of the foreground image
-   wCutoff = (bgWidth - xoff > wCutoff) ? wCutoff : bgWidth - xoff;
-   hCutoff = (bgHeight - yoff > hCutoff) ? hCutoff : bgHeight - yoff;
+   auto wCutoff = (size_t)std::min(fgWidth, bgWidth - xoff);
+   auto hCutoff = (size_t)std::min(fgHeight, bgHeight - yoff);
 
    // Go through the foreground image bit by bit and place it on to the
    // background, at an offset of xoff,yoff.
    // Don't go beyond the size of the background image,
    // or the foreground image.
-   int y;
    unsigned char *bkp;
    unsigned char *fgp;
    unsigned char *bgAlphap;
    unsigned char *fgAlphap;
-   for (y = 0; y < hCutoff; y++) {
+   for (int y = 0; y < (int)hCutoff; y++) {
       // RGB bytes
       bkp = bg + 3 * ((y + yoff) * bgWidth + xoff);
       fgp = fg + 3 * ( y * fgWidth);
@@ -357,16 +364,17 @@ wxImage GetSubImageWithAlpha( const wxImage & Src,  const wxRect &rect )
 
    wxCHECK_MSG( Src.Ok(), image, wxT("invalid image") );
 
-   wxCHECK_MSG( (rect.GetLeft()>=0) && (rect.GetTop()>=0) && (
-      rect.GetRight()<=Src.GetWidth()) && (rect.GetBottom()<=Src.GetHeight()),
-      image, wxT("invalid subimage size") );
+   int subwidth = rect.GetWidth();
+   const int subheight = rect.GetHeight();
 
-   int subwidth=rect.GetWidth();
-   const int subheight=rect.GetHeight();
+   wxCHECK_MSG( (rect.GetLeft()>=0) && (rect.GetTop()>=0) &&
+      subwidth >= 0 && subheight >= 0 &&
+      (rect.GetRight()<=Src.GetWidth()) && (rect.GetBottom()<=Src.GetHeight()),
+      image, wxT("invalid subimage size") );
 
    image.Create( subwidth, subheight, false );
 
-   unsigned char *subdata = image.GetData(), *data=Src.GetData();
+   unsigned char *subdata = image.GetData(), *data = Src.GetData();
 
    wxCHECK_MSG( subdata, image, wxT("unable to create image") );
 
@@ -374,17 +382,17 @@ wxImage GetSubImageWithAlpha( const wxImage & Src,  const wxRect &rect )
 //   if (Src.M_IMGDATA->m_hasMask)
 //      image.SetMaskColour( Src.M_IMGDATA->m_maskRed, Src.M_IMGDATA->m_maskGreen, Src.M_IMGDATA->m_maskBlue );
 
-   int subleft=3*rect.GetLeft();
-   int width=3*Src.GetWidth();
-   subwidth*=3;
+   int subleft = 3 * rect.GetLeft();
+   int width = 3 * Src.GetWidth();
+   subwidth *= 3;
 
-   data+=rect.GetTop()*width+subleft;
+   data += rect.GetTop() * width + subleft;
 
    for (long j = 0; j < subheight; ++j)
    {
-      memcpy( subdata, data, subwidth);
-      subdata+=subwidth;
-      data+=width;
+      memcpy( subdata, data, (size_t)subwidth);
+      subdata += subwidth;
+      data += width;
    }
 
    // OK, so we've copied the RGB data.
@@ -392,20 +400,20 @@ wxImage GetSubImageWithAlpha( const wxImage & Src,  const wxRect &rect )
    wxASSERT( Src.HasAlpha() );
    image.InitAlpha();
 
-   subleft/=3;
-   width/=3;
-   subwidth/=3;
+   subleft /= 3;
+   width /= 3;
+   subwidth /= 3;
 
-   data =Src.GetAlpha();
-   subdata =image.GetAlpha();
+   data = Src.GetAlpha();
+   subdata = image.GetAlpha();
 
-   data+=rect.GetTop()*width+subleft;
+   data += rect.GetTop() * width + subleft;
 
    for (long j = 0; j < subheight; ++j)
    {
-      memcpy( subdata, data, subwidth);
-      subdata+=subwidth;
-      data+=width;
+      memcpy( subdata, data, (size_t)subwidth);
+      subdata += subwidth;
+      data += width;
    }
    return image;
 }

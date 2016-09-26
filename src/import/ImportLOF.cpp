@@ -128,7 +128,7 @@ public:
    ProgressResult Import(TrackFactory *trackFactory, TrackHolders &outTracks,
               Tags *tags) override;
 
-   wxInt32 GetStreamCount() override { return 1; }
+   unsigned GetStreamCount() override { return 1; }
 
    const wxArrayString &GetStreamInfo() override
    {
@@ -136,8 +136,7 @@ public:
       return empty;
    }
 
-   void SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUSED(Use)) override
-   {}
+   void SetStreamUsage(unsigned WXUNUSED(StreamID), bool WXUNUSED(Use)) override {}
 
 private:
    // Takes a line of text in lof file and interprets it and opens files
@@ -294,7 +293,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
    wxStringTokenizer tok(*ln, wxT(" "));
    wxStringTokenizer temptok1(*ln, wxT("\""));
    wxStringTokenizer temptok2(*ln, wxT(" "));
-   int tokenplace = 0;
+   size_t tokenplace = 0;
 
    wxString targetfile;
    wxString tokenholder = tok.GetNextToken();
@@ -403,7 +402,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       temptok2.SetString(targetfile);
       tokenplace = temptok2.CountTokens();
 
-      for (int i = 0; i < tokenplace; i++)
+      for (size_t i = 0; i < tokenplace; i++)
          tokenholder = tok.GetNextToken();
 
       if (tok.HasMoreTokens())

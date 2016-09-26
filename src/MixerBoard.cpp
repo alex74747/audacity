@@ -129,9 +129,9 @@ void MixerTrackSlider::OnCaptureKey(wxCommandEvent &event)
 #define MUTE_SOLO_HEIGHT                     16
 #define PAN_HEIGHT                           24
 
-#define kLeftSideStackWidth         MUSICAL_INSTRUMENT_HEIGHT_AND_WIDTH - kDoubleInset //vvv Change when numbers shown on slider scale.
-#define kRightSideStackWidth        MUSICAL_INSTRUMENT_HEIGHT_AND_WIDTH + kDoubleInset
-#define kMixerTrackClusterWidth     kLeftSideStackWidth + kRightSideStackWidth + kQuadrupleInset // kDoubleInset margin on both sides
+#define kLeftSideStackWidth         (MUSICAL_INSTRUMENT_HEIGHT_AND_WIDTH - kDoubleInset) //vvv Change when numbers shown on slider scale.
+#define kRightSideStackWidth        (MUSICAL_INSTRUMENT_HEIGHT_AND_WIDTH + kDoubleInset)
+#define kMixerTrackClusterWidth     (kLeftSideStackWidth + kRightSideStackWidth + kQuadrupleInset) // kDoubleInset margin on both sides
 
 enum {
    ID_BITMAPBUTTON_MUSICAL_INSTRUMENT = 13000,
@@ -840,11 +840,11 @@ MusicalInstrument::MusicalInstrument(std::unique_ptr<wxBitmap> &&pBitmap, const 
    wxString strFilename = strXPMfilename;
    strFilename.MakeLower(); // Make sure, so we don't have to do case insensitive comparison.
    wxString strKeyword;
-   while ((nUnderscoreIndex = strFilename.Find(wxT('_'))) != -1)
+   while ((nUnderscoreIndex = strFilename.Find(wxT('_'))) > 0)
    {
-      strKeyword = strFilename.Left(nUnderscoreIndex);
+      strKeyword = strFilename.Left((size_t)nUnderscoreIndex);
       mKeywords.Add(strKeyword);
-      strFilename = strFilename.Mid(nUnderscoreIndex + 1);
+      strFilename = strFilename.Mid((size_t)nUnderscoreIndex + 1);
    }
    if (!strFilename.IsEmpty()) // Skip trailing underscores.
       mKeywords.Add(strFilename); // Add the last one.
@@ -1045,7 +1045,7 @@ void MixerBoard::UpdateTrackClusters()
             // Not already showing it. Add a NEW MixerTrackCluster.
             wxPoint clusterPos(
                (kInset +                                       // extra inset to left for first one, so it's double
-                  (nClusterIndex *
+                  ((int)nClusterIndex *
                      (kInset + kMixerTrackClusterWidth)) +     // left margin and width for each to its left
                   kInset),                                     // plus left margin for NEW cluster
                kInset);
@@ -1090,7 +1090,7 @@ int MixerBoard::GetTrackClustersWidth()
 {
    return
       kInset +                                     // extra margin at left for first one
-      (mMixerTrackClusters.GetCount() *            // number of tracks times
+      ((int)mMixerTrackClusters.GetCount() *            // number of tracks times
          (kInset + kMixerTrackClusterWidth)) +     // left margin and width for each
       kDoubleInset;                                // plus final right margin
 }
@@ -1104,9 +1104,11 @@ void MixerBoard::MoveTrackCluster(const WaveTrack* pTrack,
 #endif
 {
    MixerTrackCluster* pMixerTrackCluster;
-   int nIndex = FindMixerTrackCluster(pTrack, &pMixerTrackCluster);
+   int index = FindMixerTrackCluster(pTrack, &pMixerTrackCluster);
    if (pMixerTrackCluster == NULL)
       return; // Couldn't find it.
+   wxASSERT(index >= 0);
+   auto nIndex = (size_t)index;
 
    wxPoint pos;
    if (bUp)
@@ -1143,9 +1145,11 @@ void MixerBoard::RemoveTrackCluster(const WaveTrack* pTrack)
 {
    // Find and destroy.
    MixerTrackCluster* pMixerTrackCluster;
-   int nIndex = this->FindMixerTrackCluster(pTrack, &pMixerTrackCluster);
+   int index = this->FindMixerTrackCluster(pTrack, &pMixerTrackCluster);
    if (pMixerTrackCluster == NULL)
       return; // Couldn't find it.
+   wxASSERT(index >= 0);
+   auto nIndex = (size_t)index;
 
    mMixerTrackClusters.RemoveAt(nIndex);
    pMixerTrackCluster->Destroy(); // DELETE is unsafe on wxWindow.
@@ -1158,7 +1162,7 @@ void MixerBoard::RemoveTrackCluster(const WaveTrack* pTrack)
       pos = mMixerTrackClusters[i]->GetPosition();
       targetX =
          kInset +                                     // extra inset to left for first one, so it's double
-         (i * (kInset + kMixerTrackClusterWidth)) +   // left margin and width for each
+         ((int)i * (kInset + kMixerTrackClusterWidth)) +   // left margin and width for each
          kInset;                                      // plus left margin for this cluster
       if (pos.x != targetX)
          mMixerTrackClusters[i]->Move(targetX, pos.y);
@@ -1484,7 +1488,7 @@ int MixerBoard::FindMixerTrackCluster(const WaveTrack* pLeftTrack,
 #endif
       {
          *hMixerTrackCluster = mMixerTrackClusters[i];
-         return i;
+         return (int)i;
       }
    }
    return -1;

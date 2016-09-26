@@ -205,7 +205,7 @@ void AUControl::OnSize(wxSizeEvent & evt)
 
    if (mView)
    {
-      int mask = [mView autoresizingMask];
+      NSUInteger mask = [mView autoresizingMask];
 
       NSRect viewFrame = [mAUView frame];
       NSRect viewRect = [mView frame];
@@ -382,8 +382,8 @@ void AUControl::CreateGeneric()
          return;
       }
 
-      int flags = AUViewPropertiesDisplayFlag |
-                  AUViewParametersDisplayFlag;
+      UInt32 flags = AUViewPropertiesDisplayFlag |
+                     AUViewParametersDisplayFlag;
    
       [view initWithAudioUnit:mUnit displayFlags:flags];
    

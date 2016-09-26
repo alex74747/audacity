@@ -114,7 +114,7 @@ long resampleCB(void *cb_data, SBSMSFrame *data)
    }
 
    data->buf = r->buf;
-   data->size = blockSize;
+   data->size = (long)blockSize;
    if(r->bPitch) {
      float t0 = r->processed.as_float() / r->iface->getSamplesToInput();
      float t1 = (r->processed + blockSize).as_float() / r->iface->getSamplesToInput();
@@ -126,7 +126,7 @@ long resampleCB(void *cb_data, SBSMSFrame *data)
    }
    r->processed += blockSize;
    r->offset += blockSize;
-   return blockSize;
+   return data->size;
 }
 
 long postResampleCB(void *cb_data, SBSMSFrame *data)
@@ -322,7 +322,8 @@ bool EffectSBSMS::Process()
               rb.resampler = std::make_unique<Resampler>(resampleCB, &rb, srProcess==srTrack?SlideIdentity:SlideConstant);
               rb.sbsms = std::make_unique<SBSMS>(rightTrack ? 2 : 1, rb.quality.get(), true);
               rb.SBSMSBlockSize = rb.sbsms->getInputFrameSize();
-              rb.SBSMSBuf = (audio*)calloc(rb.SBSMSBlockSize,sizeof(audio));
+               wxASSERT(rb.SBSMSBlockSize >= 0);
+              rb.SBSMSBuf = (audio*)calloc((size_t)rb.SBSMSBlockSize, sizeof(audio));
 
               // Note: width of getMaxPresamples() is only long.  Widen it
               decltype(start) processPresamples = rb.quality->getMaxPresamples();
@@ -379,25 +380,27 @@ bool EffectSBSMS::Process()
             long outputCount = -1;
 
             // process
-            while(pos<samplesOut && outputCount) {
+            while(pos < samplesOut && outputCount) {
                const auto frames =
                   limitSampleBufferSize( SBSMSOutBlockSize, samplesOut - pos );
 
-               outputCount = resampler.read(outBuf,frames);
+               outputCount = resampler.read(outBuf, (long)frames);
                for(int i = 0; i < outputCount; i++) {
                   outBufLeft[i] = outBuf[i][0];
                   if(rightTrack)
                      outBufRight[i] = outBuf[i][1];
                }
                pos += outputCount;
-               rb.outputLeftTrack->Append((samplePtr)outBufLeft, floatSample, outputCount);
-               if(rightTrack)
-                  rb.outputRightTrack->Append((samplePtr)outBufRight, floatSample, outputCount);
+               if (outputCount >= 0) {
+                  rb.outputLeftTrack->Append((samplePtr)outBufLeft, floatSample, (size_t)outputCount);
+                  if(rightTrack)
+                     rb.outputRightTrack->Append((samplePtr)outBufRight, floatSample, (size_t)outputCount);
+               }
 
                double frac = (double)pos / samplesOut.as_double();
-               int nWhichTrack = mCurTrackNum;
+               auto nWhichTrack = mCurTrackNum;
                if(rightTrack) {
-                  nWhichTrack = 2*(mCurTrackNum/2);
+                  nWhichTrack = 2 * (mCurTrackNum / 2);
                   if (frac < 0.5)
                      frac *= 2.0; // Show twice as far for each track, because we're doing 2 at once.
                   else {

@@ -104,7 +104,7 @@ class ODManager final
    float GetOverallPercentComplete();
 
    ///Get Total Number of Tasks.
-   int GetTotalNumTasks();
+   unsigned GetTotalNumTasks();
 
    // RAII object for pausing and resuming..
    class Pauser
@@ -152,7 +152,7 @@ class ODManager final
    volatile bool mPause;
    ODLock mPauseLock;
 
-   volatile int mNeedsDraw;
+   volatile unsigned mNeedsDraw;
 
    ///Number of threads currently running.   Accessed thru multiple threads
    volatile int mCurrentThreads;

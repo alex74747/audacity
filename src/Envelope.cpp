@@ -1426,7 +1426,7 @@ double Envelope::SolveIntegralOfInverse( double t0, double area ) const
    if(area == 0.0)
       return t0;
 
-   unsigned int count = mEnv.size();
+   auto count = mEnv.size();
    if(count == 0) // 'empty' envelope
       return t0 + area * mDefaultValue;
 
@@ -1450,7 +1450,7 @@ double Envelope::SolveIntegralOfInverse( double t0, double area ) const
    else if (t0 >= mEnv[count - 1].GetT()) // t0 following the last point
    {
       if (area < 0) {
-         i = count - 2;
+         i = (int)count - 2;
          lastT = mEnv[count - 1].GetT();
          lastVal = mEnv[count - 1].GetVal();
          double added = (lastT - t0) / lastVal; // negative
@@ -1470,9 +1470,9 @@ double Envelope::SolveIntegralOfInverse( double t0, double area ) const
       lastVal = InterpolatePoints(mEnv[lo].GetVal(), mEnv[hi].GetVal(), (t0 - mEnv[lo].GetT()) / (mEnv[hi].GetT() - mEnv[lo].GetT()), mDB);
       lastT = t0;
       if (area < 0)
-         i = lo;
+         i = (int)lo;
       else
-         i = hi; // the point immediately after t0.
+         i = (int)hi; // the point immediately after t0.
    }
 
    if (area < 0) {
@@ -1486,13 +1486,14 @@ double Envelope::SolveIntegralOfInverse( double t0, double area ) const
          }
          else
          {
+            auto &point = mEnv[(size_t)i];
             double added =
-               -IntegrateInverseInterpolated(mEnv[i].GetVal(), lastVal, lastT - mEnv[i].GetT(), mDB);
+               -IntegrateInverseInterpolated(point.GetVal(), lastVal, lastT - point.GetT(), mDB);
             if (added <= area)
-               return lastT - SolveIntegrateInverseInterpolated(lastVal, mEnv[i].GetVal(), lastT - mEnv[i].GetT(), -area, mDB);
+               return lastT - SolveIntegrateInverseInterpolated(lastVal, point.GetVal(), lastT - point.GetT(), -area, mDB);
             area -= added;
-            lastT = mEnv[i].GetT();
-            lastVal = mEnv[i].GetVal();
+            lastT = point.GetT();
+            lastVal = point.GetVal();
             --i;
          }
       }
@@ -1507,12 +1508,13 @@ double Envelope::SolveIntegralOfInverse( double t0, double area ) const
          }
          else
          {
-            double added = IntegrateInverseInterpolated(lastVal, mEnv[i].GetVal(), mEnv[i].GetT() - lastT, mDB);
+            auto &point = mEnv[(size_t)i];
+            double added = IntegrateInverseInterpolated(lastVal, point.GetVal(), point.GetT() - lastT, mDB);
             if (added >= area)
-               return lastT + SolveIntegrateInverseInterpolated(lastVal, mEnv[i].GetVal(), mEnv[i].GetT() - lastT, area, mDB);
+               return lastT + SolveIntegrateInverseInterpolated(lastVal, point.GetVal(), point.GetT() - lastT, area, mDB);
             area -= added;
-            lastT = mEnv[i].GetT();
-            lastVal = mEnv[i].GetVal();
+            lastT = point.GetT();
+            lastVal = point.GetVal();
             i++;
          }
       }

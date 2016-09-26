@@ -390,7 +390,7 @@ private:
       }
       
       chars = [[NSString stringWithCharacters:unicodeString
-                                       length:(NSInteger)actualStringLength] UTF8String];
+                                       length:(NSUInteger)actualStringLength] UTF8String];
 
 #endif
 
@@ -622,11 +622,11 @@ void CommandManager::InsertItem(const wxString & name,
    }
 
    int pos = bar->FindMenu(names[0]);
-   if (pos == wxNOT_FOUND) {
+   if (pos < 0) {
       return;
    }
 
-   wxMenu *menu = bar->GetMenu(pos);
+   wxMenu *menu = bar->GetMenu((size_t)pos);
    wxMenuItem *item = NULL;
    pos = 0;
 
@@ -664,11 +664,11 @@ void CommandManager::InsertItem(const wxString & name,
    wxString label = GetLabel(entry);
 
    if (checkmark >= 0) {
-      menu->InsertCheckItem(pos, ID, label);
+      menu->InsertCheckItem((size_t)pos, ID, label);
       menu->Check(ID, checkmark != 0);
    }
    else {
-      menu->Insert(pos, ID, label);
+      menu->Insert((size_t)pos, ID, label);
    }
 
    mbSeparatorAllowed = true;
@@ -821,8 +821,8 @@ CommandListEntry *CommandManager::NewIdentifier(const wxString & name,
                                                 wxMenu *menu,
                                                 const CommandFunctorPointer &callback,
                                                 bool multi,
-                                                int index,
-                                                int count)
+                                                size_t index,
+                                                size_t count)
 {
    return NewIdentifier(name,
                         label.BeforeFirst(wxT('\t')),
@@ -840,8 +840,8 @@ CommandListEntry *CommandManager::NewIdentifier(const wxString & name,
    wxMenu *menu,
    const CommandFunctorPointer &callback,
    bool multi,
-   int index,
-   int count)
+   size_t index,
+   size_t count)
 {
    {
       // Make a unique_ptr or shared_ptr as appropriate:
@@ -975,10 +975,9 @@ void CommandManager::Enable(CommandListEntry *entry, bool enabled)
    }
 
    if (entry->multi) {
-      int i;
       int ID = entry->id;
 
-      for(i=1; i<entry->count; i++) {
+      for(size_t i = 1; i < entry->count; i++) {
          ID = NextIdentifier(ID);
 
          // This menu item is not necessarily in the same menu, because
@@ -1066,7 +1065,7 @@ void CommandManager::SetKeyFromName(const wxString &name, const wxString &key)
    }
 }
 
-void CommandManager::SetKeyFromIndex(int i, const wxString &key)
+void CommandManager::SetKeyFromIndex(size_t i, const wxString &key)
 {
    const auto &entry = mCommandList[i];
    entry->key = KeyStringNormalize(key);
@@ -1489,8 +1488,8 @@ void CommandManager::SetCommandFlags(CommandFlag flags, CommandMask mask, ...)
 #if defined(__WXDEBUG__)
 void CommandManager::CheckDups()
 {
-   int cnt = mCommandList.size();
-   for (size_t j = 0;  (int)j < cnt; j++) {
+   auto cnt = mCommandList.size();
+   for (size_t j = 0;  j < cnt; j++) {
       if (mCommandList[j]->key.IsEmpty()) {
          continue;
       }
@@ -1499,7 +1498,7 @@ void CommandManager::CheckDups()
          continue;
       }
 
-      for (size_t i = 0; (int)i < cnt; i++) {
+      for (size_t i = 0; i < cnt; i++) {
          if (i == j) {
             continue;
          }

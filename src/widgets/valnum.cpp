@@ -114,25 +114,29 @@ NumValidatorBase::GetCurrentValueAndInsertionPoint(wxString& val,
       return;
 
    val = control->GetValue();
-   pos = control->GetInsertionPoint();
-
+   auto point = control->GetInsertionPoint();
+   wxASSERT(point >= 0);
+   pos = (size_t) point;
    long selFrom, selTo;
    control->GetSelection(&selFrom, &selTo);
 
    const long selLen = selTo - selFrom;
    if ( selLen )
    {
+      wxASSERT(selFrom >= 0);
+      wxASSERT(selLen > 0);
+
       // Remove selected text because pressing a key would make it disappear.
-      val.erase(selFrom, selLen);
+      val.erase((size_t)selFrom, (size_t)selLen);
 
       // And adjust the insertion point to have correct position in the NEW
       // string.
-      if ( pos > selFrom )
+      if ( pos > (size_t) selFrom )
       {
-         if ( pos >= selTo )
-            pos -= selLen;
+         if ( pos >= (size_t) selTo )
+            pos -= (size_t) selLen;
          else
-            pos = selFrom;
+            pos = (size_t) selFrom;
       }
    }
 }
@@ -386,7 +390,7 @@ bool IntegerValidatorBase::DoValidateNumber(wxString * errMsg) const
 
 wxString FloatingPointValidatorBase::ToString(LongestValueType value) const
 {
-   return NumberFormatter::ToString(value, m_precision, GetFormatFlags());
+   return NumberFormatter::ToString(value, (int)m_precision, GetFormatFlags());
 }
 
 bool
@@ -533,12 +537,12 @@ bool FloatingPointValidatorBase::ValidatePrecision(const wxString& s) const
 
    // If user typed exponent 'e' the number of decimal digits is not
    // important at all. But we must know that 'e' position.
-   size_t posExp = s.Lower().Find(_("e"));
-   if ( posExp == wxString::npos )
-      posExp = s.length();
+   int posExp = s.Lower().Find(_("e"));
+   if ( posExp < 0 )
+      posExp = (int)s.length();
 
    // Return true if number has no more decimal digits than allowed
-   return ( (int)(posExp - posSep) - 1 <= (int)m_precision );
+   return ( posExp - (int)posSep - 1 <= (int)m_precision );
 }
 
 #endif // wxUSE_VALIDATORS && wxUSE_TEXTCTRL

@@ -22,8 +22,23 @@
 class KeyNode
 {
 public:
-   KeyNode()
+   KeyNode(const wxString &name_,
+           const wxString &category_,
+           const wxString &prefix_,
+           const wxString &label_,
+           const wxString &key_,
+           size_t index_,
+           int line_,
+           int depth_,
+           bool iscat_,
+           bool ispfx_,
+           bool isparent_,
+           bool isopen_)
+   : name(name_), category(category_), prefix(prefix_), label(label_), key(key_)
+   , index(index_), line(line_), depth(depth_)
+   , iscat(iscat_), ispfx(ispfx_), isparent(isparent_), isopen(isopen_)
    {
+      /*
       index = -1;
       line = -1;
       depth = -1;
@@ -31,20 +46,23 @@ public:
       ispfx = false;
       isparent = false;
       isopen = false;
+       */
    }
 
 public:
-   wxString name;
-   wxString category;
-   wxString prefix;
-   wxString label;
+   const wxString name;
+   const wxString category;
+   const wxString prefix;
+   const wxString label;
    wxString key;
-   int index;
+
+   const size_t index;
    int line;
-   int depth;
-   bool iscat;
-   bool ispfx;
-   bool isparent;
+   const int depth;
+
+   const bool iscat;
+   const bool ispfx;
+   const bool isparent;
    bool isopen;
 };
 
@@ -86,17 +104,17 @@ public:
 
    int GetSelected() const;
 
-   wxString GetLabel(int index) const;
-   wxString GetFullLabel(int index) const;
+   wxString GetLabel(size_t index) const;
+   wxString GetFullLabel(size_t index) const;
 
    int GetIndexByName(const wxString & name) const;
-   wxString GetName(int index) const;
+   wxString GetName(size_t index) const;
    wxString GetNameByKey(const wxString & key) const;
 
    int GetIndexByKey(const wxString & key) const;
-   wxString GetKey(int index) const;
-   bool CanSetKey(int index) const;
-   bool SetKey(int index, const wxString & key);
+   wxString GetKey(size_t index) const;
+   bool CanSetKey(size_t index) const;
+   bool SetKey(size_t index, const wxString & key);
    bool SetKeyByName(const wxString & name, const wxString & key);
 
    void SetView(ViewByType type);
@@ -135,10 +153,10 @@ private:
 #if wxUSE_ACCESSIBILITY
    friend class KeyViewAx;
 
-   bool HasChildren(int line);
-   bool IsExpanded(int line);
-   wxCoord GetLineHeight(int line);
-   wxString GetValue(int line);
+   bool HasChildren(size_t line);
+   bool IsExpanded(size_t line);
+   wxCoord GetLineHeight(size_t line);
+   wxString GetValue(size_t line);
    ViewByType GetViewType();
 #endif
 
@@ -182,7 +200,7 @@ public:
    void SetCurrentLine(int row);
    void ListUpdated();
    bool LineToId(int line, int & childId);
-   bool IdToLine(int childId, int & line);
+   bool IdToLine(int childId, size_t & line);
 
    // Can return either a child object, or an integer
    // representing the child element, starting from 1.

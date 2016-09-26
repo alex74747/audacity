@@ -233,7 +233,7 @@ class ToolBarArea final : public wxPanelWrapper
  protected:
    void ContractRow(int rowIndex);
    bool ExpandRow(int rowIndex);
-   void LayoutOne(int childIndex);
+   void LayoutOne(size_t childIndex);
    void AdjustLayout();
    void Fit(bool horizontal, bool vertical);
 
@@ -249,7 +249,7 @@ class ToolBarArea final : public wxPanelWrapper
    wxSize                   mActualSize;
 
    wxArrayRect              mDropTargets;
-   wxArrayInt               mDropTargetIndices;
+   std::vector<size_t>      mDropTargetIndices;
    wxArrayInt               mDropTargetRows;
 
    DECLARE_EVENT_TABLE()

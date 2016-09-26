@@ -250,10 +250,10 @@ public:
    void SetSizeHints( int minX, int minY );
    void SetBorder( int Border ) {miBorder = Border;};
    void SetStyle( int Style ) {miStyle = Style;};
-   void SetNoMatchSelector( int iSelector ) {miNoMatchSelector = iSelector;};
+   void SetNoMatchSelector( size_t iSelector ) {miNoMatchSelector = iSelector;};
    void SetSizerProportion( int iProp ) {miSizerProp = iProp;};
-   void SetStretchyCol( int i );
-   void SetStretchyRow( int i );
+   void SetStretchyCol( size_t i );
+   void SetStretchyRow( size_t i );
 
 //--Some Additions since June 2007 that don't fit in elsewhere...
    wxWindow * GetParent()
@@ -288,7 +288,7 @@ protected:
 
    std::unique_ptr<Shuttle> mpShuttle; /*! Controls source/destination of shuttled data.  You can
    leave this NULL if you are shuttling to variables */
-   int miNoMatchSelector; //! Used in choices to determine which item to use on no match.
+   size_t miNoMatchSelector; //! Used in choices to determine which item to use on no match.
 
    teShuttleMode mShuttleMode;
 

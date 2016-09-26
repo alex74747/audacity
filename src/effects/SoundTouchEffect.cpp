@@ -299,7 +299,7 @@ bool EffectSoundTouch::ProcessStereo(
 
          //Update the Progress meter
          // mCurTrackNum is left track. Include right track.
-         int nWhichTrack = mCurTrackNum;
+         auto nWhichTrack = mCurTrackNum;
          double frac = (sourceSampleCount - start).as_double() / len;
          if (frac < 0.5)
             frac *= 2.0; // Show twice as far for each track, because we're doing 2 at once.

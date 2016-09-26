@@ -478,7 +478,7 @@ void WaveTrack::VirtualStereoInit()
 }
 #endif
 
-float WaveTrack::GetChannelGain(int channel) const
+float WaveTrack::GetChannelGain(unsigned channel) const
 {
    float left = 1.0;
    float right = 1.0;
@@ -494,9 +494,9 @@ float WaveTrack::GetChannelGain(int channel) const
       left = 1.0 - mPan;
 
    if ((channel%2) == 0)
-      return left*mGain;
+      return left * mGain;
    else
-      return right*mGain;
+      return right * mGain;
 }
 
 bool WaveTrack::ConvertToSampleFormat(sampleFormat format)
@@ -965,7 +965,7 @@ bool WaveTrack::SplitDelete(double t0, double t1)
 namespace
 {
    WaveClipHolders::const_iterator
-      FindClip(const WaveClipHolders &list, const WaveClip *clip, int *distance = nullptr)
+      FindClip(const WaveClipHolders &list, const WaveClip *clip, size_t *distance = nullptr)
    {
       if (distance)
          *distance = 0;
@@ -981,7 +981,7 @@ namespace
    }
 
    WaveClipHolders::iterator
-      FindClip(WaveClipHolders &list, const WaveClip *clip, int *distance = nullptr)
+      FindClip(WaveClipHolders &list, const WaveClip *clip, size_t *distance = nullptr)
    {
       if (distance)
          *distance = 0;
@@ -1566,14 +1566,14 @@ bool WaveTrack::Append(samplePtr buffer, sampleFormat format,
 }
 
 bool WaveTrack::AppendAlias(const wxString &fName, sampleCount start,
-                            size_t len, int channel,bool useOD)
+                            size_t len, unsigned channel, bool useOD)
 {
    return RightmostOrNewClip()->AppendAlias(fName, start, len, channel, useOD);
 }
 
 
 bool WaveTrack::AppendCoded(const wxString &fName, sampleCount start,
-                            size_t len, int channel, int decodeType)
+                            size_t len, unsigned channel, unsigned decodeType)
 {
    return RightmostOrNewClip()->AppendCoded(fName, start, len, channel, decodeType);
 }
@@ -1714,7 +1714,7 @@ bool WaveTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             if (!XMLValueChecker::IsGoodInt(strValue) || !strValue.ToLong(&nValue) ||
                   !XMLValueChecker::IsValidChannel(nValue))
                return false;
-            mChannel = nValue;
+            mChannel = (unsigned)nValue;
          }
          else if (!wxStrcmp(attr, wxT("linked")) &&
                   XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
@@ -1784,7 +1784,7 @@ void WaveTrack::WriteXML(XMLWriter &xmlFile) const
       xmlFile.WriteAttr(wxT("autosaveid"), mAutoSaveIdent);
    }
    xmlFile.WriteAttr(wxT("name"), mName);
-   xmlFile.WriteAttr(wxT("channel"), mChannel);
+   xmlFile.WriteAttr(wxT("channel"), (int)mChannel);
    xmlFile.WriteAttr(wxT("linked"), mLinked);
    xmlFile.WriteAttr(wxT("mute"), mMute);
    xmlFile.WriteAttr(wxT("solo"), mSolo);
@@ -2264,27 +2264,28 @@ WaveClip* WaveTrack::RightmostOrNewClip()
    }
 }
 
-int WaveTrack::GetClipIndex(const WaveClip* clip) const
+size_t WaveTrack::GetClipIndex(const WaveClip* clip) const
 {
-   int result;
+   size_t result;
    FindClip(mClips, clip, &result);
+   // result is past-the-end value in case not found
    return result;
 }
 
-WaveClip* WaveTrack::GetClipByIndex(int index)
+WaveClip* WaveTrack::GetClipByIndex(size_t index)
 {
-   if(index < (int)mClips.size())
+   if(index < mClips.size())
       return mClips[index].get();
    else
       return nullptr;
 }
 
-const WaveClip* WaveTrack::GetClipByIndex(int index) const
+const WaveClip* WaveTrack::GetClipByIndex(size_t index) const
 {
    return const_cast<WaveTrack&>(*this).GetClipByIndex(index);
 }
 
-int WaveTrack::GetNumClips() const
+size_t WaveTrack::GetNumClips() const
 {
    return mClips.size();
 }
@@ -2399,7 +2400,7 @@ void WaveTrack::UpdateLocationsCache() const
    mDisplayLocationsCache.clear();
 
    // Count number of display locations
-   int num = 0;
+   size_t num = 0;
    {
       const WaveClip *prev = nullptr;
       for (const auto clip : clips)
@@ -2421,7 +2422,7 @@ void WaveTrack::UpdateLocationsCache() const
    mDisplayLocationsCache.reserve(num);
 
    // Add all display locations to cache
-   int curpos = 0;
+   size_t curpos = 0;
 
    const WaveClip *previousClip = nullptr;
    for (const auto clip: clips)
@@ -2429,9 +2430,8 @@ void WaveTrack::UpdateLocationsCache() const
       for (const auto &cc : clip->GetCutLines())
       {
          // Add cut line expander point
-         mDisplayLocationsCache.push_back(WaveTrackLocation{
-            clip->GetOffset() + cc->GetOffset(),
-            WaveTrackLocation::locationCutLine
+         mDisplayLocationsCache.push_back(WaveTrackLocation {
+            clip->GetOffset() + cc->GetOffset()
          });
          curpos++;
       }
@@ -2442,9 +2442,8 @@ void WaveTrack::UpdateLocationsCache() const
                                           < WAVETRACK_MERGE_POINT_TOLERANCE)
          {
             // Add merge point
-            mDisplayLocationsCache.push_back(WaveTrackLocation{
+            mDisplayLocationsCache.push_back(WaveTrackLocation {
                previousClip->GetEndTime(),
-               WaveTrackLocation::locationMergePoint,
                GetClipIndex(previousClip),
                GetClipIndex(clip)
             });
@@ -2523,7 +2522,7 @@ bool WaveTrack::RemoveCutLine(double cutLinePosition)
    return false;
 }
 
-bool WaveTrack::MergeClips(int clipidx1, int clipidx2)
+bool WaveTrack::MergeClips(size_t clipidx1, size_t clipidx2)
 {
    WaveClip* clip1 = GetClipByIndex(clipidx1);
    WaveClip* clip2 = GetClipByIndex(clipidx2);

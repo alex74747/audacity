@@ -48,7 +48,7 @@ ODPCMAliasBlockFile::ODPCMAliasBlockFile(
       wxFileNameWrapper &&fileName,
       wxFileNameWrapper &&aliasedFileName,
       sampleCount aliasStart,
-      size_t aliasLen, int aliasChannel)
+      size_t aliasLen, unsigned aliasChannel)
 : PCMAliasBlockFile { std::move(fileName), std::move(aliasedFileName),
                       aliasStart, aliasLen, aliasChannel, false }
 {
@@ -60,7 +60,7 @@ ODPCMAliasBlockFile::ODPCMAliasBlockFile(
       wxFileNameWrapper &&existingSummaryFileName,
       wxFileNameWrapper &&aliasedFileName,
       sampleCount aliasStart,
-      size_t aliasLen, int aliasChannel,
+      size_t aliasLen, unsigned aliasChannel,
       float min, float max, float rms, bool summaryAvailable)
 : PCMAliasBlockFile(std::move(existingSummaryFileName), std::move(aliasedFileName),
                     aliasStart, aliasLen,
@@ -84,7 +84,7 @@ auto ODPCMAliasBlockFile::GetSpaceUsage() const -> DiskByteCount
       DiskByteCount ret;
       mFileNameMutex.Lock();
       wxFFile summaryFile(mFileName.GetFullPath());
-      ret= summaryFile.Length();
+      ret = (DiskByteCount)summaryFile.Length();
       mFileNameMutex.Unlock();
       return ret;
    }
@@ -250,7 +250,7 @@ void ODPCMAliasBlockFile::SaveXML(XMLWriter &xmlFile)
       xmlFile.WriteAttr(wxT("aliasstart"),
                         mAliasStart.as_long_long());
       xmlFile.WriteAttr(wxT("aliaslen"), mLen);
-      xmlFile.WriteAttr(wxT("aliaschannel"), mAliasChannel);
+      xmlFile.WriteAttr(wxT("aliaschannel"), (int)mAliasChannel);
 
       xmlFile.EndTag(wxT("odpcmaliasblockfile"));
    }
@@ -269,7 +269,7 @@ BlockFilePtr ODPCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **at
    wxFileNameWrapper aliasFileName;
    sampleCount aliasStart = 0;
    size_t aliasLen = 0;
-   int aliasChannel=0;
+   unsigned aliasChannel = 0;
    long nValue;
    long long nnValue;
 
@@ -312,9 +312,9 @@ BlockFilePtr ODPCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **at
       else if (XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
-            aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
-            aliasChannel = nValue;
+            aliasLen = (size_t)nValue;
+         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(nValue))
+            aliasChannel = (unsigned)nValue;
       }
    }
 
@@ -529,7 +529,7 @@ bool ODPCMAliasBlockFile::ReadSummary(void *data)
 
    }
    else
-      mSilentLog=FALSE; // worked properly, any future error is NEW
+      mSilentLog = FALSE; // worked properly, any future error is NEW
 
    auto read = summaryFile.Read(data, mSummaryInfo.totalSummaryBytes);
 

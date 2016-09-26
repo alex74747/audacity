@@ -44,7 +44,7 @@ private:
    bool bLinkRatePitch, bRateReferenceInput, bPitchReferenceInput;
    SlideType rateSlideType;
    SlideType pitchSlideType;
-   int mCurTrackNum;
+   unsigned mCurTrackNum;
    double mCurT0;
    double mCurT1;
    float mTotalStretch;

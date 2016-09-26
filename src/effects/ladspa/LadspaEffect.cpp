@@ -221,7 +221,7 @@ bool LadspaEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxSt
    wxString saveOldCWD = ff.GetCwd();
    ff.SetCwd();
    
-   int index = 0;
+   unsigned long index = 0;
    LADSPA_Descriptor_Function mainFn = NULL;
    wxDynamicLibrary lib;
    if (lib.Load(path, wxDL_NOW)) {
@@ -272,9 +272,10 @@ IdentInterface *LadspaEffectsModule::CreateInstance(const wxString & path)
    long index;
    wxString realPath = path.BeforeFirst(wxT(';'));
    path.AfterFirst(wxT(';')).ToLong(&index);
+   wxASSERT(index >= 0);
 
    // Safety of this depends on complementary calls to DeleteInstance on the module manager side.
-   return safenew LadspaEffect(realPath, (int)index);
+   return safenew LadspaEffect(realPath, (unsigned long)index);
 }
 
 void LadspaEffectsModule::DeleteInstance(IdentInterface *instance)
@@ -537,7 +538,7 @@ BEGIN_EVENT_TABLE(LadspaEffect, wxEvtHandler)
    EVT_COMMAND_RANGE(ID_Texts, ID_Texts + 999, wxEVT_COMMAND_TEXT_UPDATED, LadspaEffect::OnTextCtrl)
 END_EVENT_TABLE()
 
-LadspaEffect::LadspaEffect(const wxString & path, int index)
+LadspaEffect::LadspaEffect(const wxString & path, unsigned long index)
 {
    mPath = path;
    mIndex = index;
@@ -791,7 +792,7 @@ bool LadspaEffect::SetHost(EffectHostInterface *host)
          // control port whose name is "latency".
          if (strcmp(mData->PortNames[p], "latency") == 0)
          {
-            mLatencyPort = p;
+            mLatencyPort = (long)p;
          }
          else
          {
@@ -1085,7 +1086,7 @@ wxArrayString LadspaEffect::GetFactoryPresets()
    return wxArrayString();
 }
 
-bool LadspaEffect::LoadFactoryPreset(int WXUNUSED(id))
+bool LadspaEffect::LoadFactoryPreset(unsigned WXUNUSED(id))
 {
    return true;
 }
@@ -1196,7 +1197,7 @@ bool LadspaEffect::PopulateUI(wxWindow *parent)
 
             if (LADSPA_IS_HINT_TOGGLED(hint.HintDescriptor))
             {
-               mToggles[p] = safenew wxCheckBox(w, ID_Toggles + p, wxT(""));
+               mToggles[p] = safenew wxCheckBox(w, ID_Toggles + (long)p, wxT(""));
                mToggles[p]->SetName(labelText);
                mToggles[p]->SetValue(mInputControls[p] > 0);
                gridSizer->Add(mToggles[p], 0, wxALL, 5);
@@ -1251,7 +1252,7 @@ bool LadspaEffect::PopulateUI(wxWindow *parent)
             // Don't specify a value at creation time.  This prevents unwanted events
             // being sent to the OnTextCtrl() handler before the associated slider
             // has been created.
-            mFields[p] = safenew wxTextCtrl(w, ID_Texts + p);
+            mFields[p] = safenew wxTextCtrl(w, ID_Texts + (long)p);
             mFields[p]->SetName(labelText);
             gridSizer->Add(mFields[p], 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
@@ -1274,7 +1275,7 @@ bool LadspaEffect::PopulateUI(wxWindow *parent)
                gridSizer->Add(1, 1, 0);
             }
 
-            mSliders[p] = safenew wxSlider(w, ID_Sliders + p,
+            mSliders[p] = safenew wxSlider(w, ID_Sliders + (long)p,
                0, 0, 1000,
                wxDefaultPosition,
                wxSize(200, -1));

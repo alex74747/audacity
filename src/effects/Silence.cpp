@@ -95,7 +95,7 @@ bool EffectSilence::TransferDataFromWindow()
 
 bool EffectSilence::GenerateTrack(WaveTrack *tmp,
                                   const WaveTrack & WXUNUSED(track),
-                                  int WXUNUSED(ntrack))
+                                  unsigned WXUNUSED(ntrack))
 {
    bool bResult = tmp->InsertSilence(0.0, GetDuration());
    wxASSERT(bResult);

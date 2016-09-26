@@ -28,8 +28,8 @@ struct Syllable {
    double t;
    wxString text;
    wxString textWithSpace;
-   int char0; // index of first char of syllable in Lyrics::mText, used only for kHighlightLyrics
-   int char1; // index of last  char of syllable in Lyrics::mText, used only for kHighlightLyrics
+   size_t char0; // index of first char of syllable in Lyrics::mText, used only for kHighlightLyrics
+   size_t char1; // index of last  char of syllable in Lyrics::mText, used only for kHighlightLyrics
    int width;
    int leftX;
    int x; // centerX, used only for kBouncingBallLyrics
@@ -78,10 +78,11 @@ class Lyrics final : public wxPanelWrapper
    void AddLabels(const LabelTrack *pLT);
    void Finish(double finalT);
 
-   int FindSyllable(long startChar); // Find the syllable whose char0 <= startChar <= char1.
-   int GetCurrentSyllableIndex() { return mCurrentSyllable; };
-   Syllable* GetSyllable(int nSyl) { return &(mSyllables[nSyl]); };
-   void SetCurrentSyllableIndex(int nSyl) { mCurrentSyllable = nSyl; };
+   // Indices one less and one or two greater than result will be valid:
+   size_t FindSyllable(long startChar); // Find the syllable whose char0 <= startChar <= char1.
+   size_t GetCurrentSyllableIndex() { return mCurrentSyllable; };
+   Syllable* GetSyllable(size_t nSyl) { return &(mSyllables[nSyl]); };
+   void SetCurrentSyllableIndex(size_t nSyl) { mCurrentSyllable = nSyl; };
 
    LyricsStyle GetLyricsStyle() { return mLyricsStyle; };
    void SetLyricsStyle(const LyricsStyle newLyricsStyle);
@@ -114,7 +115,9 @@ private:
    void SetHighlightFont(); // for kHighlightLyrics
 
    void Measure(wxDC *dc);
-   int FindSyllable(double t);
+
+   // Indices one less and one or two greater than result will be valid:
+   size_t FindSyllable(double t);
    void GetKaraokePosition(double t, int *outX, double *outY);
 
 private:
@@ -129,7 +132,7 @@ private:
 
    double         mT;
 
-   int            mCurrentSyllable;
+   size_t         mCurrentSyllable;
    SyllableArray  mSyllables;
    wxString       mText;
 

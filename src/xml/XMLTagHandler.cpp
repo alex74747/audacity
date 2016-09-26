@@ -190,7 +190,7 @@ bool XMLValueChecker::IsGoodInt64(const wxString & strInt)
 
 bool XMLValueChecker::IsValidChannel(const int nValue)
 {
-   return (nValue >= Track::LeftChannel) && (nValue <= Track::MonoChannel);
+   return (nValue >= (int)Track::LeftChannel) && (nValue <= (int)Track::MonoChannel);
 }
 
 #ifdef USE_MIDI
@@ -234,7 +234,7 @@ void XMLTagHandler::ReadXMLEndTag(const char *tag)
    HandleXMLEndTag(UTF8CTOWX(tag).c_str());
 }
 
-void XMLTagHandler::ReadXMLContent(const char *s, int len)
+void XMLTagHandler::ReadXMLContent(const char *s, size_t len)
 {
    HandleXMLContent(wxString(s, wxConvUTF8, len));
 }

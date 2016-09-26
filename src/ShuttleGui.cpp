@@ -187,7 +187,7 @@ void ShuttleGuiBase::SetSizeHints( int minX, int minY )
 
 
 /// Used to modify an already placed FlexGridSizer to make a column stretchy.
-void ShuttleGuiBase::SetStretchyCol( int i )
+void ShuttleGuiBase::SetStretchyCol( size_t i )
 {
    if( mShuttleMode != eIsCreating )
       return;
@@ -197,7 +197,7 @@ void ShuttleGuiBase::SetStretchyCol( int i )
 }
 
 /// Used to modify an already placed FlexGridSizer to make a row stretchy.
-void ShuttleGuiBase::SetStretchyRow( int i )
+void ShuttleGuiBase::SetStretchyRow( size_t i )
 {
    if( mShuttleMode != eIsCreating )
       return;
@@ -402,11 +402,9 @@ wxComboBox * ShuttleGuiBase::AddCombo( const wxString &Prompt, const wxString &S
    wxComboBox * pCombo;
    miProp=0;
 
-   int n = pChoices->GetCount();
-   if( n>50 ) n=50;
-   int i;
+   auto n = std::min<size_t>(50, pChoices->GetCount());
    wxString Choices[50];
-   for(i=0;i<n;i++)
+   for(size_t i = 0; i < n; i++)
    {
       Choices[i] = (*pChoices)[i];
    }
@@ -414,7 +412,7 @@ wxComboBox * ShuttleGuiBase::AddCombo( const wxString &Prompt, const wxString &S
    AddPrompt( Prompt );
 
    mpWind = pCombo = safenew wxComboBox(GetParent(), miId, Selected, wxDefaultPosition, wxDefaultSize,
-      n, Choices, Style( style ));
+      (int)n, Choices, Style( style ));
    mpWind->SetName(wxStripMenuCodes(Prompt));
 
    UpdateSizers();
@@ -1285,7 +1283,7 @@ wxChoice * ShuttleGuiBase::TieChoice(
             wxString Temp;
             if( pChoices && ( WrappedRef.ReadAsInt() < (int)pChoices->GetCount() ) )
             {
-               Temp = (*pChoices)[WrappedRef.ReadAsInt()];
+               Temp = (*pChoices)[(size_t)WrappedRef.ReadAsInt()];
             }
             pChoice = AddChoice( Prompt, Temp, pChoices );
          }
@@ -1511,8 +1509,8 @@ wxChoice * ShuttleGuiBase::TieChoice(
 int ShuttleGuiBase::TranslateToIndex( const wxString &Value, const wxArrayString &Choices )
 {
    int n = Choices.Index( Value );
-   if( n== wxNOT_FOUND )
-      n=miNoMatchSelector;
+   if( n < 0 )
+      n = (int)miNoMatchSelector;
    miNoMatchSelector = 0;
    return n;
 }
@@ -1521,12 +1519,12 @@ int ShuttleGuiBase::TranslateToIndex( const wxString &Value, const wxArrayString
 wxString ShuttleGuiBase::TranslateFromIndex( const int nIn, const wxArrayString &Choices )
 {
    int n = nIn;
-   if( n== wxNOT_FOUND )
-      n=miNoMatchSelector;
+   if( n < 0 )
+      n = (int)miNoMatchSelector;
    miNoMatchSelector = 0;
    if( n < (int)Choices.GetCount() )
    {
-      return Choices[n];
+      return Choices[(size_t)n];
    }
    return wxT("");
 }
@@ -1535,8 +1533,8 @@ wxString ShuttleGuiBase::TranslateFromIndex( const int nIn, const wxArrayString 
 int ShuttleGuiBase::TranslateToIndex( const int Value, const wxArrayInt &Choices )
 {
    int n = Choices.Index( Value );
-   if( n== wxNOT_FOUND )
-      n=miNoMatchSelector;
+   if( n < 0 )
+      n = (int)miNoMatchSelector;
    miNoMatchSelector = 0;
    return n;
 }
@@ -1545,12 +1543,12 @@ int ShuttleGuiBase::TranslateToIndex( const int Value, const wxArrayInt &Choices
 int ShuttleGuiBase::TranslateFromIndex( const int nIn, const wxArrayInt &Choices )
 {
    int n = nIn;
-   if( n== wxNOT_FOUND )
-      n=miNoMatchSelector;
+   if( n < 0 )
+      n = (int)miNoMatchSelector;
    miNoMatchSelector = 0;
    if( n < (int)Choices.GetCount() )
    {
-      return Choices[n];
+      return Choices[(size_t)n];
    }
    return 0;
 }

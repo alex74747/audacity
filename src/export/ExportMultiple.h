@@ -110,16 +110,16 @@ private:
    TrackList *mTracks;           /**< The list of tracks in the project that is
                                    being exported */
    LabelTrack *mLabels;
-   int mNumLabels;
-   int mNumWaveTracks;
+   size_t mNumLabels;
+   size_t mNumWaveTracks;
 
-   int mFilterIndex;          /**< The index in the drop-down list of export
+   unsigned mFilterIndex;          /**< The index in the drop-down list of export
                                 formats (mFormat) of the selected export format.
                                 This list includes all possible
                                 plug-in - subformat combinations. */
-   int mPluginIndex;          /**< The index in mPlugins of the selected export
+   unsigned mPluginIndex;     /**< The index in mPlugins of the selected export
                               plug-in */
-   int mSubFormatIndex;       /**< The selected subformat number within the
+   unsigned mSubFormatIndex;  /**< The selected subformat number within the
                                 selected export plug-in set by mPluginIndex */
    bool mInitialized;
 

@@ -595,7 +595,7 @@ bool VSTEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxStrin
                if (progress)
                {
                   idNdx++;
-                  cont = progress->Update(idNdx,
+                  cont = progress->Update((int)idNdx,
                                           wxString::Format(_("Registering %d of %d: %-64.64s"), idNdx, idCnt, proc.GetName().c_str()));
                }
 
@@ -1388,7 +1388,7 @@ size_t VSTEffect::ProcessBlock(float **inBlock, float **outBlock, size_t blockLe
    if (blockLen)
    {
       // Go let the plugin moleste the samples
-      callProcessReplacing(inBlock, outBlock, blockLen);
+      callProcessReplacing(inBlock, outBlock, (long)blockLen);
 
       // And track the position
       mTimeInfo.samplePos += ((double) blockLen / mTimeInfo.sampleRate);
@@ -1671,9 +1671,9 @@ wxArrayString VSTEffect::GetFactoryPresets()
    return progs;
 }
 
-bool VSTEffect::LoadFactoryPreset(int id)
+bool VSTEffect::LoadFactoryPreset(unsigned id)
 {
-   callSetProgram(id);
+   callSetProgram((int)id);
 
    RefreshParameters();
 
@@ -2164,8 +2164,10 @@ bool VSTEffect::Load()
             mInteractive = true;
          }
 
-         mAudioIns = mAEffect->numInputs;
-         mAudioOuts = mAEffect->numOutputs;
+         wxASSERT(mAEffect->numInputs >= 0);
+         mAudioIns = (size_t)mAEffect->numInputs;
+         wxASSERT(mAEffect->numOutputs >= 0);
+         mAudioOuts = (size_t)mAEffect->numOutputs;
 
          mMidiIns = 0;
          mMidiOuts = 0;
@@ -2310,7 +2312,7 @@ bool VSTEffect::SaveParameters(const wxString & group)
          return false;
       }
 
-      mHost->SetPrivateConfig(group, wxT("Chunk"), VSTEffect::b64encode(chunk, clen));
+      mHost->SetPrivateConfig(group, wxT("Chunk"), VSTEffect::b64encode(chunk, (size_t)clen));
       return true;
    }
 
@@ -2594,16 +2596,16 @@ void VSTEffect::callSetChunk(bool isPgm, int len, void *buf, VstPatchChunkInfo *
 const static wxChar cset[] = wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 const static char padc = wxT('=');
 
-wxString VSTEffect::b64encode(const void *in, int len)
+wxString VSTEffect::b64encode(const void *in, size_t len)
 {
    unsigned char *p = (unsigned char *) in;
    wxString out;
 
    unsigned long temp;
-   for (int i = 0; i < len / 3; i++)
+   for (size_t i = 0; i < len / 3; i++)
    {
-      temp  = (*p++) << 16; //Convert to big endian
-      temp += (*p++) << 8;
+      temp  = (unsigned)((*p++) << 16); //Convert to big endian
+      temp += (unsigned)((*p++) << 8);
       temp += (*p++);
       out += cset[(temp & 0x00FC0000) >> 18];
       out += cset[(temp & 0x0003F000) >> 12];
@@ -2614,7 +2616,7 @@ wxString VSTEffect::b64encode(const void *in, int len)
    switch (len % 3)
    {
       case 1:
-         temp  = (*p++) << 16; //Convert to big endian
+         temp  = (unsigned)((*p++) << 16); //Convert to big endian
          out += cset[(temp & 0x00FC0000) >> 18];
          out += cset[(temp & 0x0003F000) >> 12];
          out += padc;
@@ -2622,8 +2624,8 @@ wxString VSTEffect::b64encode(const void *in, int len)
       break;
 
       case 2:
-         temp  = (*p++) << 16; //Convert to big endian
-         temp += (*p++) << 8;
+         temp  = (unsigned)((*p++) << 16); //Convert to big endian
+         temp += (unsigned)((*p++) << 8);
          out += cset[(temp & 0x00FC0000) >> 18];
          out += cset[(temp & 0x0003F000) >> 12];
          out += cset[(temp & 0x00000FC0) >> 6];
@@ -2636,7 +2638,7 @@ wxString VSTEffect::b64encode(const void *in, int len)
 
 int VSTEffect::b64decode(const wxString &in, void *out)
 {
-   int len = in.length();
+   auto len = in.length();
    unsigned char *p = (unsigned char *) out;
 
    if (len % 4)  //Sanity check
@@ -2661,7 +2663,7 @@ int VSTEffect::b64decode(const wxString &in, void *out)
    //const char *a = in.mb_str();
    //Setup a vector to hold the result
    unsigned long temp = 0; //Holds decoded quanta
-   int i = 0;
+   size_t i = 0;
    while (i < len)
    {
       for (int quantumPosition = 0; quantumPosition < 4; quantumPosition++)
@@ -3008,7 +3010,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    do
    {
       // Read in the whole file
-      ssize_t len = f.Read((void *) bptr, f.Length());
+      auto len = f.Read((void *) bptr, f.Length());
       if (f.Error())
       {
          wxMessageBox(_("Unable to read presets file."),
@@ -3081,7 +3083,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
          len -= 156;
 
          unsigned char *tempPtr = bptr;
-         ssize_t tempLen = len;
+         auto tempLen = len;
 
          // Validate all of the programs
          for (int i = 0; i < numProgs; i++)
@@ -3126,7 +3128,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
          int proglen = 160 + size;
 
          // Verify that we have enough for the entire program
-         if (len < proglen)
+         if ((int)len < proglen)
          {
             break;
          }
@@ -3179,7 +3181,7 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    do
    {
       // Read in the whole file
-      ssize_t len = f.Read((void *) bptr, f.Length());
+      auto len = f.Read((void *) bptr, f.Length());
       if (f.Error())
       {
          wxMessageBox(_("Unable to read presets file."),
@@ -3203,7 +3205,7 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    return ret;
 }
 
-bool VSTEffect::LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bool dryrun)
+bool VSTEffect::LoadFXProgram(unsigned char **bptr, size_t & len, int index, bool dryrun)
 {
    // Most references to the data are via an "int" array
    int32_t *iptr = (int32_t *) *bptr;
@@ -3264,10 +3266,10 @@ bool VSTEffect::LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bo
    if (wxINT32_SWAP_ON_LE(iptr[2]) == CCONST('F', 'x', 'C', 'k'))
    {
       // We finally know the full length of the program
-      int proglen = 56 + (numParams * sizeof(float));
+      int proglen = 56 + (numParams * (int)sizeof(float));
 
       // Verify that we have enough for all of the parameter values
-      if (len < proglen)
+      if ((int)len < proglen || proglen < 0)
       {
          return false;
       }
@@ -3304,7 +3306,7 @@ bool VSTEffect::LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bo
 
       // Update in case we're loading an "FxBk" format bank file
       *bptr += proglen;
-      len -= proglen;
+      len -= (size_t)proglen;
    }
    // Maybe we have a program chunk
    else if (wxINT32_SWAP_ON_LE(iptr[2]) == CCONST('F', 'P', 'C', 'h'))
@@ -3328,7 +3330,7 @@ bool VSTEffect::LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bo
       int proglen = 60 + size;
 
       // Verify that we have enough for the entire program
-      if (len < proglen)
+      if ((int)len < proglen || proglen < 0)
       {
          return false;
       }
@@ -3341,7 +3343,7 @@ bool VSTEffect::LoadFXProgram(unsigned char **bptr, ssize_t & len, int index, bo
 
       // Update in case we're loading an "FxBk" format bank file
       *bptr += proglen;
-      len -= proglen;
+      len -= (size_t)proglen;
    }
    else
    {
@@ -3405,7 +3407,7 @@ void VSTEffect::SaveFXB(const wxFileName & fn)
    wxMemoryBuffer buf;
    wxInt32 subType;
    void *chunkPtr;
-   int chunkSize;
+   size_t chunkSize;
    int dataSize = 148;
    wxInt32 tab[8];
    int curProg = 0 ; //mProgram->GetCurrentSelection();
@@ -3414,7 +3416,9 @@ void VSTEffect::SaveFXB(const wxFileName & fn)
    {
       subType = CCONST('F', 'B', 'C', 'h');
 
-      chunkSize = callDispatcher(effGetChunk, 0, 0, &chunkPtr, 0.0);
+      auto size = callDispatcher(effGetChunk, 0, 0, &chunkPtr, 0.0);
+      wxASSERT(size >= 0);
+      chunkSize = (size_t)size;
       dataSize += 4 + chunkSize;
    }
    else
@@ -3510,21 +3514,22 @@ void VSTEffect::SaveFXProgram(wxMemoryBuffer & buf, int index)
 {
    wxInt32 subType;
    void *chunkPtr;
-   int chunkSize;
    int dataSize = 48;
    char progName[28];
    wxInt32 tab[7];
 
    callDispatcher(effGetProgramNameIndexed, index, 0, &progName, 0.0);
    progName[27] = '\0';
-   chunkSize = strlen(progName);
+   auto chunkSize = strlen(progName);
    memset(&progName[chunkSize], 0, sizeof(progName) - chunkSize);
 
    if (mAEffect->flags & effFlagsProgramChunks)
    {
       subType = CCONST('F', 'P', 'C', 'h');
 
-      chunkSize = callDispatcher(effGetChunk, 1, 0, &chunkPtr, 0.0);
+      auto size = callDispatcher(effGetChunk, 1, 0, &chunkPtr, 0.0);
+      wxASSERT(size >= 0);
+      chunkSize = (size_t)size;
       dataSize += 4 + chunkSize;
    }
    else
@@ -3590,10 +3595,10 @@ void VSTEffect::SaveXML(const wxFileName & fn)
       void *chunk = NULL;
 
       clen = (int) callDispatcher(effGetChunk, 1, 0, &chunk, 0.0);
-      if (clen != 0)
+      if (clen > 0)
       {
          xmlFile.StartTag(wxT("chunk"));
-         xmlFile.WriteSubTree(VSTEffect::b64encode(chunk, clen) + wxT('\n'));
+         xmlFile.WriteSubTree(VSTEffect::b64encode(chunk, (size_t)clen) + wxT('\n'));
          xmlFile.EndTag(wxT("chunk"));
       }
    }

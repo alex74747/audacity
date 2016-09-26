@@ -43,7 +43,7 @@ class LadspaEffect final : public wxEvtHandler,
                      public EffectUIClientInterface
 {
 public:
-   LadspaEffect(const wxString & path, int index);
+   LadspaEffect(const wxString & path, unsigned long index);
    virtual ~LadspaEffect();
 
    // IdentInterface implementation
@@ -107,7 +107,7 @@ public:
    bool SaveUserPreset(const wxString & name) override;
 
    wxArrayString GetFactoryPresets() override;
-   bool LoadFactoryPreset(int id) override;
+   bool LoadFactoryPreset(unsigned id) override;
    bool LoadFactoryDefaults() override;
 
    // EffectUIClientInterface implementation
@@ -146,7 +146,7 @@ private:
 private:
 
    wxString mPath;
-   int mIndex;
+   unsigned long mIndex;
    EffectHostInterface *mHost;
 
    wxDynamicLibrary mLib;
@@ -175,7 +175,7 @@ private:
    Floats mOutputControls;
 
    bool mUseLatency;
-   int mLatencyPort;
+   long mLatencyPort;
    bool mLatencyDone;
 
    // Realtime processing

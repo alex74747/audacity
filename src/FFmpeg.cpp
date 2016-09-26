@@ -168,13 +168,13 @@ void av_log_wx_callback(void* ptr, int level, const char* fmt, va_list vl)
 
 static int ufile_read(void *opaque, uint8_t *buf, int size)
 {
-   int ret = (int)((wxFile *) opaque)->Read(buf, size);
+   int ret = (int)((wxFile *) opaque)->Read(buf, (size_t)std::max(0, size));
    return ret;
 }
 
 static int ufile_write(void *opaque, uint8_t *buf, int size)
 {
-   return (int) ((wxFile *) opaque)->Write(buf, size);
+   return (int) ((wxFile *) opaque)->Write(buf, (size_t)std::max(0, size));
 }
 
 static int64_t ufile_seek(void *opaque, int64_t pos, int whence)
@@ -386,10 +386,14 @@ int import_ffmpeg_decode_frame(streamContext *sc, bool flushing)
    }
 
    sc->m_samplefmt = sc->m_codecCtx->sample_fmt;
-   sc->m_samplesize = av_get_bytes_per_sample(sc->m_samplefmt);
+   sc->m_samplesize = (unsigned)
+      std::max(0, av_get_bytes_per_sample(sc->m_samplefmt));
+   if (sc->m_samplesize <= 0)
+      return -1;
 
-   int channels = sc->m_codecCtx->channels;
-   unsigned int newsize = sc->m_samplesize * frame->nb_samples * channels;
+   auto channels = sc->m_codecCtx->channels;
+   auto newsize =
+      (size_t)std::max(0, (int)sc->m_samplesize * frame->nb_samples * channels);
    sc->m_decodedAudioSamplesValidSiz = newsize;
    // Reallocate the audio sample buffer if it's smaller than the frame size.
    if (newsize > sc->m_decodedAudioSamplesSiz )
@@ -405,10 +409,11 @@ int import_ffmpeg_decode_frame(streamContext *sc, bool flushing)
       }
    }
    if (frame->data[1]) {
-      for (int i = 0; i<frame->nb_samples; i++) {
-         for (int ch = 0; ch<channels; ch++) {
-            memcpy(sc->m_decodedAudioSamples.get() + sc->m_samplesize * (ch + channels*i),
-                  frame->extended_data[ch] + sc->m_samplesize*i,
+      for (size_t i = 0; (int)i < frame->nb_samples; i++) {
+         for (size_t ch = 0; (int)ch < channels; ch++) {
+            memcpy(sc->m_decodedAudioSamples.get() +
+                      sc->m_samplesize * (ch + (unsigned)channels * i),
+                  frame->extended_data[ch] + sc->m_samplesize * i,
                   sc->m_samplesize);
          }
       }
@@ -924,9 +929,9 @@ bool FFmpegLibs::InitLibs(const wxString &libpath_format, bool WXUNUSED(showerr)
    av_register_all();
 
    wxLogMessage(wxT("Retrieving FFmpeg library version numbers:"));
-   int avfver = avformat_version();
-   int avcver = avcodec_version();
-   int avuver = avutil_version();
+   auto avfver = avformat_version();
+   auto avcver = avcodec_version();
+   auto avuver = avutil_version();
    mAVCodecVersion = wxString::Format(wxT("%d.%d.%d"),avcver >> 16 & 0xFF, avcver >> 8 & 0xFF, avcver & 0xFF);
    mAVFormatVersion = wxString::Format(wxT("%d.%d.%d"),avfver >> 16 & 0xFF, avfver >> 8 & 0xFF, avfver & 0xFF);
    mAVUtilVersion = wxString::Format(wxT("%d.%d.%d"),avuver >> 16 & 0xFF, avuver >> 8 & 0xFF, avuver & 0xFF);

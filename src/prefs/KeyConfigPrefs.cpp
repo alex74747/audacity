@@ -432,8 +432,8 @@ void KeyConfigPrefs::OnHotkeyChar(wxKeyEvent & WXUNUSED(e))
 
 void KeyConfigPrefs::OnHotkeyKillFocus(wxFocusEvent & e)
 {
-   if (mKey->GetValue().IsEmpty() && mCommandSelected != wxNOT_FOUND) {
-      mKey->AppendText(mView->GetKey(mCommandSelected));
+   if (mKey->GetValue().IsEmpty() && mCommandSelected >= 0) {
+      mKey->AppendText(mView->GetKey((size_t)mCommandSelected));
    }
 
    e.Skip();
@@ -510,24 +510,28 @@ wxString KeyConfigPrefs::NameFromKey(const wxString & key)
 // This is not yet a committed change, which will happen on a save.
 void KeyConfigPrefs::SetKeyForSelected(const wxString & key)
 {
-   wxString name = mView->GetName(mCommandSelected);
+   wxASSERT(mCommandSelected >= 0);
+   const auto commandSelected = (size_t)mCommandSelected;
+   wxString name = mView->GetName(commandSelected);
 
-   if (!mView->CanSetKey(mCommandSelected))
+   if (!mView->CanSetKey(commandSelected))
    {
       wxMessageBox(_("You may not assign a key to this entry"),
          _("Error"), wxICON_ERROR | wxCENTRE, this);
       return;
    }
 
-   mView->SetKey(mCommandSelected, key);
+   mView->SetKey(commandSelected, key);
    mManager->SetKeyFromName(name, key);
-   mNewKeys[mNames.Index(name)] = key;
+   auto index = mNames.Index(name);
+   wxASSERT(index >= 0);
+   mNewKeys[(size_t)index] = key;
 }
 
 
 void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
 {
-   if (mCommandSelected == wxNOT_FOUND) {
+   if (mCommandSelected < 0) {
       wxMessageBox(_("You must select a binding before assigning a shortcut"),
          _("Error"), wxICON_WARNING | wxCENTRE, this);
       return;
@@ -535,7 +539,7 @@ void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
 
    wxString key = mKey->GetValue();
    wxString oldname = mView->GetNameByKey(key);
-   wxString newname = mView->GetName(mCommandSelected);
+   wxString newname = mView->GetName((size_t)mCommandSelected);
 
    // Just ignore it if they are the same
    if (oldname == newname) {
@@ -561,7 +565,9 @@ void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
 
       mView->SetKeyByName(oldname, wxEmptyString);
       mManager->SetKeyFromName(oldname, wxEmptyString);
-      mNewKeys[mNames.Index(oldname)].Empty();
+      auto index = mNames.Index(oldname);
+      wxASSERT(index >= 0);
+      mNewKeys[(size_t)index].Empty();
 
    }
 
@@ -572,7 +578,7 @@ void KeyConfigPrefs::OnClear(wxCommandEvent& WXUNUSED(event))
 {
    mKey->Clear();
 
-   if (mCommandSelected != wxNOT_FOUND) {
+   if (mCommandSelected >= 0) {
       SetKeyForSelected(wxEmptyString);
    }
 }
@@ -582,10 +588,10 @@ void KeyConfigPrefs::OnSelected(wxCommandEvent & WXUNUSED(e))
    mCommandSelected = mView->GetSelected();
    mKey->Clear();
 
-   if (mCommandSelected != wxNOT_FOUND) {
-      bool canset = mView->CanSetKey(mCommandSelected);
+   if (mCommandSelected >= 0) {
+      bool canset = mView->CanSetKey((size_t)mCommandSelected);
       if (canset) {
-         mKey->AppendText(mView->GetKey(mCommandSelected));
+         mKey->AppendText(mView->GetKey((size_t)mCommandSelected));
       }
 
       mKey->Enable(canset);
@@ -976,7 +982,7 @@ void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
 void KeyConfigPrefs::OnDefaults(wxCommandEvent & WXUNUSED(event))
 {
    for (size_t i = 0; i < mNames.GetCount(); i++) {
-      mManager->SetKeyFromIndex(i,mDefaultKeys[i]);
+      mManager->SetKeyFromIndex(i, mDefaultKeys[i]);
       mNewKeys[i]=mDefaultKeys[i];
    }
    RepopulateBindingsList();

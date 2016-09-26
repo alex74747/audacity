@@ -107,7 +107,7 @@ private:
    BatchCommands mBatchCommands;  /// Provides list of available commands.
    wxString mActiveChain;
 
-   int mSelectedCommand;
+   size_t mSelectedCommand;
    bool mChanged;
 
    DECLARE_EVENT_TABLE()

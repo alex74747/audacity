@@ -85,7 +85,7 @@ static int iBitrates[] = {
 class ExportMP2Options final : public wxPanelWrapper
 {
 public:
-   ExportMP2Options(wxWindow *parent, int format);
+   ExportMP2Options(wxWindow *parent, unsigned format);
    virtual ~ExportMP2Options();
 
    void PopulateOrExchange(ShuttleGui & S);
@@ -99,7 +99,7 @@ private:
 
 ///
 ///
-ExportMP2Options::ExportMP2Options(wxWindow *parent, int WXUNUSED(format))
+ExportMP2Options::ExportMP2Options(wxWindow *parent, unsigned WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
    for (unsigned int i=0; i < (sizeof(iBitrates)/sizeof(int)); i++)
@@ -172,7 +172,7 @@ public:
 
    // Required
 
-   wxWindow *OptionsCreate(wxWindow *parent, int format);
+   wxWindow *OptionsCreate(wxWindow *parent, unsigned format) override;
    ProgressResult Export(AudacityProject *project,
                unsigned channels,
                const wxString &fName,
@@ -181,11 +181,11 @@ public:
                double t1,
                MixerSpec *mixerSpec = NULL,
                const Tags *metadata = NULL,
-               int subformat = 0) override;
+               unsigned subformat = 0) override;
 
 private:
 
-   int AddTags(AudacityProject *project, char **buffer, bool *endOfFile, const Tags *tags);
+   id3_length_t AddTags(AudacityProject *project, char **buffer, bool *endOfFile, const Tags *tags);
 #ifdef USE_LIBID3TAG
    void AddFrame(struct id3_tag *tp, const wxString & n, const wxString & v, const char *name);
 #endif
@@ -196,17 +196,17 @@ ExportMP2::ExportMP2()
 :  ExportPlugin()
 {
    AddFormat();
-   SetFormat(wxT("MP2"),0);
-   AddExtension(wxT("mp2"),0);
-   SetMaxChannels(2,0);
-   SetCanMetaData(true,0);
-   SetDescription(_("MP2 Files"),0);
+   SetFormat(wxT("MP2"), 0);
+   AddExtension(wxT("mp2"), 0);
+   SetMaxChannels(2, 0);
+   SetCanMetaData(true, 0);
+   SetDescription(_("MP2 Files"), 0);
 }
 
 ProgressResult ExportMP2::Export(AudacityProject *project,
    unsigned channels, const wxString &fName,
    bool selectionOnly, double t0, double t1, MixerSpec *mixerSpec, const Tags *metadata,
-   int WXUNUSED(subformat))
+   unsigned WXUNUSED(subformat))
 {
    bool stereo = (channels == 2);
    long bitrate = gPrefs->Read(wxT("/FileFormats/MP2Bitrate"), 160);
@@ -243,14 +243,13 @@ ProgressResult ExportMP2::Export(AudacityProject *project,
    }
 
    char *id3buffer = NULL;
-   int id3len;
    bool endOfFile;
-   id3len = AddTags(project, &id3buffer, &endOfFile, metadata);
+   auto id3len = AddTags(project, &id3buffer, &endOfFile, metadata);
    if (id3len && !endOfFile)
       outFile.Write(id3buffer, id3len);
 
    // Values taken from the twolame simple encoder sample
-   const int pcmBufferSize = 9216 / 2; // number of samples
+   const size_t pcmBufferSize = 9216 / 2; // number of samples
    const size_t mp2BufferSize = 16384u; // bytes
 
    // We allocate a buffer which is twice as big as the
@@ -281,26 +280,27 @@ ProgressResult ExportMP2::Export(AudacityProject *project,
 
          short *pcmBuffer = (short *)mixer->GetBuffer();
 
-         int mp2BufferNumBytes = twolame_encode_buffer_interleaved(
+         auto mp2BufferNumBytes = twolame_encode_buffer_interleaved(
             encodeOptions,
             pcmBuffer,
-            pcmNumSamples,
+            (int)pcmNumSamples,
             mp2Buffer.get(),
             mp2BufferSize);
 
-         outFile.Write(mp2Buffer.get(), mp2BufferNumBytes);
+         if (mp2BufferNumBytes > 0)
+            outFile.Write(mp2Buffer.get(), (size_t)mp2BufferNumBytes);
 
          updateResult = progress.Update(mixer->MixGetCurrentTime() - t0, t1 - t0);
       }
    }
 
-   int mp2BufferNumBytes = twolame_encode_flush(
+   auto mp2BufferNumBytes = twolame_encode_flush(
       encodeOptions,
       mp2Buffer.get(),
       mp2BufferSize);
 
    if (mp2BufferNumBytes > 0)
-      outFile.Write(mp2Buffer.get(), mp2BufferNumBytes);
+      outFile.Write(mp2Buffer.get(), (size_t)mp2BufferNumBytes);
 
    twolame_close(&encodeOptions);
 
@@ -320,14 +320,14 @@ ProgressResult ExportMP2::Export(AudacityProject *project,
    return updateResult;
 }
 
-wxWindow *ExportMP2::OptionsCreate(wxWindow *parent, int format)
+wxWindow *ExportMP2::OptionsCreate(wxWindow *parent, unsigned format)
 {
    wxASSERT(parent); // to justify safenew
    return safenew ExportMP2Options(parent, format);
 }
 
 // returns buffer len; caller frees
-int ExportMP2::AddTags(AudacityProject * WXUNUSED(project), char **buffer, bool *endOfFile, const Tags *tags)
+id3_length_t ExportMP2::AddTags(AudacityProject * WXUNUSED(project), char **buffer, bool *endOfFile, const Tags *tags)
 {
 #ifdef USE_LIBID3TAG
    struct id3_tag *tp = id3_tag_new();

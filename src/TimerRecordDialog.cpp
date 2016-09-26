@@ -518,7 +518,9 @@ int TimerRecordDialog::RunWaitDialog()
       pProject->OnRecord();
       bool bIsRecording = true;
 
-      wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString(m_pTimerAfterCompleteChoiceCtrl->GetSelection());
+      const auto selection = m_pTimerAfterCompleteChoiceCtrl->GetSelection();
+      wxASSERT(selection >= 0);
+      wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString((unsigned)selection);
 
       // Two column layout. Line spacing must match for both columns.
       // First column
@@ -639,10 +641,11 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
 
          if ((iOverriddenAction != iPostRecordAction) &&
              (iOverriddenAction != POST_TIMER_RECORD_NOTHING)) {
+            wxASSERT(iOverriddenAction >= 0);
             // Inform the user that we have overridden the selected action
             sMessage.Printf("%s\n\n'%s' has been canceled due to the error(s) noted above.",
                             sMessage,
-                            m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction));
+                            m_pTimerAfterCompleteChoiceCtrl->GetString((unsigned)iOverriddenAction));
          }
 
          // Show Error Message Box
@@ -650,9 +653,10 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
       } else {
 
          if (bWasStopped && (iOverriddenAction != POST_TIMER_RECORD_NOTHING)) {
+            wxASSERT(iOverriddenAction >= 0);
             sMessage.Printf("%s\n\n'%s' has been canceled as the recording was stopped.",
                             sMessage,
-                            m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction));
+                            m_pTimerAfterCompleteChoiceCtrl->GetString((unsigned)iOverriddenAction));
          }
 
          wxMessageBox(sMessage, _("Timer Recording"), wxICON_INFORMATION | wxOK);
@@ -675,7 +679,7 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
          // Lets show a warning dialog telling the user what is about to happen.
          // If the user no longer wants to carry out this action then they can click
          // Cancel and we will do POST_TIMER_RECORD_NOTHING instead.
-         auto iDelayOutcome = PreActionDelay(iPostRecordAction, (TimerRecordCompletedActions)eActionFlags);
+         auto iDelayOutcome = PreActionDelay((unsigned)iPostRecordAction, (TimerRecordCompletedActions)eActionFlags);
          if (iDelayOutcome != ProgressResult::Success) {
             // Cancel the action!
             iPostRecordAction = POST_TIMER_RECORD_NOTHING;
@@ -765,6 +769,11 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
    bool bAutoSave = gPrefs->ReadBool("/TimerRecord/AutoSave", false);
    bool bAutoExport = gPrefs->ReadBool("/TimerRecord/AutoExport", false);
    int iPostTimerRecordAction = gPrefs->ReadLong("/TimerRecord/PostAction", 0);
+
+   // validate the value form the file
+   static const int NOptions = 4;
+   iPostTimerRecordAction =
+      std::max(0, std::min(NOptions, iPostTimerRecordAction));
 
    S.SetBorder(5);
    S.StartMultiColumn(2, wxCENTER);
@@ -901,6 +910,7 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
             arrayOptions.Add(_("Exit Audacity"));
             arrayOptions.Add(_("Restart system"));
             arrayOptions.Add(_("Shutdown system"));
+            wxASSERT(arrayOptions.size() == NOptions);
 
             m_sTimerAfterCompleteOptionsArray.Add(arrayOptions.Item(0));
             m_sTimerAfterCompleteOptionsArray.Add(arrayOptions.Item(1));
@@ -908,7 +918,7 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
             m_sTimerAfterCompleteOptionsArray.Add(arrayOptions.Item(2));
             m_sTimerAfterCompleteOptionsArray.Add(arrayOptions.Item(3));
 #endif
-            m_sTimerAfterCompleteOption = arrayOptions.Item(iPostTimerRecordAction);
+            m_sTimerAfterCompleteOption = arrayOptions.Item((size_t)iPostTimerRecordAction);
 
             m_pTimerAfterCompleteChoiceCtrl = S.AddChoice(_("After Recording completes:"),
                                                           m_sTimerAfterCompleteOption,
@@ -996,7 +1006,9 @@ void TimerRecordDialog::UpdateEnd()
 ProgressResult TimerRecordDialog::WaitForStart()
 {
    // MY: The Waiting For Start dialog now shows what actions will occur after recording has completed
-   wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString(m_pTimerAfterCompleteChoiceCtrl->GetSelection());
+   const auto selection = m_pTimerAfterCompleteChoiceCtrl->GetSelection();
+   wxASSERT(selection >= 0);
+   wxString sPostAction = m_pTimerAfterCompleteChoiceCtrl->GetString((unsigned)selection);
 
    // Two column layout. Line spacing must match for both columns.
    // First column
@@ -1037,7 +1049,7 @@ ProgressResult TimerRecordDialog::WaitForStart()
    return updateResult;
 }
 
-ProgressResult TimerRecordDialog::PreActionDelay(int iActionIndex, TimerRecordCompletedActions eCompletedActions)
+ProgressResult TimerRecordDialog::PreActionDelay(unsigned iActionIndex, TimerRecordCompletedActions eCompletedActions)
 {
    wxString sAction = m_pTimerAfterCompleteChoiceCtrl->GetString(iActionIndex);
    wxString sCountdownLabel;

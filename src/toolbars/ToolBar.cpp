@@ -767,7 +767,7 @@ AButton * ToolBar::MakeButton(wxWindow *parent,
 }
 
 //static
-void ToolBar::MakeAlternateImages(AButton &button, int idx,
+void ToolBar::MakeAlternateImages(AButton &button, unsigned idx,
                                   teBmps eUp,
                                   teBmps eDown,
                                   teBmps eHilite,

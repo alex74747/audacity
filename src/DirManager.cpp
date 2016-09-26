@@ -155,16 +155,16 @@ wxMemorySize GetFreeMemory()
 // JKC: Using flag wxDIR_NO_FOLLOW to NOT follow symbolic links.
 // Directories and files inside a project should never be symbolic 
 // links, so if we find one, do not follow it.
-static int RecursivelyEnumerate(wxString dirPath,
+static unsigned RecursivelyEnumerate(wxString dirPath,
                                   wxArrayString& filePathArray,  // output: all files in dirPath tree
                                   wxString dirspec,
                                   wxString filespec,
                                   bool bFiles, bool bDirs,
-                                  int progress_count = 0,
-                                  int progress_bias = 0,
+                                  size_t progress_count = 0,
+                                  size_t progress_bias = 0,
                                   ProgressDialog* progress = NULL)
 {
-   int count=0;
+   unsigned count = 0;
    bool cont;
 
    wxDir dir(dirPath);
@@ -184,8 +184,8 @@ static int RecursivelyEnumerate(wxString dirPath,
             cont = dir.GetNext(&name);
 
             if (progress)
-               progress->Update(count + progress_bias,
-                                progress_count);
+               progress->Update((int)(count + progress_bias),
+                                (int)progress_count);
          }
       }
 
@@ -209,12 +209,12 @@ static int RecursivelyEnumerate(wxString dirPath,
    return count;
 }
 
-static int RecursivelyEnumerateWithProgress(wxString dirPath,
+static unsigned RecursivelyEnumerateWithProgress(wxString dirPath,
                                              wxArrayString& filePathArray, // output: all files in dirPath tree
                                              wxString dirspec,
                                              wxString filespec,
                                              bool bFiles, bool bDirs,
-                                             int progress_count,
+                                             size_t progress_count,
                                              const wxChar* message)
 {
    Maybe<ProgressDialog> progress{};
@@ -222,7 +222,7 @@ static int RecursivelyEnumerateWithProgress(wxString dirPath,
    if (message)
       progress.create( _("Progress"), message );
 
-   int count = RecursivelyEnumerate(
+   auto count = RecursivelyEnumerate(
                   dirPath, filePathArray, dirspec,filespec,
                   bFiles, bDirs,
                   progress_count, 0,
@@ -296,7 +296,7 @@ static int RecursivelyRemoveEmptyDirs(wxString dirPath,
    return nCount;
 }
 
-static void RecursivelyRemove(wxArrayString& filePathArray, int count, int bias,
+static void RecursivelyRemove(wxArrayString& filePathArray, unsigned count, int bias,
                               int flags, const wxChar* message = NULL)
 {
    bool bFiles= (flags & kCleanFiles) != 0;
@@ -309,7 +309,7 @@ static void RecursivelyRemove(wxArrayString& filePathArray, int count, int bias,
       progress.create( _("Progress"), message );
 
    auto nn = filePathArray.size();
-   for (int i = 0; i < nn; i++) {
+   for (size_t i = 0; i < nn; i++) {
       const wxChar *file = filePathArray[i].c_str();
       if (bFiles)
          ::wxRemoveFile(file);
@@ -347,7 +347,7 @@ static void RecursivelyRemove(wxArrayString& filePathArray, int count, int bias,
          }
       }
       if (progress)
-         progress->Update(i + bias, count);
+         progress->Update((int)(i + bias), (int)count);
    }
 }
 
@@ -371,7 +371,7 @@ DirManager::DirManager()
    // Seed the random number generator.
    // this need not be strictly uniform or random, but it should give
    // unclustered numbers
-   srand(time(NULL));
+   srand((unsigned)time(NULL));
 
    // Set up local temp subdir
    // Previously, Audacity just named project temp directories "project0",
@@ -449,9 +449,9 @@ void DirManager::CleanDir(
 
    wxArrayString filePathArray, dirPathArray;
 
-   int countFiles =
+   auto countFiles =
       RecursivelyEnumerate(path, filePathArray, dirSpec, fileSpec, true, false);
-   int countDirs =
+   auto countDirs =
       RecursivelyEnumerate(path, dirPathArray, dirSpec, fileSpec, false, true);
 
    // Subtract 1 because we don't want to DELETE the global temp directory,
@@ -524,7 +524,7 @@ bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const 
       ProgressDialog progress(_("Progress"),
          _("Saving project data files"));
 
-      int total = mBlockFileHash.size();
+      auto total = mBlockFileHash.size();
 
       bool success = true;
       int count = 0;
@@ -545,7 +545,7 @@ bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const 
                success = MoveToNewProjectDirectory( &*b );
             }
 
-            progress.Update(count, total);
+            progress.Update(count, (int)total);
             count++;
          }
       }
@@ -570,7 +570,7 @@ bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const 
                MoveToNewProjectDirectory(&*b);
 
                if (count >= 0)
-                  progress.Update(count, total);
+                  progress.Update(count, (int)total);
                count--;
             }
             ++iter;
@@ -665,10 +665,11 @@ wxFileNameWrapper DirManager::MakeBlockFilePath(const wxString &value) {
    wxFileNameWrapper dir;
    dir.AssignDir(GetDataFilesDir());
 
-   if(value.GetChar(0)==wxT('d')){
+   if(value.GetChar(0) == wxT('d')){
       // this file is located in a subdirectory tree
-      int location=value.Find(wxT('b'));
-      wxString subdir=value.Mid(0,location);
+      int location = value.Find(wxT('b'));
+      // Can location be negative?
+      wxString subdir = value.Mid(0, (size_t)location);
       dir.AppendDir(subdir);
 
       if(!dir.DirExists())
@@ -727,8 +728,9 @@ bool DirManager::AssignFile(wxFileNameWrapper &fileName,
    return fileName.IsOk();
 }
 
-static inline unsigned int hexchar_to_int(unsigned int x)
+static inline unsigned int hexchar_to_int(wxChar xx)
 {
+   auto x = (unsigned)xx;
    if(x<48U)return 0;
    if(x<58U)return x-48U;
    if(x<65U)return 10U;
@@ -787,17 +789,17 @@ void DirManager::BalanceFileAdd(int midkey)
 
 void DirManager::BalanceInfoAdd(const wxString &file)
 {
-   const wxChar *s=file.c_str();
-   if(s[0]==wxT('e')){
+   const wxChar *s = file.c_str();
+   if(s[0] == wxT('e')) {
       // this is one of the modern two-deep managed files
       // convert filename to keys
-      unsigned int topnum = (hexchar_to_int(s[1]) << 4) |
-         hexchar_to_int(s[2]);
+      auto topnum = (int)((hexchar_to_int(s[1]) << 4) |
+         hexchar_to_int(s[2]));
       unsigned int midnum = (hexchar_to_int(s[3]) << 4) |
          hexchar_to_int(s[4]);
-      unsigned int midkey=topnum<<8|midnum;
+      auto midkey = (int)((unsigned)topnum << 8 | midnum);
 
-      BalanceMidAdd(topnum,midkey);
+      BalanceMidAdd(topnum, midkey);
       BalanceFileAdd(midkey);
    }
 }
@@ -842,28 +844,28 @@ void DirManager::BalanceInfoDel(const wxString &file)
    auto &dirTopPool = balanceInfo.dirTopPool;
    auto &dirTopFull = balanceInfo.dirTopFull;
 
-   const wxChar *s=file.c_str();
-   if(s[0]==wxT('e')){
+   const wxChar *s = file.c_str();
+   if(s[0] == wxT('e')){
       // this is one of the modern two-deep managed files
 
-      unsigned int topnum = (hexchar_to_int(s[1]) << 4) |
-         hexchar_to_int(s[2]);
+      auto topnum = (int)((hexchar_to_int(s[1]) << 4) |
+         hexchar_to_int(s[2]));
       unsigned int midnum = (hexchar_to_int(s[3]) << 4) |
          hexchar_to_int(s[4]);
-      unsigned int midkey=topnum<<8|midnum;
+      auto midkey = (int)((unsigned)topnum << 8 | midnum);
 
       // look for midkey in the mid pool
       if(dirMidFull.find(midkey) != dirMidFull.end()) {
          // in the full pool
 
-         if(--dirMidFull[midkey]<256) {
+         if(--dirMidFull[midkey] < 256) {
             // move out of full into available
-            dirMidPool[midkey]=dirMidFull[midkey];
+            dirMidPool[midkey] = dirMidFull[midkey];
             dirMidFull.erase(midkey);
          }
       }
       else {
-         if(--dirMidPool[midkey]<1) {
+         if(--dirMidPool[midkey] < 1) {
             // erasing the key here is OK; we have provision to add it
             // back if its needed (unlike the dirTopPool hash)
             dirMidPool.erase(midkey);
@@ -880,14 +882,14 @@ void DirManager::BalanceInfoDel(const wxString &file)
             // also need to remove from toplevel
             if(dirTopFull.find(topnum) != dirTopFull.end()){
                // in the full pool
-               if(--dirTopFull[topnum]<256) {
+               if(--dirTopFull[topnum] < 256) {
                   // move out of full into available
                   dirTopPool[topnum]=dirTopFull[topnum];
                   dirTopFull.erase(topnum);
                }
             }
             else {
-               if(--dirTopPool[topnum]<1) {
+               if(--dirTopPool[topnum]< 1) {
                   // do *not* erase the hash entry from dirTopPool
                   // *do* DELETE the actual directory
                   auto directory = (projFull != wxT("")? projFull: mytemp);
@@ -913,9 +915,9 @@ wxFileNameWrapper DirManager::MakeBlockFileName()
    wxFileNameWrapper ret;
    wxString baseFileName;
 
-   unsigned int filenum,midnum,topnum,midkey;
+   int midkey;
 
-   while(1){
+   while(1) {
 
       /* blockfiles are divided up into heirarchical directories.
          Each toplevel directory is represented by "e" + two unique
@@ -924,37 +926,34 @@ wxFileNameWrapper DirManager::MakeBlockFileName()
          "d" + two hex digits.  Each subdir contains 'a number' of
          files.  */
 
-      filenum=0;
-      midnum=0;
-      topnum=0;
-
       // first action: if there is no available two-level directory in
       // the available pool, try to make one
 
-      if(dirMidPool.empty()){
+      if(dirMidPool.empty()) {
 
          // is there a toplevel directory with space for a NEW subdir?
 
-         if(!dirTopPool.empty()){
+         if(!dirTopPool.empty()) {
 
             // there's still a toplevel with room for a subdir
 
             DirHash::iterator iter = dirTopPool.begin();
             int newcount           = 0;
-            topnum                 = iter->first;
+            auto topnum            = iter->first;
 
 
             // search for unused midlevels; linear search adequate
             // add 32 NEW topnum/midnum dirs full of  prospective filenames to midpool
-            for(midnum=0;midnum<256;midnum++){
-               midkey=(topnum<<8)+midnum;
-               if(BalanceMidAdd(topnum,midkey)){
+            for(unsigned midnum = 0; midnum < 256; midnum++) {
+               auto midkey = (int)(((unsigned)topnum << 8) + midnum);
+               if(BalanceMidAdd(topnum, midkey)) {
                   newcount++;
-                  if(newcount>=32)break;
+                  if(newcount >= 32)
+                     break;
                }
             }
 
-            if(dirMidPool.empty()){
+            if(dirMidPool.empty()) {
                // all the midlevels in this toplevel are in use yet the
                // toplevel claims some are free; this implies multiple
                // internal logic faults, but simply giving up and going
@@ -966,32 +965,35 @@ wxFileNameWrapper DirManager::MakeBlockFileName()
                // something else is also wrong.  It will contain the
                // problem so we can keep going without worry.
                dirTopPool.erase(topnum);
-               dirTopFull[topnum]=256;
+               dirTopFull[topnum] = 256;
             }
             continue;
          }
       }
 
-      if(dirMidPool.empty()){
+      unsigned filenum;
+      unsigned midnum;
+      int topnum;
+      if(dirMidPool.empty()) {
          // still empty, thus an absurdly large project; all dirs are
          // full to 256/256/256; keep working, but fall back to 'big
          // filenames' and randomized placement
 
-         filenum = rand();
-         midnum  = (int)(256.*rand()/(RAND_MAX+1.));
-         topnum  = (int)(256.*rand()/(RAND_MAX+1.));
-         midkey=(topnum<<8)+midnum;
+         filenum = (unsigned)rand();
+         midnum  = (unsigned)(256. * rand() / (RAND_MAX + 1.));
+         topnum  = (int)(256. * rand() / (RAND_MAX + 1.));
+         midkey = (int)(((unsigned)topnum << 8) + midnum);
 
 
-      }else{
+      } else {
 
          DirHash::iterator iter = dirMidPool.begin();
          midkey                 = iter->first;
 
          // split the retrieved 16 bit directory key into two 8 bit numbers
-         topnum = midkey >> 8;
+         topnum = (unsigned)midkey >> 8;
          midnum = midkey & 0xff;
-         filenum = (int)(4096.*rand()/(RAND_MAX+1.));
+         filenum = (unsigned)(4096.*rand()/(RAND_MAX+1.));
 
       }
 
@@ -1010,7 +1012,9 @@ wxFileNameWrapper DirManager::MakeBlockFileName()
             // orphans (unlikely but possible)
             BalanceFileAdd(midkey);
 
-         }else break;
+         }
+         else
+            break;
       }
    }
    // FIXME: Might we get here without midkey having been set?
@@ -1037,7 +1041,7 @@ BlockFilePtr DirManager::NewSimpleBlockFile(
 
 BlockFilePtr DirManager::NewAliasBlockFile(
                                  const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel)
+                                 size_t aliasLen, unsigned aliasChannel)
 {
    wxFileNameWrapper filePath{ MakeBlockFileName() };
    const wxString fileName = filePath.GetName();
@@ -1054,7 +1058,7 @@ BlockFilePtr DirManager::NewAliasBlockFile(
 
 BlockFilePtr DirManager::NewODAliasBlockFile(
                                  const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel)
+                                 size_t aliasLen, unsigned aliasChannel)
 {
    wxFileNameWrapper filePath{ MakeBlockFileName() };
    const wxString fileName{ filePath.GetName() };
@@ -1071,7 +1075,7 @@ BlockFilePtr DirManager::NewODAliasBlockFile(
 
 BlockFilePtr DirManager::NewODDecodeBlockFile(
                                  const wxString &aliasedFile, sampleCount aliasStart,
-                                 size_t aliasLen, int aliasChannel, int decodeType)
+                                 size_t aliasLen, unsigned aliasChannel, unsigned decodeType)
 {
    wxFileNameWrapper filePath{ MakeBlockFileName() };
    const wxString fileName{ filePath.GetName() };

@@ -105,7 +105,7 @@ void ODDecodeTask::DoSomeInternal()
 void ODDecodeTask::CalculatePercentComplete()
 {
    mPercentCompleteMutex.Lock();
-   mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
+   mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles + 1));
    mPercentCompleteMutex.Unlock();
 }
 
@@ -140,11 +140,9 @@ void ODDecodeTask::Update()
 
             //See Sequence::Delete() for why need this for now..
             blocks = clip->GetSequenceBlockArray();
-            int i;
-            int insertCursor;
 
-            insertCursor =0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
-            for (i = 0; i<(int)blocks->size(); i++)
+            size_t insertCursor = 0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
+            for (size_t i = 0; i < blocks->size(); i++)
             {
                //since we have more than one ODDecodeBlockFile, we will need type flags to cast.
                SeqBlock &block = (*blocks)[i];
@@ -162,14 +160,14 @@ void ODDecodeTask::Update()
                   //these will always be linear within a sequence-lets take advantage of this by keeping a cursor.
                   {
                      std::shared_ptr< ODDecodeBlockFile > ptr;
-                     while(insertCursor < (int)tempBlocks.size() &&
+                     while(insertCursor < tempBlocks.size() &&
                            (!(ptr = tempBlocks[insertCursor].lock()) ||
                             ptr->GetStart() + ptr->GetClipOffset() <
                             oddbFile->GetStart() + oddbFile->GetClipOffset()))
                         insertCursor++;
                   }
 
-                  tempBlocks.insert(tempBlocks.begin() + insertCursor++, oddbFile);
+                  tempBlocks.insert(tempBlocks.begin() + (int)insertCursor++, oddbFile);
                }
             }
 
@@ -222,7 +220,7 @@ void ODDecodeTask::OrderBlockFiles
                firstBlock = ptr;
             mBlockFiles.push_back(unorderedBlocks[i]);
          }
-         if(mMaxBlockFiles< (int) mBlockFiles.size())
+         if(mMaxBlockFiles < mBlockFiles.size())
             mMaxBlockFiles = mBlockFiles.size();
       }
       else
@@ -254,7 +252,7 @@ ODFileDecoder* ODDecodeTask::GetOrCreateMatchingFileDecoder(ODDecodeBlockFile* b
 {
    ODFileDecoder* ret=NULL;
    //see if the filename matches any of our decoders, if so, return it.
-   for(int i=0;i<(int)mDecoders.size();i++)
+   for(size_t i = 0; i < mDecoders.size(); i++)
    {
       //we check filename and decode type, since two types of ODDecoders might work with the same filetype
       //e.g., FFmpeg and LibMad import both do MP3s.  TODO: is this necessary? in theory we filter this when
@@ -274,7 +272,8 @@ ODFileDecoder* ODDecodeTask::GetOrCreateMatchingFileDecoder(ODDecodeBlockFile* b
    }
    return ret;
 }
-int ODDecodeTask::GetNumFileDecoders()
+
+size_t ODDecodeTask::GetNumFileDecoders()
 {
    return mDecoders.size();
 }

@@ -448,7 +448,7 @@ BlockFilePtr SimpleBlockFile::BuildFromXML(DirManager &dm, const wxChar **attrs)
       else if (!wxStrcmp(attr, wxT("len")) &&
                XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue) &&
                nValue > 0)
-         len = nValue;
+         len = (size_t)nValue;
       else if (XMLValueChecker::IsGoodString(strValue) && Internat::CompatibleToDouble(strValue, &dblValue))
       {  // double parameters
          if (!wxStricmp(attr, wxT("min")))

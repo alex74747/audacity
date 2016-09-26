@@ -77,7 +77,7 @@ class Resample final
    void SetMethod(const bool useBestMethod);
 
  protected:
-   int   mMethod; // resampler-specific enum for resampling method
+   unsigned mMethod; // resampler-specific enum for resampling method
    void* mHandle; // constant-rate or variable-rate resampler (XOR per instance)
    bool mbWantConstRateResampling;
 };

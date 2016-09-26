@@ -126,11 +126,11 @@ void ODManager::RemoveTaskIfInQueue(ODTask* task)
 {
    mTasksMutex.Lock();
    //linear search okay for now, (probably only 1-5 tasks exist at a time.)
-   for(unsigned int i=0;i<mTasks.size();i++)
+   for(unsigned int i = 0; i < mTasks.size(); i++)
    {
       if(mTasks[i]==task)
       {
-         mTasks.erase(mTasks.begin()+i);
+         mTasks.erase(mTasks.begin() + (int)i);
          break;
       }
    }
@@ -243,9 +243,9 @@ void ODManager::Start()
 {
    bool tasksInArray;
    bool paused;
-   int  numQueues=0;
+   size_t numQueues=0;
 
-   mNeedsDraw=0;
+   mNeedsDraw = 0;
 
    //wxLog calls not threadsafe.  are printfs?  thread-messy for sure, but safe?
 //   printf("ODManager thread strating \n");
@@ -306,16 +306,16 @@ void ODManager::Start()
 
       //if there is some ODTask running, then there will be something in the queue.  If so then redraw to show progress
       mQueuesMutex.Lock();
-      mNeedsDraw += mQueues.size()>0?1:0;
-      numQueues=mQueues.size();
+      mNeedsDraw += mQueues.size() > 0 ? 1 : 0;
+      numQueues = mQueues.size();
       mQueuesMutex.Unlock();
 
       //redraw the current project only (ODTasks will send a redraw on complete even if the projects are in the background)
       //we don't want to redraw at a faster rate when we have more queues because
       //this means the CPU is already taxed.  This if statement normalizes the rate
-      if((mNeedsDraw>numQueues) && numQueues)
+      if((mNeedsDraw > numQueues) && numQueues)
       {
-         mNeedsDraw=0;
+         mNeedsDraw = 0;
          wxCommandEvent event( EVT_ODTASK_UPDATE );
          ODLocker locker{ &AudacityProject::AllProjectDeleteMutex() };
          AudacityProject* proj = GetActiveProject();
@@ -452,7 +452,7 @@ bool ODManager::MakeWaveTrackDependent(WaveTrack* dependentTrack,WaveTrack* mast
    masterQueue->MergeWaveTrack(dependentTrack);
 
    //finally remove the dependent track
-   mQueues.erase(mQueues.begin()+dependentIndex);
+   mQueues.erase(mQueues.begin() + (int)dependentIndex);
    mQueuesMutex.Unlock();
    return true;
 }
@@ -476,7 +476,7 @@ void ODManager::DemandTrackUpdate(WaveTrack* track, double seconds)
 void ODManager::UpdateQueues()
 {
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for(unsigned int i = 0; i < mQueues.size(); i++)
    {
       if(mQueues[i]->IsFrontTaskComplete())
       {
@@ -496,7 +496,7 @@ void ODManager::UpdateQueues()
       //if the queue is empty DELETE it.
       if(mQueues[i]->IsEmpty())
       {
-         mQueues.erase(mQueues.begin()+i);
+         mQueues.erase(mQueues.begin() + (int)i);
          i--;
       }
    }
@@ -540,25 +540,25 @@ float ODManager::GetOverallPercentComplete()
 {
    float total=0.0;
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for(unsigned int i = 0; i < mQueues.size(); i++)
    {
-      total+=mQueues[i]->GetFrontTask()->PercentComplete();
+      total += mQueues[i]->GetFrontTask()->PercentComplete();
    }
    mQueuesMutex.Unlock();
 
    //avoid div by zero and be thread smart.
-   int totalTasks = GetTotalNumTasks();
-   return (float) total/(totalTasks>0?totalTasks:1);
+   auto totalTasks = GetTotalNumTasks();
+   return (float) total / (totalTasks > 0 ? totalTasks : 1);
 }
 
 ///Get Total Number of Tasks.
-int ODManager::GetTotalNumTasks()
+unsigned ODManager::GetTotalNumTasks()
 {
-   int ret=0;
+   unsigned ret = 0;
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for(unsigned int i = 0; i < mQueues.size(); i++)
    {
-      ret+=mQueues[i]->GetNumTasks();
+      ret += mQueues[i]->GetNumTasks();
    }
    mQueuesMutex.Unlock();
    return ret;
