@@ -911,7 +911,7 @@ bool SpecCache::CalculateOneSpectrum
       if (autocorrelation) {
          // not reassignment, xx is surely within bounds.
          wxASSERT(xx >= 0);
-         float *const results = &out[nBins * xx];
+         float *const results = &out[nBins * (size_t)xx];
          // This function does not mutate useBuffer
          ComputeSpectrum(useBuffer, windowSize, windowSize,
             rate, results,
@@ -990,7 +990,7 @@ bool SpecCache::CalculateOneSpectrum
                }
 
                int correctedX = (floor(0.5 + xx + timeCorrection * pixelsPerSecond / rate));
-               if (correctedX >= lowerBoundX && correctedX < upperBoundX)
+               if (correctedX >= (int)lowerBoundX && correctedX < (int)upperBoundX)
                {
                   result = true;
 
@@ -1010,7 +1010,7 @@ bool SpecCache::CalculateOneSpectrum
       else {
          // not reassignment, xx is surely within bounds.
          wxASSERT(xx >= 0);
-         float *const results = &out[nBins * xx];
+         float *const results = &out[nBins * (size_t)xx];
 
          // Do the FFT.  Note that useBuffer is multiplied by the window,
          // and the window is initialized with leading and trailing zeroes
@@ -1097,7 +1097,7 @@ void SpecCache::Populate
 
       #pragma omp parallel for private(tls)
 #endif
-      for (auto xx = lowerBoundX; xx < upperBoundX; ++xx)
+      for (auto xx = (int)lowerBoundX; xx < (int)upperBoundX; ++xx)
       {
 #ifdef _OPENMP
          tls.init(waveTrackCache, scratchSize);
@@ -1119,7 +1119,7 @@ void SpecCache::Populate
          // time reassignments.
          // I'm not sure what's a good stopping criterion?
          {
-            auto xx = lowerBoundX;
+            auto xx = (int)lowerBoundX;
             const double pixelsPerSample = pixelsPerSecond / rate;
             const int limit = std::min((int)(0.5 + fftLen * pixelsPerSample), 100);
             for (int ii = 0; ii < limit; ++ii)
@@ -1134,7 +1134,7 @@ void SpecCache::Populate
                   break;
             }
 
-            xx = upperBoundX;
+            xx = (int)upperBoundX;
             for (int ii = 0; ii < limit; ++ii)
             {
                const bool result =
@@ -1255,7 +1255,7 @@ bool WaveClip::GetSpectrogram(WaveTrackCache &waveTrackCache,
       mSpecCache->Allocate(settings);
       auto nBins = settings.NBins();
       memcpy(&mSpecCache->freq[nBins * copyBegin],
-         &oldCache->freq[nBins * (copyBegin + oldX0)],
+         &oldCache->freq[nBins * (size_t)((int)copyBegin + oldX0)],
          nBins * (copyEnd - copyBegin) * sizeof(float));
    }
 
