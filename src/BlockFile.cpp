@@ -571,7 +571,7 @@ size_t BlockFile::CommonReadData(
    wxASSERT(channels >= 1);
    wxASSERT(channel < channels);
 
-   size_t framesRead = 0;
+   sf_count_t framesRead = 0;
 
    if (channels == 1 &&
        format == int16Sample &&
@@ -614,14 +614,18 @@ size_t BlockFile::CommonReadData(
       framesRead = SFCall<sf_count_t>(
          sf_readf_float, sf.get(), (float *)buffer.ptr(), len);
       auto bufferPtr = (samplePtr)((float *)buffer.ptr() + channel);
+     // To justify the narrowing:
+      wxASSERT(framesRead >= 0 && framesRead <= len);
       CopySamples(bufferPtr, floatSample,
                   (samplePtr)data, format,
-                  framesRead,
+                  (size_t)framesRead,
                   true /* high quality by default */,
                   (unsigned)channels /* source stride */);
    }
 
-   return framesRead;
+   // To justify the narrowing:
+   wxASSERT(framesRead >= 0 && framesRead <= len);
+   return (size_t)framesRead;
 }
 
 /// Constructs an AliasBlockFile based on the given information about

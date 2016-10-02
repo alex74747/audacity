@@ -2434,7 +2434,7 @@ void TrackArtist::DrawClipSpectrum(WaveTrackCache &waveTrackCache,
       AColor::PreComputeGradient();
 
    // left pixel column of the fisheye
-   int fisheyeLeft = zoomInfo.GetFisheyeLeftBoundary(-leftOffset);
+   auto fisheyeLeft = zoomInfo.GetFisheyeLeftBoundary(-leftOffset);
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -2707,10 +2707,10 @@ void TrackArtist::DrawNoteBackground(const NoteTrack *track, wxDC &dc,
    dc.SetPen(wp);
    dc.DrawRectangle(sel); // fill rectangle with white keys background
 
-   int left = TIME_TO_X(track->GetOffset());
+   auto left = TIME_TO_X(track->GetOffset());
    if (left < sel.x) left = sel.x; // clip on left
 
-   int right = TIME_TO_X(track->GetOffset() + track->mSeq->get_real_dur());
+   auto right = TIME_TO_X(track->GetOffset() + track->mSeq->get_real_dur());
    if (right > sel.x + sel.width) right = sel.x + sel.width; // clip on right
 
    // need overlap between MIDI data and the background region
@@ -2777,7 +2777,7 @@ void TrackArtist::DrawNoteBackground(const NoteTrack *track, wxDC &dc,
       // map beat to time
       double t = seq->get_time_map()->beat_to_time(next_bar_beat);
       // map time to position
-      int xx = TIME_TO_X(t + track->GetOffset());
+      auto xx = TIME_TO_X(t + track->GetOffset());
       if (xx > right) break;
       AColor::Line(dc, xx, sel.y, xx, sel.y + sel.height);
       next_bar_beat += beats_per_measure;

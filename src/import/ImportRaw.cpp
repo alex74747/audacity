@@ -241,7 +241,7 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
       /* i18n-hint: 'Raw' means 'unprocessed' here and should usually be tanslated.*/
       ProgressDialog progress(_("Import Raw"), msg);
 
-      size_t block;
+      sf_count_t block;
       do {
          block =
             limitSampleBufferSize( maxBlockSize, totalFrames - framescompleted );
@@ -251,6 +251,8 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
             result = SFCall<sf_count_t>(sf_readf_short, sndFile.get(), (short *)srcbuffer.ptr(), block);
          else
             result = SFCall<sf_count_t>(sf_readf_float, sndFile.get(), (float *)srcbuffer.ptr(), block);
+
+         wxASSERT(result <= block);
 
          if (result >= 0) {
             block = result;
@@ -276,8 +278,9 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
                      ((float *)buffer.ptr())[j] =
                      ((float *)srcbuffer.ptr())[numChannels*j+c];
                }
-               
-               iter->get()->Append(buffer.ptr(), format, block);
+
+               // Narrowing cast is justified by the assertions above
+               iter->get()->Append(buffer.ptr(), format, (size_t)block);
             }
             framescompleted += block;
          }

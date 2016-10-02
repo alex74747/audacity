@@ -464,10 +464,12 @@ enum mad_flow input_cb(void *_data, struct mad_stream *stream)
       return MAD_FLOW_CONTINUE;
    }
 
-   off_t read = data->file->Read(data->inputBuffer.get() + unconsumedBytes,
+   ssize_t read = data->file->Read(data->inputBuffer.get() + unconsumedBytes,
                                  INPUT_BUFFER_SIZE - unconsumedBytes);
+   if (read < 0)
+      return MAD_FLOW_BREAK;
 
-   mad_stream_buffer(stream, data->inputBuffer.get(), read + unconsumedBytes);
+   mad_stream_buffer(stream, data->inputBuffer.get(), (size_t)read + unconsumedBytes);
 
    data->inputBufferFill = int(read + unconsumedBytes);
 

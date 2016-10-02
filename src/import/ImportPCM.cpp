@@ -481,6 +481,8 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
 
          // Assume block still fits in size_t because no more than maxBlock
 
+         wxASSERT(block >= 0 && block <= maxBlock);
+
          if (block) {
             auto iter = channels.begin();
             for(size_t c = 0; (int)c < mInfo.channels; ++iter, ++c) {
@@ -495,7 +497,9 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
                         ((float *)srcbuffer.ptr())[(unsigned)mInfo.channels * j + c];
                }
 
-               iter->get()->Append(buffer.ptr(), (mFormat == int16Sample)?int16Sample:floatSample, block);
+               // Narrowing cast is justified by the assertion above
+               iter->get()->Append(buffer.ptr(),
+                  (mFormat == int16Sample) ? int16Sample : floatSample, (size_t)block);
             }
             framescompleted += block;
          }
