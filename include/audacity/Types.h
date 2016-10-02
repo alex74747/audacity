@@ -75,8 +75,8 @@ public:
    // Beware implicit conversions from floating point values!
    // Otherwise the meaning of binary operators with sampleCount change
    // their meaning when sampleCount is not an alias!
-   explicit sampleCount ( float f ) : value ( f ) {}
-   explicit sampleCount ( double d ) : value ( d ) {}
+   explicit sampleCount ( float f ) : value ( (long long)f ) {}
+   explicit sampleCount ( double d ) : value ( (long long)d ) {}
 
    sampleCount ( const sampleCount& ) = default;
    sampleCount &operator= ( const sampleCount& ) = default;
@@ -88,8 +88,8 @@ public:
 
    size_t as_size_t() const {
       wxASSERT(value >= 0);
-      wxASSERT(value <= std::numeric_limits<size_t>::max());
-      return value;
+      wxASSERT(value <= (long long)std::numeric_limits<size_t>::max());
+      return (size_t)value;
    }
 
    sampleCount &operator += (sampleCount b) { value += b.value; return *this; }

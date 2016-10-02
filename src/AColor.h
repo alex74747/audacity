@@ -152,7 +152,7 @@ inline void GetColorGradient(float value,
                              unsigned char * __restrict green,
                              unsigned char * __restrict blue) {
 
-   int idx = value * (AColor::gradientSteps - 1);
+   int idx = (int)(value * (AColor::gradientSteps - 1));
 
    *red = AColor::gradient_pre[selected][grayscale][idx][0];
    *green = AColor::gradient_pre[selected][grayscale][idx][1];

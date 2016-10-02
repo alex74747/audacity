@@ -132,12 +132,12 @@ public:
 
    static inline float hzToErb(float hz)
    {
-      return 11.17268f * log(1 + (46.06538f * hz) / (hz + 14678.49f));
+      return 11.17268f * logf(1 + (46.06538f * hz) / (hz + 14678.49f));
    }
 
    static inline float erbToHz(float erb)
    {
-      return 676170.4f / (47.06538f - exp(0.08950404f * erb)) - 14678.49f;
+      return 676170.4f / (47.06538f - expf(0.08950404f * erb)) - 14678.49f;
    }
 
    static inline float hzToPeriod(float hz)
