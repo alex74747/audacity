@@ -52,8 +52,8 @@ public:
       ( wxDC & dc, const wxRect & r, int GlyphLeft, int GlyphRight) const;
    void DrawText( wxDC & dc, const wxRect & r) const;
    void DrawTextBox( wxDC & dc, const wxRect & r) const;
-   void DrawHighlight( wxDC & dc, int xPos1, int xPos2, int charHeight) const;
-   void getXPos( wxDC & dc, int * xPos1, int cursorPos) const;
+   void DrawHighlight( wxDC & dc, wxInt64 xPos1, wxInt64 xPos2, int charHeight) const;
+   void getXPos( wxDC & dc, wxInt64 * xPos1, int cursorPos) const;
    const SelectedRegion &getSelectedRegion() const { return selectedRegion; }
    double getDuration() const { return selectedRegion.duration(); }
    double getT0() const { return selectedRegion.t0(); }
@@ -91,9 +91,9 @@ public:
    mutable int width; /// width of the text in pixels.
 
 // Working storage for on-screen layout.
-   mutable int x;     /// Pixel position of left hand glyph
-   mutable int x1;    /// Pixel position of right hand glyph
-   mutable int xText; /// Pixel position of left hand side of text box
+   mutable wxInt64 x;     /// Pixel position of left hand glyph
+   mutable wxInt64 x1;    /// Pixel position of right hand glyph
+   mutable wxInt64 xText; /// Pixel position of left hand side of text box
    mutable int y;     /// Pixel position of label.
 
    bool updated;                  /// flag to tell if the label times were updated
@@ -103,7 +103,7 @@ using LabelArray = std::vector<LabelStruct>;
 
 const int NUM_GLYPH_CONFIGS = 3;
 const int NUM_GLYPH_HIGHLIGHTS = 4;
-const int MAX_NUM_ROWS =80;
+const int MAX_NUM_ROWS = 80;
 
 
 class AUDACITY_DLL_API LabelTrack final : public Track
@@ -205,9 +205,9 @@ class AUDACITY_DLL_API LabelTrack final : public Track
 
    //get current cursor position,
    // relative to the left edge of the track panel
-   bool CalcCursorX(int * x) const;
+   bool CalcCursorX(wxInt64 * x) const;
 
-   void CalcHighlightXs(int *x1, int *x2) const;
+   void CalcHighlightXs(wxInt64 *x1, wxInt64 *x2) const;
 
    void MayAdjustLabel( int iLabel, int iEdge, bool bAllowSwapping, double fNewTime);
    void MayMoveLabel( int iLabel, int iEdge, double fNewTime);
@@ -245,7 +245,7 @@ class AUDACITY_DLL_API LabelTrack final : public Track
    int mSelIndex;              /// Keeps track of the currently selected label
    int mMouseOverLabelLeft;    /// Keeps track of which left label the mouse is currently over.
    int mMouseOverLabelRight;   /// Keeps track of which right label the mouse is currently over.
-   int mxMouseDisplacement;    /// Displacement of mouse cursor from the centre being dragged.
+   wxInt64 mxMouseDisplacement;    /// Displacement of mouse cursor from the centre being dragged.
    LabelArray mLabels;
 
    static int mIconHeight;

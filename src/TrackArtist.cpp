@@ -398,7 +398,7 @@ void TrackArtist::DrawTracks(TrackList * tracks,
          }
       }
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
-      if(MONO_WAVE_PAN(t)){
+      if(MONO_WAVE_PAN(t)) {
          stereoTrackRect.height += t->GetHeight(true);
          t->SetVirtualStereo(false);
       }
@@ -416,7 +416,7 @@ void TrackArtist::DrawTracks(TrackList * tracks,
       }
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
-      if(MONO_WAVE_PAN(t)){
+      if(MONO_WAVE_PAN(t)) {
          trackRect.y = t->GetY(true) - zoomInfo.vpos;
          trackRect.height = t->GetHeight(true);
          stereoTrackRect = trackRect;
@@ -1127,8 +1127,10 @@ void TrackArtist::DrawWaveformBackground(wxDC &dc, int leftOffset, const wxRect 
 
    // If sync-lock selected, draw in linked graphics.
    if (bIsSyncLockSelected && t0 < t1) {
-      const int begin = std::max(0, std::min(rect.width, (int)(zoomInfo.TimeToPosition(t0, -leftOffset))));
-      const int end = std::max(0, std::min(rect.width, (int)(zoomInfo.TimeToPosition(t1, -leftOffset))));
+      const auto begin = BoundedPosition(
+         zoomInfo.TimeToPosition(t0, -leftOffset), rect.width, 0);
+      const auto end = BoundedPosition(
+         zoomInfo.TimeToPosition(t1, -leftOffset), rect.width, 0);
       DrawSyncLockTiles(&dc, wxRect(rect.x + begin, rect.y, end - 1 - begin, rect.height));
    }
 
@@ -1338,9 +1340,9 @@ void TrackArtist::DrawIndividualSamples(wxDC &dc, int leftOffset, const wxRect &
 
    for (decltype(slen) s = 0; s < slen; s++) {
       const double time = toffset + (s + s0).as_double() / rate;
-      const int xx = // An offset into the rectangle rect
-         std::max(-10000, std::min(10000,
-            (int)(zoomInfo.TimeToPosition(time, -leftOffset))));
+      const auto xx = // An offset into the rectangle rect
+         BoundedPosition(zoomInfo.TimeToPosition(time, -leftOffset),
+            rect.width, 1);
       xpos[s] = xx;
 
       const double tt = buffer[s] * clip->GetEnvelope()->GetValue(time);
@@ -1471,7 +1473,8 @@ void TrackArtist::DrawWaveform(const WaveTrack *track,
    track->UpdateLocationsCache();
 
    for (const auto loc : track->GetCachedLocations()) {
-      const int xx = zoomInfo.TimeToPosition(loc.pos);
+      const auto xx =
+         BoundedPosition(zoomInfo.TimeToPosition(loc.pos), rect.width, 1);
       if (xx >= 0 && xx < rect.width) {
          dc.SetPen(*wxGREY_PEN);
          AColor::Line(dc, (int) (rect.x + xx - 1), rect.y, (int) (rect.x + xx - 1), rect.y + rect.height);
@@ -1581,10 +1584,8 @@ struct ClipParameters
       hiddenLeftOffset = 0;
       if (tpre < 0) {
          // Fix Bug #1296 caused by premature conversion to (int).
-         wxInt64 time64 = zoomInfo.TimeToPosition(tOffset, 0 , true);
-         if( time64 < 0 )
-            time64 = 0;
-         hiddenLeftOffset = (time64 < rect.width) ? (int)time64 : rect.width;
+         hiddenLeftOffset = std::max(0, BoundedPosition
+            (zoomInfo.TimeToPosition(tOffset, 0 , true), rect.width + 1, 0));
 
          hiddenMid.x += hiddenLeftOffset;
          hiddenMid.width -= hiddenLeftOffset;
@@ -1595,10 +1596,8 @@ struct ClipParameters
       // of the track.  Reduce the "hiddenMid" rect by the
       // size of the blank area.
       if (tpost > t1) {
-         wxInt64 time64 = zoomInfo.TimeToPosition(tOffset+t1, 0 , true);
-         if( time64 < 0 )
-            time64 = 0;
-         const int hiddenRightOffset = (time64 < rect.width) ? (int)time64 : rect.width;
+         const int hiddenRightOffset = std::max(0, BoundedPosition
+            (zoomInfo.TimeToPosition(tOffset + t1, 0, true), rect.width + 1, 0));
 
          hiddenMid.width = std::max(0, hiddenRightOffset - hiddenLeftOffset);
       }
@@ -1612,10 +1611,8 @@ struct ClipParameters
       // left of the track.  Reduce the "mid"
       leftOffset = 0;
       if (tpre < 0) {
-         wxInt64 time64 = zoomInfo.TimeToPosition(tOffset, 0 , false);
-         if( time64 < 0 )
-            time64 = 0;
-         leftOffset = (time64 < rect.width) ? (int)time64 : rect.width;
+         leftOffset = std::max(0, BoundedPosition
+            (zoomInfo.TimeToPosition(tOffset, 0 , false), rect.width + 1, 0));
 
          mid.x += leftOffset;
          mid.width -= leftOffset;
@@ -1626,11 +1623,9 @@ struct ClipParameters
       // of the track.  Reduce the "mid" rect by the
       // size of the blank area.
       if (tpost > t1) {
-         wxInt64 time64 = zoomInfo.TimeToPosition(tOffset+t1, 0 , false);
-         if( time64 < 0 )
-            time64 = 0;
-         const int distortedRightOffset = (time64 < rect.width) ? (int)time64 : rect.width;
-
+         const int distortedRightOffset = std::max(0, BoundedPosition
+            (zoomInfo.TimeToPosition(tOffset + t1, 0, false), rect.width + 1, 0));
+         
          mid.width = std::max(0, distortedRightOffset - leftOffset);
       }
    }
@@ -2656,7 +2651,7 @@ const char *LookupAtomAttribute(Alg_note_ptr note, Alg_attribute attr, char *def
   return def;
 }
 
-#define TIME_TO_X(t) (zoomInfo.TimeToPosition((t), rect.x))
+#define TIME_TO_X(t) (BoundedPosition(zoomInfo.TimeToPosition((t), rect.x), rect.GetRight() + 1, 1))
 #define X_TO_TIME(xx) (zoomInfo.PositionToTime((xx), rect.x))
 
 // CLIP(x) changes x to lie between +/- CLIP_MAX due to graphics display problems
@@ -3337,7 +3332,8 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
       wxRect within = rect;
       wxRect after = rect;
 
-      before.width = (int)(zoomInfo.TimeToPosition(sel0) + 2);
+      before.width =
+         BoundedPosition((zoomInfo.TimeToPosition(sel0) + 2), rect.width + 1, 0);
       if (before.GetRight() > rect.GetRight()) {
          before.width = rect.width;
       }
@@ -3348,7 +3344,9 @@ void TrackArtist::DrawBackgroundWithSelection(wxDC *dc, const wxRect &rect,
 
          within.x = 1 + before.GetRight();
       }
-      within.width = rect.x + (int)(zoomInfo.TimeToPosition(sel1) + 2) - within.x;
+      within.width = rect.x +
+         BoundedPosition((zoomInfo.TimeToPosition(sel1) + 2), rect.width + 1, 0) -
+         within.x;
 
       if (within.GetRight() > rect.GetRight()) {
          within.width = 1 + rect.GetRight() - within.x;

@@ -1081,14 +1081,15 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
       // Zero (if it's in the middle somewhere)
       if (mMin * mMax < 0.0) {
-         int mid;
+         wxInt64 mid;
          if (zoomInfo != NULL)
-            mid = (int)(zoomInfo->TimeToPosition(0.0, mLeftOffset));
+            mid = zoomInfo->TimeToPosition(0.0, mLeftOffset);
          else
-            mid = (int)(mLength*(mMin / (mMin - mMax)) + 0.5);
+            mid = mLength * (mMin / (mMin - mMax)) + 0.5;
          const int iMaxPos = (mOrientation == wxHORIZONTAL) ? mRight : mBottom - 5;
          if (mid >= 0 && mid < iMaxPos)
-            Tick(mid, 0.0, true, false);
+            // Narrowing mid to int is safe
+            Tick((int)mid, 0.0, true, false);
       }
 
       double sg = UPP > 0.0? 1.0: -1.0;
@@ -1096,7 +1097,8 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // Major and minor ticks
       for (int jj = 0; jj < 2; ++jj) {
          const double denom = jj == 0 ? mMajor : mMinor;
-         i = -1; j = 0;
+         i = -1;
+         wxInt64 j = 0;
          double d, warpedD, nextD;
 
          double prevTime = 0.0, time = 0.0;
@@ -1673,7 +1675,7 @@ public:
    QuickPlayRulerOverlay(QuickPlayIndicatorOverlay &partner);
    virtual ~QuickPlayRulerOverlay();
 
-   void Update(wxCoord xx) { mNewQPIndicatorPos = xx; }
+   void Update(wxInt64 xx) { mNewQPIndicatorPos = xx; }
 
 private:
    AdornedRulerPanel *GetRuler() const;
@@ -1682,7 +1684,7 @@ private:
    void Draw(OverlayPanel &panel, wxDC &dc) override;
 
    QuickPlayIndicatorOverlay &mPartner;
-   int mOldQPIndicatorPos { -1 }, mNewQPIndicatorPos { -1 };
+   wxInt64 mOldQPIndicatorPos { -1 }, mNewQPIndicatorPos { -1 };
 };
 
 /**********************************************************************
@@ -1703,7 +1705,7 @@ public:
 
    virtual ~QuickPlayIndicatorOverlay();
 
-   void Update(int x, bool snapped = false, bool previewScrub = false);
+   void Update(wxInt64 x, bool snapped = false, bool previewScrub = false);
 
 private:
    std::pair<wxRect, bool> DoGetRectangle(wxSize size) override;
@@ -1714,7 +1716,7 @@ private:
    std::unique_ptr<QuickPlayRulerOverlay> mPartner
       { std::make_unique<QuickPlayRulerOverlay>(*this) };
 
-   int mOldQPIndicatorPos { -1 }, mNewQPIndicatorPos { -1 };
+   wxInt64 mOldQPIndicatorPos { -1 }, mNewQPIndicatorPos { -1 };
    bool mOldQPIndicatorSnapped {}, mNewQPIndicatorSnapped {};
    bool mOldPreviewingScrub {}, mNewPreviewingScrub {};
 };
@@ -1743,7 +1745,7 @@ AdornedRulerPanel *QuickPlayRulerOverlay::GetRuler() const
    return mPartner.mProject->GetRulerPanel();
 }
 
-std::pair<wxRect, bool> QuickPlayRulerOverlay::DoGetRectangle(wxSize /*size*/)
+std::pair<wxRect, bool> QuickPlayRulerOverlay::DoGetRectangle(wxSize size)
 {
    const auto x = mOldQPIndicatorPos;
    if (x >= 0) {
@@ -1754,7 +1756,7 @@ std::pair<wxRect, bool> QuickPlayRulerOverlay::DoGetRectangle(wxSize /*size*/)
 
       const int indsize = width / 2;
 
-      auto xx = x - indsize;
+      auto xx = (int)x - indsize;
       auto yy = 0;
       return {
          { xx, yy,
@@ -1769,6 +1771,11 @@ std::pair<wxRect, bool> QuickPlayRulerOverlay::DoGetRectangle(wxSize /*size*/)
 
 void QuickPlayRulerOverlay::Draw(OverlayPanel & /*panel*/, wxDC &dc)
 {
+   // Constrain the new position so it's safe to narrow to int:
+   const auto width = (unsigned)IndicatorBigWidth() * 3 / 2;
+   mNewQPIndicatorPos =
+      BoundedPosition(mNewQPIndicatorPos, dc.GetSize().GetWidth(), width + 1);
+
    mOldQPIndicatorPos = mNewQPIndicatorPos;
    if (mOldQPIndicatorPos >= 0) {
       auto ruler = GetRuler();
@@ -1779,7 +1786,7 @@ void QuickPlayRulerOverlay::Draw(OverlayPanel & /*panel*/, wxDC &dc)
           (scrubber.HasStartedScrubbing()));
       auto seek = scrub && (scrubber.Seeks() || scrubber.TemporarilySeeks());
       auto width = scrub ? IndicatorBigWidth() : IndicatorSmallWidth;
-      ruler->DoDrawIndicator(&dc, mOldQPIndicatorPos, true, width, scrub, seek);
+      ruler->DoDrawIndicator(&dc, (wxCoord)mOldQPIndicatorPos, true, width, scrub, seek);
    }
 }
 
@@ -1803,7 +1810,7 @@ QuickPlayIndicatorOverlay::~QuickPlayIndicatorOverlay()
       tp->RemoveOverlay(this);
 }
 
-void QuickPlayIndicatorOverlay::Update(int x, bool snapped, bool previewScrub)
+void QuickPlayIndicatorOverlay::Update(wxInt64 x, bool snapped, bool previewScrub)
 {
    mNewQPIndicatorPos = x;
    mPartner->Update(x);
@@ -1813,7 +1820,7 @@ void QuickPlayIndicatorOverlay::Update(int x, bool snapped, bool previewScrub)
 
 std::pair<wxRect, bool> QuickPlayIndicatorOverlay::DoGetRectangle(wxSize size)
 {
-   wxRect rect(mOldQPIndicatorPos, 0, 1, size.GetHeight());
+   wxRect rect((int)mOldQPIndicatorPos, 0, 1, size.GetHeight());
    return std::make_pair(
       rect,
       (mOldQPIndicatorPos != mNewQPIndicatorPos ||
@@ -1824,6 +1831,10 @@ std::pair<wxRect, bool> QuickPlayIndicatorOverlay::DoGetRectangle(wxSize size)
 
 void QuickPlayIndicatorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
 {
+   // Constrain the new position so it's safe to narrow to int:
+   mNewQPIndicatorPos =
+      BoundedPosition(mNewQPIndicatorPos, dc.GetSize().GetWidth(), 1);
+
    TrackPanel &tp = static_cast<TrackPanel&>(panel);
    TrackPanelCellIterator begin(&tp, true);
    TrackPanelCellIterator end(&tp, false);
@@ -1851,9 +1862,9 @@ void QuickPlayIndicatorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
 
          // Draw the NEW indicator in its NEW location
          AColor::Line(dc,
-            mOldQPIndicatorPos,
+            (wxCoord)mOldQPIndicatorPos,
             rect.GetTop(),
-            mOldQPIndicatorPos,
+            (wxCoord)mOldQPIndicatorPos,
             rect.GetBottom());
       }
    }
@@ -2283,7 +2294,7 @@ double AdornedRulerPanel::Pos2Time(int p, bool ignoreFisheye)
    );
 }
 
-int AdornedRulerPanel::Time2Pos(double t, bool ignoreFisheye)
+wxInt64 AdornedRulerPanel::Time2Pos(double t, bool ignoreFisheye)
 {
    return mViewInfo->TimeToPosition(t, mLeftOffset
       , ignoreFisheye
@@ -2296,9 +2307,9 @@ bool AdornedRulerPanel::IsWithinMarker(int mousePosX, double markerTime)
    if (markerTime < 0)
       return false;
 
-   int pixelPos = Time2Pos(markerTime);
-   int boundLeft = pixelPos - SELECT_TOLERANCE_PIXEL;
-   int boundRight = pixelPos + SELECT_TOLERANCE_PIXEL;
+   auto pixelPos = Time2Pos(markerTime);
+   auto boundLeft = pixelPos - SELECT_TOLERANCE_PIXEL;
+   auto boundRight = pixelPos + SELECT_TOLERANCE_PIXEL;
 
    return mousePosX >= boundLeft && mousePosX < boundRight;
 }
@@ -2519,8 +2530,8 @@ void AdornedRulerPanel::HandleQPClick(wxMouseEvent &evt, wxCoord mousePosX)
       else {
          // Don't compare times, compare positions.
          //if (fabs(mQuickPlayPos - mPlayRegionStart) < fabs(mQuickPlayPos - mPlayRegionEnd))
-         if (abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionStart)) <
-             abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionEnd)))
+         if (std::abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionStart)) <
+             std::abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionEnd)))
             mMouseEventState = mesDraggingPlayRegionStart;
          else
             mMouseEventState = mesDraggingPlayRegionEnd;
@@ -2998,8 +3009,15 @@ void AdornedRulerPanel::DoDrawPlayRegion(wxDC * dc)
 
    if (start >= 0)
    {
-      const int x1 = Time2Pos(start) + 1;
-      const int x2 = Time2Pos(end);
+      const auto width = dc->GetSize().GetWidth();
+      const auto margin = (unsigned)(dc->GetPen().GetWidth() +
+         std::max(PLAY_REGION_TRIANGLE_SIZE + 1, PLAY_REGION_RECT_WIDTH));
+      const auto x1 = BoundedPosition(
+         Time2Pos(start) + 1, width, margin
+      );
+      const auto x2 = BoundedPosition(
+         Time2Pos(end), width, margin
+      );
       int y = mInner.y - TopMargin + mInner.height/2;
 
       bool isLocked = mProject->IsPlayRegionLocked();
@@ -3019,7 +3037,7 @@ void AdornedRulerPanel::DoDrawPlayRegion(wxDC * dc)
       r.x = x1;
       r.y = y - PLAY_REGION_TRIANGLE_SIZE + PLAY_REGION_GLOBAL_OFFSET_Y;
       r.width = PLAY_REGION_RECT_WIDTH;
-      r.height = PLAY_REGION_TRIANGLE_SIZE*2 + 1;
+      r.height = PLAY_REGION_TRIANGLE_SIZE * 2 + 1;
       dc->DrawRectangle(r);
 
       if (end != start)
@@ -3035,12 +3053,12 @@ void AdornedRulerPanel::DoDrawPlayRegion(wxDC * dc)
          r.x = x2 - PLAY_REGION_RECT_WIDTH + 1;
          r.y = y - PLAY_REGION_TRIANGLE_SIZE + PLAY_REGION_GLOBAL_OFFSET_Y;
          r.width = PLAY_REGION_RECT_WIDTH;
-         r.height = PLAY_REGION_TRIANGLE_SIZE*2 + 1;
+         r.height = PLAY_REGION_TRIANGLE_SIZE * 2 + 1;
          dc->DrawRectangle(r);
 
          r.x = x1 + PLAY_REGION_TRIANGLE_SIZE;
-         r.y = y - PLAY_REGION_RECT_HEIGHT/2 + PLAY_REGION_GLOBAL_OFFSET_Y;
-         r.width = std::max(0, x2-x1 - PLAY_REGION_TRIANGLE_SIZE*2);
+         r.y = y - PLAY_REGION_RECT_HEIGHT / 2 + PLAY_REGION_GLOBAL_OFFSET_Y;
+         r.width = std::max(0, x2 - x1 - PLAY_REGION_TRIANGLE_SIZE * 2);
          r.height = PLAY_REGION_RECT_HEIGHT;
          dc->DrawRectangle(r);
       }
@@ -3124,8 +3142,11 @@ void AdornedRulerPanel::DrawSelection()
 void AdornedRulerPanel::DoDrawSelection(wxDC * dc)
 {
    // Draw selection
-   const int p0 = 1 + max(0, Time2Pos(mViewInfo->selectedRegion.t0()));
-   const int p1 = 2 + min(mInner.width, Time2Pos(mViewInfo->selectedRegion.t1()));
+   const auto width = dc->GetSize().GetWidth();
+
+   // PRL:  I am not sure why the 1 + is there
+   const auto p0 = BoundedPosition(1 + mViewInfo->selectedRegion.t0(), width, 0);
+   const auto p1 = BoundedPosition(1 + mViewInfo->selectedRegion.t1(), width, 0);
 
    dc->SetBrush( wxBrush( theTheme.Colour( clrRulerBackground )) );
    dc->SetPen(   wxPen(   theTheme.Colour( clrRulerBackground )) );
@@ -3133,7 +3154,7 @@ void AdornedRulerPanel::DoDrawSelection(wxDC * dc)
    wxRect r;
    r.x = p0;
    r.y = mInner.y;
-   r.width = p1 - p0 - 1;
+   r.width = p1 - p0;
    r.height = mInner.height;
    dc->DrawRectangle( r );
 }
@@ -3265,7 +3286,7 @@ void AdornedRulerPanel::ShowOrHideQuickPlayIndicator(bool show, bool repaint_all
       GetOverlay()->Update(-1);
    }
    else {
-      const int x = Time2Pos(mQuickPlayPos);
+      const auto x = Time2Pos(mQuickPlayPos);
       bool previewScrub =
       mPrevZone == StatusChoice::EnteringScrubZone &&
       !mProject->GetScrubber().IsScrubbing();

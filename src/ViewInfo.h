@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_VIEWINFO__
 #define __AUDACITY_VIEWINFO__
 
+#include <algorithm>
 #include <vector>
 #include <wx/event.h>
 #include "SelectedRegion.h"
@@ -64,6 +65,9 @@ public:
    // Instead, call twice to convert start and end positions,
    // and take the difference.
    // origin specifies the pixel corresponding to time h
+   // Return value is a wide integer type because it may need to be large
+   // when magnification is high, and the time is not necessarily within the
+   // current view.
    wxInt64 TimeToPosition(double time,
       wxInt64 origin = 0
       , bool ignoreFisheye = false
@@ -191,5 +195,14 @@ public:
    // Receive track panel timer notifications
    void OnTimer(wxCommandEvent &event);
 };
+
+// A global convenience function hiding the narrowing casts.
+// Trim a position to the interval [ (-margin), (width + margin) ).
+inline int BoundedPosition(wxInt64 position, int width, unsigned margin)
+{
+   return (int) std::max<wxInt64>( -(int)margin,
+      std::min<wxInt64>( std::max(0, width) + (int)margin - 1,
+         position) );
+}
 
 #endif

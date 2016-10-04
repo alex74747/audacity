@@ -318,17 +318,17 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
 
    // xExtra is extra space
    // between the text and the endpoints.
-   const int xExtra=mIconWidth;
-   int x     = labelStruct.x;  // left endpoint
-   int x1    = labelStruct.x1; // right endpoint.
+   const int xExtra = mIconWidth;
+   auto x     = labelStruct.x;  // left endpoint
+   auto x1    = labelStruct.x1; // right endpoint.
    int width = labelStruct.width;
 
-   int xText; // This is where the text will end up.
+   wxInt64 xText; // This is where the text will end up.
 
    // Will the text all fit at this zoom?
-   bool bTooWideForScreen = width > (r.width-2*xExtra);
+   bool bTooWideForScreen = width > (r.width - 2 * xExtra);
 // bool bSimpleCentering = !bTooWideForScreen;
-   bool bSimpleCentering = false;
+   const bool bSimpleCentering = false;
 
    //TODO (possibly):
    // Add configurable options as to when to use simple
@@ -349,7 +349,7 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
    if( bSimpleCentering )
    {
       // Center text between the two end points.
-      xText = (x+x1-width)/2;
+      xText = (x + x1 - width) / 2;
    }
    else
    {
@@ -358,28 +358,25 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
 
       // xText is a linear function of r.x.
       // These variables are used to compute that function.
-      int rx0,rx1,xText0,xText1;
+      wxInt64 rx0, rx1, xText0, xText1;
+
+      xText0 = x + xExtra; // text aligned left.
+      xText1 = x1 - (width + xExtra); // text aligned right.
 
       // Since we will be using a linear function,
       // we should blend smoothly between left and right
       // aligned text as r, the 'viewport' moves.
       if( bTooWideForScreen )
       {
-         rx0=x;           // when viewport at label start.
-         xText0=x+xExtra; // text aligned left.
-         rx1=x1-r.width;  // when viewport end at label end
-         xText1=x1-(width+xExtra); // text aligned right.
+         rx0 = x;           // when viewport at label start.
+         rx1 = x1 - r.width;  // when viewport end at label end
       }
       else
       {
          // when label start + width + extra spacing at viewport end..
-         rx0=x-r.width+width+2*xExtra;
-         // ..text aligned left.
-         xText0=x+xExtra;
+         rx0 = x - r.width + width + 2 * xExtra;
          // when viewport start + width + extra spacing at label end..
-         rx1=x1-(width+2*xExtra);
-         // ..text aligned right.
-         xText1=x1-(width+xExtra);
+         rx1 = x1 - (width + 2 * xExtra);
       }
 
       if( rx1 > rx0 ) // Avoid divide by zero case.
@@ -388,13 +385,14 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
 
          // Don't use:
          //
-         // xText = xText0 + ((xText1-xText0)*(r.x-rx0))/(rx1-rx0);
+         // xText = xText0 + ((xText1 - xText0) * (r.x - rx0)) / (rx1 - rx0);
          //
          // The problem with the above is that it integer-oveflows at
          // high zoom.
 
          // Instead use:
-         xText = xText0 + (int)((xText1-xText0)*(((float)(r.x-rx0))/(rx1-rx0)));
+         xText = xText0 +
+            (wxInt64)((xText1 - xText0) * (((float)(r.x - rx0)) / (rx1 - rx0)));
       }
       else
       {
@@ -405,13 +403,13 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
          // are swapped, in which case we'll end up
          // left aligned anyway because code later on
          // will catch that.
-         xText = (x+x1-width)/2;
+         xText = (x + x1 - width) / 2;
       }
    }
 
    // Is the text now appearing partly outside r?
-   bool bOffLeft = xText < r.x+xExtra;
-   bool bOffRight = xText > r.x+r.width-width-xExtra;
+   bool bOffLeft = xText < r.x + xExtra;
+   bool bOffRight = xText > r.x + r.width - width - xExtra;
 
    // IF any part of the text is offscreen
    // THEN we may bring it back.
@@ -428,14 +426,14 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
       // IF we're off on the left, OR we're
       // too wide for the screen and off on the right
       // (only) THEN align left.
-      xText = r.x+xExtra;
+      xText = r.x + xExtra;
    }
    else
    {
       // We're off on the right, OR we're
       // too wide and off on the left (only)
       // SO align right.
-      xText =r.x+r.width-width-xExtra;
+      xText = r.x + r.width - width - xExtra;
    }
 
    // But if we've taken the text out from its endpoints
@@ -445,10 +443,10 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
    // text might not even fit between the endpoints (at this
    // zoom factor), and in that case we'd like to position
    // the text at the left end point.
-   if( xText > (x1-width-xExtra))
-      xText=(x1-width-xExtra);
-   if( xText < x+xExtra )
-      xText=x+xExtra;
+   if( xText > (x1 - width - xExtra))
+      xText = (x1 - width - xExtra);
+   if( xText < x + xExtra )
+      xText = x + xExtra;
 
    labelStruct.xText = xText;
 }
@@ -458,64 +456,65 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
 /// Function assumes that the labels are sorted.
 void LabelTrack::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) const
 {
-   int xUsed[MAX_NUM_ROWS];
+   wxInt64 xUsed[MAX_NUM_ROWS];
 
    int iRow;
    // Rows are the 'same' height as icons or as the text,
    // whichever is taller.
-   const int yRowHeight = wxMax(mTextHeight,mIconHeight)+3;// pixels.
+   const int yRowHeight = wxMax(mTextHeight, mIconHeight) + 3; // pixels.
    // Extra space at end of rows.
    // We allow space for one half icon at the start and two
    // half icon widths for extra x for the text frame.
    // [we don't allow half a width space for the end icon since it is
    // allowed to be obscured by the text].
-   const int xExtra= (3 * mIconWidth)/2;
+   const int xExtra = (3 * mIconWidth) / 2;
 
    const int nRows = wxMin((r.height / yRowHeight) + 1, MAX_NUM_ROWS);
    // Initially none of the rows have been used.
    // So set a value that is less than any valid value.
    {
-      const int xStart = zoomInfo.TimeToPosition(0.0, r.x) - 100;
+      const auto xStart = std::numeric_limits<wxInt64>::min();
       for (auto &x : xUsed)
          x = xStart;
    }
-   int nRowsUsed=0;
+   int nRowsUsed = 0;
 
    { int i = -1; for (auto &labelStruct : mLabels) { ++i;
-      const int x = zoomInfo.TimeToPosition(labelStruct.getT0(), r.x);
-      const int x1 = zoomInfo.TimeToPosition(labelStruct.getT1(), r.x);
+      const auto x = zoomInfo.TimeToPosition(labelStruct.getT0(), r.x);
+      const auto x1 = zoomInfo.TimeToPosition(labelStruct.getT1(), r.x);
       int y = r.y;
 
-      labelStruct.x=x;
-      labelStruct.x1=x1;
-      labelStruct.y=-1;// -ve indicates nothing doing.
-      iRow=0;
+      labelStruct.x = x;
+      labelStruct.x1 = x1;
+      labelStruct.y = -1; // -ve indicates nothing doing.
+      iRow = 0;
       // Our first preference is a row that ends where we start.
       // (This is to encourage merging of adjacent label boundaries).
-      while( (iRow<nRowsUsed) && (xUsed[iRow] != x ))
+      while( (iRow < nRowsUsed) && (xUsed[iRow] != x) )
          iRow++;
       // IF we didn't find one THEN
       // find any row that can take a span starting at x.
       if( iRow >= nRowsUsed )
       {
-         iRow=0;
-         while( (iRow<nRows) && (xUsed[iRow] > x ))
+         iRow = 0;
+         while( (iRow < nRows) && (xUsed[iRow] > x) )
             iRow++;
       }
       // IF we found such a row THEN record a valid position.
-      if( iRow<nRows )
+      if( iRow < nRows )
       {
          // Possibly update the number of rows actually used.
          if( iRow >= nRowsUsed )
-            nRowsUsed=iRow+1;
+            nRowsUsed = iRow + 1;
          // Record the position for this label
-         y= r.y + iRow * yRowHeight +(yRowHeight/2)+1;
-         labelStruct.y=y;
+         y = r.y + iRow * yRowHeight + (yRowHeight / 2) + 1;
+         labelStruct.y = y;
          // On this row we have used up to max of end marker and width.
          // Plus also allow space to show the start icon and
          // some space for the text frame.
-         xUsed[iRow]=x+labelStruct.width+xExtra;
-         if( xUsed[iRow] < x1 ) xUsed[iRow]=x1;
+         xUsed[iRow] = x + labelStruct.width + xExtra;
+         if( xUsed[iRow] < x1 )
+            xUsed[iRow] = x1;
          ComputeTextPosition( r, i );
       }
    }}
@@ -561,31 +560,34 @@ void LabelStruct::DrawLines(wxDC & dc, const wxRect & r) const
    // start, i.e. what is the y position of the icon?
    // We adjust this so that the line encroaches on the icon
    // slightly (there is white space in the design).
-   const int yIconStart = y - (LabelTrack::mIconHeight /2)+1+(LabelTrack::mTextHeight+3)/2;
-   const int yIconEnd   = yIconStart + LabelTrack::mIconHeight-2;
+   const int yIconStart =
+      y - (LabelTrack::mIconHeight / 2) + 1 + (LabelTrack::mTextHeight + 3) / 2;
+   const int yIconEnd   = yIconStart + LabelTrack::mIconHeight - 2;
 
    // If y is positive then it is the center line for the
    // Label.
    if( y >= 0 )
    {
-      if((x  >= r.x) && (x  <= (r.x+r.width)))
+      if((x >= r.x) && (x < (r.x + r.width)))
       {
          // Draw line above and below left dragging widget.
-         AColor::Line(dc, x, r.y,  x, yIconStart - 1);
-         AColor::Line(dc, x, yIconEnd, x, r.y + r.height);
+         AColor::Line(dc, (wxCoord)x, r.y,  (wxCoord)x, yIconStart - 1);
+         AColor::Line(dc, (wxCoord)x, yIconEnd, (wxCoord)x, r.y + r.height);
       }
-      if((x1 >= r.x) && (x1 <= (r.x+r.width)))
+      if((x1 >= r.x) && (x1 < (r.x + r.width)))
       {
          // Draw line above and below right dragging widget.
-         AColor::Line(dc, x1, r.y,  x1, yIconStart - 1);
-         AColor::Line(dc, x1, yIconEnd, x1, r.y + r.height);
+         AColor::Line(dc, (wxCoord)x1, r.y,  (wxCoord)x1, yIconStart - 1);
+         AColor::Line(dc, (wxCoord)x1, yIconEnd, (wxCoord)x1, r.y + r.height);
       }
    }
    else
    {
       // Draw the line, even though the widget is off screen
-      AColor::Line(dc, x, r.y,  x, r.y + r.height);
-      AColor::Line(dc, x1, r.y,  x1, r.y + r.height);
+      if((x >= r.x) && (x < (r.x + r.width)))
+         AColor::Line(dc, (wxCoord)x, r.y, (wxCoord)x, r.y + r.height);
+      if((x1 >= r.x) && (x1 < (r.x + r.width)))
+         AColor::Line(dc, (wxCoord)x1, r.y, (wxCoord)x1, r.y + r.height);
    }
 }
 
@@ -595,19 +597,22 @@ void LabelStruct::DrawLines(wxDC & dc, const wxRect & r) const
 void LabelStruct::DrawGlyphs
    (wxDC & dc, const wxRect & r, int GlyphLeft, int GlyphRight) const
 {
-   const int xHalfWidth=LabelTrack::mIconWidth/2;
-   const int yStart=y-LabelTrack::mIconHeight/2+(LabelTrack::mTextHeight+3)/2;
+   const int xHalfWidth = LabelTrack::mIconWidth / 2;
+   const int yStart =
+      y - LabelTrack::mIconHeight / 2 + (LabelTrack::mTextHeight + 3) / 2;
 
    // If y == -1, nothing to draw
    if( y == -1 )
       return;
 
-   if((x  >= r.x) && (x  <= (r.x+r.width)))
-      dc.DrawBitmap(LabelTrack::GetGlyph(GlyphLeft), x-xHalfWidth,yStart, true);
+   if((x >= r.x) && (x < (r.x + r.width)))
+      dc.DrawBitmap(LabelTrack::GetGlyph(GlyphLeft),
+          (wxCoord)x - xHalfWidth, yStart, true);
    // The extra test commented out here would suppress right hand markers
    // when they overlap the left hand marker (e.g. zoomed out) or to the left.
-   if((x1 >= r.x) && (x1 <= (r.x+r.width)) /*&& (x1>x+LabelTrack::mIconWidth)*/)
-      dc.DrawBitmap(LabelTrack::GetGlyph(GlyphRight), x1-xHalfWidth,yStart, true);
+   if((x1 >= r.x) && (x1 < (r.x + r.width)) /*&& (x1>x+LabelTrack::mIconWidth)*/)
+      dc.DrawBitmap(LabelTrack::GetGlyph(GlyphRight),
+          (wxCoord)x1 - xHalfWidth, yStart, true);
 }
 
 /// Draw the text of the label and also draw
@@ -628,14 +633,16 @@ void LabelStruct::DrawText(wxDC & dc, const wxRect & r) const
    // Draw frame for the text...
    // We draw it half an icon width left of the text itself.
    {
-      const int xStart=wxMax(r.x,xText-LabelTrack::mIconWidth/2);
-      const int xEnd=wxMin(r.x+r.width,xText+width+LabelTrack::mIconWidth/2);
-      const int xWidth = xEnd-xStart;
+      const auto xStart =
+         std::max<wxInt64>(r.x, xText - LabelTrack::mIconWidth / 2);
+      const auto xEnd =
+         std::min<wxInt64>(r.x + r.width, xText + width + LabelTrack::mIconWidth / 2);
+      const auto xWidth = xEnd - xStart;
 
-      if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))
+      if( (xStart < (r.x + r.width)) && (xEnd > r.x) && (xWidth > 0))
       {
          // Now draw the text itself.
-         dc.DrawText(title, xText, y-LabelTrack::mTextHeight/2);
+         dc.DrawText(title, (wxCoord)xText, y - LabelTrack::mTextHeight / 2);
       }
    }
 
@@ -645,23 +652,27 @@ void LabelStruct::DrawTextBox(wxDC & dc, const wxRect & r) const
 {
    //If y is positive then it is the center line for the
    //text we are about to draw.
-   const int yBarHeight=3;
-   const int yFrameHeight = LabelTrack::mTextHeight+3;
-   const int xBarShorten  = LabelTrack::mIconWidth+4;
+   const int yBarHeight = 3;
+   const int yFrameHeight = LabelTrack::mTextHeight + 3;
+   const int xBarShorten  = LabelTrack::mIconWidth + 4;
    if( y == -1 )
       return;
 
    {
-      const int xStart=wxMax(r.x,x+xBarShorten/2);
-      const int xEnd=wxMin(r.x+r.width,x1-xBarShorten/2);
-      const int xWidth = xEnd-xStart;
+      const auto bound = r.x + r.width;
+      const auto half = xBarShorten / 2;
+      const int xStart =
+         wxMax(r.x, BoundedPosition(x, bound, (unsigned)half) + half);
+      const int xEnd =
+         wxMin(bound, BoundedPosition(x1, bound, (unsigned)half) - half);
+      const int xWidth = xEnd - xStart;
 
-      if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))
+      if( (xStart < (r.x + r.width)) && (xEnd > r.x) && (xWidth > 0))
       {
 
-         wxRect bar( xStart,y-yBarHeight/2+yFrameHeight/2,
-            xWidth,yBarHeight);
-         if( x1 > x+xBarShorten )
+         wxRect bar( (int)xStart, y - yBarHeight / 2 + yFrameHeight / 2,
+            (int)xWidth, yBarHeight);
+         if( x1 > x + xBarShorten )
             dc.DrawRectangle(bar);
       }
    }
@@ -676,15 +687,17 @@ void LabelStruct::DrawTextBox(wxDC & dc, const wxRect & r) const
    // We don't quite draw from x to x1 because we allow
    // half an icon width at each end.
    {
-      const int xStart=wxMax(r.x,xText-LabelTrack::mIconWidth/2);
-      const int xEnd=wxMin(r.x+r.width,xText+width+LabelTrack::mIconWidth/2);
-      const int xWidth = xEnd-xStart;
+      const auto xStart =
+         std::max<wxInt64>(r.x, xText - LabelTrack::mIconWidth / 2);
+      const auto xEnd =
+         std::min<wxInt64>(r.x + r.width, xText + width + LabelTrack::mIconWidth / 2);
+      const auto xWidth = xEnd - xStart;
 
-      if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))
+      if( (xStart < (r.x + r.width)) && (xEnd > r.x) && (xWidth > 0))
       {
           wxRect frame(
-            xStart,y-yFrameHeight/2,
-            xWidth,yFrameHeight );
+            (int)xStart, y - yFrameHeight / 2,
+            (int)xWidth, yFrameHeight );
          dc.DrawRectangle(frame);
       }
    }
@@ -692,19 +705,24 @@ void LabelStruct::DrawTextBox(wxDC & dc, const wxRect & r) const
 
 /// Draws text-selected region within the label
 void LabelStruct::DrawHighlight
-   ( wxDC & dc, int xPos1, int xPos2, int charHeight) const
+   ( wxDC & dc, wxInt64 xP1, wxInt64 xP2, int charHeight) const
 {
    wxPen curPen = dc.GetPen();
    curPen.SetColour(wxString(wxT("BLUE")));
    wxBrush curBrush = dc.GetBrush();
    curBrush.SetColour(wxString(wxT("BLUE")));
+   const auto width = dc.GetSize().GetWidth();
+   auto xPos1 = BoundedPosition(xP1, width, 1);
+   auto xPos2 = BoundedPosition(xP2, width, 1);
    if (xPos1 < xPos2)
-      dc.DrawRectangle(xPos1-1, y-charHeight/2, xPos2-xPos1+1, charHeight);
+      dc.DrawRectangle((wxCoord)xPos1 - 1, y - charHeight/2,
+                       (wxCoord)xPos2 - xPos1 + 1, charHeight);
    else
-      dc.DrawRectangle(xPos2-1, y-charHeight/2, xPos1-xPos2+1, charHeight);
+      dc.DrawRectangle((wxCoord)xPos2 - 1, y - charHeight/2,
+                       (wxCoord)xPos1 - xPos2 + 1, charHeight);
 }
 
-void LabelStruct::getXPos( wxDC & dc, int * xPos1, int cursorPos) const
+void LabelStruct::getXPos( wxDC & dc, wxInt64 * xPos1, int cursorPos) const
 {
    *xPos1 = xText;
    if( cursorPos > 0)
@@ -716,7 +734,7 @@ void LabelStruct::getXPos( wxDC & dc, int * xPos1, int cursorPos) const
    }
 }
 
-bool LabelTrack::CalcCursorX(int * x) const
+bool LabelTrack::CalcCursorX(wxInt64 * x) const
 {
    if (mSelIndex >= 0) {
       wxMemoryDC dc;
@@ -733,7 +751,7 @@ bool LabelTrack::CalcCursorX(int * x) const
    return false;
 }
 
-void LabelTrack::CalcHighlightXs(int *x1, int *x2) const
+void LabelTrack::CalcHighlightXs(wxInt64 *x1, wxInt64 *x2) const
 {
    wxMemoryDC dc;
 
@@ -815,35 +833,35 @@ void LabelTrack::Draw(wxDC & dc, const wxRect & r,
 
    // Draw the label boxes.
    { int i = -1; for (auto &labelStruct : mLabels) { ++i;
-      if( mSelIndex==i)
+      if( mSelIndex == i )
          dc.SetBrush(AColor::labelTextEditBrush);
       labelStruct.DrawTextBox( dc, r );
-      if( mSelIndex==i)
+      if( mSelIndex == i )
          dc.SetBrush(AColor::labelTextNormalBrush);
    }}
 
    // Draw highlights
-   if ((mInitialCursorPos != mCurrentCursorPos) && (mSelIndex >= 0 ))
+   if ((mInitialCursorPos != mCurrentCursorPos) && (mSelIndex >= 0))
    {
-      int xpos1, xpos2;
+      wxInt64 xpos1, xpos2;
       CalcHighlightXs(&xpos1, &xpos2);
       mLabels[mSelIndex].DrawHighlight(dc, xpos1, xpos2, mFontHeight);
    }
 
    // Draw the text and the label boxes.
    { int i = -1; for (auto &labelStruct : mLabels) { ++i;
-      if( mSelIndex==i)
+      if( mSelIndex == i)
          dc.SetBrush(AColor::labelTextEditBrush);
       labelStruct.DrawText( dc, r );
-      if( mSelIndex==i)
+      if( mSelIndex == i)
          dc.SetBrush(AColor::labelTextNormalBrush);
    }}
 
    // Draw the cursor, if there is one.
-   if( mDrawCursor && mSelIndex >=0 )
+   if( mDrawCursor && mSelIndex >= 0 )
    {
       const auto &labelStruct = mLabels[mSelIndex];
-      int xPos = labelStruct.xText;
+      auto xPos = labelStruct.xText;
 
       if( mCurrentCursorPos > 0)
       {
@@ -853,12 +871,14 @@ void LabelTrack::Draw(wxDC & dc, const wxRect & r,
          xPos += partWidth;
       }
 
+      xPos = BoundedPosition(xPos, dc.GetSize().GetWidth(), 1);
+
       wxPen currentPen = dc.GetPen();
-      const int CursorWidth=2;
+      const int CursorWidth = 2;
       currentPen.SetWidth(CursorWidth);
       AColor::Line(dc,
-                   xPos-1, labelStruct.y - mFontHeight/2 + 1,
-                   xPos-1, labelStruct.y + mFontHeight/2 - 1);
+                   (wxCoord)xPos - 1, labelStruct.y - mFontHeight / 2 + 1,
+                   (wxCoord)xPos - 1, labelStruct.y + mFontHeight / 2 - 1);
       currentPen.SetWidth(1);
    }
 }
@@ -877,7 +897,6 @@ int LabelTrack::FindCurrentCursorPosition(int xPos)
    int charIndex = 1;
    int partWidth;
    int oneWidth;
-   double bound;
    wxString subString;
    const auto &labelStruct = mLabels[mSelIndex];
    const auto &title = labelStruct.title;
@@ -890,7 +909,7 @@ int LabelTrack::FindCurrentCursorPosition(int xPos)
 
       // Get the width of the last character
       dc.GetTextExtent(subString.Right(1), &oneWidth, NULL);
-      bound = labelStruct.xText + partWidth - oneWidth * 0.5;
+      auto bound = labelStruct.xText + partWidth - oneWidth * 0.5;
 
       if (xPos <= bound)
       {
@@ -931,8 +950,8 @@ void LabelTrack::calculateFontHeight(wxDC & dc) const
    // To make up for ignoring the descender height, we add one pixel above and below
    // using CursorExtraHeight so that the cursor is just a little taller than the
    // body of the characters.
-   const int CursorExtraHeight=2;
-   mFontHeight += CursorExtraHeight - (charLeading+charDescent);
+   const int CursorExtraHeight = 2;
+   mFontHeight += CursorExtraHeight - (charLeading + charDescent);
 }
 
 bool LabelTrack::IsTextSelected()
@@ -1122,28 +1141,28 @@ void LabelTrack::SetSelected(bool s)
 int LabelTrack::OverGlyph(int x, int y)
 {
    //Determine the NEW selection.
-   int result=0;
-   const int d1=10; //distance in pixels, used for have we hit drag handle.
-   const int d2=5;  //distance in pixels, used for have we hit drag handle center.
+   int result = 0;
+   const int d1 = 10; //distance in pixels, used for have we hit drag handle.
+   const int d2 = 5;  //distance in pixels, used for have we hit drag handle center.
 
    //If not over a label, reset it
-   mMouseOverLabelLeft  = -1;
+   mMouseOverLabelLeft = -1;
    mMouseOverLabelRight = -1;
    mbHitCenter = false;
    { int i = -1; for (auto &labelStruct : mLabels) { ++i;
       //over left or right selection bound
       //Check right bound first, since it is drawn after left bound,
       //so give it precedence for matching/highlighting.
-      if( abs(labelStruct.y - (y - (LabelTrack::mTextHeight+3)/2)) < d1 &&
-               abs(labelStruct.x1 - d2 -x) < d1)
+      if( abs(labelStruct.y - (y - (LabelTrack::mTextHeight + 3) / 2)) < d1 &&
+               std::abs(labelStruct.x1 - d2 - x) < d1)
       {
          mMouseOverLabelRight = i;
-         if(abs(labelStruct.x1 - x) < d2 )
+         if(std::abs(labelStruct.x1 - x) < d2 )
          {
             mbHitCenter = true;
             // If left and right co-incident at this resolution, then we drag both.
             // We could be a little less stringent about co-incidence here if we liked.
-            if( abs(labelStruct.x1-labelStruct.x) < 1.0 )
+            if(std::abs(labelStruct.x1 - labelStruct.x) < 1.0 )
             {
                result |=1;
                mMouseOverLabelLeft = i;
@@ -1153,11 +1172,11 @@ int LabelTrack::OverGlyph(int x, int y)
       }
       // Use else-if here rather than else to avoid detecting left and right
       // of the same label.
-      else if(   abs(labelStruct.y - (y - (LabelTrack::mTextHeight+3)/2)) < d1 &&
-            abs(labelStruct.x + d2 - x) < d1 )
+      else if(   abs(labelStruct.y - (y - (LabelTrack::mTextHeight + 3) / 2)) < d1 &&
+            std::abs(labelStruct.x + d2 - x) < d1 )
       {
          mMouseOverLabelLeft = i;
-         if(abs(labelStruct.x - x) < d2 )
+         if(std::abs(labelStruct.x - x) < d2 )
             mbHitCenter = true;
          result |= 1;
       }
@@ -1186,9 +1205,9 @@ int LabelTrack::OverATextBox(int xx, int yy) const
 // return true if the mouse is over text box, false otherwise
 bool LabelTrack::OverTextBox(const LabelStruct *pLabel, int x, int y) const
 {
-   if( (pLabel->xText-(mIconWidth/2) < x) &&
-            (x<pLabel->xText+pLabel->width+(mIconWidth/2)) &&
-            (abs(pLabel->y-y)<mIconHeight/2))
+   if( (pLabel->xText - (mIconWidth / 2) < x) &&
+            (x < pLabel->xText + pLabel->width + (mIconWidth / 2)) &&
+            (abs(pLabel->y - y)<mIconHeight / 2))
    {
       return true;
    }
@@ -1426,15 +1445,15 @@ void LabelTrack::MayMoveLabel( int iLabel, int iEdge, double fNewTime)
 
 // Constrain function, as in processing/arduino.
 // returned value will be between min and max (inclusive).
-static int Constrain( int value, int min, int max )
+static int Constrain( wxInt64 value, int min, int max )
 {
    wxASSERT( min <= max );
-   int result=value;
+   auto result = value;
    if( result < min )
-      result=min;
+      result = min;
    if( result > max )
-      result=max;
-   return result;
+      result = max;
+   return (int)result;
 }
 
 bool LabelTrack::HandleGlyphDragRelease(const wxMouseEvent & evt,
@@ -1476,7 +1495,7 @@ bool LabelTrack::HandleGlyphDragRelease(const wxMouseEvent & evt,
       // and if both edges the same, then we're always moving the label.
       bool bLabelMoving = mbIsMoving;
       bLabelMoving ^= evt.ShiftDown();
-      bLabelMoving |= mMouseOverLabelLeft==mMouseOverLabelRight;
+      bLabelMoving |= mMouseOverLabelLeft == mMouseOverLabelRight;
       double fNewX = zoomInfo.PositionToTime(x, 0);
       if( bLabelMoving )
       {
@@ -1572,8 +1591,8 @@ void LabelTrack::HandleClick(const wxMouseEvent & evt,
          // position when we start dragging.
 
          // Dragging of three label edges at the same time is not supported (yet).
-         if( (mMouseOverLabelRight >=0) &&
-             (mMouseOverLabelLeft >=0)
+         if( (mMouseOverLabelRight >= 0) &&
+             (mMouseOverLabelLeft >= 0)
            )
          {
             t = (mLabels[mMouseOverLabelRight].getT1() +
@@ -1583,11 +1602,11 @@ void LabelTrack::HandleClick(const wxMouseEvent & evt,
             // if we're on a boundary between two different labels.
             mbIsMoving = (mMouseOverLabelLeft == mMouseOverLabelRight);
          }
-         else if(mMouseOverLabelRight >=0)
+         else if(mMouseOverLabelRight >= 0)
          {
             t = mLabels[mMouseOverLabelRight].getT1();
          }
-         else if(mMouseOverLabelLeft >=0)
+         else if(mMouseOverLabelLeft >= 0)
          {
             t = mLabels[mMouseOverLabelLeft].getT0();
          }
@@ -1630,20 +1649,6 @@ void LabelTrack::HandleClick(const wxMouseEvent & evt,
          else
             // Actually this might be right or middle down
             mRightDragging = true;
-
-         // reset the highlight indicator
-         wxRect highlightedRect;
-         {
-            int xpos1, xpos2;
-            CalcHighlightXs(&xpos1, &xpos2);
-
-            wxASSERT(mFontHeight >= 0); // should have been set up while drawing
-            // the rectangle of highlighted area
-            highlightedRect = {
-               xpos1, labelStruct.y - mFontHeight / 2,
-               (int)(xpos2 - xpos1 + 0.5), mFontHeight
-            };
-         }
 
          // Middle click on GTK: paste from primary selection
 #if defined(__WXGTK__) && (HAVE_GTK)
@@ -2053,11 +2058,13 @@ void LabelTrack::ShowContextMenu()
          dc.SetFont(msFont);
       }
 
-      int x = 0;
+      wxInt64 x = 0;
       bool success = CalcCursorX(&x);
       wxASSERT(success);
 
-      parent->PopupMenu(&menu, x, ls->y + (mIconHeight / 2) - 1);
+      parent->PopupMenu(&menu,
+                        BoundedPosition(x, parent->GetSize().GetWidth(), 0),
+                        ls->y + (mIconHeight / 2) - 1);
    }
 }
 
@@ -2636,7 +2643,7 @@ void LabelTrack::DeleteLabel(int index)
    mLabels.erase(mLabels.begin() + index);
    // IF we've deleted the selected label
    // THEN set no label selected.
-   if( mSelIndex== index )
+   if( mSelIndex == index )
    {
       mSelIndex = -1;
       mCurrentCursorPos = 1;

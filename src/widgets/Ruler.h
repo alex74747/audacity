@@ -376,7 +376,7 @@ private:
    void ShowContextMenu( MenuChoice choice, const wxPoint *pPosition);
 
    double Pos2Time(int p, bool ignoreFisheye = false);
-   int Time2Pos(double t, bool ignoreFisheye = false);
+   wxInt64 Time2Pos(double t, bool ignoreFisheye = false);
 
    bool IsWithinMarker(int mousePosX, double markerTime);
 

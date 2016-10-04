@@ -14,6 +14,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../MemoryX.h"
 #include "../../widgets/Overlay.h"
 
+#include <wx/defs.h>
+
 class AudacityProject;
 
 class EditCursorOverlay final : public Overlay
@@ -30,9 +32,9 @@ private:
    bool mIsMaster;
    std::unique_ptr<EditCursorOverlay> mPartner;
 
-   int mLastCursorX;
+   wxInt64 mLastCursorX;
    double mCursorTime;
-   int mNewCursorX;
+   wxInt64 mNewCursorX;
 };
 
 #endif

@@ -209,7 +209,7 @@ class AUDACITY_DLL_API TrackPanel final : public OverlayPanel {
    virtual void OnToggle();
 
    virtual void ScrollIntoView(double pos);
-   virtual void ScrollIntoView(int x);
+   virtual void ScrollIntoView(wxInt64 x);
 
    virtual void OnTrackMenu(Track *t = NULL);
    virtual void OnVRulerMenu(Track *t, wxMouseEvent *pEvent = NULL);

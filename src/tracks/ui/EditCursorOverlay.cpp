@@ -67,9 +67,9 @@ std::pair<wxRect, bool> EditCursorOverlay::DoGetRectangle(wxSize size)
 
    // Excessive height in case of the ruler, but it matters little.
    return std::make_pair(
-      mLastCursorX == -1
+      mLastCursorX < 0
          ? wxRect()
-         : wxRect(mLastCursorX, 0, 1, size.GetHeight()),
+         : wxRect((int)mLastCursorX, 0, 1, size.GetHeight()),
       mLastCursorX != mNewCursorX
    );
 }
@@ -77,6 +77,9 @@ std::pair<wxRect, bool> EditCursorOverlay::DoGetRectangle(wxSize size)
 
 void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
 {
+   const auto width = dc.GetSize().GetWidth();
+   mNewCursorX = BoundedPosition(mNewCursorX, width, 1);
+
    if (mIsMaster && !mPartner) {
       auto ruler = mProject->GetRulerPanel();
       if (ruler) {
@@ -86,7 +89,7 @@ void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
    }
 
    mLastCursorX = mNewCursorX;
-   if (mLastCursorX == -1)
+   if (mLastCursorX < 0)
       return;
 
    const ZoomInfo &viewInfo = mProject->GetZoomInfo();
@@ -117,7 +120,9 @@ void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
          {
             const wxRect &rect = data.second;
             // AColor::Line includes both endpoints so use GetBottom()
-            AColor::Line(dc, mLastCursorX, rect.GetTop(), mLastCursorX, rect.GetBottom());
+            AColor::Line(dc,
+                         (wxCoord)mLastCursorX, rect.GetTop(),
+                         (wxCoord)mLastCursorX, rect.GetBottom());
             // ^^^ The whole point of this routine.
 
 #ifdef EXPERIMENTAL_OUTPUT_DISPLAY
@@ -125,7 +130,8 @@ void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
                auto y = pTrack->GetY(true) - viewInfo.vpos + 1;
                auto top = y + kTopInset;
                auto bottom = y + pTrack->GetHeight(true) - kTopInset;
-               AColor::Line(dc, mLastCursorX, top, mLastCursorX, bottom);
+               AColor::Line(dc,
+                  (wxCoord)mLastCursorX, top, (wxCoord)mLastCursorX, bottom);
             }
 #endif
 
@@ -137,7 +143,9 @@ void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
       dc.SetPen(*wxBLACK_PEN);
       // AColor::Line includes both endpoints so use GetBottom()
       auto rect = ruler->GetInnerRect();
-      AColor::Line(dc, mLastCursorX, rect.GetTop(), mLastCursorX, rect.GetBottom());
+      AColor::Line(dc,
+                   (wxCoord)mLastCursorX, rect.GetTop(),
+                   (wxCoord)mLastCursorX, rect.GetBottom());
    }
    else
       wxASSERT(false);

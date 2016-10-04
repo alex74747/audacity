@@ -25,7 +25,7 @@ public:
    PlayIndicatorOverlayBase(AudacityProject *project, bool isMaster);
    virtual ~PlayIndicatorOverlayBase();
 
-   void Update(int newIndicatorX) { mNewIndicatorX = newIndicatorX; }
+   void Update(wxInt64 newIndicatorX) { mNewIndicatorX = newIndicatorX; }
 
 private:
    std::pair<wxRect, bool> DoGetRectangle(wxSize size) override;
@@ -35,8 +35,8 @@ protected:
 
    AudacityProject *const mProject;
    const bool mIsMaster;
-   int mLastIndicatorX { -1 };
-   int mNewIndicatorX { -1 };
+   wxInt64 mLastIndicatorX { -1 };
+   wxInt64 mNewIndicatorX { -1 };
 };
 
 // Master object for track panel, creates the other object for the ruler

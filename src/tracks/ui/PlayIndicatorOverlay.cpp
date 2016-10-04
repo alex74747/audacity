@@ -49,7 +49,7 @@ std::pair<wxRect, bool> PlayIndicatorOverlayBase::DoGetRectangle(wxSize size)
    auto width = mIsMaster ? 1 : IndicatorMediumWidth;
 
    // May be excessive height, but little matter
-   wxRect rect(mLastIndicatorX - width / 2, 0, width, size.GetHeight());
+   wxRect rect((int)mLastIndicatorX - width / 2, 0, width, size.GetHeight());
    return std::make_pair(
       rect,
       mLastIndicatorX != mNewIndicatorX
@@ -59,11 +59,15 @@ std::pair<wxRect, bool> PlayIndicatorOverlayBase::DoGetRectangle(wxSize size)
 
 void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
 {
+   const auto width = dc.GetSize().GetWidth();
+   mNewIndicatorX =
+      BoundedPosition(mNewIndicatorX, width, IndicatorMediumWidth);
+
    // Set play/record color
    bool rec = (gAudioIO->GetNumCaptureChannels() > 0);
    AColor::IndicatorColor(&dc, !rec);
    mLastIndicatorX = mNewIndicatorX;
-   if (!between_incexc(0, mLastIndicatorX, dc.GetSize().GetWidth()))
+   if (!between_incexc(0, mLastIndicatorX, width))
       return;
 
    if(auto tp = dynamic_cast<TrackPanel*>(&panel)) {
@@ -90,16 +94,18 @@ void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
          // AColor::Line includes both endpoints so use GetBottom()
          const wxRect &rect = data.second;
          AColor::Line(dc,
-                      mLastIndicatorX,
+                      (wxCoord)mLastIndicatorX,
                       rect.GetTop(),
-                      mLastIndicatorX,
+                      (wxCoord)mLastIndicatorX,
                       rect.GetBottom());
       }
    }
    else if(auto ruler = dynamic_cast<AdornedRulerPanel*>(&panel)) {
       wxASSERT(!mIsMaster);
 
-      ruler->DoDrawIndicator(&dc, mLastIndicatorX, !rec, IndicatorMediumWidth, false, false);
+      ruler->DoDrawIndicator
+         (&dc, (wxCoord)mLastIndicatorX, !rec, IndicatorMediumWidth,
+          false, false);
    }
    else
       wxASSERT(false);
@@ -197,7 +203,8 @@ void PlayIndicatorOverlay::OnTimer(wxCommandEvent &event)
       mProject->TP_RedrawScrollbars();
 
       if (onScreen)
-         mNewIndicatorX = viewInfo.TimeToPosition(playPos, trackPanel->GetLeftOffset());
+         mNewIndicatorX =
+            viewInfo.TimeToPosition(playPos, trackPanel->GetLeftOffset());
       else
          mNewIndicatorX = -1;
    }

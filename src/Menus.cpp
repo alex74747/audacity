@@ -4441,7 +4441,7 @@ bool AudacityProject::HandlePasteText()
             PushState(_("Pasted text from the clipboard"), _("Paste"));
 
             // Make sure caret is in view
-            int x;
+            wxInt64 x;
             if (pLabelTrack->CalcCursorX(&x)) {
                mTrackPanel->ScrollIntoView(x);
             }

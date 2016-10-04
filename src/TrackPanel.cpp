@@ -2908,9 +2908,9 @@ void TrackPanel::SelectionHandleDrag(wxMouseEvent & event, Track *clickedTrack)
 
    // Might be dragging frequency bounds only, test
    if (mSelStartValid) {
-      wxInt64 SelStart = mViewInfo->TimeToPosition(mSelStart, rect.x); //cvt time to pixels.
+      auto SelStart = mViewInfo->TimeToPosition(mSelStart, rect.x); //cvt time to pixels.
       // Abandon this drag if selecting < 5 pixels.
-      if (wxLongLong(SelStart-x).Abs() < minimumSizedSelection
+      if (std::abs(SelStart - x) < minimumSizedSelection
 #ifdef USE_MIDI        // limiting selection size is good, and not starting
           && !mStretching // stretch unless mouse moves 5 pixels is good, but
 #endif                 // once stretching starts, it's ok to move even 1 pixel
@@ -3091,13 +3091,13 @@ bool mayDragWidth, bool onlyWithinSnapDistance,
       const wxInt64 topSel = (f1 >= 0)
          ? FrequencyToPosition(wt, f1, rect.y, rect.height)
          : rect.y;
-      wxInt64 signedBottomDist = (int)(event.m_y - bottomSel);
+      wxInt64 signedBottomDist = event.m_y - bottomSel;
       wxInt64 verticalDist = std::abs(signedBottomDist);
       if (bottomSel == topSel)
          // Top and bottom are too close to resolve on screen
          chooseBottom = (signedBottomDist >= 0);
       else {
-         const wxInt64 topDist = abs((int)(event.m_y - topSel));
+         const wxInt64 topDist = std::abs(event.m_y - topSel);
          if (topDist < verticalDist)
             chooseBottom = false, verticalDist = topDist;
       }
@@ -3108,7 +3108,7 @@ bool mayDragWidth, bool onlyWithinSnapDistance,
          ) {
          const wxInt64 centerSel =
             FrequencyToPosition(wt, fc, rect.y, rect.height);
-         const wxInt64 centerDist = abs((int)(event.m_y - centerSel));
+         const wxInt64 centerDist = std::abs(event.m_y - centerSel);
          if (centerDist < verticalDist)
             chooseCenter = true, verticalDist = centerDist,
             ratio = f1 / fc;
@@ -4427,7 +4427,7 @@ bool SampleResolutionTest(const ViewInfo &viewInfo, const WaveTrack *wt, double 
    // Require more than 3 pixels per sample
    // Round to an exact sample time
    const double adjustedTime = wt->LongSamplesToTime(wt->TimeToLongSamples(time));
-   const wxInt64 xx = std::max(wxInt64(0), viewInfo.TimeToPosition(adjustedTime));
+   const auto xx = std::max<wxInt64>(0, viewInfo.TimeToPosition(adjustedTime));
    ZoomInfo::Intervals intervals;
    viewInfo.FindIntervals(rate, intervals, width);
    ZoomInfo::Intervals::const_iterator it = intervals.begin(), end = intervals.end(), prev;
@@ -5731,7 +5731,8 @@ void TrackPanel::HandleWheelRotation(wxMouseEvent & event)
       if (GetProject()->GetScrubber().IsScrollScrubbing()) {
          // Expand or contract about the center, ignoring mouse position
          center_h = mViewInfo->h + (GetScreenEndTime() - mViewInfo->h) / 2.0;
-         xx = mViewInfo->TimeToPosition(center_h, trackLeftEdge);
+         // Result must be in the screen rectangle so this narrowing is safe:
+         xx = (int)mViewInfo->TimeToPosition(center_h, trackLeftEdge);
       }
       else {
          xx = event.m_x;
@@ -5972,7 +5973,7 @@ void TrackPanel::OnKeyDown(wxKeyEvent & event)
                           UndoPush::CONSOLIDATE);
 
    // Make sure caret is in view
-   int x;
+   wxInt64 x;
    if (lt->CalcCursorX(&x)) {
       ScrollIntoView(x);
    }
@@ -6350,13 +6351,14 @@ bool TrackPanel::HandleTrackLocationMouseEvent(WaveTrack * track, const wxRect &
 
 bool TrackPanel::IsOverCutline(WaveTrack * track, const wxRect &rect, const wxMouseEvent &event)
 {
-   for (auto loc: track->GetCachedLocations())
+   for (const auto &loc: track->GetCachedLocations())
    {
-      const double x = mViewInfo->TimeToPosition(loc.pos);
+      const auto x = mViewInfo->TimeToPosition(loc.pos);
       if (x >= 0 && x < rect.width)
       {
+         // We can safely narrow x to int
          wxRect locRect;
-         locRect.x = (int)(rect.x + x) - 5;
+         locRect.x = rect.x + (int)x - 5;
          locRect.width = 11;
          locRect.y = rect.y;
          locRect.height = rect.height;
@@ -7086,11 +7088,14 @@ void TrackPanel::DrawEverythingElse(wxDC * dc,
    // Draw snap guidelines if we have any
    if (mSnapManager && (mSnapLeft >= 0 || mSnapRight >= 0)) {
       AColor::SnapGuidePen(dc);
-      if (mSnapLeft >= 0) {
-         AColor::Line(*dc, (int)mSnapLeft, 0, mSnapLeft, 30000);
+      const auto width = dc->GetSize().GetWidth();
+      if (mSnapLeft >= 0 && mSnapLeft < width) {
+         // the narrowing is safe
+         AColor::Line(*dc, (int)mSnapLeft, 0, (int)mSnapLeft, 30000);
       }
-      if (mSnapRight >= 0) {
-         AColor::Line(*dc, (int)mSnapRight, 0, mSnapRight, 30000);
+      if (mSnapRight >= 0 && mSnapRight < width) {
+         // the narrowing is safe
+         AColor::Line(*dc, (int)mSnapRight, 0, (int)mSnapRight, 30000);
       }
    }
 }
@@ -7643,7 +7648,7 @@ void TrackPanel::ScrollIntoView(double pos)
    int w;
    GetTracksUsableArea( &w, NULL );
 
-   int pixel = mViewInfo->TimeToPosition(pos);
+   auto pixel = mViewInfo->TimeToPosition(pos);
    if (pixel < 0 || pixel >= w)
    {
       mListener->TP_ScrollWindow
@@ -7652,7 +7657,7 @@ void TrackPanel::ScrollIntoView(double pos)
    }
 }
 
-void TrackPanel::ScrollIntoView(int x)
+void TrackPanel::ScrollIntoView(wxInt64 x)
 {
    ScrollIntoView(mViewInfo->PositionToTime(x, GetLeftOffset()));
 }
