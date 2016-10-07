@@ -4736,7 +4736,7 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
       if (freeSpace >= 0) {
          wxString sMessage;
 
-         int iRecordingMins = GetEstimatedRecordingMinsLeftOnDisk(gAudioIO->GetNumCaptureChannels());
+         auto iRecordingMins = GetEstimatedRecordingMinsLeftOnDisk(gAudioIO->GetNumCaptureChannels());
          sMessage.Printf(_("Disk space remains for recording %s"), GetHoursMinsString(iRecordingMins));
 
          mStatusBar->SetStatusText(sMessage, mainStatusBarField);
@@ -5594,7 +5594,7 @@ bool AudacityProject::ProjectHasTracks() {
    return bHasTracks;
 }
 
-wxString AudacityProject::GetHoursMinsString(int iMinutes)
+wxString AudacityProject::GetHoursMinsString(unsigned iMinutes)
 {
 
    wxString sFormatted = wxEmptyString;
@@ -5608,8 +5608,8 @@ wxString AudacityProject::GetHoursMinsString(int iMinutes)
    }
 
    // Calculate
-   int iHours = iMinutes / 60;
-   int iMins = iMinutes % 60;
+   auto iHours = iMinutes / 60;
+   auto iMins = iMinutes % 60;
 
    // Use wxPLURAL to get strings
    sHours = wxPLURAL("hour", "hours", iHours);
@@ -5624,13 +5624,17 @@ wxString AudacityProject::GetHoursMinsString(int iMinutes)
 // minutes of recording time we have available.
 // The calculations made are based on the user's current
 // preferences.
-int AudacityProject::GetEstimatedRecordingMinsLeftOnDisk(long lCaptureChannels) {
+unsigned AudacityProject::GetEstimatedRecordingMinsLeftOnDisk(unsigned long lCaptureChannels) {
 
    // Obtain the current settings
    sampleFormat oCaptureFormat = (sampleFormat)
       gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleFormat"), floatSample);
    if (lCaptureChannels == 0) {
-      gPrefs->Read(wxT("/AudioIO/RecordChannels"), &lCaptureChannels, 2L);
+      long channels;
+      gPrefs->Read(wxT("/AudioIO/RecordChannels"), &channels, 2L);
+      if (channels < 0)
+         channels = 0;
+      lCaptureChannels = (unsigned long)(channels);
    }
 
    // Find out how much free space we have on disk
@@ -5646,9 +5650,10 @@ int AudacityProject::GetEstimatedRecordingMinsLeftOnDisk(long lCaptureChannels) 
    dRecTime /= bytesOnDiskPerSample;   
    dRecTime /= lCaptureChannels;
    dRecTime /= GetRate();
+   wxASSERT(dRecTime >= 0.0);
 
    // Convert to minutes before returning
-   int iRecMins = (int)round(dRecTime / 60.0);
+   auto iRecMins = (unsigned)round(dRecTime / 60.0);
    return iRecMins;
 }
 

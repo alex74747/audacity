@@ -394,10 +394,10 @@ void TimerRecordDialog::OnOK(wxCommandEvent& WXUNUSED(event))
    AudacityProject* pProject = GetActiveProject();
 
    // How many minutes do we have left on the disc?
-   int iMinsLeft = pProject->GetEstimatedRecordingMinsLeftOnDisk();
+   auto iMinsLeft = pProject->GetEstimatedRecordingMinsLeftOnDisk();
 
    // How many minutes will this recording require?
-   int iMinsRecording = m_TimeSpan_Duration.GetMinutes();
+   auto iMinsRecording = m_TimeSpan_Duration.GetMinutes();
 
    // Do we have enough space?
    if (iMinsRecording >= iMinsLeft) {
