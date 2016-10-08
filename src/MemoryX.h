@@ -44,7 +44,7 @@ namespace std {
       
       // Allow copy from other deleter classes
       template<typename Y>
-      default_delete(const default_delete<Y>& that)
+      default_delete(const default_delete<Y>&)
       {
          // Break compilation if Y* does not convert to X*
          // I should figure out the right use of enable_if instead
