@@ -742,9 +742,12 @@ bool AutoSaveFile::Decode(const wxString & fileName)
       return true;
    }
 
+<<<<<<< HEAD
    XMLFileWriter out;
    wxString tempName;
-   len = file.Length() - len;
+   auto wideLen = file.Length() - len;
+   wxASSERT(wideLen >= 0 && wideLen <= std::numeric_limits<size_t>::max());
+   len = (size_t)wideLen;
    {
       using Chars = ArrayOf < char >;
       using WxChars = ArrayOf < wxChar >;

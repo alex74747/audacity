@@ -1627,7 +1627,7 @@ ProgressResult TimerProgressDialog::Update(const wxString & message /*= wxEmptyS
 
    wxLongLong_t remains = mStartTime + mDuration - now;
 
-   int nGaugeValue = (1000 * elapsed) / mDuration; // range = [0,1000]
+   auto nGaugeValue = (1000 * elapsed) / mDuration; // range = [0,1000]
    // Running in TimerRecordDialog::RunWaitDialog(), for some unknown reason, 
    // nGaugeValue here is often a little over 1000. 
    // From testing, it's never shown bigger than 1009, but 
@@ -1643,9 +1643,9 @@ ProgressResult TimerProgressDialog::Update(const wxString & message /*= wxEmptyS
 
    if (nGaugeValue != mLastValue)
    {
-      mGauge->SetValue(nGaugeValue);
+      mGauge->SetValue((int)nGaugeValue);
       mGauge->Update();
-      mLastValue = nGaugeValue;
+      mLastValue = (int)nGaugeValue;
    }
 
    // Only update if a full second has passed.

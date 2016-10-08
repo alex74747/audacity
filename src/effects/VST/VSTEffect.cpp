@@ -2989,15 +2989,15 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    bool ret = false;
 
    // Try to open the file...will be closed automatically when method returns
-   wxFFile f(fn.GetFullPath(), wxT("rb"));
-   if (!f.IsOpened())
+   wxFFile file(fn.GetFullPath(), wxT("rb"));
+   if (!file.IsOpened())
    {
       return false;
    }
 
    // Allocate memory for the contents
    ArrayOf<unsigned char> data{ size_t(f.Length()) };
-   if (!data)
+   if (!data.get()) //?
    {
       wxMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),
@@ -3010,8 +3010,8 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    do
    {
       // Read in the whole file
-      auto len = f.Read((void *) bptr, f.Length());
-      if (f.Error())
+      auto len = file.Read((void *) bptr, (size_t)length);
+      if (file.Error())
       {
          wxMessageBox(_("Unable to read presets file."),
                       _("Error Loading VST Presets"),
@@ -3160,15 +3160,15 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    bool ret = false;
 
    // Try to open the file...will be closed automatically when method returns
-   wxFFile f(fn.GetFullPath(), wxT("rb"));
-   if (!f.IsOpened())
+   wxFFile file(fn.GetFullPath(), wxT("rb"));
+   if (!file.IsOpened())
    {
       return false;
    }
 
    // Allocate memory for the contents
    ArrayOf<unsigned char> data{ size_t(f.Length()) };
-   if (!data)
+   if (!data.get()) //?
    {
       wxMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),
@@ -3181,8 +3181,8 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    do
    {
       // Read in the whole file
-      auto len = f.Read((void *) bptr, f.Length());
-      if (f.Error())
+      auto len = file.Read((void *) bptr, (size_t)length);
+      if (file.Error())
       {
          wxMessageBox(_("Unable to read presets file."),
                       _("Error Loading VST Presets"),

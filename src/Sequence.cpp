@@ -856,7 +856,8 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
                mErrorOpening = true;
                return false;
             }
-            mDirManager->SetLoadingBlockLength(nValue);
+            // Narrowing nValue is now safe
+            mDirManager->SetLoadingBlockLength((size_t)nValue);
          }
       } // while
 
@@ -897,7 +898,7 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             }
 
             // nValue is now safe for size_t
-            mMaxSamples = nValue;
+            mMaxSamples = (size_t)nValue;
 
             // PRL:  Is the following really okay?  DirManager might be shared across projects!
             // PRL:  Yes, because it only affects DirManager's behavior in opening the project.
