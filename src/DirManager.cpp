@@ -945,8 +945,8 @@ wxFileNameWrapper DirManager::MakeBlockFileName()
             // search for unused midlevels; linear search adequate
             // add 32 NEW topnum/midnum dirs full of  prospective filenames to midpool
             for(unsigned midnum = 0; midnum < 256; midnum++) {
-               auto midkey = (int)(((unsigned)topnum << 8) + midnum);
-               if(BalanceMidAdd(topnum, midkey)) {
+               auto myMidkey = (int)(((unsigned)topnum << 8) + midnum);
+               if(BalanceMidAdd(topnum, myMidkey)) {
                   newcount++;
                   if(newcount >= 32)
                      break;

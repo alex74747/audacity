@@ -185,7 +185,6 @@ void ODComputeSummaryTask::Update()
             //These are existing blocks, and its wavetrack or blockfiles won't be deleted because
             //of the respective mWaveTrackMutex lock and LockDeleteUpdateMutex() call.
             blocks = clip->GetSequenceBlockArray();
-            int i;
 
             size_t insertCursor = 0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
 

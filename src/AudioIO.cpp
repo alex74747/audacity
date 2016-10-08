@@ -2732,7 +2732,6 @@ wxArrayLong AudioIO::GetSupportedCaptureRates(int devIndex, double rate)
    wxArrayLong supported;
    int irate = (int)rate;
    const PaDeviceInfo* devInfo = NULL;
-   int i;
 
    devInfo = Pa_GetDeviceInfo(devIndex);
 
@@ -2773,7 +2772,9 @@ wxArrayLong AudioIO::GetSupportedCaptureRates(int devIndex, double rate)
    {
       // LLL: Remove when a proper method of determining actual supported
       //      DirectSound rate is devised.
-      if (!(isDirectSound && RatesToTry[i] > 200000))
+      if (!(isDirectSound
+            // && RatesToTry[i] > 200000
+            ))
       if (Pa_IsFormatSupported(&pars, NULL, irate) == 0)
          supported.Add(irate);
    }

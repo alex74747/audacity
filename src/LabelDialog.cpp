@@ -327,7 +327,6 @@ bool LabelDialog::Show(bool show)
 bool LabelDialog::TransferDataFromWindow()
 {
    auto cnt = mData.size();
-   int i;
    TrackListIterator iter(mTracks);
    Track *t;
    size_t tndx = 0;

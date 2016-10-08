@@ -711,9 +711,9 @@ void LabelStruct::DrawHighlight
    curPen.SetColour(wxString(wxT("BLUE")));
    wxBrush curBrush = dc.GetBrush();
    curBrush.SetColour(wxString(wxT("BLUE")));
-   const auto width = dc.GetSize().GetWidth();
-   auto xPos1 = BoundedPosition(xP1, width, 1);
-   auto xPos2 = BoundedPosition(xP2, width, 1);
+   const auto limitWidth = dc.GetSize().GetWidth();
+   auto xPos1 = BoundedPosition(xP1, limitWidth, 1);
+   auto xPos2 = BoundedPosition(xP2, limitWidth, 1);
    if (xPos1 < xPos2)
       dc.DrawRectangle((wxCoord)xPos1 - 1, y - charHeight/2,
                        (wxCoord)xPos2 - xPos1 + 1, charHeight);

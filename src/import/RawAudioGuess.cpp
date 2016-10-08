@@ -296,7 +296,6 @@ static int GuessFloatFormats(int numTests, char **rawData, size_t dataSize,
    size_t len1;
    size_t len2;
    int test;
-   int i;
    bool guessStereo = false;
    int stereoVotes = 0;
    int monoVotes = 0;
@@ -761,7 +760,6 @@ static int Guess16Bit(int numTests, char **rawData,
 
    for (test = 0; test < numTests; test++) {
       float leftChannel, rightChannel, combinedChannel;
-      int i;
 
       /* Extract a NEW array of the MSBs only: */
 

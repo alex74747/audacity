@@ -1755,9 +1755,9 @@ std::pair<wxRect, bool> QuickPlayRulerOverlay::DoGetRectangle(wxSize size)
 void QuickPlayRulerOverlay::Draw(OverlayPanel & /*panel*/, wxDC &dc)
 {
    // Constrain the new position so it's safe to narrow to int:
-   const auto width = (unsigned)IndicatorBigWidth() * 3 / 2;
+   const auto limitWidth = (unsigned)IndicatorBigWidth() * 3 / 2;
    mNewQPIndicatorPos =
-      BoundedPosition(mNewQPIndicatorPos, dc.GetSize().GetWidth(), width + 1);
+      BoundedPosition(mNewQPIndicatorPos, dc.GetSize().GetWidth(), limitWidth + 1);
 
    mOldQPIndicatorPos = mNewQPIndicatorPos;
    if (mOldQPIndicatorPos >= 0) {
