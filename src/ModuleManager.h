@@ -126,4 +126,6 @@ private:
    std::vector<movable_ptr<Module>> mModules;
 };
 
+bool MakeLibraryLink(const wxString &path, const wxString &linkName);
+
 #endif /* __AUDACITY_MODULEMANAGER_H__ */

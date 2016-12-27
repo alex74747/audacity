@@ -22,6 +22,7 @@ License: GPL v2.  See License.txt.
 #include "AudacityApp.h"
 #include "FileNames.h"
 #include "Internat.h"
+#include "ModuleManager.h"
 #include "widgets/HelpSystem.h"
 
 #include <wx/file.h>
@@ -646,18 +647,20 @@ bool FFmpegLibs::LoadLibs(wxWindow * WXUNUSED(parent), bool showerr)
       FreeLibs();
    }
 
+   wxString path;
+
    // First try loading it from a previously located path
    if (!mLibAVFormatPath.IsEmpty()) {
       wxLogMessage(wxT("mLibAVFormatPath ('%s') is not empty. Loading from it."),mLibAVFormatPath.c_str());
-      mLibsLoaded = InitLibs(mLibAVFormatPath,showerr);
+      mLibsLoaded = InitLibs((path = mLibAVFormatPath), showerr);
    }
 
    // If not successful, try loading it from default path
    if (!mLibsLoaded && !GetLibAVFormatPath().IsEmpty()) {
       const wxFileName fn{ GetLibAVFormatPath(), GetLibAVFormatName() };
-      wxString path = fn.GetFullPath();
+      path = fn.GetFullPath();
       wxLogMessage(wxT("Trying to load FFmpeg libraries from default path, '%s'."), path.c_str());
-      mLibsLoaded = InitLibs(path,showerr);
+      mLibsLoaded = InitLibs(path, showerr);
       if (mLibsLoaded) {
          mLibAVFormatPath = path;
       }
@@ -667,7 +670,7 @@ bool FFmpegLibs::LoadLibs(wxWindow * WXUNUSED(parent), bool showerr)
    // If not successful, try loading it from legacy path
    if (!mLibsLoaded && !GetLibAVFormatPath().IsEmpty()) {
       const wxFileName fn{wxT("/usr/local/lib/audacity"), GetLibAVFormatName()};
-      wxString path = fn.GetFullPath();
+      path = fn.GetFullPath();
       wxLogMessage(wxT("Trying to load FFmpeg libraries from legacy path, '%s'."), path.c_str());
       mLibsLoaded = InitLibs(path,showerr);
       if (mLibsLoaded) {
@@ -678,7 +681,7 @@ bool FFmpegLibs::LoadLibs(wxWindow * WXUNUSED(parent), bool showerr)
 
    // If not successful, try loading using system search paths
    if (!ValidLibsLoaded()) {
-      wxString path = GetLibAVFormatName();
+      path = GetLibAVFormatName();
       wxLogMessage(wxT("Trying to load FFmpeg libraries from system paths. File name is '%s'."), path.c_str());
       mLibsLoaded = InitLibs(path,showerr);
       if (mLibsLoaded) {
@@ -705,6 +708,8 @@ bool FFmpegLibs::LoadLibs(wxWindow * WXUNUSED(parent), bool showerr)
       wxLogError(msg);
       return false;
    }
+
+   MakeLibraryLink(path, "FFmpeg");
 
    wxLogMessage(wxT("FFmpeg libraries loaded successfully."));
    return true;

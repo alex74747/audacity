@@ -83,6 +83,7 @@
 #include "../float_cast.h"
 #include "../Internat.h"
 #include "../Mix.h"
+#include "../ModuleManager.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"
@@ -1175,6 +1176,9 @@ bool MP3Exporter::InitLibrary(wxString libpath)
       lame_lib.Unload();
       return false;
    }
+
+   MakeLibraryLink(libpath, "LAME");
+
 #endif // DISABLE_DYNAMIC_LOADING_LAME
 
    mGF = lame_init();

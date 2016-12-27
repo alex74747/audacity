@@ -611,3 +611,42 @@ bool ModuleManager::IsPluginValid(const PluginID & providerID,
    return mDynModules[providerID]->IsPluginValid(path);
 }
 
+#if defined(__WXMAC__)
+#include "PlatformCompatibility.h"
+#endif
+
+bool MakeLibraryLink(const wxString &path, const wxString &inLinkName)
+{
+#if defined(__WXMAC__)
+
+   // Edit the linkName first
+   wxString linkName{ inLinkName };
+   {
+      auto forbid = wxFileName::GetForbiddenChars(wxPATH_MAC) + '/';
+      for (auto c : forbid)
+         linkName.Replace(c, '_', true);
+   }
+
+   // Bug 1567: Intermittent failure on Sierra to open modules, may be cured
+   // by remembering symbolic links to their containing directories.
+   wxFileName targetPath{ path };
+   const auto target = targetPath.GetPath();
+   auto linkFileName =
+   wxFileName{ PlatformCompatibility::GetExecutablePath() };
+   linkFileName.RemoveLastDir(); // Remove "MacOS"
+   linkFileName.AppendDir("plug-ins");
+   linkFileName.AppendDir(linkName);
+   const auto link = linkFileName.GetPath();
+   struct stat buf;
+   if (0 == lstat(link.c_str(), &buf) &&
+       S_ISLNK(buf.st_mode))
+      unlink(link);
+   auto success = !symlink(target.c_str(), link.c_str());
+   return success;
+
+#else
+
+   return true;
+
+#endif
+}
