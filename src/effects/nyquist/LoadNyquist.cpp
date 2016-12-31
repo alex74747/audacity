@@ -16,6 +16,8 @@
 
 #include "LoadNyquist.h"
 
+#include "../../ModuleManager.h"
+
 // ============================================================================
 // List of effects that ship with Audacity.  These will be autoregistered.
 // ============================================================================
@@ -209,7 +211,8 @@ bool NyquistEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxS
    NyquistEffect effect(path);
    if (effect.IsOk())
    {
-      pm.RegisterPlugin(this, &effect);
+      auto id = pm.RegisterPlugin(this, &effect);
+      MakeLibraryLink( path, id );
       return true;
    }
 

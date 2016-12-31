@@ -53,6 +53,7 @@ effects from this one class.
 #include "../../ShuttleGui.h"
 #include "../../widgets/valnum.h"
 #include "../../widgets/wxPanelWrapper.h"
+#include "../../ModuleManager.h"
 
 // ============================================================================
 // List of effects that ship with Audacity.  These will be autoregistered.
@@ -224,6 +225,7 @@ bool LadspaEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxSt
    int index = 0;
    LADSPA_Descriptor_Function mainFn = NULL;
    wxDynamicLibrary lib;
+   std::vector<PluginID> ids;
    if (lib.Load(path, wxDL_NOW)) {
       wxLogNull logNo;
 
@@ -234,7 +236,8 @@ bool LadspaEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxSt
          for (data = mainFn(index); data; data = mainFn(++index)) {
             LadspaEffect effect(path, index);
             if (effect.SetHost(NULL)) {
-               pm.RegisterPlugin(this, &effect);
+               auto id = pm.RegisterPlugin(this, &effect);
+               ids.push_back( id );
             }
          }
       }
@@ -246,6 +249,10 @@ bool LadspaEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxSt
       // comes too soon after the load.  I saw the bug in Release builds but not Debug.
       // A sleep of even 1 ms was enough to fix the problem for me, but let's be even more generous.
       ::wxMilliSleep(10);
+
+      for (const auto &id : ids)
+         MakeLibraryLink(path, id);
+
       lib.Unload();
    }
 

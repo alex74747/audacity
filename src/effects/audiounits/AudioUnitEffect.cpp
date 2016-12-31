@@ -36,6 +36,7 @@
 #include <wx/textctrl.h>
 #include <wx/tokenzr.h>
 
+#include "../../ModuleManager.h"
 #include "../../ShuttleGui.h"
 #include "../../widgets/valnum.h"
 #include "../../widgets/wxPanelWrapper.h"
@@ -185,7 +186,8 @@ bool AudioUnitEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const w
       return false;
    }
 
-   pm.RegisterPlugin(this, &effect);
+   auto id = pm.RegisterPlugin(this, &effect);
+   // MakeLibraryLink( path, id );
 
    return true;
 }

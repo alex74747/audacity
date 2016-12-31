@@ -32,6 +32,7 @@ Functions that find and load all LV2 plugins on the system.
 
 #include "../../AudacityApp.h"
 #include "../../Internat.h"
+#include "../../ModuleManager.h"
 #include "../EffectManager.h"
 
 #include "LV2Effect.h"
@@ -254,7 +255,8 @@ bool LV2EffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxStrin
    LV2Effect effect(plug);
    if (effect.SetHost(NULL))
    {
-      pm.RegisterPlugin(this, &effect);
+      auto id = pm.RegisterPlugin(this, &effect);
+      MakeLibraryLink( path, id );
    }
 
    return true;

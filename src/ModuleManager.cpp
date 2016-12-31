@@ -131,6 +131,8 @@ bool Module::Load()
       return false;
    }
 
+   MakeLibraryLink(mName, mName);
+
    mDispatch = (fnModuleDispatch) mLib->GetSymbol(wxT(ModuleDispatchName));
    if (!mDispatch) {
       // Module does not provide a dispatch function...
@@ -442,8 +444,11 @@ ModuleInterface *ModuleManager::LoadModule(const wxString & path)
             {
 
                auto module = handle.get();
-               mDynModules[PluginManager::GetID(module)] = std::move(handle);
+               auto id = PluginManager::GetID(module);
+               mDynModules[id] = std::move(handle);
                mLibs[module] = std::move(lib);
+
+               MakeLibraryLink(path, id);
 
                return module;
             }

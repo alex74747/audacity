@@ -81,6 +81,7 @@
 #include "FileDialog.h"
 #include "../../FileNames.h"
 #include "../../Internat.h"
+#include "../../ModuleManager.h"
 #include "../../PlatformCompatibility.h"
 #include "../../ShuttleGui.h"
 #include "../../effects/Effect.h"
@@ -1998,6 +1999,8 @@ bool VSTEffect::Load()
    mModule = NULL;
    mAEffect = NULL;
 
+   wxString libPath;
+
 #if defined(__WXMAC__)
    // Start clean
    mBundleRef.reset();
@@ -2047,6 +2050,7 @@ bool VSTEffect::Load()
       return false;
 
    // Attempt to open it
+   libPath = (char*)exePath;
    mModule.reset((char*)dlopen((char *) exePath, RTLD_NOW | RTLD_LOCAL));
    if (!mModule)
       return false;
@@ -2084,6 +2088,7 @@ bool VSTEffect::Load()
       wxLogNull nolog;
 
       // Try to load the library
+      libPath = realPath;
       auto lib = std::make_unique<wxDynamicLibrary>(realPath);
       if (!lib) 
          return false;
@@ -2126,6 +2131,7 @@ bool VSTEffect::Load()
 #ifndef RTLD_DEEPBIND
 #define RTLD_DEEPBIND 0
 #endif
+   libPath = realPath;
    ModuleHandle lib {
       (char*) dlopen((const char *)wxString(realPath).ToUTF8(),
                      RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND)
@@ -2148,6 +2154,8 @@ bool VSTEffect::Load()
    mModule = std::move(lib);
 
 #endif
+
+   MakeLibraryLink(libPath, PluginManager::GetID(this));
 
    // Initialize the plugin
    try
