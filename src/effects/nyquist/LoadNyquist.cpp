@@ -212,7 +212,8 @@ bool NyquistEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxS
    if (effect.IsOk())
    {
       auto id = pm.RegisterPlugin(this, &effect);
-      MakeLibraryLink( path, id );
+      if (id != NYQUIST_PROMPT_ID)
+         MakeLibraryLink( path, id );
       return true;
    }
 

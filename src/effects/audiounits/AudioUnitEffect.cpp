@@ -187,7 +187,8 @@ bool AudioUnitEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const w
    }
 
    auto id = pm.RegisterPlugin(this, &effect);
-   // MakeLibraryLink( path, id );
+   // Don't make a unique link for each au effect
+   MakeLibraryLink( "/Library/Audio/Plug-Ins/Components/x", "AU" );
 
    return true;
 }

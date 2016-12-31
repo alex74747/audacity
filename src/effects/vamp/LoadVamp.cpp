@@ -15,6 +15,7 @@
 #include <wx/filename.h>
 
 #include "../EffectManager.h"
+#include "../../ModuleManager.h"
 #include "VampEffect.h"
 #include "LoadVamp.h"
 
@@ -208,7 +209,11 @@ bool VampEffectsModule::RegisterPlugin(PluginManagerInterface & pm, const wxStri
    if (vp)
    {
       VampEffect effect(std::move(vp), path, output, hasParameters);
-      pm.RegisterPlugin(this, &effect);
+      auto id = pm.RegisterPlugin(this, &effect);
+
+      PluginLoader::PluginKey key = path.BeforeLast(wxT('/')).ToUTF8().data();
+      auto path = PluginLoader::getInstance()->getLibraryPathForPlugin(key);
+      MakeLibraryLink( path, id );
 
       return true;
    }
