@@ -627,7 +627,8 @@ bool MakeLibraryLink(const wxString &path, const wxString &inLinkName)
    // Edit the linkName first
    wxString linkName{ inLinkName };
    {
-      auto forbid = wxFileName::GetForbiddenChars(wxPATH_MAC) + '/';
+      auto forbid =
+         wxFileName::GetForbiddenChars(wxPATH_MAC) + wxFILE_SEP_PATH;
       for (auto c : forbid)
          linkName.Replace(c, '_', true);
    }
@@ -639,7 +640,11 @@ bool MakeLibraryLink(const wxString &path, const wxString &inLinkName)
    auto linkFileName =
    wxFileName{ PlatformCompatibility::GetExecutablePath() };
    linkFileName.RemoveLastDir(); // Remove "MacOS"
-   linkFileName.AppendDir("plug-ins");
+   linkFileName.AppendDir("links");
+
+   const auto dir = linkFileName.GetPath();
+   wxDir::Make(dir);
+
    linkFileName.AppendDir(linkName);
    const auto link = linkFileName.GetPath();
    struct stat buf;
