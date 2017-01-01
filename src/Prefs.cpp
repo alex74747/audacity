@@ -131,13 +131,36 @@ static void CopyEntriesRecursive(wxString path, wxConfigBase *src, wxConfigBase 
 }
 #endif
 
+class MyWxFileConfig : public wxFileConfig
+{
+public:
+   MyWxFileConfig(const wxString& appName = wxEmptyString,
+                const wxString& vendorName = wxEmptyString,
+                const wxString& localFilename = wxEmptyString,
+                const wxString& globalFilename = wxEmptyString,
+                long style = wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE,
+                const wxMBConv& conv = wxConvAuto())
+      : wxFileConfig{
+         appName, vendorName, localFilename, globalFilename, style, conv }
+   {
+   }
+
+#ifdef __WXMAC__
+   bool Flush(bool bCurrentOnly) override
+   {
+      // Ignore the too-many flushes throughout our code
+      return true;
+   }
+#endif
+};
+
 void InitPreferences()
 {
    wxString appName = wxTheApp->GetAppName();
 
    wxFileName configFileName(FileNames::DataDir(), wxT("audacity.cfg"));
 
-   ugPrefs = std::make_unique<wxFileConfig>
+   ugPrefs = std::make_unique<MyWxFileConfig>
       (appName, wxEmptyString,
        configFileName.GetFullPath(),
        wxEmptyString, wxCONFIG_USE_LOCAL_FILE);

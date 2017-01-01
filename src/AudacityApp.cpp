@@ -261,6 +261,9 @@ bool gIsQuitting = false;
 
 void QuitAudacity(bool bForce)
 {
+   // Do the real flush of preferences only now
+   gPrefs->wxFileConfig::Flush();
+
    if (gIsQuitting)
       return;
 
