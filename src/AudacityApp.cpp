@@ -1352,11 +1352,19 @@ bool AudacityApp::OnInit()
 
    //<<<< Try to avoid dialogs before this point.
    // The reason is that InitTempDir starts the single instance checker.
-   // If we're waiitng in a dialog before then we can very easily
+   // If we're waiting in a dialog before then we can very easily
    // start multiple instances, defeating the single instance checker.
 
    // Initialize the CommandHandler
    InitCommandHandler();
+
+#ifdef __WXMAC__
+   // PRL:  Bug1567, mysterious intermittent failures to load libraries in
+   // Sierra, fixed by waiting a little after doing the single-instance
+   // checking and before any libraries or Nyquist scripts are loaded by
+   // PluginManager.
+   ::wxMilliSleep(1000);
+#endif
 
    // Initialize the PluginManager
    PluginManager::Get().Initialize();
