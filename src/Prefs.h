@@ -40,4 +40,29 @@ void FinishPreferences();
 extern AUDACITY_DLL_API wxFileConfig *gPrefs;
 extern int gMenusDirty;
 
+#ifdef __WXMAC__
+// For bug1567, override the flushing behavior of wxFileConfig so that the
+// inode number of the destination file does not change.
+class MyWxFileConfig : public wxFileConfig
+{
+public:
+   MyWxFileConfig(const wxString& appName = wxEmptyString,
+                  const wxString& vendorName = wxEmptyString,
+                  const wxString& localFilename = wxEmptyString,
+                  const wxString& globalFilename = wxEmptyString,
+                  long style = wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE,
+                  const wxMBConv& conv = wxConvAuto());
+   ~MyWxFileConfig();
+
+   bool Flush(bool bCurrentOnly = false) override;
+
+private:
+   static wxString GetTempFileName(const wxString &localName);
+   static wxString CreateTempFile(const wxString &localName);
+   wxString mLocalFilename;
+};
+#else
+using MyWxFileConfig = wxFileConfig;
+#endif
+
 #endif

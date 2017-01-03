@@ -131,28 +131,82 @@ static void CopyEntriesRecursive(wxString path, wxConfigBase *src, wxConfigBase 
 }
 #endif
 
-class MyWxFileConfig : public wxFileConfig
-{
-public:
-   MyWxFileConfig(const wxString& appName = wxEmptyString,
-                const wxString& vendorName = wxEmptyString,
-                const wxString& localFilename = wxEmptyString,
-                const wxString& globalFilename = wxEmptyString,
-                long style = wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE,
-                const wxMBConv& conv = wxConvAuto())
-      : wxFileConfig{
-         appName, vendorName, localFilename, globalFilename, style, conv }
-   {
-   }
-
 #ifdef __WXMAC__
-   bool Flush(bool bCurrentOnly) override
+
+MyWxFileConfig::MyWxFileConfig(
+   const wxString& appName,
+   const wxString& vendorName,
+   const wxString& localFilename,
+   const wxString& globalFilename,
+   long style,
+   const wxMBConv& conv)
+: wxFileConfig{
+   appName, vendorName,
+
+   // Create the copy of the config file in /tmp before calling the
+   // base class constructor, else we won't load the settings
+
+   CreateTempFile(localFilename),
+
+   globalFilename, style, conv }
+, mLocalFilename{ localFilename }
+{
+}
+
+MyWxFileConfig::~MyWxFileConfig()
+{
+   Flush();
+   wxRemoveFile( GetTempFileName(mLocalFilename) );
+}
+
+bool MyWxFileConfig::Flush(bool bCurrentOnly)
+{
+   bool result = wxFileConfig::Flush(bCurrentOnly);
+   if (result)
    {
-      // Ignore the too-many flushes throughout our code
-      return true;
+      wxFile fileIn(GetTempFileName(mLocalFilename), wxFile::read);
+      if ( !fileIn.IsOpened() )
+         return false;
+
+      wxFile fileOut;
+      fileOut.Open(mLocalFilename, wxFile::write);
+      if ( !fileOut.IsOpened() )
+         return false;
+
+      // copy contents of file1 to file2
+      char buf[4096];
+      for ( ;; )
+      {
+         ssize_t count = fileIn.Read(buf, WXSIZEOF(buf));
+         if ( count == wxInvalidOffset )
+            return false;
+
+         // end of file?
+         if ( !count )
+            break;
+
+         if ( fileOut.Write(buf, count) < (size_t)count )
+            return false;
+      }
+
+      return fileIn.Close() && fileOut.Close();
    }
+}
+
+wxString MyWxFileConfig::GetTempFileName(const wxString &localFileName)
+{
+   auto name = wxFileName{ localFileName }.GetFullName();
+   return wxString::Format("/tmp/%s", name);
+}
+
+wxString MyWxFileConfig::CreateTempFile(const wxString &localFileName)
+{
+   auto fileName = GetTempFileName(localFileName);
+   wxCopyFile(localFileName, fileName); // error check?
+   return fileName;
+}
+
 #endif
-};
 
 void InitPreferences()
 {

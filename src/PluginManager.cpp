@@ -1727,7 +1727,7 @@ void PluginManager::Terminate()
 void PluginManager::Load()
 {
    // Create/Open the registry
-   wxFileConfig registry(wxEmptyString, wxEmptyString, FileNames::PluginRegistry());
+   MyWxFileConfig registry(wxEmptyString, wxEmptyString, FileNames::PluginRegistry());
 
    // If this group doesn't exist then we have something that's not a registry.
    // We should probably warn the user, but it's pretty unlikely that this will happen.
@@ -1995,7 +1995,7 @@ void PluginManager::LoadGroup(wxFileConfig *pRegistry, PluginType type)
 void PluginManager::Save()
 {
    // Create/Open the registry
-   wxFileConfig registry(wxEmptyString, wxEmptyString, FileNames::PluginRegistry());
+   MyWxFileConfig registry(wxEmptyString, wxEmptyString, FileNames::PluginRegistry());
 
    // Clear it out
    registry.DeleteAll();
@@ -2489,7 +2489,7 @@ wxFileConfig *PluginManager::GetSettings()
 {
    if (!mSettings)
    {
-      mSettings = std::make_unique<wxFileConfig>(wxEmptyString, wxEmptyString, FileNames::PluginSettings());
+      mSettings = std::make_unique<MyWxFileConfig>(wxEmptyString, wxEmptyString, FileNames::PluginSettings());
 
       // Check for a settings version that we can understand
       if (mSettings->HasEntry(SETVERKEY))
