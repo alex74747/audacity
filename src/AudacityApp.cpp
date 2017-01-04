@@ -1358,14 +1358,6 @@ bool AudacityApp::OnInit()
    // Initialize the CommandHandler
    InitCommandHandler();
 
-#ifdef __WXMAC__
-   // PRL:  Bug1567, mysterious intermittent failures to load libraries in
-   // Sierra, fixed by waiting a little after doing the single-instance
-   // checking and before any libraries or Nyquist scripts are loaded by
-   // PluginManager.
-   ::wxMilliSleep(1000);
-#endif
-
    // Initialize the PluginManager
    PluginManager::Get().Initialize();
 
@@ -2054,6 +2046,15 @@ int AudacityApp::OnExit()
    mRecentFiles->Save(*gPrefs, wxT("RecentFiles"));
 
    FinishPreferences();
+
+#ifdef __WXMAC__
+   // PRL:  Bug1567, mysterious intermittent failures to load libraries in
+   // Sierra, fixed by waiting a little after destroying the single-instance
+   // checker and (what we just did) flushing preferences the last time.
+   mChecker.reset();
+
+   ::wxMilliSleep(1000);
+#endif
 
 #ifdef USE_FFMPEG
    DropFFmpegLibs();
