@@ -1694,6 +1694,9 @@ bool AudacityApp::InitTempDir()
    bool bSuccess = gPrefs->Write(wxT("/Directories/TempDir"), temp) && gPrefs->Flush();
    DirManager::SetTempDir(temp);
 
+   // Bug1567
+   ::wxMilliSleep(1000);
+
    // Make sure the temp dir isn't locked by another process.
    if (!CreateSingleInstanceChecker(temp))
       return false;
