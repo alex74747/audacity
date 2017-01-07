@@ -1342,6 +1342,46 @@ bool AudacityApp::OnInit()
    // AColor depends on theTheme.
    AColor::Init();
 
+   // Parse command line and handle options that might require
+   // immediate exit...no need to initialize all of the audio
+   // stuff to display the version string.
+
+   std::shared_ptr< wxCmdLineParser > parser{ ParseCommandLine().release() };
+   if (!parser)
+   {
+      // Either user requested help or a parsing error occured
+      exit(1);
+   }
+
+   // Bizarre fix for Bug1567
+   // Crashing one Audacity and immediately starting another avoids intermittent
+   // failures to load libraries on Sierra
+   // It's a nuisance in debug builds, so disabled there.
+#if defined(__WXMAC__) && ! defined(__WXDEBUG__)
+   if (!parser->Found(wxT("z")))
+   {
+      wxString cmd;
+      cmd += "\"" + argv[0] + "\"";
+      cmd += " -z";
+      for (int ii = 1; ii < argc; ++ii) {
+         cmd += " \"" + argv[ii] + "\"";
+      }
+
+      int flags = wxEXEC_ASYNC;
+
+      wxExecute(cmd, flags);
+
+      raise(SIGTERM);
+   }
+   else
+   {
+      // In the non-crashing process spawned by the block above.
+      // How long a sleep is needed?
+
+      ::wxMilliSleep(1000);
+   }
+#endif
+
    // Init DirManager, which initializes the temp directory
    // If this fails, we must exit the program.
    if (!InitTempDir()) {
@@ -1362,16 +1402,6 @@ bool AudacityApp::OnInit()
 
    // Initialize the ModuleManager, including loading found modules
    ModuleManager::Get().Initialize(*mCmdHandler);
-
-   // Parse command line and handle options that might require
-   // immediate exit...no need to initialize all of the audio
-   // stuff to display the version string.
-   std::shared_ptr< wxCmdLineParser > parser{ ParseCommandLine().release() };
-   if (!parser)
-   {
-      // Either user requested help or a parsing error occured
-      exit(1);
-   }
 
    if (parser->Found(wxT("v")))
    {
@@ -1926,6 +1956,11 @@ std::unique_ptr<wxCmdLineParser> AudacityApp::ParseCommandLine()
 
    /*i18n-hint: This displays the Audacity version */
    parser->AddSwitch(wxT("v"), wxT("version"), _("display Audacity version"));
+
+   // More for Bug1567
+#if defined(__WXMAC__) && ! defined(__WXDEBUG__)
+   parser->AddSwitch(wxT("z"), wxT("zzzHiddenNoCrashOption"), _(""));
+#endif
 
    /*i18n-hint: This is a list of one or more files that Audacity
     *           should open upon startup */
