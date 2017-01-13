@@ -691,8 +691,6 @@ int main(int argc, char *argv[])
       execve(argv[0], argv, environ);
 #endif
 
-#undef FIX_BUG1567
-
    wxDISABLE_DEBUG_SUPPORT();
 
    return wxEntry(argc, argv);
@@ -1192,6 +1190,10 @@ AudacityApp::~AudacityApp()
 {
 }
 
+#ifdef FIX_BUG1567
+#include <objc/objc.h>
+#endif
+
 // The `main program' equivalent, creating the windows and returning the
 // main frame
 bool AudacityApp::OnInit()
@@ -1571,6 +1573,11 @@ bool AudacityApp::OnInit()
 
    mTimer.SetOwner(this, kAudacityAppTimerID);
    mTimer.Start(200);
+
+#ifdef FIX_BUG1567
+   id app = [NSApplication sharedApplication];
+   [app activateIgnoringOtherApps:YES];
+#endif
 
    return TRUE;
 }

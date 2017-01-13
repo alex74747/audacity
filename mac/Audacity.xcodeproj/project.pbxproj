@@ -1728,7 +1728,7 @@
 		1790AFC909883BFD008A330A /* AColor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = AColor.cpp; sourceTree = "<group>"; tabWidth = 3; };
 		1790AFCA09883BFD008A330A /* AColor.h */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = AColor.h; sourceTree = "<group>"; tabWidth = 3; };
 		1790AFCC09883BFD008A330A /* Audacity.h */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = Audacity.h; sourceTree = "<group>"; tabWidth = 3; };
-		1790AFCE09883BFD008A330A /* AudacityApp.cpp */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = AudacityApp.cpp; sourceTree = "<group>"; tabWidth = 3; };
+		1790AFCE09883BFD008A330A /* AudacityApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 30; indentWidth = 3; path = AudacityApp.cpp; sourceTree = "<group>"; tabWidth = 3; };
 		1790AFCF09883BFD008A330A /* AudacityApp.h */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = AudacityApp.h; sourceTree = "<group>"; tabWidth = 3; };
 		1790AFD009883BFD008A330A /* AudacityHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = AudacityHeaders.h; sourceTree = "<group>"; tabWidth = 3; };
 		1790AFD209883BFD008A330A /* AudioIO.cpp */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = AudioIO.cpp; sourceTree = "<group>"; tabWidth = 3; };
