@@ -663,31 +663,37 @@ IMPLEMENT_WX_THEME_SUPPORT
 
 int main(int argc, char *argv[])
 {
-   if (getenv("DYLD_LIBRARY_PATH")) {
-      extern char **environ;
+   bool doExec = getenv("DYLD_LIBRARY_PATH");
+   unsetenv("DYLD_LIBRARY_PATH");
 
-      unsetenv("DYLD_LIBRARY_PATH");
+   extern char **environ;
+
+#if defined(__WXMAC__) && ! defined(__WXDEBUG__)
+#define FIX_BUG1567
+#endif
+
+#ifdef FIX_BUG1567
+   const char *var_name = "_NO_CRASH";
+   if ( !( getenv( var_name ) ) ) {
+      setenv(var_name, "1", TRUE);
+      // Bizarre fix for Bug1567
+      // Crashing one Audacity and immediately starting another avoids intermittent
+      // failures to load libraries on Sierra
+      if ( fork() )
+         // The original process crashes at once
+         raise(SIGTERM);
+
+      // Child process can't proceed until doing this:
       execve(argv[0], argv, environ);
    }
+#else
+   if (doExec)
+      execve(argv[0], argv, environ);
+#endif
+
+#undef FIX_BUG1567
 
    wxDISABLE_DEBUG_SUPPORT();
-
-   // Bizarre fix for Bug1567
-   // Crashing one Audacity and immediately starting another avoids intermittent
-   // failures to load libraries on Sierra
-#if defined(__WXMAC__)
-   pid_t pid;
-   if ( ! ( pid = fork() ) )
-      // The spawned process crashes at once
-      raise(SIGTERM);
-   else {
-      // Wait for termination of the child -- perhaps this is not needed.
-      waitpid( pid, NULL, 0 );
-      // In the non-crashing process
-      // Is any additional sleep needed?
-      ::wxMilliSleep(1000);
-   }
-#endif
 
    return wxEntry(argc, argv);
 }
