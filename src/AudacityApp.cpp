@@ -672,6 +672,23 @@ int main(int argc, char *argv[])
 
    wxDISABLE_DEBUG_SUPPORT();
 
+   // Bizarre fix for Bug1567
+   // Crashing one Audacity and immediately starting another avoids intermittent
+   // failures to load libraries on Sierra
+#if defined(__WXMAC__)
+   pid_t pid;
+   if ( ! ( pid = fork() ) )
+      // The spawned process crashes at once
+      raise(SIGTERM);
+   else {
+      // Wait for termination of the child -- perhaps this is not needed.
+      waitpid( pid, NULL, 0 );
+      // In the non-crashing process
+      // Is any additional sleep needed?
+      ::wxMilliSleep(1000);
+   }
+#endif
+
    return wxEntry(argc, argv);
 }
 
@@ -1341,23 +1358,6 @@ bool AudacityApp::OnInit()
 
    // AColor depends on theTheme.
    AColor::Init();
-
-   // Bizarre fix for Bug1567
-   // Crashing one Audacity and immediately starting another avoids intermittent
-   // failures to load libraries on Sierra
-#if defined(__WXMAC__)
-   pid_t pid;
-   if ( ! ( pid = fork() ) )
-      // The spawned process crashes at once
-      raise(SIGTERM);
-   else {
-      // Wait for termination of the child -- perhaps this is not needed.
-      waitpid( pid, NULL, 0 );
-      // In the non-crashing process
-      // Is any additional sleep needed?
-      ::wxMilliSleep(1000);
-   }
-#endif
 
    // Init DirManager, which initializes the temp directory
    // If this fails, we must exit the program.
