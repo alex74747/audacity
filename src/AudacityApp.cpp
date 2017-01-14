@@ -685,6 +685,9 @@ int main(int argc, char *argv[])
 
       // Child process can't proceed until doing this:
       execve(argv[0], argv, environ);
+
+      // Does sleep improve the fix at all?
+      ::wxMilliSleep(1);
    }
 #else
    if (doExec)
