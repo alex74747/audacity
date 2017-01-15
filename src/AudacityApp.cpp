@@ -1453,6 +1453,11 @@ bool AudacityApp::OnInit()
       temporarywindow.SetTitle(_("Audacity is starting up..."));
       SetTopWindow(&temporarywindow);
 
+#ifdef FIX_BUG1567
+      id app = [NSApplication sharedApplication];
+      [app activateIgnoringOtherApps:YES];
+#endif
+
       // ANSWER-ME: Why is YieldFor needed at all?
       //wxEventLoopBase::GetActive()->YieldFor(wxEVT_CATEGORY_UI|wxEVT_CATEGORY_USER_INPUT|wxEVT_CATEGORY_UNKNOWN);
       wxEventLoopBase::GetActive()->YieldFor(wxEVT_CATEGORY_UI);
@@ -1576,11 +1581,6 @@ bool AudacityApp::OnInit()
 
    mTimer.SetOwner(this, kAudacityAppTimerID);
    mTimer.Start(200);
-
-#ifdef FIX_BUG1567
-   id app = [NSApplication sharedApplication];
-   [app activateIgnoringOtherApps:YES];
-#endif
 
    return TRUE;
 }
