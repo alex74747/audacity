@@ -405,6 +405,30 @@ void DirManager::CleanTempDir()
 
    auto msg = _("Cleaning up temporary files");
    RecursivelyRemove(filePathArray, count, 0, true, false, msg);
+
+#ifdef __WXMAC__
+
+   int msec = 1000;
+#if 0
+   ::wxMilliSleep(msec);
+#else
+   // More for bug 1521
+   // Sleep at most the given interval, else just long enough to detect that
+   // the removal of files completed.
+   // Probably not important for bug 1521, as the .au files are normally
+   // destroyed already by this point, but it seems harmless.
+   auto limit = ::wxGetLocalTimeMillis() + msec;
+   auto begin = filePathArray.begin(), end = filePathArray.end();
+   bool (*pred)(const wxString&) = wxFileName::FileExists;
+   while (
+      ::wxGetLocalTimeMillis() < limit &&
+          end != std::find_if( begin, end, pred )
+   )
+   {}
+#endif
+
+#endif
+
    RecursivelyRemove(dirPathArray, count, countFiles, false, true, msg);
 }
 
