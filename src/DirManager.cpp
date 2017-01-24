@@ -304,6 +304,24 @@ static void RecursivelyRemove(wxArrayString& filePathArray, int count, int bias,
             ::wxRemoveFile(file); // See note above about wxRmdir sometimes incorrectly failing on Windows.
 #endif
          ::wxRmdir(file);
+
+#ifdef __WXMAC__
+         int msec = 100;
+#if 0
+         ::wxMilliSleep(msec);
+#else
+         // More for bug 1521
+         // Sleep at most the given interval, else just long enough to detect that
+         // the removal of the directory completed.
+         auto limit = ::wxGetLocalTimeMillis() + msec;
+         while (
+            ::wxGetLocalTimeMillis() < limit &&
+            wxDirExists(file)
+         )
+         {}
+#endif
+
+#endif
       }
       if (progress)
          progress->Update(i + bias, count);
