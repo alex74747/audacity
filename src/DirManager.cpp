@@ -412,15 +412,15 @@ void DirManager::CleanDir(
 
    wxArrayString filePathArray, dirPathArray;
 
-   // Subtract 1 because we don't want to DELETE the global temp directory,
-   // which this will find and list last.
    int countFiles =
       RecursivelyEnumerate(path, filePathArray, dirSpec, true, false);
    int countDirs =
       RecursivelyEnumerate(path, dirPathArray, dirSpec, false, true);
    if (!removeTop) {
-      // Remove the globaltemp itself from the array
+      // Subtract 1 because we don't want to DELETE the top directory,
+      // which was found and listed last.
       --countDirs;
+      // Remove the top from the array
       dirPathArray.resize(countDirs);
    }
 
