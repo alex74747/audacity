@@ -260,6 +260,9 @@ static int RecursivelyRemoveEmptyDirs(wxString dirPath,
          }
       }
       // Have to recheck dir.HasSubDirs() again, in case they all were deleted in recursive calls.
+      // PRL:  Exclude _data folder from the removals, when we get here
+      // in ProjectFSCK cleanup.  But do remove the projectnnnnnnnnnn folder
+      // when we get here closing an untitled, unsaved project.
       if (!dir.HasSubDirs() && !dir.HasFiles() && (dirPath.Right(5) != wxT("_data")))
       {
          // No subdirs or files. It's empty so DELETE it.
@@ -388,6 +391,22 @@ DirManager::DirManager()
 
 DirManager::~DirManager()
 {
+   // More for bug1567 (and bug1521?):
+   // Cleanup empty directories eagerly when each project closes.  Do not
+   // wait until the last project is closed and CleanTempDir is done.
+   // Also cleanup extraneous files like .DS_Store that may be created by
+   // macOS.
+   // But be careful not to destroy any important files.
+
+   auto path = projFull;
+   if (path.empty())
+      path = mytemp;
+
+   // This leaves be any .au or .auf files.  (Even if orphans.)
+   RemoveExtraneousFiles(path);
+
+   RecursivelyRemoveEmptyDirs(path);
+
    numDirManagers--;
    if (numDirManagers == 0) {
       CleanTempDir();
@@ -430,6 +449,26 @@ void DirManager::CleanDir(
 
    RecursivelyRemove(filePathArray, count, 0, true, false, msg);
    RecursivelyRemove(dirPathArray, count, countFiles, false, true, msg);
+}
+
+void DirManager::RemoveExtraneousFiles(const wxString &path)
+{
+   wxArrayString allFiles;
+
+   // Find all files
+   RecursivelyEnumerate(path, allFiles, wxString{}, true, false);
+
+   // Remove the files that don't match either of these:
+   const wxString pattern1(wxT("*.au"));
+   const wxString pattern2(wxT("*.auf"));
+
+   for (const auto &file : allFiles) {
+      if (wxMatchWild(pattern1, file))
+         continue;
+      if (wxMatchWild(pattern2, file))
+         continue;
+      ::wxRemoveFile(file);
+   }
 }
 
 bool DirManager::SetProject(wxString& newProjPath, wxString& newProjName, const bool bCreate)

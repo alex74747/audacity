@@ -126,6 +126,9 @@ class PROFILE_DLL_API DirManager final : public XMLTagHandler {
       const wxString &path, const wxString &dirSpec, const wxString &msg,
       bool removeTop = false);
 
+   // Remove files from the tree that do not have known extensions
+   void RemoveExtraneousFiles(const wxString &path);
+
    // Check the project for errors and possibly prompt user
    // bForceError: Always show log error alert even if no errors are found here.
    //    Important when you know that there are already errors in the log.
