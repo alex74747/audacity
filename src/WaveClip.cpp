@@ -293,6 +293,36 @@ static void ComputeSpectrumUsingRealFFTf
    }
 }
 
+static void computeConstantQ
+   (const std::vector<SpectrogramSettings::Kernel> &kernels,
+    float * __restrict buffer, FFTParam *hFFT, size_t len, float * __restrict out)
+{
+   for(size_t ii = len; ii < (hFFT->Points * 2); ++ii)
+      buffer[ii] = 0; // zero pad as needed
+
+   RealFFTf(buffer, hFFT);
+
+   // For each band, compute a weighted sum of real parts of FFT coefficients
+   // and another weighted sum of the imaginary parts
+   for ( const auto &kernel : kernels ) {
+      float real = 0, imag = 0;
+      auto ii = kernel.startBin;
+      auto pIndex = &hFFT->BitReversed[ii];
+      auto last = pIndex + kernel.weights.size() / 2;
+      auto pWeight = kernel.weights.begin();
+      for ( ; pIndex != last; ++pIndex ) {
+         auto index = *pIndex;
+         real += buffer[ index++ ] * *pWeight++;
+         imag += buffer[ index ] * *pWeight++;
+      }
+      auto power = real * real + imag * imag;
+      if(power <= 0)
+         *out++ = -160.0;
+      else
+         *out++ = 10.0 * log10f( power );
+   }
+}
+
 WaveClip::WaveClip(const std::shared_ptr<DirManager> &projDirManager,
                    sampleFormat format, int rate, int colourIndex)
 {
@@ -1033,6 +1063,13 @@ bool SpecCache::CalculateOneSpectrum
                }
             }
          }
+      }
+      else if (settings.algorithm == SpectrogramSettings::algConstantQ) {
+         // not reassignment, xx is surely within bounds.
+         wxASSERT(xx >= 0);
+         float *const results = &out[nBins * xx];
+         computeConstantQ(settings.kernels,
+            useBuffer, settings.hFFT.get(), fftLen, results);
       }
       else {
          // not reassignment, xx is surely within bounds.

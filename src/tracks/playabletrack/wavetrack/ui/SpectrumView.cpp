@@ -261,6 +261,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
                                      (size_t)hiddenMid.width,
          t0, pps);
    }
+   settings.CacheWindows();
    auto nBins = settings.NBins();
 
    float minFreq, maxFreq;
@@ -448,7 +449,8 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
                float value;
 
 #ifdef EXPERIMENTAL_FIND_NOTES
-               if (fftFindNotes) {
+               if (fftFindNotes &&
+                   settings.algorithm != SpectrogramSettings::algConstantQ) {
                   if (it < maximas) {
                      float i0 = maxima0[it];
                      if (yy >= i0)

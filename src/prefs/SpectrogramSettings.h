@@ -15,6 +15,7 @@ Paul Licameli
 
 #include "../SampleFormat.h"
 #include "../RealFFTf.h"
+#include <vector>
 
 #undef SPECTRAL_SELECTION_GLOBAL_SWITCH
 
@@ -28,6 +29,17 @@ class SpectrogramSettings
 {
    friend class SpectrumPrefs;
 public:
+
+   struct ConstantQSettings
+   {
+      explicit ConstantQSettings( double steps );
+
+      double stepsPerOctave;
+      double ratio, sqrtRatio, Q;
+   };
+
+   // In future, might make this non-static
+   static const ConstantQSettings &GetConstantQSettings();
 
    // Singleton for settings that are not per-track
    class Globals
@@ -139,6 +151,7 @@ public:
       algSTFT = 0,
       algReassignment,
       algPitchEAC,
+      algConstantQ,
 
       algNumAlgorithms,
    };
@@ -164,5 +177,19 @@ public:
    // Two other windows for computing reassigned spectrogram
    mutable Floats         tWindow; // Window times time parameter
    mutable Floats         dWindow; // Derivative of window
+
+   // For constant Q
+   // The value assigned to each of the bands, which have equal width on the
+   // log-frequency scale, is computed in the frequency domain by a
+   // weighted sum of the real parts of the coefficients, and another (real)
+   // weighted sum of the imaginary parts; and most of the coefficients are
+   // neglected, so there are few weights for each band.
+   struct Kernel {
+      size_t startBin { 0 }; // Lowest bin with non-negligible weight
+      std::vector<float> weights; // alternating weights for real and imaginary
+   };
+   // bottom of the lowest constant-Q band, in linear bins
+   mutable float cQBottom { 1 };
+   mutable std::vector<Kernel> kernels;
 };
 #endif

@@ -24,6 +24,7 @@ Paul Licameli
 
 #include "../FFT.h"
 #include "../Internat.h"
+#include "../MemoryX.h"
 #include "../Prefs.h"
 
 #include <cmath>
@@ -94,6 +95,7 @@ SpectrogramSettings::SpectrogramSettings(const SpectrogramSettings &other)
    , window{}
    , tWindow{}
    , dWindow{}
+   , kernels{}
 {
 }
 
@@ -167,6 +169,7 @@ const TranslatableStrings &SpectrogramSettings::GetAlgorithmNames()
       XO("Reassignment") ,
       /* i18n-hint: EAC abbreviates "Enhanced Autocorrelation" */
       XO("Pitch (EAC)") ,
+      XO("Tones") ,
    };
    return results;
 }
@@ -343,11 +346,24 @@ void SpectrogramSettings::DestroyWindows()
    window.reset();
    dWindow.reset();
    tWindow.reset();
+   kernels.clear();
+   cQBottom = 1;
 }
 
 
 namespace
 {
+   // Scale the window function to give 0dB spectrum for 0dB sine tone
+   double computeScale( float *window, size_t length )
+   {
+      double scale = 0.0;
+      for (size_t ii = 0; ii < length; ++ii)
+         scale += window[ii];
+      if (scale > 0)
+         scale = 2.0 / scale;
+      return scale;
+   }
+
    enum { WINDOW, TWINDOW, DWINDOW };
    void RecreateWindow(
       Floats &window, int which, size_t fftLen,
@@ -389,17 +405,28 @@ namespace
       default:
          wxASSERT(false);
       }
-      // Scale the window function to give 0dB spectrum for 0dB sine tone
-      if (which == WINDOW) {
-         scale = 0.0;
-         for (ii = padding; ii < endOfWindow; ++ii)
-            scale += window[ii];
-         if (scale > 0)
-            scale = 2.0 / scale;
-      }
+
+      if (which == WINDOW)
+         scale = computeScale( window.get() + padding, windowSize );
       for (ii = padding; ii < endOfWindow; ++ii)
          window[ii] *= scale;
    }
+}
+
+SpectrogramSettings::ConstantQSettings::ConstantQSettings( double steps )
+   : stepsPerOctave{ steps }
+   , ratio{ pow( 2.0, 1.0 / stepsPerOctave ) }
+   , sqrtRatio{ sqrt( ratio ) }
+   , Q{ sqrtRatio / ( ratio - 1.0 ) }
+{}
+
+auto SpectrogramSettings::GetConstantQSettings() -> const ConstantQSettings &
+{
+   double N = 12; // resolve semitones
+   // double N = 24; // resolve quarter-tones
+   // double N = 3.0103; // ten per decade, as with equalization sliders
+   static ConstantQSettings settings{ N };
+   return settings;
 }
 
 void SpectrogramSettings::CacheWindows() const
@@ -415,6 +442,132 @@ void SpectrogramSettings::CacheWindows() const
       if (algorithm == algReassignment) {
          RecreateWindow(tWindow, TWINDOW, fftLen, padding, windowType, windowSize, scale);
          RecreateWindow(dWindow, DWINDOW, fftLen, padding, windowType, windowSize, scale);
+      }
+      if (algorithm == algConstantQ) {
+         /*
+          Method desribed in:
+          http://academics.wellesley.edu/Physics/brown/pubs/effalgV92P2698-P2701.pdf
+
+          To compute one band of constant Q, we will convolve the sound
+          with a windowed complex sinusoid (a "kernel" function).
+
+          To compute these many convolutions efficiently, use Parseval's
+          identity:
+          sum [ s(t) k(t) ] = (1/N) sum [ S(f) K(f) ]
+          where s is the sound, k is the kernel, S and K are their discrete
+          Fourier transforms, and N is the FFT size.
+
+          Thus, for each band, compute frequency-domain weights just
+          once; then for each window of samples, take FFT once, and take
+          a weighted sum of coefficients for each band; furthermore treat
+          many coefficients as negligible to make this still run fast.
+
+          The kernel k is conjugate-symmetric, therefore the coefficients
+          of K are all real.
+
+          The sound s is real, therefore the coefficients of S are conjugate-
+          symmetric, and the RealFFTf function stores only the coefficients
+          for the nonnegative frequencies.
+
+          Thus the symmetric part of K times two, that is (K(f) + K(-f)), can
+          weight just the stored real part of S, and the alternating part of K
+          times two, which is (K(f) - K(-f)), the stored imaginary part of S.
+
+          To compute the coefficients K, the trick is to take FFT of the
+          real function Re(k) + Im(k).  This puts the symmetric part of K in the
+          real places of the result, and the alternating in the imaginary.
+          But then the weights are not used according the the rules of complex
+          arithmetic, but rather as described above.
+          */
+
+         const auto &cqSettings = GetConstantQSettings();
+
+         double linearBin = cqSettings.Q;
+         cQBottom = linearBin / cqSettings.sqrtRatio;
+
+         ArrayOf<float> scratch{ fftLen };
+         auto half = fftLen / 2;
+         for ( ; linearBin < half; linearBin *= cqSettings.ratio )
+         {
+            // Find the length of the window, Q cycles (with some roundoff)
+            auto period = fftLen / linearBin;
+            auto halfShortWindow = size_t(period * cqSettings.Q / 2);
+            auto shortWindowSize = 2 * halfShortWindow;
+            wxASSERT( shortWindowSize <= fftLen );
+
+            // Compute the window function, centered in the larger window
+            auto padding = ( fftLen - shortWindowSize ) / 2;
+            auto size = padding * sizeof(float);
+            memset(&scratch[0],                    0, size);
+            memset(&scratch[0] + fftLen - padding, 0, size);
+            auto shortWindow = &scratch[ padding ];
+            std::fill( shortWindow, shortWindow + shortWindowSize, 1.0f );
+            NewWindowFunc(windowType, shortWindowSize, true, shortWindow);
+
+            // Normalize it
+            auto scale =
+               computeScale( shortWindow, shortWindowSize )
+               * 2      // So that the K's weight both positive and negative
+                        // frequencies of S
+               / fftLen // The 1/N in Parseval's identity
+            ;
+            for (size_t ii = 0; ii < shortWindowSize; ++ii)
+               shortWindow[ii] *= scale;
+
+            // Multiply by sine plus cosine with zero phase at the center
+            for( size_t ii = 1; ii < halfShortWindow; ++ii ) {
+               double angle = 2 * M_PI * ii / period;
+               double sine = sin(angle), cosine = cos(angle);
+               scratch[ half + ii ] *= cosine + sine;
+               scratch[ half - ii ] *= cosine - sine;
+            }
+            {
+               // one more
+               double angle = 2 * M_PI * halfShortWindow / period;
+               double sine = sin(angle), cosine = cos(angle);
+               scratch[ half - halfShortWindow ] *= cosine - sine;
+            }
+
+            RealFFTf( &scratch[0], hFFT.get() );
+
+            // Coefficient value small enough to neglect
+            // Some experiment hit on this:
+            double threshold = 1.0 / (2.5 * half);
+            threshold *= threshold;
+
+            // Record the coefficients
+            Kernel kernel;
+            size_t firstBin = 1, lastBin = half - 1;
+
+            float even, odd;
+            for( ; firstBin < half; ++firstBin ) {
+               auto index = hFFT->BitReversed[ firstBin ];
+               auto even = scratch[ index ], odd = scratch[ index + 1 ];
+               wxASSERT( !( std::isnan( even ) || std::isnan( odd ) ) );
+               if ( even * even + odd * odd  > threshold )
+                  break;
+            }
+
+            for( ; lastBin >= firstBin; --lastBin ) {
+               auto index = hFFT->BitReversed[ lastBin ];
+               auto even = scratch[ index ], odd = scratch[ index + 1 ];
+               wxASSERT( !( std::isnan( even ) || std::isnan( odd ) ) );
+               if ( even * even + odd * odd  > threshold )
+                  break;
+            }
+
+            kernel.startBin = firstBin;
+
+            for( auto bin = firstBin; bin <= lastBin; ++bin ) {
+               auto index = hFFT->BitReversed[ bin ];
+               auto even = scratch[ index ], odd = scratch[ index + 1 ];
+               wxASSERT( !( std::isnan( even ) || std::isnan( odd ) ) );
+               kernel.weights.push_back(even);
+               kernel.weights.push_back(odd);
+            }
+
+            kernels.push_back( std::move( kernel ) );
+         }
       }
    }
 }
@@ -456,6 +609,8 @@ float SpectrogramSettings::findBin( float frequency, float binUnit ) const
    float linearBin = frequency / binUnit;
    if (linearBin < 0)
       return -1;
+   else if (algorithm == algConstantQ)
+      return log( linearBin / cQBottom ) / log( GetConstantQSettings().ratio );
    else
       return linearBin;
 }
@@ -471,8 +626,11 @@ size_t SpectrogramSettings::GetFFTLength() const
 
 size_t SpectrogramSettings::NBins() const
 {
-   // Omit the Nyquist frequency bin
-   return GetFFTLength() / 2;
+   if ( algorithm == algConstantQ )
+      return kernels.size();
+   else
+      // Omit the Nyquist frequency bin
+      return GetFFTLength() / 2;
 }
 
 NumberScale SpectrogramSettings::GetScale( float minFreqIn, float maxFreqIn ) const
