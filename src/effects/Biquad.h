@@ -1,11 +1,7 @@
 #ifndef __BIQUAD_H__
 #define __BIQUAD_H__
 
-#if 0
-//initialisations not supported in MSVC 2013.
-//Gives error C2905
-// Do not make conditional on compiler.
-typedef struct {
+struct BiquadStruct {
    float* pfIn {};
    float* pfOut {};
    float fNumerCoeffs [3] { 1.0f, 0.0f, 0.0f };	// B0 B1 B2
@@ -14,20 +10,14 @@ typedef struct {
    float fPrevPrevIn {};
    float fPrevOut {};
    float fPrevPrevOut {};
-} BiquadStruct;
-#else
-// WARNING: This structure may need initialisation.
-typedef struct {
-   float* pfIn;
-   float* pfOut;
-   float fNumerCoeffs [3];	// B0 B1 B2
-   float fDenomCoeffs [2];	// A1 A2
-   float fPrevIn;
-   float fPrevPrevIn;
-   float fPrevOut;
-   float fPrevPrevOut;
-} BiquadStruct;
-#endif
+
+   BiquadStruct()
+   {
+      fNumerCoeffs[0] = 1.0f,
+         fNumerCoeffs[1] = fNumerCoeffs[2] = 0.0f;
+      fDenomCoeffs[0] = fDenomCoeffs[1] = 0.0f;
+   }
+};
 
 
 

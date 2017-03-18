@@ -32,27 +32,13 @@ using std::max;
 #define lsx_zalloc(var, n) (var.reinit(n, true), var.get())
 #define filter_advance(p) if (--(p)->ptr < (p)->buffer.get()) (p)->ptr += (p)->size
 
-#if 0
-//initialisations not supported in MSVC 2013.
-//Gives error C2905
-// Do not make conditional on compiler.
-typedef struct {
+struct fifo_t {
    ArrayOf<char> data;
    size_t allocation {};   /* Number of bytes allocated for data. */
    size_t item_size {};    /* Size of each item in data */
    size_t begin {};        /* Offset of the first byte to read. */
    size_t end {};          /* 1 + Offset of the last byte byte to read. */
-} fifo_t;
-#else
-// WARNING: This structure may need initialisation.
-typedef struct {
-   ArrayOf<char> data;
-   size_t allocation;   /* Number of bytes allocated for data. */
-   size_t item_size;    /* Size of each item in data */
-   size_t begin;        /* Offset of the first byte to read. */
-   size_t end;          /* 1 + Offset of the last byte byte to read. */
-} fifo_t;
-#endif
+};
 
 static void fifo_clear(fifo_t * f)
 {
@@ -115,10 +101,10 @@ static void fifo_create(fifo_t * f, FIFO_SIZE_T item_size)
 }
 
 typedef struct {
-   size_t  size;
+   size_t  size {};
    ArrayOf<float> buffer;
-   float   * ptr;
-   float   store;
+   float   * ptr {};
+   float   store {};
 } filter_t;
 
 static float comb_process(filter_t * p,  /* gcc -O2 will inline this */
@@ -140,7 +126,7 @@ static float allpass_process(filter_t * p,  /* gcc -O2 will inline this */
    return output - *input;
 }
 
-typedef struct {double b0, b1, a1, i1, o1;} one_pole_t;
+struct one_pole_t { double b0{}, b1{}, a1{}, i1{}, o1{}; };
 
 static float one_pole_process(one_pole_t * p, float i0)
 {
@@ -153,11 +139,11 @@ static const size_t /* Filter delay lengths in samples (44100Hz sample-rate) */
    comb_lengths[] = {1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617},
    allpass_lengths[] = {225, 341, 441, 556}, stereo_adjust = 12;
 
-typedef struct {
+struct filter_array_t {
    filter_t comb   [array_length(comb_lengths)];
    filter_t allpass[array_length(allpass_lengths)];
    one_pole_t one_pole[2];
-} filter_array_t;
+};
 
 static void filter_array_create(filter_array_t * p, double rate,
       double scale, double offset, double fc_highpass, double fc_lowpass)
@@ -210,29 +196,14 @@ static void filter_array_process(filter_array_t * p,
    }
 }
 
-#if 0
-//initialisations not supported in MSVC 2013.
-//Gives error C2905
-// Do not make conditional on compiler.
-typedef struct {
-   float feedback {};
-   float hf_damping {};
-   float gain {};
+struct reverb_t {
+   float feedback { 0.0f };
+   float hf_damping { 0.0f };
+   float gain { 0.0f };
    fifo_t input_fifo {};
    filter_array_t chan[2];
    ArrayOf<float> out[2];
-} reverb_t;
-#else
-// WARNING: This structure may need initialisation.
-typedef struct {
-   float feedback;
-   float hf_damping;
-   float gain;
-   fifo_t input_fifo;
-   filter_array_t chan[2];
-   ArrayOf<float> out[2];
-} reverb_t;
-#endif
+};
 
 static void reverb_create(reverb_t * p, double sample_rate_Hz,
       double wet_gain_dB,
