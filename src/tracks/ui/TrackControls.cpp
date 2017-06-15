@@ -284,7 +284,7 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
    wxDialogWrapper dlg(mpData->pParent, wxID_ANY, wxString(_("Customize Controls")));
    dlg.SetName(dlg.GetTitle());
 
-   auto lines = TrackInfo::GetTCPLines( *mpData->pTrack );
+   auto &lines = TrackInfo::GetTCPLines( *mpData->pTrack );
    CustomizePanel panel{
       &dlg, *mpData->pTrack, lines, TrackInfo::CommonTrackTCPBottomLines };
 
@@ -303,7 +303,8 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
    if (dlg.ShowModal() == wxID_CANCEL)
       return;
 
-   // to do: make changes persistent
+   // to do: make changes persistent in preferences too
+   lines = panel.mTopLines;
 
    mpData->result = RefreshCode::RefreshAll;
 }
