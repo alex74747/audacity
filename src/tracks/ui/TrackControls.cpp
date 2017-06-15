@@ -12,10 +12,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackControls.h"
 #include "TrackButtonHandles.h"
 #include "TrackSelectHandle.h"
+#include "../../AColor.h"
 #include "../../HitTestResult.h"
 #include "../../RefreshCode.h"
 #include "../../MixerBoard.h"
 #include "../../Project.h"
+#include "../../ShuttleGui.h"
 #include "../../TrackPanel.h"
 #include "../../TrackPanelMouseEvent.h"
 #include "../../WaveTrack.h"
@@ -196,8 +198,79 @@ void TrackMenuTable::OnMoveTrack(wxCommandEvent &event)
    mpData->result = RefreshCode::RefreshAll;
 }
 
+
+class CustomizePanel : public wxPanelWrapper
+{
+public:
+   CustomizePanel
+      ( wxWindow *parent, const Track &track,
+        const std::vector<TrackInfo::TCPLine> &topLines,
+        const std::vector<TrackInfo::TCPLine> &bottomLines )
+      : wxPanelWrapper{
+         parent, wxID_ANY, wxDefaultPosition,
+         wxSize{
+            kTrackInfoWidth - kLeftMargin,
+            TrackInfo::TotalTCPLines( topLines, true ) +
+            TrackInfo::TotalTCPLines( bottomLines, false ) + 1
+         }
+      }
+      , mTrack{ track }
+      , mTopLines{ topLines }
+      , mBottomLines{ bottomLines }
+   {}
+
+   void OnPaint(wxPaintEvent &);
+
+   const Track &mTrack;
+   const std::vector<TrackInfo::TCPLine> &mTopLines, &mBottomLines;
+
+   DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(CustomizePanel, wxPanelWrapper)
+   EVT_PAINT(CustomizePanel::OnPaint)
+END_EVENT_TABLE()
+
+void CustomizePanel::OnPaint(wxPaintEvent & WXUNUSED(evt))
+{
+   wxPaintDC dc{ this };
+   auto rect = GetClientRect();
+
+   // Paint background as if a selected TCP
+   AColor::MediumTrackInfo(&dc, true);
+   dc.DrawRectangle(rect);
+
+   TrackInfo::DrawItems
+      ( &dc, rect,
+        nullptr, mTopLines, mBottomLines, TrackPanel::IsUncaptured, false );
+}
+
 void TrackMenuTable::OnCustomize(wxCommandEvent &)
 {
+   wxDialogWrapper dlg(mpData->pParent, wxID_ANY, wxString(_("Customize Controls")));
+   dlg.SetName(dlg.GetTitle());
+
+   auto lines = TrackInfo::GetTCPLines( *mpData->pTrack );
+   CustomizePanel panel{
+      &dlg, *mpData->pTrack, lines, TrackInfo::CommonTrackTCPBottomLines };
+
+   ShuttleGui S(&dlg, eIsCreating);
+   S.StartVerticalLay(true);
+   {
+      S.AddWindow( &panel );
+   }
+   S.EndVerticalLay();
+   S.AddStandardButtons();
+
+   dlg.Layout();
+   dlg.Fit();
+   dlg.CenterOnParent();
+   if (dlg.ShowModal() == wxID_CANCEL)
+      return;
+
+   // to do: make changes persistent
+
+   mpData->result = RefreshCode::RefreshAll;
 }
 
 unsigned TrackControls::DoContextMenu
