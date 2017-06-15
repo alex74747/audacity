@@ -88,7 +88,7 @@ public:
    using TCPLines = std::vector<TCPLine>;
 
    static TCPLines CommonTrackTCPBottomLines;
-   static const TCPLines &GetTCPLines( const Track &track );
+   static TCPLines &GetTCPLines( const Track &track );
 
    static int TotalTCPLines( const TCPLines &lines, bool omitLastExtra );
 

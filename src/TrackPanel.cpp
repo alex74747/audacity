@@ -1084,7 +1084,8 @@ const TrackInfo::TCPLine defaultWaveTrackTCPLines[] = {
      &TrackInfo::PanSliderDrawFunction },
    STATUS_ITEMS
 };
-TCPLines waveTrackTCPLines{ RANGE(defaultWaveTrackTCPLines) };
+const TCPLines waveTrackDefaultTCPLines{ RANGE(defaultWaveTrackTCPLines) };
+TCPLines waveTrackTCPLines{ waveTrackDefaultTCPLines };
 
 const TrackInfo::TCPLine defaultNoteTrackTCPLines[] = {
    COMMON_ITEMS
@@ -1096,17 +1097,20 @@ const TrackInfo::TCPLine defaultNoteTrackTCPLines[] = {
      &TrackInfo::VelocitySliderDrawFunction },
 #endif
 };
-TCPLines noteTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+const TCPLines noteTrackDefaultTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+TCPLines noteTrackTCPLines{ noteTrackDefaultTCPLines };
 
 const TrackInfo::TCPLine defaultLabelTrackTCPLines[] = {
    COMMON_ITEMS
 };
-TCPLines labelTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+const TCPLines labelTrackDefaultTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+TCPLines labelTrackTCPLines{ labelTrackDefaultTCPLines };
 
 const TrackInfo::TCPLine timeLabelTrackTCPLines[] = {
    COMMON_ITEMS
 };
-TCPLines timeTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+const TCPLines timeTrackDefaultTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+TCPLines timeTrackTCPLines{ timeTrackDefaultTCPLines };
 
 // return y value and height
 std::pair< int, int > CalcItemY( const TCPLines &lines, unsigned iItem )
@@ -1151,7 +1155,7 @@ std::pair< int, int > CalcBottomItemY
 
 }
 
-const TCPLines &TrackInfo::GetTCPLines( const Track &track )
+TCPLines &TrackInfo::GetTCPLines( const Track &track )
 {
 #ifdef USE_MIDI
    if ( track.GetKind() == Track::Note )
