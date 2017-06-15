@@ -1098,6 +1098,16 @@ const TrackInfo::TCPLine defaultNoteTrackTCPLines[] = {
 };
 TCPLines noteTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
 
+const TrackInfo::TCPLine defaultLabelTrackTCPLines[] = {
+   COMMON_ITEMS
+};
+TCPLines labelTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+
+const TrackInfo::TCPLine timeLabelTrackTCPLines[] = {
+   COMMON_ITEMS
+};
+TCPLines timeTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
+
 // return y value and height
 std::pair< int, int > CalcItemY( const TCPLines &lines, unsigned iItem )
 {
@@ -1150,6 +1160,12 @@ const TCPLines &TrackInfo::GetTCPLines( const Track &track )
 
    if ( track.GetKind() == Track::Wave )
       return waveTrackTCPLines;
+
+   if ( track.GetKind() == Track::Label )
+      return labelTrackTCPLines;
+
+   if ( track.GetKind() == Track::Time )
+      return timeTrackTCPLines;
 
    return commonTrackTCPLines;
 }
