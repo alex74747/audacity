@@ -1001,20 +1001,18 @@ void TrackPanel::OnContextMenu(wxContextMenuEvent & WXUNUSED(event))
    OnTrackMenu();
 }
 
-struct TrackInfo::TCPLine {
-   using DrawFunction = void (*)(
-      wxDC *dc,
-      const wxRect &rect,
-      const Track *maybeNULL,
-      int pressed, // a value from MouseCaptureEnum; TODO: make it bool
-      bool captured
-   );
-
-   unsigned items; // a bitwise OR of values of the enum above
-   int height;
-   int extraSpace;
-   DrawFunction drawFunction;
-};
+int TrackInfo::TotalTCPLines( const TCPLines &lines, bool omitLastExtra )
+{
+   int total = 0;
+   int lastExtra = 0;
+   for ( const auto line : lines ) {
+      lastExtra = line.extraSpace;
+      total += line.height + lastExtra;
+   }
+   if (omitLastExtra)
+      total -= lastExtra;
+   return total;
+}
 
 namespace {
 
@@ -1100,32 +1098,6 @@ const TrackInfo::TCPLine defaultNoteTrackTCPLines[] = {
 };
 TCPLines noteTrackTCPLines{ RANGE(defaultNoteTrackTCPLines) };
 
-int totalTCPLines( const TCPLines &lines, bool omitLastExtra )
-{
-   int total = 0;
-   int lastExtra = 0;
-   for ( const auto line : lines ) {
-      lastExtra = line.extraSpace;
-      total += line.height + lastExtra;
-   }
-   if (omitLastExtra)
-      total -= lastExtra;
-   return total;
-}
-
-const TCPLines &getTCPLines( const Track &track )
-{
-#ifdef USE_MIDI
-   if ( track.GetKind() == Track::Note )
-      return noteTrackTCPLines;
-#endif
-
-   if ( track.GetKind() == Track::Wave )
-      return waveTrackTCPLines;
-
-   return commonTrackTCPLines;
-}
-
 // return y value and height
 std::pair< int, int > CalcItemY( const TCPLines &lines, unsigned iItem )
 {
@@ -1150,7 +1122,6 @@ const TrackInfo::TCPLine defaultCommonTrackTCPBottomLines[] = {
    { kItemSyncLock | kItemMinimize, kTrackInfoBtnSize, 0,
      &TrackInfo::MinimizeSyncLockDrawFunction },
 };
-TCPLines commonTrackTCPBottomLines{ RANGE(defaultCommonTrackTCPBottomLines) };
 
 // return y value and height
 std::pair< int, int > CalcBottomItemY
@@ -1170,10 +1141,26 @@ std::pair< int, int > CalcBottomItemY
 
 }
 
+const TCPLines &TrackInfo::GetTCPLines( const Track &track )
+{
+#ifdef USE_MIDI
+   if ( track.GetKind() == Track::Note )
+      return noteTrackTCPLines;
+#endif
+
+   if ( track.GetKind() == Track::Wave )
+      return waveTrackTCPLines;
+
+   return commonTrackTCPLines;
+}
+
+TCPLines TrackInfo::CommonTrackTCPBottomLines
+{ RANGE(defaultCommonTrackTCPBottomLines) };
+
 bool TrackInfo::HideTopItem( const wxRect &rect, const wxRect &subRect,
                  int allowance ) {
    auto limit = CalcBottomItemY
-   ( commonTrackTCPBottomLines, kHighestBottomItem, rect.height).first;
+   ( CommonTrackTCPBottomLines, kHighestBottomItem, rect.height).first;
    // Return true if the rectangle is even touching the limit
    // without an overlap.  That was the behavior as of 2.1.3.
    return subRect.y + subRect.height - allowance >= rect.y + limit;
@@ -1824,8 +1811,8 @@ void TrackInfo::DrawItems
 ( wxDC *dc, const wxRect &rect, const Track &track,
   int mouseCapture, bool captured )
 {
-   const auto topLines = getTCPLines( track );
-   const auto bottomLines = commonTrackTCPBottomLines;
+   const auto topLines = GetTCPLines( track );
+   const auto bottomLines = CommonTrackTCPBottomLines;
    DrawItems
       ( dc, rect, &track, topLines, bottomLines, mouseCapture, captured );
 }
@@ -2870,8 +2857,8 @@ void TrackInfo::GetMuteSoloRect
  const Track *pTrack)
 {
 
-   auto resultsM = CalcItemY( getTCPLines( *pTrack ), kItemMute );
-   auto resultsS = CalcItemY( getTCPLines( *pTrack ), kItemSolo );
+   auto resultsM = CalcItemY( GetTCPLines( *pTrack ), kItemMute );
+   auto resultsS = CalcItemY( GetTCPLines( *pTrack ), kItemSolo );
    dest.height = resultsS.second;
 
    int yMute = resultsM.first;
@@ -2945,7 +2932,7 @@ void TrackInfo::GetMinimizeRect(const wxRect & rect, wxRect &dest)
 {
    GetMinimizeHorizontalBounds( rect, dest );
    auto results = CalcBottomItemY
-      ( commonTrackTCPBottomLines, kItemMinimize, rect.height);
+      ( CommonTrackTCPBottomLines, kItemMinimize, rect.height);
    dest.y = rect.y + results.first;
    dest.height = results.second;
 }
@@ -2960,7 +2947,7 @@ void TrackInfo::GetSyncLockIconRect(const wxRect & rect, wxRect &dest)
 {
    GetSyncLockHorizontalBounds( rect, dest );
    auto results = CalcBottomItemY
-      ( commonTrackTCPBottomLines, kItemSyncLock, rect.height);
+      ( CommonTrackTCPBottomLines, kItemSyncLock, rect.height);
    dest.y = rect.y + results.first;
    dest.height = results.second;
 }
@@ -3090,8 +3077,8 @@ unsigned DefaultTrackHeight( const TCPLines &topLines )
 {
    int needed =
       kTopMargin + kBottomMargin +
-      totalTCPLines( topLines, true ) +
-      totalTCPLines( commonTrackTCPBottomLines, false ) + 1;
+      TrackInfo::TotalTCPLines( topLines, true ) +
+      TrackInfo::TotalTCPLines( TrackInfo::CommonTrackTCPBottomLines, false ) + 1;
    return (unsigned) std::max( needed, (int) Track::DefaultHeight );
 }
 }

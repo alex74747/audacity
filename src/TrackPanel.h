@@ -85,6 +85,12 @@ public:
    void ReCreateSliders();
 
    struct TCPLine;
+   using TCPLines = std::vector<TCPLine>;
+
+   static TCPLines CommonTrackTCPBottomLines;
+   static const TCPLines &GetTCPLines( const Track &track );
+
+   static int TotalTCPLines( const TCPLines &lines, bool omitLastExtra );
 
    static void DrawItems
       ( wxDC *dc, const wxRect &rect, const Track &track, int mouseCapture,
@@ -238,6 +244,21 @@ private:
 #endif
 
    friend class TrackPanel;
+};
+
+struct TrackInfo::TCPLine {
+   using DrawFunction = void (*)(
+      wxDC *dc,
+      const wxRect &rect,
+      const Track *maybeNULL,
+      int pressed, // a value from MouseCaptureEnum; TODO: make it bool
+      bool captured
+   );
+
+   unsigned items; // a bitwise OR of values of the enum above
+   int height;
+   int extraSpace;
+   DrawFunction drawFunction;
 };
 
 
