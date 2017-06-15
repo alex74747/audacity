@@ -89,6 +89,7 @@ public:
 
    static TCPLines CommonTrackTCPBottomLines;
    static TCPLines &GetTCPLines( const Track &track );
+   static const TCPLines &GetDefaultTCPLines( const Track &track );
 
    static int TotalTCPLines( const TCPLines &lines, bool omitLastExtra );
 

@@ -1174,6 +1174,25 @@ TCPLines &TrackInfo::GetTCPLines( const Track &track )
    return commonTrackTCPLines;
 }
 
+const TCPLines &TrackInfo::GetDefaultTCPLines( const Track &track )
+{
+#ifdef USE_MIDI
+   if ( track.GetKind() == Track::Note )
+      return noteTrackDefaultTCPLines;
+#endif
+
+   if ( track.GetKind() == Track::Wave )
+      return waveTrackDefaultTCPLines;
+
+   if ( track.GetKind() == Track::Label )
+      return labelTrackDefaultTCPLines;
+
+   if ( track.GetKind() == Track::Time )
+      return timeTrackDefaultTCPLines;
+
+   return commonTrackTCPLines;
+}
+
 TCPLines TrackInfo::CommonTrackTCPBottomLines
 { RANGE(defaultCommonTrackTCPBottomLines) };
 
