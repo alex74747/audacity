@@ -198,13 +198,22 @@ void TrackMenuTable::OnMoveTrack(wxCommandEvent &event)
    mpData->result = RefreshCode::RefreshAll;
 }
 
+TrackInfo::TCPLines::iterator findTCPLine( TrackInfo::TCPLines &lines, int yy )
+{
+   auto it = lines.begin(), end = lines.end();
+   while (it != end && yy >= it->height )
+      yy -= it++ ->height;
+   if ( yy >= 0 )
+      return it;
+   return end;
+}
 
 class CustomizePanel : public wxPanelWrapper
 {
 public:
    CustomizePanel
       ( wxWindow *parent, const Track &track,
-        const std::vector<TrackInfo::TCPLine> &topLines,
+        std::vector<TrackInfo::TCPLine> &topLines,
         const std::vector<TrackInfo::TCPLine> &bottomLines )
       : wxPanelWrapper{
          parent, wxID_ANY, wxDefaultPosition,
@@ -217,18 +226,24 @@ public:
       , mTrack{ track }
       , mTopLines{ topLines }
       , mBottomLines{ bottomLines }
+      , mpLine{ mTopLines.end() }
    {}
 
    void OnPaint(wxPaintEvent &);
+   void OnMouseEvents(wxMouseEvent &event);
 
    const Track &mTrack;
-   const std::vector<TrackInfo::TCPLine> &mTopLines, &mBottomLines;
+   std::vector<TrackInfo::TCPLine> &mTopLines;
+   const std::vector<TrackInfo::TCPLine> &mBottomLines;
+
+   std::vector<TrackInfo::TCPLine>::iterator mpLine;
 
    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(CustomizePanel, wxPanelWrapper)
    EVT_PAINT(CustomizePanel::OnPaint)
+   EVT_MOUSE_EVENTS(CustomizePanel::OnMouseEvents)
 END_EVENT_TABLE()
 
 void CustomizePanel::OnPaint(wxPaintEvent & WXUNUSED(evt))
@@ -245,6 +260,25 @@ void CustomizePanel::OnPaint(wxPaintEvent & WXUNUSED(evt))
         nullptr, mTopLines, mBottomLines, TrackPanel::IsUncaptured, false );
 }
 
+void CustomizePanel::OnMouseEvents(wxMouseEvent &event)
+{
+   if (event.LeftDown()) {
+      mpLine = findTCPLine( mTopLines, event.m_y );
+   }
+   else if (event.Dragging() && mpLine != mTopLines.end()) {
+      auto pNewLine = findTCPLine( mTopLines, event.m_y );
+      if ( pNewLine != mTopLines.end() ) {
+         if (pNewLine < mpLine)
+            std::swap( *mpLine, *(mpLine - 1) ), --mpLine, Refresh();
+         else if (pNewLine > mpLine)
+            std::swap( *mpLine, *(mpLine + 1) ), ++mpLine, Refresh();
+      }
+   }
+   else if (event.ButtonUp()) {
+      mpLine = mTopLines.end();
+   }
+}
+
 void TrackMenuTable::OnCustomize(wxCommandEvent &)
 {
    wxDialogWrapper dlg(mpData->pParent, wxID_ANY, wxString(_("Customize Controls")));
@@ -257,6 +291,7 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
    ShuttleGui S(&dlg, eIsCreating);
    S.StartVerticalLay(true);
    {
+      S.AddVariableText(_("Drag up or down to rearrange items"));
       S.AddWindow( &panel );
    }
    S.EndVerticalLay();
