@@ -60,6 +60,8 @@ enum
    OnMoveDownID,
    OnMoveTopID,
    OnMoveBottomID,
+
+   OnCustomizeID,
 };
 
 class TrackMenuTable : public PopupMenuTable
@@ -73,6 +75,8 @@ public:
 private:
    void OnSetName(wxCommandEvent &);
    void OnMoveTrack(wxCommandEvent &event);
+
+   void OnCustomize(wxCommandEvent &);
 
    void InitMenu(Menu *pMenu, void *pUserData) override;
 
@@ -105,6 +109,7 @@ void TrackMenuTable::InitMenu(Menu *pMenu, void *pUserData)
 
 BEGIN_POPUP_MENU(TrackMenuTable)
    POPUP_MENU_ITEM(OnSetNameID, _("&Name..."), OnSetName)
+   POPUP_MENU_ITEM(OnCustomizeID, _("Customize..."), OnCustomize)
    POPUP_MENU_SEPARATOR()
    POPUP_MENU_ITEM(
       // It is not correct to use KeyStringDisplay here -- wxWidgets will apply
@@ -189,6 +194,10 @@ void TrackMenuTable::OnMoveTrack(wxCommandEvent &event)
    // MoveTrack already refreshed TrackPanel, which means repaint will happen.
    // This is a harmless redundancy:
    mpData->result = RefreshCode::RefreshAll;
+}
+
+void TrackMenuTable::OnCustomize(wxCommandEvent &)
+{
 }
 
 unsigned TrackControls::DoContextMenu
