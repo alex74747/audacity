@@ -285,6 +285,7 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
    dlg.SetName(dlg.GetTitle());
 
    auto &lines = TrackInfo::GetTCPLines( *mpData->pTrack );
+   auto &defaultLines = TrackInfo::GetDefaultTCPLines( *mpData->pTrack );
    CustomizePanel panel{
       &dlg, *mpData->pTrack, lines, TrackInfo::CommonTrackTCPBottomLines };
 
@@ -295,7 +296,16 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
       S.AddWindow( &panel );
    }
    S.EndVerticalLay();
-   S.AddStandardButtons();
+
+   enum { ID_RESET = 10000 };
+   auto resetButton = std::make_unique<wxButton>(&dlg, ID_RESET, _("Reset"));
+
+   S.AddStandardButtons(eOkButton | eCancelButton, resetButton.get());
+
+   bool reset = false;
+   dlg.Bind( wxEVT_BUTTON, [&](wxCommandEvent&){
+      reset = true; dlg.EndModal(wxID_OK);
+   }, ID_RESET );
 
    dlg.Layout();
    dlg.Fit();
@@ -304,7 +314,10 @@ void TrackMenuTable::OnCustomize(wxCommandEvent &)
       return;
 
    // to do: make changes persistent in preferences too
-   lines = panel.mTopLines;
+   if (reset)
+      lines = defaultLines;
+   else
+      lines = panel.mTopLines;
 
    mpData->result = RefreshCode::RefreshAll;
 }
