@@ -2819,10 +2819,11 @@ void TrackInfo::GetCloseBoxHorizontalBounds( const wxRect & rect, wxRect &dest )
    dest.width = kTrackInfoBtnSize;
 }
 
-void TrackInfo::GetCloseBoxRect(const wxRect & rect, wxRect & dest)
+void TrackInfo::GetCloseBoxRect
+   (const Track &track, const wxRect & rect, wxRect & dest)
 {
    GetCloseBoxHorizontalBounds( rect, dest );
-   auto results = CalcItemY( commonTrackTCPLines, kItemBarButtons );
+   auto results = CalcItemY( GetTCPLines(track), kItemBarButtons );
    dest.y = rect.y + results.first;
    dest.height = results.second;
 }
@@ -2838,10 +2839,11 @@ void TrackInfo::GetTitleBarHorizontalBounds( const wxRect & rect, wxRect &dest )
    dest.width = rect.x + rect.width - dest.x + TitleSoloBorderOverlap;
 }
 
-void TrackInfo::GetTitleBarRect(const wxRect & rect, wxRect & dest)
+void TrackInfo::GetTitleBarRect
+   (const Track &track, const wxRect & rect, wxRect & dest)
 {
    GetTitleBarHorizontalBounds( rect, dest );
-   auto results = CalcItemY( commonTrackTCPLines, kItemBarButtons );
+   auto results = CalcItemY( GetTCPLines(track), kItemBarButtons );
    dest.y = rect.y + results.first;
    dest.height = results.second;
 }
@@ -2996,6 +2998,7 @@ void TrackInfo::SetTrackInfoFont(wxDC * dc)
    dc->SetFont(gFont);
 }
 
+#if 0
 void TrackInfo::DrawBordersWithin
    ( wxDC* dc, const wxRect & rect, const Track &track ) const
 {
@@ -3046,6 +3049,7 @@ void TrackInfo::DrawBordersWithin
       (*dc, minimizeRect.x,                          minimizeRect.y - 1,
             minimizeRect.x + minimizeRect.width - 1, minimizeRect.y - 1);
 }
+#endif
 
 //#define USE_BEVELS
 

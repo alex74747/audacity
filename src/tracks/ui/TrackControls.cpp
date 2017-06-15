@@ -35,7 +35,7 @@ HitTestResult TrackControls::HitTest
    const wxRect &rect = evt.rect;
    HitTestResult result;
 
-   if (NULL != (result = CloseButtonHandle::HitTest(event, rect)).handle)
+   if (NULL != (result = CloseButtonHandle::HitTest(event, rect, this)).handle)
       return result;
 
    if (NULL != (result = MenuButtonHandle::HitTest(event, rect, this)).handle)
@@ -195,7 +195,7 @@ unsigned TrackControls::DoContextMenu
    (const wxRect &rect, wxWindow *pParent, wxPoint *)
 {
    wxRect buttonRect;
-   TrackInfo::GetTitleBarRect(rect, buttonRect);
+   TrackInfo::GetTitleBarRect(*FindTrack(), rect, buttonRect);
 
    InitMenuData data{ mpTrack, pParent, RefreshCode::RefreshNone };
 

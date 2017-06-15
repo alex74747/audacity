@@ -110,10 +110,11 @@ UIHandle::Result CloseButtonHandle::CommitChanges
 }
 
 HitTestResult CloseButtonHandle::HitTest
-(const wxMouseEvent &event, const wxRect &rect)
+(const wxMouseEvent &event, const wxRect &rect, TrackPanelCell *pCell)
 {
    wxRect buttonRect;
-   TrackInfo::GetCloseBoxRect(rect, buttonRect);
+   TrackInfo::GetCloseBoxRect
+      (*static_cast<CommonTrackPanelCell*>(pCell)->FindTrack(), rect, buttonRect);
 
    if (buttonRect.Contains(event.m_x, event.m_y)) {
       Instance().mRect = buttonRect;
@@ -153,7 +154,8 @@ HitTestResult MenuButtonHandle::HitTest
 (const wxMouseEvent &event, const wxRect &rect, TrackPanelCell *pCell)
 {
    wxRect buttonRect;
-   TrackInfo::GetTitleBarRect(rect, buttonRect);
+   TrackInfo::GetTitleBarRect
+      (*static_cast<CommonTrackPanelCell*>(pCell)->FindTrack(), rect, buttonRect);
 
    if (buttonRect.Contains(event.m_x, event.m_y)) {
       Instance().mpCell = pCell;

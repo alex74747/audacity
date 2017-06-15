@@ -52,7 +52,8 @@ protected:
    bool StopsOnKeystroke () override { return true; }
    
 public:
-   static HitTestResult HitTest(const wxMouseEvent &event, const wxRect &rect);
+   static HitTestResult HitTest
+      (const wxMouseEvent &event, const wxRect &rect, TrackPanelCell *pCell);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

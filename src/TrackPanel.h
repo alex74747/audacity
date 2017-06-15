@@ -172,10 +172,12 @@ public:
    void DrawVRuler(wxDC * dc, const wxRect & rect, Track * t) const;
 
    static void GetCloseBoxHorizontalBounds( const wxRect & rect, wxRect &dest );
-   static void GetCloseBoxRect(const wxRect & rect, wxRect &dest);
+   static void GetCloseBoxRect
+      (const Track &track, const wxRect & rect, wxRect &dest);
 
    static void GetTitleBarHorizontalBounds( const wxRect & rect, wxRect &dest );
-   static void GetTitleBarRect(const wxRect & rect, wxRect &dest);
+   static void GetTitleBarRect
+      (const Track &track, const wxRect & rect, wxRect &dest);
 
    static void GetNarrowMuteHorizontalBounds
       ( const wxRect & rect, wxRect &dest );
