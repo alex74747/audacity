@@ -352,16 +352,18 @@ bool LabelDialog::TransferDataFromWindow()
    }
 
    // Create any added tracks
-   while (tndx < (int)mTrackNames.GetCount() - 1) {
+   { TrackList::Locker locker{ mTracks->mLock };
+      while (tndx < (int)mTrackNames.GetCount() - 1) {
 
-      // Extract the name
-      wxString name = mTrackNames[tndx + 1].AfterFirst(wxT('-')).Mid(1);
+         // Extract the name
+         wxString name = mTrackNames[tndx + 1].AfterFirst(wxT('-')).Mid(1);
 
-      // Create the NEW track and add to track list
-      auto newTrack = mFactory.NewLabelTrack();
-      newTrack->SetName(name);
-      mTracks->Add(std::move(newTrack));
-      tndx++;
+         // Create the NEW track and add to track list
+         auto newTrack = mFactory.NewLabelTrack();
+         newTrack->SetName(name);
+         mTracks->Add(&locker, std::move(newTrack));
+         tndx++;
+      }
    }
 
    // Repopulate with updated labels

@@ -868,8 +868,11 @@ void WaveTrackMenuTable::OnSwapChannels(wxCommandEvent &)
    pTrack->SetChannel(Track::RightChannel);
    partner->SetChannel(Track::LeftChannel);
 
-   TrackList *const tracks = project->GetTracks();
-   (tracks->MoveUp(partner));
+   {
+      TrackList *const tracks = project->GetTracks();
+      TrackList::Locker locker{ tracks->mLock };
+      (tracks->MoveUp(&locker, partner));
+   }
    partner->SetLinked(true);
 
    MixerBoard* pMixerBoard = project->GetMixerBoard();

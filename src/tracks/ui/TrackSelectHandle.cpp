@@ -135,7 +135,9 @@ UIHandle::Result TrackSelectHandle::Drag
 
    MixerBoard* pMixerBoard = pProject->GetMixerBoard(); // Update mixer board, too.
    if (event.m_y < mMoveUpThreshold || event.m_y < 0) {
-      tracks->MoveUp(mpTrack);
+      { TrackList::Locker locker{ tracks->mLock };
+         tracks->MoveUp(&locker, mpTrack);
+      }
       --mRearrangeCount;
       if (pMixerBoard)
          if(auto pPlayable = dynamic_cast< const PlayableTrack* >( mpTrack ))
@@ -143,7 +145,9 @@ UIHandle::Result TrackSelectHandle::Drag
    }
    else if ( event.m_y > mMoveDownThreshold
       || event.m_y > evt.whole.GetHeight() ) {
-      tracks->MoveDown(mpTrack);
+      { TrackList::Locker locker{ tracks->mLock };
+         tracks->MoveDown(&locker, mpTrack);
+      }
       ++mRearrangeCount;
       if (pMixerBoard)
          if(auto pPlayable = dynamic_cast< const PlayableTrack* >( mpTrack ))

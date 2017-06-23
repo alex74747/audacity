@@ -169,7 +169,7 @@ bool EffectStereoToMono::ProcessOne(int count)
    mLeftTrack->SetLinked(false);
    mRightTrack->SetLinked(false);
    mLeftTrack->SetChannel(Track::MonoChannel);
-   mOutputTracks->Remove(mRightTrack);
+   mOutputTracks->Remove(nullptr, mRightTrack);
 
    return bResult;
 }

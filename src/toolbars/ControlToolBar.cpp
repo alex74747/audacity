@@ -935,14 +935,16 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 
    auto cleanup = finally( [&] {
       if (!success) {
-         if (tracksCopied)
-            // Restore the tracks to remove any inserted silence
-            *trackList = std::move(tracksCopy);
+         { TrackList::Locker locker{ trackList->mLock };
+            if (tracksCopied)
+               // Restore the tracks to remove any inserted silence
+               trackList->Swap(&locker, nullptr, tracksCopy);
 
-         if ( ! shifted ) {
-            // msmeyer: Delete recently added tracks if opening stream fails
-            for ( auto track : recordingTracks )
-               trackList->Remove(track);
+            if ( ! shifted ) {
+               // msmeyer: Delete recently added tracks if opening stream fails
+               for ( auto track : recordingTracks )
+                  trackList->Remove(&locker, track);
+            }
          }
 
          SetPlay(false);
@@ -1046,7 +1048,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
                      // The duplicates are used to restore state in case
                      // of failure.
                      tracksCopied = true;
-                     tracksCopy = *trackList;
+                     tracksCopy.DoAssign(nullptr, *trackList);
                   }
 
                   // Pad the recording track with silence, up to the
@@ -1092,6 +1094,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 
          wxString baseTrackName = recordingNameCustom? defaultRecordingTrackName : defaultTrackName;
 
+         { TrackList::Locker locker{ trackList->mLock };
          for (int c = 0; c < recordingChannels; c++) {
             auto newTrack = p->GetTrackFactory()->NewWaveTrack();
 
@@ -1148,9 +1151,10 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
             // Let the list hold the track, and keep a pointer to it
             recordingTracks.push_back(
                static_cast<WaveTrack*>(
-                  trackList->Add(
+                  trackList->Add( &locker,
                      std::move(newTrack))));
          }
+      }
       }
 
       //Automated Input Level Adjustment Initialization
@@ -1276,9 +1280,9 @@ void ControlToolBar::SetupCutPreviewTracks(double WXUNUSED(playStart), double cu
          // use NOTHROW-GUARANTEE:
 
          mCutPreviewTracks = std::make_unique<TrackList>();
-         mCutPreviewTracks->Add(std::move(new1));
+         mCutPreviewTracks->Add(nullptr, std::move(new1));
          if (track2)
-            mCutPreviewTracks->Add(std::move(new2));
+            mCutPreviewTracks->Add(nullptr, std::move(new2));
       }
    }
 }
@@ -1286,7 +1290,7 @@ void ControlToolBar::SetupCutPreviewTracks(double WXUNUSED(playStart), double cu
 void ControlToolBar::ClearCutPreviewTracks()
 {
    if (mCutPreviewTracks)
-      mCutPreviewTracks->Clear();
+      mCutPreviewTracks->Clear(nullptr);
    mCutPreviewTracks.reset();
 }
 

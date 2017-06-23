@@ -21,6 +21,7 @@
 #include <wx/gdicmn.h>
 #include <wx/longlong.h>
 #include <wx/string.h>
+#include <wx/thread.h>
 
 #include "Experimental.h"
 #include "SampleFormat.h"
@@ -339,6 +340,161 @@ protected:
    bool                mSolo { false };
 };
 
+class TrackList final : public wxEvtHandler, private ListOfTracks
+{
+   // privatize this, make you use Swap instead:
+   using ListOfTracks::swap;
+
+ public:
+#if wxUSE_ACCESSIBILITY
+   // Can we use wxCriticalSection, or is inter-process synchronization on
+   // Windows really needed?
+   using Lock = wxMutex;
+   using Locker = wxMutexLocker;
+#else
+   struct Lock {};
+   struct Locker { Locker(Lock &lock) {} };
+#endif
+
+   // Create an empty TrackList
+   TrackList();
+
+   // Copy -- a deep copy that duplicates all tracks
+   TrackList(Locker *mine, const TrackList &that);
+   TrackList(const TrackList &that) = delete;
+   TrackList &operator= (const TrackList &that) = delete;
+
+   // Move
+   TrackList(Locker *mine, Locker *theirs,
+             TrackList &&that);
+   TrackList(TrackList &&that) = delete;
+   TrackList& operator= (TrackList&&) = delete;
+
+   using ListOfTracks::size;
+
+   // Anything in the main thread that might mutate the sequence of tracks
+   // should lock this.  Not all such places are internal to TrackList.
+   Lock mLock;
+
+   // Move is defined in terms of Swap
+   void Swap(Locker *mine, Locker *theirs,
+             TrackList &that);
+public:
+
+   // Destructor
+   virtual ~TrackList();
+
+   ListOfTracks &Base(Locker*) { return *this; }
+   const ListOfTracks &Base() const { return *this; }
+
+//   friend class Effect;
+  // friend class AudacityProject;
+//   friend class Track;
+   friend class TrackListIterator;
+   //friend class SyncLockedTracksIterator;
+
+   /// For use in sorting:  assume each iterator points into this list, no duplications
+   void Permute(Locker *,
+                const std::vector<TrackNodePointer> &permutation);
+
+   public:
+   /// Add this Track or all children of this TrackList.
+   template<typename TrackKind>
+   Track *Add(Locker*, std::unique_ptr<TrackKind> &&t);
+   template<typename TrackKind>
+   Track *AddToHead(Locker*, std::unique_ptr<TrackKind> &&t);
+
+   template<typename TrackKind>
+   Track *Add(Locker*, std::shared_ptr<TrackKind> &&t);
+
+public:
+   /// Replace first track with second track, give back a holder
+   value_type Replace(Locker*, Track * t, value_type &&with);
+
+   /// Remove this Track or all children of this TrackList.
+   /// Return an iterator to what followed the removed track.
+   TrackNodePointer Remove(Locker*, Track *t);
+
+   /// Make the list empty
+   void Clear(Locker *, bool sendEvent = true);
+
+   /** Select a track, and if it is linked to another track, select it, too. */
+   void Select(Track * t, bool selected = true);
+
+   Track *GetPrev(Track * t, bool linked = false) const;
+
+   /** Return a track in the list that comes after Track t
+     * @param t a track in the list
+     * @param linked if true, skips over linked tracks, if false returns the next track even if it is a linked track
+    **/
+   Track *GetNext(Track * t, bool linked = false) const;
+   int GetGroupHeight(Track * t) const;
+
+   bool CanMoveUp(Track * t) const;
+   bool CanMoveDown(Track * t) const;
+
+   bool MoveUp(Locker*, Track * t);
+   bool MoveDown(Locker*, Track * t);
+   bool Move(Locker *locker, Track * t, bool up)
+   { return up ? MoveUp(locker, t) : MoveDown(locker, t); }
+   public:
+
+   TimeTrack *GetTimeTrack();
+   const TimeTrack *GetTimeTrack() const;
+
+   /** \brief Find out how many channels this track list mixes to
+   *
+   * This is used in exports of the tracks to work out whether to export in
+   * Mono, Stereo etc. @param selectionOnly Whether to consider the entire track
+   * list or only the selected members of it
+   */
+   unsigned GetNumExportChannels(bool selectionOnly) const;
+
+   WaveTrackArray GetWaveTrackArray(bool selectionOnly, bool includeMuted = true);
+   WaveTrackConstArray GetWaveTrackConstArray(bool selectionOnly, bool includeMuted = true) const;
+
+#if defined(USE_MIDI)
+   NoteTrackArray GetNoteTrackArray(bool selectionOnly);
+#endif
+
+   /// Mainly a test function. Uses a linear search, so could be slow.
+   bool Contains(const Track * t) const;
+
+   bool IsEmpty() const;
+   int GetCount() const;
+
+   double GetStartTime() const;
+   double GetEndTime() const;
+
+   double GetMinOffset() const;
+   int GetHeight() const;
+
+#if LEGACY_PROJECT_FILE_SUPPORT
+   // File I/O
+   bool Load(wxTextFile * in, DirManager * dirManager) override;
+   bool Save(wxTextFile * out, bool overwrite) override;
+#endif
+
+   bool isNull(TrackNodePointer p) const
+   { return p == end(); }
+   void setNull(TrackNodePointer &p)
+   { p = end(); }
+   bool hasPrev(TrackNodePointer p) const
+   { return p != begin(); }
+
+   void DoAssign(Locker *mine, const TrackList &that);
+
+   public:
+   void RecalcPositions(TrackNodePointer node);
+   private:
+   void DeletionEvent();
+   public:
+   void ResizingEvent(TrackNodePointer node);
+   private:
+
+   void SwapNodes(TrackNodePointer s1, TrackNodePointer s2);
+};
+
 class AUDACITY_DLL_API TrackListIterator /* not final */
 {
  public:
@@ -352,7 +508,7 @@ class AUDACITY_DLL_API TrackListIterator /* not final */
    virtual Track *Prev(bool skiplinked = false);
    virtual Track *Last(bool skiplinked = false);
 
-   Track *RemoveCurrent(); // deletes track, returns next
+   Track *RemoveCurrent(TrackList::Locker *); // deletes track, returns next
 
  protected:
    friend TrackList;
@@ -490,128 +646,6 @@ DECLARE_EXPORTED_EVENT_TYPE(AUDACITY_DLL_API, EVT_TRACKLIST_RESIZING, -1);
 // Posted when a track has been deleted from a tracklist.
 // Also posted when one track replaces another
 DECLARE_EXPORTED_EVENT_TYPE(AUDACITY_DLL_API, EVT_TRACKLIST_DELETION, -1);
-
-class TrackList final : public wxEvtHandler, public ListOfTracks
-{
-   // privatize this, make you use Swap instead:
-   using ListOfTracks::swap;
-
- public:
-   // Create an empty TrackList
-   TrackList();
-
-   // Allow copy -- a deep copy that duplicates all tracks
-   TrackList(const TrackList &that);
-   TrackList &operator= (const TrackList &that);
-
-   // Allow move
-   TrackList(TrackList &&that);
-   TrackList& operator= (TrackList&&);
-
-   // Move is defined in terms of Swap
-   void Swap(TrackList &that);
-
-
-   // Destructor
-   virtual ~TrackList();
-
-   friend class Track;
-   friend class TrackListIterator;
-   friend class SyncLockedTracksIterator;
-
-   /// For use in sorting:  assume each iterator points into this list, no duplications
-   void Permute(const std::vector<TrackNodePointer> &permutation);
-
-   /// Add this Track or all children of this TrackList.
-   template<typename TrackKind>
-   Track *Add(std::unique_ptr<TrackKind> &&t);
-   template<typename TrackKind>
-   Track *AddToHead(std::unique_ptr<TrackKind> &&t);
-
-   template<typename TrackKind>
-   Track *Add(std::shared_ptr<TrackKind> &&t);
-
-   /// Replace first track with second track, give back a holder
-   value_type Replace(Track * t, value_type &&with);
-
-   /// Remove this Track or all children of this TrackList.
-   /// Return an iterator to what followed the removed track.
-   TrackNodePointer Remove(Track *t);
-
-   /// Make the list empty
-   void Clear(bool sendEvent = true);
-
-   /** Select a track, and if it is linked to another track, select it, too. */
-   void Select(Track * t, bool selected = true);
-
-   Track *GetPrev(Track * t, bool linked = false) const;
-
-   /** Return a track in the list that comes after Track t
-     * @param t a track in the list
-     * @param linked if true, skips over linked tracks, if false returns the next track even if it is a linked track
-    **/
-   Track *GetNext(Track * t, bool linked = false) const;
-   int GetGroupHeight(Track * t) const;
-
-   bool CanMoveUp(Track * t) const;
-   bool CanMoveDown(Track * t) const;
-
-   bool MoveUp(Track * t);
-   bool MoveDown(Track * t);
-   bool Move(Track * t, bool up) { return up ? MoveUp(t) : MoveDown(t); }
-
-   TimeTrack *GetTimeTrack();
-   const TimeTrack *GetTimeTrack() const;
-
-   /** \brief Find out how many channels this track list mixes to
-   *
-   * This is used in exports of the tracks to work out whether to export in
-   * Mono, Stereo etc. @param selectionOnly Whether to consider the entire track
-   * list or only the selected members of it
-   */
-   unsigned GetNumExportChannels(bool selectionOnly) const;
-
-   WaveTrackArray GetWaveTrackArray(bool selectionOnly, bool includeMuted = true);
-   WaveTrackConstArray GetWaveTrackConstArray(bool selectionOnly, bool includeMuted = true) const;
-
-#if defined(USE_MIDI)
-   NoteTrackArray GetNoteTrackArray(bool selectionOnly);
-#endif
-
-   /// Mainly a test function. Uses a linear search, so could be slow.
-   bool Contains(const Track * t) const;
-
-   bool IsEmpty() const;
-   int GetCount() const;
-
-   double GetStartTime() const;
-   double GetEndTime() const;
-
-   double GetMinOffset() const;
-   int GetHeight() const;
-
-#if LEGACY_PROJECT_FILE_SUPPORT
-   // File I/O
-   bool Load(wxTextFile * in, DirManager * dirManager) override;
-   bool Save(wxTextFile * out, bool overwrite) override;
-#endif
-
-private:
-   bool isNull(TrackNodePointer p) const
-   { return p == end(); }
-   void setNull(TrackNodePointer &p)
-   { p = end(); }
-   bool hasPrev(TrackNodePointer p) const
-   { return p != begin(); }
-
-   void DoAssign(const TrackList &that);
-       
-   void RecalcPositions(TrackNodePointer node);
-   void DeletionEvent();
-   void ResizingEvent(TrackNodePointer node);
-
-   void SwapNodes(TrackNodePointer s1, TrackNodePointer s2);
-};
 
 class AUDACITY_DLL_API TrackFactory
 {

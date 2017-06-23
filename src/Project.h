@@ -401,7 +401,7 @@ public:
    void SetTrackGain(WaveTrack * track, LWSlider * slider);
    void SetTrackPan(WaveTrack * track, LWSlider * slider);
 
-   void RemoveTrack(Track * toRemove);
+   void RemoveTrack(TrackList::Lock *lock, Track * toRemove);
 
    // "exclusive" mute means mute the chosen track and unmute all others.
    void HandleTrackMute(Track *t, const bool exclusive);

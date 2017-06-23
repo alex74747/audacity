@@ -2033,7 +2033,8 @@ void Effect::CopyInputTracks(int trackType)
       if (aTrack->GetSelected() ||
             (trackType == Track::All && aTrack->IsSyncLockSelected()))
       {
-         Track *o = mOutputTracks->Add(aTrack->Duplicate());
+         // pass nullptr, don't worry about races from JAWS
+         Track *o = mOutputTracks->Add(nullptr, aTrack->Duplicate());
          mIMap.push_back(aTrack);
          mOMap.push_back(o);
       }
@@ -2044,7 +2045,8 @@ Track *Effect::AddToOutputTracks(std::unique_ptr<Track> &&t)
 {
    mIMap.push_back(NULL);
    mOMap.push_back(t.get());
-   return mOutputTracks->Add(std::move(t));
+   // pass nullptr, don't worry about races from JAWS
+   return mOutputTracks->Add(nullptr, std::move(t));
 }
 
 Effect::AddedAnalysisTrack::AddedAnalysisTrack(Effect *pEffect, const wxString &name)
@@ -2054,7 +2056,8 @@ Effect::AddedAnalysisTrack::AddedAnalysisTrack(Effect *pEffect, const wxString &
    mpTrack = pTrack.get();
    if (!name.empty())
       pTrack->SetName(name);
-   pEffect->mTracks->Add(std::move(pTrack));
+   TrackList::Locker locker{ pEffect->mTracks->mLock };
+   pEffect->mTracks->Add(&locker, std::move(pTrack));
 }
 
 Effect::AddedAnalysisTrack::AddedAnalysisTrack(AddedAnalysisTrack &&that)
@@ -2073,7 +2076,8 @@ Effect::AddedAnalysisTrack::~AddedAnalysisTrack()
 {
    if (mpEffect) {
       // not committed -- DELETE the label track
-      mpEffect->mTracks->Remove(mpTrack);
+      TrackList::Locker locker{ mpEffect->mTracks->mLock };
+      mpEffect->mTracks->Remove(&locker, mpTrack);
    }
 }
 
@@ -2099,12 +2103,15 @@ Effect::ModifiedAnalysisTrack::ModifiedAnalysisTrack
 
    // mpOrigTrack came from mTracks which we own but expose as const to subclasses
    // So it's okay that we cast it back to const
+   TrackList::Locker locker{ pEffect->mTracks->mLock };
    mpOrigTrack =
-      pEffect->mTracks->Replace(const_cast<LabelTrack*>(pOrigTrack),
+      pEffect->mTracks->Replace(
+         &locker,
+         const_cast<LabelTrack*>(pOrigTrack),
 #ifdef __AUDACITY_OLD_STD__
-      std::shared_ptr<Track>(newTrack.release())
+         std::shared_ptr<Track>(newTrack.release())
 #else
-      std::move(newTrack)
+         std::move(newTrack)
 #endif
    );
 }
@@ -2128,7 +2135,8 @@ Effect::ModifiedAnalysisTrack::~ModifiedAnalysisTrack()
       // not committed -- DELETE the label track
       // mpOrigTrack came from mTracks which we own but expose as const to subclasses
       // So it's okay that we cast it back to const
-      mpEffect->mTracks->Replace(mpTrack, std::move(mpOrigTrack));
+      TrackList::Locker locker{ mpEffect->mTracks->mLock };
+      mpEffect->mTracks->Replace(&locker, mpTrack, std::move(mpOrigTrack));
    }
 }
 
@@ -2147,7 +2155,8 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
 
       // Processing failed or was cancelled so throw away the processed tracks.
       if ( mOutputTracks )
-         mOutputTracks->Clear();
+         // pass nullptr, don't worry about races from JAWS
+         mOutputTracks->Clear(nullptr);
 
       // Reset map
       mIMap.clear();
@@ -2162,11 +2171,13 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
    // Assume resources need to be freed.
    wxASSERT(mOutputTracks); // Make sure we at least did the CopyInputTracks().
 
-   auto iterOut = mOutputTracks->begin(), iterEnd = mOutputTracks->end();
+   auto iterOut = mOutputTracks->Base(nullptr).begin(),
+      iterEnd = mOutputTracks->Base(nullptr).end();
 
    size_t cnt = mOMap.size();
    size_t i = 0;
 
+   TrackList::Locker locker{ mTracks->mLock };
    for (; iterOut != iterEnd; ++i) {
       ListOfTracks::value_type o = std::move(*iterOut);
       // If tracks were removed from mOutputTracks, then there will be
@@ -2174,7 +2185,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
       while (i < cnt && mOMap[i] != o.get()) {
          const auto t = mIMap[i];
          if (t) {
-            mTracks->Remove(t);
+            mTracks->Remove(&locker, t);
          }
          i++;
       }
@@ -2183,22 +2194,24 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
       wxASSERT(i < cnt);
 
       // Remove the track from the output list...don't DELETE it
-      iterOut = mOutputTracks->erase(iterOut);
+      iterOut = mOutputTracks->Base(nullptr).erase(iterOut);
 
       const auto  t = mIMap[i];
       if (t == NULL)
       {
          // This track is a NEW addition to output tracks; add it to mTracks
-         mTracks->Add(std::move(o));
+         mTracks->Add(&locker, std::move(o));
       }
       else
       {
          // Replace mTracks entry with the NEW track
          WaveTrack *newTrack = static_cast<WaveTrack*>(o.get());
-         mTracks->Replace(t, std::move(o));
+         mTracks->Replace(&locker, t, std::move(o));
 
          // Swap the wavecache track the ondemand task uses, since now the NEW
          // one will be kept in the project
+         // Lift this part out of the scope of the locker?
+         // But it does nothing harmful that might cause deadlock.
          if (ODManager::IsInstanceCreated()) {
             ODManager::Instance()->ReplaceWaveTrack((WaveTrack *)t,
                                                     newTrack);
@@ -2211,7 +2224,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
    while (i < cnt) {
       const auto t = mIMap[i];
       if (t) {
-         mTracks->Remove(t);
+         mTracks->Remove(&locker, t);
       }
       i++;
    }
@@ -2221,7 +2234,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
    mOMap.clear();
 
    // Make sure we processed everything
-   wxASSERT(mOutputTracks->empty());
+   wxASSERT(mOutputTracks->Base().empty());
 
    // The output list is no longer needed
    mOutputTracks.reset();
@@ -2532,12 +2545,14 @@ void Effect::Preview(bool dryOnly)
       mixLeft->InsertSilence(0.0, mT0);
       mixLeft->SetSelected(true);
       mixLeft->SetDisplay(WaveTrack::NoDisplay);
-      mTracks->Add(std::move(mixLeft));
+      // Adding only to a temporary TrackList
+      mTracks->Add(nullptr, std::move(mixLeft));
       if (mixRight) {
          mixRight->Offset(-mixRight->GetStartTime());
          mixRight->InsertSilence(0.0, mT0);
          mixRight->SetSelected(true);
-         mTracks->Add(std::move(mixRight));
+         // Adding only to a temporary TrackList
+         mTracks->Add(nullptr, std::move(mixRight));
       }
    }
    else {
@@ -2550,7 +2565,8 @@ void Effect::Preview(bool dryOnly)
             dest->InsertSilence(0.0, mT0);
             dest->SetSelected(src->GetSelected());
             static_cast<WaveTrack*>(dest.get())->SetDisplay(WaveTrack::NoDisplay);
-            mTracks->Add(std::move(dest));
+            // Adding only to a temporary TrackList
+            mTracks->Add(nullptr, std::move(dest));
          }
          src = (WaveTrack *) iter.Next();
       }

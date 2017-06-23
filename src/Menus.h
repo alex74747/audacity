@@ -247,7 +247,9 @@ void OnRedo();
 
 private:
 static void FinishCopy(const Track *n, Track *dest);
-static void FinishCopy(const Track *n, Track::Holder &&dest, TrackList &list);
+static void FinishCopy
+   (const Track *n, Track::Holder &&dest,
+    TrackList::Locker *, TrackList &list);
 
 public:
 void OnCut();

@@ -100,7 +100,7 @@ UIHandle::Result CloseButtonHandle::CommitChanges
       pProject->StopIfPaused();
       if (!pProject->IsAudioActive()) {
          // This pushes an undo item:
-         pProject->RemoveTrack(pTrack.get());
+         pProject->RemoveTrack(&pProject->GetTracks()->mLock, pTrack.get());
          // Redraw all tracks when any one of them closes
          // (Could we invent a return code that draws only those at or below
          // the affected track?)

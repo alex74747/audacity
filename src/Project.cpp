@@ -2661,7 +2661,7 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
          t = iter.Next();
       }
 
-      mLastSavedTracks->Clear(); // sends an event
+      mLastSavedTracks->Clear(nullptr); // sends an event
       mLastSavedTracks.reset();
    }
 
@@ -2705,7 +2705,9 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
                        this);
 
    // Delete all the tracks to free up memory and DirManager references.
-   mTracks->Clear();
+   // Safely pass nullptr because TrackPanel is disconnected, so no other
+   // threads will examine the list.
+   mTracks->Clear(nullptr);
    mTracks.reset();
 
    // This must be done before the following Deref() since it holds
@@ -3120,9 +3122,13 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
       }
    }
 
+   bool bParseSuccess;
    XMLFileReader xmlFile;
-
-   bool bParseSuccess = xmlFile.Parse(this, fileName);
+   {
+      // Maybe this isn't needed
+      TrackList::Locker locker{ GetTracks()->mLock };
+      bParseSuccess = xmlFile.Parse(this, fileName);
+   }
 
    // Clean up now unused recording recovery handler if any
    mRecordingRecoveryHandler.reset();
@@ -3191,7 +3197,7 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
             }
          }
 
-         mLastSavedTracks->Add(t->Duplicate());
+         mLastSavedTracks->Add(nullptr, t->Duplicate());
          t = iter.Next();
       }
 
@@ -3322,7 +3328,9 @@ void AudacityProject::OpenFile(const wxString &fileNameArg, bool addtohistory)
          static_cast< WaveTrack* >(pTrack)->CloseLock();
       }
 
-      mTracks->Clear(); //mTracks->Clear(true);
+      { TrackList::Locker locker{ GetTracks()->mLock };
+         mTracks->Clear(&locker); //mTracks->Clear(&locker, true);
+      }
 
       mFileName = wxT("");
       SetProjectTitle();
@@ -3618,22 +3626,23 @@ XMLTagHandler *AudacityProject::HandleXMLChild(const wxChar *tag)
       return mTags.get();
    }
 
+   // See the locking of TrackList in AudacityProject::OpenFile
    if (!wxStrcmp(tag, wxT("wavetrack"))) {
-      return mTracks->Add(mTrackFactory->NewWaveTrack());
+      return mTracks->Add(nullptr, mTrackFactory->NewWaveTrack());
    }
 
    #ifdef USE_MIDI
    if (!wxStrcmp(tag, wxT("notetrack"))) {
-      return mTracks->Add(mTrackFactory->NewNoteTrack());
+      return mTracks->Add(nullptr, mTrackFactory->NewNoteTrack());
    }
    #endif // USE_MIDI
 
    if (!wxStrcmp(tag, wxT("labeltrack"))) {
-      return mTracks->Add(mTrackFactory->NewLabelTrack());
+      return mTracks->Add(nullptr, mTrackFactory->NewLabelTrack());
    }
 
    if (!wxStrcmp(tag, wxT("timetrack"))) {
-      return mTracks->Add(mTrackFactory->NewTimeTrack());
+      return mTracks->Add(nullptr, mTrackFactory->NewTimeTrack());
    }
 
    if (!wxStrcmp(tag, wxT("recordingrecovery"))) {
@@ -3981,13 +3990,13 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
       }
 
       if (mLastSavedTracks)
-         mLastSavedTracks->Clear();
+         mLastSavedTracks->Clear(nullptr);
       mLastSavedTracks = std::make_unique<TrackList>();
 
       TrackListIterator iter(GetTracks());
       Track *t = iter.First();
       while (t) {
-         mLastSavedTracks->Add(t->Duplicate());
+         mLastSavedTracks->Add(nullptr, t->Duplicate());
 
          //only after the xml has been saved we can mark it saved.
          //thus is because the OD blockfiles change on  background thread while this is going on.
@@ -4031,7 +4040,7 @@ bool AudacityProject::Save(bool overwrite /* = true */ ,
       {
          numWaveTracks++;
          pWaveTrack = (WaveTrack*)pTrack;
-         pSavedTrackList.Add(mTrackFactory->DuplicateWaveTrack(*pWaveTrack));
+         pSavedTrackList.Add(nullptr, mTrackFactory->DuplicateWaveTrack(*pWaveTrack));
       }
       auto cleanup = finally( [&] {
          // Restore the saved track states and clean up.
@@ -4123,36 +4132,38 @@ void AudacityProject::AddImportedTracks(const wxString &fileName,
    wxString trackNameBase = fileName.AfterLast(wxFILE_SEP_PATH).BeforeLast('.');
    bool isLinked = false;
    int i = -1;
-   for (auto &uNewTrack : newTracks) {
-      ++i;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      for (auto &uNewTrack : newTracks) {
+         ++i;
 
-      auto newTrack = mTracks->Add(std::move(uNewTrack));
-      if (newRate == 0 && newTrack->GetKind() == Track::Wave) {
-         newRate = ((WaveTrack *)newTrack)->GetRate();
-      }
-      newTrack->SetSelected(true);
-      //we need to check link status based on the first channel only.
-      if(0==i)
-         isLinked = newTrack->GetLinked();
-      if (numTracks > 2 || (numTracks > 1 && !isLinked) ) {
-         newTrack->SetName(trackNameBase + wxString::Format(wxT(" %d" ), i + 1));
-      }
-      else {
-         newTrack->SetName(trackNameBase);
-      }
+         auto newTrack = mTracks->Add(&locker, std::move(uNewTrack));
+         if (newRate == 0 && newTrack->GetKind() == Track::Wave) {
+            newRate = ((WaveTrack *)newTrack)->GetRate();
+         }
+         newTrack->SetSelected(true);
+         //we need to check link status based on the first channel only.
+         if(0==i)
+            isLinked = newTrack->GetLinked();
+         if (numTracks > 2 || (numTracks > 1 && !isLinked) ) {
+            newTrack->SetName(trackNameBase + wxString::Format(wxT(" %d" ), i + 1));
+         }
+         else {
+            newTrack->SetName(trackNameBase);
+         }
 
-      // Check if NEW track contains aliased blockfiles and if yes,
-      // remember this to show a warning later
-      if (newTrack->GetKind() == WaveTrack::Wave)
-      {
-         WaveClip* clip = ((WaveTrack*)newTrack)->GetClipByIndex(0);
-         BlockArray &blocks = clip->GetSequence()->GetBlockArray();
-         if (clip && blocks.size())
+         // Check if NEW track contains aliased blockfiles and if yes,
+         // remember this to show a warning later
+         if (newTrack->GetKind() == WaveTrack::Wave)
          {
-            SeqBlock& block = blocks[0];
-            if (block.f->IsAlias())
+            WaveClip* clip = ((WaveTrack*)newTrack)->GetClipByIndex(0);
+            BlockArray &blocks = clip->GetSequence()->GetBlockArray();
+            if (clip && blocks.size())
             {
-               mImportedDependencies = true;
+               SeqBlock& block = blocks[0];
+               if (block.f->IsAlias())
+               {
+                  mImportedDependencies = true;
+               }
             }
          }
       }
@@ -4507,42 +4518,44 @@ void AudacityProject::PopState(const UndoState &state)
    // Restore tags
    mTags = state.tags;
 
-   TrackList *const tracks = state.tracks.get();
-
-   mTracks->Clear();
-   TrackListIterator iter(tracks);
-   Track *t = iter.First();
    bool odUsed = false;
    movable_ptr<ODComputeSummaryTask> computeTask;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      TrackList *const tracks = state.tracks.get();
 
-   while (t)
-   {
-      auto copyTrack = mTracks->Add(t->Duplicate());
+      mTracks->Clear(&locker);
+      TrackListIterator iter(tracks);
+      Track *t = iter.First();
 
-      //add the track to OD if the manager exists.  later we might do a more rigorous check...
-      if (copyTrack->GetKind() == Track::Wave)
+      while (t)
       {
-         //if the ODManager hasn't been initialized, there's no chance this track has OD blocks since this
-         //is a "Redo" operation.
-         //TODO: update this to look like the update loop in OpenFile that handles general purpose ODTasks.
-         //BUT, it is too slow to go thru every blockfile and check the odtype, so maybe put a flag in wavetrack
-         //that gets unset on OD Completion, (and we could also update the drawing there too.)  The hard part is that
-         //we would need to watch every possible way a OD Blockfile could get inserted into a wavetrack and change the
-         //flag there.
-         if(ODManager::IsInstanceCreated())
+         auto copyTrack = mTracks->Add(&locker, t->Duplicate());
+
+         //add the track to OD if the manager exists.  later we might do a more rigorous check...
+         if (copyTrack->GetKind() == Track::Wave)
          {
-            if(!odUsed)
+            //if the ODManager hasn't been initialized, there's no chance this track has OD blocks since this
+            //is a "Redo" operation.
+            //TODO: update this to look like the update loop in OpenFile that handles general purpose ODTasks.
+            //BUT, it is too slow to go thru every blockfile and check the odtype, so maybe put a flag in wavetrack
+            //that gets unset on OD Completion, (and we could also update the drawing there too.)  The hard part is that
+            //we would need to watch every possible way a OD Blockfile could get inserted into a wavetrack and change the
+            //flag there.
+            if(ODManager::IsInstanceCreated())
             {
-               computeTask = make_movable<ODComputeSummaryTask>();
-               odUsed=true;
+               if(!odUsed)
+               {
+                  computeTask = make_movable<ODComputeSummaryTask>();
+                  odUsed=true;
+               }
+               // PRL:  Is it correct to add all tracks to one task, even if they
+               // are not partnered channels?  Rather than
+               // make one task for each?
+               computeTask->AddWaveTrack((WaveTrack*)copyTrack);
             }
-            // PRL:  Is it correct to add all tracks to one task, even if they
-            // are not partnered channels?  Rather than
-            // make one task for each?
-            computeTask->AddWaveTrack((WaveTrack*)copyTrack);
          }
+         t = iter.Next();
       }
-      t = iter.Next();
    }
 
    //add the task.
@@ -4650,7 +4663,7 @@ void AudacityProject::ClearClipboard()
    msClipT1 = 0.0;
    msClipProject = NULL;
    if (msClipboard) {
-      msClipboard->Clear();
+      msClipboard->Clear(nullptr);
    }
 }
 
@@ -5073,12 +5086,12 @@ void AudacityProject::EditClipboardByLabel( EditDestFunction action )
                         regions.at(i + 1).start - region.end);
          }
          if( merged )
-            newClipboard.Add( std::move(merged) );
+            newClipboard.Add( nullptr, std::move(merged) );
       }
    }
 
    // Survived possibility of exceptions.  Commit changes to the clipboard now.
-   newClipboard.Swap(*msClipboard);
+   newClipboard.Swap(nullptr, nullptr, *msClipboard);
 
    msClipT0 = regions.front().start;
    msClipT1 = regions.back().end;
@@ -5453,7 +5466,7 @@ void AudacityProject::SetTrackPan(WaveTrack * wt, LWSlider * slider)
 }
 
 /// Removes the specified track.  Called from HandleClosing.
-void AudacityProject::RemoveTrack(Track * toRemove)
+void AudacityProject::RemoveTrack(TrackList::Lock *lock, Track * toRemove)
 {
    // If it was focused, reassign focus to the next or, if
    // unavailable, the previous track.
@@ -5477,9 +5490,15 @@ void AudacityProject::RemoveTrack(Track * toRemove)
          pMixerBoard->RemoveTrackCluster(playable); // Will remove partner shown in same cluster.
    }
 
-   mTracks->Remove(toRemove);
-   if (partner) {
-      mTracks->Remove(partner);
+   {
+      Maybe<TrackList::Locker> locker;
+      if (lock)
+         locker.create(*lock);
+
+      mTracks->Remove(locker.get(), toRemove);
+      if (partner) {
+         mTracks->Remove(locker.get(), partner);
+      }
    }
 
    if (mTracks->IsEmpty()) {

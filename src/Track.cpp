@@ -487,12 +487,12 @@ Track *TrackListIterator::Prev(bool skiplinked)
    return cur->get();
 }
 
-Track *TrackListIterator::RemoveCurrent()
+Track *TrackListIterator::RemoveCurrent(TrackList::Locker *locker)
 {
    if (!l || l->isNull(cur))
       return nullptr;
 
-   cur = l->Remove(cur->get());
+   cur = l->Remove(locker, cur->get());
 
    #ifdef DEBUG_TLI // if we are debugging this bit
    wxASSERT_MSG((!cur || (*l).Contains((*cur).t)), wxT("cur invalid after deletion of track."));   // check that cur is in the list
@@ -748,43 +748,29 @@ TrackList::TrackList()
 {
 }
 
-TrackList::TrackList(const TrackList &that)
+TrackList::TrackList
+(Locker *mine, const TrackList &that)
    : ListOfTracks{}
 {
-   DoAssign(that);
+   DoAssign(mine, that);
 }
 
-TrackList& TrackList::operator= (const TrackList &that)
+TrackList::TrackList
+(Locker *mine, Locker *theirs, TrackList &&that)
 {
-   if (this != &that) {
-      this->Clear();
-      DoAssign(that);
-   }
-   return *this;
+   Swap(mine, theirs, that);
 }
 
-TrackList::TrackList(TrackList &&that)
-{
-   Swap(that);
-}
-
-TrackList &TrackList::operator= (TrackList &&that)
-{
-   if (this != &that) {
-      this->Clear();
-      Swap(that);
-   }
-   return *this;
-}
-
-void TrackList::DoAssign(const TrackList &that)
+void TrackList::DoAssign
+(Locker *mine, const TrackList &that)
 {
    TrackListConstIterator it(&that);
    for (const Track *track = it.First(); track; track = it.Next())
-      Add(track->Duplicate());
+      Add(mine, track->Duplicate());
 }
 
-void TrackList::Swap(TrackList &that)
+void TrackList::Swap
+(Locker *, Locker *, TrackList &that)
 {
    ListOfTracks::swap(that);
    for (auto it = begin(), last = end(); it != last; ++it)
@@ -795,7 +781,7 @@ void TrackList::Swap(TrackList &that)
 
 TrackList::~TrackList()
 {
-   Clear(false);
+   Clear(nullptr, false);
 }
 
 void TrackList::RecalcPositions(TrackNodePointer node)
@@ -871,7 +857,8 @@ void TrackList::ResizingEvent(TrackNodePointer node)
    QueueEvent(e.release());
 }
 
-void TrackList::Permute(const std::vector<TrackNodePointer> &permutation)
+void TrackList::Permute
+(Locker*, const std::vector<TrackNodePointer> &permutation)
 {
    for (const auto iter : permutation) {
       value_type track = std::move(*iter);
@@ -879,12 +866,14 @@ void TrackList::Permute(const std::vector<TrackNodePointer> &permutation)
       Track *pTrack = track.get();
       pTrack->SetOwner(this, insert(end(), std::move(track)));
    }
+   // lift
    auto n = begin();
    RecalcPositions(n);
 }
 
 template<typename TrackKind>
-Track *TrackList::Add(std::unique_ptr<TrackKind> &&t)
+Track *TrackList::Add
+(Locker *, std::unique_ptr<TrackKind> &&t)
 {
    Track *pTrack;
    push_back(value_type(pTrack = t.release()));
@@ -897,16 +886,17 @@ Track *TrackList::Add(std::unique_ptr<TrackKind> &&t)
 }
 
 // Make instantiations for the linker to find
-template Track *TrackList::Add<TimeTrack>(std::unique_ptr<TimeTrack> &&);
+template Track *TrackList::Add<TimeTrack>(Locker *, std::unique_ptr<TimeTrack> &&);
 #if defined(USE_MIDI)
-template Track *TrackList::Add<NoteTrack>(std::unique_ptr<NoteTrack> &&);
+template Track *TrackList::Add<NoteTrack>(Locker *, std::unique_ptr<NoteTrack> &&);
 #endif
-template Track *TrackList::Add<WaveTrack>(std::unique_ptr<WaveTrack> &&);
-template Track *TrackList::Add<LabelTrack>(std::unique_ptr<LabelTrack> &&);
-template Track *TrackList::Add<Track>(std::unique_ptr<Track> &&);
+template Track *TrackList::Add<WaveTrack>(Locker *, std::unique_ptr<WaveTrack> &&);
+template Track *TrackList::Add<LabelTrack>(Locker *, std::unique_ptr<LabelTrack> &&);
+template Track *TrackList::Add<Track>(Locker *, std::unique_ptr<Track> &&);
 
 template<typename TrackKind>
-Track *TrackList::AddToHead(std::unique_ptr<TrackKind> &&t)
+Track *TrackList::AddToHead
+(Locker *, std::unique_ptr<TrackKind> &&t)
 {
    Track *pTrack;
    push_front(value_type(pTrack = t.release()));
@@ -918,10 +908,11 @@ Track *TrackList::AddToHead(std::unique_ptr<TrackKind> &&t)
 }
 
 // Make instantiations for the linker to find
-template Track *TrackList::AddToHead<TimeTrack>(std::unique_ptr<TimeTrack> &&);
+template Track *TrackList::AddToHead<TimeTrack>(Locker *, std::unique_ptr<TimeTrack> &&);
 
 template<typename TrackKind>
-Track *TrackList::Add(std::shared_ptr<TrackKind> &&t)
+Track *TrackList::Add
+(Locker *, std::shared_ptr<TrackKind> &&t)
 {
    push_back(t);
    auto n = end();
@@ -933,10 +924,11 @@ Track *TrackList::Add(std::shared_ptr<TrackKind> &&t)
 }
 
 // Make instantiations for the linker to find
-template Track *TrackList::Add<Track>(std::shared_ptr<Track> &&);
-template Track *TrackList::Add<WaveTrack>(std::shared_ptr<WaveTrack> &&);
+template Track *TrackList::Add<Track>(Locker *, std::shared_ptr<Track> &&);
+template Track *TrackList::Add<WaveTrack>(Locker *, std::shared_ptr<WaveTrack> &&);
 
-auto TrackList::Replace(Track * t, value_type &&with) -> value_type
+auto TrackList::Replace
+(Locker *, Track * t, value_type &&with) -> value_type
 {
    value_type holder;
    if (t && with) {
@@ -956,7 +948,8 @@ auto TrackList::Replace(Track * t, value_type &&with) -> value_type
    return holder;
 }
 
-TrackNodePointer TrackList::Remove(Track *t)
+TrackNodePointer TrackList::Remove
+(Locker *, Track *t)
 {
    TrackNodePointer result(end());
    if (t) {
@@ -977,7 +970,8 @@ TrackNodePointer TrackList::Remove(Track *t)
    return result;
 }
 
-void TrackList::Clear(bool sendEvent)
+void TrackList::Clear
+(Locker *, bool sendEvent)
 {
    ListOfTracks tempList;
    tempList.swap( *this );
@@ -1093,6 +1087,8 @@ bool TrackList::CanMoveDown(Track * t) const
 // in one of the tracks.
 void TrackList::SwapNodes(TrackNodePointer s1, TrackNodePointer s2)
 {
+   // This function is private and locking is assumed done as needed
+
    // if a null pointer is passed in, we want to know about it
    wxASSERT(!isNull(s1));
    wxASSERT(!isNull(s2));
@@ -1153,7 +1149,8 @@ void TrackList::SwapNodes(TrackNodePointer s1, TrackNodePointer s2)
    RecalcPositions(s1);
 }
 
-bool TrackList::MoveUp(Track * t)
+bool TrackList::MoveUp
+(Locker *, Track * t)
 {
    if (t) {
       Track *p = GetPrev(t, true);
@@ -1166,7 +1163,8 @@ bool TrackList::MoveUp(Track * t)
    return false;
 }
 
-bool TrackList::MoveDown(Track * t)
+bool TrackList::MoveDown
+(Locker *, Track * t)
 {
    if (t) {
       Track *n = GetNext(t, true);

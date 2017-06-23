@@ -2785,7 +2785,9 @@ void AudacityProject::SortTracks(int flags)
    //sort by linked tracks. Assumes linked track follows owner in list.
 
    // First find the permutation.
-   for (auto iter = mTracks->begin(), end = mTracks->end(); iter != end; ++iter) {
+   TrackList::Locker locker{ GetTracks()->mLock };
+   for (auto iter = mTracks->Base(&locker).begin(),
+        end = mTracks->Base(&locker).end(); iter != end; ++iter) {
       const auto &track = *iter;
       if(lastTrackLinked) {
          //insert after the last track since this track should be linked to it.
@@ -2849,7 +2851,7 @@ void AudacityProject::SortTracks(int flags)
    }
 
    // Now apply the permutation
-   mTracks->Permute(arr);
+   mTracks->Permute(&locker, arr);
 }
 
 void AudacityProject::OnSortTime()
@@ -3827,7 +3829,7 @@ void AudacityProject::OnTrackClose()
       return;
    }
 
-   RemoveTrack(t);
+   RemoveTrack(&GetTracks()->mLock, t);
 
    GetTrackPanel()->UpdateViewIfNoTracks();
    GetTrackPanel()->Refresh(false);
@@ -3876,41 +3878,44 @@ void AudacityProject::MoveTrack(Track* target, MoveChoice choice)
    wxString direction;
 
    auto pt = dynamic_cast<PlayableTrack*>(target);
-   switch (choice)
-   {
-   case OnMoveTopID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Top");
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      switch (choice)
+      {
+            // hoist?
+      case OnMoveTopID:
+         /* i18n-hint: where the track is moving to.*/
+         direction = _("to Top");
 
-      while (mTracks->CanMoveUp(target)) {
-         if (mTracks->Move(target, true)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && pt)
-               pMixerBoard->MoveTrackCluster(pt, true);
+         while (mTracks->CanMoveUp(target)) {
+            if (mTracks->Move(&locker, target, true)) {
+               MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
+               if (pMixerBoard && pt)
+                  pMixerBoard->MoveTrackCluster(pt, true);
+            }
          }
-      }
-      break;
-   case OnMoveBottomID:
-      /* i18n-hint: where the track is moving to.*/
-      direction = _("to Bottom");
+         break;
+      case OnMoveBottomID:
+         /* i18n-hint: where the track is moving to.*/
+         direction = _("to Bottom");
 
-      while (mTracks->CanMoveDown(target)) {
-         if (mTracks->Move(target, false)) {
-            MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
-            if (pMixerBoard && pt)
-               pMixerBoard->MoveTrackCluster(pt, false);
+         while (mTracks->CanMoveDown(target)) {
+            if (mTracks->Move(&locker, target, false)) {
+               MixerBoard* pMixerBoard = this->GetMixerBoard(); // Update mixer board.
+               if (pMixerBoard && pt)
+                  pMixerBoard->MoveTrackCluster(pt, false);
+            }
          }
-      }
-      break;
-   default:
-      bool bUp = (OnMoveUpID == choice);
-      /* i18n-hint: a direction.*/
-      direction = bUp ? _("Up") : _("Down");
+         break;
+      default:
+         bool bUp = (OnMoveUpID == choice);
+         /* i18n-hint: a direction.*/
+         direction = bUp ? _("Up") : _("Down");
 
-      if (mTracks->Move(target, bUp)) {
-         MixerBoard* pMixerBoard = this->GetMixerBoard();
-         if (pMixerBoard && pt)
-            pMixerBoard->MoveTrackCluster(pt, bUp);
+         if (mTracks->Move(&locker, target, bUp)) {
+            MixerBoard* pMixerBoard = this->GetMixerBoard();
+            if (pMixerBoard && pt)
+               pMixerBoard->MoveTrackCluster(pt, bUp);
+         }
       }
    }
 
@@ -4180,7 +4185,9 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
 
       if (!success) {
          if (newTrack) {
-            mTracks->Remove(newTrack);
+            { TrackList::Locker locker{ GetTracks()->mLock };
+               mTracks->Remove(&locker, newTrack);
+            }
             mTrackPanel->Refresh(false);
          }
 
@@ -4211,7 +4218,10 @@ bool AudacityProject::OnEffect(const PluginID & ID, int flags)
       // No tracks were selected...
       if (type == EffectTypeGenerate) {
          // Create a NEW track for the generated audio...
-         newTrack = static_cast<WaveTrack*>(mTracks->Add(mTrackFactory->NewWaveTrack()));
+         { TrackList::Locker locker{ GetTracks()->mLock };
+            newTrack = static_cast<WaveTrack*>
+               (mTracks->Add(&locker, mTrackFactory->NewWaveTrack()));
+         }
          newTrack->SetSelected(true);
       }
    }
@@ -4677,11 +4687,12 @@ void AudacityProject::FinishCopy
 }
 
 void AudacityProject::FinishCopy
-   (const Track *n, Track::Holder &&dest, TrackList &list)
+(const Track *n, Track::Holder &&dest,
+ TrackList::Locker *locker, TrackList &list)
 {
    FinishCopy( n, dest.get() );
    if (dest)
-      list.Add(std::move(dest));
+      list.Add(locker, std::move(dest));
 }
 
 void AudacityProject::OnCut()
@@ -4723,13 +4734,13 @@ void AudacityProject::OnCut()
             dest = n->Copy(mViewInfo.selectedRegion.t0(),
                     mViewInfo.selectedRegion.t1());
 
-         FinishCopy(n, std::move(dest), newClipboard);
+         FinishCopy(n, std::move(dest), nullptr, newClipboard);
       }
       n = iter.Next();
    }
 
    // Survived possibility of exceptions.  Commit changes to the clipboard now.
-   newClipboard.Swap(*msClipboard);
+   newClipboard.Swap(nullptr, nullptr, *msClipboard);
 
    // Proceed to change the project.  If this throws, the project will be
    // rolled back by the top level handler.
@@ -4809,13 +4820,13 @@ void AudacityProject::OnSplitCut()
                        mViewInfo.selectedRegion.t1());
          }
          if (dest)
-            FinishCopy(n, std::move(dest), newClipboard);
+            FinishCopy(n, std::move(dest), nullptr, newClipboard);
       }
       n = iter.Next();
    }
 
    // Survived possibility of exceptions.  Commit changes to the clipboard now.
-   newClipboard.Swap(*msClipboard);
+   newClipboard.Swap(nullptr, nullptr, *msClipboard);
 
    msClipT0 = mViewInfo.selectedRegion.t0();
    msClipT1 = mViewInfo.selectedRegion.t1();
@@ -4858,13 +4869,13 @@ void AudacityProject::OnCopy()
       if (n->GetSelected()) {
          auto dest = n->Copy(mViewInfo.selectedRegion.t0(),
                  mViewInfo.selectedRegion.t1());
-         FinishCopy(n, std::move(dest), newClipboard);
+         FinishCopy(n, std::move(dest), nullptr, newClipboard);
       }
       n = iter.Next();
    }
 
    // Survived possibility of exceptions.  Commit changes to the clipboard now.
-   newClipboard.Swap(*msClipboard);
+   newClipboard.Swap(nullptr, nullptr, *msClipboard);
 
    msClipT0 = mViewInfo.selectedRegion.t0();
    msClipT1 = mViewInfo.selectedRegion.t1();
@@ -5153,61 +5164,63 @@ bool AudacityProject::HandlePasteNothingSelected()
          return true; // nothing to paste
 
       Track* pFirstNewTrack = NULL;
-      while (pClip) {
-         Maybe<WaveTrack::Locker> locker;
-         if ((msClipProject != this) && (pClip->GetKind() == Track::Wave))
-            // Cause duplication of block files on disk, when copy is
-            // between projects
-            locker.create(static_cast<const WaveTrack*>(pClip));
+      { TrackList::Locker tllocker{ GetTracks()->mLock };
+         while (pClip) {
+            Maybe<WaveTrack::Locker> locker;
+            if ((msClipProject != this) && (pClip->GetKind() == Track::Wave))
+               // Cause duplication of block files on disk, when copy is
+               // between projects
+               locker.create(static_cast<const WaveTrack*>(pClip));
 
-         Track::Holder uNewTrack;
-         Track *pNewTrack;
-         switch (pClip->GetKind()) {
-         case Track::Wave:
-            {
-               WaveTrack *w = (WaveTrack *)pClip;
-               uNewTrack = mTrackFactory->NewWaveTrack(w->GetSampleFormat(), w->GetRate()),
+            Track::Holder uNewTrack;
+            Track *pNewTrack;
+            switch (pClip->GetKind()) {
+            case Track::Wave:
+               {
+                  WaveTrack *w = (WaveTrack *)pClip;
+                  uNewTrack = mTrackFactory->NewWaveTrack(w->GetSampleFormat(), w->GetRate()),
+                  pNewTrack = uNewTrack.get();
+               }
+               break;
+
+            #ifdef USE_MIDI
+            case Track::Note:
+               uNewTrack = mTrackFactory->NewNoteTrack(),
                pNewTrack = uNewTrack.get();
+               break;
+            #endif // USE_MIDI
+
+            case Track::Label:
+               uNewTrack = mTrackFactory->NewLabelTrack(),
+               pNewTrack = uNewTrack.get();
+               break;
+            case Track::Time: {
+               // Maintain uniqueness of the time track!
+               pNewTrack = GetTracks()->GetTimeTrack();
+               if (!pNewTrack)
+                  uNewTrack = mTrackFactory->NewTimeTrack(),
+                  pNewTrack = uNewTrack.get();
+               break;
             }
-            break;
+            default:
+               pClip = iterClip.Next();
+               continue;
+            }
+            wxASSERT(pClip);
 
-         #ifdef USE_MIDI
-         case Track::Note:
-            uNewTrack = mTrackFactory->NewNoteTrack(),
-            pNewTrack = uNewTrack.get();
-            break;
-         #endif // USE_MIDI
+            pNewTrack->Paste(0.0, pClip);
 
-         case Track::Label:
-            uNewTrack = mTrackFactory->NewLabelTrack(),
-            pNewTrack = uNewTrack.get();
-            break;
-         case Track::Time: {
-            // Maintain uniqueness of the time track!
-            pNewTrack = GetTracks()->GetTimeTrack();
-            if (!pNewTrack)
-               uNewTrack = mTrackFactory->NewTimeTrack(),
-               pNewTrack = uNewTrack.get();
-            break;
-         }
-         default:
+            if (!pFirstNewTrack)
+               pFirstNewTrack = pNewTrack;
+
+            pNewTrack->SetSelected(true);
+            if (uNewTrack)
+               FinishCopy(pClip, std::move(uNewTrack), &tllocker, *mTracks);
+            else
+               FinishCopy(pClip, pNewTrack);
+
             pClip = iterClip.Next();
-            continue;
          }
-         wxASSERT(pClip);
-
-         pNewTrack->Paste(0.0, pClip);
-
-         if (!pFirstNewTrack)
-            pFirstNewTrack = pNewTrack;
-
-         pNewTrack->SetSelected(true);
-         if (uNewTrack)
-            FinishCopy(pClip, std::move(uNewTrack), *mTracks);
-         else
-            FinishCopy(pClip, pNewTrack);
-
-         pClip = iterClip.Next();
       }
 
       // Select some pasted samples, which is probably impossible to get right
@@ -5262,7 +5275,8 @@ void AudacityProject::OnPasteNewLabel()
 
       // If no match found, add one
       if (!t) {
-         t = mTracks->Add(GetTrackFactory()->NewLabelTrack());
+         TrackList::Locker locker{ GetTracks()->mLock };
+         t = mTracks->Add(&locker, GetTrackFactory()->NewLabelTrack());
       }
 
       // Select this track so the loop picks it up
@@ -5465,21 +5479,23 @@ void AudacityProject::OnDuplicate()
    Track *l = iter.Last();
    Track *n = iter.First();
 
-   while (n) {
-      if (n->GetSelected()) {
-         // Make copies not for clipboard but for direct addition to the project
-         auto dest = n->Copy(mViewInfo.selectedRegion.t0(),
-                 mViewInfo.selectedRegion.t1(), false);
-         dest->Init(*n);
-         dest->SetOffset(wxMax(mViewInfo.selectedRegion.t0(), n->GetOffset()));
-         mTracks->Add(std::move(dest));
-      }
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      while (n) {
+         if (n->GetSelected()) {
+            // Make copies not for clipboard but for direct addition to the project
+            auto dest = n->Copy(mViewInfo.selectedRegion.t0(),
+                    mViewInfo.selectedRegion.t1(), false);
+            dest->Init(*n);
+            dest->SetOffset(wxMax(mViewInfo.selectedRegion.t0(), n->GetOffset()));
+            mTracks->Add(&locker, std::move(dest));
+         }
 
-      if (n == l) {
-         break;
-      }
+         if (n == l) {
+            break;
+         }
 
-      n = iter.Next();
+         n = iter.Next();
+      }
    }
 
    PushState(_("Duplicated"), _("Duplicate"));
@@ -5719,36 +5735,38 @@ void AudacityProject::OnSplitNew()
 {
    TrackListIterator iter(GetTracks());
    Track *l = iter.Last();
+ 
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      for (Track *n = iter.First(); n; n = iter.Next()) {
+         if (n->GetSelected()) {
+            Track::Holder dest;
+            double newt0 = 0, newt1 = 0;
+            double offset = n->GetOffset();
+            if (n->GetKind() == Track::Wave) {
+               const auto wt = static_cast<WaveTrack*>(n);
+               // Clips must be aligned to sample positions or the NEW clip will not fit in the gap where it came from
+               offset = wt->LongSamplesToTime(wt->TimeToLongSamples(offset));
+               newt0 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t0()));
+               newt1 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t1()));
+               dest = wt->SplitCut(newt0, newt1);
+            }
+   #if 0
+            // LL:  For now, just skip all non-wave tracks since the other do not
+            //      yet support proper splitting.
+            else {
+               dest = n->Cut(mViewInfo.selectedRegion.t0(),
+                      mViewInfo.selectedRegion.t1());
+            }
+   #endif
+            if (dest) {
+               dest->SetOffset(wxMax(newt0, offset));
+               FinishCopy(n, std::move(dest), &locker, *mTracks);
+            }
+         }
 
-   for (Track *n = iter.First(); n; n = iter.Next()) {
-      if (n->GetSelected()) {
-         Track::Holder dest;
-         double newt0 = 0, newt1 = 0;
-         double offset = n->GetOffset();
-         if (n->GetKind() == Track::Wave) {
-            const auto wt = static_cast<WaveTrack*>(n);
-            // Clips must be aligned to sample positions or the NEW clip will not fit in the gap where it came from
-            offset = wt->LongSamplesToTime(wt->TimeToLongSamples(offset));
-            newt0 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t0()));
-            newt1 = wt->LongSamplesToTime(wt->TimeToLongSamples(mViewInfo.selectedRegion.t1()));
-            dest = wt->SplitCut(newt0, newt1);
+         if (n == l) {
+            break;
          }
-#if 0
-         // LL:  For now, just skip all non-wave tracks since the other do not
-         //      yet support proper splitting.
-         else {
-            dest = n->Cut(mViewInfo.selectedRegion.t0(),
-                   mViewInfo.selectedRegion.t1());
-         }
-#endif
-         if (dest) {
-            dest->SetOffset(wxMax(newt0, offset));
-            FinishCopy(n, std::move(dest), *mTracks);
-         }
-      }
-
-      if (n == l) {
-         break;
       }
    }
 
@@ -6049,14 +6067,15 @@ int AudacityProject::FindClips(double t0, double t1, bool next, std::vector<Foun
    finalResults.clear();
 
    bool anyWaveTracksSelected =
-      tracks->end() != std::find_if(tracks->begin(), tracks->end(),
+      tracks->Base().end() != std::find_if(
+         tracks->Base().begin(), tracks->Base().end(),
          [] (const std::shared_ptr<Track>& t) {
             return t->GetSelected() && t->GetKind() == Track::Wave; });
 
    // first search the tracks individually
    std::vector<FoundClip> results;
    int nTracksSearched = 0;
-   for (auto& track : *tracks) {
+   for (auto& track : tracks->Base()) {
       if (track->GetKind() == Track::Wave && (!anyWaveTracksSelected || track->GetSelected())) {
          auto waveTrack = static_cast<const WaveTrack*>(track.get());
          auto result = next ? FindNextClip(waveTrack, t0, t1) :
@@ -6137,9 +6156,11 @@ void AudacityProject::OnSelectClip(bool next)
 
          if (nTracksSearched > 1) {
             if (result.waveTrack->GetName() == result.waveTrack->GetDefaultName()) {
-               auto track = std::find_if(GetTracks()->begin(), GetTracks()->end(),
+               auto track = std::find_if(
+                  GetTracks()->Base().begin(), GetTracks()->Base().end(),
                   [&] (const std::shared_ptr<Track>& t) { return t.get() == result.waveTrack; });
-               temp.Printf(wxT("%s %d "), _("Track"), std::distance(GetTracks()->begin(), track) + 1);
+               temp.Printf(wxT("%s %d "), _("Track"),
+                  std::distance(GetTracks()->Base().begin(), track) + 1);
             }
             else
                temp.Printf(wxT("%s "), result.waveTrack->GetName());
@@ -6694,7 +6715,9 @@ void AudacityProject::OnImportLabels()
 
       SelectNone();
       newTrack->SetSelected(true);
-      mTracks->Add(std::move(newTrack));
+      { TrackList::Locker locker{ GetTracks()->mLock };
+         mTracks->Add(&locker, std::move(newTrack));
+      }
 
       PushState(wxString::
                 Format(_("Imported labels from '%s'"), fileName.c_str()),
@@ -6739,7 +6762,10 @@ AudacityProject *AudacityProject::DoImportMIDI(
    if (::ImportMIDI(fileName, newTrack.get())) {
 
       pProject->SelectNone();
-      auto pTrack = pProject->mTracks->Add(std::move(newTrack));
+      Track *pTrack;
+      { TrackList::Locker locker{ pProject->GetTracks()->mLock };
+         pTrack = pProject->mTracks->Add(&locker, std::move(newTrack));
+      }
       pTrack->SetSelected(true);
 
       pProject->PushState(wxString::Format(_("Imported MIDI from '%s'"),
@@ -6825,32 +6851,34 @@ void AudacityProject::HandleMixAndRender(bool toNewTrack)
       int selectedCount = 0;
       wxString firstName;
 
-      while (t) {
-         if (t->GetSelected() && (t->GetKind() == Track::Wave)) {
-            if (selectedCount==0)
-               firstName = t->GetName();
+      Track *pNewLeft{}, *pNewRight{};
+      { TrackList::Locker locker{ GetTracks()->mLock };
+         while (t) {
+            if (t->GetSelected() && (t->GetKind() == Track::Wave)) {
+               if (selectedCount==0)
+                  firstName = t->GetName();
 
-            // Add one to the count if it's an unlinked track, or if it's the first
-            // in a stereo pair
-            if (t->GetLinked() || !t->GetLink())
-                selectedCount++;
+               // Add one to the count if it's an unlinked track, or if it's the first
+               // in a stereo pair
+               if (t->GetLinked() || !t->GetLink())
+                  selectedCount++;
 
-                if (!toNewTrack) {
-                   t = iter.RemoveCurrent();
-                } else {
-                   t = iter.Next();
-                };
+               if (!toNewTrack) {
+                  t = iter.RemoveCurrent(&locker);
+               } else {
+                  t = iter.Next();
+               };
+            }
+            else
+               t = iter.Next();
          }
-         else
-            t = iter.Next();
+
+         // Add NEW tracks
+
+         pNewLeft = mTracks->Add(&locker, std::move(uNewLeft));
+         if (uNewRight)
+            pNewRight = mTracks->Add(&locker, std::move(uNewRight));
       }
-
-      // Add NEW tracks
-
-      auto pNewLeft = mTracks->Add(std::move(uNewLeft));
-      decltype(pNewLeft) pNewRight{};
-      if (uNewRight)
-         pNewRight = mTracks->Add(std::move(uNewRight));
 
       // If we're just rendering (not mixing), keep the track name the same
       if (selectedCount==1) {
@@ -7116,14 +7144,15 @@ int AudacityProject::FindClipBoundaries(double time, bool next, std::vector<Foun
    finalResults.clear();
 
    bool anyWaveTracksSelected =
-      tracks->end() != std::find_if(tracks->begin(), tracks->end(),
+      tracks->Base().end() != std::find_if(
+         tracks->Base().begin(), tracks->Base().end(),
          [] (const std::shared_ptr<Track>& t) {
             return t->GetSelected() && t->GetKind() == Track::Wave; });
 
    // first search the tracks individually
    std::vector<FoundClipBoundary> results;
    int nTracksSearched = 0;
-   for (auto& track : *tracks) {
+   for (auto& track : tracks-> Base()) {
       if ( track->GetKind() == Track::Wave && (!anyWaveTracksSelected || track->GetSelected())) {
          auto waveTrack = static_cast<const WaveTrack*>(track.get());
          auto result = next ? FindNextClipBoundary(waveTrack, time) :
@@ -7189,9 +7218,11 @@ wxString AudacityProject::ClipBoundaryMessage(int nTracksSearched, const std::ve
       wxString temp;
       if (nTracksSearched > 1) {
          if (result.waveTrack->GetName() == result.waveTrack->GetDefaultName()) {
-            auto track = std::find_if(GetTracks()->begin(), GetTracks()->end(),
+            auto track = std::find_if(
+               GetTracks()->Base().begin(), GetTracks()->Base().end(),
                [&] (const std::shared_ptr<Track>& t) { return t.get() == result.waveTrack; });
-            temp.Printf(wxT("%s %d "), _("Track"), std::distance(GetTracks()->begin(), track) + 1);
+            temp.Printf(wxT("%s %d "), _("Track"),
+               std::distance(GetTracks()->Base().begin(), track) + 1);
          }
          else 
             temp.Printf( wxT("%s "), result.waveTrack->GetName());
@@ -7673,7 +7704,11 @@ void AudacityProject::OnScoreAlign()
 
 void AudacityProject::OnNewWaveTrack()
 {
-   auto t = mTracks->Add(mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
+   Track *t;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      t = mTracks->Add(&locker,
+         mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
+   }
    SelectNone();
 
    t->SetSelected(true);
@@ -7686,27 +7721,35 @@ void AudacityProject::OnNewWaveTrack()
 
 void AudacityProject::OnNewStereoTrack()
 {
-   auto t = mTracks->Add(mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
-   t->SetChannel(Track::LeftChannel);
    SelectNone();
 
-   t->SetSelected(true);
-   t->SetLinked (true);
+   Track *t1, *t2;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      t1 = mTracks->Add(
+         &locker, mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
 
-   t = mTracks->Add(mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
-   t->SetChannel(Track::RightChannel);
+      t2 = mTracks->Add(
+         &locker, mTrackFactory->NewWaveTrack(mDefaultFormat, mRate));
+   }
 
-   t->SetSelected(true);
+   t1->SetChannel(Track::LeftChannel);
+   t1->SetSelected(true);
+   t1->SetLinked (true);
+   t2->SetChannel(Track::RightChannel);
+   t2->SetSelected(true);
 
    PushState(_("Created new stereo audio track"), _("New Track"));
 
    RedrawProject();
-   mTrackPanel->EnsureVisible(t);
+   mTrackPanel->EnsureVisible(t2);
 }
 
 void AudacityProject::OnNewLabelTrack()
 {
-   auto t = mTracks->Add(GetTrackFactory()->NewLabelTrack());
+   Track *t;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      t = mTracks->Add(&locker, GetTrackFactory()->NewLabelTrack());
+   }
 
    SelectNone();
 
@@ -7725,7 +7768,10 @@ void AudacityProject::OnNewTimeTrack()
       return;
    }
 
-   auto t = mTracks->AddToHead(mTrackFactory->NewTimeTrack());
+   Track *t;
+   { TrackList::Locker locker{ GetTracks()->mLock };
+      t = mTracks->AddToHead(&locker, mTrackFactory->NewTimeTrack());
+   }
 
    SelectNone();
 
@@ -7851,8 +7897,9 @@ int AudacityProject::DoAddLabel(const SelectedRegion &region, bool preserveFocus
 
    // If none found, start a NEW label track and use it
    if (!lt) {
+      TrackList::Locker locker{ GetTracks()->mLock };
       lt = static_cast<LabelTrack*>
-         (mTracks->Add(GetTrackFactory()->NewLabelTrack()));
+         (mTracks->Add(&locker, GetTrackFactory()->NewLabelTrack()));
    }
 
 // LLL: Commented as it seemed a little forceful to remove users
@@ -7974,10 +8021,11 @@ void AudacityProject::OnEditChains()
 void AudacityProject::OnRemoveTracks()
 {
    TrackListIterator iter(GetTracks());
-   Track *t = iter.First();
+   Track *t;
    Track *f = NULL;
    Track *l = NULL;
 
+   t = iter.First();
    while (t) {
       if (t->GetSelected()) {
          auto playable = dynamic_cast<PlayableTrack*>(t);
@@ -7985,11 +8033,22 @@ void AudacityProject::OnRemoveTracks()
             mMixerBoard->RemoveTrackCluster(playable);
          if (!f)
             f = l;         // Capture the track preceeding the first removed track
-         t = iter.RemoveCurrent();
       }
-      else {
+      else
          l = t;
-         t = iter.Next();
+      t = iter.Next();
+   }
+
+   {
+      // Iterate again, doing the removal, putting as little as needed in the
+      // scope of the locker
+      TrackList::Locker locker{ GetTracks()->mLock };
+      t = iter.First();
+      while (t) {
+         if (t->GetSelected())
+            t = iter.RemoveCurrent(&locker);
+         else
+            t = iter.Next();
       }
    }
 
