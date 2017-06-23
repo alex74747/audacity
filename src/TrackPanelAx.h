@@ -13,6 +13,7 @@
 
 #include <wx/window.h>
 #include <wx/panel.h>
+#include <wx/thread.h>
 
 #if wxUSE_ACCESSIBILITY
 #include <wx/access.h>
@@ -30,6 +31,9 @@ class TrackPanelAx final
 public:
    TrackPanelAx(wxWindow * window);
    virtual ~ TrackPanelAx();
+
+   // TrackPanel calls this when it is destroyed
+   void Disconnect();
 
    // Returns currently focused track or first one if none focused
    std::shared_ptr<Track> GetFocus();
@@ -111,6 +115,22 @@ private:
 
    int TrackNum( const std::shared_ptr<Track> &track );
    std::shared_ptr<Track> FindTrack( int num );
+
+#if wxUSE_ACCESSIBILITY
+   // Can we use wxCriticalSection, or is inter-process synchronization on
+   // Windows really needed?
+   using Lock = wxMutex;
+   using Locker = wxMutexLocker;
+#else
+   struct Lock {};
+   struct Locker { Locker(Lock &lock) {} };
+#endif
+
+   // This serializes the uses of mTrackPanel that might happen in other
+   // threads with destruction of the TrackPanel in the main thread.
+   // It also serializes all read of mFocusedTrack by other thread with
+   // writes by the main thread.
+   Lock mLock;
 
    TrackPanel *mTrackPanel;
 

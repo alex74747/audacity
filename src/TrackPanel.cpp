@@ -358,6 +358,8 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
 TrackPanel::~TrackPanel()
 {
+   mAx->Disconnect();
+
    mTimer.Stop();
 
    // Unregister for tracklist updates

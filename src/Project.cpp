@@ -116,6 +116,7 @@ scroll information.  It also has some status flags.
 #include "Tags.h"
 #include "TimeTrack.h"
 #include "TrackPanel.h"
+#include "TrackPanelAx.h"
 #include "WaveTrack.h"
 #include "DirManager.h"
 #include "effects/Effect.h"
@@ -1253,6 +1254,11 @@ AudacityProject::~AudacityProject()
 #endif
       mTrackPanel->RemoveOverlay(mCursorOverlay.get());
       mTrackPanel->RemoveOverlay(mIndicatorOverlay.get());
+
+      // PRL: Is this redundant with the destructor of TrackPanel?
+      // If so, it's harmless, and might give extra protection against
+      // races.
+      mTrackPanel->GetAx().Disconnect();
    }
 
    wxTheApp->Disconnect(EVT_AUDIOIO_CAPTURE,
@@ -2675,6 +2681,7 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
    // Deeper fix is in the Import code, but this failsafes against crash.
    if (mTrackPanel)
    {
+      mTrackPanel->GetAx().Disconnect();
       mTrackPanel->Destroy();
       mTrackPanel = NULL;              // Make sure this gets set...see HandleResize()
    }

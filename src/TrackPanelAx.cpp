@@ -45,9 +45,18 @@ TrackPanelAx::~TrackPanelAx()
 {
 }
 
+void TrackPanelAx::Disconnect()
+{
+   // Called from the main thread about to destroy TrackPanel.
+   Locker locker{ mLock };
+   mTrackPanel = nullptr;
+}
+
 // Returns currently focused track or first one if none focused
 std::shared_ptr<Track> TrackPanelAx::GetFocus()
 {
+   // Locker not needed, because this is only done in the main thread
+   // and no other threads change mFocusedTrack
    auto focusedTrack = mFocusedTrack.lock();
    if( !focusedTrack )
       focusedTrack = SetFocus();
@@ -64,6 +73,9 @@ std::shared_ptr<Track> TrackPanelAx::GetFocus()
 // Changes focus to a specified track
 std::shared_ptr<Track> TrackPanelAx::SetFocus( std::shared_ptr<Track> track )
 {
+   // Main thread may write mFocusedTrack which another thread reads.
+   Locker locker{ mLock };
+
    mTrackName = true;
 
 #if wxUSE_ACCESSIBILITY
@@ -113,6 +125,8 @@ std::shared_ptr<Track> TrackPanelAx::SetFocus( std::shared_ptr<Track> track )
 // Returns TRUE if passed track has the focus
 bool TrackPanelAx::IsFocused( Track *track )
 {
+   // Locker not needed, because this is only done in the main thread
+   // and no other threads change mFocusedTrack
    auto focusedTrack = mFocusedTrack.lock();
    if( !focusedTrack )
       focusedTrack = SetFocus();
@@ -128,6 +142,12 @@ bool TrackPanelAx::IsFocused( Track *track )
 
 int TrackPanelAx::TrackNum( const std::shared_ptr<Track> &target )
 {
+   // Locker not needed in this private function.
+
+   // Return the 1-based position of the target, if it is found, else 0
+   if (!mTrackPanel)
+      return 0;
+
    TrackListIterator iter( mTrackPanel->GetTracks() );
    Track *t = iter.First();
    int ndx = 0;
@@ -148,6 +168,11 @@ int TrackPanelAx::TrackNum( const std::shared_ptr<Track> &target )
 
 std::shared_ptr<Track> TrackPanelAx::FindTrack( int num )
 {
+   // Inverse of TrackNum.  Also private.
+
+   if (!mTrackPanel)
+      return {};
+
    TrackListIterator iter( mTrackPanel->GetTracks() );
    Track *t = iter.First();
    int ndx = 0;
@@ -169,6 +194,9 @@ std::shared_ptr<Track> TrackPanelAx::FindTrack( int num )
 void TrackPanelAx::Updated()
 {
 #if wxUSE_ACCESSIBILITY
+   // Locker not needed, because this is only done in the main thread
+   // and no other threads destroy *mTrackPanel
+
    auto t = GetFocus();
    mTrackName = true;
 
@@ -184,6 +212,9 @@ void TrackPanelAx::Updated()
 void TrackPanelAx::MessageForScreenReader(const wxString& message)
 {
 #if wxUSE_ACCESSIBILITY
+   // Locker not needed, because this is only done in the main thread
+   // and no other threads change mFocusedTrack or destroy *mTrackPanel
+
    if (mTrackPanel == wxWindow::FindFocus())
    {
       auto t = GetFocus();
@@ -209,6 +240,8 @@ void TrackPanelAx::MessageForScreenReader(const wxString& message)
 
 #if wxUSE_ACCESSIBILITY
 
+// The functions returning wxAccStatus may be called from other threads
+
 // Retrieves the address of an IDispatch interface for the specified child.
 // All objects must support this property.
 wxAccStatus TrackPanelAx::GetChild( int childId, wxAccessible** child )
@@ -228,6 +261,12 @@ wxAccStatus TrackPanelAx::GetChild( int childId, wxAccessible** child )
 // Gets the number of children.
 wxAccStatus TrackPanelAx::GetChildCount( int* childCount )
 {
+   Locker locker{ mLock };
+   if (!mTrackPanel) {
+      *childCount = 0;
+      return wxACC_OK;
+   }
+
    TrackListIterator iter( mTrackPanel->GetTracks() );
    Track *t = iter.First();
    int cnt = 0;
@@ -291,6 +330,13 @@ wxAccStatus TrackPanelAx::GetKeyboardShortcut( int WXUNUSED(childId), wxString *
 // rect is in screen coordinates.
 wxAccStatus TrackPanelAx::GetLocation( wxRect& rect, int elementId )
 {
+   // Guard use of mTrackPanel and call to FindTrack
+   Locker locker{ mLock };
+   if (!mTrackPanel) {
+      rect = {};
+      return wxACC_OK;
+   }
+
    wxRect client;
 
    if( elementId == wxACC_SELF )
@@ -334,6 +380,8 @@ wxAccStatus TrackPanelAx::GetName( int childId, wxString* name )
       }
       else
       {
+         // Guard calls to FindTrack and TrackNum
+         Locker locker{ mLock };
          auto t = FindTrack( childId );
 
          if( t == NULL )
@@ -475,6 +523,8 @@ wxAccStatus TrackPanelAx::GetState( int childId, long* state )
 #if defined(__WXMSW__)
    if( childId > 0 )
    {
+      // Guard call to FindTrack and use of mTrackPanel
+      Locker locker{ mLock };
       auto t = FindTrack( childId );
 
       *state = wxACC_STATE_SYSTEM_FOCUSABLE | wxACC_STATE_SYSTEM_SELECTABLE;
@@ -502,6 +552,8 @@ wxAccStatus TrackPanelAx::GetState( int childId, long* state )
 
    if( childId > 0 )
    {
+      // Guard call to FindTrack and use of mTrackPanel
+      Locker locker{ mLock };
       auto t = FindTrack( childId );
 
       if (t)
@@ -541,6 +593,8 @@ wxAccStatus TrackPanelAx::GetValue( int WXUNUSED(childId), wxString* WXUNUSED(st
    }
    else
    {
+      // Guard these calls to FindTrack and TrackNum
+      Locker locker{ mLock };
       auto t = FindTrack( childId );
 
       if( t == NULL )
@@ -584,6 +638,8 @@ wxAccStatus TrackPanelAx::GetFocus( int *childId, wxAccessible **child )
 {
 #if defined(__WXMSW__)
 
+   // Guard use of mTrackPanel and call to TrackNum
+   Locker locker{ mLock };
    if (mTrackPanel == wxWindow::FindFocus())
    {
       if (mFocusedTrack)
@@ -600,6 +656,8 @@ wxAccStatus TrackPanelAx::GetFocus( int *childId, wxAccessible **child )
 #endif
 
 #if defined(__WXMAC__)
+   // Guard implied use of mTrackPanel and call to TrackNum
+   Locker locker{ mLock };
    if( GetWindow() == wxWindow::FindFocus() )
    {
       auto focusedTrack = mFocusedTrack.lock();
