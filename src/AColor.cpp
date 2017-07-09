@@ -638,13 +638,41 @@ void AColor::PreComputeGradient() {
                      theTheme.Colour( clrSpectro1 ) = theTheme.Colour( clrUnselected );
                      theTheme.Colour( clrSpectro1Sel ) = theTheme.Colour( clrSelected );
                      int clrFirst = (selected == ColorGradientUnselected ) ? clrSpectro1 : clrSpectro1Sel;
+                     /*
                      for(int j=0;j<(gsteps+1);j++){
                         wxColour c = theTheme.Colour( clrFirst+j );
                         gradient[ j] [0] = c.Red()/255.0;
                         gradient[ j] [1] = c.Green()/255.0;
                         gradient[ j] [2] = c.Blue()/255.0;
                      }
+                      */
+#if 0
+{ float(0.00), float(0.00), float(0.55) },
+{ float(0.40), float(0.30), float(0.55) },
+{ float(0.35), float(0.30), float(0.30) },
+{ float(1.00), float(1.00), float(0.30) },
+{ float(1.00), float(1.00), float(1.00) }
+#endif
 
+                     gradient[0][0] = 0;
+                     gradient[0][1] = 0;
+                     gradient[0][2] = 0.55;
+
+                     gradient[1][0] = 0.4;
+                     gradient[1][1] = 0.3;
+                     gradient[1][2] = 0.55;
+
+                     gradient[2][0] = 0.35;
+                     gradient[2][1] = 0.3;
+                     gradient[2][2] = 0.3;
+
+                     gradient[3][0] = 1;
+                     gradient[3][1] = 1;
+                     gradient[3][2] = 0.3;
+
+                     gradient[4][0] = 1;
+                     gradient[4][1] = 1;
+                     gradient[4][2] = 1;
 
                      int left = (int)(value * gsteps);
                      int right = (left == gsteps ? gsteps : left + 1);
