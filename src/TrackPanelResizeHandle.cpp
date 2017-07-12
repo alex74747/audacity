@@ -123,6 +123,13 @@ TrackPanelResizeHandle::TrackPanelResizeHandle
    }
 }
 
+void TrackPanelResizeHandle::Enter(bool)
+{
+#ifdef EXPERIMENTAL_TRACK_PANEL_HIGHLIGHTING
+   mChangeHighlight = RefreshCode::RefreshCell;
+#endif
+}
+
 UIHandle::Result TrackPanelResizeHandle::Drag
 (const TrackPanelMouseEvent &evt, AudacityProject *pProject)
 {
