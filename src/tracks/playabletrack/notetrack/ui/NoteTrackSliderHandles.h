@@ -36,11 +36,12 @@ public:
    virtual ~VelocitySliderHandle();
 
 protected:
-   float GetValue() override;
+   float GetValue(bool display) override;
    Result SetValue
-   (AudacityProject *pProject, float newValue) override;
+      (AudacityProject *pProject, float newValue) override;
    Result CommitChanges
-   (const wxMouseEvent &event, AudacityProject *pProject) override;
+      (const wxMouseEvent &event, AudacityProject *pProject) override;
+   wxString TipTemplate() const override;
 
    bool StopsOnKeystroke () override { return true; }
 

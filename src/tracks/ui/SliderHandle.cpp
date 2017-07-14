@@ -42,7 +42,7 @@ UIHandle::Result SliderHandle::Click
       return Cancelled;
 
    // Come here for left click or double click
-   mStartingValue = GetValue();
+   mStartingValue = GetValue(false);
    auto slider = GetSlider( pProject );
    slider->OnMouseEvent(event);
    const float newValue = slider->Get();
@@ -73,10 +73,12 @@ UIHandle::Result SliderHandle::Drag
 }
 
 HitTestPreview SliderHandle::Preview
-(const TrackPanelMouseState &, const AudacityProject *)
+(const TrackPanelMouseState &st, const AudacityProject *)
 {
-   // No special message or cursor
-   return {};
+   // No special cursor
+   const auto format = TipTemplate();
+   auto tip = wxString::Format(format, GetValue(true));
+   return { tip, {} };
 }
 
 UIHandle::Result SliderHandle::Release

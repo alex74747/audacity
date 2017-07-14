@@ -16,6 +16,7 @@ Paul Licameli
 #include <wx/gdicmn.h>
 
 class wxMouseEvent;
+class wxMouseState;
 class LWSlider;
 class Track;
 
@@ -41,11 +42,18 @@ protected:
    // These new abstract virtuals simplify the duties of further subclasses.
    // This class will decide whether to refresh the clicked cell for slider state
    // change.
-   // Subclass can decide to refresh other things and the results will be ORed.
-   virtual float GetValue() = 0;
+   // Subclass can decide to refresh other things in SetValue or CommitChanges,
+   // and the results will be ORed.
+
+   // display is true when formatting the value for the user; else, it must be
+   // such as causes no change when passed back to SetValue.
+   virtual float GetValue(bool display) = 0;
    virtual Result SetValue(AudacityProject *pProject, float newValue) = 0;
    virtual Result CommitChanges
       (const wxMouseEvent &event, AudacityProject *pProject) = 0;
+
+   // Return a printf-like format string with one slot for the value
+   virtual wxString TipTemplate() const = 0;
 
    void Enter(bool forward) override;
 

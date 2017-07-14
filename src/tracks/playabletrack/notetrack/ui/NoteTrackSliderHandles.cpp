@@ -36,7 +36,7 @@ std::shared_ptr<NoteTrack> VelocitySliderHandle::GetNoteTrack()
    return std::static_pointer_cast<NoteTrack>(mpTrack.lock());
 }
 
-float VelocitySliderHandle::GetValue()
+float VelocitySliderHandle::GetValue(bool)
 {
    if (GetNoteTrack())
       return GetNoteTrack()->GetVelocity();
@@ -67,7 +67,10 @@ UIHandle::Result VelocitySliderHandle::CommitChanges
    return RefreshCode::RefreshCell;
 }
 
-
+wxString VelocitySliderHandle::TipTemplate() const
+{
+   return _("Velocity: %.2f");
+}
 
 UIHandlePtr VelocitySliderHandle::HitTest
 (std::weak_ptr<VelocitySliderHandle> &holder,

@@ -33,10 +33,14 @@ std::shared_ptr<WaveTrack> GainSliderHandle::GetWaveTrack()
    return std::static_pointer_cast<WaveTrack>(mpTrack.lock());
 }
 
-float GainSliderHandle::GetValue()
+float GainSliderHandle::GetValue(bool display)
 {
-   if (GetWaveTrack())
-      return GetWaveTrack()->GetGain();
+   if (GetWaveTrack()) {
+      auto value = GetWaveTrack()->GetGain();
+      if (display)
+         value = LINEAR_TO_DB(value);
+      return value;
+   }
    else
       return 0;
 }
@@ -67,6 +71,11 @@ UIHandle::Result GainSliderHandle::CommitChanges
 {
    pProject->PushState(_("Moved gain slider"), _("Gain"), UndoPush::CONSOLIDATE);
    return RefreshCode::RefreshCell;
+}
+
+wxString GainSliderHandle::TipTemplate() const
+{
+   return _("Gain: %2.2f dB");
 }
 
 UIHandlePtr GainSliderHandle::HitTest
@@ -116,7 +125,7 @@ std::shared_ptr<WaveTrack> PanSliderHandle::GetWaveTrack()
    return std::static_pointer_cast<WaveTrack>(mpTrack.lock());
 }
 
-float PanSliderHandle::GetValue()
+float PanSliderHandle::GetValue(bool)
 {
    if (GetWaveTrack())
       return GetWaveTrack()->GetPan();
@@ -161,6 +170,11 @@ UIHandle::Result PanSliderHandle::CommitChanges
 {
    pProject->PushState(_("Moved pan slider"), _("Pan"), UndoPush::CONSOLIDATE);
    return RefreshCode::RefreshCell;
+}
+
+wxString PanSliderHandle::TipTemplate() const
+{
+   return _("Pan: %.2f");
 }
 
 UIHandlePtr PanSliderHandle::HitTest
