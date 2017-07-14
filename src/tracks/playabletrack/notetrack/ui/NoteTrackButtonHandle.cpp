@@ -79,14 +79,22 @@ UIHandle::Result NoteTrackButtonHandle::Drag
 }
 
 HitTestPreview NoteTrackButtonHandle::Preview
-(const TrackPanelMouseState &, const AudacityProject *)
+(const TrackPanelMouseState &st, const AudacityProject *)
 {
    // auto pTrack = pProject->GetTracks()->Lock(mpTrack);
    auto pTrack = mpTrack.lock();
    if ( !pTrack )
       return {};
-   // No special message or cursor
-   return {};
+   // No special cursor
+   auto channel = GetChannel();
+   auto track = mpTrack.lock();
+   auto visible = track && track->IsVisibleChan(channel);
+   return {
+      visible
+         ? _("Click to silence channel / Right click to solo channel")
+         : _("Click to unsilence channel / Right click to unsilence other channels"),
+      {}
+   };
 }
 
 UIHandle::Result NoteTrackButtonHandle::Release
