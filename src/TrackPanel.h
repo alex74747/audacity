@@ -347,7 +347,9 @@ class AUDACITY_DLL_API TrackPanel final : public OverlayPanel {
    // (ignoring any fisheye)
    double GetScreenEndTime() const;
 
- protected:
+protected:
+   wxMouseState GetMouseState() const;
+
    bool IsAudioActive();
    void HandleClick( const TrackPanelMouseEvent &tpmEvent );
 

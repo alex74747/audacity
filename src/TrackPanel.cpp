@@ -755,16 +755,15 @@ namespace
 
 void TrackPanel::Uncapture(wxMouseState *pState)
 {
-   auto state = ::wxGetMouseState();
-   if (!pState) {
-      // Remap the position
-      state.SetPosition(this->ScreenToClient(state.GetPosition()));
-      pState = &state;
-   }
-
    if (HasCapture())
       ReleaseMouse();
-   HandleMotion( *pState );
+
+   if (pState)
+      HandleMotion( *pState );
+   else {
+      auto state = GetMouseState();
+      HandleMotion( state );
+   }
 }
 
 bool TrackPanel::CancelDragging()
@@ -848,6 +847,15 @@ void TrackPanel::HandlePageDownKey()
    mListener->TP_ScrollWindow(GetScreenEndTime());
 }
 
+wxMouseState TrackPanel::GetMouseState() const
+{
+   // Get the button and key states
+   auto state = ::wxGetMouseState();
+   // Remap the position
+   state.SetPosition(this->ScreenToClient(state.GetPosition()));
+   return state;
+}
+
 void TrackPanel::HandleCursorForPresentMouseState(bool doHit)
 {
    // Come here on modifier key or mouse button transitions,
@@ -855,11 +863,7 @@ void TrackPanel::HandleCursorForPresentMouseState(bool doHit)
    // or change of toolbar button,
    // and change the cursor appropriately.
 
-   // Get the button and key states
-   auto state = ::wxGetMouseState();
-   // Remap the position
-   state.SetPosition(this->ScreenToClient(state.GetPosition()));
-
+   auto state = GetMouseState();
    HandleMotion( state, doHit );
 }
 
@@ -1876,7 +1880,8 @@ void TrackPanel::DrawTracks(wxDC * dc)
    bool bigPointsFlag  = pTtb->IsDown(drawTool) || bMultiToolDown;
    bool sliderFlag     = bMultiToolDown;
 
-   TrackPanelDrawingContext context{ *dc, Target(), mLastMouseState };
+   auto state = GetMouseState();
+   TrackPanelDrawingContext context{ *dc, Target(), state };
 
    // The track artist actually draws the stuff inside each track
    auto first = GetProject()->GetFirstVisible();
