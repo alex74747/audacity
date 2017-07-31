@@ -91,6 +91,7 @@
 #include "../FileFormats.h"
 #include "../Prefs.h"
 #include "../Internat.h"
+#include "../menus/FileMenuCommands.h"
 
 #define BINARY_FILE_CHECK_BUFFER_SIZE 1024
 
@@ -383,7 +384,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       if (targetfile.AfterLast(wxT('.')).IsSameAs(wxT("mid"), false)
           ||  targetfile.AfterLast(wxT('.')).IsSameAs(wxT("midi"), false))
       {
-         mProject->DoImportMIDI(targetfile);
+         FileMenuCommands{mProject}.DoImportMIDI(targetfile);
       }
 
       // If not a midi, open audio file

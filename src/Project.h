@@ -97,6 +97,7 @@ struct UndoState;
 class UndoManager;
 enum class UndoPush : unsigned char;
 
+class FileMenuCommands;
 class EditMenuCommands;
 class ViewMenuCommands;
 class TransportMenuCommands;
@@ -220,6 +221,7 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    TrackFactory *GetTrackFactory();
    AdornedRulerPanel *GetRulerPanel();
    const Tags *GetTags();
+   void SetTags( const std::shared_ptr<Tags> &pTags );
    int GetAudioIOToken() const;
    bool IsAudioActive() const;
    void SetAudioIOToken(int token);
@@ -743,6 +745,7 @@ private:
    // See explanation in OnCloseWindow
    bool mIsBeingDeleted{ false };
 
+   FileMenuCommands *mFileMenuCommands;
    EditMenuCommands *mEditMenuCommands;
    ViewMenuCommands *mViewMenuCommands;
    TransportMenuCommands *mTransportMenuCommands;

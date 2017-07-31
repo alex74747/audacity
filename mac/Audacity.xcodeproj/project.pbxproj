@@ -1221,6 +1221,7 @@
 		5E5DC48A1F2CD51D00E8CDA9 /* ViewMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4881F2CD51D00E8CDA9 /* ViewMenuCommands.cpp */; };
 		5E5DC48D1F2CD61800E8CDA9 /* EditMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC48B1F2CD61800E8CDA9 /* EditMenuCommands.cpp */; };
 		5E5DC4901F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC48E1F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp */; };
+		5E5DC4931F2CDA8800E8CDA9 /* FileMenuCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DC4911F2CDA8800E8CDA9 /* FileMenuCommands.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
 		ED15214D163C22F000451B5F /* lsr.c in Sources */ = {isa = PBXBuildFile; fileRef = ED152123163C220300451B5F /* lsr.c */; };
@@ -3021,6 +3022,8 @@
 		5E5DC48C1F2CD61800E8CDA9 /* EditMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditMenuCommands.h; path = menus/EditMenuCommands.h; sourceTree = "<group>"; };
 		5E5DC48E1F2CD83900E8CDA9 /* CursorAndFocusCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CursorAndFocusCommands.cpp; path = menus/CursorAndFocusCommands.cpp; sourceTree = "<group>"; };
 		5E5DC48F1F2CD83900E8CDA9 /* CursorAndFocusCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CursorAndFocusCommands.h; path = menus/CursorAndFocusCommands.h; sourceTree = "<group>"; };
+		5E5DC4911F2CDA8800E8CDA9 /* FileMenuCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileMenuCommands.cpp; path = menus/FileMenuCommands.cpp; sourceTree = "<group>"; };
+		5E5DC4921F2CDA8800E8CDA9 /* FileMenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileMenuCommands.h; path = menus/FileMenuCommands.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
 		82FF184E13CF01A600C1B664 /* dBTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dBTable.h; path = sbsms/src/dBTable.h; sourceTree = "<group>"; };
 		82FF184F13CF01A600C1B664 /* slide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = slide.cpp; path = sbsms/src/slide.cpp; sourceTree = "<group>"; };
@@ -5598,6 +5601,8 @@
 				5E5DC48F1F2CD83900E8CDA9 /* CursorAndFocusCommands.h */,
 				5E5DC48B1F2CD61800E8CDA9 /* EditMenuCommands.cpp */,
 				5E5DC48C1F2CD61800E8CDA9 /* EditMenuCommands.h */,
+				5E5DC4911F2CDA8800E8CDA9 /* FileMenuCommands.cpp */,
+				5E5DC4921F2CDA8800E8CDA9 /* FileMenuCommands.h */,
 				5E6B19F01F2CD1A2009A2CB0 /* HelpMenuCommands.cpp */,
 				5E6B19F11F2CD1A2009A2CB0 /* HelpMenuCommands.h */,
 				5E5DC4821F2CD28B00E8CDA9 /* TracksMenuCommands.cpp */,
@@ -7620,6 +7625,7 @@
 				2888494B131B6CF600B59735 /* cs.po in Sources */,
 				2888494C131B6CF600B59735 /* cy.po in Sources */,
 				2888494D131B6CF600B59735 /* da.po in Sources */,
+				5E5DC4931F2CDA8800E8CDA9 /* FileMenuCommands.cpp in Sources */,
 				2888494E131B6CF600B59735 /* de.po in Sources */,
 				2888494F131B6CF600B59735 /* el.po in Sources */,
 				28884950131B6CF600B59735 /* es.po in Sources */,

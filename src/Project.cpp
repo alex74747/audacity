@@ -53,6 +53,7 @@ scroll information.  It also has some status flags.
 #include "Project.h"
 
 #include "commands/CommandManager.h"
+#include "menus/FileMenuCommands.h"
 #include "menus/EditMenuCommands.h"
 #include "menus/ViewMenuCommands.h"
 #include "menus/TransportMenuCommands.h"
@@ -915,6 +916,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mbLoadedFromAup( false )
 {
    mCommandManager = new CommandManager();
+   mFileMenuCommands = new FileMenuCommands(this);
    mEditMenuCommands = new EditMenuCommands(this);
    mViewMenuCommands = new ViewMenuCommands(this);
    mTransportMenuCommands = new TransportMenuCommands(this);
@@ -1240,6 +1242,7 @@ AudacityProject::~AudacityProject()
 
    delete mCommandManager;
 
+   delete mFileMenuCommands;
    delete mEditMenuCommands;
    delete mViewMenuCommands;
    delete mTransportMenuCommands;
@@ -1396,6 +1399,11 @@ bool AudacityProject::IsAudioActive() const
 const Tags *AudacityProject::GetTags()
 {
    return mTags.get();
+}
+
+void AudacityProject::SetTags( const std::shared_ptr<Tags> &pTags )
+{
+   mTags = pTags;
 }
 
 wxString AudacityProject::GetName()
