@@ -1608,7 +1608,7 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
                          double t0, double t1,
                          const AudioIOStartStreamOptions &options)
 {
-   auto cleanup = finally ( [this] { ClearRecordingException(); } );
+   auto cleanup = finally ( [this] { ClearExceptions(); } );
 
    if( IsBusy() )
       return 0;
@@ -2071,6 +2071,7 @@ PmTimestamp MidiTime(void *info)
 // Sends MIDI control changes up to the starting point mT0
 // if send is true. Output is delayed by offset to facilitate
 // looping (each iteration is delayed more).
+// This may throw when send is true
 void AudioIO::PrepareMidiIterator(bool send, double offset)
 {
    int i;
@@ -2210,7 +2211,7 @@ void AudioIO::SetMeters()
 
 void AudioIO::StopStream()
 {
-   auto cleanup = finally ( [this] { ClearRecordingException(); } );
+   auto cleanup = finally ( [this] { ClearExceptions(); } );
 
    if( mPortStreamV19 == NULL
 #ifdef EXPERIMENTAL_MIDI_OUT
@@ -3507,31 +3508,32 @@ wxString AudioIO::GetMidiDeviceInfo()
 }
 #endif
 
+void AudioIO::DelayedExceptionHandler( AudacityException * pException )
+{
+   // In the main thread, stop recording or playback
+   // This is one place where the application handles disk
+   // exhaustion exceptions from wave track operations, without rolling
+   // back to the last pushed undo state.  Instead, partial recording
+   // results are pushed as a NEW undo state.  For this reason, as
+   // commented elsewhere, we want an exception safety guarantee for
+   // the output wave tracks, after the failed append operation, that
+   // the tracks remain as they were after the previous successful
+   // (block-level) appends.
+
+   // Note that the Flush in StopStream() may throw another exception,
+   // but StopStream() contains that exception, and the logic in
+   // AudacityException::DelayedHandlerAction prevents redundant message
+   // boxes.
+   gAudioIO->StopStream();
+   DefaultDelayedHandlerAction{}( pException );
+};
+
 // This method is the data gateway between the audio thread (which
 // communicates with the disk) and the PortAudio callback thread
 // (which communicates with the audio device).
 void AudioIO::FillBuffers()
 {
    unsigned int i;
-
-   auto delayedHandler = [this] ( AudacityException * pException ) {
-      // In the main thread, stop recording
-      // This is one place where the application handles disk
-      // exhaustion exceptions from wave track operations, without rolling
-      // back to the last pushed undo state.  Instead, partial recording
-      // results are pushed as a NEW undo state.  For this reason, as
-      // commented elsewhere, we want an exception safety guarantee for
-      // the output wave tracks, after the failed append operation, that
-      // the tracks remain as they were after the previous successful
-      // (block-level) appends.
-
-      // Note that the Flush in StopStream() may throw another exception,
-      // but StopStream() contains that exception, and the logic in
-      // AudacityException::DelayedHandlerAction prevents redundant message
-      // boxes.
-      StopStream();
-      DefaultDelayedHandlerAction{}( pException );
-   };
 
    if (mPlaybackTracks.size() > 0)
    {
@@ -3797,7 +3799,7 @@ void AudioIO::FillBuffers()
             // Don't want to intercept other exceptions (?)
             throw;
       },
-      delayedHandler
+      &AudioIO::DelayedExceptionHandler
    );
 }
 
@@ -3814,6 +3816,34 @@ void AudioIO::SetListener(AudioIOListener* listener)
 static Alg_update gAllNotesOff; // special event for loop ending
 // the fields of this event are never used, only the address is important
 
+class MidiPlayException : public MessageBoxException
+{
+public:
+   explicit MidiPlayException( PmError err ) : pmErr{err} {}
+   ~MidiPlayException() override {};
+
+protected:
+   std::unique_ptr< AudacityException > Move() override
+   {
+   return std::unique_ptr< AudacityException >
+      { safenew MidiPlayException{ std::move( *this ) } };
+   }
+
+   // Format a default, internationalized error message for this exception.
+   wxString ErrorMessage() const override
+   {
+      auto pm_message = LAT1CTOWX(Pm_GetErrorText(pmErr));
+      return wxString::Format(
+         /* i18n-hint:  PortMidi is the name of a software library */
+         _("Error from PortMidi:\n%s"), pm_message
+      );
+   }
+
+private:
+   PmError pmErr;
+};
+
+// This may throw
 void AudioIO::OutputEvent()
 {
    int channel = (mNextEvent->chan) & 0xF; // must be in [0..15]
@@ -3948,13 +3978,15 @@ void AudioIO::OutputEvent()
          }
       }
       if (command != -1) {
-         Pm_WriteShort(mMidiStream, timestamp,
+         auto result = Pm_WriteShort(mMidiStream, timestamp,
                     Pm_Message((int) (command + channel),
                                   (long) data1, (long) data2));
          /* printf("Pm_WriteShort %lx (%p) @ %d, advance %d\n",
                 Pm_Message((int) (command + channel),
                            (long) data1, (long) data2),
                            mNextEvent, timestamp, timestamp - Pt_Time()); */
+         if (result != pmNoError)
+            throw MidiPlayException{ result };
       }
    }
 }
@@ -3993,29 +4025,47 @@ bool AudioIO::SetHasSolo(bool hasSolo)
 
 void AudioIO::FillMidiBuffers()
 {
-   bool hasSolo = false;
-   auto numPlaybackTracks = gAudioIO->mPlaybackTracks.size();
-   for(unsigned t = 0; t < numPlaybackTracks; t++ )
-      if( gAudioIO->mPlaybackTracks[t]->GetSolo() ) {
-         hasSolo = true;
-         break;
-      }
-   auto numMidiPlaybackTracks = gAudioIO->mMidiPlaybackTracks.size();
-   for(unsigned t = 0; t < numMidiPlaybackTracks; t++ )
-      if( gAudioIO->mMidiPlaybackTracks[t]->GetSolo() ) {
-         hasSolo = true;
-         break;
-      }
-   SetHasSolo(hasSolo);
-   // Compute the current track time differently depending upon
-   // whether audio playback is in effect:
-   double time = AudioTime() - PauseTime();
-   while (mNextEvent &&
-          (mTimeTrack ? (mTimeTrack->ComputeWarpedLength(mT0, mNextEventTime) + mT0) : mNextEventTime)
-             < time + ((MIDI_SLEEP + mSynthLatency) * 0.001)) {
-      OutputEvent();
-      GetNextEvent();
-   }
+   GuardedCall<void>(
+      [&] {
+         bool hasSolo = false;
+         auto numPlaybackTracks = gAudioIO->mPlaybackTracks.size();
+         for(unsigned t = 0; t < numPlaybackTracks; t++ )
+            if( gAudioIO->mPlaybackTracks[t]->GetSolo() ) {
+               hasSolo = true;
+               break;
+            }
+         auto numMidiPlaybackTracks = gAudioIO->mMidiPlaybackTracks.size();
+         for(unsigned t = 0; t < numMidiPlaybackTracks; t++ )
+            if( gAudioIO->mMidiPlaybackTracks[t]->GetSolo() ) {
+               hasSolo = true;
+               break;
+            }
+         SetHasSolo(hasSolo);
+         // Compute the current track time differently depending upon
+         // whether audio playback is in effect:
+         double time = AudioTime() - PauseTime();
+         while (!mMidiException &&
+                mNextEvent &&
+                (mTimeTrack ? (mTimeTrack->ComputeWarpedLength(mT0, mNextEventTime) + mT0) : mNextEventTime)
+                   < time + ((MIDI_SLEEP + mSynthLatency) * 0.001)) {
+            OutputEvent();
+            GetNextEvent();
+         }
+      },
+      // handler
+      [this] ( AudacityException *pException ) {
+         if ( pException ) {
+            // So that we don't attempt to send more events
+            // before the main thread stops playing
+            SetMidiException();
+            return ;
+         }
+         else
+            // Don't want to intercept other exceptions (?)
+            throw;
+      },
+      &AudioIO::DelayedExceptionHandler
+   );
 }
 
 double AudioIO::PauseTime()
@@ -4037,6 +4087,10 @@ PmTimestamp AudioIO::MidiTime()
 
 void AudioIO::AllNotesOff()
 {
+   // This function does not check error messages from Pm_WriteShort.
+   // It is used for pausing or stopping play, possibly in the handling of
+   // the error condition detected during play.
+
 #ifdef AUDIO_IO_GB_MIDI_WORKAROUND
    // Send individual note-off messages for each note-on not yet paired.
    for (const auto &pair : mPendingNotesOff) {

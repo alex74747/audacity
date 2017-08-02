@@ -49,6 +49,7 @@ using NoteTrackArray = std::vector < NoteTrack* >;
 #include "SampleFormat.h"
 
 class AudioIO;
+class AudacityException;
 class RingBuffer;
 class Mixer;
 class Resample;
@@ -432,11 +433,13 @@ private:
                              unsigned int numPlaybackChannels,
                              unsigned int numCaptureChannels,
                              sampleFormat captureFormat);
+   static void DelayedExceptionHandler( AudacityException * pException );
    void FillBuffers();
 
 #ifdef EXPERIMENTAL_MIDI_OUT
    void PrepareMidiIterator(bool send = true, double offset = 0);
    bool StartPortMidiStream();
+   // This may throw:
    void OutputEvent();
    void FillMidiBuffers();
    void GetNextEvent();
@@ -747,6 +750,19 @@ private:
       { wxAtomicInc( mRecordingException ); }
    void ClearRecordingException()
       { if (mRecordingException) wxAtomicDec( mRecordingException ); }
+
+   // A flag tested and set in one thread, cleared in another.  Perhaps
+   // this guarantee of atomicity is more cautious than necessary.
+   wxAtomicInt mMidiException {};
+   void SetMidiException()
+      { wxAtomicInc( mMidiException ); }
+   void ClearMidiException()
+      { if (mMidiException) wxAtomicDec( mMidiException ); }
+
+   void ClearExceptions() {
+      ClearRecordingException();
+      ClearMidiException();
+   }
 };
 
 #endif
