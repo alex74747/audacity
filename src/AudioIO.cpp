@@ -952,6 +952,23 @@ bool AudioIO::ValidateDeviceNames(const wxString &play, const wxString &rec)
    return true;
 }
 
+namespace {
+   void ReportMidiError(PmError pmErr)
+   {
+      wxString errStr =
+      _("There was an error initializing the midi i/o layer.\n");
+      errStr += _("You will not be able to play midi.\n\n");
+      wxString pmErrStr = LAT1CTOWX(Pm_GetErrorText(pmErr));
+      if (!pmErrStr.empty())
+         errStr += _("Error: ") + pmErrStr;
+      // XXX: we are in libaudacity, popping up dialogs not allowed!  A
+      // long-term solution will probably involve exceptions
+      wxMessageBox(errStr, _("Error Initializing Midi"), wxICON_ERROR|wxOK);
+
+      // Same logic for PortMidi as described above for PortAudio
+   }
+}
+
 AudioIO::AudioIO()
 {
    mAudioThreadShouldCallFillBuffersOnce = false;
@@ -1013,17 +1030,7 @@ AudioIO::AudioIO()
    PmError pmErr = Pm_Initialize();
 
    if (pmErr != pmNoError) {
-      wxString errStr =
-              _("There was an error initializing the midi i/o layer.\n");
-      errStr += _("You will not be able to play midi.\n\n");
-      wxString pmErrStr = LAT1CTOWX(Pm_GetErrorText(pmErr));
-      if (!pmErrStr.empty())
-         errStr += _("Error: ") + pmErrStr;
-      // XXX: we are in libaudacity, popping up dialogs not allowed!  A
-      // long-term solution will probably involve exceptions
-      wxMessageBox(errStr, _("Error Initializing Midi"), wxICON_ERROR|wxOK);
-
-      // Same logic for PortMidi as described above for PortAudio
+      ReportMidiError(pmErr);
    }
    mMidiThread = std::make_unique<MidiThread>();
    mMidiThread->Create();
@@ -1785,10 +1792,14 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    // active -- this would be a bug and may require a change in the
    // logic here.
 
-   bool successMidi = true;
-
    if(!mMidiPlaybackTracks.empty()){
-      successMidi = StartPortMidiStream();
+      bool successMidi = StartPortMidiStream();
+      if (!successMidi) {
+         if (mLastPmError != pmNoError)
+            ReportMidiError(mLastPmError);
+         StartStreamCleanup();
+         return 0;
+      }
    }
 
    // On the other hand, if MIDI cannot be opened, we will not complain
@@ -2103,6 +2114,8 @@ void AudioIO::PrepareMidiIterator(bool send, double offset)
 
 bool AudioIO::StartPortMidiStream()
 {
+   mLastPmError = pmNoError;
+
    int i;
    int nTracks = mMidiPlaybackTracks.size();
    // Only start MIDI stream if there is an open track
