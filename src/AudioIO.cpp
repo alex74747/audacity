@@ -2152,7 +2152,9 @@ bool AudioIO::StartPortMidiStream()
       // data for MidiTime().
       Pm_Synchronize(mMidiStream); // start using timestamps
       // start midi output flowing (pending first audio callback)
+      { wxMutexLocker locker{mMutex1};
       mMidiThreadFillBuffersLoopRunning = true;
+      }
    }
    return (mLastPmError == pmNoError);
 }
@@ -2311,9 +2313,15 @@ void AudioIO::StopStream()
    /* Stop Midi playback */
    if ( mMidiStream ) {
       mMidiStreamActive = false;
+      { wxMutexLocker locker{mMutex1};
       mMidiThreadFillBuffersLoopRunning = false; // stop output to stream
+      }
       // but output is in another thread. Wait for output to stop...
-      while (mMidiThreadFillBuffersLoopActive) {
+      auto active = [&]{
+         wxMutexLocker locker{mMutex2};
+            return mMidiThreadFillBuffersLoopActive;
+      };
+      while (active()) {
          wxMilliSleep(1);
       }
       // now we can assume "ownership" of the mMidiStream
@@ -2946,8 +2954,14 @@ MidiThread::ExitCode MidiThread::Entry()
    while( !TestDestroy() )
    {
       // Set LoopActive outside the tests to avoid race condition
+      { wxMutexLocker locker{gAudioIO->mMutex2};
       gAudioIO->mMidiThreadFillBuffersLoopActive = true;
-      if( gAudioIO->mMidiThreadFillBuffersLoopRunning &&
+      }
+      auto running = [&]
+      { wxMutexLocker locker{gAudioIO->mMutex1};
+         return gAudioIO->mMidiThreadFillBuffersLoopRunning;
+      };
+      if( running() &&
           // mNumFrames signals at least one callback, needed for MidiTime()
           gAudioIO->mNumFrames > 0)
       {
@@ -2995,7 +3009,9 @@ MidiThread::ExitCode MidiThread::Entry()
             // !gAudioIO->mNextEvent);
          }
       }
+      { wxMutexLocker locker{gAudioIO->mMutex2};
       gAudioIO->mMidiThreadFillBuffersLoopActive = false;
+      }
       Sleep(MIDI_SLEEP);
    }
    return 0;

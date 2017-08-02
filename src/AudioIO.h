@@ -637,7 +637,9 @@ private:
    wxLongLong          mLastPlaybackTimeMillis;
 
 #ifdef EXPERIMENTAL_MIDI_OUT
+   wxMutex mMutex1;
    volatile bool       mMidiThreadFillBuffersLoopRunning;
+   wxMutex mMutex2;
    volatile bool       mMidiThreadFillBuffersLoopActive;
 #endif
 
