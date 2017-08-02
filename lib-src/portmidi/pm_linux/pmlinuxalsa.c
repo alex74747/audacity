@@ -88,13 +88,22 @@ static PmError alsa_use_queue(void)
         snd_seq_queue_tempo_set_ppq(tempo, 480);
         pm_hosterror = snd_seq_set_queue_tempo(seq, queue, tempo);
         if (pm_hosterror < 0)
-            return pmHostError;
+            goto free_queue;
 
-        snd_seq_start_queue(seq, queue, NULL);
-        snd_seq_drain_output(seq);
+        pm_hosterror = snd_seq_start_queue(seq, queue, NULL);
+        if (pm_hosterror < 0)
+            goto free_queue;
+
+        pm_hosterror = snd_seq_drain_output(seq);
+        if (pm_hosterror < 0)
+            goto free_queue;
     }
     ++queue_used;
     return pmNoError;
+
+ free_queue:
+    snd_seq_free_queue(seq, queue);
+    return pmHostError;
 }
 
 
