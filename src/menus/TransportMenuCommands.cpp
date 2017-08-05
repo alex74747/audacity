@@ -11,6 +11,8 @@
 
 #include "../TrackPanel.h"
 #include "../tracks/ui/Scrubbing.h"
+#include "../prefs/TracksPrefs.h"
+#include "../widgets/Ruler.h"
 
 #define FN(X) FNT(TransportMenuCommands, this, & TransportMenuCommands :: X)
 
@@ -50,6 +52,13 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("Record"), _("&Record"), FN(OnRecord), wxT("R"));
    c->AddItem(wxT("TimerRecord"), _("&Timer Record..."), FN(OnTimerRecord), wxT("Shift+T"));
    c->AddItem(wxT("RecordAppend"), _("Appen&d Record"), FN(OnRecordAppend), wxT("Shift+R"));
+
+   c->AddSeparator();
+
+   c->AddCheck(wxT("PinnedHead"), _("Pinned Recording/Playback &Head"),
+               FN(OnTogglePinnedHead), 0,
+               // Switching of scrolling on and off is permitted even during transport
+               AlwaysEnabledFlag, AlwaysEnabledFlag);
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -313,4 +322,25 @@ void TransportMenuCommands::OnRecordAppend()
    evt.SetInt(1); // 0 is default, use 1 to set shift on, 2 to clear it
 
    mProject->GetControlToolBar()->OnRecord(evt);
+}
+
+void TransportMenuCommands::OnTogglePinnedHead()
+{
+   bool value = !TracksPrefs::GetPinnedHeadPreference();
+   TracksPrefs::SetPinnedHeadPreference(value, true);
+   mProject->ModifyAllProjectToolbarMenus();
+
+   // Change what happens in case transport is in progress right now
+   auto ctb = GetActiveProject()->GetControlToolBar();
+   if (ctb)
+      ctb->StartScrollingIfPreferred();
+
+   auto ruler = mProject->GetRulerPanel();
+   if (ruler)
+      // Update button image
+      ruler->UpdateButtonStates();
+
+   auto &scrubber = mProject->GetScrubber();
+   if (scrubber.HasStartedScrubbing())
+      scrubber.SetScrollScrubbing(value);
 }

@@ -740,13 +740,6 @@ void AudacityProject::CreateMenusAndCommands()
       c->SetDefaultFlags(AudioIONotBusyFlag | CanStopAudioStreamFlag,
                          AudioIONotBusyFlag | CanStopAudioStreamFlag);
 
-      c->AddSeparator();
-
-      c->AddCheck(wxT("PinnedHead"), _("Pinned Recording/Playback &Head"),
-                  FN(OnTogglePinnedHead), 0,
-                  // Switching of scrolling on and off is permitted even during transport
-                  AlwaysEnabledFlag, AlwaysEnabledFlag);
-
       c->AddCheck(wxT("Duplex"), _("&Overdub (on/off)"), FN(OnTogglePlayRecording), 0);
       c->AddCheck(wxT("SWPlaythrough"), _("So&ftware Playthrough (on/off)"), FN(OnToggleSWPlaythrough), 0);
 
@@ -2084,27 +2077,6 @@ void AudacityProject::OnToggleSoundActivated()
    gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
    gPrefs->Flush();
    ModifyAllProjectToolbarMenus();
-}
-
-void AudacityProject::OnTogglePinnedHead()
-{
-   bool value = !TracksPrefs::GetPinnedHeadPreference();
-   TracksPrefs::SetPinnedHeadPreference(value, true);
-   ModifyAllProjectToolbarMenus();
-
-   // Change what happens in case transport is in progress right now
-   auto ctb = GetActiveProject()->GetControlToolBar();
-   if (ctb)
-      ctb->StartScrollingIfPreferred();
-
-   auto ruler = GetRulerPanel();
-   if (ruler)
-      // Update button image
-      ruler->UpdateButtonStates();
-
-   auto &scrubber = GetScrubber();
-   if (scrubber.HasStartedScrubbing())
-      scrubber.SetScrollScrubbing(value);
 }
 
 void AudacityProject::OnTogglePlayRecording()

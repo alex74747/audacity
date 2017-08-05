@@ -29,6 +29,9 @@ public:
 private:
    void OnTimerRecord();
    void OnRecordAppend();
+public:
+   void OnTogglePinnedHead();
+private:
 
    AudacityProject *const mProject;
 };

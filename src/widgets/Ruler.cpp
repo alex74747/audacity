@@ -2883,7 +2883,7 @@ void AdornedRulerPanel::UpdateButtonStates()
 
 void AdornedRulerPanel::OnTogglePinnedState(wxCommandEvent & /*event*/)
 {
-   mProject->OnTogglePinnedHead();
+   TransportMenuCommands{mProject}.OnTogglePinnedHead();
    UpdateButtonStates();
 }
 
