@@ -7,6 +7,9 @@
 #include "../toolbars/ControlToolBar.h"
 #include "../tracks/ui/Scrubbing.h"
 
+#include "../TrackPanel.h"
+#include "../tracks/ui/Scrubbing.h"
+
 #define FN(X) FNT(TransportMenuCommands, this, & TransportMenuCommands :: X)
 
 TransportMenuCommands::TransportMenuCommands(AudacityProject *project)
@@ -24,6 +27,9 @@ void TransportMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("PlayLooped"), _("&Loop Play"), FN(OnPlayLooped), wxT("Shift+Space"),
       WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag,
       WaveTracksExistFlag | AudioIONotBusyFlag | CanStopAudioStreamFlag);
+
+   // Scrubbing sub-menu
+   mProject->GetScrubber().AddMenuItems();
 }
 
 void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
