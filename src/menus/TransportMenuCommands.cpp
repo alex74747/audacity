@@ -4,6 +4,7 @@
 
 #include "../AudioIO.h"
 #include "../DeviceManager.h"
+#include "../LabelTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../SoundActivatedRecord.h"
@@ -145,6 +146,9 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
    c->AddCommand(wxT("SetPlaySpeed"), _("Adjust playback speed"), FN(OnSetPlaySpeed));
    c->AddCommand(wxT("PlaySpeedInc"), _("Increase playback speed"), FN(OnPlaySpeedInc));
    c->AddCommand(wxT("PlaySpeedDec"), _("Decrease playback speed"), FN(OnPlaySpeedDec));
+
+   c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
+      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -820,5 +824,70 @@ void TransportMenuCommands::OnPlaySpeedDec()
    TranscriptionToolBar *tb = mProject->GetTranscriptionToolBar();
    if (tb) {
       tb->AdjustPlaySpeed(-0.1f);
+   }
+}
+
+void TransportMenuCommands::OnMoveToNextLabel()
+{
+   OnMoveToLabel(true);
+}
+
+void TransportMenuCommands::OnMoveToLabel(bool next)
+{
+   auto tracks = mProject->GetTracks();
+   auto trackPanel = mProject->GetTrackPanel();
+
+   // Find the number of label tracks, and ptr to last track found
+   Track* track = nullptr;
+   int nLabelTrack = 0;
+   TrackListOfKindIterator iter(Track::Label, tracks);
+   for (Track* t = iter.First(); t; t = iter.Next()) {
+      nLabelTrack++;
+      track = t;
+   }
+
+   if (nLabelTrack == 0 ) {
+      trackPanel->MessageForScreenReader(_("no label track"));
+   }
+   else if (nLabelTrack > 1) {         // find first label track, if any, starting at the focused track
+      track = trackPanel->GetFocusedTrack();
+      while (track && track->GetKind() != Track::Label) {
+         track = tracks->GetNext(track, true);
+         if (!track) {
+          trackPanel->MessageForScreenReader(_("no label track at or below focused track"));
+         }
+      }
+   }
+
+   // If there is a single label track, or there is a label track at or below the focused track
+   if (track) {
+      LabelTrack* lt = static_cast<LabelTrack*>(track);
+      int i;
+      if (next)
+         i = lt->FindNextLabel(mProject->GetSelection());
+      else
+         i = lt->FindPrevLabel(mProject->GetSelection());
+
+      if (i >= 0) {
+         const LabelStruct* label = lt->GetLabel(i);
+         if (mProject->IsAudioActive()) {
+            OnPlayStop();     // stop
+            mProject->GetViewInfo().selectedRegion = label->selectedRegion;
+            mProject->RedrawProject();
+            OnPlayStop();     // play
+         }
+         else {
+            mProject->GetViewInfo().selectedRegion = label->selectedRegion;
+            trackPanel->ScrollIntoView(mProject->GetViewInfo().selectedRegion.t0());
+            mProject->RedrawProject();
+         }
+
+         wxString message;
+         message.Printf(wxT("%s %d of %d"), label->title, i + 1, lt->GetNumLabels() );
+         trackPanel->MessageForScreenReader(message);
+      }
+      else {
+         trackPanel->MessageForScreenReader(_("no labels in label track"));
+      }
    }
 }

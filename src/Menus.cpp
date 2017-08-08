@@ -948,8 +948,6 @@ void AudacityProject::CreateMenusAndCommands()
 
    c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
 
-   c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
-      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
    c->AddCommand(wxT("MoveToPrevLabel"), _("Move to Previous Label"), FN(OnMoveToPrevLabel), wxT("Alt+Left"),
       CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
 
@@ -1826,71 +1824,9 @@ void AudacityProject::OnSelToEnd()
    ModifyState(false);
 }
 
-void AudacityProject::OnMoveToNextLabel()
-{
-   OnMoveToLabel(true);
-}
-
 void AudacityProject::OnMoveToPrevLabel()
 {
-   OnMoveToLabel(false);
-}
-
-void AudacityProject::OnMoveToLabel(bool next)
-{
-   // Find the number of label tracks, and ptr to last track found
-   Track* track = nullptr;
-   int nLabelTrack = 0;
-   TrackListOfKindIterator iter(Track::Label, &*mTracks);
-   for (Track* t = iter.First(); t; t = iter.Next()) {
-      nLabelTrack++;
-      track = t;
-   }
-
-   if (nLabelTrack == 0 ) {
-      mTrackPanel->MessageForScreenReader(_("no label track"));
-   }
-   else if (nLabelTrack > 1) {         // find first label track, if any, starting at the focused track
-      track = mTrackPanel->GetFocusedTrack();
-      while (track && track->GetKind() != Track::Label) {
-         track = mTracks->GetNext(track, true);
-         if (!track) {
-          mTrackPanel->MessageForScreenReader(_("no label track at or below focused track"));
-         }
-      }
-   }
-
-   // If there is a single label track, or there is a label track at or below the focused track
-   if (track) {
-      LabelTrack* lt = static_cast<LabelTrack*>(track);
-      int i;
-      if (next)
-         i = lt->FindNextLabel(GetSelection());
-      else
-         i = lt->FindPrevLabel(GetSelection());
-
-      if (i >= 0) {
-         const LabelStruct* label = lt->GetLabel(i);
-         if (IsAudioActive()) {
-            TransportMenuCommands{this}.OnPlayStop();     // stop
-            GetViewInfo().selectedRegion = label->selectedRegion;
-            RedrawProject();
-            TransportMenuCommands{this}.OnPlayStop();     // play
-         }
-         else {
-            GetViewInfo().selectedRegion = label->selectedRegion;
-            mTrackPanel->ScrollIntoView(GetViewInfo().selectedRegion.t0());
-            RedrawProject();
-         }
-
-         wxString message;
-         message.Printf(wxT("%s %d of %d"), label->title, i + 1, lt->GetNumLabels() );
-         mTrackPanel->MessageForScreenReader(message);
-      }
-      else {
-         mTrackPanel->MessageForScreenReader(_("no labels in label track"));
-      }
-   }
+   TransportMenuCommands{this}.OnMoveToLabel(false);
 }
 
 void AudacityProject::OnCursorUp()

@@ -76,6 +76,12 @@ private:
    void OnPlaySpeedInc();
    void OnPlaySpeedDec();
 
+   void OnMoveToNextLabel();
+
+public:
+   void OnMoveToLabel(bool next);
+
+private:
    AudacityProject *const mProject;
 };
 
