@@ -149,6 +149,8 @@ void TransportMenuCommands::CreateNonMenuCommands(CommandManager *c)
 
    c->AddCommand(wxT("MoveToNextLabel"), _("Move to Next Label"), FN(OnMoveToNextLabel), wxT("Alt+Right"),
       CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
+   c->AddCommand(wxT("MoveToPrevLabel"), _("Move to Previous Label"), FN(OnMoveToPrevLabel), wxT("Alt+Left"),
+      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
 }
 
 void TransportMenuCommands::OnPlayStop()
@@ -830,6 +832,11 @@ void TransportMenuCommands::OnPlaySpeedDec()
 void TransportMenuCommands::OnMoveToNextLabel()
 {
    OnMoveToLabel(true);
+}
+
+void TransportMenuCommands::OnMoveToPrevLabel()
+{
+   OnMoveToLabel(false);
 }
 
 void TransportMenuCommands::OnMoveToLabel(bool next)

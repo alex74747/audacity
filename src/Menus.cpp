@@ -946,11 +946,6 @@ void AudacityProject::CreateMenusAndCommands()
       wxT("F11"));
 #endif
 
-   c->SetDefaultFlags(CaptureNotBusyFlag, CaptureNotBusyFlag);
-
-   c->AddCommand(wxT("MoveToPrevLabel"), _("Move to Previous Label"), FN(OnMoveToPrevLabel), wxT("Alt+Left"),
-      CaptureNotBusyFlag | TrackPanelHasFocus, CaptureNotBusyFlag | TrackPanelHasFocus);
-
 #ifdef __WXMAC__
    /* i8n-hint: Shrink all project windows to icons on the Macintosh tooldock */
    c->AddCommand(wxT("MacMinimizeAll"), _("Minimize all projects"),
@@ -1822,11 +1817,6 @@ void AudacityProject::OnSelToEnd()
 {
    SkipEnd(true);
    ModifyState(false);
-}
-
-void AudacityProject::OnMoveToPrevLabel()
-{
-   TransportMenuCommands{this}.OnMoveToLabel(false);
 }
 
 void AudacityProject::OnCursorUp()

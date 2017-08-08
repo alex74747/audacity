@@ -77,11 +77,10 @@ private:
    void OnPlaySpeedDec();
 
    void OnMoveToNextLabel();
+   void OnMoveToPrevLabel();
 
-public:
    void OnMoveToLabel(bool next);
 
-private:
    AudacityProject *const mProject;
 };
 

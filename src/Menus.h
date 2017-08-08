@@ -105,8 +105,6 @@ void OnSetRightSelection();
 void OnSelToStart();
 void OnSelToEnd();
 
-void OnMoveToPrevLabel();
-
 void OnZeroCrossing();
 
 void OnLockPlayRegion();
