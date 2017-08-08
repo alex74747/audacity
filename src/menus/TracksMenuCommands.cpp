@@ -149,6 +149,9 @@ void TracksMenuCommands::Create(CommandManager *c)
          AudioIOBusyFlag);
 
    c->AddItem(wxT("EditLabels"), _("&Edit Labels..."), FN(OnEditLabels));
+
+   c->AddCheck(wxT("TypeToCreateLabel"), _("&Type to Create a Label (on/off)"),
+      FN(OnToggleTypeToCreateLabel), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
 }
 
 void TracksMenuCommands::OnNewWaveTrack()
@@ -1084,4 +1087,13 @@ void TracksMenuCommands::DoEditLabels(LabelTrack *lt, int index)
 void TracksMenuCommands::OnEditLabels()
 {
    DoEditLabels();
+}
+
+void TracksMenuCommands::OnToggleTypeToCreateLabel()
+{
+   bool typeToCreateLabel;
+   gPrefs->Read(wxT("/GUI/TypeToCreateLabel"), &typeToCreateLabel, true);
+   gPrefs->Write(wxT("/GUI/TypeToCreateLabel"), !typeToCreateLabel);
+   gPrefs->Flush();
+   mProject->ModifyAllProjectToolbarMenus();
 }

@@ -55,6 +55,7 @@ public:
    void DoEditLabels(LabelTrack *lt = nullptr, int index = -1);
 private:
    void OnEditLabels();
+   void OnToggleTypeToCreateLabel();
 
    AudacityProject *const mProject;
    size_t mAlignLabelsCount;

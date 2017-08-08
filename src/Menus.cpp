@@ -805,9 +805,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       c->SetDefaultFlags(AudioIONotBusyFlag, AudioIONotBusyFlag);
 
-      c->AddCheck(wxT("TypeToCreateLabel"), _("&Type to Create a Label (on/off)"),
-                  FN(OnToggleTypeToCreateLabel), 0, AlwaysEnabledFlag, AlwaysEnabledFlag);
-
       c->AddSeparator();
 
       //////////////////////////////////////////////////////////////////////////
@@ -5846,15 +5843,6 @@ void AudacityProject::OnSoundActivated()
 void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
-}
-
-void AudacityProject::OnToggleTypeToCreateLabel()
-{
-   bool typeToCreateLabel;
-   gPrefs->Read(wxT("/GUI/TypeToCreateLabel"), &typeToCreateLabel, true);
-   gPrefs->Write(wxT("/GUI/TypeToCreateLabel"), !typeToCreateLabel);
-   gPrefs->Flush();
-   ModifyAllProjectToolbarMenus();
 }
 
 void AudacityProject::OnApplyChain()
