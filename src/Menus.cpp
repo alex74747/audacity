@@ -388,10 +388,6 @@ void AudacityProject::CreateMenusAndCommands()
 
       /////////////////////////////////////////////////////////////////////////////
 
-      c->AddItem(wxT("StoreCursorPosition"), _("Store Cursor Pos&ition"), FN(OnCursorPositionStore),
-         WaveTracksExistFlag,
-         WaveTracksExistFlag);
-
       c->AddSeparator();
 
       /////////////////////////////////////////////////////////////////////////////
@@ -2584,12 +2580,6 @@ bool AudacityProject::DoEditMetadata
    }
 
    return false;
-}
-
-void AudacityProject::OnCursorPositionStore()
-{
-   mCursorPositionStored = IsAudioActive() ? gAudioIO->GetStreamTime() : mViewInfo.selectedRegion.t0();
-   mCursorPositionHasBeenStored = true;
 }
 
 void AudacityProject::OnApplyChain()

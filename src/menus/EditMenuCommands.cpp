@@ -229,6 +229,10 @@ void EditMenuCommands::Create(CommandManager *c)
    c->AddItem(wxT("SelRestore"), _("Retrieve Regio&n"), FN(OnSelectionRestore),
       TracksExistFlag,
       TracksExistFlag);
+
+   c->AddItem(wxT("StoreCursorPosition"), _("Store Cursor Pos&ition"), FN(OnCursorPositionStore),
+      WaveTracksExistFlag,
+      WaveTracksExistFlag);
 }
 
 void EditMenuCommands::CreateNonMenuCommands(CommandManager *c)
@@ -2007,4 +2011,13 @@ void EditMenuCommands::OnSelectionRestore()
    mProject->ModifyState(false);
 
    mProject->GetTrackPanel()->Refresh(false);
+}
+
+void EditMenuCommands::OnCursorPositionStore()
+{
+   const auto &selectedRegion = mProject->GetViewInfo().selectedRegion;
+   auto cursorPositionStored = mProject->IsAudioActive()
+      ? gAudioIO->GetStreamTime() : selectedRegion.t0();
+   mProject->SetCursorPositionStored(cursorPositionStored);
+   mProject->SetCursorPositionHasBeenStored(true);
 }

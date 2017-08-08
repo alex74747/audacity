@@ -95,6 +95,7 @@ private:
    void OnCursorTrackEnd();
    void OnSelectionSave();
    void OnSelectionRestore();
+   void OnCursorPositionStore();
 
    AudacityProject *const mProject;
    SelectedRegion mRegionSave{};
