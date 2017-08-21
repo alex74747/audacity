@@ -192,6 +192,7 @@ static PmError alsa_write_byte(PmInternal *midi, unsigned char byte,
     alsa_descriptor_type desc = (alsa_descriptor_type) midi->descriptor;
     snd_seq_event_t ev;
     int err;
+    snd_seq_real_time_t rtime;
 
     snd_seq_ev_clear(&ev);
     if (snd_midi_event_encode_byte(desc->parser, byte, &ev) == 1) {
@@ -201,7 +202,7 @@ static PmError alsa_write_byte(PmInternal *midi, unsigned char byte,
             /* compute relative time of event = timestamp - now + latency */
             PmTimestamp now = (midi->time_proc ? 
                                midi->time_proc(midi->time_info) : 
-                               Pt_Time(NULL));
+                               Pt_Time());
             int when = timestamp;
             /* if timestamp is zero, send immediately */
             /* otherwise compute time delay and use delay if positive */
@@ -211,6 +212,7 @@ static PmError alsa_write_byte(PmInternal *midi, unsigned char byte,
             VERBOSE printf("timestamp %d now %d latency %d, ", 
                            (int) timestamp, (int) now, midi->latency);
             VERBOSE printf("scheduling event after %d\n", when);
+#if 0
             /* message is sent in relative ticks, where 1 tick = 1 ms */
             snd_seq_ev_schedule_tick(&ev, queue, 1, when);
             /* NOTE: for cases where the user does not supply a time function,
@@ -220,6 +222,11 @@ static PmError alsa_write_byte(PmInternal *midi, unsigned char byte,
                count when PortMidi is initialized and keep it running until
                PortMidi is terminated. (This should be simple, but it's not
                how the code works now.) -RBD */
+#else
+           rtime.tv_sec = when / 1000;
+           rtime.tv_nsec = (when % 1000) * 1000000;
+           snd_seq_ev_schedule_real(&ev, queue, 1, &rtime);
+#endif
         } else { /* send event out without queueing */
             VERBOSE printf("direct\n");
             /* ev.queue = SND_SEQ_QUEUE_DIRECT;
