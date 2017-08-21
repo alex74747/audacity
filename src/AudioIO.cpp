@@ -315,6 +315,8 @@ wxArrayLong AudioIO::mCachedSampleRates;
 double AudioIO::mCachedBestRateIn = 0.0;
 double AudioIO::mCachedBestRateOut;
 
+static const double MIDI_TIME_OFFSET = 1.0;
+
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
 
 #include "tracks/ui/Scrubbing.h"
@@ -2974,7 +2976,7 @@ MidiThread::ExitCode MidiThread::Entry()
             // test for end
             double realTime = gAudioIO->MidiTime() * 0.001 -
                                gAudioIO->PauseTime();
-            realTime -= 1; // MidiTime() runs ahead 1s
+            realTime -= MIDI_TIME_OFFSET;
 
             // XXX Is this still true now?  It seems to break looping --Poke
             //
@@ -3831,7 +3833,8 @@ void AudioIO::OutputEvent()
    double time = eventTime + 0.0005 -
                  ((mMidiLatency + mSynthLatency) * 0.001);
 
-   time += 1; // MidiTime() has a 1s offset
+   time += MIDI_TIME_OFFSET;
+
    // state changes have to go out without delay because the
    // midi stream time gets reset when playback starts, and
    // we don't want to leave any control changes scheduled for later
@@ -4046,7 +4049,7 @@ PmTimestamp AudioIO::MidiTime()
    auto clockChange = PaUtil_GetTime() - mAudioCallbackClockTime;
    auto offset = mAudioCallbackOutputDacTime - mAudioCallbackOutputCurrentTime;
    return (PmTimestamp) ((unsigned long) (1000 * (
-      AudioTime() + 1.0005 -
+      AudioTime() + MIDI_TIME_OFFSET + .0005 -
       mAudioFramesPerBuffer / mRate +
       clockChange - offset
    )));
