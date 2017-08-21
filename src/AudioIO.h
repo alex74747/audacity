@@ -555,6 +555,11 @@ private:
    /// so that AllNotesOff() is only delivered once
    volatile bool    mMidiPaused;
 
+   // Time origin for timestamps passed to portmidi
+   double mMidiT0{};
+
+   bool mShouldStopPt{ false };
+
    Alg_seq_ptr      mSeq;
    std::unique_ptr<Alg_iterator> mIterator;
    /// The next event to play (or null)

@@ -317,6 +317,10 @@ double AudioIO::mCachedBestRateOut;
 
 static const double MIDI_TIME_OFFSET = 1.0;
 
+// If not defined, the function ::MidiTime is used only to decide when to
+// signal completion of playback to the application, and not passed to portmidi
+#undef USE_MIDI_TIME
+
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
 
 #include "tracks/ui/Scrubbing.h"
@@ -1792,6 +1796,14 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    bool successMidi = true;
 
    if(!mMidiPlaybackTracks.empty()){
+#ifdef USE_MIDI_TIME
+      mMidiT0 = mT0 + MIDI_TIME_OFFSET;
+#else
+      const int resolution = 100; // ms
+      auto result = Pt_Start(resolution, nullptr, nullptr);
+      mShouldStopPt = (result != ptAlreadyStarted);
+      mMidiT0 = Pt_Time() / 1000.0;
+#endif
       successMidi = StartPortMidiStream();
    }
 
@@ -2137,11 +2149,18 @@ bool AudioIO::StartPortMidiStream()
    } // (else playback device has Pm_GetDefaultOuputDeviceID())
 
    /* open output device */
+   const PmTimeProcPtr callback =
+#ifdef USE_MIDI_TIME
+      ::MidiTime
+#else
+      nullptr
+#endif
+   ;
    mLastPmError = Pm_OpenOutput(&mMidiStream,
                                 playbackDevice,
                                 NULL,
                                 0,
-                                &::MidiTime,
+                                callback,
                                 NULL,
                                 mMidiLatency);
    if (mLastPmError == pmNoError) {
@@ -2151,9 +2170,12 @@ bool AudioIO::StartPortMidiStream()
       mMidiOutputComplete = false;
       PrepareMidiIterator();
 
+#ifdef USE_MIDI_TIME
       // It is ok to call this now, but do not send timestamped midi
       // until after the first audio callback, which provides necessary
       // data for MidiTime().
+#endif
+
       Pm_Synchronize(mMidiStream); // start using timestamps
       // start midi output flowing (pending first audio callback)
       mMidiThreadFillBuffersLoopRunning = true;
@@ -2336,6 +2358,10 @@ void AudioIO::StopStream()
       wxMilliSleep(40); // deliver the all-off messages
       Pm_Close(mMidiStream);
       mMidiStream = NULL;
+#ifndef USE_MIDI_TIME
+      if (mShouldStopPt)
+         Pt_Stop();
+#endif
       mIterator->end();
 
       // set in_use flags to false
@@ -2956,9 +2982,14 @@ MidiThread::ExitCode MidiThread::Entry()
    {
       // Set LoopActive outside the tests to avoid race condition
       gAudioIO->mMidiThreadFillBuffersLoopActive = true;
-      if( gAudioIO->mMidiThreadFillBuffersLoopRunning &&
+
+      if( gAudioIO->mMidiThreadFillBuffersLoopRunning
+
+#ifdef USE_MIDI_TIME
           // mNumFrames signals at least one callback, needed for MidiTime()
-          gAudioIO->mNumFrames > 0)
+          && gAudioIO->mNumFrames > 0
+#endif
+         )
       {
          // Keep track of time paused. If not paused, fill buffers.
          if (gAudioIO->IsPaused()) {
@@ -3817,7 +3848,7 @@ double AudioIO::UncorrectedMidiEventTime()
    else
       time = mNextEventTime;
 
-   return time + PauseTime();
+   return time + (mMidiT0 - mT0) + PauseTime();
 }
 
 void AudioIO::OutputEvent()
@@ -3832,8 +3863,6 @@ void AudioIO::OutputEvent()
    // 0.0005 is for rounding
    double time = eventTime + 0.0005 -
                  ((mMidiLatency + mSynthLatency) * 0.001);
-
-   time += MIDI_TIME_OFFSET;
 
    // state changes have to go out without delay because the
    // midi stream time gets reset when playback starts, and
@@ -4015,10 +4044,16 @@ void AudioIO::FillMidiBuffers()
          break;
       }
    SetHasSolo(hasSolo);
+#ifdef USE_MIDI_TIME
    double time = AudioTime();
+#else
+   // Need this different limit, else play won't stop promptly if begun later
+   // than t0
+   double time = Pt_Time() / 1000.0;
+#endif
    while (mNextEvent &&
           UncorrectedMidiEventTime() <
-             time + ((MIDI_SLEEP + mSynthLatency) * 0.001)) {
+             time + ((2 * MIDI_SLEEP + mMidiLatency + mSynthLatency) * 0.001)) {
       OutputEvent();
       GetNextEvent();
    }
