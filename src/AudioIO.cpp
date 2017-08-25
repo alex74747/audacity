@@ -1799,10 +1799,8 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
 #ifdef USE_MIDI_TIME
       mMidiT0 = mT0 + MIDI_TIME_OFFSET;
 #else
-      const int resolution = 100; // ms
-      auto result = Pt_Start(resolution, nullptr, nullptr);
-      mShouldStopPt = (result != ptAlreadyStarted);
-      mMidiT0 = Pt_Time() / 1000.0;
+      mMidiT0 = -1;
+      mShouldStopPt = false;
 #endif
       successMidi = StartPortMidiStream();
    }
@@ -2988,6 +2986,8 @@ MidiThread::ExitCode MidiThread::Entry()
 #ifdef USE_MIDI_TIME
           // mNumFrames signals at least one callback, needed for MidiTime()
           && gAudioIO->mNumFrames > 0
+#else
+          && gAudioIO->mMidiT0 >= 0
 #endif
          )
       {
@@ -4328,6 +4328,17 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    if(gAudioIO->IsPaused())
       gAudioIO->mNumPauseFrames += framesPerBuffer;
    gAudioIO->mNumFrames += framesPerBuffer;
+
+#ifndef USE_MIDI_TIME
+   if (gAudioIO->mMidiT0 < 0) {
+      const int resolution = 100; // ms
+      auto result = Pt_Start(resolution, nullptr, nullptr);
+      gAudioIO->mShouldStopPt = (result != ptAlreadyStarted);
+      gAudioIO->mMidiT0 = Pt_Time() / 1000.0
+         + timeInfo->outputBufferDacTime - timeInfo->currentTime;
+   }
+#endif
+
 #endif
 
    unsigned int i;
