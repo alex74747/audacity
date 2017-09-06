@@ -54,7 +54,6 @@
 #include <wx/listctrl.h>
 #include <wx/log.h>
 #include <wx/module.h>
-#include <wx/msgdlg.h>
 #include <wx/process.h>
 #include <wx/progdlg.h>
 #include <wx/recguard.h>
@@ -86,6 +85,7 @@
 #include "../../widgets/NumericTextCtrl.h"
 #include "../../widgets/wxPanelWrapper.h"
 #include "../../widgets/valnum.h"
+#include "../../widgets/ErrorDialog.h"
 #include "../../xml/XMLFileReader.h"
 #include "../../xml/XMLWriter.h"
 
@@ -1831,7 +1831,7 @@ void VSTEffect::ExportPresets()
    else
    {
       // This shouldn't happen, but complain anyway
-      wxMessageBox(_("Unrecognized file extension."),
+      AudacityMessageBox(_("Unrecognized file extension."),
                    _("Error Saving VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -1883,7 +1883,7 @@ void VSTEffect::ImportPresets()
    else
    {
       // This shouldn't happen, but complain anyway
-      wxMessageBox(_("Unrecognized file extension."),
+      AudacityMessageBox(_("Unrecognized file extension."),
                    _("Error Loading VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -1893,7 +1893,7 @@ void VSTEffect::ImportPresets()
 
    if (!success)
    {
-      wxMessageBox(_("Unable to load presets file."),
+      AudacityMessageBox(_("Unable to load presets file."),
                    _("Error Loading VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -2997,7 +2997,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    ArrayOf<unsigned char> data{ size_t(f.Length()) };
    if (!data)
    {
-      wxMessageBox(_("Unable to allocate memory when loading presets file."),
+      AudacityMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3011,7 +3011,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
       ssize_t len = f.Read((void *) bptr, f.Length());
       if (f.Error())
       {
-         wxMessageBox(_("Unable to read presets file."),
+         AudacityMessageBox(_("Unable to read presets file."),
                       _("Error Loading VST Presets"),
                       wxOK | wxCENTRE,
                       mParent);
@@ -3168,7 +3168,7 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    ArrayOf<unsigned char> data{ size_t(f.Length()) };
    if (!data)
    {
-      wxMessageBox(_("Unable to allocate memory when loading presets file."),
+      AudacityMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3182,7 +3182,7 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
       ssize_t len = f.Read((void *) bptr, f.Length());
       if (f.Error())
       {
-         wxMessageBox(_("Unable to read presets file."),
+         AudacityMessageBox(_("Unable to read presets file."),
                       _("Error Loading VST Presets"),
                       wxOK | wxCENTRE,
                       mParent);
@@ -3378,7 +3378,7 @@ bool VSTEffect::LoadXML(const wxFileName & fn)
    if (!ok)
    {
       // Inform user of load failure
-      wxMessageBox(reader.GetErrorStr(),
+      AudacityMessageBox(reader.GetErrorStr(),
                    _("Error Loading VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3395,7 +3395,7 @@ void VSTEffect::SaveFXB(const wxFileName & fn)
    wxFFile f(fullPath, wxT("wb"));
    if (!f.IsOpened())
    {
-      wxMessageBox(wxString::Format(_("Could not open file: \"%s\""), fullPath.c_str()),
+      AudacityMessageBox(wxString::Format(_("Could not open file: \"%s\""), fullPath.c_str()),
                    _("Error Saving VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3462,7 +3462,7 @@ void VSTEffect::SaveFXB(const wxFileName & fn)
 
    if (f.Error())
    {
-      wxMessageBox(wxString::Format(_("Error writing to file: \"%s\""), fullPath.c_str()),
+      AudacityMessageBox(wxString::Format(_("Error writing to file: \"%s\""), fullPath.c_str()),
                    _("Error Saving VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3480,7 +3480,7 @@ void VSTEffect::SaveFXP(const wxFileName & fn)
    wxFFile f(fullPath, wxT("wb"));
    if (!f.IsOpened())
    {
-      wxMessageBox(wxString::Format(_("Could not open file: \"%s\""), fullPath.c_str()),
+      AudacityMessageBox(wxString::Format(_("Could not open file: \"%s\""), fullPath.c_str()),
                    _("Error Saving VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3495,7 +3495,7 @@ void VSTEffect::SaveFXP(const wxFileName & fn)
    f.Write(buf.GetData(), buf.GetDataLen());
    if (f.Error())
    {
-      wxMessageBox(wxString::Format(_("Error writing to file: \"%s\""), fullPath.c_str()),
+      AudacityMessageBox(wxString::Format(_("Error writing to file: \"%s\""), fullPath.c_str()),
                    _("Error Saving VST Presets"),
                    wxOK | wxCENTRE,
                    mParent);
@@ -3690,7 +3690,7 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             {
                wxString msg;
                msg.Printf(_("This parameter file was saved from %s.  Continue?"), value);
-               int result = wxMessageBox(msg, wxT("Confirm"), wxYES_NO, mParent);
+               int result = AudacityMessageBox(msg, wxT("Confirm"), wxYES_NO, mParent);
                if (result == wxNO)
                {
                   return false;

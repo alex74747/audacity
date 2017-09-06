@@ -28,7 +28,6 @@ KeyConfigPrefs and MousePrefs use.
 #include <wx/intl.h>
 #include <wx/filedlg.h>
 #include <wx/button.h>
-#include <wx/msgdlg.h>
 
 #include "../Prefs.h"
 #include "../Project.h"
@@ -42,6 +41,7 @@ KeyConfigPrefs and MousePrefs use.
 #include "../FileNames.h"
 
 #include "../widgets/KeyView.h"
+#include "../widgets/ErrorDialog.h"
 
 //
 // KeyConfigPrefs
@@ -347,7 +347,7 @@ void KeyConfigPrefs::OnImport(wxCommandEvent & WXUNUSED(event))
 
    XMLFileReader reader;
    if (!reader.Parse(mManager, file)) {
-      wxMessageBox(reader.GetErrorStr(),
+      AudacityMessageBox(reader.GetErrorStr(),
                    _("Error Importing Keyboard Shortcuts"),
                    wxOK | wxCENTRE, this);
    }
@@ -584,7 +584,7 @@ void KeyConfigPrefs::SetKeyForSelected(const wxString & key)
 
    if (!mView->CanSetKey(mCommandSelected))
    {
-      wxMessageBox(_("You may not assign a key to this entry"),
+      AudacityMessageBox(_("You may not assign a key to this entry"),
          _("Error"), wxICON_ERROR | wxCENTRE, this);
       return;
    }
@@ -598,7 +598,7 @@ void KeyConfigPrefs::SetKeyForSelected(const wxString & key)
 void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
 {
    if (mCommandSelected == wxNOT_FOUND) {
-      wxMessageBox(_("You must select a binding before assigning a shortcut"),
+      AudacityMessageBox(_("You must select a binding before assigning a shortcut"),
          _("Error"), wxICON_WARNING | wxCENTRE, this);
       return;
    }
@@ -618,7 +618,7 @@ void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
                           mManager->GetPrefixedLabelFromName(oldname);
       wxString newlabel = mManager->GetCategoryFromName(newname) + wxT(" - ") +
                           mManager->GetPrefixedLabelFromName(newname);
-      if (wxMessageBox(
+      if (AudacityMessageBox(
             wxString::Format(
             _("The keyboard shortcut '%s' is already assigned to:\n\n\t'%s'\n\nClick OK to assign the shortcut to\n\n\t'%s'\n\ninstead.  Otherwise, click Cancel."),
             key.c_str(),

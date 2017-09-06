@@ -28,6 +28,7 @@ recover previous Audacity projects that were closed incorrectly.
 #include <wx/app.h>
 
 #include "WaveTrack.h"
+#include "widgets/ErrorDialog.h"
 
 enum {
    ID_RECOVER_ALL = 10000,
@@ -134,7 +135,7 @@ void AutoRecoveryDialog::OnQuitAudacity(wxCommandEvent & WXUNUSED(event))
 
 void AutoRecoveryDialog::OnRecoverNone(wxCommandEvent & WXUNUSED(event))
 {
-   int ret = wxMessageBox(
+   int ret = AudacityMessageBox(
       _("Are you sure you want to discard all recoverable projects?\n\nChoosing \"Yes\" discards all recoverable projects immediately."),
       _("Confirm Discard Projects"), wxICON_QUESTION | wxYES_NO | wxNO_DEFAULT, this);
 
@@ -154,7 +155,7 @@ static bool HaveFilesToRecover()
    wxDir dir(FileNames::AutoSaveDir());
    if (!dir.IsOpened())
    {
-      wxMessageBox(_("Could not enumerate files in auto save directory."),
+      AudacityMessageBox(_("Could not enumerate files in auto save directory."),
                    _("Error"), wxICON_STOP);
       return false;
    }
@@ -177,7 +178,7 @@ static bool RemoveAllAutoSaveFiles()
       {
          // I don't think this error message is actually useful.
          // -dmazzoni
-         //wxMessageBox(wxT("Could not remove auto save file: " + files[i]),
+         //AudacityMessageBox(wxT("Could not remove auto save file: " + files[i]),
          //             _("Error"), wxICON_STOP);
          return false;
       }
@@ -191,7 +192,7 @@ static bool RecoverAllProjects(AudacityProject** pproj)
    wxDir dir(FileNames::AutoSaveDir());
    if (!dir.IsOpened())
    {
-      wxMessageBox(_("Could not enumerate files in auto save directory."),
+      AudacityMessageBox(_("Could not enumerate files in auto save directory."),
                    _("Error"), wxICON_STOP);
       return false;
    }

@@ -73,7 +73,6 @@
 #include <wx/log.h>
 #include <wx/filefn.h>
 #include <wx/hash.h>
-#include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 #include <wx/timer.h>
 #include <wx/intl.h>
@@ -105,6 +104,7 @@
 #include "Sequence.h"
 #include "widgets/Warning.h"
 #include "widgets/MultiDialog.h"
+#include "widgets/ErrorDialog.h"
 
 #include "ondemand/ODManager.h"
 
@@ -1850,7 +1850,7 @@ other projects. \
 
       // In auto-recover mode, we didn't do any ShowMultiDialog calls above, so put up an alert.
       if (bAutoRecoverMode)
-         ::wxMessageBox(
+         ::AudacityMessageBox(
             _("Project check found file inconsistencies during automatic recovery.\n\nSelect 'Show Log...' in the Help menu to see details."),
             _("Warning: Problems in Automatic Recovery"),
             wxOK  | wxICON_EXCLAMATION);

@@ -44,7 +44,6 @@
 #include <wx/choice.h>
 #include <wx/intl.h>
 #include <wx/timer.h>
-#include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 #include <wx/string.h>
 #include <wx/textctrl.h>
@@ -61,6 +60,7 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../Tags.h"
+#include "../widgets/ErrorDialog.h"
 
 #include "Export.h"
 
@@ -567,7 +567,7 @@ void FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
    if (preset)
    {
       wxString query = wxString::Format(_("Overwrite preset '%s'?"),name.c_str());
-      int action = wxMessageBox(query,_("Confirm Overwrite"),wxYES_NO | wxCENTRE);
+      int action = AudacityMessageBox(query,_("Confirm Overwrite"),wxYES_NO | wxCENTRE);
       if (action == wxNO) return;
    }
 
@@ -578,7 +578,7 @@ void FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
    lb = dynamic_cast<wxListBox*>(wnd);
    if (lb->GetSelection() < 0)
    {
-      wxMessageBox(_("Please select format before saving a profile"));
+      AudacityMessageBox(_("Please select format before saving a profile"));
       return;
    }
    format = lb->GetStringSelection();
@@ -587,7 +587,7 @@ void FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
    lb = dynamic_cast<wxListBox*>(wnd);
    if (lb->GetSelection() < 0)
    {
-      wxMessageBox(_("Please select codec before saving a profile"));
+      AudacityMessageBox(_("Please select codec before saving a profile"));
       return;
    }
    codec = lb->GetStringSelection();
@@ -660,7 +660,7 @@ void FFmpegPresets::LoadPreset(ExportFFmpegOptions *parent, wxString &name)
    FFmpegPreset *preset = FindPreset(name);
    if (!preset)
    {
-      wxMessageBox(wxString::Format(_("Preset '%s' does not exist."),name.c_str()));
+      AudacityMessageBox(wxString::Format(_("Preset '%s' does not exist."),name.c_str()));
       return;
    }
 
@@ -762,7 +762,7 @@ bool FFmpegPresets::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             if (mPreset)
             {
                wxString query = wxString::Format(_("Replace preset '%s'?"), value.c_str());
-               int action = wxMessageBox(query, _("Confirm Overwrite"), wxYES_NO | wxCANCEL | wxCENTRE);
+               int action = AudacityMessageBox(query, _("Confirm Overwrite"), wxYES_NO | wxCANCEL | wxCENTRE);
                if (action == wxCANCEL)
                {
                   mAbortImport = true;
@@ -1745,12 +1745,12 @@ void ExportFFmpegOptions::OnDeletePreset(wxCommandEvent& WXUNUSED(event))
    wxString presetname = preset->GetValue();
    if (presetname.IsEmpty())
    {
-      wxMessageBox(_("You can't delete a preset without name"));
+      AudacityMessageBox(_("You can't delete a preset without name"));
       return;
    }
 
    wxString query = wxString::Format(_("Delete preset '%s'?"),presetname.c_str());
-   int action = wxMessageBox(query,_("Confirm Deletion"),wxYES_NO | wxCENTRE);
+   int action = AudacityMessageBox(query,_("Confirm Deletion"),wxYES_NO | wxCENTRE);
    if (action == wxNO) return;
 
    mPresets->DeletePreset(presetname);
@@ -1768,7 +1768,7 @@ void ExportFFmpegOptions::OnSavePreset(wxCommandEvent& WXUNUSED(event))
    wxString name = preset->GetValue();
    if (name.IsEmpty())
    {
-      wxMessageBox(_("You can't save a preset without name"));
+      AudacityMessageBox(_("You can't save a preset without name"));
       return;
    }
    mPresets->SavePreset(this,name);

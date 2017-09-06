@@ -42,7 +42,6 @@ simplifies construction of menu items.
 
 #include <wx/defs.h>
 #include <wx/docview.h>
-#include <wx/msgdlg.h>
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
 #include <wx/textdlg.h>
@@ -139,6 +138,7 @@ simplifies construction of menu items.
 #include "prefs/TracksPrefs.h"
 
 #include "widgets/Meter.h"
+#include "widgets/ErrorDialog.h"
 
 enum {
    kAlignStartZero = 0,
@@ -4524,7 +4524,7 @@ void AudacityProject::OnExportLabels()
    }
 
    if (numLabelTracks == 0) {
-      wxMessageBox(_("There are no label tracks to export."));
+      AudacityMessageBox(_("There are no label tracks to export."));
       return;
    }
 
@@ -4560,7 +4560,7 @@ void AudacityProject::OnExportLabels()
    f.Create();
    f.Open();
    if (!f.IsOpened()) {
-      wxMessageBox(_("Couldn't write to file: ") + fName);
+      AudacityMessageBox(_("Couldn't write to file: ") + fName);
       return;
    }
 
@@ -4597,12 +4597,12 @@ void AudacityProject::OnExportMIDI(){
    }
 
    if(numNoteTracksSelected > 1) {
-      wxMessageBox(wxString::Format(_(
+      AudacityMessageBox(wxString::Format(_(
          "Please select only one Note Track at a time.")));
       return;
    }
    else if(numNoteTracksSelected < 1) {
-      wxMessageBox(wxString::Format(_(
+      AudacityMessageBox(wxString::Format(_(
          "Please select a Note Track.")));
       return;
    }
@@ -4654,7 +4654,7 @@ void AudacityProject::OnExportMIDI(){
       } else {
          wxString msg = _("You have selected a filename with an unrecognized file extension.\nDo you want to continue?");
          wxString title = _("Export MIDI");
-         int id = wxMessageBox(msg, title, wxYES_NO);
+         int id = AudacityMessageBox(msg, title, wxYES_NO);
          if (id == wxNO) {
             continue;
          } else if (id == wxYES) {
@@ -4750,7 +4750,7 @@ void AudacityProject::OnPrint()
 void AudacityProject::OnUndo()
 {
    if (!GetUndoManager()->UndoAvailable()) {
-      wxMessageBox(_("Nothing to undo"));
+      AudacityMessageBox(_("Nothing to undo"));
       return;
    }
 
@@ -4780,7 +4780,7 @@ void AudacityProject::OnUndo()
 void AudacityProject::OnRedo()
 {
    if (!GetUndoManager()->RedoAvailable()) {
-      wxMessageBox(_("Nothing to redo"));
+      AudacityMessageBox(_("Nothing to redo"));
       return;
    }
    // Can't redo whilst dragging
@@ -6875,7 +6875,7 @@ void AudacityProject::OnImportLabels()
 
       f.Open(fileName);
       if (!f.IsOpened()) {
-         wxMessageBox(_("Could not open file: ") + fileName);
+         AudacityMessageBox(_("Could not open file: ") + fileName);
          return;
       }
 
@@ -7802,7 +7802,7 @@ void AudacityProject::OnScoreAlign()
    if(numWaveTracksSelected == 0 ||
       numNoteTracksSelected != 1 ||
       numOtherTracksSelected != 0){
-      wxMessageBox(wxString::Format(wxT("Please select at least one audio track and one MIDI track.")));
+      AudacityMessageBox(wxString::Format(wxT("Please select at least one audio track and one MIDI track.")));
       return;
    }
 
@@ -7872,13 +7872,13 @@ void AudacityProject::OnScoreAlign()
    if (result == SA_SUCCESS) {
       mTracks->Replace(nt, std::move(holder));
       RedrawProject();
-      wxMessageBox(wxString::Format(
+      AudacityMessageBox(wxString::Format(
          _("Alignment completed: MIDI from %.2f to %.2f secs, Audio from %.2f to %.2f secs."),
          params.mMidiStart, params.mMidiEnd,
          params.mAudioStart, params.mAudioEnd));
       PushState(_("Sync MIDI with Audio"), _("Sync MIDI with Audio"));
    } else if (result == SA_TOOSHORT) {
-      wxMessageBox(wxString::Format(
+      AudacityMessageBox(wxString::Format(
          _("Alignment error: input too short: MIDI from %.2f to %.2f secs, Audio from %.2f to %.2f secs."),
          params.mMidiStart, params.mMidiEnd,
          params.mAudioStart, params.mAudioEnd));
@@ -7888,7 +7888,7 @@ void AudacityProject::OnScoreAlign()
       return; // no message when user cancels alignment
    } else {
       //GetActiveProject()->OnUndo(); // recover any changes to note track
-      wxMessageBox(_("Internal error reported by alignment process."));
+      AudacityMessageBox(_("Internal error reported by alignment process."));
    }
 }
 #endif /* EXPERIMENTAL_SCOREALIGN */
@@ -7944,7 +7944,7 @@ void AudacityProject::OnNewLabelTrack()
 void AudacityProject::OnNewTimeTrack()
 {
    if (mTracks->GetTimeTrack()) {
-      wxMessageBox(_("This version of Audacity only allows one time track for each project window."));
+      AudacityMessageBox(_("This version of Audacity only allows one time track for each project window."));
       return;
    }
 
@@ -7966,7 +7966,7 @@ void AudacityProject::OnTimerRecord()
    // it is now safer to disable Timer Recording when there is more than
    // one open project.
    if (GetOpenProjectCount() > 1) {
-      wxMessageBox(_("Timer Recording cannot be used with more than one open project.\n\nPlease close any additional projects and try again."),
+      AudacityMessageBox(_("Timer Recording cannot be used with more than one open project.\n\nPlease close any additional projects and try again."),
                    _("Timer Recording"),
                    wxICON_INFORMATION | wxOK);
       return;
@@ -7977,7 +7977,7 @@ void AudacityProject::OnTimerRecord()
    // preventing issues surrounding "dirty" projects when Automatic Save/Export
    // is used in Timer Recording.
    if ((GetUndoManager()->UnsavedChanges()) && (ProjectHasTracks() || mEmptyCanBeDirty)) {
-      wxMessageBox(_("Timer Recording cannot be used while you have unsaved changes.\n\nPlease save or close this project and try again."),
+      AudacityMessageBox(_("Timer Recording cannot be used while you have unsaved changes.\n\nPlease save or close this project and try again."),
                    _("Timer Recording"),
                    wxICON_INFORMATION | wxOK);
       return;
@@ -8354,7 +8354,7 @@ void AudacityProject::OnAudioDeviceInfo()
       {
          if (!text->SaveFile(fName))
          {
-            wxMessageBox(_("Unable to save device info"), _("Save Device Info"));
+            AudacityMessageBox(_("Unable to save device info"), _("Save Device Info"));
          }
       }
    }
@@ -8395,7 +8395,7 @@ void AudacityProject::OnMidiDeviceInfo()
       {
          if (!text->SaveFile(fName))
          {
-            wxMessageBox(_("Unable to save MIDI device info"), _("Save MIDI Device Info"));
+            AudacityMessageBox(_("Unable to save MIDI device info"), _("Save MIDI Device Info"));
          }
       }
    }
@@ -8528,7 +8528,7 @@ void AudacityProject::OnLockPlayRegion()
    double start, end;
    GetPlayRegion(&start, &end);
    if (start >= mTracks->GetEndTime()) {
-       wxMessageBox(_("Cannot lock region beyond\nend of project."),
+       AudacityMessageBox(_("Cannot lock region beyond\nend of project."),
                     _("Error"));
    }
    else {
@@ -8608,7 +8608,7 @@ void AudacityProject::OnResample()
          break;
       }
 
-      wxMessageBox(_("The entered value is invalid"), _("Error"),
+      AudacityMessageBox(_("The entered value is invalid"), _("Error"),
                    wxICON_ERROR, this);
    }
 
