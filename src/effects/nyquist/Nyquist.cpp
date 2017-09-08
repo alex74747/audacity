@@ -785,7 +785,7 @@ _("Selection too long for Nyquist code.\nMaximum allowed selection is %ld sample
 
    if (mDebug && !mRedirectOutput) {
       NyquistOutputDialog dlog(mUIParent, -1,
-                               mName,
+                               GetTranslatedName(),
                                _("Debug Output: "),
                                mDebugOutput.c_str());
       dlog.CentreOnParent();
@@ -1176,7 +1176,7 @@ bool NyquistEffect::ProcessOne()
    // If we're not showing debug window, log errors and warnings:
    if (!mDebugOutput.IsEmpty() && !mDebug && !mTrace) {
       /* i18n-hint: An effect "returned" a message.*/
-      wxLogMessage(_("\'%s\' returned:\n%s"), mName, mDebugOutput);
+      wxLogMessage(_("\'%s\' returned:\n%s"), GetTranslatedName(), mDebugOutput);
    }
 
    // Audacity has no idea how long Nyquist processing will take, but
@@ -1196,9 +1196,9 @@ bool NyquistEffect::ProcessOne()
       // Return value is not valid type.
       // Show error in debug window if trace enabled, otherwise log.
       if (mTrace) {
-         /* i18n-hint: "%s" is replaced by name of plug-in.*/
+/* i18n-hint: Do not translate nyx_error. "%s" is replaced by name of plug-in.*/
          mDebugOutput = wxString::Format(_("nyx_error returned from %s.\n"),
-                                         mName.IsEmpty()? _("plug-in") : mName) + mDebugOutput;
+                                         mName.IsEmpty()? _("plug-in") : GetTranslatedName()) + mDebugOutput;
          mDebug = true;
          return false;
       }
@@ -1211,7 +1211,7 @@ bool NyquistEffect::ProcessOne()
    if (rval == nyx_string) {
       wxString msg = NyquistToWxString(nyx_get_string());
       if (!msg.IsEmpty())  // Not currently a documented feature, but could be useful as a No-Op.
-         wxMessageBox(msg, mName, wxOK | wxCENTRE, mUIParent);
+         wxMessageBox(msg, GetTranslatedName(), wxOK | wxCENTRE, mUIParent);
 
       // True if not process type.
       // If not returning audio from process effect,
@@ -1601,6 +1601,8 @@ void NyquistEffect::Parse(const wxString &line)
    }
 
    if (len >= 2 && tokens[0] == wxT("name")) {
+      // TODO:  If we ever translate Nyquist effect names, must we translate
+      // each twice, with and without ellipsis?  Or just concatenate?
       mName = UnQuote(tokens[1]);
       if (mName.EndsWith(wxT("...")))
       {
