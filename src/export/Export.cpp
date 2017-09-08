@@ -595,9 +595,10 @@ bool Exporter::GetFilename()
          // as an extension with no name, like just plain ".wav".
          //
          if (mFilename.GetName().Left(1) == wxT(".")) {
-            wxString prompt = _("Are you sure you want to export the file as \"") +
-                              mFilename.GetFullName() +
-                              wxT("\"?\n");
+            wxString prompt = wxString::Format(
+               _("Are you sure you want to export the file as \"%s\"?\n"),
+               mFilename.GetFullName()
+            );
 
             int action = wxMessageBox(prompt,
                                       _("Warning"),

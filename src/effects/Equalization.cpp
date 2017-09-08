@@ -3342,7 +3342,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
                   mEffect->Effect::MessageBox( _("Name is the same as the original one"), wxOK, _("Same name") );
                   break;
                }
-               int answer = mEffect->Effect::MessageBox( _("Overwrite existing curve '") + name +_("'?"),
+               int answer = mEffect->Effect::MessageBox( wxString::Format(_("Overwrite existing curve '%s'?"), name),
                   wxYES_NO, _("Curve exists") );
                if (answer == wxYES)
                {
@@ -3421,7 +3421,7 @@ void EditCurvesDialog::OnDelete(wxCommandEvent & WXUNUSED(event))
       {
          // Create the prompt
          wxString quest;
-         quest = wxString(_("Delete '")) + mEditCurves[ item-deleted ].Name + _("' ?");
+         quest = wxString::Format(_("Delete '%s'?")), mEditCurves[ item-deleted ].Name);
 
          // Ask for confirmation before removal
          int ans = Effect::MessageBox( quest, _("Confirm Deletion"), wxYES_NO | wxCENTRE, this );
@@ -3447,10 +3447,10 @@ void EditCurvesDialog::OnDelete(wxCommandEvent & WXUNUSED(event))
    // Create the prompt
    wxString quest;
    if( count > 1 )
-      quest.Printf(_("Delete ") + wxString(wxT("%d ")) + _("items?"), count);
+      quest.Printf(_("Delete %d items?"), count);
    else
       if( count == 1 )
-         quest = wxString(_("Delete '")) + mEditCurves[ item ].Name + _("' ?");
+         quest = wxString::Format(_("Delete '%s'?"), mEditCurves[ item ].Name);
       else
          return;
    // Ask for confirmation before removal
