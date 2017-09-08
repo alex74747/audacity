@@ -3606,7 +3606,7 @@ void EffectUIHost::OnSaveAs(wxCommandEvent & WXUNUSED(evt))
       name = text->GetValue();
       if (name.IsEmpty())
       {
-         wxMessageDialog md(this,
+         AudacityMessageDialog md(this,
                             _("You must specify a name"),
                             _("Save Preset"));
          md.Center();
@@ -3616,7 +3616,7 @@ void EffectUIHost::OnSaveAs(wxCommandEvent & WXUNUSED(evt))
 
       if (mUserPresets.Index(name) != wxNOT_FOUND)
       {
-         wxMessageDialog md(this,
+         AudacityMessageDialog md(this,
                             _("Preset already exists.\n\nReplace?"),
                             _("Save Preset"),
                             wxYES_NO | wxCANCEL | wxICON_EXCLAMATION);

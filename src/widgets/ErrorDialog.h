@@ -98,4 +98,17 @@ inline int AudacityMessageBox(const wxString& message,
    return ::wxMessageBox(message, caption, style, parent, x, y);
 }
 
+// Likewise, avoid using wxMessageDialog directly
+class AudacityMessageDialog : public wxMessageDialog
+{
+public:
+    AudacityMessageDialog(wxWindow *parent,
+                    const wxString& message,
+                    const wxString& caption = AudacityMessageBoxCaptionStr(),
+                    long style = wxOK|wxCENTRE,
+                    const wxPoint& pos = wxDefaultPosition)
+   : wxMessageDialog{ parent, message, caption, style, pos }
+   {}
+};
+
 #endif // __AUDACITY_ERRORDIALOG__
