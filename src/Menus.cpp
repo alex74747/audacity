@@ -8232,6 +8232,7 @@ void AudacityProject::OnRemoveTracks()
    if (f)
       mTrackPanel->EnsureVisible(f);
 
+   //
    PushState(_("Removed audio track(s)"), _("Remove Track"));
 
    mTrackPanel->UpdateViewIfNoTracks();
@@ -8634,6 +8635,7 @@ void AudacityProject::OnResample()
          // commit that to the undo stack.  The second and later times,
          // consolidate.
 
+         //
          PushState(_("Resampled audio track(s)"), _("Resample Track"), flags);
          flags = flags | UndoPush::CONSOLIDATE;
       }

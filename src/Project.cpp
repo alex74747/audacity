@@ -4851,6 +4851,7 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
 
          }
          else if(numTasks>1)
+            //
             msg.Printf(_("Import(s) complete. Running %d on-demand waveform calculations. Overall %2.0f%% complete."),
               numTasks,ratioComplete*100.0);
          else

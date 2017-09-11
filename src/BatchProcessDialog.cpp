@@ -238,6 +238,7 @@ void BatchProcessDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
       return;
    }
 
+   //
    wxString prompt =  _("Select file(s) for batch processing...");
 
    FormatList l;

@@ -528,11 +528,13 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    int h = (int)(t/3600);  // there must be a standard function for this!
    int m = (int)((t - h*3600)/60);
    float s = t - h*3600.0 - m*60.0;
+   //
    f.AddLine(wxString::Format(_("Time started = %2d hour(s), %2d minute(s), %.2f seconds."), h, m, s ));
    t = (float)mForegroundEndT->GetValue();
    h = (int)(t/3600);
    m = (int)((t - h*3600)/60);
    s = t - h*3600.0 - m*60.0;
+   //
    f.AddLine(wxString::Format(_("Time ended = %2d hour(s), %2d minute(s), %.2f seconds."), h, m, s ));
    f.AddLine( FormatRMSMessage( mForegroundIsDefined ? &foregrounddB : nullptr ) );
    f.AddLine(wxT(""));
@@ -541,11 +543,13 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    h = (int)(t/3600);
    m = (int)((t - h*3600)/60);
    s = t - h*3600.0 - m*60.0;
+   //
    f.AddLine(wxString::Format(_("Time started = %2d hour(s), %2d minute(s), %.2f seconds."), h, m, s ));
    t = (float)mBackgroundEndT->GetValue();
    h = (int)(t/3600);
    m = (int)((t - h*3600)/60);
    s = t - h*3600.0 - m*60.0;
+   //
    f.AddLine(wxString::Format(_("Time ended = %2d hour(s), %2d minute(s), %.2f seconds."), h, m, s ));
    f.AddLine( FormatRMSMessage( mBackgroundIsDefined ? &backgrounddB : nullptr ) );
    f.AddLine(wxT(""));

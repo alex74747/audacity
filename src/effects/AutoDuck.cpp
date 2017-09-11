@@ -242,6 +242,7 @@ bool EffectAutoDuck::Init()
 
    if (!controlTrackCandidate)
    {
+      //
       Effect::MessageBox(
          _("Auto Duck needs a control track which must be placed below the selected track(s)."),
          wxICON_ERROR);

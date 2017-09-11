@@ -570,10 +570,15 @@ void ExportMultiple::OnExport(wxCommandEvent& WXUNUSED(event))
    {
       wxString msg;
       msg.Printf(
+                 //
          ok == ProgressResult::Success ? _("Successfully exported the following %lld file(s).")
+                 //
            : (ok == ProgressResult::Failed ? _("Something went wrong after exporting the following %lld file(s).")
+              //
              : (ok == ProgressResult::Cancelled ? _("Export canceled after exporting the following %lld file(s).")
+                //
                : (ok == ProgressResult::Stopped ? _("Export stopped after exporting the following %lld file(s).")
+                  //
                  : _("Something went really wrong after exporting the following %lld file(s).")
                  )
                )

@@ -522,6 +522,7 @@ bool Importer::Import(const wxString &fName,
          // File has more than one stream - display stream selector
          if (inFile->GetStreamCount() > 1)
          {
+            //
             ImportStreamDialog ImportDlg(inFile.get(), NULL, -1, _("Select stream(s) to import"));
 
             if (ImportDlg.ShowModal() == wxID_CANCEL)

@@ -1844,6 +1844,7 @@ void Sequence::ConsistencyCheck
       wxLogError(wxT("%s"), str.c_str());
       wxLogError(wxT("*** Please report this error to https://forum.audacityteam.org/. ***\n\n")
                  wxT("Recommended course of action:\n")
+                 //
                  wxT("Undo the failed operation(s), then export or save your work and quit."));
 
       if (mayThrow)

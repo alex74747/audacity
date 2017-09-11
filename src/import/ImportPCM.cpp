@@ -250,6 +250,7 @@ static wxString AskCopyOrEdit()
       wxBoxSizer *vbox;
       dialog.SetSizer(vbox = safenew wxBoxSizer(wxVERTICAL));
 
+      //
       wxStaticText *message = safenew wxStaticText(&dialog, -1, wxString::Format(_("\
 When importing uncompressed audio files you can either copy them \
 into the project, or read them directly from their current location (without copying).\n\n\

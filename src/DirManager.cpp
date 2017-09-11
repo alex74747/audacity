@@ -1566,6 +1566,7 @@ int DirManager::ProjectFSCK(const bool bForceError, const bool bAutoRecoverMode)
       else
       {
          wxString msgA =
+         //
 _("Project check of \"%s\" folder \
 \ndetected %lld missing external audio file(s) \
 \n('aliased files'). There is no way for Audacity \
@@ -1586,6 +1587,7 @@ _("Project check of \"%s\" folder \
                _("Replace missing audio with silence (permanent immediately)."),
                NULL};
          wxLog::FlushActive(); // MultiDialog has "Show Log..." button, so make sure log is current.
+         //
          action = ShowMultiDialog(msg, _("Warning - Missing Aliased File(s)"), buttons);
       }
 
@@ -1632,6 +1634,7 @@ _("Project check of \"%s\" folder \
             ++iter;
          }
          if ((action == 2) && bAutoRecoverMode)
+            //
             wxLogWarning(_("   Project check replaced missing aliased file(s) with silence."));
       }
    }
@@ -1652,6 +1655,7 @@ _("Project check of \"%s\" folder \
       else
       {
          wxString msgA =
+         //
 _("Project check of \"%s\" folder \
 \ndetected %lld missing alias (.auf) blockfile(s). \
 \nAudacity can fully regenerate these files \
@@ -1663,6 +1667,7 @@ _("Project check of \"%s\" folder \
                                     _("Close project immediately with no further changes"),
                                     NULL};
          wxLog::FlushActive(); // MultiDialog has "Show Log..." button, so make sure log is current.
+         //
          action = ShowMultiDialog(msg, _("Warning - Missing Alias Summary File(s)"), buttons);
       }
 
@@ -1700,6 +1705,7 @@ _("Project check of \"%s\" folder \
             ++iter;
          }
          if ((action == 0) && bAutoRecoverMode)
+            //
             wxLogWarning(_("   Project check regenerated missing alias summary file(s)."));
       }
    }
@@ -1718,6 +1724,7 @@ _("Project check of \"%s\" folder \
       else
       {
          wxString msgA =
+         //
 _("Project check of \"%s\" folder \
 \ndetected %lld missing audio data (.au) blockfile(s), \
 \nprobably due to a bug, system crash, or accidental \
@@ -1736,6 +1743,7 @@ _("Project check of \"%s\" folder \
                _("Replace missing audio with silence (permanent immediately)"),
                NULL};
          wxLog::FlushActive(); // MultiDialog has "Show Log..." button, so make sure log is current.
+         //
          action = ShowMultiDialog(msg, _("Warning - Missing Audio Data Block File(s)"), buttons);
       }
 
@@ -1773,6 +1781,7 @@ _("Project check of \"%s\" folder \
             ++iter;
          }
          if ((action == 2) && bAutoRecoverMode)
+            //
             wxLogWarning(_("   Project check replaced missing audio data block file(s) with silence."));
       }
    }
@@ -1789,12 +1798,14 @@ _("Project check of \"%s\" folder \
       // They will be deleted when project is saved the first time.
       if (bAutoRecoverMode)
       {
+         //
          wxLogWarning(_("   Project check ignored orphan block file(s). They will be deleted when project is saved."));
          action = 1;
       }
       else
       {
          wxString msgA =
+         //
 _("Project check of \"%s\" folder \
 \nfound %d orphan block file(s). These files are \
 \nunused by this project, but might belong to \
@@ -1809,6 +1820,7 @@ other projects. \
             _("Delete orphan files (permanent immediately)"),
             NULL};
          wxLog::FlushActive(); // MultiDialog has "Show Log..." button, so make sure log is current.
+         //
          action = ShowMultiDialog(msg, _("Warning - Orphan Block File(s)"), buttons);
       }
 

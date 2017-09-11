@@ -642,6 +642,7 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
          if ((iOverriddenAction != iPostRecordAction) &&
              (iOverriddenAction != POST_TIMER_RECORD_NOTHING)) {
             // Inform the user that we have overridden the selected action
+            //
             sMessage.Printf(_("%s\n\n'%s' has been canceled due to the error(s) noted above."),
                             sMessage,
                             m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction));
