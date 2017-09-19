@@ -458,8 +458,10 @@ private:
    void OutputEvent();
    void FillMidiBuffers();
    void GetNextEvent();
+ public: /* RBDDBG */ // for debug printing
    double AudioTime() { return mT0 + mNumFrames / mRate; }
    double PauseTime();
+ private:
    void AllNotesOff();
 #endif
 
@@ -551,11 +553,8 @@ private:
 
    // These fields are used to synchronize MIDI with audio:
 
-   /// PortAudio's clock time
-   volatile double  mAudioCallbackClockTime;
-
 #ifdef USE_TIME_INFO
-   /// PortAudio's currentTime -- its origin is unspecified!
+   /// PortAudio's currentTime
    volatile double  mAudioCallbackOutputCurrentTime;
    /// PortAudio's outTime
    volatile double  mAudioCallbackOutputDacTime;
@@ -573,6 +572,22 @@ private:
    /// Used by Midi process to record that pause has begun,
    /// so that AllNotesOff() is only delivered once
    volatile bool    mMidiPaused;
+
+   // This extra info is used to estimate dac output time if
+   // PortAudio does not provide the info (using ALSA)
+
+   /// System time at previous callback
+   double mPrevCallbackTime;
+   /// Offset from ideal sample computation time to system time,
+   /// where "ideal" means when we would get the callback if there
+   /// were no scheduling delays or computation time
+ public: /*RBDDBG*/ // for some debug printing
+   double mSystemMinusAudioTime;
+ private:
+   /// number of callbacks since stream start
+   long mCallbackCount;
+   /// audio output latency reported by PortAudio
+   double mAudioOutLatency;
 
    Alg_seq_ptr      mSeq;
    std::unique_ptr<Alg_iterator> mIterator;

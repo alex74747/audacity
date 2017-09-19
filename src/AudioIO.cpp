@@ -95,33 +95,61 @@
   \par
   Therefore, we define the following interface for MIDI timing:
   \li \c AudioTime() is the time based on all samples written so far, including zeros output during pauses. AudioTime() is based on the start location mT0, not zero.
-  \li \c PauseTime() is the amount of time spent paused, based on a count of zero samples output.
-  \li \c MidiTime() is an estimate in milliseconds of the current audio output time + 1s. In other words, what audacity track time corresponds to the audio (including pause insertions) at the output?
+  \li \c PauseTime() is the amount of time spent paused, based on a count of zero-padding samples output.
+  \li \c MidiTime() is an estimate in milliseconds of the current audio output time + 1s. In other words, what audacity track time corresponds to the audio (plus pause insertions) at the DAC output?
 
   \par AudioTime() and PauseTime() computation
   AudioTime() is simply mT0 + mNumFrames / mRate.
   mNumFrames is incremented in each audio callback. Similarly, PauseTime()
   is mNumPauseFrames / mRate. mNumPauseFrames is also incremented in
-  each audio callback when a pause is in effect.
+  each audio callback when a pause is in effect or audio output is ready to start.
 
   \par MidiTime() computation
   MidiTime() is computed based on information from PortAudio's callback,
   which estimates the system time at which the current audio buffer will
   be output. Consider the (unimplemented) function RealToTrack() that
-  maps real time to track time. If outputTime is PortAudio's time
-  estimate for the most recent output buffer, then \n
-  RealToTrack(outputTime) = AudioTime() - PauseTime() - bufferDuration \n
-  We want to know RealToTrack of the current time, so we use this
-  approximation for small d: \n
-  RealToTrack(t + d) = RealToTrack(t) + d \n
-  Letting t = outputTime and d = (systemTime - outputTime), we can
+  maps real audio write time to track time. If writeTime is the system
+  time for the first sample of the current output buffer, and
+  if we are in the callback, so AudioTime() also refers to the first sample
+  of the buffer, then \n
+  RealToTrack(writeTime) = AudioTime() - PauseTime()\n
+  We want to know RealToTrack of the current time (when we are not in the
+  callback, so we use this approximation for small d: \n
+  RealToTrack(t + d) = RealToTrack(t) + d, or \n
+  Letting t = writeTime and d = (systemTime - writeTime), we can
   substitute to get:\n
-  RealToTrack(systemTime) = AudioTime() - PauseTime() - bufferduration + (systemTime - outputTime) \n
-  MidiTime() should include pause time, so add PauseTime() to both sides of
-  the equation. Also MidiTime() is offset by 1 second to avoid negative
-  time at startup, so add 1 to both sides:
-  MidiTime() in seconds = RealToTrack(systemTime) + PauseTime() + 1 = \n
-  AudioTime() - bufferduration + (systemTime - outputTime) + 1
+  RealToTrack(systemTime)
+     = RealToTrack(writeTime) + systemTime - writeTime\n
+     = AudioTime() - PauseTime() + (systemTime - writeTime) \n
+  MidiTime() should include pause time, so that it increases smoothly,
+  and audioLatency so that MidiTime() corresponds to the time of audio
+  output rather than audio write times.  Also MidiTime() is offset by 1
+  second to avoid negative time at startup, so add 1: \n
+  MidiTime(systemTime) in seconds\n
+     = RealToTrack(systemTime) + PauseTime() - audioLatency + 1 \n
+     = AudioTime() + (systemTime - writeTime) - audioLatency + 1 \n
+  (Note that audioLatency is called mAudioOutLatency in the code.)
+  When we schedule a MIDI event with track time TT, we need 
+  to map TT to a PortMidi timestamp. The PortMidi timestamp is exactly
+  MidiTime(systemTime) in ms units, and \n
+     MidiTime(x) = RealToTrack(x) + PauseTime() + 1, so \n
+     timestamp = TT + PauseTime() + 1 - midiLatency \n
+  Note 1: The timestamp is incremented by the PortMidi stream latency
+  (midiLatency) so we subtract midiLatency here for the timestamp 
+  passed to PortMidi. \n
+  Note 2: Here, we're setting x to the time at which RealToTrack(x) = TT,
+  so then MidiTime(x) is the desired timestamp. To be completely
+  correct, we should assume that MidiTime(x + d) = MidiTime(x) + d,
+  and consider that we compute MidiTime(systemTime) based on the
+  *current* system time, but we really want the MidiTime(x) for some
+  future time corresponding when MidiTime(x) = TT.)
+
+  \par
+  Also, we should assume PortMidi was opened with mMidiLatency, and that
+  MIDI messages become sound with a delay of mSynthLatency. Therefore,
+  the final timestamp calculation is: \n
+     timestamp = TT + PauseTime() + 1 - (mMidiLatency + mSynthLatency) \n
+  (All units here are seconds; some conversion is needed in the code.)  
 
   \par
   The difference AudioTime() - PauseTime() is the time "cursor" for
@@ -129,34 +157,92 @@
   unsynchronized. In particular, MIDI will not be synchronized with
   the visual cursor, which moves with scaled time reported in mTime.
 
-  \par Midi Synchronization
-  The goal of MIDI playback is to deliver MIDI messages synchronized to
-  audio (assuming no speed variation for now). If a midi event has time
-  tmidi, then the timestamp for that message should be \n
-  timestamp (in seconds) = tmidi + PauseTime() + 1.0 - latency.\n
-  (This is actually off by 1ms; see "PortMidi Latency Parameter" below for
-  more detail.)
-  Notice the extra 1.0, added because MidiTime() is offset by 1s to avoid
-  starting at a negative value. Also notice that we subtract latency.
-  The user must set device latency using preferences. Some software
-  synthesizers have very high latency (on the order of 100ms), so unless
-  we lower timestamps and send messages early, the final output will not
-  be synchronized.
-  This timestamp is interpreted by PortMidi relative to MidiTime(), which
-  is synchronized to audio output. So the only thing we need to do is
-  output Midi messages shortly before they will be played with the correct
-  timestamp. We will take "shortly before" to mean "at about the same time
-  as corresponding audio". Based on this, output the event when
-  AudioTime() - PauseTime() > mtime - latency,
-  adjusting the event time by adding PauseTime() + 1 - latency.
-  This gives at least mAudioOutputLatency for
-  the MIDI output to be generated (we want to generate MIDI output before
-  the actual output time because events generated early are accurately timed
-  according to their timestamp). However, the MIDI thread sleeps for
-  MIDI_SLEEP in its polling loop, so the worst case is really
-  mAudioOutputLatency + MIDI_SLEEP. In case the audio output latency is
-  very low, we will output events when
-  AudioTime() + MIDI_SLEEP - PauseTime() > mtime - latency.
+  \par Timing in Linux
+  It seems we cannot get much info from Linux. We can read the time
+  when we get a callback, and we get a variable frame count (it changes
+  from one callback to the next). Returning to the RealToTrack() 
+  equations above: \n
+  RealToTrack(outputTime) = AudioTime() - PauseTime() - bufferDuration \n
+  where outputTime should be PortAudio's estimate for the most recent output
+  buffer, but at least on my Dell Latitude E7450, PortAudio is getting zero
+  from ALSA, so we need to find a proxy for this. 
+
+  \par Estimating outputTime (Plan A, assuming double-buffered, fixed-size buffers, please skip to Plan B)
+  One can expect the audio callback to happen as soon as there is room in
+  the output for another block of samples, so we could just measure system
+  time at the top of the callback. Then we could add the maximum delay
+  buffered in the system. E.g. if there is simple double buffering and the
+  callback is computing one of the buffers, the callback happens just as
+  one of the buffers empties, meaning the other buffer is full, so we have
+  exactly one buffer delay before the next computed sample is output.
+
+  If computation falls behind a bit, the callback will be later, so the 
+  delay to play the next computed sample will be less. I think a reasonable
+  way to estimate the actual output time is to assume that the computer is
+  mostly keeping up and that *most* callbacks will occur immediately when
+  there is space. Note that the most likely reason for the high-priority 
+  audio thread to fall behind is the callback itself, but the start of the
+  callback should be pretty consistently keeping up.
+
+  Also, we do not have to have a perfect estimate of the time. Suppose we
+  estimate a linear mapping from sample count to system time by saying
+  that the sample count maps to the system time at the most recent callback,
+  and set the slope to 1% slower than real time (as if the sample clock is
+  slow). Now, at each callback, if the callback seems to occur earlier than
+  expected, we can adjust the mapping to be earlier. The earlier the 
+  callback, the more accurate it must be. On the other hand, if the callback
+  is later than predicted, it must be a delayed callback (or else the
+  sample clock is more than 1% slow, which is really a hardware problem.)
+  How bad can this be? Assuming callbacks every 30ms (this seems to be what
+  I'm observing in a default setup), you'll be a maximum of 1ms off even if
+  2 out of 3 callbacks are late. This is pretty reasonable given that 
+  PortMIDI clock precision is 1ms. If buffers are larger and callback timing
+  is more erratic, errors will be larger, but even a few ms error is 
+  probably OK.
+
+  \par Estimating outputTime (Plan B, variable framesPerBuffer in callback, please skip to Plan C)
+  ALSA is complicated because we get varying values of 
+  framesPerBuffer from callback to callback. Assume you get more frames
+  when the callback is later (because there is more accumulated input to
+  deliver and more more accumulated room in the output buffers). So take
+  the current time and subtract the duration of the frame count in the 
+  current callback. This should be a time position that is relatively
+  jitter free (because we estimated the lateness by frame count and 
+  subtracted that out). This time position intuitively represents the
+  current ADC time, or if no input, the time of the tail of the output
+  buffer. If we wanted DAC time, we'd have to add the total output 
+  buffer duration, which should be reported by PortAudio. (If PortAudio 
+  is wrong, we'll be systematically shifted in time by the error.)
+
+  Since there is still bound to be jitter, we can smooth these estimates.
+  First, we will assume a linear mapping from system time to audio time
+  with slope = 1, so really it's just the offset we need, which is going 
+  to be a double that we can read/write atomically without locks or 
+  anything fancy. (Maybe it should be "volatile".)
+
+  To improve the estimate, we get a new offset every callback, so we can
+  create a "smooth" offset by using a simple regression model (also 
+  this could be seen as a first order filter). The following formula
+  updates smooth_offset with a new offset estimate in the callback:
+      smooth_offset = smooth_offset * 0.9 + new_offset_estimate * 0.1
+  Since this is smooth, we'll have to be careful to give it a good initial
+  value to avoid a long convergence.
+
+  \par Estimating outputTime (Plan C)
+  ALSA is complicated because we get varying values of 
+  framesPerBuffer from callback to callback. It seems there is a lot
+  of variation in callback times and buffer space. One solution would
+  be to go to fixed size double buffer, but Audacity seems to work
+  better as is, so Plan C is to rely on one invariant which is that
+  the output buffer cannot overflow, so there's a limit to how far
+  ahead of the DAC time we can be writing samples into the
+  buffer. Therefore, we'll assume that the audio clock runs slow by
+  about 0.2% and we'll assume we're computing at that rate. If the
+  actual output position is ever ahead of the computed position, we'll
+  increase the computed position to the actual position. Thus whenever
+  the buffer is less than near full, we'll stay ahead of DAC time,
+  falling back at a rate of about 0.2% until eventually there's
+  another near-full buffer callback that will push the time back ahead.
 
   \par Interaction between MIDI, Audio, and Pause
   When Pause is used, PauseTime() will increase at the same rate as
@@ -283,6 +369,8 @@ writing audio.
 
 #ifdef EXPERIMENTAL_MIDI_OUT
    #define MIDI_SLEEP 10 /* milliseconds */
+   // how long do we think the thread might be delayed due to other threads?
+   #define THREAD_LATENCY 10 /* milliseconds */
    #define ROUND(x) (int) ((x)+0.5)
    //#include <string.h>
    #include "../lib-src/portmidi/pm_common/portmidi.h"
@@ -797,6 +885,33 @@ private:
 };
 #endif
 
+// return the system time as a double
+/* RBDDBG */
+static double streamStartTime = 0; // bias system time to small number
+
+static double SystemTime()
+{
+   struct timespec now;
+   clock_gettime(CLOCK_REALTIME, &now);
+   //return now.tv_sec + now.tv_nsec * 0.000000001;
+   return (now.tv_sec + now.tv_nsec * 0.000000001) - streamStartTime;
+}
+
+/* RBDDBG */
+extern "C"
+void printTimes(const char *title)
+{
+    printf("*** %s: t=%g MidiT %g SysMinAudio %g PauseT %g track %g ***\n    ",
+           title, SystemTime(), gAudioIO->MidiTime() / 1000.0, 
+           gAudioIO->mSystemMinusAudioTime, gAudioIO->PauseTime(),
+           gAudioIO->AudioTime() - gAudioIO->PauseTime());
+}
+
+
+/*DEBUG*/
+extern "C" double systemtime() { return SystemTime(); }
+
+
 const int AudioIO::StandardRates[] = {
    8000,
    11025,
@@ -835,6 +950,22 @@ const int AudioIO::RatesToTry[] = {
 };
 const int AudioIO::NumRatesToTry = sizeof(AudioIO::RatesToTry) /
                                       sizeof(AudioIO::RatesToTry[0]);
+
+/* RBDDBG */
+int writeatend = 0;
+int zerocount = 0;
+int foundzero = 0;
+int firstCallback = true;
+#define FIRSTCALLBACK if (firstCallback)
+int firstGet = true;
+#define FIRSTGET if (firstGet)
+int firstCopy = true;
+#define FIRSTCOPY if (firstCopy)
+int firstClip = true;
+#define FIRSTCLIP if (firstClip)
+int playnext = 0;
+
+
 
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                           unsigned long framesPerBuffer,
@@ -1436,14 +1567,33 @@ static PaSampleFormat AudacityToPortAudioSampleFormat(sampleFormat format)
    }
 }
 
+// RBDDBG
+double offset_buffer[10000];
+long frames_per_buffer[10000];
+int obx = 0;
+
 bool AudioIO::StartPortAudioStream(double sampleRate,
                                    unsigned int numPlaybackChannels,
                                    unsigned int numCaptureChannels,
                                    sampleFormat captureFormat)
 {
 #ifdef EXPERIMENTAL_MIDI_OUT
+   // RBDDBG
+   obx = 0;
+
    mNumFrames = 0;
    mNumPauseFrames = 0;
+   // we want this initial value to be way high. It should be 
+   // sufficient to assume AudioTime is zero and therefore
+   // mSystemMinusAudioTime is SystemTime(), but we'll add 1000s
+   // for good measure. On the first callback, this should be
+   // reduced to SystemTime() - mT0, and note that mT0 is always
+   // positive.
+   mSystemMinusAudioTime = SystemTime() + 1000;
+   mAudioOutLatency = 0.0; // set when stream is opened
+   mCallbackCount = 0; // unused for Linux
+   mPrevCallbackTime = 0.0; // unused for Linux
+   mAudioFramesPerBuffer = 0;
 #endif
    mOwningProject = GetActiveProject();
    mInputMeter = NULL;
@@ -1834,6 +1984,12 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    }
 
    // On the other hand, if MIDI cannot be opened, we will not complain
+
+   // We use audio latency to estimate how far ahead of DACS we are writing
+   if (successAudio) {
+      const PaStreamInfo* info = Pa_GetStreamInfo(mPortStreamV19);
+      mAudioOutLatency = info->outputLatency;
+   }
 #endif
 
    if (!successAudio) {
@@ -2086,6 +2242,10 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    // are the ones who have reserved AudioIO or not.
    //
    mStreamToken = (++mNextStreamToken);
+
+   /* RBDDBG */
+   streamStartTime = 0;
+   streamStartTime = SystemTime();
 
    return mStreamToken;
 }
@@ -2347,6 +2507,16 @@ void AudioIO::StopStream()
       Pa_AbortStream( mPortStreamV19 );
       Pa_CloseStream( mPortStreamV19 );
       mPortStreamV19 = NULL;
+
+      // RBDDBG
+      FILE *obf = fopen("offset.txt", "w");
+      fprintf(obf, "initial offset: %g\n", offset_buffer[0]);
+      for (int i = 0; i < obx; i++) {
+         fprintf(obf, "%g,%ld\n", offset_buffer[i] - offset_buffer[0],
+                                  frames_per_buffer[i]);
+      }
+      obx = 0;
+      fclose(obf);
    }
 
    if (mNumPlaybackChannels > 0)
@@ -3970,13 +4140,15 @@ void AudioIO::OutputEvent()
          }
       }
       if (command != -1) {
-         Pm_WriteShort(mMidiStream, timestamp,
-                    Pm_Message((int) (command + channel),
-                                  (long) data1, (long) data2));
-         /* printf("Pm_WriteShort %lx (%p) @ %d, advance %d\n",
+         printTimes("OutputEvent");
+         printf("Pm_WriteShort %lx (%p) @ %g, timestamp %ld advance %ld\n",
                 Pm_Message((int) (command + channel),
                            (long) data1, (long) data2),
-                           mNextEvent, timestamp, timestamp - Pt_Time()); */
+                mNextEvent, eventTime, timestamp, 
+                timestamp - gAudioIO->MidiTime());
+         Pm_WriteShort(mMidiStream, timestamp,
+                       Pm_Message((int) (command + channel),
+                                  (long) data1, (long) data2));
       }
    }
 }
@@ -4046,10 +4218,23 @@ void AudioIO::FillMidiBuffers()
          break;
       }
    SetHasSolo(hasSolo);
-   double time = AudioTime();
+   // If we compute until mNextEventTime > current audio track time,
+   // we would have a built-in compute-ahead of mAudioOutLatency, and
+   // it's probably good to compute MIDI when we compute audio (so when
+   // we stop, both stop about the same time). 
+   double time = AudioTime(); // compute to here
+   // But if mAudioOutLatency is very low, we might need some extra 
+   // compute-ahead to deal with mSynthLatency or even this thread.
+   double actual_latency  = (MIDI_SLEEP + THREAD_LATENCY + 
+                             MIDI_MINIMAL_LATENCY_MS + mSynthLatency) * 0.001;
+   if (actual_latency > mAudioOutLatency) {
+       time += actual_latency - mAudioOutLatency;
+   }
    while (mNextEvent &&
-          UncorrectedMidiEventTime() <
-             time + ((MIDI_SLEEP + mSynthLatency) * 0.001)) {
+          UncorrectedMidiEventTime() < time) {
+       printTimes("FillMidiBuffers");
+       printf("evttime %g audiotime - pausetime (compute to here) %g\n", 
+              mNextEventTime, time);
       OutputEvent();
       GetNextEvent();
    }
@@ -4091,13 +4276,16 @@ double AudioIO::PauseTime()
 }
 
 
+// MidiTime() is an estimate in milliseconds of the current audio 
+// output (DAC) time + 1s. In other words, what audacity track time 
+// corresponds to the audio (including pause insertions) at the output?
+//
 PmTimestamp AudioIO::MidiTime()
 {
-   //printf("AudioIO:MidiTime: PaUtil_GetTime() %g mAudioCallbackOutputDacTime %g time - outputTime %g\n",
-   //        PaUtil_GetTime(), mAudioCallbackOutputDacTime, PaUtil_GetTime() - mAudioCallbackOutputDacTime);
    // note: the extra 0.0005 is for rounding. Round down by casting to
    // unsigned long, then convert to PmTimeStamp (currently signed)
 
+#if 0
    // See long comments at the top of the file for the explanation of this
    // calculation; we must use PaUtil_GetTime() here and also in the audio
    // callback, to change the origin of times from portaudio, so the diffence of
@@ -4127,7 +4315,22 @@ PmTimestamp AudioIO::MidiTime()
       mAudioFramesPerBuffer / mRate +
       clockChange - offset
    )));
+#else
+   // auto offset = mAudioCallbackOutputDacTime - mAudioCallbackOutputCurrentTime;
+   PmTimestamp ts;
+   // subtract mAudioOutLatency here because mSystemMinusAudioTime gets us
+   // to the current *write* time, but we're writing ahead by audio output
+   // latency (mAudioOutLatency).
+   double now = SystemTime();
+   ts = (PmTimestamp) ((unsigned long)
+         (1000 * (now - gAudioIO->mAudioOutLatency + 1.0005 - 
+                  mSystemMinusAudioTime)));
+   // printf("AudioIO::MidiTime() %d time %g sys-aud %g\n", 
+   //        ts, now, mSystemMinusAudioTime);
+   return ts;
+#endif
 }
+
 
 void AudioIO::AllNotesOff()
 {
@@ -4329,6 +4532,9 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
          outputBuffer[2*i + 1] = outputBuffer[2*i];
 }
 
+extern int BLIPFLAG; /*DEBUG*/
+
+
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                           unsigned long framesPerBuffer,
 // If there were more of these conditionally used arguments, it 
@@ -4339,7 +4545,9 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 #else
                           const PaStreamCallbackTimeInfo * WXUNUSED(timeInfo),
 #endif
-                          const PaStreamCallbackFlags WXUNUSED(statusFlags), void * WXUNUSED(userData) )
+//                          const PaStreamCallbackFlags WXUNUSED(statusFlags), void * WXUNUSED(userData) )
+// RBDDBG:
+                          const PaStreamCallbackFlags statusFlags, void * WXUNUSED(userData) )
 {
    auto numPlaybackChannels = gAudioIO->mNumPlaybackChannels;
    auto numPlaybackTracks = gAudioIO->mPlaybackTracks.size();
@@ -4358,19 +4566,71 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          (float *)outputBuffer;
 
 #ifdef EXPERIMENTAL_MIDI_OUT
-   /* GSW: Save timeInfo in case MidiPlayback needs it */
-   gAudioIO->mAudioCallbackClockTime = PaUtil_GetTime();
+   /* for Linux, estimate a smooth audio time as a slowly-changing
+      offset from system time */
+   // rnow is system time as a double to simplify math
+   double rnow = SystemTime();
+   // anow is next-sample-to-be-computed audio time as a double
+   // NEW:
+   gAudioIO->mNumFrames += framesPerBuffer;
+   double anow = gAudioIO->AudioTime();
+   // enow is audio time estimated from our clock synchronization protocol,
+   //   which produces mSystemMinusAudioTime. But we want the estimate
+   //   to drift low, so we steadily decrease mAudioFramesPerBuffer to
+   //   simulate a slow system clock. If anow > enow, we'll update
+   //   mSystemMinusAudioTime to keep in sync. (You might think we could
+   //   just use anow as the "truth", but it has a lot of jitter, so we
+   //   are using enow to smooth out this jitter, in fact to < 1ms.)
+   // Subtract worst-case clock drift using previous framesPerBuffer:
+   gAudioIO->mSystemMinusAudioTime -= 
+         gAudioIO->mAudioFramesPerBuffer * 0.0002 / gAudioIO->mRate;
+   double enow = rnow - gAudioIO->mSystemMinusAudioTime;
+   /*DEBUG*/
+   if (statusFlags) {
+       printf("CALLBACK STATUS");
+       if (statusFlags & paInputUnderflow) printf(" InputUnderflow");
+       if (statusFlags & paInputOverflow) printf(" InputOverflow");
+       if (statusFlags & paOutputUnderflow) printf(" OutputUnderflow");
+       if (statusFlags & paOutputOverflow) printf(" OutputOverflow");
+       printf("\n");
+   }
 
+   /* RBDDBG */ // print callbacks corresponding to approx. whole seconds
+   double tracktime = anow - gAudioIO->PauseTime();
+   double dist = round(tracktime) - tracktime;
+   if (dist < 0.01 && dist > -0.01) {
+       printTimes("Callback");
+       printf("tracktime %g anow %g EXPECTED ABOUT %g\n",
+              tracktime, anow, SystemTime() + gAudioIO->mAudioOutLatency);
+       /* RBDDBG
+       Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                     Pm_Message(0x90, 72, 70)); */
+       writeatend = 1;
+   }
+
+   // now, use anow instead if it is ahead of enow
+   if (anow > enow) {
+       printTimes("new SysMinAud"); /*RBDDBG*/
+       gAudioIO->mSystemMinusAudioTime = rnow - anow;
+   }
+   if (obx < 10000) {
+       offset_buffer[obx] = gAudioIO->mSystemMinusAudioTime;
+       frames_per_buffer[obx++] = framesPerBuffer;
+   }
+   //printf("callback time %g obx %ld offset %g frames %ld dur %g\n", 
+   //       SystemTime(), obx, gAudioIO->mSystemMinusAudioTime,
+   //       framesPerBuffer, framesPerBuffer / gAudioIO->mRate);
+
+   /* GSW: Save timeInfo in case MidiPlayback needs it */
 #ifdef USE_TIME_INFO
    gAudioIO->mAudioCallbackOutputDacTime = timeInfo->outputBufferDacTime;
    gAudioIO->mAudioCallbackOutputCurrentTime = timeInfo->currentTime;
 #endif
 
-   // printf("in callback, mAudioCallbackOutputDacTime %g\n", gAudioIO->mAudioCallbackOutputDacTime); //DBG
    gAudioIO->mAudioFramesPerBuffer = framesPerBuffer;
-   if(gAudioIO->IsPaused())
+   if (gAudioIO->IsPaused() || gAudioIO->mStreamToken <= 0)
       gAudioIO->mNumPauseFrames += framesPerBuffer;
-   gAudioIO->mNumFrames += framesPerBuffer;
+   // OLD: gAudioIO->mNumFrames += framesPerBuffer;
 
 #ifndef USE_MIDI_THREAD
    if (gAudioIO->mMidiStream)
@@ -4455,8 +4715,16 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          }
       }
 
+      /*RBDDBG*/ printf("AudioIO early return\n");
+      firstCallback = false;
+
       return paContinue;
    }
+
+   FIRSTCOPY
+       printf("** gAudioIO->mStreamToken %d, gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+              gAudioIO->mStreamToken, gAudioIO->mSeek, framesPerBuffer, 
+              gAudioIO->mNumFrames);
 
    if (gAudioIO->mStreamToken > 0)
    {
@@ -4472,6 +4740,18 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          float *outputFloats = (float *)outputBuffer;
          for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
+         FIRSTCALLBACK
+             printf("clear1 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
+
+         /*DEBUG*/
+         // output loud blip when user types '1' into track
+         if (BLIPFLAG) {
+             for (i = 0; i < framesPerBuffer; i++) {
+                 outputFloats[i * numPlaybackChannels] = 
+                     (i % 10) / 12.0 - 0.25;
+             }
+             BLIPFLAG = 0;
+         }
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
@@ -4486,6 +4766,11 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
             }
          }
 
+         /* RBDDBG */
+         FIRSTCOPY
+             printf("gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+                    gAudioIO->mSeek, framesPerBuffer, gAudioIO->mNumFrames);
+
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
          // While scrubbing, ignore seek requests
          if (gAudioIO->mSeek && gAudioIO->mPlayMode == AudioIO::PLAY_SCRUB)
@@ -4494,12 +4779,17 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 #endif
          if (gAudioIO->mSeek)
          {
+             FIRSTCOPY
+                 printf("** gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+                        gAudioIO->mSeek, framesPerBuffer, gAudioIO->mNumFrames);
             int token = gAudioIO->mStreamToken;
             wxMutexLocker locker(gAudioIO->mSuspendAudioThread);
             if (token != gAudioIO->mStreamToken)
                // This stream got destroyed while we waited for it
                return paAbort;
 
+            /*RBDDBG*/
+            
             // Pause audio thread and wait for it to finish
             gAudioIO->mAudioThreadFillBuffersLoopRunning = false;
             while( gAudioIO->mAudioThreadFillBuffersLoopActive == true )
@@ -4544,6 +4834,9 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
             // Reenable the audio thread
             gAudioIO->mAudioThreadFillBuffersLoopRunning = true;
+
+            /*RBDDBG*/ printf("AudioIO early return\n");
+            firstCallback = false;
 
             return paContinue;
          }
@@ -4706,6 +4999,11 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
                   for(decltype(len) i = 0; i < len; i++)
                      outputFloats[numPlaybackChannels*i] += gain*tempBufs[c][i];
+                  FIRSTCOPY {
+                     printf("out1 c %d samp %g len %ld totalframes %ld\n", 
+                            c, outputFloats[0], len, gAudioIO->mNumFrames);
+                     firstCopy = false;
+                  }
                }
 
                if (vt->GetChannel() == Track::RightChannel ||
@@ -4724,6 +5022,10 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
                   for(decltype(len) i = 0; i < len; i++)
                      outputFloats[numPlaybackChannels*i+1] += gain*tempBufs[c][i];
+                  FIRSTCOPY {
+                     printf("out2 c %d samp %g len %ld\n", c, outputFloats[0], len);
+                     firstCopy = false;
+                  }
                }
             }
 
@@ -4742,6 +5044,32 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                gAudioIO->mMidiOutputComplete = true,
                callbackReturn = paComplete;
             }
+         }
+
+         /* RBDDBG */
+         // playnext is state: 0 means waiting for audio pulse
+         // 1 means audio goes into buffer and midi goes out on next callback
+         // playnext<0 means note-off will come after -playnext callbacks
+         if (playnext == 1) {
+             Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                           Pm_Message(0x90, 72, 70));
+             printf("**** Pm_WriteShort on framesPerBuffer %ld\n", framesPerBuffer);
+             playnext = -20;
+         } else if (playnext < 0) {
+             playnext++;
+             if (playnext == 0) {
+                 Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                               Pm_Message(0x90, 72, 0));
+             }
+         }
+         for (i = 0; i < framesPerBuffer * numPlaybackChannels; i++) {
+             if (outputFloats[i] > 0.5) {
+                 for (int j = 0; j < framesPerBuffer * numPlaybackChannels; j++) {
+                     outputFloats[i] = 0.0F;
+                 }
+                 playnext = 1;
+                 break;
+             }
          }
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
@@ -4766,6 +5094,10 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                outputFloats[i] = 1.0;
             else if (f < -1.0)
                outputFloats[i] = -1.0;
+         }
+         FIRSTCLIP {
+             printf("clip1 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
+             firstClip = false;
          }
 
          // Same for meter output
@@ -4914,6 +5246,8 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          float *outputFloats = (float *)outputBuffer;
          for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
+         FIRSTCOPY
+             printf("clear2 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
@@ -4965,6 +5299,24 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
       }
       gAudioIO->mUpdatingMeters = false;
    }  // end playback VU meter update
+
+   /* RBDDBG */
+   if (!foundzero) {
+      float *outputFloats = (float *) outputBuffer;
+      for (i = 0; i < framesPerBuffer; i++) {
+         if (outputFloats[i * numPlaybackChannels] == 0) {
+            zerocount++;
+         } else {
+            foundzero = 1;
+            printf("******************************************\n");
+            printf("Initially, there are %d zero frames\n", zerocount);
+            printf("   framesPerBuffer %ld mNumPausedFrames %ld mNumFrames %ld\n",
+                   framesPerBuffer, gAudioIO->mNumPauseFrames, gAudioIO->mNumFrames);
+            break;
+         }
+      }
+   }
+   firstCallback = false;
 
    return callbackReturn;
 }
