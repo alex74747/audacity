@@ -871,10 +871,14 @@ static double streamStartTime = 0; // bias system time to small number
 
 static double SystemTime()
 {
+#ifdef __WXGTK__
    struct timespec now;
    clock_gettime(CLOCK_REALTIME, &now);
    //return now.tv_sec + now.tv_nsec * 0.000000001;
    return (now.tv_sec + now.tv_nsec * 0.000000001) - streamStartTime;
+#else
+   return Pt_Time() / 1000.0;
+#endif
 }
 
 /* RBDDBG */
@@ -4435,7 +4439,7 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
          outputBuffer[2*i + 1] = outputBuffer[2*i];
 }
 
-extern int BLIPFLAG; /*DEBUG*/
+int BLIPFLAG; /*DEBUG*/
 
 
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
