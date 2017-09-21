@@ -4672,12 +4672,14 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          gAudioIO->mAudioFramesPerBuffer * 0.0002 / gAudioIO->mRate;
    double enow = rnow - gAudioIO->mSystemMinusAudioTime;
    /*DEBUG*/
-   if (statusFlags) {
-       printf("CALLBACK STATUS");
-       if (statusFlags & paInputUnderflow) printf(" InputUnderflow");
-       if (statusFlags & paInputOverflow) printf(" InputOverflow");
+   if (statusFlags || !inputBuffer || !outputBuffer) {
+       printf("$$$$$$$$$$$$$$$$ CALLBACK STATUS:");
+       if (statusFlags & paInputUnderflow)  printf(" InputUnderflow");
+       if (statusFlags & paInputOverflow)   printf(" InputOverflow");
        if (statusFlags & paOutputUnderflow) printf(" OutputUnderflow");
-       if (statusFlags & paOutputOverflow) printf(" OutputOverflow");
+       if (statusFlags & paOutputOverflow)  printf(" OutputOverflow");
+       if (!inputBuffer) printf(" NULL inputBuffer");
+       if (!outputBuffer) printf(" NULL outputBuffer");
        printf("\n");
    }
 
@@ -5444,4 +5446,3 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
    return callbackReturn;
 }
-
