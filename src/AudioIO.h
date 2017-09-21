@@ -562,6 +562,8 @@ private:
    long mCallbackCount;
    /// audio output latency reported by PortAudio
    double mAudioOutLatency;
+   /// time of first callback
+   double mStartTime;
 
    Alg_seq_ptr      mSeq;
    std::unique_ptr<Alg_iterator> mIterator;
@@ -768,4 +770,3 @@ private:
 };
 
 #endif
-

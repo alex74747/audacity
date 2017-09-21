@@ -81,6 +81,78 @@
   speed at mTime. This effectively integrates speed to get position.
   Negative speeds are allowed too, for instance in scrubbing.
 
+  \par The Big Picture
+@verbatim
+
+Sample
+Time (in seconds, = total_sample_count / sample_rate)
+  ^
+  |                                             /         /
+  |             y=x-mSystemTimeMinusAudioTime /         /
+  |                                         /     #   /
+  |                                       /         /
+  |                                     /   # <- callbacks (#) showing
+  |                                   /#        /   lots of timing jitter.
+  |       top line is "full buffer" /         /     Some are later,
+  |                     condition /         /       indicating buffer is
+  |                             /         /         getting low. Plot
+  |                           /     #   /           shows sample time
+  |                         /    #    /             (based on how many 
+  |                       /    #    /               samples previously 
+  |                     /         /                 *written*) vs. real
+  |                   / #       /                   time.
+  |                 /<------->/ audio latency
+  |               /#       v/
+  |             /         / bottom line is "empty buffer"
+  |           /   #     /      condition = DAC output time = 
+  |         /         /
+  |       /      # <-- rapid callbacks as buffer is filled
+  |     /         /
+0 +...+---------#---------------------------------------------------->
+  0 ^ |         |                                            real time
+    | |         first callback time
+    | mSystemMinusAudioTime
+    |
+    Probably the actual real times shown in this graph are very large 
+    in practice (> 350,000 sec.), so the X "origin" might be when
+    the computer was booted or 1970 or something.
+
+
+@endverbatim
+
+  To estimate the true DAC time (needed to synchronize MIDI), we need 
+  a mapping from track time to DAC time. The estimate is the theoretical
+  time of the full buffer (top diagonal line) + audio latency. To
+  estimate the top diagonal line, we "draw" the line to be at least
+  as high as any sample time corresponding to a callback (#), and we
+  slowly lower the line in case the sample clock is slow or the system
+  clock is fast, preventing the estimated line from drifting too far
+  from the actual callback observations. The line is occasionally
+  "bumped" up by new callback observations, but continuosly 
+  "lowered" at a very low rate.  All adjustment is accomplished
+  by changing mSystemMinusAudioTime, shown here as the X-intercept.\n
+    theoreticalFullBufferTime = realTime - mSystemMinusAudioTime\n
+  To estimate audio latency, notice that the first callback happens on
+  an empty buffer, but the buffer soon fills up. This will cause a rapid
+  re-estimation of mSystemMinusAudioTime. (The first estimate of 
+  mSystemMinusAudioTime will simply be the real time of the first 
+  callback time.) By watching these changes, which happen within ms of
+  starting, we can estimate the buffer size and thus audio latency.
+  So, to map from track time to real time, we compute:\n
+    DACoutputTime = trackTime + mSystemMinusAudioTime\n
+  There are some additional details to avoid counting samples while 
+  paused or while waiting for initialization, MIDI latency, etc.
+  Also, in the code, track time is measured with respect to the track
+  origin, so there's an extra term to add (mT0) if you start somewhere
+  in the middle of the track.
+  Finally, when a callback occurs, you might expect there is room in
+  the output buffer for the requested frames, so maybe the "full buffer"
+  sample time should be based not on the first sample of the callback, but
+  the last sample time + 1 sample. I suspect, at least on Linux, that the
+  callback occurs as soon as the last callback completes, so the buffer is
+  really full, and the callback thread is going to block waiting for space
+  in the output buffer.
+
   \par Midi Time
   MIDI is not warped according to the speed control. This might be
   something that should be changed. (Editorial note: Wouldn't it
@@ -872,7 +944,8 @@ static double SystemTime()
 {
 #ifdef __WXGTK__
    struct timespec now;
-   clock_gettime(CLOCK_REALTIME, &now);
+   // CLOCK_MONOTONIC_RAW is unaffected by NTP or adj-time
+   clock_gettime(CLOCK_MONOTONIC_RAW, &now);
    //return now.tv_sec + now.tv_nsec * 0.000000001;
    return (now.tv_sec + now.tv_nsec * 0.000000001) - streamStartTime;
 #else
@@ -1565,7 +1638,7 @@ bool AudioIO::StartPortAudioStream(double sampleRate,
    // positive.
    mSystemMinusAudioTime = SystemTime() + 1000;
    mAudioOutLatency = 0.0; // set when stream is opened
-   mCallbackCount = 0; // unused for Linux
+   mCallbackCount = 0;
    mPrevCallbackTime = 0.0; // unused for Linux
    mAudioFramesPerBuffer = 0;
 #endif
@@ -1829,6 +1902,11 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
 
    double playbackTime = 4.0;
 
+   /* RBDDBG */
+   streamStartTime = 0;
+   streamStartTime = SystemTime();
+   printf("streamStartTime %22.20g\n", streamStartTime);
+
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
    bool scrubbing = (options.pScrubbingOptions != nullptr);
 
@@ -1951,6 +2029,8 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    // We use audio latency to estimate how far ahead of DACS we are writing
    if (successAudio) {
       const PaStreamInfo* info = Pa_GetStreamInfo(mPortStreamV19);
+      // this is an initial guess, but it's wrong and will be updated
+      // with a better value:
       mAudioOutLatency = info->outputLatency;
    }
 #endif
@@ -2188,10 +2268,6 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
    // are the ones who have reserved AudioIO or not.
    //
    mStreamToken = (++mNextStreamToken);
-
-   /* RBDDBG */
-   streamStartTime = 0;
-   streamStartTime = SystemTime();
 
    return mStreamToken;
 }
@@ -4461,6 +4537,12 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          (float *)alloca(framesPerBuffer*numPlaybackChannels * sizeof(float)) :
          (float *)outputBuffer;
 
+   if (gAudioIO->mCallbackCount++ == 0) {
+       // This is effectively mSystemMinusAudioTime when the buffer is empty:
+       gAudioIO->mStartTime = SystemTime() - gAudioIO->mT0;
+       // later, mStartTime - mSystemMinusAudioTime will tell us latency
+   }
+
 #ifdef EXPERIMENTAL_MIDI_OUT
    /* for Linux, estimate a smooth audio time as a slowly-changing
       offset from system time */
@@ -4468,17 +4550,17 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    double rnow = SystemTime();
    // anow is next-sample-to-be-computed audio time as a double
    // NEW:
-   gAudioIO->mNumFrames += framesPerBuffer;
+   // gAudioIO->mNumFrames += framesPerBuffer;
    double anow = gAudioIO->AudioTime();
    // enow is audio time estimated from our clock synchronization protocol,
    //   which produces mSystemMinusAudioTime. But we want the estimate
-   //   to drift low, so we steadily decrease mAudioFramesPerBuffer to
-   //   simulate a slow system clock. If anow > enow, we'll update
-   //   mSystemMinusAudioTime to keep in sync. (You might think we could
-   //   just use anow as the "truth", but it has a lot of jitter, so we
-   //   are using enow to smooth out this jitter, in fact to < 1ms.)
-   // Subtract worst-case clock drift using previous framesPerBuffer:
-   gAudioIO->mSystemMinusAudioTime -= 
+   //   to drift low, so we steadily increase mAudioFramesPerBuffer to
+   //   simulate a fast system clock or a slow audio clock. If anow > enow, 
+   //   we'll update mSystemMinusAudioTime to keep in sync. (You might think 
+   //   we could just use anow as the "truth", but it has a lot of jitter, 
+   //   so we are using enow to smooth out this jitter, in fact to < 1ms.)
+   // Add worst-case clock drift using previous framesPerBuffer:
+   gAudioIO->mSystemMinusAudioTime += 
          gAudioIO->mAudioFramesPerBuffer * 0.0002 / gAudioIO->mRate;
    double enow = rnow - gAudioIO->mSystemMinusAudioTime;
    /*DEBUG*/
@@ -4495,7 +4577,24 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    double tracktime = anow - gAudioIO->PauseTime();
    double dist = round(tracktime) - tracktime;
    if (dist < 0.01 && dist > -0.01) {
-       printTimes("Callback");
+#ifdef MIDI_PING_WHEN_CALLBACK_IS_ON_EVEN_SECOND
+       // we're here if the callback corresponds to an even second 
+       // within 10ms. If the callback is even more closely aligned
+       // (within 2ms), we send an immediate MIDI message and print
+       // more stuff. This is just another hack to investigate 
+       // synchronization and latency.
+       if (dist < 0.002 && dist > -0.002) {
+           Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                         Pm_Message(0x90, 76, 100));
+           double diff = enow - anow;
+           printTimes("Callback WITH PING");
+           printf("enow - anow %g\n", diff);
+           Pm_WriteShort(gAudioIO->mMidiStream, gAudioIO->MidiTime() + 10,
+                         Pm_Message(0x90, 76, 0));
+           
+       } else 
+#endif
+           printTimes("Callback");
        printf("tracktime %g anow %g EXPECTED ABOUT %g\n",
               tracktime, anow, SystemTime() + gAudioIO->mAudioOutLatency);
        /* RBDDBG
@@ -4506,8 +4605,21 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
    // now, use anow instead if it is ahead of enow
    if (anow > enow) {
-       printTimes("new SysMinAud"); /*RBDDBG*/
-       gAudioIO->mSystemMinusAudioTime = rnow - anow;
+      printTimes("new SysMinAud"); /*RBDDBG*/
+      printf("Callback %ld\n", gAudioIO->mCallbackCount);
+      gAudioIO->mSystemMinusAudioTime = rnow - anow;
+      // Update our mAudioOutLatency estimate during the first 20 callbacks.
+      // During this period, the buffer should fill. Once we have a good
+      // estimate of mSystemMinusAudioTime (expected in fewer than 20 callbacks)
+      // we want to stop the updating in case there is clock drift, which would
+      // cause the mAudioOutLatency estimation to drift as well. The clock drift
+      // in the first 20 callbacks should be negligible, however.
+      if (gAudioIO->mCallbackCount < 20) {
+         gAudioIO->mAudioOutLatency = gAudioIO->mStartTime -
+                                      gAudioIO->mSystemMinusAudioTime;
+         printTimes("UpdateLatency");
+         printf("mAudioOutLatency %g\n", gAudioIO->mAudioOutLatency);
+      }
    }
    if (obx < 10000) {
        offset_buffer[obx] = gAudioIO->mSystemMinusAudioTime;
@@ -4523,7 +4635,8 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    gAudioIO->mAudioFramesPerBuffer = framesPerBuffer;
    if (gAudioIO->IsPaused() || gAudioIO->mStreamToken <= 0)
       gAudioIO->mNumPauseFrames += framesPerBuffer;
-   // OLD: gAudioIO->mNumFrames += framesPerBuffer;
+   // OLD: 
+   gAudioIO->mNumFrames += framesPerBuffer;
 #endif
 
    unsigned int i;
@@ -4931,7 +5044,13 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
             }
          }
 
+#ifdef MIDI_WHEN_AUDIO_STARTS
          /* RBDDBG */
+         // This hack finds samples >0.5 which serve as triggers. The entire
+         // buffer is zeroed, but the next callback is passed through AND the
+         // on the next callback, MIDI is sent immediately. The delay from 
+         // MIDI onset to audio onset is a measure of audio latency.
+         //
          // playnext is state: 0 means waiting for audio pulse
          // 1 means audio goes into buffer and midi goes out on next callback
          // playnext<0 means note-off will come after -playnext callbacks
@@ -4956,6 +5075,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                  break;
              }
          }
+#endif
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
          // Update the current time position, for scrubbing
