@@ -572,6 +572,9 @@ private:
    /// Used by Midi process to record that pause has begun,
    /// so that AllNotesOff() is only delivered once
    volatile bool    mMidiPaused;
+   /// The largest timestamp written so far, used to delay
+   /// stream closing until last message has been delivered
+   PmTimestamp mMaxMidiTimestamp;
 
    // This extra info is used to estimate dac output time if
    // PortAudio does not provide the info (using ALSA)

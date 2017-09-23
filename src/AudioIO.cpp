@@ -2279,6 +2279,13 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
          PaAlsa_EnableRealtimeScheduling( mPortStreamV19, 1 );
 #endif
 
+      //
+      // Generate an unique value each time, to be returned to
+      // clients accessing the AudioIO API, so they can query if
+      // are the ones who have reserved AudioIO or not.
+      //
+      mStreamToken = (++mNextStreamToken);
+
       // Now start the PortAudio stream!
       PaError err;
       err = Pa_StartStream( mPortStreamV19 );
@@ -2319,13 +2326,6 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
 
    // Enable warning popups for unfound aliased blockfiles.
    wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
-
-   //
-   // Generate an unique value each time, to be returned to
-   // clients accessing the AudioIO API, so they can query if
-   // are the ones who have reserved AudioIO or not.
-   //
-   mStreamToken = (++mNextStreamToken);
 
    return mStreamToken;
 }
@@ -2443,6 +2443,7 @@ bool AudioIO::StartPortMidiStream()
       mMidiPaused = false;
       mMidiLoopPasses = 0;
       mMidiOutputComplete = false;
+      mMaxMidiTimestamp = 0;
       PrepareMidiIterator();
 
       // It is ok to call this now, but do not send timestamped midi
@@ -2633,7 +2634,11 @@ void AudioIO::StopStream()
 
       // now we can assume "ownership" of the mMidiStream
       // if output in progress, send all off, etc.
+      printf("before AllNotesOff, mMaxMidiTimestamp %d\n",
+             mMaxMidiTimestamp);
       AllNotesOff();
+      printf("after AllNotesOff, mMaxMidiTimestamp %d\n",
+             mMaxMidiTimestamp);
       // AllNotesOff() should be sufficient to stop everything, but
       // in Linux, if you Pm_Close() immediately, it looks like
       // messages are dropped. ALSA then seems to send All Sound Off
@@ -2641,9 +2646,10 @@ void AudioIO::StopStream()
       // respond to these messages. This is probably a bug in PortMidi
       // if the All Off messages do not get out, but for security,
       // delay a bit so that messages can be delivered before closing
-      // the stream. It should take about 16ms to send All Off messages,
-      // so this will add 24ms latency.
-      wxMilliSleep(40); // deliver the all-off messages
+      // the stream. Add 2ms of "padding" to avoid any rounding errors.
+      while (mMaxMidiTimestamp + 2 > MidiTime()) {
+          wxMilliSleep(1); // deliver the all-off messages
+      }
       Pm_Close(mMidiStream);
       mMidiStream = NULL;
       mIterator->end();
@@ -4226,6 +4232,10 @@ void AudioIO::OutputEvent()
                            (long) data1, (long) data2),
                 mNextEvent, eventTime, timestamp, 
                 timestamp - gAudioIO->MidiTime());
+         // keep track of greatest timestamp used
+         if (timestamp > gAudioIO->mMaxMidiTimestamp) {
+            mMaxMidiTimestamp = timestamp;
+         }
          Pm_WriteShort(mMidiStream, timestamp,
                        Pm_Message((int) (command + channel),
                                   (long) data1, (long) data2));
@@ -4414,11 +4424,25 @@ PmTimestamp AudioIO::MidiTime()
 
 void AudioIO::AllNotesOff()
 {
+   // to keep track of when MIDI should all be delivered,
+   // update mMaxMidiTimestamp to now:
+   PmTimestamp now = MidiTime();
+   if (mMaxMidiTimestamp < now) {
+       mMaxMidiTimestamp = now;
+   }
 #ifdef AUDIO_IO_GB_MIDI_WORKAROUND
    // Send individual note-off messages for each note-on not yet paired.
+   // Even this did not work as planned. My guess is ALSA does not use
+   // a "stable sort" for timed messages, so that when a note-off is
+   // added later at the same time as a future note-on, the order is
+   // not respected, and the note-off can go first, leaving a stuck note.
+   // The workaround here is to use mMaxMidiTimestamp to ensure that
+   // note-offs come at least 1ms later than any previous message
+   mMaxMidiTimestamp += 1;
    for (const auto &pair : mPendingNotesOff) {
-      Pm_WriteShort(mMidiStream, 0, Pm_Message(
+      Pm_WriteShort(mMidiStream, mMaxMidiTimestamp, Pm_Message(
          0x90 + pair.first, pair.second, 0));
+      mMaxMidiTimestamp++; // allow 1ms per note-off
    }
    mPendingNotesOff.clear();
 
@@ -4426,7 +4450,9 @@ void AudioIO::AllNotesOff()
 #endif
 
    for (int chan = 0; chan < 16; chan++) {
-      Pm_WriteShort(mMidiStream, 0, Pm_Message(0xB0 + chan, 0x7B, 0));
+      Pm_WriteShort(mMidiStream, mMaxMidiTimestamp, 
+                    Pm_Message(0xB0 + chan, 0x7B, 0));
+      mMaxMidiTimestamp++; // allow 1ms per all-notes-off
    }
 }
 
@@ -4673,14 +4699,14 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
    double enow = rnow - gAudioIO->mSystemMinusAudioTime;
    /*DEBUG*/
    if (statusFlags || !inputBuffer || !outputBuffer) {
-       printf("$$$$$$$$$$$$$$$$ CALLBACK STATUS:");
+       // printf("$$$$$$$$$$$$$$$$ CALLBACK STATUS:");
        if (statusFlags & paInputUnderflow)  printf(" InputUnderflow");
        if (statusFlags & paInputOverflow)   printf(" InputOverflow");
        if (statusFlags & paOutputUnderflow) printf(" OutputUnderflow");
        if (statusFlags & paOutputOverflow)  printf(" OutputOverflow");
-       if (!inputBuffer) printf(" NULL inputBuffer");
-       if (!outputBuffer) printf(" NULL outputBuffer");
-       printf("\n");
+       // if (!inputBuffer) printf(" NULL inputBuffer");
+       // if (!outputBuffer) printf(" NULL outputBuffer");
+       // printf("\n");
    }
 
    /* RBDDBG */ // print callbacks corresponding to approx. whole seconds
