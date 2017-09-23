@@ -455,8 +455,10 @@ private:
    void OutputEvent();
    void FillMidiBuffers();
    void GetNextEvent();
+ public: /* RBDDBG */ // for debug printing
    double AudioTime() { return mT0 + mNumFrames / mRate; }
    double PauseTime();
+private:
    void AllNotesOff(bool looping = false);
 #endif
 
@@ -566,7 +568,9 @@ private:
    /// Offset from ideal sample computation time to system time,
    /// where "ideal" means when we would get the callback if there
    /// were no scheduling delays or computation time
+ public: /*RBDDBG*/ // for some debug printing
    double mSystemMinusAudioTime;
+ private:
    /// audio output latency reported by PortAudio
    /// (initially; for Alsa, we adjust it to the largest "observed" value)
    double mAudioOutLatency;

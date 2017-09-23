@@ -964,6 +964,7 @@ private:
 #endif
 
 // return the system time as a double
+/* RBDDBG */
 static double streamStartTime = 0; // bias system time to small number
 
 static double SystemTime(bool usingAlsa)
@@ -982,6 +983,21 @@ static double SystemTime(bool usingAlsa)
 
    return PaUtil_GetTime() - streamStartTime;
 }
+
+/* RBDDBG */
+extern "C"
+void printTimes(const char *title)
+{
+    printf("*** %s: t=%g MidiT %g SysMinAudio %g PauseT %g track %g ***\n    ",
+           title, SystemTime(true), gAudioIO->MidiTime() / 1000.0,
+           gAudioIO->mSystemMinusAudioTime, gAudioIO->PauseTime(),
+           gAudioIO->AudioTime() - gAudioIO->PauseTime());
+}
+
+
+/*DEBUG*/
+extern "C" double systemtime() { return SystemTime(true); }
+
 
 const int AudioIO::StandardRates[] = {
    8000,
@@ -1021,6 +1037,22 @@ const int AudioIO::RatesToTry[] = {
 };
 const int AudioIO::NumRatesToTry = sizeof(AudioIO::RatesToTry) /
                                       sizeof(AudioIO::RatesToTry[0]);
+
+/* RBDDBG */
+int writeatend = 0;
+int zerocount = 0;
+int foundzero = 0;
+int firstCallback = true;
+#define FIRSTCALLBACK if (firstCallback)
+int firstGet = true;
+#define FIRSTGET if (firstGet)
+int firstCopy = true;
+#define FIRSTCOPY if (firstCopy)
+int firstClip = true;
+#define FIRSTCLIP if (firstClip)
+int playnext = 0;
+
+
 
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                           unsigned long framesPerBuffer,
@@ -1622,12 +1654,20 @@ static PaSampleFormat AudacityToPortAudioSampleFormat(sampleFormat format)
    }
 }
 
+// RBDDBG
+double offset_buffer[10000];
+long frames_per_buffer[10000];
+int obx = 0;
+
 bool AudioIO::StartPortAudioStream(double sampleRate,
                                    unsigned int numPlaybackChannels,
                                    unsigned int numCaptureChannels,
                                    sampleFormat captureFormat)
 {
 #ifdef EXPERIMENTAL_MIDI_OUT
+   // RBDDBG
+   obx = 0;
+
    mNumFrames = 0;
    mNumPauseFrames = 0;
    // we want this initial value to be way high. It should be
@@ -1919,8 +1959,10 @@ int AudioIO::StartStream(const ConstWaveTrackArray &playbackTracks,
 
    double playbackTime = 4.0;
 
+   /* RBDDBG */
    streamStartTime = 0;
    streamStartTime = SystemTime(mUsingAlsa);
+   printf("streamStartTime %22.20g\n", streamStartTime);
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
    bool scrubbing = (options.pScrubbingOptions != nullptr);
@@ -2562,6 +2604,16 @@ void AudioIO::StopStream()
       Pa_AbortStream( mPortStreamV19 );
       Pa_CloseStream( mPortStreamV19 );
       mPortStreamV19 = NULL;
+
+      // RBDDBG
+      FILE *obf = fopen("offset.txt", "w");
+      fprintf(obf, "initial offset: %g\n", offset_buffer[0]);
+      for (int i = 0; i < obx; i++) {
+         fprintf(obf, "%g,%ld\n", offset_buffer[i] - offset_buffer[0],
+                                  frames_per_buffer[i]);
+      }
+      obx = 0;
+      fclose(obf);
    }
 
    if (mNumPlaybackChannels > 0)
@@ -2598,7 +2650,11 @@ void AudioIO::StopStream()
 
       // now we can assume "ownership" of the mMidiStream
       // if output in progress, send all off, etc.
+      printf("before AllNotesOff, mMaxMidiTimestamp %d\n",
+             mMaxMidiTimestamp);
       AllNotesOff();
+      printf("after AllNotesOff, mMaxMidiTimestamp %d\n",
+             mMaxMidiTimestamp);
       // AllNotesOff() should be sufficient to stop everything, but
       // in Linux, if you Pm_Close() immediately, it looks like
       // messages are dropped. ALSA then seems to send All Sound Off
@@ -4187,17 +4243,19 @@ void AudioIO::OutputEvent()
          }
       }
       if (command != -1) {
+         printTimes("OutputEvent");
+         printf("Pm_WriteShort %lx (%p) @ %g, timestamp %ld advance %ld\n",
+                Pm_Message((int) (command + channel),
+                           (long) data1, (long) data2),
+                mNextEvent, eventTime, timestamp, 
+                timestamp - gAudioIO->MidiTime());
          // keep track of greatest timestamp used
-         if (timestamp > mMaxMidiTimestamp) {
+         if (timestamp > gAudioIO->mMaxMidiTimestamp) {
             mMaxMidiTimestamp = timestamp;
          }
          Pm_WriteShort(mMidiStream, timestamp,
-                    Pm_Message((int) (command + channel),
+                       Pm_Message((int) (command + channel),
                                   (long) data1, (long) data2));
-         /* printf("Pm_WriteShort %lx (%p) @ %d, advance %d\n",
-                Pm_Message((int) (command + channel),
-                           (long) data1, (long) data2),
-                           mNextEvent, timestamp, timestamp - Pt_Time()); */
       }
    }
 }
@@ -4281,6 +4339,9 @@ void AudioIO::FillMidiBuffers()
    }
    while (mNextEvent &&
           UncorrectedMidiEventTime() < time) {
+       printTimes("FillMidiBuffers");
+       printf("evttime %g audiotime - pausetime (compute to here) %g\n", 
+              mNextEventTime, time);
       OutputEvent();
       GetNextEvent();
    }
@@ -4585,6 +4646,9 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
          outputBuffer[2*i + 1] = outputBuffer[2*i];
 }
 
+int BLIPFLAG; /*DEBUG*/
+
+
 int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                           unsigned long framesPerBuffer,
 // If there were more of these conditionally used arguments, it 
@@ -4595,7 +4659,9 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 #else
                           const PaStreamCallbackTimeInfo * WXUNUSED(timeInfo),
 #endif
-                          const PaStreamCallbackFlags WXUNUSED(statusFlags), void * WXUNUSED(userData) )
+//                          const PaStreamCallbackFlags WXUNUSED(statusFlags), void * WXUNUSED(userData) )
+// RBDDBG:
+                          const PaStreamCallbackFlags statusFlags, void * WXUNUSED(userData) )
 {
    auto numPlaybackChannels = gAudioIO->mNumPlaybackChannels;
    auto numPlaybackTracks = gAudioIO->mPlaybackTracks.size();
@@ -4647,9 +4713,52 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
       gAudioIO->mSystemMinusAudioTimePlusLatency += increase;
       double enow = rnow - gAudioIO->mSystemMinusAudioTime;
 
+      /*DEBUG*/
+      if (statusFlags || !inputBuffer || !outputBuffer) {
+          // printf("$$$$$$$$$$$$$$$$ CALLBACK STATUS:");
+          if (statusFlags & paInputUnderflow)  printf(" InputUnderflow");
+          if (statusFlags & paInputOverflow)   printf(" InputOverflow");
+          if (statusFlags & paOutputUnderflow) printf(" OutputUnderflow");
+          if (statusFlags & paOutputOverflow)  printf(" OutputOverflow");
+          // if (!inputBuffer) printf(" NULL inputBuffer");
+          // if (!outputBuffer) printf(" NULL outputBuffer");
+          // printf("\n");
+      }
+
+      /* RBDDBG */ // print callbacks corresponding to approx. whole seconds
+      double tracktime = anow - gAudioIO->PauseTime();
+      double dist = round(tracktime) - tracktime;
+      if (dist < 0.01 && dist > -0.01) {
+   #ifdef MIDI_PING_WHEN_CALLBACK_IS_ON_EVEN_SECOND
+          // we're here if the callback corresponds to an even second 
+          // within 10ms. If the callback is even more closely aligned
+          // (within 2ms), we send an immediate MIDI message and print
+          // more stuff. This is just another hack to investigate 
+          // synchronization and latency.
+          if (dist < 0.002 && dist > -0.002) {
+              Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                            Pm_Message(0x90, 76, 100));
+              double diff = enow - anow;
+              printTimes("Callback WITH PING");
+              printf("enow - anow %g\n", diff);
+              Pm_WriteShort(gAudioIO->mMidiStream, gAudioIO->MidiTime() + 10,
+                            Pm_Message(0x90, 76, 0));
+              
+          } else 
+   #endif
+              printTimes("Callback");
+          printf("tracktime %g anow %g EXPECTED ABOUT %g\n",
+                 tracktime, anow, SystemTime(true) + gAudioIO->mAudioOutLatency);
+          /* RBDDBG
+          Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                        Pm_Message(0x90, 72, 70)); */
+          writeatend = 1;
 
       // now, use anow instead if it is ahead of enow
       if (anow > enow) {
+         printTimes("new SysMinAud"); /*RBDDBG*/
+         printf("Callback %ld\n", gAudioIO->mCallbackCount);
+
          gAudioIO->mSystemMinusAudioTime = rnow - anow;
          // Update our mAudioOutLatency estimate during the first 20 callbacks.
          // During this period, the buffer should fill. Once we have a good
@@ -4660,10 +4769,13 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          if (gAudioIO->mCallbackCount < 20) {
             gAudioIO->mAudioOutLatency = gAudioIO->mStartTime -
                gAudioIO->mSystemMinusAudioTime;
+            printTimes("UpdateLatency");
+            printf("mAudioOutLatency %g\n", gAudioIO->mAudioOutLatency);
          }
          gAudioIO->mSystemMinusAudioTimePlusLatency =
             gAudioIO->mSystemMinusAudioTime + gAudioIO->mAudioOutLatency;
       }
+   }
    }
    else {
       // If not using Alsa, rely on timeInfo to have meaningful values that are
@@ -4673,6 +4785,14 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          gAudioIO->mSystemMinusAudioTime +
             (timeInfo->outputBufferDacTime - timeInfo->currentTime);
    }
+
+   if (obx < 10000) {
+       offset_buffer[obx] = gAudioIO->mSystemMinusAudioTime;
+       frames_per_buffer[obx++] = framesPerBuffer;
+   }
+   //printf("callback time %g obx %ld offset %g frames %ld dur %g\n", 
+   //       SystemTime(), obx, gAudioIO->mSystemMinusAudioTime,
+   //       framesPerBuffer, framesPerBuffer / gAudioIO->mRate);
 
    gAudioIO->mAudioFramesPerBuffer = framesPerBuffer;
    if (gAudioIO->IsPaused()
@@ -4770,8 +4890,16 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          }
       }
 
+      /*RBDDBG*/ printf("AudioIO early return\n");
+      firstCallback = false;
+
       return paContinue;
    }
+
+   FIRSTCOPY
+       printf("** gAudioIO->mStreamToken %d, gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+              gAudioIO->mStreamToken, gAudioIO->mSeek, framesPerBuffer, 
+              gAudioIO->mNumFrames);
 
    if (gAudioIO->mStreamToken > 0)
    {
@@ -4787,6 +4915,18 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          float *outputFloats = (float *)outputBuffer;
          for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
+         FIRSTCALLBACK
+             printf("clear1 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
+
+         /*DEBUG*/
+         // output loud blip when user types '1' into track
+         if (BLIPFLAG) {
+             for (i = 0; i < framesPerBuffer; i++) {
+                 outputFloats[i * numPlaybackChannels] = 
+                     (i % 10) / 12.0 - 0.25;
+             }
+             BLIPFLAG = 0;
+         }
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
@@ -4801,6 +4941,11 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
             }
          }
 
+         /* RBDDBG */
+         FIRSTCOPY
+             printf("gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+                    gAudioIO->mSeek, framesPerBuffer, gAudioIO->mNumFrames);
+
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
          // While scrubbing, ignore seek requests
          if (gAudioIO->mSeek && gAudioIO->mPlayMode == AudioIO::PLAY_SCRUB)
@@ -4809,6 +4954,9 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 #endif
          if (gAudioIO->mSeek)
          {
+             FIRSTCOPY
+                 printf("** gAudioIO->mSeek %g frames %ld totalframes %ld\n", 
+                        gAudioIO->mSeek, framesPerBuffer, gAudioIO->mNumFrames);
             int token = gAudioIO->mStreamToken;
             wxMutexLocker locker(gAudioIO->mSuspendAudioThread);
             if (token != gAudioIO->mStreamToken)
@@ -4859,6 +5007,9 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
             // Reenable the audio thread
             gAudioIO->mAudioThreadFillBuffersLoopRunning = true;
+
+            /*RBDDBG*/ printf("AudioIO early return\n");
+            firstCallback = false;
 
             return paContinue;
          }
@@ -5023,6 +5174,11 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
                   for(decltype(len) i = 0; i < len; i++)
                      outputFloats[numPlaybackChannels*i] += gain*tempBufs[c][i];
+                  FIRSTCOPY {
+                     printf("out1 c %d samp %g len %ld totalframes %ld\n", 
+                            c, outputFloats[0], len, gAudioIO->mNumFrames);
+                     firstCopy = false;
+                  }
                }
 
                if (vt->GetChannel() == Track::RightChannel ||
@@ -5041,6 +5197,10 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
                   for(decltype(len) i = 0; i < len; i++)
                      outputFloats[numPlaybackChannels*i+1] += gain*tempBufs[c][i];
+                  FIRSTCOPY {
+                     printf("out2 c %d samp %g len %ld\n", c, outputFloats[0], len);
+                     firstCopy = false;
+                  }
                }
             }
 
@@ -5062,6 +5222,39 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                callbackReturn = paComplete;
             }
          }
+
+#ifdef MIDI_WHEN_AUDIO_STARTS
+         /* RBDDBG */
+         // This hack finds samples >0.5 which serve as triggers. The entire
+         // buffer is zeroed, but the next callback is passed through AND the
+         // on the next callback, MIDI is sent immediately. The delay from 
+         // MIDI onset to audio onset is a measure of audio latency.
+         //
+         // playnext is state: 0 means waiting for audio pulse
+         // 1 means audio goes into buffer and midi goes out on next callback
+         // playnext<0 means note-off will come after -playnext callbacks
+         if (playnext == 1) {
+             Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                           Pm_Message(0x90, 72, 70));
+             printf("**** Pm_WriteShort on framesPerBuffer %ld\n", framesPerBuffer);
+             playnext = -20;
+         } else if (playnext < 0) {
+             playnext++;
+             if (playnext == 0) {
+                 Pm_WriteShort(gAudioIO->mMidiStream, 0,
+                               Pm_Message(0x90, 72, 0));
+             }
+         }
+         for (i = 0; i < framesPerBuffer * numPlaybackChannels; i++) {
+             if (outputFloats[i] > 0.5) {
+                 for (int j = 0; j < framesPerBuffer * numPlaybackChannels; j++) {
+                     outputFloats[i] = 0.0F;
+                 }
+                 playnext = 1;
+                 break;
+             }
+         }
+#endif
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
          // Update the current time position, for scrubbing
@@ -5085,6 +5278,10 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                outputFloats[i] = 1.0;
             else if (f < -1.0)
                outputFloats[i] = -1.0;
+         }
+         FIRSTCLIP {
+             printf("clip1 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
+             firstClip = false;
          }
 
          // Same for meter output
@@ -5233,6 +5430,8 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
          float *outputFloats = (float *)outputBuffer;
          for( i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
             outputFloats[i] = 0.0;
+         FIRSTCOPY
+             printf("clear2 samp %g len %ld\n", outputFloats[0], framesPerBuffer);
 
          if (inputBuffer && gAudioIO->mSoftwarePlaythrough) {
             DoSoftwarePlaythrough(inputBuffer, gAudioIO->mCaptureFormat,
@@ -5285,6 +5484,23 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
       gAudioIO->mUpdatingMeters = false;
    }  // end playback VU meter update
 
+   /* RBDDBG */
+   if (!foundzero) {
+      float *outputFloats = (float *) outputBuffer;
+      for (i = 0; i < framesPerBuffer; i++) {
+         if (outputFloats[i * numPlaybackChannels] == 0) {
+            zerocount++;
+         } else {
+            foundzero = 1;
+            printf("******************************************\n");
+            printf("Initially, there are %d zero frames\n", zerocount);
+            printf("   framesPerBuffer %ld mNumPausedFrames %ld mNumFrames %ld\n",
+                   framesPerBuffer, gAudioIO->mNumPauseFrames, gAudioIO->mNumFrames);
+            break;
+         }
+      }
+   }
+   firstCallback = false;
+
    return callbackReturn;
 }
-
