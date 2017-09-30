@@ -24,6 +24,7 @@ class wxImage;
 class wxWindow;
 
 class AButton;
+class LocalizedString;
 
 enum {
    ETBCutID,

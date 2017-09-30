@@ -270,7 +270,7 @@ void BenchmarkDialog::OnSave( wxCommandEvent & WXUNUSED(event))
 {
 /* i18n-hint: Benchmark means a software speed test;
    leave untranslated file extension .txt */
-   auto fName = XO("benchmark.txt").Translation();
+   auto fName = (wxString)XO("benchmark.txt").Translation();
 
    fName = LocalizedString{FileNames::SelectFile(FileNames::Operation::Export,
       XO("Export Benchmark Data as:"),

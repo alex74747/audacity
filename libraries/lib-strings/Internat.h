@@ -96,14 +96,17 @@ class LocalizedString : public wxString {
 public:
    LocalizedString() {}
 
+   explicit
    LocalizedString( const wxString &string )
    : wxString{ string }
    {}
 
+   explicit
    LocalizedString( const char *chars )
    : wxString{ chars }
    {}
 
+   explicit
    LocalizedString( const wchar_t *chars )
    : wxString{ chars }
    {}
@@ -386,12 +389,13 @@ public:
 
    /** \brief Convert a number to a string, always uses the dot as decimal
     * separator*/
-   static wxString ToString(double numberToConvert,
+   static wxString /* not LocalizedString ! */
+      ToString(double numberToConvert,
                      int digitsAfterDecimalPoint = -1);
 
    /** \brief Convert a number to a string, uses the user's locale's decimal
     * separator */
-   static wxString ToDisplayString(double numberToConvert,
+   static LocalizedString ToDisplayString(double numberToConvert,
                      int digitsAfterDecimalPoint = -1);
 
    /** \brief Convert a number to a string while formatting it in bytes, KB,

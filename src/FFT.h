@@ -50,6 +50,8 @@ class TranslatableString;
 #include <wx/defs.h>
 #include <wx/wxchar.h>
 
+class LocalizedString;
+
 #ifndef M_PI
 #define	M_PI		3.14159265358979323846  /* pi */
 #endif

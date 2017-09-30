@@ -27,6 +27,7 @@
 #include "wxPanelWrapper.h" // to inherit
 
 class AudacityProject;
+class LocalizedString;
 
 /** @brief Class which contains static methods and data needed for implementing
  * help buttons

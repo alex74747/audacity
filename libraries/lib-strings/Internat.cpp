@@ -158,7 +158,7 @@ wxString Internat::ToString(double numberToConvert,
    return result;
 }
 
-wxString Internat::ToDisplayString(double numberToConvert,
+LocalizedString Internat::ToDisplayString(double numberToConvert,
                                     int digitsAfterDecimalPoint /* = -1 */)
 {
    wxString decSep = wxString(GetDecimalSeparator());
@@ -166,7 +166,7 @@ wxString Internat::ToDisplayString(double numberToConvert,
 
    if (digitsAfterDecimalPoint == -1)
    {
-      result.Printf(L"%f", numberToConvert);
+      result = _("%f").Format(numberToConvert);
 
       // Not all libcs respect the decimal separator, so always convert
       // any dots found to the decimal separator.
@@ -197,7 +197,7 @@ wxString Internat::ToDisplayString(double numberToConvert,
       result.Replace(L".", decSep);
    }
 
-   return result;
+   return LocalizedString{ result };
 }
 
 TranslatableString Internat::FormatSize(wxLongLong size)

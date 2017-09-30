@@ -21,6 +21,7 @@ class wxString;
 class AudacityProject;
 class CommandContext;
 class CommandManager;
+class LocalizedString;
 class PluginDescriptor;
 class Track;
 class TrackList;

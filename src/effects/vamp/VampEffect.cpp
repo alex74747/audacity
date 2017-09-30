@@ -668,7 +668,7 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                         mParameters[p].minValue, mParameters[p].maxValue)
                      .AddTextBox( {}, L"", 12);
 
-                  wxString str = Internat::ToDisplayString(mParameters[p].minValue);
+                  auto str = Internat::ToDisplayString(mParameters[p].minValue);
                   S.AddPrompt( Verbatim( str ) );
 
                   S.Id(ID_Sliders + p);

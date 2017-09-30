@@ -26,6 +26,7 @@ class wxWindow;
 
 class AButton;
 class AudacityProject;
+class LocalizedString;
 
 // Code duplication warning: these apparently need to be in the
 // same order as the enum in ToolsToolBar.cpp

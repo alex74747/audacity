@@ -112,7 +112,7 @@ bool EffectFindClipping::Process()
 {
    std::shared_ptr<AddedAnalysisTrack> addedTrack;
    Optional<ModifiedAnalysisTrack> modifiedTrack;
-   const wxString name{ _("Clipping") };
+   const auto name = _("Clipping");
 
    auto clt = *inputTracks()->Any< const LabelTrack >().find_if(
       [&]( const Track *track ){ return track->GetName() == name; } );

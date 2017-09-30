@@ -40,6 +40,7 @@
 #include <cmath>
 #include <limits>
 #include <wx/log.h>
+#include "Internat.h"
 
 // ----------------------------------------------------------------------------
 // local helpers

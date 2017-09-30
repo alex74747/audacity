@@ -28,6 +28,7 @@ class AButton;
 class ASlider;
 class AudacityProject;
 class BoundedEnvelope;
+class LocalizedString;
 class WaveTrack;
 
 #ifdef EXPERIMENTAL_VOICE_DETECTION

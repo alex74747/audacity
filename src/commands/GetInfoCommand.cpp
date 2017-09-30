@@ -174,17 +174,16 @@ bool GetInfoCommand::SendMenus(const CommandContext &context)
 
    size_t cnt = pBar->GetMenuCount();
    size_t i;
-   wxString Label;
    context.StartArray();
    for(i=0;i<cnt;i++)
    {
-      Label = pBar->GetMenuLabelText( i );
-      context.StartStruct();
+      auto Label = LocalizedString{ pBar->GetMenuLabelText( i ) };
+      context.StartArray();
       context.AddItem( 0, "depth" );
       context.AddItem( 0, "flags" );
       context.AddItem( Label, "label" );
       context.AddItem( "", "accel" );
-      context.EndStruct();
+      context.EndArray();
       ExploreMenu( context,
          static_cast<wxMenuWrapper*>( pBar->GetMenu( i ) ), pBar->GetId(), 1 )
       ;
@@ -472,7 +471,7 @@ bool GetInfoCommand::SendTracks(const CommandContext & context)
       Track * fTrack = trackFocus.Get();
 
       context.StartStruct();
-      context.AddItem( trk->GetName(), "name" );
+      context.AddItem( trk->GetName(), "name" ); // User-supplied name
       context.AddBool( (trk == fTrack), "focused");
       context.AddBool( trk->GetSelected(), "selected" );
       //JKC: Possibly add later...
@@ -601,7 +600,7 @@ bool GetInfoCommand::SendLabels(const CommandContext &context)
             context.StartArray();
             context.AddItem( label.getT0() ); // start
             context.AddItem( label.getT1() ); // end
-            context.AddItem( label.title ); //text.
+            context.AddItem( label.title ); //text.  User-supplied
             context.EndArray();
          }
          context.EndArray();

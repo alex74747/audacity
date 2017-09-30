@@ -20,6 +20,7 @@
 
 class AudacityProject;
 class wxCollapsiblePaneEvent;
+class LocalizedString;
 
 class ErrorDialog /* not final */ : public wxDialogWrapper
 {

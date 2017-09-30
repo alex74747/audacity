@@ -29,6 +29,7 @@ class WaveTrackFactory;
 class Track;
 class ImportPlugin;
 class ImportFileHandle;
+class LocalizedString;
 class UnusableImportPlugin;
 typedef bool (*progress_callback_t)( void *userData, float percent );
 

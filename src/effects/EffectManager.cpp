@@ -183,7 +183,7 @@ void EffectManager::GetCommandDefinition(const PluginID & ID, const CommandConte
    // Macro command details are one place that we do expose Identifier
    // to (more sophisticated) users
    S.AddItem( GetCommandIdentifier( ID ).GET(), "id" );
-   S.AddItem( GetCommandName( ID ).Translation(), "name" );
+   S.AddItem( GetCommandName( ID ).Translation(), "name" ); // Translated!
    if( bHasParams ){
       S.StartField( "params" );
       S.StartArray();

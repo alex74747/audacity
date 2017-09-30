@@ -16,6 +16,7 @@
 
 #include <wx/defs.h>
 #include <wx/string.h>
+#include "Internat.h"
 
 #include <wx/chartype.h> // for typedef wxChar
 #include "Internat.h" // for TranslatableStrings

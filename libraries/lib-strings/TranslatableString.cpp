@@ -89,7 +89,7 @@ TranslatableString &TranslatableString::Strip( unsigned codes ) &
 #include "Internat.h"
 LocalizedString TranslatableString::Translation() const
 {
-   return DoFormat( false );
+   return LocalizedString{ DoFormat( false ) };
 }
 
 LocalizedString TranslatableString::StrippedTranslation() const
@@ -101,7 +101,7 @@ LocalizedString TranslatableString::StrippedTranslation() const
 // for end users
 LocalizedString TranslatableString::Debug() const
 {
-   return DoFormat( true );
+   return LocalizedString{ DoFormat( true ) };
 }
 
 wxString TranslatableString::DoGetContext( const Formatter &formatter )

@@ -19,6 +19,8 @@
 #include "audacity/Types.h"
 #include "Dither.h"
 
+class LocalizedString;
+
 //
 // Definitions / Meta-Information
 //

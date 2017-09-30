@@ -1007,9 +1007,11 @@ AudioIO::AudioIO()
    PaError err = Pa_Initialize();
 
    if (err != paNoError) {
+      /* i18n-hint: an optional error string, or an empty string is substituted */
       auto errStr = XO("Could not find any audio devices.\n");
       errStr += XO("You will not be able to play or record audio.\n\n");
       wxString paErrStr = LAT1CTOWX(Pa_GetErrorText(err));
+      wxString extra;
       if (!paErrStr.empty())
          errStr += XO("Error: %s").Format( paErrStr );
       // XXX: we are in libaudacity, popping up dialogs not allowed!  A
@@ -1033,6 +1035,7 @@ AudioIO::AudioIO()
               XO("There was an error initializing the midi i/o layer.\n");
       errStr += XO("You will not be able to play midi.\n\n");
       wxString pmErrStr = LAT1CTOWX(Pm_GetErrorText(pmErr));
+      wxString extra;
       if (!pmErrStr.empty())
          errStr += XO("Error: %s").Format( pmErrStr );
       // XXX: we are in libaudacity, popping up dialogs not allowed!  A

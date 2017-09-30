@@ -786,15 +786,14 @@ void EffectAutoDuckPanel::OnPaint(wxPaintEvent & WXUNUSED(evt))
             digits = 1;
          }
 
-         wxString valueStr = Internat::ToDisplayString(value, digits);
-         valueStr += L" ";
+         auto valueStr = Internat::ToDisplayString(value, digits);
 
          if (cp == duckAmount)
             /* i18n-hint: short form of 'decibels'.*/
-            valueStr += _("dB");
+            valueStr = _("%s dB").Format(valueStr);
          else
             /* i18n-hint: short form of 'seconds'.*/
-            valueStr += _("s");
+            valueStr = _(" s").Format(valueStr);
 
          int textWidth = 0, textHeight = 0;
          GetTextExtent(valueStr, &textWidth, &textHeight);

@@ -18,6 +18,7 @@ class wxStaticBitmap;
 class wxTextOutputStream;
 
 class ShuttleGui;
+class LocalizedString;
 
 struct AboutDialogCreditItem {
    AboutDialogCreditItem( TranslatableString str, int r )

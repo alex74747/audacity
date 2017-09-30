@@ -27,6 +27,7 @@ class wxStatusBar;
 
 class AButton;
 class AudacityProject;
+class LocalizedString;
 
 // In the GUI, ControlToolBar appears as the "Transport Toolbar". "Control Toolbar" is historic.
 class AUDACITY_DLL_API ControlToolBar final : public ToolBar {

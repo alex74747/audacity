@@ -563,11 +563,11 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    ss
       << L"===================================" << '\n'
    /* i18n-hint: WCAG abbreviates Web Content Accessibility Guidelines */
-      << XO("WCAG 2.0 Success Criteria 1.4.7 Contrast Results") << '\n'
+      << XO("WCAG 2.0 Success Criteria 1.4.7 Contrast Results").mention() << '\n'
       << '\n'
       << XO("Filename = %s.").Format( ProjectFileIO::Get(*project).GetFileName().GET() ) << '\n'
       << '\n'
-      << XO("Foreground") << '\n';
+      << XO("Foreground").mention() << '\n';
 
    float t = (float)mForegroundStartT->GetValue();
    int h = (int)(t/3600);  // there must be a standard function for this!
@@ -576,7 +576,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 
    ss
       << XO("Time started = %2d hour(s), %2d minute(s), %.2f seconds.")
-         .Format( h, m, s ) << '\n';
+         .Format( h, m, s ).mention() << '\n';
 
    t = (float)mForegroundEndT->GetValue();
    h = (int)(t/3600);
@@ -585,10 +585,10 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 
    ss
       << XO("Time ended = %2d hour(s), %2d minute(s), %.2f seconds.")
-         .Format( h, m, s ) << '\n'
-      << FormatRMSMessage( mForegroundIsDefined ? &foregrounddB : nullptr ) << '\n'
+         .Format( h, m, s ).mention() << '\n'
+      << FormatRMSMessage( mForegroundIsDefined ? &foregrounddB : nullptr ).mention() << '\n'
       << '\n'
-      << XO("Background") << '\n';
+      << XO("Background").mention() << '\n';
 
    t = (float)mBackgroundStartT->GetValue();
    h = (int)(t/3600);
@@ -597,7 +597,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 
    ss
       << XO("Time started = %2d hour(s), %2d minute(s), %.2f seconds.")
-         .Format( h, m, s ) << '\n';
+         .Format( h, m, s ).mention() << '\n';
 
    t = (float)mBackgroundEndT->GetValue();
    h = (int)(t/3600);
@@ -606,20 +606,20 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 
    ss
       << XO("Time ended = %2d hour(s), %2d minute(s), %.2f seconds.")
-         .Format( h, m, s ) << '\n'
-      << FormatRMSMessage( mBackgroundIsDefined ? &backgrounddB : nullptr ) << '\n'
+         .Format( h, m, s ).mention() << '\n'
+      << FormatRMSMessage( mBackgroundIsDefined ? &backgrounddB : nullptr ).mention() << '\n'
       << '\n'
-      << XO("Results") << '\n';
+      << XO("Results").mention() << '\n';
 
    float diffdB = foregrounddB - backgrounddB;
 
    ss
-      << FormatDifferenceForExport( diffdB ) << '\n'
+      << FormatDifferenceForExport( diffdB ).mention() << '\n'
       << (( diffdB > 20. )
          ? XO("Success Criteria 1.4.7 of WCAG 2.0: Pass")
-         : XO("Success Criteria 1.4.7 of WCAG 2.0: Fail")) << '\n'
+         : XO("Success Criteria 1.4.7 of WCAG 2.0: Fail")).mention() << '\n'
       << '\n'
-      << XO("Data gathered") << '\n';
+      << XO("Data gathered").mention() << '\n';
 
    wxDateTime now = wxDateTime::Now();
    int year = now.GetYear();
@@ -634,7 +634,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
       .Format( dom, monthName, year, hour, minute, second );
 
    ss <<
-      sNow << '\n'
+      sNow.mention() << '\n'
       << L"===================================" << '\n'
       << '\n';
 }
