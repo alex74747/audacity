@@ -1393,10 +1393,10 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
       const wxString sTrackName = (t->GetName()).Left(20);
       if( t->GetChannel() == Track::LeftChannel )
       /* i18n-hint: track name and L abbreviating Left channel */
-         mTrackNames.push_back( _( "%s - L" ).Format( sTrackName ) );
+         mTrackNames.push_back( _( "%s - L" ).Format( VERBATIM( sTrackName ) ) );
       else if( t->GetChannel() == Track::RightChannel )
       /* i18n-hint: track name and R abbreviating Right channel */
-         mTrackNames.push_back( _( "%s - R" ).Format( sTrackName ) );
+         mTrackNames.push_back( _( "%s - R" ).Format( VERBATIM( sTrackName ) ) );
       else
          mTrackNames.push_back(sTrackName);
    }

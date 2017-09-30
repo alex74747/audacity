@@ -352,7 +352,7 @@ bool EffectChangeTempo::TransferDataToWindow()
    // Set the accessibility name here because we need m_pTextCtrl_FromLength to have had its value set
    m_pTextCtrl_ToLength->SetName(
       _("Length in seconds from %s, to").Format(
-         m_pTextCtrl_FromLength->GetValue() ) );
+         VERBATIM( m_pTextCtrl_FromLength->GetValue() ) ) );
 
    return true;
 }

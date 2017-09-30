@@ -513,8 +513,8 @@ bool FloatingPointValidatorBase::DoValidateNumber(TranslatableString * errMsg) c
          res = IsInRange(value);
          if ( !res )
          {
-            wxString strMin = wxString::Format(L"%f", m_min);
-            wxString strMax = wxString::Format(L"%f", m_max);
+            LocalizedString strMin { m_min, L"%f" };
+            LocalizedString strMax { m_max, L"%f" };
             NumberFormatter::RemoveTrailingZeroes(strMin);
             NumberFormatter::RemoveTrailingZeroes(strMax);
 

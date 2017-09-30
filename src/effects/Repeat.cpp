@@ -232,7 +232,7 @@ void EffectRepeat::DisplayNewTime()
                        mT1 - mT0,
                        mProjectRate);
 
-   str = _("Current selection length: %s").Format( nc.GetString() );
+   str = _("Current selection length: %s").Format( VERBATIM( nc.GetString() ) );
 
    mCurrentTime->SetLabel(str);
    mCurrentTime->SetName(str); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
@@ -242,7 +242,7 @@ void EffectRepeat::DisplayNewTime()
       repeatCount = l;
 
       nc.SetValue((mT1 - mT0) * (repeatCount + 1));
-      str = _("New selection length: %s").Format( nc.GetString() );
+      str = _("New selection length: %s").Format( VERBATIM( nc.GetString() ) );
    }
    else {
       str = _("Warning: No repeats.");

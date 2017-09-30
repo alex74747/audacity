@@ -202,7 +202,7 @@ private:
 
    void resolveFilePath(wxString & path, FileExtension extension = {});
    bool validatePath(wxString path);
-   wxString ToTimeFormat(double t);
+   LocalizedString ToTimeFormat(double t);
 
 private:
 

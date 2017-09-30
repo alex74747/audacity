@@ -3572,7 +3572,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
             XO("Rename...") );
          dlg.SetTextValidator( wxFILTER_EXCLUDE_CHAR_LIST ); //
          dlg.SetName(
-            _("Rename '%s'").Format( mEditCurves[ item ].Name ) );
+            _("Rename '%s'").Format( VERBATIM( mEditCurves[ item ].Name ) ) );
          wxTextValidator *tv = dlg.GetTextValidator();
          tv->SetExcludes( exclude );   // Tell the validator about excluded chars
          if( dlg.ShowModal() == wxID_CANCEL )

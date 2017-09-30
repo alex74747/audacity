@@ -493,10 +493,10 @@ public:
          {
             if (mLibPath.GetFullPath().empty()) {
                mPathText = S.AddTextBox( {},
-                  _("To find '%s', click here -->").Format( mName ), 0);
+                  _("To find '%s', click here -->").Format( VERBATIM( mName ) ), 0);
             }
             else {
-               mPathText = S.AddTextBox( {}, mLibPath.GetFullPath(), 0);
+                  mPathText = S.AddTextBox( {}, mLibPath.GetFullPath(), 0);
             }
             S.Id(ID_FFMPEG_BROWSE).AddButton(XXO("Browse..."), wxALIGN_RIGHT);
             S.AddVariableText(

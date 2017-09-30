@@ -444,7 +444,7 @@ void DependencyDialog::PopulateList()
       else
       {
          mFileListCtrl->InsertItem(i,
-            _("MISSING %s").Format( fileName.GetFullPath() ) );
+            _("MISSING %s").Format( VERBATIM( fileName.GetFullPath() ) ) );
          mHasMissingFiles = true;
          mFileListCtrl->SetItemState(i, 0, wxLIST_STATE_SELECTED); // Deselect.
          mFileListCtrl->SetItemTextColour(i, *wxRED);

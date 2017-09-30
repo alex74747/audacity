@@ -160,6 +160,7 @@ private:
       { return string; }
 
    void ConvertFormatArg( const Identifier &string ) PROHIBITED;
+   static void ConvertFormatArg( const wxString & ) PROHIBITED;
 
 public:
 

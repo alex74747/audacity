@@ -621,7 +621,7 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
             // Inform the user that we have overridden the selected action
             sMessage = XO("%s\n\n'%s' has been canceled due to the error(s) noted above.").Format(
                             sMessage,
-                            m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction));
+                            VERBATIM( m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction) ));
          }
 
          // Show Error Message Box
@@ -634,7 +634,7 @@ int TimerRecordDialog::ExecutePostRecordActions(bool bWasStopped) {
          if (bWasStopped && (iOverriddenAction != POST_TIMER_RECORD_NOTHING)) {
             sMessage = XO("%s\n\n'%s' has been canceled as the recording was stopped.").Format(
                             sMessage,
-                            m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction));
+                            VERBATIM( m_pTimerAfterCompleteChoiceCtrl->GetString(iOverriddenAction) ));
          }
 
          AudacityMessageBox(

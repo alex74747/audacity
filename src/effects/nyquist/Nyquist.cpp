@@ -2209,9 +2209,6 @@ bool NyquistEffect::Parse(
          else {
             ctrl.label = UnQuote( ctrl.label );
 
-            if (len < 8) {
-               return true;
-            }
 
             if ((tokens[3] == L"float") ||
                   (tokens[3] == L"real")) // Deprecated
@@ -2226,9 +2223,8 @@ bool NyquistEffect::Parse(
                 ctrl.type = NYQ_CTRL_TIME;
             else
             {
-               wxString str;
-               str.Printf(L"Bad Nyquist 'control' type specification: '%s' in plug-in file '%s'.\nControl not created.",
-                        tokens[3], mFileName.GetFullPath());
+               auto str = _("Bad Nyquist 'control' type specification: '%s' in plug-in file '%s'.\nControl not created.")
+                     .Format( tokens[3].c_str(), VERBATIM( mFileName.GetFullPath() ) );
 
                // Too disturbing to show alert before Audacity frame is up.
                //    Effect::MessageBox(
@@ -3273,13 +3269,13 @@ bool NyquistEffect::validatePath(wxString path)
 }
 
 
-wxString NyquistEffect::ToTimeFormat(double t)
+LocalizedString NyquistEffect::ToTimeFormat(double t)
 {
    int seconds = static_cast<int>(t);
    int hh = seconds / 3600;
    int mm = seconds % 3600;
    mm = mm / 60;
-   return wxString::Format("%d:%d:%.3f", hh, mm, t - (hh * 3600 + mm * 60));
+   return _("%d:%d:%.3f").Format(hh, mm, t - (hh * 3600 + mm * 60));
 }
 
 
