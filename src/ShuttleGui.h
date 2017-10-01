@@ -332,8 +332,7 @@ public:
    wxCheckBox * AddCheckBoxOnRight( const TranslatableString &Prompt, const wxChar *) = delete;
    wxCheckBox * AddCheckBoxOnRight( const TranslatableString &Prompt, const char *) = delete;
 
-   wxComboBox * AddCombo( const TranslatableString &Prompt,
-      const wxString &Selected, const wxArrayStringEx & choices );
+   wxComboBox * AddCombo( const TranslatableString &Prompt, const wxString &Selected,const LocalizedStringVector & choices );
    wxChoice   * AddChoice( const TranslatableString &Prompt,
       const TranslatableStrings &choices, int Selected = -1 );
    wxChoice   * AddChoice( const TranslatableString &Prompt,

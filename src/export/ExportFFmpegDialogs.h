@@ -257,7 +257,7 @@ private:
 
    std::unique_ptr<FFmpegPresets> mPresets;
 
-   wxArrayStringEx mPresetNames;
+   LocalizedStringVector mPresetNames;
 
    /// Finds the format currently selected and returns its name and description
    void FindSelectedFormat(LocalizedString **name, wxString **longname);
@@ -320,7 +320,7 @@ public:
    FFmpegPresets();
    ~FFmpegPresets();
 
-   void GetPresetList(wxArrayString &list);
+   void GetPresetList(LocalizedStringVector &list);
    void LoadPreset(ExportFFmpegOptions *parent, wxString &name);
    bool SavePreset(ExportFFmpegOptions *parent, wxString &name);
    void DeletePreset(wxString &name);

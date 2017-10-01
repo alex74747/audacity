@@ -112,9 +112,9 @@ ExportCLOptions::~ExportCLOptions()
 ///
 void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
 {
-   wxArrayStringEx cmds;
+   LocalizedStringVector cmds;
    for ( const auto &file : mHistory )
-      cmds.push_back( file.GET() );
+      cmds.push_back( LocalizedString{ file.GET() } );
    auto cmd = cmds[0];
 
    S.StartVerticalLay();

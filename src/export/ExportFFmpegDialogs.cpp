@@ -920,13 +920,13 @@ void FFmpegPresets::ExportPresets(wxString &filename)
    } );
 }
 
-void FFmpegPresets::GetPresetList(wxArrayString &list)
+void FFmpegPresets::GetPresetList(LocalizedStringVector &list)
 {
    list.clear();
    FFmpegPresetMap::iterator iter;
    for (iter = mPresets.begin(); iter != mPresets.end(); ++iter)
    {
-      list.push_back(iter->second.mPresetName);
+      list.push_back( VERBATIM( iter->second.mPresetName ) );
    }
 
    std::sort( list.begin(), list.end() );
@@ -2255,17 +2255,24 @@ bool ExportFFmpegOptions::SavePreset(bool bCheckForOverwrite)
       AudacityMessageBox( XO("You can't save a preset without a name") );
       return false;
    }
+
    if( bCheckForOverwrite && !mPresets->OverwriteIsOk(name))
       return false;
    if( !mPresets->SavePreset(this,name) )
       return false;
-   int index = mPresetNames.Index(name,false);
-   if (index == -1)
+
+   const auto pred = [&](const LocalizedString& str){
+      return name.CmpNoCase(str) == 0;
+   };
+   auto index = make_iterator_range(mPresetNames).index_if( pred );
+   if (index < 0)
    {
-      mPresetNames.push_back(name);
+      mPresetNames.push_back( VERBATIM( name ) );
       mPresetCombo->Clear();
-      mPresetCombo->Append(mPresetNames);
-      mPresetCombo->Select(mPresetNames.Index(name,false));
+      for (const auto &n : mPresetNames)
+         mPresetCombo->Append(n);
+      auto nn = make_iterator_range(mPresetNames).index_if( pred );
+      mPresetCombo->Select(nn);
    }
    return true;
 }
@@ -2318,7 +2325,8 @@ void ExportFFmpegOptions::OnImportPresets(wxCommandEvent& WXUNUSED(event))
    mPresets->ImportPresets(path);
    mPresets->GetPresetList(mPresetNames);
    mPresetCombo->Clear();
-   mPresetCombo->Append(mPresetNames);
+   for (const auto &name : mPresetNames)
+      mPresetCombo->Append(name);
 }
 
 ///
@@ -2331,9 +2339,9 @@ void ExportFFmpegOptions::OnExportPresets(wxCommandEvent& WXUNUSED(event))
    if( !SavePreset(!kCheckForOverwrite) )
       return;
 
-   wxArrayString presets;
-   mPresets->GetPresetList( presets);
-   if( presets.Count() < 1)
+   LocalizedStringVector presets;
+   mPresets->GetPresetList( presets );
+   if( presets.size() < 1)
    {
       AudacityMessageBox( XO("No presets to export") );
       return;

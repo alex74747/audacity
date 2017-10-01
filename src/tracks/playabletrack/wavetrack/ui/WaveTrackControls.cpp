@@ -427,7 +427,7 @@ void RateMenuTable::OnRateOther(wxCommandEvent &)
 
       rate.Printf(L"%ld", lrint(pTrack->GetRate()));
 
-      wxArrayStringEx rates{
+      LocalizedStringVector rates{
          LocalizedString{ 8000 } ,
          LocalizedString{ 11025 } ,
          LocalizedString{ 16000 } ,

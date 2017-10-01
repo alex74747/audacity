@@ -420,10 +420,10 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent,
          S.AddUnits(XO("%"));
 
          // Rate text
-         wxArrayStringEx rates;
+         LocalizedStringVector rates;
          for (int i = 0; i < AudioIOBase::NumStandardRates; i++) {
-            rates.Add(
-               wxString::Format(L"%d", AudioIOBase::StandardRates[i]));
+            rates.push_back( VERBATIM( wxString::Format(L"%d",
+               AudioIOBase::StandardRates[i])));
          }
 
          /* i18n-hint: (noun)*/

@@ -507,9 +507,7 @@ ReadOnlyText * ShuttleGuiBase::AddReadOnlyText(
    return pReadOnlyText;
 }
 
-wxComboBox * ShuttleGuiBase::AddCombo(
-   const TranslatableString &Prompt,
-   const wxString &Selected, const wxArrayStringEx & choices )
+wxComboBox * ShuttleGuiBase::AddCombo( const TranslatableString &Prompt, const wxString &Selected,const LocalizedStringVector & choices )
 {
    const auto translated = Prompt.Translation();
    HandleOptionality( Prompt );
