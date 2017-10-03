@@ -427,18 +427,18 @@ void RateMenuTable::OnRateOther(wxCommandEvent &)
       rate.Printf(L"%ld", lrint(pTrack->GetRate()));
 
       wxArrayStringEx rates{
-         L"8000" ,
-         L"11025" ,
-         L"16000" ,
-         L"22050" ,
-         L"44100" ,
-         L"48000" ,
-         L"88200" ,
-         L"96000" ,
-         L"176400" ,
-         L"192000" ,
-         L"352800" ,
-         L"384000" ,
+         LocalizedString{ 8000 } ,
+         LocalizedString{ 11025 } ,
+         LocalizedString{ 16000 } ,
+         LocalizedString{ 22050 } ,
+         LocalizedString{ 44100 } ,
+         LocalizedString{ 48000 } ,
+         LocalizedString{ 88200 } ,
+         LocalizedString{ 96000 } ,
+         LocalizedString{ 176400 } ,
+         LocalizedString{ 192000 } ,
+         LocalizedString{ 352800 } ,
+         LocalizedString{ 384000 } ,
       };
 
       S.StartVerticalLay(true);
