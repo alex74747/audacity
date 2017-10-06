@@ -20,6 +20,8 @@
 
 class TranslatableString;
 
+class LocalizedString;
+
 // FreqToMIDInote takes a frequency in Hz (exponential scale relative to
 // alphabetic pitch names) and returns a pitch ID number (linear
 // scale), such that A440 (A4) is 69, middle C (C4) is 60, etc.

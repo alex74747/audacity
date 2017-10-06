@@ -430,7 +430,7 @@ namespace {
             value = XO("zero");
       }
       else
-         value = format1.Format( "" );
+         value = format1.Format( LocalizedString{} );
 
       return format0.Format( value );
    }

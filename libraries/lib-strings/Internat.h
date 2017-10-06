@@ -161,6 +161,8 @@ private:
 
    void ConvertFormatArg( const Identifier &string ) PROHIBITED;
    static void ConvertFormatArg( const wxString & ) PROHIBITED;
+   static void ConvertFormatArg( const char * ) PROHIBITED;
+   static void ConvertFormatArg( const wxChar * ) PROHIBITED;
 
 public:
 

@@ -3771,6 +3771,7 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 
             if (value != GetSymbol().Internal())
             {
+               // Does the other effect have a translated name perhps?
                auto msg = XO("This parameter file was saved from %s. Continue?")
                   .Format( value );
                int result = AudacityMessageBox(
