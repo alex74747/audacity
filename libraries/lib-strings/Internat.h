@@ -78,6 +78,8 @@ struct wxArgNormalizerNative<VerbatimString>
    wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
 };
 
+#define VERBATIM( s ) VerbatimString{ s }
+
 /* LocalizedString contains a string (or format) that HAS BEEN translated.
  * After any format substitutions, it can be shown to the user.
  * It is meant to be a short-lived object: storing it in a table is probably
