@@ -46,6 +46,7 @@ void ImportFileHandle::CreateProgress()
 {
    wxFileNameWrapper ff{ mFilename };
 
+   // Are the arguments reversed?
    auto title = XO("Importing %s").Format( GetFileDescription() );
    mProgress = std::make_unique< ProgressDialog >(
       title, Verbatim( ff.GetFullName() ) );
