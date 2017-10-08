@@ -145,7 +145,7 @@ wxString EffectManager::GetCommandUrl(const PluginID & ID)
    if( pCom )
       return pCom->ManualPage();
 
-   return wxEmptyString;
+   return {};
 }
 
 TranslatableString EffectManager::GetCommandTip(const PluginID & ID)
