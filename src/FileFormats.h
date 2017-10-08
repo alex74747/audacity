@@ -23,6 +23,7 @@
 
 class ChoiceSetting;
 class wxString;
+class VerbatimString;
 
 //
 // enumerating headers
@@ -42,7 +43,7 @@ int sf_num_headers();
  * required
  */
 AUDACITY_DLL_API
-wxString sf_header_index_name(int format_num);
+VerbatimString sf_header_index_name(int format_num);
 
 AUDACITY_DLL_API
 unsigned int sf_header_index_to_type(int format_num);
@@ -58,7 +59,7 @@ int sf_num_encodings();
  *
  * uses SFC_GET_FORMAT_SUBTYPE */
 AUDACITY_DLL_API
-wxString sf_encoding_index_name(int encoding_num);
+VerbatimString sf_encoding_index_name(int encoding_num);
 AUDACITY_DLL_API
 unsigned int sf_encoding_index_to_subtype(int encoding_num);
 
@@ -122,7 +123,7 @@ sampleFormat sf_subtype_to_effective_format(unsigned int format);
 AUDACITY_DLL_API
 extern FileExtensions sf_get_all_extensions();
 
-wxString sf_normalize_name(const char *name);
+VerbatimString sf_normalize_name(const char *name);
 
 
 // This function wrapper uses a mutex to serialize calls to the SndFile library.

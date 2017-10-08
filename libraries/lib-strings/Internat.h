@@ -78,6 +78,9 @@ struct wxArgNormalizerNative<VerbatimString>
    wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
 };
 
+inline wxString wxToString(const VerbatimString& str)
+{ return str.asWxString(); }
+
 #define VERBATIM( s ) VerbatimString{ s }
 
 /* LocalizedString contains a string (or format) that HAS BEEN translated.

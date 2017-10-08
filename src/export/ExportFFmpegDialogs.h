@@ -307,7 +307,7 @@ public:
    FFmpegPreset();
    ~FFmpegPreset();
 
-   wxString mPresetName;
+   VerbatimString mPresetName;
    wxArrayString mControlState;
 
 };

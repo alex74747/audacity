@@ -3543,7 +3543,7 @@ long EditCurvesDialog::GetPreviousItem(long item)  // wx doesn't have this
 // Rename curve/curves
 void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
 {
-   wxString name;
+   VerbatimString name;
    int numCurves = mEditCurves.size();
    int curve = 0;
 
@@ -3582,7 +3582,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
          }
 
          // Extract the name from the dialog
-         name = dlg.GetValue();
+         name = VerbatimString{ dlg.GetValue() };
 
          // Search list of curves for a duplicate name
          for( curve = 0; curve < numCurves; curve++ )
@@ -3611,7 +3611,9 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
                }
             }
          }
-         if( name.empty() || name == L"unnamed" )
+         if( name.empty() ||
+             // ?? Localize me ??
+             name == L"unnamed" )
             bad = true;
       }
 

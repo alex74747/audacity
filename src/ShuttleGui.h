@@ -23,6 +23,7 @@
 
 #include "Prefs.h"
 #include "WrappedType.h"
+#include "Internat.h"
 
 class ChoiceSetting;
 

@@ -22,6 +22,8 @@
 #include "audacity/ImporterInterface.h"
 #include "audacity/PluginInterface.h"
 
+#include "Internat.h"
+
 class wxArrayString;
 class FileConfig;
 

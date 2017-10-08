@@ -44,7 +44,7 @@ int sf_num_headers()
    return count;
 }
 
-wxString sf_header_index_name(int format)
+VerbatimString sf_header_index_name(int format)
 {
    SF_FORMAT_INFO	format_info;
 
@@ -53,7 +53,7 @@ wxString sf_header_index_name(int format)
    sf_command(NULL, SFC_GET_FORMAT_MAJOR,
               &format_info, sizeof (format_info)) ;
 
-   return LAT1CTOWX(format_info.name);
+   return VerbatimString{ LAT1CTOWX(format_info.name) };
 }
 
 unsigned int sf_header_index_to_type(int i)
@@ -81,7 +81,7 @@ int sf_num_encodings()
    return count;
 }
 
-wxString sf_encoding_index_name(int i)
+VerbatimString sf_encoding_index_name(int i)
 {
    SF_FORMAT_INFO	format_info ;
 
@@ -272,7 +272,7 @@ FileExtensions sf_get_all_extensions()
    return exts;
 }
 
-wxString sf_normalize_name(const char *name)
+VerbatimString sf_normalize_name(const char *name)
 {
    wxString n = LAT1CTOWX(name);
 
@@ -282,7 +282,7 @@ wxString sf_normalize_name(const char *name)
    n.Replace(L"32 bit", L"32-bit");
    n.Replace(L"64 bit", L"64-bit");
 
-   return n;
+   return VerbatimString{ n };
 }
 
 #ifdef __WXMAC__

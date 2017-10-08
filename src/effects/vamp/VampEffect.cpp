@@ -437,7 +437,7 @@ bool VampEffect::Process()
       const auto effectName = GetSymbol().Translation();
       addedTracks.push_back(AddAnalysisTrack(
          multiple
-            ? _("%s: %s").Format( VERBATIM( left->GetName() ), effectName )
+            ? _("%s: %s").Format( left->GetName(), effectName )
             : effectName
       ));
       LabelTrack *ltrack = addedTracks.back()->get();

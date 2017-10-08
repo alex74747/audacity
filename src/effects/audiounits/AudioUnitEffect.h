@@ -27,6 +27,8 @@
 
 #include "AUControl.h"
 
+#include "Internat.h"
+
 #define AUDIOUNITEFFECTS_VERSION L"1.0.0.0"
 /* i18n-hint: the name of an Apple audio software protocol */
 #define AUDIOUNITEFFECTS_FAMILY EffectFamilySymbol{ L"AudioUnit", XO("Audio Unit") }

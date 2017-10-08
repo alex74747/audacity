@@ -83,7 +83,7 @@ void Track::Init(const Track &orig)
 void Track::SetName( const wxString &n )
 {
    if ( mName != n ) {
-      mName = n;
+      mName = VerbatimString{ n };
       Notify();
    }
 }

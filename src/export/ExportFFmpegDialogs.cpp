@@ -1000,7 +1000,7 @@ bool FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
    }
 
    preset = &mPresets[name];
-   preset->mPresetName = name;
+   preset->mPresetName = VerbatimString{ name };
 
    wxSpinCtrl *sc;
    wxTextCtrl *tc;
@@ -1190,7 +1190,7 @@ bool FFmpegPresets::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             {
                mPreset = &mPresets[value];
             }
-            mPreset->mPresetName = value;
+            mPreset->mPresetName = VerbatimString{ value };
          }
       }
       return true;
@@ -2156,6 +2156,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, const wxString 
       {
          if ((selfmt != NULL) && (*selfmt == CompatibilityList[i].fmt)) index = mShownFormatNames.size();
          FromList.push_back(CompatibilityList[i].fmt);
+         //
          mShownFormatNames.push_back( VERBATIM( CompatibilityList[i].fmt ) );
          AVOutputFormat *tofmt = av_guess_format(wxString(CompatibilityList[i].fmt).ToUTF8(),NULL,NULL);
          if (tofmt != NULL) mShownFormatLongNames.push_back(wxString::Format(L"%s - %s",CompatibilityList[i].fmt,wxString::FromUTF8(tofmt->long_name)));

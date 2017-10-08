@@ -22,6 +22,7 @@
 #include <wx/longlong.h>
 
 #include "ClientData.h"
+#include "Internat.h"
 #include "SampleFormat.h"
 #include "xml/XMLTagHandler.h"
 
@@ -247,8 +248,8 @@ class AUDACITY_DLL_API Track /* not final */
    /*! mNode's pointer to std::list might not be this TrackList, if it's a pending update track */
    TrackNodePointer mNode{};
    int            mIndex; //!< 0-based position of this track in its TrackList
-   wxString       mName;
-   wxString       mDefaultName;
+   VerbatimString mName;
+   VerbatimString mDefaultName;
 
  private:
    bool           mSelected;
@@ -406,10 +407,10 @@ private:
    // take on some parameters of its partner.
    virtual void Merge(const Track &orig);
 
-   wxString GetName() const { return mName; }
+   VerbatimString GetName() const { return mName; }
    void SetName( const wxString &n );
    wxString GetDefaultName() const { return mDefaultName; }
-   void SetDefaultName( const wxString &n ) { mDefaultName = n; }
+   void SetDefaultName( const wxString &n ) { mDefaultName = VerbatimString{ n }; }
 
    bool GetSelected() const { return mSelected; }
 

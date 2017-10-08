@@ -73,15 +73,15 @@ public:
 class EQCurve
 {
 public:
-   EQCurve( const wxString & name = {} ) { Name = name; }
-   EQCurve( const wxChar * name ) { Name = name; }
+   EQCurve( const wxString & name = {} ) : Name{ name } {}
+   EQCurve( const wxChar * name ) : Name{ name } {}
 
    bool operator < (const EQCurve &that) const
    {
       return Name.CmpNoCase(that.Name) < 0;
    }
 
-   wxString Name; //
+   VerbatimString Name;
    std::vector<EQPoint> points;
 };
 

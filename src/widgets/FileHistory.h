@@ -14,6 +14,7 @@
 #include <vector>
 #include <algorithm>
 #include <wx/defs.h>
+#include <wx/fileconf.h> //?
 #include <wx/weakref.h> // member variable
 
 #include "Identifier.h"
