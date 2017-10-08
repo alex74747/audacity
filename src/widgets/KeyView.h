@@ -19,6 +19,9 @@
 
 #include "../commands/Keyboard.h"
 
+class LocalizedString;
+using LocalizedStringVector = std::vector< LocalizedString >;
+
 // Class holding all information about a node.  Rather than a real tree
 // we store these in an array and simulate a tree.
 class KeyNode
