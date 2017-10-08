@@ -234,9 +234,9 @@ TitleRestorer::TitleRestorer(
    window.Raise(); // May help identifying the window on Mac
 
    // Construct this project's name and number.
-   sProjName = project.GetProjectName();
+   sProjName = VerbatimString{ project.GetProjectName() };
    if ( sProjName.empty() ) {
-      sProjName = _("<untitled>");
+      sProjName = VerbatimString{ (const wxString&) _("<untitled>") };
       UnnamedCount = std::count_if(
          AllProjects{}.begin(), AllProjects{}.end(),
          []( const AllProjects::value_type &ptr ){

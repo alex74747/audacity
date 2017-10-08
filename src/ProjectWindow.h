@@ -13,6 +13,7 @@ Paul Licameli split from AudacityProject.h
 
 #include <memory>
 #include "ProjectWindowBase.h" // to inherit
+#include "Internat.h" // member variables
 #include "TrackPanelListener.h" // to inherit
 #include "Prefs.h"
 

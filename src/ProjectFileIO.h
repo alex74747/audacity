@@ -316,8 +316,8 @@ class TitleRestorer{
 public:
    TitleRestorer( wxTopLevelWindow &window, AudacityProject &project );
    ~TitleRestorer();
-   wxString sProjNumber;
-   wxString sProjName;
+   VerbatimString sProjNumber;
+   VerbatimString sProjName;
    size_t UnnamedCount;
 };
 
