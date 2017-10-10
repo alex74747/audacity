@@ -17,6 +17,7 @@
 #define __COMMANDMISC__
 
 #include <map>
+#include "Internat.h"
 #include "Validators.h"
 
 class wxVariant;
@@ -33,6 +34,6 @@ typedef std::map<wxString, std::unique_ptr<Validator>> ValidatorMap;
 
 // Map from command name to type
 // to do: use hash
-typedef std::map<wxString, std::unique_ptr<OldStyleCommandType>> CommandMap;
+typedef std::map<Identifier, std::unique_ptr<OldStyleCommandType>> CommandMap;
 
 #endif /* End of include guard: __COMMANDMISC__ */

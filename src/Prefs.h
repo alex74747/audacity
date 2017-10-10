@@ -52,6 +52,7 @@ void FinishPreferences();
 
 extern AUDACITY_DLL_API FileConfig *gPrefs;
 extern int gMenusDirty;
+using IdentifierVector = std::vector< Identifier >;
 
 
 struct ByColumns_t{};
@@ -249,15 +250,15 @@ public:
    EnumValueSymbols(
       ByColumns_t,
       const TranslatableStrings &msgids,
-      wxArrayStringEx internals
+      IdentifierVector internals
    );
 
    const TranslatableStrings &GetMsgids() const;
-   const wxArrayStringEx &GetInternals() const;
+   const IdentifierVector &GetInternals() const;
 
 private:
    mutable TranslatableStrings mMsgids;
-   mutable wxArrayStringEx mInternals;
+   mutable IdentifierVector mInternals;
 };
 
 /// Packages a table of user-visible choices each with an internal code string,
@@ -283,19 +284,19 @@ public:
    const EnumValueSymbol &Default() const;
    const EnumValueSymbols &GetSymbols() const { return mSymbols; }
 
-   wxString Read() const;
+   Identifier Read() const;
 
    // new direct use is discouraged but it may be needed in legacy code:
    // use a default in case the preference is not defined, which may not be
    // the default-default stored in this object.
-   wxString ReadWithDefault( const wxString & ) const;
+   Identifier ReadWithDefault( const Identifier & ) const;
 
    bool Write( const wxString &value ); // you flush gPrefs afterward
 
    void SetDefault( long value );
 
 protected:
-   size_t Find( const wxString &value ) const;
+   size_t Find( const Identifier &value ) const;
    virtual void Migrate( wxString& );
 
    const RegistryPath mKey;

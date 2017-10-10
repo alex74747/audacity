@@ -83,7 +83,7 @@ namespace Languages {
 
 wxString GetSystemLanguageCode(const DirectoryPaths &pathList)
 {
-   wxArrayString langCodes;
+   Identifiers langCodes;
    TranslatableStrings langNames;
 
    GetLanguages(pathList, langCodes, langNames);
@@ -136,7 +136,7 @@ wxString GetSystemLanguageCode(const DirectoryPaths &pathList)
 }
 
 void GetLanguages( DirectoryPaths pathList,
-   wxArrayString &langCodes, TranslatableStrings &langNames)
+   Identifiers &langCodes, TranslatableStrings &langNames)
 {
    static const char *const utf8Names[] = {
 "af Afrikaans",

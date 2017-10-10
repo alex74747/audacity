@@ -1801,7 +1801,7 @@ void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
       
          wxCommandEvent e(eventType, GetId());
          e.SetInt(i);
-         e.SetString(GetBuiltinName(i).Internal());
+         e.SetString(GetBuiltinName(i).Internal().GET());
          GetParent()->GetEventHandler()->AddPendingEvent(e);
       }
    }

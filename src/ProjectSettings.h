@@ -128,7 +128,7 @@ private:
    NumericFormatSymbol mBandwidthSelectionFormatName;
    NumericFormatSymbol mAudioTimeFormat;
 
-   wxString mSoloPref;
+   Identifier mSoloPref;
 
    double mRate;
 

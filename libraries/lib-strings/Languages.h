@@ -28,7 +28,7 @@ namespace Languages {
  */
 STRINGS_API
 void GetLanguages( DirectoryPaths pathList,
-   wxArrayString &langCodes, TranslatableStrings &langNames);
+   Identifiers &langCodes, TranslatableStrings &langNames);
 
 /*!
  @param pathList paths to search for .mo files, grouped into subdirectories for the different languages

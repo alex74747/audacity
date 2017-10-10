@@ -1518,7 +1518,7 @@ wxRadioButton * ShuttleGuiBase::TieRadioButton()
 
    // In what follows, WrappedRef is used in read only mode, but we
    // don't have a 'read-only' version, so we copy to deal with the constness.
-   auto Temp = symbol.Internal();
+   wxString Temp = symbol.Internal().GET();
    wxASSERT( !Temp.empty() ); // More buttons than values?
 
    WrappedType WrappedRef( Temp );
@@ -1572,7 +1572,7 @@ void ShuttleGuiBase::StartRadioButtonGroup( const ChoiceSetting &Setting )
    mRadioSymbols = Setting.GetSymbols();
 
    // Configure the generic type mechanism to use OUR string.
-   mRadioValueString = Setting.Default().Internal();
+   mRadioValueString = Setting.Default().Internal().GET();
    mRadioValue.emplace( mRadioValueString );
 
    // Now actually start the radio button group.
@@ -1721,7 +1721,8 @@ wxChoice * ShuttleGuiBase::TieChoice(
 //-----------------------------------------------------------------------//
 
 /// String-to-Index
-int ShuttleGuiBase::TranslateToIndex( const wxString &Value, const wxArrayStringEx &Choices )
+int ShuttleGuiBase::TranslateToIndex(
+   const Identifier &Value, const IdentifierVector &Choices )
 {
    int n = make_iterator_range( Choices ).index( Value );
    if( n == wxNOT_FOUND  )
@@ -1731,7 +1732,7 @@ int ShuttleGuiBase::TranslateToIndex( const wxString &Value, const wxArrayString
 }
 
 /// Index-to-String
-wxString ShuttleGuiBase::TranslateFromIndex( const int nIn, const wxArrayStringEx &Choices )
+Identifier ShuttleGuiBase::TranslateFromIndex( const int nIn, const IdentifierVector &Choices )
 {
    int n = nIn;
    if( n== wxNOT_FOUND )
@@ -1741,7 +1742,7 @@ wxString ShuttleGuiBase::TranslateFromIndex( const int nIn, const wxArrayStringE
    {
       return Choices[n];
    }
-   return L"";
+   return {};
 }
 
 //-----------------------------------------------------------------------//
@@ -1960,14 +1961,16 @@ wxChoice *ShuttleGuiBase::TieChoice(
 
    int TempIndex=0;
 //   int TempIndex = TranslateToIndex( Default, InternalChoices );
-   wxString TempStr = Default;
+   wxString TempStr = Default.GET();
    WrappedType WrappedRef( TempStr );
    // Get from prefs does 1 and 2.
    // Put to prefs does 2 and 3.
    if( DoStep(1) ) DoDataShuttle( SettingName, WrappedRef ); // Get Index from Prefs.
-   if( DoStep(1) ) TempIndex = TranslateToIndex( TempStr, InternalChoices ); // To an index
+   if( DoStep(1) ) TempIndex = TranslateToIndex(
+      Identifier{ TempStr }, InternalChoices ); // To an index
    if( DoStep(2) ) pChoice = TieChoice( Prompt, TempIndex, Choices );
-   if( DoStep(3) ) TempStr = TranslateFromIndex( TempIndex, InternalChoices ); // To a string
+   if( DoStep(3) ) TempStr =
+      TranslateFromIndex( TempIndex, InternalChoices ).GET(); // To a string
    if( DoStep(3) ) DoDataShuttle( SettingName, WrappedRef ); // Put into Prefs.
    return pChoice;
 }
@@ -1990,12 +1993,13 @@ wxChoice * ShuttleGuiBase::TieNumberAsChoice(
    const std::vector<int> * pInternalChoices,
    int iNoMatchSelector)
 {
-   auto fn = [](int arg){ return wxString::Format( "%d", arg ); };
+   auto fn = [](int arg) -> Identifier {
+      return wxString::Format( "%d", arg ); };
 
-   wxArrayStringEx InternalChoices;
+   IdentifierVector InternalChoices;
    if ( pInternalChoices )
       InternalChoices =
-         transform_container<wxArrayStringEx>(*pInternalChoices, fn);
+         transform_container<IdentifierVector>(*pInternalChoices, fn);
    else
       for ( int ii = 0; ii < (int)Choices.size(); ++ii )
          InternalChoices.push_back( fn( ii ) );

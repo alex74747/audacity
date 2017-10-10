@@ -2174,7 +2174,7 @@ bool AudioUnitEffect::SetRateAndChannels()
    {
       wxPrintf("%ls Didn't accept sample rate on global\n",
                // Exposing internal name only in debug printf
-               GetSymbol().Internal().wx_str());
+               GetSymbol().Internal().GET());
       return false;
    }
 
@@ -2190,7 +2190,7 @@ bool AudioUnitEffect::SetRateAndChannels()
       {
          wxPrintf("%ls Didn't accept sample rate on input\n",
                // Exposing internal name only in debug printf
-               GetSymbol().Internal().wx_str());
+               GetSymbol().Internal().GET());
          return false;
       }
 
@@ -2204,7 +2204,7 @@ bool AudioUnitEffect::SetRateAndChannels()
       {
          wxPrintf("%ls didn't accept stream format on input\n",
                // Exposing internal name only in debug printf
-               GetSymbol().Internal().wx_str());
+               GetSymbol().Internal().GET());
          return false;
       }
    }
@@ -2221,7 +2221,7 @@ bool AudioUnitEffect::SetRateAndChannels()
       {
          wxPrintf("%ls Didn't accept sample rate on output\n",
                // Exposing internal name only in debug printf
-               GetSymbol().Internal().wx_str());
+               GetSymbol().Internal().GET());
          return false;
       }
    
@@ -2237,7 +2237,7 @@ bool AudioUnitEffect::SetRateAndChannels()
       {
          wxPrintf("%ls didn't accept stream format on output\n",
                // Exposing internal name only in debug printf
-               GetSymbol().Internal().wx_str());
+               GetSymbol().Internal().GET());
          return false;
       }
    }

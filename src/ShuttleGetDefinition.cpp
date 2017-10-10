@@ -124,11 +124,11 @@ void ShuttleGetDefinition::DefineEnum( int &var,
    if( IsOptional() )
       AddItem( "unchanged", "default" );
    else
-      AddItem( strings[vdefault].Internal(), "default"  );
+      AddItem( strings[vdefault].Internal().GET(), "default"  );
    StartField( "enum" );
    StartArray();
    for( size_t i = 0; i < nStrings; i++ )
-      AddItem( strings[i].Internal() );
+      AddItem( strings[i].Internal().GET() );
    EndArray();
    EndField();
    EndStruct();

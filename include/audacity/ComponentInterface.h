@@ -62,9 +62,14 @@ class ComponentInterfaceSymbol
 public:
    ComponentInterfaceSymbol() = default;
    
+   // Allows implicit construction from an internal string re-used as a msgid
+   ComponentInterfaceSymbol( const Identifier &internal )
+      : mInternal{ internal }, mMsgid{ internal.GET(), {} }
+   {}
+
    // Allows implicit construction from a msgid re-used as an internal string
-   ComponentInterfaceSymbol( const TranslatableString &msgid )
-      : mInternal{ msgid.MSGID().GET(), }, mMsgid{ msgid }
+   ComponentInterfaceSymbol( const TranslatableString &internal )
+      : mInternal{ internal.MSGID().GET(), }, mMsgid{ internal }
    {}
 
    // Allows implicit construction from an internal string re-used as a msgid
@@ -86,7 +91,7 @@ public:
       , mMsgid{ internal.empty() ? TranslatableString{} : msgid }
    {}
 
-   const wxString &Internal() const { return mInternal; }
+   const Identifier &Internal() const { return mInternal; }
    const TranslatableString &Msgid() const { return mMsgid; }
    const TranslatableString Stripped() const { return mMsgid.Stripped(); }
    const wxString Translation() const { return mMsgid.Translation(); }
@@ -104,7 +109,7 @@ public:
    { return !( a == b ); }
 
 private:
-   wxString mInternal;
+   Identifier mInternal;
    TranslatableString mMsgid;
 };
 

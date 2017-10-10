@@ -121,7 +121,8 @@ TranslatableString EffectManager::GetVendorName(const PluginID & ID)
 
 CommandID EffectManager::GetCommandIdentifier(const PluginID & ID)
 {
-   wxString name = PluginManager::Get().GetSymbol(ID).Internal();
+   // Computing one Identifier from another
+   auto name = PluginManager::Get().GetSymbol(ID).Internal().GET();
    return Effect::GetSquashedName(name);
 }
 

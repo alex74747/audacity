@@ -292,11 +292,11 @@ wxChoice * ShuttleGuiGetDefinition::TieChoice(
    AddItem( choiceSetting.Key().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "enum", "type" );
-   AddItem( choiceSetting.Default().Internal(), "default"  );
+   AddItem( choiceSetting.Default().Internal().GET(), "default"  );
    StartField( "enum" );
    StartArray();
    for ( const auto &choice : choiceSetting.GetSymbols().GetInternals() )
-      AddItem( choice );
+      AddItem( choice.GET() );
    EndArray();
    EndField();
    EndStruct();

@@ -41,7 +41,7 @@ class DevicePrefs final : public PrefsPanel
    void OnDevice(wxCommandEvent & e);
 
    TranslatableStrings mHostNames;
-   wxArrayStringEx mHostLabels;
+   std::vector<Identifier> mHostLabels;
 
    wxString mPlayDevice;
    wxString mRecordDevice;

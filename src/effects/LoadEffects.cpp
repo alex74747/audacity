@@ -113,7 +113,7 @@ TranslatableString BuiltinEffectsModule::GetDescription()
 bool BuiltinEffectsModule::Initialize()
 {
    for ( const auto &entry : Entry::Registry() ) {
-      auto path = wxString(BUILTIN_EFFECT_PREFIX) + entry.name.Internal();
+      auto path = wxString(BUILTIN_EFFECT_PREFIX) + entry.name.Internal().GET();
       mEffects[ path ] = &entry;
    }
    sInitialized = true;

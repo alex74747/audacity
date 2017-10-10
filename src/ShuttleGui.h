@@ -28,6 +28,8 @@
 class ChoiceSetting;
 
 class wxArrayStringEx;
+class Identifier;
+using IdentifierVector = std::vector< Identifier >;
 
 
 const int nMaxNestedSizers = 20;
@@ -386,8 +388,9 @@ public:
    void EndRadioButtonGroup();
 
    bool DoStep( int iStep );
-   int TranslateToIndex( const wxString &Value, const wxArrayStringEx &Choices );
-   wxString TranslateFromIndex( const int nIn, const wxArrayStringEx &Choices );
+   int TranslateToIndex(
+      const Identifier &Value, const IdentifierVector &Choices );
+   Identifier TranslateFromIndex( const int nIn, const IdentifierVector &Choices );
 
 //-- Tie functions both add controls and also read/write to them.
 

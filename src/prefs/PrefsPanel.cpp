@@ -66,7 +66,7 @@ struct PrefsItemVisitor final : Registry::Visitor {
 }
 
 PluginPath PrefsPanel::GetPath()
-{ return BUILTIN_PREFS_PANEL_PREFIX + GetSymbol().Internal(); }
+{ return BUILTIN_PREFS_PANEL_PREFIX + GetSymbol().Internal().GET(); }
 
 VendorSymbol PrefsPanel::GetVendor()
 {  return XO("Audacity");}

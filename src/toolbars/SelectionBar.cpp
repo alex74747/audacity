@@ -368,7 +368,7 @@ void SelectionBar::UpdatePrefs()
    wxCommandEvent e;
    e.SetString(NumericTextCtrl::LookupFormat(
                NumericConverter::TIME,
-               gPrefs->Read(L"/SelectionFormat", L"")).Internal());
+               gPrefs->Read(L"/SelectionFormat", L"")).Internal().GET());
    OnUpdate(e);
 
    // Set label to pull in language change
@@ -712,7 +712,7 @@ void SelectionBar::SetSelectionFormat(const NumericFormatSymbol & format)
    // Test first whether changed, to avoid infinite recursion from OnUpdate
    if ( changed ) {
       wxCommandEvent e;
-      e.SetString(format.Internal());
+      e.SetString(format.Internal().GET());
       OnUpdate(e);
    }
 }

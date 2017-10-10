@@ -116,7 +116,7 @@ bool BuiltinCommandsModule::Initialize()
 {
    for ( const auto &entry : Entry::Registry() ) {
       auto path = wxString(BUILTIN_GENERIC_COMMAND_PREFIX)
-         + entry.name.Internal();
+         + entry.name.Internal().GET();
       mCommands[ path ] = &entry;
    }
    sInitialized = true;

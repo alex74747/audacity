@@ -146,7 +146,7 @@ PluginPath Effect::GetPath()
       return mClient->GetPath();
    }
 
-   return BUILTIN_EFFECT_PREFIX + GetSymbol().Internal();
+   return BUILTIN_EFFECT_PREFIX + GetSymbol().Internal().GET();
 }
 
 ComponentInterfaceSymbol Effect::GetSymbol()
@@ -677,7 +677,7 @@ void Effect::ExportPresets()
 {
    wxString params;
    GetAutomationParameters(params);
-   wxString commandId = GetSquashedName(GetSymbol().Internal()).GET();
+   auto commandId = GetSquashedName(GetSymbol().Internal().GET()).GET();
    params =  commandId + ":" + params;
 
    auto path = FileNames::SelectFile(FileNames::Operation::Presets,
@@ -743,7 +743,7 @@ void Effect::ImportPresets()
          wxString ident = params.BeforeFirst(':');
          params = params.AfterFirst(':');
 
-         wxString commandId = GetSquashedName(GetSymbol().Internal()).GET();
+         auto commandId = GetSquashedName(GetSymbol().Internal().GET()).GET();
 
          if (ident != commandId) {
             // effect identifiers are a sensible length!

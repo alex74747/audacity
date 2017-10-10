@@ -51,7 +51,7 @@ wxString OldStyleCommandType::Describe()
 {
    // PRL: Is this intended for end-user visibility or just debugging?  It did not
    // use _(""), so I assume it is meant to use internal strings
-   wxString desc = GetSymbol().Internal() + L"\nParameters:";
+   wxString desc = GetSymbol().Internal().GET() + L"\nParameters:";
    GetSignature();
    ParamValueMap::iterator iter;
    ParamValueMap defaults = mSignature->GetDefaults();

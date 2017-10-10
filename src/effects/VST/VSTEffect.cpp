@@ -735,9 +735,9 @@ void VSTEffectsModule::Check(const wxChar *path)
       {
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyBegin, wxEmptyString);
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyPath, effect.GetPath().GET());
-         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyName, effect.GetSymbol().Internal());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyName, effect.GetSymbol().Internal().GET());
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyVendor,
-                                 effect.GetVendor().Internal());
+                                 effect.GetVendor().Internal().GET());
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyVersion, effect.GetVersion());
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyDescription, effect.GetDescription().Translation());
          out += wxString::Format(L"%s%d=%d\n", OUTPUTKEY, kKeyEffectType, effect.GetType());

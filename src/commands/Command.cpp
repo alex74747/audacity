@@ -152,7 +152,7 @@ bool ApplyAndSendResponse::Apply()
 
    // PRL: it's all right to send untranslated strings to this channel
    // I don't see _("") used with literal strings.
-   response += GetSymbol().Internal();
+   response += GetSymbol().Internal().GET();
 
    // These three strings are deliberately not localised.
    // They are used in script responses and always happen in English.
@@ -188,7 +188,7 @@ void CommandImplementation::TypeCheck(const wxString &typeName,
 {
    // this macro is empty if wxWidgets is not compiled in debug mode
    wxASSERT_MSG(param.IsType(typeName),
-                GetSymbol().Internal()
+                GetSymbol().Internal().GET()
                 + L"command tried to get '"
                 + paramName
                 + L"' parameter as a "
@@ -200,7 +200,7 @@ void CommandImplementation::CheckParam(const wxString &paramName)
 {
    // this macro is empty if wxWidgets is not compiled in debug mode
    wxASSERT_MSG(mParams.find(paramName) != mParams.end(),
-                GetSymbol().Internal()
+                GetSymbol().Internal().GET()
                 + L"command tried to get '"
                 + paramName
                 + L"' parameter, but that parameter doesn't exist in the command signature!");
@@ -269,7 +269,7 @@ bool CommandImplementation::SetParameter(const wxString &paramName, const wxVari
       // Perhaps these formats that don't need translating.
       context.Error( wxString::Format(
          _("%s is not a parameter accepted by %s"),
-            paramName, GetSymbol().Internal() ) );
+            paramName, GetSymbol().Internal().GET() ) );
                     // neglect translation for scripting ??
       return false;
    }

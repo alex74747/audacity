@@ -63,11 +63,11 @@ wxString GUIPrefs::HelpPageName()
 
 void GUIPrefs::GetRangeChoices(
    TranslatableStrings *pChoices,
-   wxArrayStringEx *pCodes,
+   IdentifierVector *pCodes,
    int *pDefaultRangeIndex
 )
 {
-   static const auto sCodes = {
+   static const std::initializer_list<Identifier> sCodes = {
       L"36" ,
       L"48" ,
       L"60" ,

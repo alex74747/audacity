@@ -20,6 +20,8 @@ class WaveTrack;
 class wxCheckBox;
 class wxChoice;
 
+using IdentifierVector = std::vector< Identifier >;
+
 #define WAVEFORM_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Waveform") }
 
 class WaveformPrefs final : public PrefsPanel
@@ -56,7 +58,7 @@ private:
    wxChoice *mScaleChoice;
    wxChoice *mRangeChoice;
 
-   wxArrayStringEx mRangeCodes;
+   IdentifierVector mRangeCodes;
    TranslatableStrings mRangeChoices;
 
    WaveformSettings mTempSettings;

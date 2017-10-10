@@ -194,7 +194,7 @@ void FinishPreferences()
 EnumValueSymbols::EnumValueSymbols(
    ByColumns_t,
    const TranslatableStrings &msgids,
-   wxArrayStringEx internals
+   IdentifierVector internals
 )
    : mInternals( std::move( internals ) )
 {
@@ -218,10 +218,10 @@ const TranslatableStrings &EnumValueSymbols::GetMsgids() const
    return mMsgids;
 }
 
-const wxArrayStringEx &EnumValueSymbols::GetInternals() const
+const IdentifierVector &EnumValueSymbols::GetInternals() const
 {
    if ( mInternals.empty() )
-      mInternals = transform_container<wxArrayStringEx>( *this,
+      mInternals = transform_container<IdentifierVector>( *this,
          std::mem_fn( &EnumValueSymbol::Internal ) );
    return mInternals;
 }
@@ -235,16 +235,16 @@ const EnumValueSymbol &ChoiceSetting::Default() const
    return empty;
 }
 
-wxString ChoiceSetting::Read() const
+Identifier ChoiceSetting::Read() const
 {
    const auto &defaultValue = Default().Internal();
    return ReadWithDefault( defaultValue );
 }
 
-wxString ChoiceSetting::ReadWithDefault( const wxString &defaultValue ) const
+Identifier ChoiceSetting::ReadWithDefault( const Identifier &defaultValue ) const
 {
    wxString value;
-   if ( !gPrefs->Read(mKey.GET(), &value, defaultValue) )
+   if ( !gPrefs->Read(mKey.GET(), &value, defaultValue.GET()) )
       if (!mMigrated) {
          const_cast<ChoiceSetting*>(this)->Migrate( value );
          mMigrated = true;
@@ -254,11 +254,12 @@ wxString ChoiceSetting::ReadWithDefault( const wxString &defaultValue ) const
    // in case we try to interpret config files from future versions
    auto index = Find( value );
    if ( index >= mSymbols.size() )
-      value = defaultValue;
-   return value;
+      return defaultValue;
+   else
+      return value;
 }
 
-size_t ChoiceSetting::Find( const wxString &value ) const
+size_t ChoiceSetting::Find( const Identifier &value ) const
 {
    auto start = GetSymbols().begin();
    return size_t(
@@ -319,7 +320,7 @@ int EnumSettingBase::ReadInt() const
 
 int EnumSettingBase::ReadIntWithDefault( int defaultValue ) const
 {
-   wxString defaultString;
+   Identifier defaultString;
    auto index0 = FindInt( defaultValue );
    if ( index0 < mSymbols.size() )
       defaultString = mSymbols[ index0 ].Internal();
@@ -353,7 +354,7 @@ void EnumSettingBase::Migrate( wxString &value )
       if ( index >= (long)mSymbols.size() )
          index = mDefaultSymbol;
       if ( index >= 0 && index < (long)mSymbols.size() ) {
-         value = mSymbols[index].Internal();
+         value = mSymbols[index].Internal().GET();
          Write(value);
          gPrefs->Flush();
       }
@@ -365,7 +366,7 @@ bool EnumSettingBase::WriteInt( int code ) // you flush gPrefs afterward
    auto index = FindInt( code );
    if ( index >= mSymbols.size() )
       return false;
-   return Write( mSymbols[index].Internal() );
+   return Write( mSymbols[index].Internal().GET() );
 }
 
 wxString WarningDialogKey(const wxString &internalDialogName)

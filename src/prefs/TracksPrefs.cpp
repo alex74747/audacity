@@ -104,14 +104,14 @@ public:
       int oldMode;
       wxString newValue;
       auto stringValue =
-         []( WaveTrackViewConstants::Display display ){
+         []( WaveTrackViewConstants::Display display ) -> wxString {
          switch ( display ) {
             case WaveTrackViewConstants::Spectrum:
-               return spectrumSymbol.Internal();
+               return spectrumSymbol.Internal().GET();
             case WaveTrackViewConstants::obsoleteWaveformDBDisplay:
                return obsoleteValue;
             default:
-               return waveformSymbol.Internal();
+               return waveformSymbol.Internal().GET();
          }
       };
 
@@ -132,7 +132,7 @@ public:
 
       if ( !gPrefs->Read( key3, &value ) ) {
          if (newValue == obsoleteValue) {
-            newValue = waveformSymbol.Internal();
+            newValue = waveformSymbol.Internal().GET();
             gPrefs->Write(waveformScaleKey, dbValueString);
          }
 

@@ -19,6 +19,7 @@
 
 class ChoiceSetting;
 class ShuttleGui;
+using IdentifierVector = std::vector< Identifier >;
 
 #define GUI_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("GUI") }
 
@@ -36,7 +37,7 @@ class AUDACITY_DLL_API GUIPrefs final : public PrefsPanel
 
    static void GetRangeChoices(
       TranslatableStrings *pChoices,
-      wxArrayStringEx *pCodes,
+      IdentifierVector *pCodes,
       int *pDefaultRangeIndex = nullptr
    );
 
@@ -47,10 +48,10 @@ class AUDACITY_DLL_API GUIPrefs final : public PrefsPanel
  private:
    void Populate();
 
-   wxArrayStringEx mLangCodes;
+   IdentifierVector mLangCodes;
    TranslatableStrings mLangNames;
 
-   wxArrayStringEx mRangeCodes;
+   IdentifierVector mRangeCodes;
    TranslatableStrings mRangeChoices;
    int mDefaultRangeIndex;
 };

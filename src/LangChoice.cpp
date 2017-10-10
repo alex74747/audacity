@@ -45,7 +45,7 @@ private:
    wxString mLang;
 
    int mNumLangs;
-   wxArrayString mLangCodes;
+   IdentifierVector mLangCodes;
    TranslatableStrings mLangNames;
 
    DECLARE_EVENT_TABLE()
@@ -104,7 +104,7 @@ LangChoiceDialog::LangChoiceDialog(wxWindow * parent,
 void LangChoiceDialog::OnOk(wxCommandEvent & WXUNUSED(event))
 {
    int ndx = mChoice->GetSelection();
-   mLang = mLangCodes[ndx];
+   mLang = mLangCodes[ndx].GET();
 
    auto slang =
       Languages::GetSystemLanguageCode(FileNames::AudacityPathList());

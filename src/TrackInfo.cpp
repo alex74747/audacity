@@ -53,7 +53,7 @@ struct Settings : PrefsListener {
 
    void UpdatePrefs() override
    {
-      gSoloPref = TracksBehaviorsSolo.Read();
+      gSoloPref = TracksBehaviorsSolo.Read().GET();
 
       // Calculation of best font size depends on language, so it should be redone in case
       // the language preference changed.

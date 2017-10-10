@@ -232,7 +232,7 @@ bool ThemeBase::LoadPreferredTheme()
 // DA: Default themes differ.
    auto theme = GUITheme.Read();
 
-   theTheme.LoadTheme( theTheme.ThemeTypeOfTypeName( theme ) );
+   theTheme.LoadTheme( theTheme.ThemeTypeOfTypeName( theme.GET() ) );
    return true;
 }
 

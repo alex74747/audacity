@@ -206,7 +206,8 @@ bool EffectChangeSpeed::Startup()
          mFromVinyl = kVinyl_33AndAThird;
       }
 
-      SetPrivateConfig(GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
+      SetPrivateConfig(GetCurrentSettingsGroup(), L"TimeFormat",
+                       mFormat.Internal().GET());
       SetPrivateConfig(GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl);
 
       SaveUserPreset(GetCurrentSettingsGroup());
@@ -295,7 +296,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
    {
       wxString formatId;
       GetPrivateConfig(GetCurrentSettingsGroup(), L"TimeFormat",
-                       formatId, mFormat.Internal());
+                       formatId, mFormat.Internal().GET());
       mFormat = NumericConverter::LookupFormat(
          NumericConverter::TIME, formatId );
    }
@@ -457,7 +458,8 @@ bool EffectChangeSpeed::TransferDataFromWindow()
    }
    m_PercentChange = exactPercent;
 
-   SetPrivateConfig(GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
+   SetPrivateConfig(GetCurrentSettingsGroup(), L"TimeFormat",
+                    mFormat.Internal().GET());
    SetPrivateConfig(GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl);
 
    return true;

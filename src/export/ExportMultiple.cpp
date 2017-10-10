@@ -226,7 +226,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
    wxString defaultFormat = gPrefs->Read(L"/Export/Format", L"WAV");
 
    TranslatableStrings visibleFormats;
-   wxArrayStringEx formats;
+   IdentifierVector formats;
    mPluginIndex = -1;
    mFilterIndex = 0;
 
@@ -242,7 +242,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             // use MSGID of description as a value too, written into config file
             // This is questionable.  A change in the msgid can make the
             // preference stored in old config files inapplicable
-            formats.push_back( format.MSGID().GET() );
+            formats.push_back( format.MSGID() );
             if (mPlugins[i]->GetFormat(j) == defaultFormat) {
                mPluginIndex = i;
                mSubFormatIndex = j;
