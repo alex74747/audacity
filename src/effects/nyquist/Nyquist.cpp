@@ -3251,7 +3251,7 @@ void NyquistEffect::resolveFilePath(wxString& path, FileExtension extension /* e
    // the user sees the error rather than an unexpected file path.
    if (fname.wxFileName::IsOk() && fname.GetFullName().empty())
    {
-      path = fname.GetPathWithSep() + _("untitled");
+      path = fname.GetPathWithSep() + _("untitled").mention();
       if (!extension.empty())
          path = path + '.' + extension.GET();
    }

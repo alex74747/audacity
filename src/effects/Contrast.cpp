@@ -430,9 +430,9 @@ namespace {
             value = XO("zero");
       }
       else
-         value = format1.Format( LocalizedString{} );
+         value = format1.Format( LocalizedString{}.mention() );
 
-      return format0.Format( value );
+      return format0.Format( value.mention() );
    }
 
    TranslatableString FormatDifference( float diffdB )

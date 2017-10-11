@@ -120,7 +120,7 @@ public:
 
    double GetValue();
 
-   wxString GetString();
+   VerbatimString GetString();
 
    int GetFormatIndex();
 

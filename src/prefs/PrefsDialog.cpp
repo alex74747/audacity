@@ -403,7 +403,7 @@ int wxTreebookExt::ChangeSelection(size_t n) {
 int wxTreebookExt::SetSelection(size_t n)
 {
    int i = wxTreebook::SetSelection(n);
-   auto Temp = mTitlePrefix.Translation() + L" " + GetPageText( n );
+   auto Temp = (wxString)mTitlePrefix.Translation() + L" " + GetPageText( n );
    static_cast<wxDialog*>(GetParent())->SetTitle( Temp );
    static_cast<wxDialog*>(GetParent())->SetName( Temp );
 

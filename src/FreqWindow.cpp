@@ -949,8 +949,8 @@ void FrequencyPlotDialog::PlotPaint(wxPaintEvent & event)
       TranslatableString peak;
 
       if (mAlg == SpectrumAnalyst::Spectrum) {
-         auto xp = PitchName_Absolute(FreqToMIDInote(xPos));
-         auto pp = PitchName_Absolute(FreqToMIDInote(bestpeak));
+         auto xp = PitchName_Absolute(FreqToMIDInote(xPos)).mention();
+         auto pp = PitchName_Absolute(FreqToMIDInote(bestpeak)).mention();
          /* i18n-hint: The %d's are replaced by numbers, the %s by musical notes, e.g. A#*/
          cursor = XO("%d Hz (%s) = %d dB")
             .Format( (int)(xPos + 0.5), xp, (int)(value + 0.5));
@@ -958,8 +958,8 @@ void FrequencyPlotDialog::PlotPaint(wxPaintEvent & event)
          peak = XO("%d Hz (%s) = %.1f dB")
             .Format( (int)(bestpeak + 0.5), pp, bestValue );
       } else if (xPos > 0.0 && bestpeak > 0.0) {
-         auto xp = PitchName_Absolute(FreqToMIDInote(1.0 / xPos));
-         auto pp = PitchName_Absolute(FreqToMIDInote(1.0 / bestpeak));
+         auto xp = PitchName_Absolute(FreqToMIDInote(1.0 / xPos)).mention();
+         auto pp = PitchName_Absolute(FreqToMIDInote(1.0 / bestpeak)).mention();
          /* i18n-hint: The %d's are replaced by numbers, the %s by musical notes, e.g. A#
           * the %.4f are numbers, and 'sec' should be an abbreviation for seconds */
          cursor = XO("%.4f sec (%d Hz) (%s) = %f")

@@ -1226,11 +1226,11 @@ auto NumericConverter::GetBuiltinFormat(
    return GetBuiltinFormat(ndx);
 }
 
-wxString NumericConverter::GetString()
+VerbatimString NumericConverter::GetString()
 {
    ValueToControls();
 
-   return mValueString;
+   return VerbatimString{ mValueString };
 }
 
 void NumericConverter::Increment()

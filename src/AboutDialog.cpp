@@ -422,14 +422,14 @@ visit our %s.")
       // << L"<p>"
       // << par2Str
       << L"<h3>"
-      << XO("Credits")
+      << XO("Credits").mention()
       << L"</h3>"
       << L"<p>"
 
 // DA: Customisation credit
 #ifdef EXPERIMENTAL_DA
       << L"<p><b>"
-      << XO("DarkAudacity Customisation")
+      << XO("DarkAudacity Customisation").mention()
       << L"</b><br>"
       << L"James Crook, art, coding &amp; design<br>"
 #endif
@@ -441,7 +441,7 @@ visit our %s.")
       << GetCreditsByRole(roleTeamMember)
 
       << L"<p><b> "
-      << XO("Emeritus:")
+      << XO("Emeritus:").mention()
       << L"</b><br>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("Distinguished %s Team members, not currently active")
@@ -450,26 +450,26 @@ visit our %s.")
       << GetCreditsByRole(roleEmeritusTeam)
 
       << L"<p><b>"
-      << XO("Contributors")
+      << XO("Contributors").mention()
       << L"</b><br>"
       << GetCreditsByRole(roleContributor)
 
       << L"<p><b>"
-      << XO("Website and Graphics")
+      << XO("Website and Graphics").mention()
       << L"</b><br>"
       << GetCreditsByRole(roleGraphics)
    ;
 
    if(!translatorCredits.empty()) informationStr
       << L"<p><b>"
-      << XO("Translators")
+      << XO("Translators").mention()
       << L"</b><br>"
       << translatorCredits
    ;
 
    informationStr
       << L"<p><b>"
-      << XO("Libraries")
+      << XO("Libraries").mention()
       << L"</b><br>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("%s includes code from the following projects:").Format( ProgramName )
@@ -477,7 +477,7 @@ visit our %s.")
       << GetCreditsByRole(roleLibrary)
 
       << L"<p><b>"
-      << XO("Special thanks:")
+      << XO("Special thanks:").mention()
       << L"</b><br>"
       << GetCreditsByRole(roleThanks)
 
@@ -578,7 +578,7 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
     * informationStr */
    informationStr
       << L"<h2><center>"
-      << XO("Build Information")
+      << XO("Build Information").mention()
       << L"</center></h2>\n"
       << VerCheckHtml();
  
@@ -659,7 +659,7 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
 
    informationStr
       << L"<h3>"
-      << XO("File Format Support")
+      << XO("File Format Support").mention()
       << L"</h3>\n<p>";
 
    informationStr
@@ -733,7 +733,7 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
 
    informationStr
       << L"<h3>"
-      << XO("Features")
+      << XO("Features").mention()
       << L"</h3>\n<table>";  // start table of features
 
 #ifdef EXPERIMENTAL_DA
@@ -1181,7 +1181,7 @@ void AboutDialog::AddBuildinfoRow(
       << L"<tr><td>"
       << libname
       << L"</td><td>("
-      << libdesc
+      << libdesc.mention()
       << L")</td><td>"
       << status
       << L"</td></tr>";
@@ -1197,7 +1197,7 @@ void AboutDialog::AddBuildinfoRow(
 {
    *str
       << L"<tr><td>"
-      << description
+      << description.mention()
       << L"</td><td>"
       << spec
       << L"</td></tr>";

@@ -67,7 +67,7 @@ wxString CommandBuilder::GetResponse()
    if (!mValid && !mError.empty()) {
       return mError + L"\n";
    }
-   return mResponse->GetResponse().Translation() + L"\n";
+   return mResponse->GetResponse().Translation().mention() + L"\n";
 }
 
 void CommandBuilder::Failure(const wxString &msg)

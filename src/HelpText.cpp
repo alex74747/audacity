@@ -204,7 +204,7 @@ TranslatableString TitleText( const wxString & Key )
 template< typename Sink >
 inline Sink &operator <<( Sink &sink, const TranslatableString &str )
 {
-   return sink << str.Translation();
+   return sink << str.Translation().mention();
 }
 
 static wxString HelpTextBuiltIn( const wxString & Key )

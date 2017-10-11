@@ -755,7 +755,7 @@ wxRect ScreenshotCommand::GetTrackRect( AudacityProject * pProj, TrackPanel * pa
 wxString ScreenshotCommand::WindowFileName(AudacityProject * proj, wxTopLevelWindow *w){
    if (w != ProjectWindow::Find( proj ) && !w->GetTitle().empty()) {
       mFileName = MakeFileName(mFilePath,
-         kCaptureWhatStrings[ mCaptureMode ].Translation() +
+         kCaptureWhatStrings[ mCaptureMode ].Translation().mention() +
             (L"-" + w->GetTitle() + L"-"));
    }
    return mFileName;

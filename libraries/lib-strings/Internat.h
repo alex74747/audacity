@@ -147,22 +147,25 @@ public:
    : wxString{ str.Translation() }
    {}
 
+   // use sparingly!
+   VerbatimString mention() const
+   { return VerbatimString( (const wxString&) *this); }
+
    int CmpNoCase( const LocalizedString &str ) const
    { return wxString::CmpNoCase( str ); }
 
    friend inline bool operator ==
       ( const LocalizedString &xx, const LocalizedString &yy )
    { return (const wxString&) xx == (const wxString&) yy; }
+
 private:
    template< typename T > T static ConvertFormatArg( const T t ) { return t; }
    wxString static ConvertFormatArg( const VerbatimString &string )
       { return string; }
-   wxString static ConvertFormatArg( const TranslatableString &string )
-      { return  ( LocalizedString{ string }); }
-   wxString static ConvertFormatArg( const LocalizedString &string )
-      { return string; }
 
-   void ConvertFormatArg( const Identifier &string ) PROHIBITED;
+   static void ConvertFormatArg( const TranslatableString &string ) PROHIBITED;
+   static void ConvertFormatArg( const LocalizedString &string ) PROHIBITED;
+   static void ConvertFormatArg( const Identifier &string ) PROHIBITED;
    static void ConvertFormatArg( const wxString & ) PROHIBITED;
    static void ConvertFormatArg( const char * ) PROHIBITED;
    static void ConvertFormatArg( const wxChar * ) PROHIBITED;
@@ -178,6 +181,12 @@ public:
 
    void c_str() PROHIBITED;
 };
+
+template<typename T>
+void operator + ( const T& t, const LocalizedString& ) PROHIBITED;
+
+template<typename T>
+void operator + ( const LocalizedString&, const T& t ) PROHIBITED;
 
 // This makes LocalizedString work as an argument in wxString::Format()
 template<>

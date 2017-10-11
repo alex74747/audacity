@@ -209,7 +209,7 @@ void MacroCommandDialog::OnItemSelected(wxListEvent &event)
    // Macro command details are one place that we do expose Identifier
    // to (more sophisticated) users
    mDetails->SetValue(
-      mInternalCommandName.GET() + "\r\n" + command.category.Translation()  );
+      mInternalCommandName.GET() + "\r\n" + command.category.Translation().mention()  );
    mParameters->SetValue(params);
 }
 
@@ -252,7 +252,7 @@ void MacroCommandDialog::SetCommandAndParams(const CommandID &Command, const wxS
       // Macro command details are one place that we do expose Identifier
       // to (more sophisticated) users
       mDetails->SetValue(
-         iter->name.Internal().GET() + "\r\n" + iter->category.Translation() );
+         iter->name.Internal().GET() + "\r\n" + iter->category.Translation().mention() );
       mChoices->SetItemState(iter - mCatalog.begin(),
                              wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
 

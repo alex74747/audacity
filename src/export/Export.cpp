@@ -1390,7 +1390,7 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
             - ( anySolo ? &WaveTrack::GetNotSolo :  &WaveTrack::GetMute)
    ) {
       numTracks++;
-      const wxString sTrackName = (t->GetName()).Left(20);
+      const auto sTrackName = VERBATIM( (t->GetName()).Left(20) );
       if( t->GetChannel() == Track::LeftChannel )
       /* i18n-hint: track name and L abbreviating Left channel */
          mTrackNames.push_back( _( "%s - L" ).Format( VERBATIM( sTrackName ) ) );

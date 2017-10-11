@@ -396,7 +396,7 @@ void SelectionBar::RegenerateTooltips()
          : NumericFormatSymbol{};
    mSnapTo->SetToolTip(
          _("Snap Clicks/Selections to %s").Format(
-            formatName.Translation() ) );
+            formatName.Translation().mention() ) );
 #endif
 }
 
@@ -576,6 +576,8 @@ void SelectionBar::SetDrivers( int driver1, int driver2 )
          /* i18n-hint: each string is replaced by one of 'Length', 'Center',
             'Start', or 'End' (translated) */
          XO("Selection %s. %s won't change.").Format( Temp, Text[fixed] );
+      // i18n-hint: %s is replaced e.g by 'Length'.  This is a tooltip on a numerical control.
+      //wxString Tooltip = _(" With %s fixed.  (Use context menu to change format.) ").Format(  Text[fixed] );
       if( *Ctrls[i] ){
          (*Ctrls[i])->SetName( Temp );
       }

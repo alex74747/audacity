@@ -52,8 +52,10 @@ enum
 };
 
 #if defined(__WXMAC__)
+/* i18n-hint: name of a modifier key on Macintosh keyboards */
 #define CTRL XO("Command")
 #else
+/* i18n-hint: name of a modifier key on Windows and Linux keyboards */
 #define CTRL XO("Ctrl")
 #endif
 
@@ -151,9 +153,9 @@ void MousePrefs::CreateList()
    AddItem(XO("Right-Drag"),       XO("Zoom"),      XO("Zoom in on a Range"), XO("same as left-drag"));
    AddItem(XO("Shift-Drag"),       XO("Zoom"),      XO("Zoom out on a Range"));
    AddItem(XO("Middle-Click"),     XO("Zoom"),      XO("Zoom default"));
-
    AddItem(XO("Left-Drag"),        XO("Time-Shift"),XO("Move clip left/right or between tracks"));
    AddItem(XO("Shift-Left-Drag"),  XO("Time-Shift"),XO("Move all clips in track left/right"));
+   /* i18n-hint: substitute translation of "Ctrl" or "Command" */
    AddItem(CTRL + XO("-Left-Drag"),XO("Time-Shift"),XO("Move clip up/down between tracks"));
 
    AddItem(XO("Left-Drag"),
@@ -165,6 +167,7 @@ void MousePrefs::CreateList()
    AddItem(XO("Left-Click"),       XO("Pencil"),    XO("Change Sample"));
    AddItem(XO("Alt-Left-Click"),   XO("Pencil"),    XO("Smooth at Sample"));
    AddItem(XO("Left-Drag"),        XO("Pencil"),    XO("Change Several Samples"));
+   /* i18n-hint: substitute translation of "Ctrl" or "Command" */
    AddItem(CTRL + XO("-Left-Drag"),XO("Pencil"),    XO("Change ONE Sample only"));
 
    AddItem(XO("Left-Click"),       XO("Multi"),     XO("Set Selection Point"), XO("same as select tool"));
@@ -181,7 +184,9 @@ void MousePrefs::CreateList()
 
    AddItem(XO("Wheel-Rotate"),                XO("Any"),   XO("Scroll tracks up or down"));
    AddItem(XO("Shift-Wheel-Rotate"),          XO("Any"),   XO("Scroll waveform"));
+   /* i18n-hint: substitute translation of "Ctrl" or "Command" */
    AddItem(CTRL + XO("-Wheel-Rotate"),        XO("Any"),   XO("Zoom waveform in or out"));
+   /* i18n-hint: substitute translation of "Ctrl" or "Command" */
    AddItem(CTRL + XO("-Shift-Wheel-Rotate"),  XO("Any"),   XO("Vertical Scale Waveform (dB) range"));
 
    mList->SetColumnWidth(ToolColumn, wxLIST_AUTOSIZE);
@@ -211,7 +216,7 @@ void MousePrefs::AddItem(
 
    // Add a space before the text to work around a minor bug in the
    // list control when showing narrow columns.
-   mList->SetItem(i, CommentColumn, L" " + comment.Translation());
+   mList->SetItem(i, CommentColumn, L" " + comment.Translation().mention());
 }
 
 // See bug #2315 for discussion. This should be reviewed

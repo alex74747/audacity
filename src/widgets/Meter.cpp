@@ -2257,9 +2257,9 @@ wxAccStatus MeterAx::GetName(int WXUNUSED(childId), wxString* name)
          // always retain the leading space. Therefore a space has
          // been added to ensure at least one space, and stop
          // words from being merged
-         *name += L" " + _(" Monitoring ");
+         *name += L" " + _(" Monitoring ").mention();
       else if (m->mActive)
-         *name += L" " + _(" Active ");
+         *name += L" " + _(" Active ").mention();
 
       float peak = 0.;
       bool clipped = false;
@@ -2271,12 +2271,16 @@ wxAccStatus MeterAx::GetName(int WXUNUSED(childId), wxString* name)
       }
 
       if (m->mDB)
-         *name += L" " + _(" Peak %2.f dB").Format( (peak * m->mDBRange) - m->mDBRange);
+         /* i18n-hint: Peak meaning maximum value in recent recording or playback */
+         *name += L" " + (_(" Peak %2.f dB").Format( (peak * m->mDBRange) - m->mDBRange)).mention();
       else
-         *name += L" " + _(" Peak %.2f ").Format( peak);
+         /* i18n-hint: Peak meaning maximum value in recent recording or playback */
+         *name += L" " + (_(" Peak %.2f ").Format( peak)).mention();
 
       if (clipped)
-         *name += L" " + _(" Clipped ");
+         /* i18n-hint: audio signal is "clipped" when it exceeds the limits of
+          * the output device */
+         *name += L" " + _(" Clipped ").mention();
    }
 
    return wxACC_OK;

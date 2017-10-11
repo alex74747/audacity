@@ -1595,7 +1595,7 @@ void NyqBench::SetWindowTitle()
       name = mPath.GetFullName();
    }
 
-   SetTitle(_("Nyquist Effect Workbench - ") + name);
+   SetTitle(_("Nyquist Effect Workbench - %s").Format( VERBATIM( name ) ));
 }
 
 void NyqBench::RecreateToolbar(bool large)

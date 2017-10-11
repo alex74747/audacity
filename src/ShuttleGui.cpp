@@ -2098,7 +2098,7 @@ void ShuttleGuiBase::ApplyItem( int step, const DialogDefinition::Item &item,
 
       if ( !item.mNameSuffix.empty() )
          pWind->SetName(
-            pWind->GetName() + " " + item.mNameSuffix.Translation() );
+            pWind->GetName() + " " + item.mNameSuffix.Translation().mention() );
 
       if (item.mFocused)
          pWind->SetFocus();
