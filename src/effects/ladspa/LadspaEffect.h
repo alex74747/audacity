@@ -186,7 +186,7 @@ private:
    EffectUIHostInterface *mUIHost;
 
    NumericTextCtrl *mDuration;
-   wxDialog *mDialog;
+   wxDialogWrapper *mDialog;
    wxWindow *mParent;
    ArrayOf<wxSlider*> mSliders;
    ArrayOf<wxTextCtrl*> mFields;

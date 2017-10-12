@@ -551,7 +551,7 @@ void EffectReverb::SetTitle(const wxString & name)
 {
    mUIDialog->SetTitle(
       name.empty()
-         ? _("Reverb")
-         : wxString::Format( _("Reverb: %s"), name )
+         ? XO("Reverb")
+         : XO("Reverb: %s").Format( name )
    );
 }

@@ -341,7 +341,7 @@ bool ScreenshotCommand::CaptureDock(
 }
 
 // Handed a dialog, which it is given the option to capture.
-bool ScreenshotCommand::MayCapture( wxDialog * pDlg )
+bool ScreenshotCommand::MayCapture( wxDialogWrapper * pDlg )
 {
    if( mIdleHandler == NULL )
       return false;

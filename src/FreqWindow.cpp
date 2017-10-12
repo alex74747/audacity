@@ -1086,7 +1086,7 @@ void FrequencyPlotDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    const float *const processed = mAnalyst->GetProcessed();
    if (mAlgChoice->GetSelection() == 0) {
       ss
-         << XO("Frequency (Hz)\tLevel (dB)") << '\n';
+         << XO("Frequency (Hz)\tLevel (dB)").mention() << '\n';
       for (int i = 1; i < processedSize; i++)
          ss
             << wxString::Format(L"%f\t%f\n",
@@ -1094,7 +1094,7 @@ void FrequencyPlotDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    }
    else {
       ss
-         << XO("Lag (seconds)\tFrequency (Hz)\tLevel") << '\n';
+         << XO("Lag (seconds)\tFrequency (Hz)\tLevel").mention() << '\n';
       for (int i = 1; i < processedSize; i++)
          ss
             << wxString::Format(L"%f\t%f\t%f\n",

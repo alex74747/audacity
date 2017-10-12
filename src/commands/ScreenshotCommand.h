@@ -143,7 +143,7 @@ public:
    static ScreenshotCommand * mpShooter;
    static void (*mIdleHandler)(wxIdleEvent& event);
    static void SetIdleHandler( AudacityProject &project );
-   static bool MayCapture( wxDialog * pDlg );
+   static bool MayCapture( wxDialogWrapper * pDlg );
 
    void CaptureWindowOnIdle( const CommandContext & context, wxWindow * pWin );
    wxTopLevelWindow *GetFrontWindow(AudacityProject *project);

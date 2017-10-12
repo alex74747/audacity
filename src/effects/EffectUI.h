@@ -220,8 +220,8 @@ class CommandContext;
 
 namespace  EffectUI {
 
-   AUDACITY_DLL_API
-   wxDialog *DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
+AUDACITY_DLL_API
+   wxDialogWrapper *DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
       EffectUIClientInterface *client);
 
    /** Run an effect given the plugin ID */

@@ -1730,7 +1730,7 @@ bool AudioUnitEffect::PopulateUI(ShuttleGui &S)
    // OSStatus result;
 
    auto parent = S.GetParent();
-   mDialog = static_cast<wxDialog *>(wxGetTopLevelParent(parent));
+   mDialog = static_cast<wxDialogWrapper *>(wxGetTopLevelParent(parent));
    mParent = parent;
    mpControl = NULL;
 

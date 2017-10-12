@@ -369,7 +369,7 @@ private:
    size_t mNumSamples;
 
    // UI
-   wxDialog *mDialog;
+   wxDialogWrapper *mDialog;
    wxWindow *mParent;
    EffectUIHostInterface *mUIHost;
    wxSizerItem *mContainer;

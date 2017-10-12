@@ -1825,7 +1825,7 @@ void EffectUIHost::CleanupRealtime()
    }
 }
 
-wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
+wxDialogWrapper *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
    EffectUIClientInterface *client)
 {
    auto pEffect = dynamic_cast< Effect* >( pHost );

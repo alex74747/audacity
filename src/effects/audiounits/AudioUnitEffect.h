@@ -207,7 +207,7 @@ private:
 
    EffectUIHostInterface *mUIHost;
    wxWindow *mParent;
-   wxDialog *mDialog;
+   wxDialogWrapper *mDialog;
    wxString mUIType; // NOT translated, "Full", "Generic", or "Basic"
    bool mIsGraphical;
 

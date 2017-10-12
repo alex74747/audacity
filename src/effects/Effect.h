@@ -82,7 +82,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
 
    // Type of a registered function that, if it returns true,
    // causes ShowInterface to return early without making any dialog
-   using VetoDialogHook = bool (*) ( wxDialog* );
+   using VetoDialogHook = bool (*) ( wxDialogWrapper* );
    static VetoDialogHook SetVetoDialogHook( VetoDialogHook hook );
 
    // ComponentInterface implementation
@@ -472,7 +472,7 @@ protected:
    int            mPass;
 
    // UI
-   wxDialog       *mUIDialog;
+   wxDialogWrapper *mUIDialog;
    wxWindow       *mUIParent;
    int            mUIResultID;
    unsigned       mUIFlags;

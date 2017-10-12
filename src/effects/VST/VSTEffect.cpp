@@ -1762,7 +1762,7 @@ void VSTEffect::SetHostUI(EffectUIHostInterface *host)
 bool VSTEffect::PopulateUI(ShuttleGui &S)
 {
    auto parent = S.GetParent();
-   mDialog = static_cast<wxDialog *>(wxGetTopLevelParent(parent));
+   mDialog = static_cast<wxDialogWrapper *>(wxGetTopLevelParent(parent));
    mParent = parent;
 
    mParent->PushEventHandler(this);

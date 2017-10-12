@@ -50,6 +50,7 @@
 #include "audacity/EffectAutomationParameters.h" // for command automation
 
 class ShuttleGui;
+class wxDialogWrapper;
 
 typedef enum EffectType : int
 {
@@ -144,7 +145,7 @@ class AUDACITY_DLL_API EffectClientInterface  /* not final */ : public EffectDef
 {
 public:
    using EffectDialogFactory = std::function<
-      wxDialog* ( wxWindow &parent,
+      wxDialogWrapper* ( wxWindow &parent,
          EffectHostInterface*, EffectUIClientInterface* )
    >;
 

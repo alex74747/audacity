@@ -48,7 +48,7 @@ class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
    
    // Type of a registered function that, if it returns true,
    // causes ShowInterface to return early without making any dialog
-   using VetoDialogHook = bool (*) ( wxDialog* );
+   using VetoDialogHook = bool (*) ( wxDialogWrapper* );
    static VetoDialogHook SetVetoDialogHook( VetoDialogHook hook );
 
    // ComponentInterface implementation
@@ -74,7 +74,7 @@ class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
    bool ShowInterface(wxWindow *parent, bool forceModal = false);
    virtual void SetHostUI(EffectUIHostInterface * WXUNUSED(host)){;};
 
-   wxDialog *CreateUI(wxWindow *parent, AudacityCommand *client);
+   wxDialogWrapper *CreateUI(wxWindow *parent, AudacityCommand *client);
 
    virtual bool GetAutomationParameters(wxString & parms);
    virtual bool SetAutomationParameters(const wxString & parms);
@@ -127,7 +127,7 @@ protected:
 
    ProgressDialog *mProgress; // Temporary pointer, NOT deleted in destructor.
    // UI
-   wxDialog       *mUIDialog;
+   wxDialogWrapper *mUIDialog;
    wxWindow       *mUIParent;
    int             mUIResultID;
 
