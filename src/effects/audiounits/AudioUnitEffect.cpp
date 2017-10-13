@@ -670,6 +670,7 @@ END_EVENT_TABLE()
 
 AudioUnitEffectImportDialog::AudioUnitEffectImportDialog(wxWindow * parent, AudioUnitEffect *effect)
 :  wxDialogWrapper(parent, wxID_ANY, XO("Import Audio Unit Presets"))
+
 {
    mEffect = effect;
 

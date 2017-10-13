@@ -1602,6 +1602,7 @@ ASlider::ASlider( wxWindow * parent,
                              options.orientation);
    mLWSlider->mStepValue = options.stepValue;
    mLWSlider->SetId( id );
+   // What about in-session language change?
    SetName( name.Translation() );
 
    mSliderIsFocused = false;

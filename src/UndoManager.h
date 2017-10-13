@@ -78,6 +78,8 @@ wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API, EVT_UNDO_RESET, wxCommandEvent);
 wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API, EVT_UNDO_PURGE, wxCommandEvent);
 
 class AudacityProject;
+class LocalizedString;
+
 class Tags;
 class Track;
 class TrackList;

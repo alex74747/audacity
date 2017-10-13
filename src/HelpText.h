@@ -13,6 +13,7 @@
 
 class TranslatableString;
 class wxString;
+class LocalizedString;
 
 AUDACITY_DLL_API  wxString HelpText( const wxString & Key );
 AUDACITY_DLL_API TranslatableString TitleText( const wxString & Key );
