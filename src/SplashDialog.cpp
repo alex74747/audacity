@@ -174,6 +174,7 @@ void SplashDialog::Show2( wxWindow * pParent )
    {
       // pParent owns it
       wxASSERT(pParent);
+      // nonmodal
       pSelf = safenew SplashDialog( pParent );
    }
    pSelf->mpHtml->SetPage(HelpText( wxT("welcome") ));

@@ -94,6 +94,7 @@ EffectRack::EffectRack( AudacityProject &project )
       wxFRAME_FLOAT_ON_PARENT)
 , mProject{ project }
 {
+   //
    mBypassing = false;
    mNumEffects = 0;
    mLastLatency = 0;
@@ -578,6 +579,7 @@ namespace
 {
 AudacityProject::AttachedWindows::RegisteredFactory sKey{
    []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+      //
       auto result = safenew EffectRack( parent );
       result->CenterOnParent();
       return result;
@@ -835,6 +837,7 @@ int EffectUIHost::ShowModal()
    // Swap the Close and Apply buttons
    wxSizer *sz = mApplyBtn->GetContainingSizer();
    wxASSERT(mApplyBtn->GetParent()); // To justify safenew
+   //
    wxButton *apply = safenew wxButton(mApplyBtn->GetParent(), wxID_APPLY);
    sz->Replace(mCloseBtn, apply);
    sz->Replace(mApplyBtn, mCloseBtn);
@@ -1833,6 +1836,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
    if ( !project )
       return nullptr;
 
+   // nonmodal
    Destroy_ptr<EffectUIHost> dlg{
       safenew EffectUIHost{ &parent, *project, pEffect, client} };
    

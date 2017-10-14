@@ -113,6 +113,7 @@ void DeviceToolBar::DeinitChildren()
 
 void DeviceToolBar::Populate(ShuttleGui &S)
 {
+   //
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    DeinitChildren();
 

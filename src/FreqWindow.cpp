@@ -1214,6 +1214,7 @@ struct Handler : CommandHandlerObject {
    {
       auto &project = context.project;
       CommandManager::Get(project).RegisterLastAnalyzer(context);  //Register Plot Spectrum as Last Analyzer
+      // nonmodal
       auto freqWindow =
          &project.AttachedWindows::Get< FrequencyPlotDialog >( sFrequencyWindowKey );
 

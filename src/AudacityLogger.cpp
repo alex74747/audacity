@@ -158,6 +158,7 @@ void AudacityLogger::Show(bool show)
    }
 
    // This is the first use, so create the frame
+   //
    Destroy_ptr<wxFrame> frame
       { safenew wxFrame(NULL, wxID_ANY, _("Audacity Log")) };
    frame->SetName(frame->GetTitle());

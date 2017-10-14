@@ -85,6 +85,7 @@ MultiDialog::MultiDialog(wxWindow * pParent,
                wxCAPTION), // not wxDEFAULT_DIALOG_STYLE because we don't want wxCLOSE_BOX and wxSYSTEM_MENU
     mHelpPage( helpPage)
 {
+   //
    SetName();
 
    ShuttleGui S{ this, eIsCreating };

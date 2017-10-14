@@ -100,6 +100,7 @@ LyricsPanel::LyricsPanel(wxWindow* parent, wxWindowID id,
 
    this->SetBackgroundColour(*wxWHITE);
 
+   //
    mHighlightTextCtrl =
       safenew HighlightTextCtrl(this, -1, // wxWindow* parent, wxWindowID id,
                               wxT(""), // const wxString& value = {},

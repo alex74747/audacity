@@ -155,6 +155,7 @@ void SelectionBar::Create(wxWindow * parent)
 auStaticText * SelectionBar::AddTitle(
    const TranslatableString & Title, wxSizer * pSizer ){
    const auto translated = Title.Translation();
+   //
    auStaticText * pTitle = safenew auStaticText(this, translated );
    pTitle->SetBackgroundColour( theTheme.Colour( clrMedium ));
    pTitle->SetForegroundColour( theTheme.Colour( clrTrackPanelText ) );
@@ -177,6 +178,7 @@ NumericTextCtrl * SelectionBar::AddTime(
 }
 
 void SelectionBar::AddVLine(  wxSizer * pSizer ){
+   //
    pSizer->Add(safenew wxStaticLine(this, -1, wxDefaultPosition,
                                    wxSize(1, toolbarSingle-10),
                                    wxLI_VERTICAL),
@@ -185,6 +187,7 @@ void SelectionBar::AddVLine(  wxSizer * pSizer ){
 
 void SelectionBar::Populate(ShuttleGui &S)
 {
+   //
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
 
    mStartTime = mEndTime = mLengthTime = mCenterTime = mAudioTime = nullptr;

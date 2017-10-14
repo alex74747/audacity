@@ -965,6 +965,7 @@ void OnScoreAlign(const CommandContext &context)
    // if the program is quit by the user while the dialog is up.
    ScoreAlignParams params;
 
+   //
    // safe because the class maintains a global resource pointer
    safenew ScoreAlignDialog(params);
 

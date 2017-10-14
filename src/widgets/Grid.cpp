@@ -368,11 +368,13 @@ ChoiceEditor::~ChoiceEditor()
 // Clone is required by wxwidgets; implemented via copy constructor
 wxGridCellEditor *ChoiceEditor::Clone() const
 {
+   //??
    return safenew ChoiceEditor(mChoices);
 }
 
 void ChoiceEditor::Create(wxWindow* parent, wxWindowID id, wxEvtHandler* evtHandler)
 {
+   //
    m_control = safenew wxChoice(parent,
                             id,
                             wxDefaultPosition,

@@ -288,6 +288,7 @@ SliderDialog::SliderDialog(wxWindow * parent, wxWindowID id,
 
    S.StartVerticalLay();
    {
+      //
       if (style == PAN_SLIDER)
       {
          mTextCtrl = S

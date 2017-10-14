@@ -186,6 +186,7 @@ void ShowModelessErrorDialog(wxWindow *parent,
    if( !parent )
       parent = wxTheApp->GetTopWindow();
    wxASSERT(parent);
+   // nonmodal
    ErrorDialog *dlog = safenew ErrorDialog(parent, dlogTitle, message, helpPage, log, Close, false);
    dlog->CentreOnParent();
    dlog->Show();

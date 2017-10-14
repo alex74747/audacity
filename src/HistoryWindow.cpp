@@ -425,6 +425,7 @@ struct Handler : CommandHandlerObject {
    {
       auto &project = context.project;
 
+      // nonmodal
       auto historyWindow = &project.AttachedWindows::Get( sHistoryWindowKey );
       historyWindow->Show();
       historyWindow->Raise();

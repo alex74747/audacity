@@ -128,6 +128,7 @@ ExpandingToolBar::ExpandingToolBar(wxWindow* parent,
    mSavedArrangement{},
    mTopLevelParent(NULL)
 {
+   //
    mMainPanel = safenew wxPanelWrapper(this, -1,
                             wxDefaultPosition, wxSize(1, 1));
    mExtraPanel = safenew wxPanelWrapper(this, -1,
@@ -544,6 +545,7 @@ void ExpandingToolBar::StartMoving()
 //   ImageRoll tgtImageRoll = ImageRoll(ImageRoll::VerticalRoll,
 //                                      tgtImage,
 //                                      magicColor);
+   //
    mTargetPanel = safenew ImageRollPanel(mAreaParent, -1, //tgtImageRoll,
                                      wxDefaultPosition,
                                      wxDefaultSize,

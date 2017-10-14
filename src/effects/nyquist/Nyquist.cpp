@@ -3324,6 +3324,7 @@ NyquistOutputDialog::NyquistOutputDialog(wxWindow * parent, wxWindowID id,
                                        const TranslatableString &message)
 : wxDialogWrapper{ parent, id, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER }
 {
+   //
    SetName();
 
    ShuttleGui S{ this, eIsCreating };

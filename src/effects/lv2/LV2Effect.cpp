@@ -2068,6 +2068,7 @@ void LV2Effect::FreeInstance(LV2Wrapper *wrapper)
 
 bool LV2Effect::BuildFancy()
 {
+   // nonmodal
    // Set the native UI type
    const char *nativeType =
 #if defined(__WXGTK3__)
@@ -2311,6 +2312,7 @@ bool LV2Effect::BuildFancy()
 
 bool LV2Effect::BuildPlain()
 {
+   // nonmodal
    int numCols = 5;
    wxSizer *innerSizer;
 

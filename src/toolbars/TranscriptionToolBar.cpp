@@ -199,6 +199,7 @@ void TranscriptionToolBar::MakeAlternateImages(
 
 void TranscriptionToolBar::Populate(ShuttleGui &S)
 {
+   //
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
 // Very similar to code in ControlToolBar...
 // Very similar to code in EditToolBar

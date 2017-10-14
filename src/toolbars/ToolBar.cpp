@@ -516,6 +516,7 @@ wxSize ToolBar::GetSmartDockedSize()
 
 void ToolBar::ReCreateButtons()
 {
+   //
    wxSize sz3 = GetSize();
    //wxLogDebug( "x:%i y:%i",sz3.x, sz3.y);
 
@@ -854,6 +855,7 @@ AButton * ToolBar::MakeButton(wxWindow *parent,
                               bool processdownevents,
                               wxSize size)
 {
+   //
    // wxMax to cater for case of image being bigger than the button.
    int xoff = wxMax( 0, (size.GetWidth() - theTheme.Image(eStandardUp).GetWidth())/2);
    int yoff = wxMax( 0, (size.GetHeight() - theTheme.Image(eStandardUp).GetHeight())/2);

@@ -1191,6 +1191,7 @@ void LadspaEffect::SetHostUI(EffectUIHostInterface *host)
 
 bool LadspaEffect::PopulateUI(ShuttleGui &S)
 {
+   // nonmodal
    auto parent = S.GetParent();
 
    mParent = parent;

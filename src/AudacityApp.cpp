@@ -2237,6 +2237,7 @@ void AudacityApp::OnMenuAbout(wxCommandEvent & /*event*/)
    if (instance)
       instance->Raise();
    else
+      //
       // This dialog deletes itself when dismissed
       (safenew AboutDialog{ nullptr })->Show(true);
 #else

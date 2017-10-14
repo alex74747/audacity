@@ -86,6 +86,7 @@ void MixerToolBar::Create(wxWindow *parent)
 
 void MixerToolBar::Populate(ShuttleGui &S)
 {
+   //
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    // Recording icon and slider
    Add(safenew AStaticBitmap(this,

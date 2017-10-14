@@ -136,6 +136,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
    // inside it, rather than have a variant of the BrowserDialog that is a
    // frame??
    // Bug 1412 seems to be related to the extra frame.
+   // nonmodal
    auto pFrame = safenew wxFrame {
       pParent, wxID_ANY, Title.Translation(), wxDefaultPosition, wxDefaultSize,
 #if defined(__WXMAC__)

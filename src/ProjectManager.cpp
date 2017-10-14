@@ -525,6 +525,7 @@ void InitProjectWindow( ProjectWindow &window )
 
 AudacityProject *ProjectManager::New()
 {
+   // nonmodal
    wxRect wndRect;
    bool bMaximized = false;
    bool bIconized = false;

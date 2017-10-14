@@ -673,6 +673,7 @@ struct Handler : CommandHandlerObject {
    {
       auto &project = context.project;
       CommandManager::Get(project).RegisterLastAnalyzer(context);  //Register Contrast as Last Analyzer
+      // nonmodal
       auto contrastDialog =
          &project.AttachedWindows::Get< ContrastDialog >( sContrastDialogKey );
 

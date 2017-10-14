@@ -138,6 +138,7 @@ void OpenScreenshotTools( AudacityProject &project )
          wxASSERT(false);
          return;
       }
+      //
       mFrame = ScreenshotBigDialogPtr{
          safenew ScreenshotBigDialog(parent, -1, project) };
    }

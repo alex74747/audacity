@@ -598,6 +598,7 @@ ProjectWindow::ProjectWindow(wxWindow * parent, wxWindowID id,
    mTopPanel->SetLabel( "Top Panel" );// Not localised
    mTopPanel->SetLayoutDirection(wxLayout_LeftToRight);
    mTopPanel->SetAutoLayout(true);
+   //
 #ifdef EXPERIMENTAL_DA2
    mTopPanel->SetBackgroundColour(theTheme.Colour( clrMedium ));
 #endif

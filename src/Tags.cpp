@@ -894,6 +894,7 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
 
          mGrid->RegisterDataType(wxT("Combo"),
             (mStringRenderer = safenew wxGridCellStringRenderer),
+                                 //??
             (mComboEditor = safenew ComboEditor(wxArrayString(), true)));
 
          mGrid->SetColLabelSize(mGrid->GetDefaultRowSize());

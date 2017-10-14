@@ -1724,6 +1724,7 @@ void AudioUnitEffect::SetHostUI(EffectUIHostInterface *host)
 
 bool AudioUnitEffect::PopulateUI(ShuttleGui &S)
 {
+   //
    // OSStatus result;
 
    auto parent = S.GetParent();

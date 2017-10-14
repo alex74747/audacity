@@ -1102,6 +1102,7 @@ void ProgressDialog::Reinit()
 void ProgressDialog::AddMessageAsColumn(wxBoxSizer * pSizer,
                                         const MessageColumn & column,
                                         bool bFirstColumn) {
+   //
 
    // Assuming that we don't want empty columns, bail out if there is no text.
    if (column.empty())
@@ -1157,6 +1158,7 @@ bool ProgressDialog::Create(const TranslatableString & title,
 {
    Init();
 
+   //
    wxWindow *parent = 
 #if defined(__WXMAC__)
       // Bug 2703: In release builds, the progress dialog will fall behind

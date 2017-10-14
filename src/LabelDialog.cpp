@@ -117,6 +117,7 @@ LabelDialog::LabelDialog(wxWindow *parent,
   mFormat(format)
   , mFreqFormat(freqFormat)
 {
+   // nonmodal
    SetName();
    Populate();
 }

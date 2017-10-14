@@ -210,6 +210,7 @@ struct Handler : CommandHandlerObject {
    {
       auto &project = context.project;
 
+      // nonmodal
       auto lyricsWindow = &project.AttachedWindows::Get( sLyricsWindowKey );
       lyricsWindow->Show();
       lyricsWindow->Raise();

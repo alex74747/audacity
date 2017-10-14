@@ -2806,6 +2806,7 @@ static void OnSize(wxSizeEvent & evt)
 
 void VSTEffect::BuildFancy()
 {
+   //
    // Turn the power on...some effects need this when the editor is open
    PowerOn();
 

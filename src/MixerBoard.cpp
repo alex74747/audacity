@@ -175,6 +175,7 @@ MixerTrackCluster::MixerTrackCluster(wxWindow* parent,
 : wxPanelWrapper(parent, -1, pos, size)
 , mTrack{ pTrack }
 {
+   //
    mMixerBoard = grandParent;
    mProject = project;
    wxASSERT( pTrack );
@@ -862,6 +863,7 @@ MixerBoard::MixerBoard(AudacityProject* pProject,
                         const wxSize& size /*= wxDefaultSize*/)
 : wxWindow(parent, -1, pos, size)
 {
+   // nonmodal
    // public data members
 
    // mute & solo button images
@@ -1014,6 +1016,7 @@ void MixerBoard::UpdateTrackClusters()
             kInset + nClusterIndex * kMixerTrackClusterWidth,
             kInset);
          wxSize clusterSize(kMixerTrackClusterWidth, nClusterHeight);
+         //
          pMixerTrackCluster =
             safenew MixerTrackCluster(mScrolledWindow, this, mProject,
                                     spTrack,
@@ -1414,6 +1417,8 @@ MixerBoardFrame::MixerBoardFrame(AudacityProject* parent)
             wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT)
    , mProject(parent)
 {
+   // nonmodal
+
    SetWindowTitle();
    auto titleChanged = [&](wxCommandEvent &evt)
    {
@@ -1482,6 +1487,7 @@ void MixerBoardFrame::OnKeyEvent(wxKeyEvent & event)
 
 void MixerBoardFrame::Recreate( AudacityProject *pProject )
 {
+   //
    wxPoint  pos = mMixerBoard->GetPosition();
    wxSize siz = mMixerBoard->GetSize();
    wxSize siz2 = this->GetSize();
@@ -1507,48 +1513,5 @@ void MixerBoardFrame::SetWindowTitle()
    }
 
    SetTitle(AudacityMixerBoardTitle.Format(name).Translation());
-}
-
-// Remaining code hooks this add-on into the application
-#include "commands/CommandContext.h"
-
-namespace {
-
-// Mixer board window attached to each project is built on demand by:
-AudacityProject::AttachedWindows::RegisteredFactory sMixerBoardKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
-      return safenew MixerBoardFrame( &parent );
-   }
-};
-
-// Define our extra menu item that invokes that factory
-struct Handler : CommandHandlerObject {
-   void OnMixerBoard(const CommandContext &context)
-   {
-      auto &project = context.project;
-
-      auto mixerBoardFrame = &project.AttachedWindows::Get( sMixerBoardKey );
-      mixerBoardFrame->Show();
-      mixerBoardFrame->Raise();
-      mixerBoardFrame->SetFocus();
-   }
-};
-
-CommandHandlerObject &findCommandHandler(AudacityProject &) {
-   // Handler is not stateful.  Doesn't need a factory registered with
-   // AudacityProject.
-   static Handler instance;
-   return instance;
-}
-
-// Register that menu item
-
-using namespace MenuTable;
-AttachedItem sAttachment{ wxT("View/Windows"),
-   ( FinderScope{ findCommandHandler },
-      Command( wxT("MixerBoard"), XXO("&Mixer Board..."), &Handler::OnMixerBoard,
-         PlayableTracksExistFlag()) )
-};
-
 }
 

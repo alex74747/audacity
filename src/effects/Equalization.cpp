@@ -904,6 +904,7 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
             S.StartVerticalLay();
             {
                S.AddFixedText( fNum  );
+               //
                mSliders[i] = safenew wxSliderWrapper(pParent, ID_Slider + i, 0, -20, +20,
                   wxDefaultPosition, wxSize(-1,50), wxSL_VERTICAL | wxSL_INVERSE);
 

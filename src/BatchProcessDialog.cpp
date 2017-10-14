@@ -268,6 +268,7 @@ void ApplyMacroDialog::ApplyMacroToProject( int iMacro, bool bHasGui )
       return;
 
 #ifdef OPTIONAL_ACTIVITY_WINDOW
+   //
    wxDialogWrapper activityWin( this, wxID_ANY, GetTitle());
    activityWin.SetName();
    ShuttleGui S(&activityWin, eIsCreating);
@@ -374,6 +375,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
 
    files.Sort();
 
+   //
    wxDialogWrapper activityWin(this, wxID_ANY, Verbatim( GetTitle() ),
       wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
       );

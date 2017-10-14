@@ -407,6 +407,7 @@ ToolManager::ToolManager( AudacityProject *parent )
 
    // Create the indicator frame
    // parent is null but FramePtr ensures destruction
+   //
    mIndicator = FramePtr{ safenew wxFrame( NULL,
                              wxID_ANY,
                              wxEmptyString,
@@ -453,6 +454,7 @@ void ToolManager::CreateWindows()
    wxWindow *topDockParent = getTopPanelHook()( window );
 
    // Create the top and bottom docks
+   //
    mTopDock = safenew ToolDock( this, topDockParent, TopDockID );
    mBotDock = safenew ToolDock( this, &window, BotDockID );
 
