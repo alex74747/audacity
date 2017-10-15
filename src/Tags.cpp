@@ -338,7 +338,8 @@ void Tags::Clear()
 }
 
 namespace {
-   bool EqualMaps(const TagMap &map1, const TagMap &map2)
+   template< typename Map >
+   bool EqualMaps(const Map &map1, const Map &map2)
    {
       // Maps are unordered, hash maps; can't just iterate in tandem and
       // compare.
@@ -446,18 +447,18 @@ int Tags::GetGenre(const wxString & name)
    return 255;
 }
 
-bool Tags::HasTag(const wxString & name) const
+bool Tags::HasTag(const Identifier & name) const
 {
-   wxString key = name;
+   wxString key{ name.GET() };
    key.UpperCase();
 
    auto iter = mXref.find(key);
    return (iter != mXref.end());
 }
 
-wxString Tags::GetTag(const wxString & name) const
+wxString Tags::GetTag(const Identifier & name) const
 {
-   wxString key = name;
+   wxString key{ name.GET() };
    key.UpperCase();
 
    auto iter = mXref.find(key);
@@ -480,7 +481,8 @@ Tags::Iterators Tags::GetRange() const
    return { mMap.begin(), mMap.end() };
 }
 
-void Tags::SetTag(const wxString & name, const wxString & value, const bool bSpecialTag)
+void Tags::SetTag(
+   const Identifier & name, const wxString & value, const bool bSpecialTag)
 {
    // We don't like empty names
    if (name.empty()) {
@@ -488,17 +490,16 @@ void Tags::SetTag(const wxString & name, const wxString & value, const bool bSpe
    }
 
    // Tag name must be ascii
-   if (!name.IsAscii()) {
+   if (!wxString{name.GET()}.IsAscii()) {
       wxLogError("Tag rejected (Non-ascii character in name)");
       return;
    }
 
    // All keys are uppercase
-   wxString key = name;
-   key.UpperCase();
+   const Identifier key { wxString{name.GET()}.Upper() };
 
    // Look it up
-   TagMap::iterator iter = mXref.find(key);
+   TagTagMap::iterator iter = mXref.find(key);
 
    // The special tags, if empty, should not exist.
    // However it is allowable for a custom tag to be empty.
@@ -535,7 +536,7 @@ void Tags::SetTag(const wxString & name, const wxString & value, const bool bSpe
    }
 }
 
-void Tags::SetTag(const wxString & name, const int & value)
+void Tags::SetTag(const Identifier & name, const int & value)
 {
    SetTag(name, wxString::Format(L"%d", value));
 }
@@ -1030,7 +1031,7 @@ bool TagsEditorDialog::TransferDataFromWindow()
 bool TagsEditorDialog::TransferDataToWindow()
 {
    size_t i;
-   TagMap popTagMap;
+   TagValueMap popTagMap;
 
    // Disable redrawing until we're done
    mGrid->BeginBatch();
@@ -1069,7 +1070,9 @@ bool TagsEditorDialog::TransferDataToWindow()
       const auto &v = pair.second;
       if (popTagMap.find(n) == popTagMap.end()) {
          mGrid->AppendRows();
-         mGrid->SetCellValue(i, 0, n);
+         // A tag is present that is not among the special ones so must have
+         // been user defined.  Display it verbatim
+         mGrid->SetCellValue(i, 0, n.GET());
          mGrid->SetCellValue(i, 1, v);
          i++;
       }
@@ -1371,7 +1374,7 @@ void TagsEditorDialog::OnSaveDefaults(wxCommandEvent & WXUNUSED(event))
    for (const auto &pair : mLocal.GetRange()) {
       const auto &n = pair.first;
       const auto &v = pair.second;
-      gPrefs->Write(L"/Tags/" + n, v);
+      gPrefs->Write(L"/Tags/" + n.GET(), v);
    }
    gPrefs->Flush();
 

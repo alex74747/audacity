@@ -382,16 +382,15 @@ bool ExportOGG::FillComment(AudacityProject *project, vorbis_comment *comment, c
 
    vorbis_comment_init(comment);
 
-   wxString n;
    for (const auto &pair : metadata->GetRange()) {
-      n = pair.first;
+      auto n = pair.first;
       const auto &v = pair.second;
       if (n == TAG_YEAR) {
          n = L"DATE";
       }
       vorbis_comment_add_tag(comment,
-                             (char *) (const char *) n.mb_str(wxConvUTF8),
-                             (char *) (const char *) v.mb_str(wxConvUTF8));
+         (char *) (const char *) wxString{n.GET()}.mb_str(wxConvUTF8),
+         (char *) (const char *) v.mb_str(wxConvUTF8));
    }
 
    return true;

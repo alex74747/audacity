@@ -453,9 +453,8 @@ bool ExportFLAC::GetMetadata(AudacityProject *project, const Tags *tags)
 
    mMetadata.reset(::FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT));
 
-   wxString n;
    for (const auto &pair : tags->GetRange()) {
-      n = pair.first;
+      auto n = pair.first;
       const auto &v = pair.second;
       if (n == TAG_YEAR) {
          n = L"DATE";
@@ -464,8 +463,8 @@ bool ExportFLAC::GetMetadata(AudacityProject *project, const Tags *tags)
          // Some apps like Foobar use COMMENT and some like Windows use DESCRIPTION,
          // so add both to try and make everyone happy.
          n = L"COMMENT";
-         FLAC::Metadata::VorbisComment::Entry entry(n.mb_str(wxConvUTF8),
-                                                    v.mb_str(wxConvUTF8));
+         FLAC::Metadata::VorbisComment::Entry entry(
+            wxString{n.GET()}.mb_str(wxConvUTF8), v.mb_str(wxConvUTF8));
          if (! ::FLAC__metadata_object_vorbiscomment_append_comment(mMetadata.get(),
                                                               entry.get_entry(),
                                                               true) ) {
@@ -473,8 +472,9 @@ bool ExportFLAC::GetMetadata(AudacityProject *project, const Tags *tags)
          }
          n = L"DESCRIPTION";
       }
-      FLAC::Metadata::VorbisComment::Entry entry(n.mb_str(wxConvUTF8),
-                                                 v.mb_str(wxConvUTF8));
+      FLAC::Metadata::VorbisComment::Entry entry(
+         wxString{n.GET()}.mb_str(wxConvUTF8),
+         v.mb_str(wxConvUTF8));
       if (! ::FLAC__metadata_object_vorbiscomment_append_comment(mMetadata.get(),
                                                            entry.get_entry(),
                                                            true) ) {

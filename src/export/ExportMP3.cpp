@@ -2125,32 +2125,32 @@ unsigned long ExportMP3::AddTags(AudacityProject *WXUNUSED(project), ArrayOf<cha
       const auto &v = pair.second;
       const char *name = "TXXX";
 
-      if (n.CmpNoCase(TAG_TITLE) == 0) {
+      if (n == TAG_TITLE) {
          name = ID3_FRAME_TITLE;
       }
-      else if (n.CmpNoCase(TAG_ARTIST) == 0) {
+      else if (n == TAG_ARTIST) {
          name = ID3_FRAME_ARTIST;
       }
-      else if (n.CmpNoCase(TAG_ALBUM) == 0) {
+      else if (n == TAG_ALBUM) {
          name = ID3_FRAME_ALBUM;
       }
-      else if (n.CmpNoCase(TAG_YEAR) == 0) {
+      else if (n == TAG_YEAR){
          // LLL:  Some apps do not like the newer frame ID (ID3_FRAME_YEAR),
          //       so we add old one as well.
-         AddFrame(tp.get(), n, v, "TYER");
+         AddFrame(tp.get(), n.GET(), v, "TYER");
          name = ID3_FRAME_YEAR;
       }
-      else if (n.CmpNoCase(TAG_GENRE) == 0) {
+      else if (n == TAG_GENRE) {
          name = ID3_FRAME_GENRE;
       }
-      else if (n.CmpNoCase(TAG_COMMENTS) == 0) {
+      else if (n == TAG_COMMENTS){
          name = ID3_FRAME_COMMENT;
       }
-      else if (n.CmpNoCase(TAG_TRACK) == 0) {
+      else if (n == TAG_TRACK) {
          name = ID3_FRAME_TRACK;
       }
 
-      AddFrame(tp.get(), n, v, name);
+      AddFrame(tp.get(), n.GET(), v, name);
    }
 
    tp->options &= (~ID3_TAG_OPTION_COMPRESSION); // No compression

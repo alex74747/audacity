@@ -55,7 +55,8 @@ class ShuttleGui;
 class TagsEditorDialog;
 class ComboEditor;
 
-using TagMap = std::unordered_map< wxString, wxString >;
+using TagTagMap = std::unordered_map< Identifier, Identifier >;
+using TagValueMap = std::unordered_map< Identifier, wxString >;
 
 #define TAG_TITLE     L"TITLE"
 #define TAG_ARTIST   L"ARTIST"
@@ -113,14 +114,16 @@ class AUDACITY_DLL_API Tags final
    wxString GetGenre(int value);
    int GetGenre(const wxString & name);
 
-   bool HasTag(const wxString & name) const;
-   wxString GetTag(const wxString & name) const;
+   bool HasTag(const Identifier & name) const;
+   wxString GetTag(const Identifier & name) const;
 
-   using Iterators = IteratorRange<TagMap::const_iterator>;
+   using Iterators = IteratorRange< TagValueMap::const_iterator >;
    Iterators GetRange() const;
 
-   void SetTag(const wxString & name, const wxString & value, const bool bSpecialTag=false);
-   void SetTag(const wxString & name, const int & value);
+   void SetTag(
+      const Identifier & name, const wxString & value,
+      const bool bSpecialTag=false);
+   void SetTag(const Identifier & name, const int & value);
 
    bool IsEmpty();
    void Clear();
@@ -128,8 +131,11 @@ class AUDACITY_DLL_API Tags final
    friend bool operator == (const Tags &lhs, const Tags &rhs);
 
  private:
-   TagMap mXref;
-   TagMap mMap;
+   // Map from UPPERCASE to not-necessarily-uppercase:
+   TagTagMap mXref;
+
+   // Second map from that to value:
+   TagValueMap mMap;
 
    wxArrayString mGenres;
 

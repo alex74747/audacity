@@ -893,34 +893,34 @@ bool ExportPCM::AddID3Chunk(
       const auto &v = pair.second;
       const char *name = "TXXX";
 
-      if (n.CmpNoCase(TAG_TITLE) == 0) {
+      if (n == TAG_TITLE) {
          name = ID3_FRAME_TITLE;
       }
-      else if (n.CmpNoCase(TAG_ARTIST) == 0) {
+      else if (n == TAG_ARTIST) {
          name = ID3_FRAME_ARTIST;
       }
-      else if (n.CmpNoCase(TAG_ALBUM) == 0) {
+      else if (n == TAG_ALBUM) {
          name = ID3_FRAME_ALBUM;
       }
-      else if (n.CmpNoCase(TAG_YEAR) == 0) {
+      else if (n == TAG_YEAR) {
          name = ID3_FRAME_YEAR;
       }
-      else if (n.CmpNoCase(TAG_GENRE) == 0) {
+      else if (n == TAG_GENRE) {
          name = ID3_FRAME_GENRE;
       }
-      else if (n.CmpNoCase(TAG_COMMENTS) == 0) {
+      else if (n == TAG_COMMENTS) {
          name = ID3_FRAME_COMMENT;
       }
-      else if (n.CmpNoCase(TAG_TRACK) == 0) {
+      else if (n == TAG_TRACK) {
          name = ID3_FRAME_TRACK;
       }
-      else if (n.CmpNoCase(L"composer") == 0) {
+      else if (n == L"composer") {
          name = "TCOM";
       }
 
       struct id3_frame *frame = id3_frame_new(name);
 
-      if (!n.IsAscii() || !v.IsAscii()) {
+      if (!wxString{n.GET()}.IsAscii() || !v.IsAscii()) {
          id3_field_settextencoding(id3_frame_field(frame, 0), ID3_FIELD_TEXTENCODING_UTF_16);
       }
       else {
@@ -943,7 +943,8 @@ bool ExportPCM::AddID3Chunk(
       else if (strcmp(name, "TXXX") == 0) {
          id3_field_setstring(id3_frame_field(frame, 2), ucs4.get());
 
-         ucs4.reset(id3_utf8_ucs4duplicate((id3_utf8_t *) (const char *) n.mb_str(wxConvUTF8)));
+         ucs4.reset(id3_utf8_ucs4duplicate(
+            (id3_utf8_t *) (const char *) wxString{n.GET()}.mb_str(wxConvUTF8)));
 
          id3_field_setstring(id3_frame_field(frame, 1), ucs4.get());
       }
