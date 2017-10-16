@@ -17,6 +17,9 @@
 
 class Identifier;
 
+class LocalizedString;
+class VerbatimString;
+
 #include <vector>
 
 //! Holds a msgid for the translation catalog; may also bind format arguments
@@ -44,7 +47,12 @@ public:
       and no substitutions */
    using Formatter = std::function< wxString(const wxString &, Request) >;
 
+   friend class LocalizedString;
+
    TranslatableString() {}
+
+   // Prohibit back-conversion from localized!
+   explicit TranslatableString(const LocalizedString&) = delete;
 
    /*! Supply {} for the second argument to cause lookup of the msgid with
       empty context string (default context) rather than the null context */
@@ -80,6 +88,9 @@ public:
 
    //! Format as an English string for debugging logs and developers' eyes, not for end users
    wxString Debug() const { return DoFormat( true ); }
+
+   // use sparingly!
+   VerbatimString mention() const;
 
    //! Warning: comparison of msgids only, which is not all of the information!
    /*! This operator makes it easier to define a std::unordered_map on TranslatableStrings */

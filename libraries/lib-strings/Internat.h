@@ -23,6 +23,245 @@ class wxArrayStringEx;
 extern STRINGS_API const wxString& GetCustomTranslation(const wxString& str1 );
 extern STRINGS_API const wxString& GetCustomSubstitution(const wxString& str1 );
 
+class LocalizedString;
+
+// A string that can be displayed without translation, such as a technical
+// acronym
+//
+// String manipulations, other than insertion into a format, are discouraged
+//
+// Do not use for proper names of people that might be transliterated to
+// another alphabet
+//
+// Do not use for numbers because they should be formatted suitably for locale
+class VerbatimString : public wxString {
+public:
+   friend class LocalizedString;
+   VerbatimString() {}
+
+   using wxString::empty;
+   using wxString::Length;
+
+   // Prohibit back-conversion from localized!
+   explicit VerbatimString(const LocalizedString&) PROHIBITED;
+
+   void c_str() PROHIBITED;
+
+   explicit VerbatimString(const wxString &str) : wxString{ str } {}
+   explicit VerbatimString(const wxChar *str) : wxString{ str } {}
+
+   wxString asWxString() const { return *this; }
+};
+
+// This makes VerbatimString work as an argument in wxString::Format()
+template<>
+struct wxArgNormalizerNative<const VerbatimString&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const VerbatimString& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s.asWxString(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+template<>
+struct wxArgNormalizerNative<VerbatimString>
+: public wxArgNormalizerNative<const VerbatimString&>
+{
+   wxArgNormalizerNative(const VerbatimString& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const VerbatimString&>( s, fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+/* LocalizedString contains a string (or format) that HAS BEEN translated.
+ * After any format substitutions, it can be shown to the user.
+ * It is meant to be a short-lived object: storing it in a table is probably
+ * wrong, because it will not be notified of a change in locale.
+ *
+ * Localized strings can be built up by substitution into formats, but
+ * concatenation is discouraged.  Concatenating words and phrases may rely on
+ * assumptions special to English grammar.
+ *
+ * Concatenation of longer localized strings, of them a sentence, is allowed
+ * by use of LocalizedClause below.
+ */
+class LocalizedString : public wxString {
+public:
+   LocalizedString() {}
+
+   LocalizedString( const wxString &string )
+   : wxString{ string }
+   {}
+
+   LocalizedString( const char *chars )
+   : wxString{ chars }
+   {}
+
+   LocalizedString( const wchar_t *chars )
+   : wxString{ chars }
+   {}
+
+   // Assuming global locale is set, the constructors from numbers will
+   // format appropriately:
+
+   explicit
+   LocalizedString( int L, const wxChar *fmt = L"%d" )
+   : wxString{ wxString::Format( fmt, L ) }
+   {}
+
+   explicit
+   LocalizedString( long L, const wxChar *fmt = L"%ld" )
+   : wxString{ wxString::Format( fmt, L ) }
+   {}
+
+   explicit
+   LocalizedString( long long LL, const wxChar *fmt = L"%lld" )
+   : wxString{ wxString::Format( fmt, LL ) }
+   {}
+
+   explicit
+   LocalizedString( double d, const wxChar *fmt = L"%g" )
+   : wxString{ wxString::Format( fmt, d ) }
+   {}
+
+   // implicit
+   LocalizedString( const VerbatimString & str )
+   : wxString{ str }
+   {}
+
+   // implicit
+   LocalizedString( const TranslatableString & str )
+   : wxString{ str.Translation() }
+   {}
+
+   int CmpNoCase( const LocalizedString &str ) const
+   { return wxString::CmpNoCase( str ); }
+
+   friend inline bool operator ==
+      ( const LocalizedString &xx, const LocalizedString &yy )
+   { return (const wxString&) xx == (const wxString&) yy; }
+
+   void c_str() PROHIBITED;
+};
+
+// This makes LocalizedString work as an argument in wxString::Format()
+template<>
+struct wxArgNormalizerNative<const LocalizedString&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const LocalizedString& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s, fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+template<>
+struct wxArgNormalizerNative<LocalizedString>
+: public wxArgNormalizerNative<const LocalizedString&>
+{
+   wxArgNormalizerNative(const LocalizedString& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const LocalizedString&>( s, fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+using LocalizedStringVector = std::vector<LocalizedString>;
+
+/*
+ * Construct localized strings of this class so that you can concatenate with
+ * operator + .  Each string should represent a complete thought, not a word
+ * or phrase.  Uses of this class should be few and easily reviewed.
+ */
+class LocalizedClause : public LocalizedString {
+public:
+   LocalizedClause() {}
+
+   explicit
+   LocalizedClause( const LocalizedString &string )
+   : LocalizedString{ string }
+   {}
+
+   explicit
+   LocalizedClause( const wxString &string )
+   : LocalizedString{ string }
+   {}
+
+   explicit
+   LocalizedClause( const char *chars )
+   : LocalizedString{ chars }
+   {}
+
+   explicit
+   LocalizedClause( const wchar_t *chars )
+   : LocalizedString{ chars }
+   {}
+
+   // Permit assignment, as well as construction, from LocalizedString
+   LocalizedClause &operator= (const LocalizedString &str)
+   {
+      if (this != &str)
+         (LocalizedString&)(*this) = str;
+
+      return *this;
+   }
+
+   LocalizedClause& operator += ( const LocalizedClause &next )
+   {
+      this->wxString::operator+= ( next );
+      return *this;
+   }
+
+   LocalizedClause operator + ( const LocalizedClause &next )
+   {
+      auto result( *this );
+      result += next;
+      return result;
+   }
+
+   template<typename... Args>
+   LocalizedClause Format(Args... args) const
+   {
+      return LocalizedClause {
+         this->LocalizedString::Format( *this, args... )
+      };
+   }
+
+};
+
+// This makes LocalizedClause work as an argument in wxString::Format()
+template<>
+struct wxArgNormalizerNative<const LocalizedClause&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const LocalizedClause& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s, fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+template<>
+struct wxArgNormalizerNative<LocalizedClause>
+: public wxArgNormalizerNative<const LocalizedClause&>
+{
+   wxArgNormalizerNative(const LocalizedClause& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const LocalizedClause&>( s, fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
 // Marks string for substitution only.
 #define _TS( s ) GetCustomSubstitution( s )
 
