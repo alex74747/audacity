@@ -272,6 +272,7 @@ void CellularPanel::HandleMotion
    auto oldHandle = Target();
 
    TranslatableString status, tooltip;
+
    wxCursor *pCursor{};
    unsigned refreshCode = 0;
    if ( ! doHit ) {
