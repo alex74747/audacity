@@ -79,7 +79,7 @@ class EditToolBar final : public ToolBar {
 
    void OnButton(wxCommandEvent & event);
 
-   void Populate() override;
+   void Populate(ShuttleGui &S) override;
    void Repaint(wxDC * WXUNUSED(dc)) override {};
    void EnableDisableButtons() override;
    void UpdatePrefs() override;

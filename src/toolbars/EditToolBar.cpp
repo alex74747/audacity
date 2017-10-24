@@ -124,7 +124,7 @@ AButton *EditToolBar::AddButton(
    return r;
 }
 
-void EditToolBar::Populate()
+void EditToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    MakeButtonBackgroundsSmall();

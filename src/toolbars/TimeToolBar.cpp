@@ -71,7 +71,7 @@ const TimeToolBar &TimeToolBar::Get(const AudacityProject &project)
    return Get(const_cast<AudacityProject&>(project)) ;
 }
 
-void TimeToolBar::Populate()
+void TimeToolBar::Populate(ShuttleGui&)
 {
    const auto &settings = ProjectSettings::Get(mProject);
 

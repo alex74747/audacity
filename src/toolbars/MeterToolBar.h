@@ -38,7 +38,7 @@ class MeterToolBar final : public ToolBar {
 
    void Create(wxWindow *parent) override;
 
-   void Populate() override;
+   void Populate(ShuttleGui &S) override;
    void ReCreateButtons() override;
    void Repaint(wxDC * WXUNUSED(dc)) override {};
    void EnableDisableButtons() override {};

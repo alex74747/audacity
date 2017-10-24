@@ -35,7 +35,7 @@ class MixerToolBar final : public ToolBar {
    void UpdateControls();
    void SetMixer(wxCommandEvent &event);
 
-   void Populate() override;
+   void Populate(ShuttleGui &S) override;
    void Repaint(wxDC * WXUNUSED(dc)) override {};
    void EnableDisableButtons() override {};
    int GetMinToolbarWidth() override { return 250; }

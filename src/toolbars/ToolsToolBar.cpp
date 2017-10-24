@@ -190,7 +190,7 @@ AButton * ToolsToolBar::MakeTool(
 }
 
 
-void ToolsToolBar::Populate()
+void ToolsToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    MakeButtonBackgroundsSmall();

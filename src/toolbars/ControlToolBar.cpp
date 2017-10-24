@@ -188,7 +188,7 @@ void ControlToolBar::MakeAlternateImages(AButton &button, int idx,
       theTheme.ImageSize( bmpRecoloredUpLarge ));
 }
 
-void ControlToolBar::Populate()
+void ControlToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    MakeButtonBackgroundsLarge();

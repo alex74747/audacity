@@ -111,7 +111,7 @@ void DeviceToolBar::DeinitChildren()
    mHost          = NULL;
 }
 
-void DeviceToolBar::Populate()
+void DeviceToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    DeinitChildren();

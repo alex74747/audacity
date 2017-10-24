@@ -127,7 +127,7 @@ void SpectralSelectionBar::Create(wxWindow * parent)
    mHeight = wxWindowBase::GetSizer()->GetSize().GetHeight();
 }
 
-void SpectralSelectionBar::Populate()
+void SpectralSelectionBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    gPrefs->Read(preferencePath, &mbCenterAndWidth, true);

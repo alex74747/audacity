@@ -111,7 +111,7 @@ void MeterToolBar::ReCreateButtons()
    }
 }
 
-void MeterToolBar::Populate()
+void MeterToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    Add((mSizer = safenew wxGridBagSizer()), 1, wxEXPAND);

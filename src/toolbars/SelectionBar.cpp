@@ -182,7 +182,7 @@ void SelectionBar::AddVLine(  wxSizer * pSizer ){
                   0,  wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
 }
 
-void SelectionBar::Populate()
+void SelectionBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
 

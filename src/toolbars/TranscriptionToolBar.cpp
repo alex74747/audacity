@@ -197,7 +197,7 @@ void TranscriptionToolBar::MakeAlternateImages(
       theTheme.ImageSize( bmpRecoloredUpSmall ));
 }
 
-void TranscriptionToolBar::Populate()
+void TranscriptionToolBar::Populate(ShuttleGui &S)
 {
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
 // Very similar to code in ControlToolBar...

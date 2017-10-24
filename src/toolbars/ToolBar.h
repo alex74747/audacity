@@ -36,6 +36,7 @@ class wxWindow;
 
 class AButton;
 class Grabber;
+class ShuttleGui;
 class ToolDock;
 
 class ToolBarResizer;
@@ -224,7 +225,7 @@ public:
    /// Returns the width in pixels of the resizer element
    int GetResizeGrabberWidth();
 
-   virtual void Populate() = 0;
+   virtual void Populate(ShuttleGui &S) = 0;
    virtual void Repaint(wxDC *dc) = 0;
 
    void OnErase(wxEraseEvent & event);

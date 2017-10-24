@@ -68,7 +68,7 @@ class AUDACITY_DLL_API ControlToolBar final : public ToolBar {
    // Return the Audio IO token or -1 for failure
    void PlayDefault();
 
-   void Populate() override;
+   void Populate(ShuttleGui &S) override;
    void Repaint(wxDC *dc) override;
    void EnableDisableButtons() override;
 

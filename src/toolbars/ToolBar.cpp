@@ -54,6 +54,7 @@ in which buttons can be placed.
 #include "../widgets/AButton.h"
 #include "../widgets/Grabber.h"
 #include "../Prefs.h"
+#include "../ShuttleGui.h"
 
 ////////////////////////////////////////////////////////////
 /// ToolBarResizer
@@ -546,7 +547,10 @@ void ToolBar::ReCreateButtons()
       ms->Add((mHSizer = safenew wxBoxSizer(wxHORIZONTAL)), 1, wxEXPAND);
 
       // Go add all the rest of the gadgets
-      Populate();
+      {
+         ShuttleGui S{ this, eIsCreating };
+         Populate(S);
+      }
 
       // Add some space for the resize border
       if (IsResizable())

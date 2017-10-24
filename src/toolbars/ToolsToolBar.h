@@ -53,7 +53,7 @@ class ToolsToolBar final : public ToolBar {
    bool IsDown(int tool) const;
    int GetDownTool();
 
-   void Populate() override;
+   void Populate(ShuttleGui &S) override;
    void Repaint(wxDC * WXUNUSED(dc)) override {};
    void EnableDisableButtons() override {};
 

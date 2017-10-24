@@ -28,7 +28,7 @@ public:
    static TimeToolBar &Get(AudacityProject &project);
    static const TimeToolBar &Get(const AudacityProject &project);
    
-   void Populate() override;
+   void Populate(ShuttleGui& S) override;
    void Repaint(wxDC * WXUNUSED(dc)) override {};
    void EnableDisableButtons() override {};
    void UpdatePrefs() override;
