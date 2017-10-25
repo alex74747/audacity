@@ -1157,14 +1157,15 @@ void ShuttleGuiBase::EndInvisiblePanel()
 ///  - Use wxCENTRE and 1 for no expansion.
 /// @param PositionFlag  Typically wxEXPAND or wxALIGN_CENTER.
 /// @param iProp         Proportionality for resizing.
-void ShuttleGuiBase::StartHorizontalLay( int PositionFlags, int iProp)
+wxSizer *ShuttleGuiBase::StartHorizontalLay( int PositionFlags, int iProp)
 {
    if( mShuttleMode != eIsCreating )
-      return;
+      return {};
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxHORIZONTAL );
    // PRL:  wxALL has no effect because UpdateSizersCore ignores border
    UpdateSizersCore( false, PositionFlags | wxALL );
+   return mpSizer;
 }
 
 void ShuttleGuiBase::EndHorizontalLay()
@@ -1174,23 +1175,25 @@ void ShuttleGuiBase::EndHorizontalLay()
    PopSizer();
 }
 
-void ShuttleGuiBase::StartVerticalLay(int iProp)
+wxSizer *ShuttleGuiBase::StartVerticalLay(int iProp)
 {
    if( mShuttleMode != eIsCreating )
-      return;
+      return {};
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxVERTICAL );
    UpdateSizers();
+   return mpSizer;
 }
 
-void ShuttleGuiBase::StartVerticalLay(int PositionFlags, int iProp)
+wxSizer *ShuttleGuiBase::StartVerticalLay(int PositionFlags, int iProp)
 {
    if( mShuttleMode != eIsCreating )
-      return;
+      return {};
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxVERTICAL );
    // PRL:  wxALL has no effect because UpdateSizersCore ignores border
    UpdateSizersCore( false, PositionFlags | wxALL );
+   return mpSizer;
 }
 
 void ShuttleGuiBase::EndVerticalLay()
@@ -1200,14 +1203,15 @@ void ShuttleGuiBase::EndVerticalLay()
    PopSizer();
 }
 
-void ShuttleGuiBase::StartMultiColumn(
+wxSizer *ShuttleGuiBase::StartMultiColumn(
    int nCols, int PositionFlags, const wxSize &gap)
 {
    if( mShuttleMode != eIsCreating )
-      return;
+      return {};
    mpSubSizer = std::make_unique<wxFlexGridSizer>( nCols, gap );
    // PRL:  wxALL has no effect because UpdateSizersCore ignores border
    UpdateSizersCore( false, PositionFlags | wxALL );
+   return mpSizer;
 }
 
 void ShuttleGuiBase::EndMultiColumn()

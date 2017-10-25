@@ -345,24 +345,25 @@ public:
 
 //-- Start and end functions.  These are used for sizer, or other window containers
 //   and create the appropriate widget.
-   void StartHorizontalLay(int PositionFlags=wxALIGN_CENTRE, int iProp=1);
+//   non-NULL sizer is returned only when creating
+   wxSizer *StartHorizontalLay(int PositionFlags=wxALIGN_CENTRE, int iProp=1);
    void EndHorizontalLay();
-   void StartVerticalLay(int iProp=1);
-   void StartVerticalLay(int PositionFlags, int iProp);
+   wxSizer *StartVerticalLay(int iProp=1);
+   wxSizer *StartVerticalLay(int PositionFlags, int iProp);
 
    void EndVerticalLay();
    wxScrolledWindow * StartScroller(int iStyle=0);
    void EndScroller();
    wxPanel * StartPanel(int iStyle=0);
    void EndPanel();
-   void StartMultiColumn(
+   wxSizer *StartMultiColumn(
       int nCols, int PositionFlags=wxALIGN_LEFT, const wxSize &gap = { 0, 0 });
    void EndMultiColumn();
 
-   void StartTwoColumn() {StartMultiColumn(2);};
-   void EndTwoColumn() {EndMultiColumn();};
-   void StartThreeColumn(){StartMultiColumn(3);};
-   void EndThreeColumn(){EndMultiColumn();};
+   wxSizer *StartTwoColumn() { return StartMultiColumn(2); }
+   void EndTwoColumn() {EndMultiColumn();}
+   wxSizer *StartThreeColumn(){ return StartMultiColumn(3); }
+   void EndThreeColumn(){EndMultiColumn();}
 
    wxStaticBox * StartStatic( const TranslatableString & Str, int iProp=0 );
    void EndStatic();
