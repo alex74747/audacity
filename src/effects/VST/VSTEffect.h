@@ -221,8 +221,8 @@ private:
    void OnSave(wxCommandEvent & evt);
    void OnSettings(wxCommandEvent & evt);
 
-   void BuildPlain();
-   void BuildFancy();
+   void BuildPlain(ShuttleGui &S);
+   void BuildFancy(ShuttleGui &S);
    wxSizer *BuildProgramBar();
    void RefreshParameters(int skip = -1);
 
