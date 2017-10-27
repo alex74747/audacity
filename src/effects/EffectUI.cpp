@@ -11,7 +11,6 @@
 
 **********************************************************************/
 
-
 #include "EffectUI.h"
 
 #include "Effect.h"
@@ -44,6 +43,7 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../widgets/wxPanelWrapper.h"
+#include "../ShuttleGui.h"
 
 #include "../../images/EffectRack/EffectRack.h"
 
@@ -114,56 +114,56 @@ EffectRack::EffectRack( AudacityProject &project )
    mRemovePushed = CreateBitmap(remove_16x16_xpm, false, true);
    mRemoveRaised = CreateBitmap(remove_16x16_xpm, true, true);
 
+   ShuttleGui S{ this, eIsCreating };
+   S.Prop(1).StartPanel();
    {
-      auto bs = std::make_unique<wxBoxSizer>(wxVERTICAL);
-      mPanel = safenew wxPanelWrapper(this, wxID_ANY);
-      bs->Add(mPanel, 1, wxEXPAND);
-      SetSizer(bs.release());
-   }
-
-   {
-      auto bs = std::make_unique<wxBoxSizer>(wxVERTICAL);
+      S.StartHorizontalLay();
       {
-         auto hs = std::make_unique<wxBoxSizer>(wxHORIZONTAL);
-         wxASSERT(mPanel); // To justify safenew
-         hs->Add(safenew wxButton(mPanel, wxID_APPLY, _("&Apply")), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
-         hs->AddStretchSpacer();
-         mLatency = safenew wxStaticText(mPanel, wxID_ANY, _("Latency: 0"));
-         hs->Add(mLatency, 0, wxALIGN_CENTER);
-         hs->AddStretchSpacer();
-         hs->Add(safenew wxToggleButton(mPanel, wxID_CLEAR, _("&Bypass")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
-         bs->Add(hs.release(), 0, wxEXPAND);
+         S
+            .Position(wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL)
+            .AddWindow(safenew wxButton(S.GetParent(), wxID_APPLY, _("&Apply")));
+         S.AddSpace( 0, 0, 1 );
+         mLatency = safenew wxStaticText(S.GetParent(), wxID_ANY, _("Latency: 0"));
+         S
+            .Position(wxALIGN_CENTER)
+            .AddWindow(mLatency);
+         S.AddSpace( 0, 0, 1 );
+         S
+            .Position(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL)
+            .AddWindow(safenew wxToggleButton(S.GetParent(), wxID_CLEAR, _("&Bypass")));
       }
-      bs->Add(safenew wxStaticLine(mPanel, wxID_ANY), 0, wxEXPAND);
+      S.EndHorizontalLay();
 
+      S
+         .Position(wxEXPAND)
+         .AddWindow(safenew wxStaticLine(S.GetParent(), wxID_ANY));
+
+      mMainSizer = S.Prop(1).StartMultiColumn( 7 );
       {
-         auto uMainSizer = std::make_unique<wxFlexGridSizer>(7);
-         uMainSizer->AddGrowableCol(6);
-         uMainSizer->SetHGap(0);
-         uMainSizer->SetVGap(0);
-         bs->Add((mMainSizer = uMainSizer.release()), 1, wxEXPAND);
+         S.SetStretchyCol( 6 );
+         
+         wxString oldPath = gPrefs->GetPath();
+         gPrefs->SetPath(wxT("/EffectsRack"));
+         size_t cnt = gPrefs->GetNumberOfEntries();
+         gPrefs->SetPath(oldPath);
+
+         EffectManager & em = EffectManager::Get();
+         for (size_t i = 0; i < cnt; i++)
+         {
+            wxString slot;
+            gPrefs->Read(wxString::Format(wxT("/EffectsRack/Slot%02d"), i), &slot);
+
+            Effect *effect = em.GetEffect(slot.AfterFirst(wxT(',')));
+            if (effect)
+            {
+               Add(//S,
+                  effect, slot.BeforeFirst(wxT(',')) == wxT("1"), true);
+            }
+         }
       }
-
-      mPanel->SetSizer(bs.release());
+      S.EndMultiColumn();
    }
-
-   wxString oldPath = gPrefs->GetPath();
-   gPrefs->SetPath(wxT("/EffectsRack"));
-   size_t cnt = gPrefs->GetNumberOfEntries();
-   gPrefs->SetPath(oldPath);
-
-   EffectManager & em = EffectManager::Get();
-   for (size_t i = 0; i < cnt; i++)
-   {
-      wxString slot;
-      gPrefs->Read(wxString::Format(wxT("/EffectsRack/Slot%02d"), i), &slot);
-
-      Effect *effect = em.GetEffect(slot.AfterFirst(wxT(',')));
-      if (effect)
-      {
-         Add(effect, slot.BeforeFirst(wxT(',')) == wxT("1"), true);
-      }
-   }
+   S.EndPanel();
 
    Fit();
 }
@@ -185,7 +185,8 @@ EffectRack::~EffectRack()
    }
 }
 
-void EffectRack::Add(Effect *effect, bool active, bool favorite)
+void EffectRack::Add( // ShuttleGui &S,
+   Effect *effect, bool active, bool favorite)
 {
    if (mEffects.end() != std::find(mEffects.begin(), mEffects.end(), effect))
    {

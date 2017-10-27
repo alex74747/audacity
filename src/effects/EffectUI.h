@@ -39,7 +39,9 @@ public:
    EffectRack( AudacityProject &project );
    virtual ~EffectRack();
 
-   void Add(Effect *effect, bool active = false, bool favorite = false);
+   void Add(
+      // ShuttleGui &S,
+      Effect *effect, bool active = false, bool favorite = false);
 
    static EffectRack &Get( AudacityProject &project );
 
@@ -91,7 +93,7 @@ private:
    wxTimer mTimer;
 
    wxPanel *mPanel;
-   wxFlexGridSizer *mMainSizer;
+   wxSizer *mMainSizer;
 
    EffectArray mEffects;
    EffectArray mActive;
