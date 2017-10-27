@@ -426,7 +426,8 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
          {
             S.StartHorizontalLay(wxALIGN_LEFT, 0);
             {
-               S.AddPrompt(XXO("Select effects, click the Enable or Disable button, then click OK."));
+               S
+                  .AddPrompt(XXO("Select effects, click the Enable or Disable button, then click OK."));
             }
             S.EndHorizontalLay();
 
@@ -459,7 +460,9 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
                rb->SetAccessible(safenew WindowAccessible(rb));
 #endif
 
-               rb = S.Id(ID_ShowDisabled)
+               rb =
+               S
+                  .Id(ID_ShowDisabled)
                   /* i18n-hint: Radio button to show just the currently disabled effects */
                   .Name(XO("Show disabled"))
                   /* i18n-hint: Radio button to show just the currently disabled effects */
@@ -469,7 +472,9 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
                rb->SetAccessible(safenew WindowAccessible(rb));
 #endif
 
-               rb = S.Id(ID_ShowEnabled)
+               rb =
+               S
+                  .Id(ID_ShowEnabled)
                   /* i18n-hint: Radio button to show just the currently enabled effects */
                   .Name(XO("Show enabled"))
                   /* i18n-hint: Radio button to show just the currently enabled effects */
@@ -481,7 +486,9 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
                }
                S.EndRadioButtonGroup();
 
-               rb = S.Id(ID_ShowNew)
+               rb =
+               S
+                  .Id(ID_ShowNew)
                   /* i18n-hint: Radio button to show just the newly discovered effects */
                   .Name(XO("Show new"))
                   /* i18n-hint: Radio button to show just the newly discovered effects */
@@ -495,7 +502,9 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
          }
          S.EndHorizontalLay();
 
-         mEffects = S.Id(ID_List)
+         mEffects =
+         S
+            .Id(ID_List)
             .Style(wxSUNKEN_BORDER | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES )
             .ConnectRoot(wxEVT_KEY_DOWN,
                       &PluginRegistrationDialog::OnListChar)
@@ -506,8 +515,13 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
 
          S.StartHorizontalLay(wxALIGN_LEFT | wxEXPAND, 0);
          {
-            S.Id(ID_SelectAll).AddButton(XXO("&Select All"));
-            S.Id(ID_ClearAll).AddButton(XXO("C&lear All"));
+            S
+               .Id(ID_SelectAll)
+               .AddButton(XXO("&Select All"));
+
+            S
+               .Id(ID_ClearAll)
+               .AddButton(XXO("C&lear All"));
 
             S.StartHorizontalLay(wxALIGN_CENTER);
             {
@@ -515,15 +529,21 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
             }
             S.EndHorizontalLay();
 
-            S.Id(ID_Enable).AddButton(XXO("&Enable"));
-            S.Id(ID_Disable).AddButton(XXO("&Disable"));
+            S
+               .Id(ID_Enable)
+               .AddButton(XXO("&Enable"));
+
+            S
+               .Id(ID_Disable)
+               .AddButton(XXO("&Disable"));
          }
          S.EndHorizontalLay();
       }
 //      S.EndStatic();
       S.EndVerticalLay();
 
-      S.AddStandardButtons(eOkButton | eCancelButton);
+      S
+         .AddStandardButtons(eOkButton | eCancelButton);
    }
    S.EndVerticalLay();
 

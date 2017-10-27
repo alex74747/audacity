@@ -67,11 +67,22 @@ void SetClipCommand::PopulateOrExchange(ShuttleGui & S)
 
    S.StartMultiColumn(3, wxALIGN_CENTER);
    {
-      S.Optional( bHasContainsTime).TieNumericTextBox(  XXO("At:"),            mContainsTime );
-      S.Optional( bHasColour      ).TieChoice(          XXO("Color:"),         mColour,
-         Msgids( kColourStrings, nColours ) );
-      S.Optional( bHasT0          ).TieNumericTextBox(  XXO("Start:"),         mT0 );
-      S.Optional( bHasName        ).TieTextBox(         XXO("Name:"),          mName );
+      S
+         .Optional( bHasContainsTime)
+         .TieNumericTextBox(  XXO("At:"),            mContainsTime );
+
+      S
+         .Optional( bHasColour      )
+         .TieChoice(          XXO("Color:"),         mColour,
+            Msgids( kColourStrings, nColours ) );
+
+      S
+         .Optional( bHasT0          )
+         .TieNumericTextBox(  XXO("Start:"),         mT0 );
+
+      S
+         .Optional( bHasName        )
+         .TieTextBox(         XXO("Name:"),          mName );
    }
    S.EndMultiColumn();
 }

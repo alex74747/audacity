@@ -182,11 +182,8 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       for ( const auto &entry : GetModuleData() )
       {
-         S.TieCheckBox(
-            entry.prompt,
-            {entry.setting,
-             true}
-         );
+         S
+            .TieCheckBox( entry.prompt, {entry.setting, true} );
       }
    }
    S.EndStatic();
@@ -195,11 +192,13 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       S.StartMultiColumn(2);
       {
-         wxChoice *c = S
+         wxChoice *c =
+         S
             .MinSize()
             .TieChoice( XXO("S&ort or Group:"), EffectsGroupBy);
 
-         S.TieIntegerTextBox(XXO("&Maximum effects per group (0 to disable):"),
+         S
+            .TieIntegerTextBox(XXO("&Maximum effects per group (0 to disable):"),
                              {L"/Effects/MaxPerGroup",
 #if defined(__WXGTK__)
                               15
@@ -216,12 +215,13 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
 #if 1//ndef EXPERIMENTAL_EFFECT_MANAGEMENT
    S.StartStatic(XO("Plugin Options"));
    {
-      S.TieCheckBox(XXO("Check for updated plugins when Audacity starts"),
-                     {L"/Plugins/CheckForUpdates",
-                     true});
-      S.TieCheckBox(XXO("Rescan plugins next time Audacity is started"),
-                     {L"/Plugins/Rescan",
-                     false});
+      S
+         .TieCheckBox(XXO("Check for updated plugins when Audacity starts"),
+            {L"/Plugins/CheckForUpdates", true});
+
+      S
+         .TieCheckBox(XXO("Rescan plugins next time Audacity is started"),
+            {L"/Plugins/Rescan", false});
    }
    S.EndStatic();
 #endif
@@ -229,9 +229,8 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
    S.StartStatic(XO("Instruction Set"));
    {
-      S.TieCheckBox(XXO("&Use SSE/SSE2/.../AVX"),
-                    {L"/SSE/GUI",
-                    true});
+      S
+         .TieCheckBox(XXO("&Use SSE/SSE2/.../AVX"), {L"/SSE/GUI", true});
    }
    S.EndStatic();
 #endif

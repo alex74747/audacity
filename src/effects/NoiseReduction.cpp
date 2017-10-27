@@ -1238,21 +1238,23 @@ struct ControlInfo {
 
    void CreateControls(int id, ShuttleGui &S) const
    {
-      wxTextCtrl *const text = S.Id(id + 1)
+      wxTextCtrl *const text =
+      S
+         .Id(id + 1)
          .Validator<FloatingPointValidator<double>>(
             formatAsInt ? 0 : 2,
             nullptr,
             NumValidatorStyle::DEFAULT,
-            valueMin, valueMax
-         )
+            valueMin, valueMax )
          .AddTextBox(textBoxCaption, L"", 0);
 
       wxSlider *const slider =
-         S.Id(id)
-            .Name( sliderName )
-            .Style(wxSL_HORIZONTAL)
-            .MinSize( { 150, -1 } )
-            .AddSlider( {}, 0, sliderMax);
+      S
+         .Id(id)
+         .Name( sliderName )
+         .Style(wxSL_HORIZONTAL)
+         .MinSize( { 150, -1 } )
+         .AddSlider( {}, 0, sliderMax);
    }
 
    MemberPointer field;
@@ -1513,16 +1515,21 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
 {
    S.StartStatic(XO("Step 1"));
    {
-      S.AddVariableText(XO(
+      S
+         .AddVariableText(XO(
 "Select a few seconds of just noise so Audacity knows what to filter out,\nthen click Get Noise Profile:"));
+
       //m_pButton_GetProfile =
-      S.Id(ID_BUTTON_GETPROFILE).AddButton(XXO("&Get Noise Profile"));
+      S
+         .Id(ID_BUTTON_GETPROFILE)
+         .AddButton(XXO("&Get Noise Profile"));
    }
    S.EndStatic();
 
    S.StartStatic(XO("Step 2"));
    {
-      S.AddVariableText(XO(
+      S
+         .AddVariableText(XO(
 "Select all of the audio you want filtered, choose how much noise you want\nfiltered out, and then click 'OK' to reduce noise.\n"));
 
       S.StartMultiColumn(3, wxEXPAND);

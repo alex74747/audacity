@@ -139,48 +139,58 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
    {
       S.StartMultiColumn(2);
       {
-         S.Id(HostID);
-         /* i18n-hint: (noun) */
-         mHost = S.TieChoice( XXO("&Host:"),
-            {
-               L"/MidiIO/Host",
-               { ByColumns, mHostNames, mHostLabels }
-            }
-         );
+         mHost =
+         S
+            .Id(HostID)
+            /* i18n-hint: (noun) */
+            .TieChoice( XXO("&Host:"),
+               {
+                  L"/MidiIO/Host",
+                  { ByColumns, mHostNames, mHostLabels }
+               } );
 
-         S.AddPrompt(XXO("Using: PortMidi"));
+         S
+            .AddPrompt(XXO("Using: PortMidi"));
       }
       S.EndMultiColumn();
    }
    S.EndStatic();
 
-   S.StartStatic(XO("Playback"));
+   S
+      .StartStatic(XO("Playback"));
    {
       S.StartMultiColumn(2);
       {
-         S.Id(PlayID);
-         mPlay = S.AddChoice(XXO("&Device:"),
+         mPlay =
+         S
+            .Id(PlayID)
+            .AddChoice(XXO("&Device:"),
                              {} );
-         mLatency = S.TieIntegerTextBox(XXO("MIDI Synth L&atency (ms):"),
-                                        MIDISynthLatency_ms, 3);
+         mLatency =
+         S
+            .TieIntegerTextBox(XXO("MIDI Synth L&atency (ms):"),
+               MIDISynthLatency_ms, 3);
       }
       S.EndMultiColumn();
    }
    S.EndStatic();
+
 #ifdef EXPERIMENTAL_MIDI_IN
-   S.StartStatic(XO("Recording"));
+   S
+      .StartStatic(XO("Recording"));
    {
       S.StartMultiColumn(2);
       {
-         S.Id(RecordID);
-         mRecord = S.AddChoice(XO("De&vice:"),
-                               {} );
+         mRecord
+         S
+            .Id(RecordID);
+            .AddChoice(XO("De&vice:"), {} );
 
-         S.Id(ChannelsID);
          /*
-         mChannels = S.AddChoice(XO("&Channels:"),
-                                 wxEmptyString,
-                                 {} );
+         mChannels =
+         S
+            .Id(ChannelsID)
+            .AddChoice( XO("&Channels:"), wxEmptyString, {} );
          */
       }
       S.EndMultiColumn();

@@ -123,7 +123,8 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
    S.SetBorder(2);
    S.StartScroller();
 
-   S.StartStatic(XO("Info"));
+   S
+      .StartStatic(XO("Info"));
    {
       S.AddFixedText(
          XO(
@@ -137,31 +138,39 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
          );
 #endif
 
-      S.AddFixedText(
-         XO(
-"Saving and loading individual theme files uses a separate file for each image, but is\notherwise the same idea.")
-         );
+      S
+         .AddFixedText( XO(
+"Saving and loading individual theme files uses a separate file for each image, but is\notherwise the same idea.") );
    }
    S.EndStatic();
 
    /* i18n-hint: && in here is an escape character to get a single & on screen,
     * so keep it as is */
-   S.StartStatic(		XO("Theme Cache - Images && Color"));
+   S
+      .StartStatic( XO("Theme Cache - Images && Color") );
    {
       S.StartHorizontalLay(wxALIGN_LEFT);
       {
-         S.Id(idSaveThemeCache).AddButton(XXO("Save Theme Cache"));
-         S.Id(idLoadThemeCache).AddButton(XXO("Load Theme Cache"));
+         S
+            .Id(idSaveThemeCache)
+            .AddButton(XXO("Save Theme Cache"));
+
+         S
+            .Id(idLoadThemeCache)
+            .AddButton(XXO("Load Theme Cache"));
 
          // This next button is only provided in Debug mode.
          // It is for developers who are compiling Audacity themselves
          // and who wish to generate NEW *ThemeAsCeeCode.h and compile them in.
 #ifdef _DEBUG
-         S.Id(idSaveThemeAsCode).AddButton(
-            VerbatimLabel("Output Sourcery"));
+         S
+            .Id(idSaveThemeAsCode)
+            .AddButton( VerbatimLabel("Output Sourcery") );
 #endif
 
-         S.Id(idReadThemeInternal).AddButton(XXO("&Defaults"));
+         S
+            .Id(idReadThemeInternal)
+            .AddButton(XXO("&Defaults"));
       }
       S.EndHorizontalLay();
    }
@@ -174,12 +183,18 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
    // To reduce that risk, we use a separate box to separate them off.
    // And choose text on the buttons that is shorter, making the
    // buttons smaller and less tempting to click.
-   S.StartStatic( XO("Individual Theme Files"),1);
+   S
+      .StartStatic( XO("Individual Theme Files"),1);
    {
       S.StartHorizontalLay(wxALIGN_LEFT);
       {
-         S.Id(idSaveThemeComponents).AddButton( XXO("Save Files"));
-         S.Id(idLoadThemeComponents).AddButton( XXO("Load Files"));
+         S
+            .Id(idSaveThemeComponents)
+            .AddButton( XXO("Save Files"));
+
+         S
+            .Id(idLoadThemeComponents)
+            .AddButton( XXO("Load Files"));
       }
       S.EndHorizontalLay();
    }
