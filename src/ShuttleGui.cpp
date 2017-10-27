@@ -1200,11 +1200,12 @@ void ShuttleGuiBase::EndVerticalLay()
    PopSizer();
 }
 
-void ShuttleGuiBase::StartMultiColumn(int nCols, int PositionFlags)
+void ShuttleGuiBase::StartMultiColumn(
+   int nCols, int PositionFlags, const wxSize &gap)
 {
    if( mShuttleMode != eIsCreating )
       return;
-   mpSubSizer = std::make_unique<wxFlexGridSizer>( nCols );
+   mpSubSizer = std::make_unique<wxFlexGridSizer>( nCols, gap );
    // PRL:  wxALL has no effect because UpdateSizersCore ignores border
    UpdateSizersCore( false, PositionFlags | wxALL );
 }

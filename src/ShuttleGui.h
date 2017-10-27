@@ -355,7 +355,8 @@ public:
    void EndScroller();
    wxPanel * StartPanel(int iStyle=0);
    void EndPanel();
-   void StartMultiColumn(int nCols, int PositionFlags=wxALIGN_LEFT);
+   void StartMultiColumn(
+      int nCols, int PositionFlags=wxALIGN_LEFT, const wxSize &gap = { 0, 0 });
    void EndMultiColumn();
 
    void StartTwoColumn() {StartMultiColumn(2);};
