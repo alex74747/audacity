@@ -57,6 +57,7 @@
 #include "../ImageManipulation.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../ShuttleGui.h"
 #include "../widgets/AButton.h"
 #include "../widgets/ASlider.h"
 #include "../widgets/MeterPanelBase.h"
@@ -104,26 +105,25 @@ ToolFrame::ToolFrame
       SetMinSize(bar->GetDockedSize());
    }
 
+   ShuttleGui S{ this, eIsCreating };
+   S.SetBorder( border );
+   S.StartHorizontalLay();
    {
-      // We use a sizer to maintain proper spacing
-      auto s = std::make_unique<wxBoxSizer>(wxHORIZONTAL);
-
-      // Add the bar to the sizer
-      s->Add(bar, 1, wxEXPAND | wxALL, border);
+      S.Prop( 1 )
+         .Position(wxEXPAND | wxALL)
+         .AddWindow( bar );
 
       // Add space for the resize grabber
       if (bar->IsResizable())
       {
-         s->Add(sizerW, 1);
+         S.AddSpace(sizerW, 1);
          width += sizerW;
       }
 
       SetSize(width + 2 * ToolBarFloatMargin,
               bar->GetDockedSize().y + 2 * ToolBarFloatMargin);
-
-      // Attach the sizer and resize the window to fit
-      SetSizer(s.release());
    }
+   S.EndHorizontalLay();
 
    Layout();
 
