@@ -370,6 +370,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                   .Enable( firstFileEnabler )
                   .AddVariableText(XO("First file name:"), false);
 
+               // S.Prop(1); // PRL: was here, but had no effect
                S
                   .Id(FirstFileNameID)
                   .Prop(1)
