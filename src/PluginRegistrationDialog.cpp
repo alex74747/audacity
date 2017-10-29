@@ -397,6 +397,7 @@ void PluginRegistrationDialog::Populate()
 /// Defines the dialog and does data exchange with it.
 void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
 {
+   using namespace DialogDefinition;
    S.StartVerticalLay(true);
    {
       /*i18n-hint: The dialog shows a list of plugins with check-boxes
@@ -421,66 +422,48 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
 
             S.StartHorizontalLay(wxALIGN_NOT | wxALIGN_LEFT, 0);
             {
-               wxRadioButton *rb;
-
                S
                   /* i18n-hint: This is before radio buttons selecting which effects to show */
                   .AddPrompt(XXO("Show:"));
 
                S
+#if wxUSE_ACCESSIBILITY
+                  // so that name can be set on a standard control
+                  .Accessible()
+#endif
                   .Target( mFilter )
                   .Action( [this]{ RegenerateEffectsList(); } )
-                  .StartRadioButtonGroup();
+                 .StartRadioButtonGroup();
                {
-               rb =
                S
                   .Id(ID_ShowAll)
                   /* i18n-hint: Radio button to show all effects */
                   .Text(XO("Show all"))
                   /* i18n-hint: Radio button to show all effects */
                   .AddRadioButton(XXO("&All"));
-#if wxUSE_ACCESSIBILITY
-               // so that name can be set on a standard control
-               rb->SetAccessible(safenew WindowAccessible(rb));
-#endif
 
-               rb =
                S
                   .Id(ID_ShowDisabled)
                   /* i18n-hint: Radio button to show just the currently disabled effects */
                   .Text(XO("Show disabled"))
                   /* i18n-hint: Radio button to show just the currently disabled effects */
                   .AddRadioButton(XXO("D&isabled"));
-#if wxUSE_ACCESSIBILITY
-               // so that name can be set on a standard control
-               rb->SetAccessible(safenew WindowAccessible(rb));
-#endif
 
-               rb =
                S
                   .Id(ID_ShowEnabled)
                   /* i18n-hint: Radio button to show just the currently enabled effects */
                   .Text(XO("Show enabled"))
                   /* i18n-hint: Radio button to show just the currently enabled effects */
                   .AddRadioButton(XXO("E&nabled"));
-#if wxUSE_ACCESSIBILITY
-               // so that name can be set on a standard control
-               rb->SetAccessible(safenew WindowAccessible(rb));
-#endif
                }
                S.EndRadioButtonGroup();
 
-               rb =
                S
                   .Id(ID_ShowNew)
                   /* i18n-hint: Radio button to show just the newly discovered effects */
                   .Text(XO("Show new"))
                   /* i18n-hint: Radio button to show just the newly discovered effects */
                   .AddRadioButton(XXO("Ne&w"));
-#if wxUSE_ACCESSIBILITY
-               // so that name can be set on a standard control
-               rb->SetAccessible(safenew WindowAccessible(rb));
-#endif
             }
             S.EndHorizontalLay();
          }
@@ -492,10 +475,10 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
             .Style(wxSUNKEN_BORDER | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES )
             .ConnectRoot(wxEVT_KEY_DOWN,
                       &PluginRegistrationDialog::OnListChar)
-            .AddListControlReportMode({ XO("Name"), XO("State"), XO("Path") });
 #if wxUSE_ACCESSIBILITY
-         mEffects->SetAccessible(mAx = safenew CheckListAx(mEffects));
+            .Accessible( MakeAccessibleFactory<CheckListAx, wxListCtrl>() )
 #endif
+            .AddListControlReportMode({ XO("Name"), XO("State"), XO("Path") });
 
          S.StartHorizontalLay(wxALIGN_LEFT | wxEXPAND, 0);
          {
@@ -623,7 +606,7 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
       mEffects->SetFocus();
       mEffects->SetItemState(0, wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED, wxLIST_STATE_FOCUSED | wxLIST_STATE_SELECTED);
 #if wxUSE_ACCESSIBILITY
-      mAx->SetSelected(0);
+      static_cast<CheckListAx*>(mEffects->GetAccessible())->SetSelected(0);
 #endif
    }
 
@@ -683,7 +666,7 @@ void PluginRegistrationDialog::RegenerateEffectsList()
 //      mEffects->SetFocus();
       mEffects->SetItemState(0, wxLIST_STATE_FOCUSED|wxLIST_STATE_SELECTED, wxLIST_STATE_FOCUSED|wxLIST_STATE_SELECTED);
 #if wxUSE_ACCESSIBILITY
-      mAx->SetSelected(0, false);
+      static_cast<CheckListAx*>(mEffects->GetAccessible())->SetSelected(0, false);
 #endif
    }
 }
@@ -731,7 +714,7 @@ void PluginRegistrationDialog::SetState(int i, bool toggle, bool state)
    {
       mEffects->SetItem(i, COL_State, mStates[item->state]);
 #if wxUSE_ACCESSIBILITY
-      mAx->SetSelected(i);
+      static_cast<CheckListAx*>(mEffects->GetAccessible())->SetSelected(i);
 #endif
    }
 }

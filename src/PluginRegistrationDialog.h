@@ -76,9 +76,6 @@ private:
    PluginPath mLongestPath;
 
    wxListCtrl *mEffects;
-#if wxUSE_ACCESSIBILITY
-   CheckListAx *mAx;
-#endif
 
    DECLARE_EVENT_TABLE()
 };

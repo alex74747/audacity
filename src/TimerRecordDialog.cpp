@@ -715,6 +715,8 @@ wxTextCtrlWrapper * TimerRecordDialog::NewPathControl(
 
 void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
 {
+   using namespace DialogDefinition;
+
    const auto saveEnabler = [this]{ return AutoSave.Read(); };
    const auto exportEnabler = [this]{ return AutoExport.Read(); };
    const auto eitherEnabler = [saveEnabler, exportEnabler]{ return
@@ -760,15 +762,15 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
             */
             .StartStatic(XO("Start Date and Time"), true);
          {
-            m_pDatePickerCtrl_Start = S.Id(ID_DATEPICKER_START)
-               .Text(XO("Start Date"))
-               .Window( pickerCtrlFactory( m_DateTime_Start, wxDateTime::Today() ) );
-#if wxUSE_ACCESSIBILITY
-            m_pDatePickerCtrl_Start->SetAccessible( safenew DatePickerCtrlAx(m_pDatePickerCtrl_Start));
-#endif
+            m_pDatePickerCtrl_Start =
             S
+               .Id(ID_DATEPICKER_START)
                .Text(XO("Start Date"))
-               .AddWindow(m_pDatePickerCtrl_Start);
+#if wxUSE_ACCESSIBILITY
+               .Accessible(
+                  MakeAccessibleFactory<DatePickerCtrlAx, wxDatePickerCtrl>() )
+#endif
+               .Window( pickerCtrlFactory( m_DateTime_Start, wxDateTime::Today() ) );
 
             m_pTimeTextCtrl_Start =
             S
@@ -786,15 +788,15 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
          S
             .StartStatic(XO("End Date and Time"), true);
          {
-            m_pDatePickerCtrl_End = S.Id(ID_DATEPICKER_END)
-               .Text(XO("End Date"))
-               .Window( pickerCtrlFactory( m_DateTime_End, m_DateTime_Start ) );
-#if wxUSE_ACCESSIBILITY
-            m_pDatePickerCtrl_End->SetAccessible( safenew DatePickerCtrlAx(m_pDatePickerCtrl_End));
-#endif
+            m_pDatePickerCtrl_End =
             S
+               .Id(ID_DATEPICKER_END)
                .Text(XO("End Date"))
-               .AddWindow(m_pDatePickerCtrl_End);
+#if wxUSE_ACCESSIBILITY
+               .Accessible(
+                  MakeAccessibleFactory<DatePickerCtrlAx, wxDatePickerCtrl>() )
+#endif
+               .Window( pickerCtrlFactory( m_DateTime_End, m_DateTime_Start ) );
 
             m_pTimeTextCtrl_End =
             S

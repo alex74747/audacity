@@ -25,6 +25,7 @@
 #include <wx/valgen.h> // for wxGenericValidator
 #include <wx/valtext.h> // for wxTextValidator
 #include <wx/listbase.h> // for wxLIST_FORMAT_LEFT
+#include <wx/setup.h> // for wxUSE_* macros
 #include <wx/weakref.h>
 
 #include "Prefs.h"
@@ -137,6 +138,11 @@ enum StandardButtonID : unsigned
 };
 
 #include "Prefs.h"
+
+#if wxUSE_ACCESSIBILITY
+class wxAccessible;
+class WindowAccessible;
+#endif
 
 namespace DialogDefinition {
   
@@ -790,6 +796,19 @@ private:
    Options mOptions{};
 };
 
+#if wxUSE_ACCESSIBILITY
+using AccessibleFactory = std::function< wxAccessible* ( wxWindow* ) > ;
+template<typename Accessible, typename Window = wxWindow, typename... Args>
+AccessibleFactory MakeAccessibleFactory( Args... args )
+{
+   return [args...]( wxWindow *pWind ) {
+      return safenew Accessible{
+         static_cast<Window*>(pWind), args...
+      };
+   };
+}
+#endif
+
 struct BaseItem
 {
    using ActionType = std::function< void() >;
@@ -812,6 +831,10 @@ struct BaseItem
 
    Test mEnableTest;
    Test mShowTest;
+
+#if wxUSE_ACCESSIBILITY
+   AccessibleFactory mAccessibleFactory;
+#endif
 
    ControlText mText;
    ControlTextFunction mComputedText;
@@ -912,6 +935,15 @@ struct TypedItem : BaseItem {
       mComputedText = fn;
       return std::move( *this );
    }
+
+#if wxUSE_ACCESSIBILITY
+   TypedItem&& Accessible(
+      const DialogDefinition::AccessibleFactory &factory ) &&
+   {
+      mAccessibleFactory = factory;
+      return std::move( *this );
+   }
+#endif
 
    TypedItem&& Style( long style ) &&
    {
@@ -1555,6 +1587,18 @@ public:
       GetItem().Action( action, type );
       return *this;
    }
+
+#if wxUSE_ACCESSIBILITY
+   // Takes a factory function, calls it only if creating
+   TypedShuttleGui & Accessible(
+      const DialogDefinition::AccessibleFactory &factory
+         = DialogDefinition::MakeAccessibleFactory<WindowAccessible>()
+   )
+   {
+      GetItem().Accessible( factory );
+      return *this;
+   }
+#endif
 
    // Prop() sets the proportion value, defined as in wxSizer::Add().
    TypedShuttleGui & Prop( int iProp ){ ShuttleGuiBase::Prop(iProp); return *this;}; // Has to be here too, to return a TypedShuttleGui and not a ShuttleGuiBase.
