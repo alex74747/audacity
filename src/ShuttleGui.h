@@ -360,6 +360,9 @@ protected:
    wxWindow * mpWind;
    wxMenuBar * mpMenuBar;
    wxMenu * mpMenu;
+
+protected:
+   std::function< void(wxWindow*) > mValidatorSetter;
 };
 
 // A rarely used helper function that sets a pointer
@@ -414,6 +417,24 @@ public:
 public:
    ShuttleGui & Optional( bool & bVar );
    ShuttleGui & Id(int id );
+
+   // Factory may be a lambda that returns a value of some subclass of
+   // wxValidator
+   template<typename Factory>
+   ShuttleGui & Validator( const Factory &f )
+   {
+      if ( GetMode() == eIsCreating )
+         // We must wrap f in another lambda to allow the return type of f to
+         // vary, and avoid the "slicing" problem.
+         mValidatorSetter = [f](wxWindow *p){ p->SetValidator(f()); };
+      return *this;
+   }
+
+   // This allows further abbreviation of the previous:
+   template<typename V, typename... Args>
+   ShuttleGui & Validator( Args... args )
+   { return Validator( [args...]{ return V( args... ); } ); }
+
    // Prop() sets the proportion value, defined as in wxSizer::Add().
    ShuttleGui & Prop( int iProp ){ ShuttleGuiBase::Prop(iProp); return *this;}; // Has to be here too, to return a ShuttleGui and not a ShuttleGuiBase.
    GuiWaveTrack * AddGuiWaveTrack( const wxString & Name);

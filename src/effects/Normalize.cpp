@@ -349,6 +349,8 @@ bool EffectNormalize::Process()
 
 void EffectNormalize::PopulateOrExchange(ShuttleGui & S)
 {
+   using Range = ValidatorRange<double>;
+
    mCreating = true;
 
    S.StartVerticalLay(0);
@@ -357,9 +359,9 @@ void EffectNormalize::PopulateOrExchange(ShuttleGui & S)
       {
          S.StartVerticalLay(false);
          {
-            mDCCheckBox = S.AddCheckBox(_("Remove DC offset (center on 0.0 vertically)"),
+            mDCCheckBox = S.Validator<wxGenericValidator>(&mDC)
+               .AddCheckBox(_("Remove DC offset (center on 0.0 vertically)"),
                                         mDC ? wxT("true") : wxT("false"));
-            mDCCheckBox->SetValidator(wxGenericValidator(&mDC));
 
             S.StartHorizontalLay(wxALIGN_LEFT, false);
             {
@@ -374,32 +376,36 @@ void EffectNormalize::PopulateOrExchange(ShuttleGui & S)
                wxString longerPrompt = prompt1 + "   ";
 #endif
                // Now make the checkbox.
-               mGainCheckBox = S.AddCheckBox(longerPrompt,
+               mGainCheckBox = S.Validator<wxGenericValidator>(&mGain)
+                  .AddCheckBox(longerPrompt,
                                              mGain ? wxT("true") : wxT("false"));
-               mGainCheckBox->SetValidator(wxGenericValidator(&mGain));
                mGainCheckBox->SetMinSize( mGainCheckBox->GetSize());
 
-               FloatingPointValidator<double> vldLevel(2, &mPeakLevel,
-                                                       NumValidatorStyle::ONE_TRAILING_ZERO);
-               vldLevel.SetRange( MIN_PeakLevel, MAX_PeakLevel);
-
-               mLevelTextCtrl = S.AddTextBox( {}, wxT(""), 10);
+               mLevelTextCtrl = S
+                  .Validator<FloatingPointValidator<double>>(
+                     2,
+                     &mPeakLevel,
+                     Range{ MIN_PeakLevel, MAX_PeakLevel },
+                     NumValidatorStyle::ONE_TRAILING_ZERO
+                  )
+                  .AddTextBox( {}, wxT(""), 10);
                mLevelTextCtrl->SetName( _("Peak amplitude dB"));
-               mLevelTextCtrl->SetValidator(vldLevel);
                mLeveldB = S.AddVariableText(_("dB"), false,
                                             wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
                mWarning = S.AddVariableText( {}, false,
                                             wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
             }
             S.EndHorizontalLay();
+
 #ifdef EXPERIMENTAL_R128_NORM
-            mUseLoudnessCheckBox = S.AddCheckBox(_("Use loudness instead of peak amplitude"),
-                                                 mUseLoudness ? wxT("true") : wxT("false"));
-            mUseLoudnessCheckBox->SetValidator(wxGenericValidator(&mGUIUseLoudness));
+            mUseLoudnessCheckBox = S.Validator<wxGenericValidator>(&mGUIUseLoudness)
+               .AddCheckBox(_("Use loudness instead of peak amplitude"),
+                     mUseLoudness ? wxT("true") : wxT("false"));
 #endif
-            mStereoIndCheckBox = S.AddCheckBox(_("Normalize stereo channels independently"),
-                                               mStereoInd ? wxT("true") : wxT("false"));
-            mStereoIndCheckBox->SetValidator(wxGenericValidator(&mStereoInd));
+         
+            mStereoIndCheckBox = S.Validator<wxGenericValidator>(&mStereoInd)
+               .AddCheckBox(_("Normalize stereo channels independently"),
+                           mStereoInd ? wxT("true") : wxT("false"));
          }
          S.EndVerticalLay();
       }

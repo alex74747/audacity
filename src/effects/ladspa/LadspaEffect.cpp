@@ -1347,6 +1347,7 @@ bool LadspaEffect::PopulateUI(wxWindow *parent)
 
             if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
             {
+               using Range = ValidatorRange<int>;
                fieldText.Printf(wxT("%d"), (int)(mInputControls[p] + 0.5));
 
                IntegerValidator<float> vld(&mInputControls[p]);
@@ -1356,6 +1357,7 @@ bool LadspaEffect::PopulateUI(wxWindow *parent)
             }
             else
             {
+               using Range = ValidatorRange<float>;
                fieldText = Internat::ToDisplayString(mInputControls[p]);
 
                // > 12 decimal places can cause rounding errors in display.

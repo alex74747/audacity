@@ -653,20 +653,25 @@ void VampEffect::PopulateOrExchange(ShuttleGui & S)
                }
                else
                {
+                  using Range = ValidatorRange<float>;
+
                   mValues[p] = value;
-                  FloatingPointValidator<float> vld(6, &mValues[p]);
-                  vld.SetRange(mParameters[p].minValue, mParameters[p].maxValue);
 
                   float range = mParameters[p].maxValue - mParameters[p].minValue;
-                  auto style = range < 10 ? NumValidatorStyle::THREE_TRAILING_ZEROES :
-                              range < 100 ? NumValidatorStyle::TWO_TRAILING_ZEROES :
-                              NumValidatorStyle::ONE_TRAILING_ZERO;
-                  vld.SetStyle(style);
 
                   S.Id(ID_Texts + p);
-                  mFields[p] = S.AddTextBox( {}, wxT(""), 12);
+                  mFields[p] = S
+                     .Validator<FloatingPointValidator<float>>(
+                        6, &mValues[p],
+                        Range{ mParameters[p].minValue, mParameters[p].maxValue },
+                        (range < 10
+                           ? NumValidatorStyle::THREE_TRAILING_ZEROES
+                           : range < 100
+                              ? NumValidatorStyle::TWO_TRAILING_ZEROES
+                              : NumValidatorStyle::ONE_TRAILING_ZERO)
+                     )
+                     .AddTextBox( {}, wxT(""), 12);
                   mFields[p]->SetName(labelText);
-                  mFields[p]->SetValidator(vld);
                   if (!tip.IsEmpty())
                   {
                      mFields[p]->SetToolTip(tip);

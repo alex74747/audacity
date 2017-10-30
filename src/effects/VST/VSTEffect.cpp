@@ -800,9 +800,6 @@ void VSTEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
       {
          S.StartStatic(_("Buffer Size"));
          {
-            IntegerValidator<int> vld(&mBufferSize);
-            vld.SetRange(8, 1048576 * 1);
-
             S.AddVariableText(wxString() +
                _("The buffer size controls the number of samples sent to the effect ") +
                _("on each iteration. Smaller values will cause slower processing and ") +
@@ -812,12 +809,17 @@ void VSTEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
 
             S.StartHorizontalLay(wxALIGN_LEFT);
             {
+               using Range = ValidatorRange<int>;
                wxTextCtrl *t;
-               t = S.TieNumericTextBox(_("&Buffer Size (8 to 1048576 samples):"),
+               t = S.Validator<IntegerValidator<int>>(
+                     &mBufferSize,
+                     Range{ 8, 1048576 * 1 },
+                     NumValidatorStyle::DEFAULT
+                  )
+                  .TieNumericTextBox(_("&Buffer Size (8 to 1048576 samples):"),
                                        mBufferSize,
                                        12);
                t->SetMinSize(wxSize(100, -1));
-               t->SetValidator(vld);
             }
             S.EndHorizontalLay();
          }

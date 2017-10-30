@@ -42,6 +42,16 @@ inline NumValidatorStyle operator | (NumValidatorStyle x, NumValidatorStyle y)
 inline int operator & (NumValidatorStyle x, NumValidatorStyle y)
 { return int(x) & int(y); }
 
+
+template< typename T >
+struct ValidatorRange : std::pair< T, T >
+{
+   ValidatorRange(
+      T lower = std::numeric_limits<T>::lowest(),
+      T higher = std::numeric_limits<T>::max() )
+   : std::pair< T, T >{ lower, higher } {}
+};
+
 // ----------------------------------------------------------------------------
 // Base class for all numeric validators.
 // ----------------------------------------------------------------------------
@@ -157,14 +167,7 @@ class NumValidator /* final */ : public B
 public:
     typedef B BaseValidator;
     typedef T ValueType;
-
-    struct Range : std::pair< T, T >
-    {
-       Range( T lower = std::numeric_limits<T>::lowest(),
-          T higher = std::numeric_limits<T>::max() )
-          : std::pair< T, T >{ lower, higher }
-       {}
-    };
+    using Range = ValidatorRange< T >;
 
     typedef typename BaseValidator::LongestValueType LongestValueType;
 

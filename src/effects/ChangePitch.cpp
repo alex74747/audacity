@@ -246,6 +246,7 @@ bool EffectChangePitch::CheckWhetherSkipEffect()
 
 void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
 {
+   using Range = ValidatorRange<double>;
    DeduceFrequencies(); // Set frequency-related control values based on sample.
 
    wxArrayString pitch;
@@ -291,11 +292,13 @@ void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
 
          S.StartHorizontalLay(wxALIGN_CENTER);
          {
-            FloatingPointValidator<double> vldSemitones(2, &m_dSemitonesChange, NumValidatorStyle::TWO_TRAILING_ZEROES);
-            m_pTextCtrl_SemitonesChange =
-               S.Id(ID_SemitonesChange).AddTextBox(_("Semitones (half-steps):"), wxT(""), 12);
+            m_pTextCtrl_SemitonesChange = S.Id(ID_SemitonesChange)
+               .Validator<FloatingPointValidator<double>>(
+                  2, &m_dSemitonesChange,
+                  NumValidatorStyle::TWO_TRAILING_ZEROES
+               )
+               .AddTextBox(_("Semitones (half-steps):"), wxT(""), 12);
             m_pTextCtrl_SemitonesChange->SetName(_("Semitones (half-steps)"));
-            m_pTextCtrl_SemitonesChange->SetValidator(vldSemitones);
          }
          S.EndHorizontalLay();
       }
@@ -305,17 +308,23 @@ void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
       {
          S.StartMultiColumn(5, wxALIGN_CENTER); // 5, because AddTextBox adds a wxStaticText and a wxTextCtrl.
          {
-            FloatingPointValidator<double> vldFromFrequency(3, &m_FromFrequency, NumValidatorStyle::THREE_TRAILING_ZEROES);
-            vldFromFrequency.SetMin(0.0);
-            m_pTextCtrl_FromFrequency = S.Id(ID_FromFrequency).AddTextBox(_("from"), wxT(""), 12);
+            m_pTextCtrl_FromFrequency = S.Id(ID_FromFrequency)
+               .Validator<FloatingPointValidator<double>>(
+                  3, &m_FromFrequency,
+                  Range{ 0.0 },
+                  NumValidatorStyle::THREE_TRAILING_ZEROES
+               )
+               .AddTextBox(_("from"), wxT(""), 12);
             m_pTextCtrl_FromFrequency->SetName(_("from (Hz)"));
-            m_pTextCtrl_FromFrequency->SetValidator(vldFromFrequency);
 
-            FloatingPointValidator<double> vldToFrequency(3, &m_ToFrequency, NumValidatorStyle::THREE_TRAILING_ZEROES);
-            vldToFrequency.SetMin(0.0);
-            m_pTextCtrl_ToFrequency = S.Id(ID_ToFrequency).AddTextBox(_("to"), wxT(""), 12);
+            m_pTextCtrl_ToFrequency = S.Id(ID_ToFrequency)
+               .Validator<FloatingPointValidator<double>>(
+                  3, &m_ToFrequency,
+                  Range{ 0.0 },
+                  NumValidatorStyle::THREE_TRAILING_ZEROES
+               )
+               .AddTextBox(_("to"), wxT(""), 12);
             m_pTextCtrl_ToFrequency->SetName(_("to (Hz)"));
-            m_pTextCtrl_ToFrequency->SetValidator(vldToFrequency);
 
             S.AddUnits(_("Hz"));
          }
@@ -323,10 +332,13 @@ void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
 
          S.StartHorizontalLay(wxALIGN_CENTER);
          {
-            FloatingPointValidator<double> vldPercentage(3, &m_dPercentChange, NumValidatorStyle::THREE_TRAILING_ZEROES);
-            vldPercentage.SetRange(MIN_Percentage, MAX_Percentage);
-            m_pTextCtrl_PercentChange = S.Id(ID_PercentChange).AddTextBox(_("Percent Change:"), wxT(""), 12);
-            m_pTextCtrl_PercentChange->SetValidator(vldPercentage);
+            m_pTextCtrl_PercentChange = S.Id(ID_PercentChange)
+               .Validator<FloatingPointValidator<double>>(
+                  3, &m_dPercentChange,
+                  Range{ MIN_Percentage, MAX_Percentage },
+                  NumValidatorStyle::THREE_TRAILING_ZEROES
+               )
+               .AddTextBox(_("Percent Change:"), wxT(""), 12);
          }
          S.EndHorizontalLay();
 
@@ -344,9 +356,9 @@ void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
 #if USE_SBSMS
       S.StartMultiColumn(2);
       {
-         mUseSBSMSCheckBox = S.AddCheckBox(_("Use high quality stretching (slow)"),
+         mUseSBSMSCheckBox = S.Validator<wxGenericValidator>(&mUseSBSMS)
+            .AddCheckBox(_("Use high quality stretching (slow)"),
                                              mUseSBSMS? wxT("true") : wxT("false"));
-         mUseSBSMSCheckBox->SetValidator(wxGenericValidator(&mUseSBSMS));
       }
       S.EndMultiColumn();
 #endif

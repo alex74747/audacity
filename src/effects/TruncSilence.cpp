@@ -742,6 +742,8 @@ bool EffectTruncSilence::Analyze(RegionList& silenceList,
 
 void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
 {
+   using Range = ValidatorRange<double>;
+
    wxASSERT(nActions == WXSIZEOF(kActionStrings));
 
    S.AddSpace(0, 5);
@@ -751,18 +753,22 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(3, wxALIGN_CENTER_HORIZONTAL);
       {
          // Threshold
-         FloatingPointValidator<double> vldThreshold(3, &mThresholdDB,
-            NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldThreshold.SetRange(MIN_Threshold, MAX_Threshold);
-         mThresholdText = S.AddTextBox(_("Threshold:"), wxT(""), 0);
-         mThresholdText->SetValidator(vldThreshold);
+         mThresholdText = S
+            .Validator<FloatingPointValidator<double>>(
+               3, &mThresholdDB,
+               Range{ MIN_Threshold, MAX_Threshold },
+               NumValidatorStyle::DEFAULT
+            )
+            .AddTextBox(_("Threshold:"), wxT(""), 0);
          S.AddUnits(_("dB"));
 
          // Ignored silence
-         FloatingPointValidator<double> vldDur(3, &mInitialAllowedSilence, NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldDur.SetRange(MIN_Minimum, MAX_Minimum);
-         mInitialAllowedSilenceT = S.AddTextBox(_("Duration:"), wxT(""), 12);
-         mInitialAllowedSilenceT->SetValidator(vldDur);
+         mInitialAllowedSilenceT = S.Validator<FloatingPointValidator<double>>(
+               3, &mInitialAllowedSilence,
+               Range{ MIN_Minimum, MAX_Minimum },
+               NumValidatorStyle::NO_TRAILING_ZEROES
+            )
+            .AddTextBox(_("Duration:"), wxT(""), 12);
          S.AddUnits(_("seconds"));
       }
       S.EndMultiColumn();
@@ -775,25 +781,29 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
       {
          // Action choices
          auto actionChoices = LocalizedStrings(kActionStrings, nActions);
-         mActionChoice = S.AddChoice( {}, wxT(""), &actionChoices);
-         mActionChoice->SetValidator(wxGenericValidator(&mActionIndex));
-         S.SetSizeHints(-1, -1);
+         mActionChoice = S.Validator<wxGenericValidator>(&mActionIndex)
+            .AddChoice( {}, wxT(""), &actionChoices);
+          S.SetSizeHints(-1, -1);
       }
       S.EndHorizontalLay();
       S.StartMultiColumn(3, wxALIGN_CENTER_HORIZONTAL);
       {
          // Truncation / Compression factor
 
-         FloatingPointValidator<double> vldTrunc(3, &mTruncLongestAllowedSilence, NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldTrunc.SetRange(MIN_Truncate, MAX_Truncate);
-         mTruncLongestAllowedSilenceT = S.AddTextBox(_("Truncate to:"), wxT(""), 12);
-         mTruncLongestAllowedSilenceT->SetValidator(vldTrunc);
+         mTruncLongestAllowedSilenceT = S.Validator<FloatingPointValidator<double>>(
+               3, &mTruncLongestAllowedSilence,
+               Range{ MIN_Truncate, MAX_Truncate },
+               NumValidatorStyle::NO_TRAILING_ZEROES
+            )
+            .AddTextBox(_("Truncate to:"), wxT(""), 12);
          S.AddUnits(_("seconds"));
 
-         FloatingPointValidator<double> vldComp(3, &mSilenceCompressPercent, NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldComp.SetRange(MIN_Compress, MAX_Compress);
-         mSilenceCompressPercentT = S.AddTextBox(_("Compress to:"), wxT(""), 12);
-         mSilenceCompressPercentT->SetValidator(vldComp);
+         mSilenceCompressPercentT = S.Validator<FloatingPointValidator<double>>(
+               3, &mSilenceCompressPercent,
+               Range{ MIN_Compress, MAX_Compress },
+               NumValidatorStyle::NO_TRAILING_ZEROES
+            )
+            .AddTextBox(_("Compress to:"), wxT(""), 12);
          S.AddUnits(_("%"));
       }
       S.EndMultiColumn();

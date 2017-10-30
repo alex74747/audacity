@@ -329,13 +329,15 @@ bool EffectToneGen::SetAutomationParameters(CommandParameters & parms)
 
 void EffectToneGen::PopulateOrExchange(ShuttleGui & S)
 {
+   using Range = ValidatorRange<double>;
+
    wxTextCtrl *t;
 
    S.StartMultiColumn(2, wxCENTER);
    {
       auto waveforms = LocalizedStrings(kWaveStrings, nWaveforms);
-      wxChoice *c = S.AddChoice(_("Waveform:"), wxT(""), &waveforms);
-      c->SetValidator(wxGenericValidator(&mWaveform));
+      wxChoice *c = S.Validator<wxGenericValidator>(&mWaveform)
+         .AddChoice(_("Waveform:"), wxT(""), &waveforms);
 
       if (mChirp)
       {
@@ -361,21 +363,27 @@ void EffectToneGen::PopulateOrExchange(ShuttleGui & S)
          {
             S.StartHorizontalLay(wxLEFT, 50);
             {
-               FloatingPointValidator<double> vldStartFreq(6, &mFrequency[0], NumValidatorStyle::NO_TRAILING_ZEROES);
-               vldStartFreq.SetRange(MIN_StartFreq, GetActiveProject()->GetRate() / 2.0);
-               t = S.AddTextBox( {}, wxT(""), 12);
+               t = S
+                  .Validator<FloatingPointValidator<double>>(
+                     6, &mFrequency[0],
+                     Range{ MIN_StartFreq, GetActiveProject()->GetRate() / 2.0 },
+                     NumValidatorStyle::NO_TRAILING_ZEROES
+                  )
+                  .AddTextBox( {}, wxT(""), 12);
                t->SetName(_("Frequency Hertz Start"));
-               t->SetValidator(vldStartFreq);
             }
             S.EndHorizontalLay();
 
             S.StartHorizontalLay(wxLEFT, 50);
             {
-               FloatingPointValidator<double> vldEndFreq(6, &mFrequency[1], NumValidatorStyle::NO_TRAILING_ZEROES);
-               vldEndFreq.SetRange(MIN_EndFreq, GetActiveProject()->GetRate() / 2.0);
-               t = S.AddTextBox( {}, wxT(""), 12);
+               t = S
+                  .Validator<FloatingPointValidator<double>>(
+                     6, &mFrequency[1],
+                     Range{ MIN_EndFreq, GetActiveProject()->GetRate() / 2.0 },
+                     NumValidatorStyle::NO_TRAILING_ZEROES
+                  )
+                  .AddTextBox( {}, wxT(""), 12);
                t->SetName(_("Frequency Hertz End"));
-               t->SetValidator(vldEndFreq);
             }
             S.EndHorizontalLay();
          }
@@ -386,41 +394,51 @@ void EffectToneGen::PopulateOrExchange(ShuttleGui & S)
          {
             S.StartHorizontalLay(wxLEFT, 50);
             {
-               FloatingPointValidator<double> vldStartAmp(6, &mAmplitude[0], NumValidatorStyle::NO_TRAILING_ZEROES);
-               vldStartAmp.SetRange(MIN_StartAmp, MAX_StartAmp);
-               t = S.AddTextBox( {}, wxT(""), 12);
+               t = S
+                  .Validator<FloatingPointValidator<double>>(
+                     6, &mAmplitude[0],
+                     Range{ MIN_StartAmp, MAX_StartAmp },
+                     NumValidatorStyle::NO_TRAILING_ZEROES
+                  )
+                  .AddTextBox( {}, wxT(""), 12);
                t->SetName(_("Amplitude Start"));
-               t->SetValidator(vldStartAmp);
             }
             S.EndHorizontalLay();
 
             S.StartHorizontalLay(wxLEFT, 50);
             {
-               FloatingPointValidator<double> vldEndAmp(6, &mAmplitude[1], NumValidatorStyle::NO_TRAILING_ZEROES);
-               vldEndAmp.SetRange(MIN_EndAmp, MAX_EndAmp);
-               t = S.AddTextBox( {}, wxT(""), 12);
+               t = S
+                  .Validator<FloatingPointValidator<double>>(
+                     6, &mAmplitude[1],
+                     Range{ MIN_EndAmp, MAX_EndAmp },
+                     NumValidatorStyle::NO_TRAILING_ZEROES
+                  )
+                  .AddTextBox( {}, wxT(""), 12);
                t->SetName(_("Amplitude End"));
-               t->SetValidator(vldEndAmp);
             }
             S.EndHorizontalLay();
          }
          S.EndHorizontalLay();
 
          auto interpolations = LocalizedStrings(kInterStrings, nInterpolations);
-         c = S.AddChoice(_("Interpolation:"), wxT(""), &interpolations);
-         c->SetValidator(wxGenericValidator(&mInterpolation));
+         c = S.Validator<wxGenericValidator>(&mInterpolation)
+            .AddChoice(_("Interpolation:"), wxT(""), &interpolations);
       }
       else
       {
-         FloatingPointValidator<double> vldFrequency(6, &mFrequency[0], NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldFrequency.SetRange(MIN_Frequency, GetActiveProject()->GetRate() / 2.0);
-         t = S.AddTextBox(_("Frequency (Hz):"), wxT(""), 12);
-         t->SetValidator(vldFrequency);
+         t = S.Validator<FloatingPointValidator<double>>(
+               6, &mFrequency[0],
+               Range{ MIN_Frequency, GetActiveProject()->GetRate() / 2.0 },
+               NumValidatorStyle::NO_TRAILING_ZEROES
+            )
+            .AddTextBox(_("Frequency (Hz):"), wxT(""), 12);
 
-         FloatingPointValidator<double> vldAmplitude(6, &mAmplitude[0], NumValidatorStyle::NO_TRAILING_ZEROES);
-         vldAmplitude.SetRange(MIN_Amplitude, MAX_Amplitude);
-         t = S.AddTextBox(_("Amplitude (0-1):"), wxT(""), 12);
-         t->SetValidator(vldAmplitude);
+         t = S.Validator<FloatingPointValidator<double>>(
+               6, &mAmplitude[0],
+               Range{ MIN_Amplitude, MAX_Amplitude },
+               NumValidatorStyle::NO_TRAILING_ZEROES
+            )
+            .AddTextBox(_("Amplitude (0-1):"), wxT(""), 12);
       }
 
       S.AddPrompt(_("Duration:"));

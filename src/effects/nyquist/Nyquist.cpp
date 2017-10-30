@@ -2572,6 +2572,8 @@ void NyquistEffect::BuildPromptWindow(ShuttleGui & S)
 
 void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
 {
+   using Range = ValidatorRange<double>;
+
    S.SetStyle(wxVSCROLL | wxTAB_TRAVERSAL);
    wxScrolledWindow *scroller = S.StartScroller(2);
    {
@@ -2601,8 +2603,9 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                {
                   S.AddSpace(10, 10);
 
-                  wxTextCtrl *item = S.Id(ID_Text + i).AddTextBox( {}, wxT(""), 12);
-                  item->SetValidator(wxGenericValidator(&ctrl.valStr));
+                  wxTextCtrl *item = S.Id(ID_Text + i)
+                     .Validator<wxGenericValidator>(&ctrl.valStr)
+                     .AddTextBox( {}, wxT(""), 12);
                   item->SetName(prompt);
                }
                else if (ctrl.type == NYQ_CTRL_CHOICE)
@@ -2652,8 +2655,9 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                   }
                   resolveFilePath(ctrl.valStr, defaultExtension);
 
-                  wxTextCtrl *item = S.Id(ID_Text+i).AddTextBox( {}, wxT(""), 40);
-                  item->SetValidator(wxGenericValidator(&ctrl.valStr));
+                  wxTextCtrl *item = S.Id(ID_Text+i)
+                     .Validator<wxGenericValidator>(&ctrl.valStr)
+                     .AddTextBox( {}, wxT(""), 40);
                   item->SetName(prompt);
 
                   if (ctrl.label == wxEmptyString)
@@ -2669,33 +2673,35 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                      S.AddSpace(10, 10);
                   }
 
+                  if (ctrl.type == NYQ_CTRL_FLOAT || ctrl.type == NYQ_CTRL_FLOAT_TEXT)
+                  {
+                     double range = ctrl.high - ctrl.low;
+                     S.Validator<FloatingPointValidator<double>>(
+                        // > 12 decimal places can cause rounding errors in display.
+                        12, &ctrl.val,
+                        Range{ ctrl.low, ctrl.high },
+                        // Set number of decimal places
+                        (range < 10
+                           ? NumValidatorStyle::THREE_TRAILING_ZEROES
+                           : range < 100
+                              ? NumValidatorStyle::TWO_TRAILING_ZEROES
+                              : NumValidatorStyle::ONE_TRAILING_ZERO)
+                     );
+                  }
+                  else
+                  {
+                     using Range = ValidatorRange<double>;
+                     S.Validator< IntegerValidator<double> /* [sic] */ >(
+                        &ctrl.val,
+                        Range{ ctrl.low, ctrl.high },
+                        NumValidatorStyle::DEFAULT
+                     );
+                  }
+
                   wxTextCtrl *item = S.Id(ID_Text+i).AddTextBox( {}, wxT(""),
                                                                (ctrl.type == NYQ_CTRL_INT_TEXT ||
                                                                ctrl.type == NYQ_CTRL_FLOAT_TEXT) ? 25 : 12);
                   item->SetName(prompt);
-
-                  double range = ctrl.high - ctrl.low;
-
-                  if (ctrl.type == NYQ_CTRL_FLOAT || ctrl.type == NYQ_CTRL_FLOAT_TEXT)
-                  {
-                     // > 12 decimal places can cause rounding errors in display.
-                     FloatingPointValidator<double> vld(12, &ctrl.val);
-                     vld.SetRange(ctrl.low, ctrl.high);
-
-                     // Set number of decimal places
-                     auto style = range < 10 ? NumValidatorStyle::THREE_TRAILING_ZEROES :
-                                 range < 100 ? NumValidatorStyle::TWO_TRAILING_ZEROES :
-                                 NumValidatorStyle::ONE_TRAILING_ZERO;
-                     vld.SetStyle(style);
-
-                     item->SetValidator(vld);
-                  }
-                  else
-                  {
-                     IntegerValidator<double> vld(&ctrl.val);
-                     vld.SetRange((int) ctrl.low, (int) ctrl.high);
-                     item->SetValidator(vld);
-                  }
 
                   if (ctrl.type == NYQ_CTRL_INT || ctrl.type == NYQ_CTRL_FLOAT)
                   {
@@ -2704,6 +2710,9 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                      S.SetSizeHints(150, -1);
                   }
                }
+               S.AddTextBox( {}, wxT(""),
+                            (ctrl.type == NYQ_CTRL_INT_TEXT ||
+                             ctrl.type == NYQ_CTRL_FLOAT_TEXT) ? 25 : 12);
 
                if (ctrl.type != NYQ_CTRL_FILE)
                {

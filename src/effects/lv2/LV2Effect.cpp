@@ -1516,6 +1516,8 @@ bool LV2Effect::BuildFancy()
 
 bool LV2Effect::BuildPlain()
 {
+   using Range = ValidatorRange<float>;
+
    int numCols = 5;
 
    // Allocate memory for the user parameter controls

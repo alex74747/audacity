@@ -329,6 +329,8 @@ bool EffectClickRemoval::RemoveClicks(size_t len, float *buffer)
 
 void EffectClickRemoval::PopulateOrExchange(ShuttleGui & S)
 {
+   using Range = ValidatorRange< int >;
+
    S.AddSpace(0, 5);
    S.SetBorder(10);
 
@@ -336,31 +338,39 @@ void EffectClickRemoval::PopulateOrExchange(ShuttleGui & S)
    S.SetStretchyCol(2);
    {
       // Threshold
-      IntegerValidator<int> vldThresh(&mThresholdLevel);
-      vldThresh.SetRange(MIN_Threshold, MAX_Threshold);
-      mThreshT = S.Id(ID_Thresh).AddTextBox(_("Threshold (lower is more sensitive):"),
-                                            wxT(""),
-                                            10);
-      mThreshT->SetValidator(vldThresh);
+      mThreshT = S.Id(ID_Thresh)
+         .Validator<IntegerValidator<int>>(
+            &mThresholdLevel,
+            Range{ MIN_Threshold, MAX_Threshold },
+            NumValidatorStyle::DEFAULT
+         )
+         .AddTextBox(_("Threshold (lower is more sensitive):"),
+                     wxT(""),
+                     10);
 
       S.SetStyle(wxSL_HORIZONTAL);
-      mThreshS = S.Id(ID_Thresh).AddSlider( {}, mThresholdLevel, MAX_Threshold, MIN_Threshold);
+      mThreshS = S.Id(ID_Thresh)
+         .Validator<wxGenericValidator>(&mThresholdLevel)
+         .AddSlider( {}, mThresholdLevel, MAX_Threshold, MIN_Threshold);
       mThreshS->SetName(_("Threshold"));
-      mThreshS->SetValidator(wxGenericValidator(&mThresholdLevel));
       mThreshS->SetMinSize(wxSize(150, -1));
 
       // Click width
-      IntegerValidator<int> vldWidth(&mClickWidth);
-      vldWidth.SetRange(MIN_Width, MAX_Width);
-      mWidthT = S.Id(ID_Width).AddTextBox(_("Max Spike Width (higher is more sensitive):"),
-                                          wxT(""),
-                                          10);
-      mWidthT->SetValidator(vldWidth);
+      mWidthT = S.Id(ID_Width)
+         .Validator<IntegerValidator<int>>(
+            &mClickWidth,
+            Range{ MIN_Width, MAX_Width },
+            NumValidatorStyle::DEFAULT
+         )
+         .AddTextBox(_("Max Spike Width (higher is more sensitive):"),
+                     wxT(""),
+                     10);
 
       S.SetStyle(wxSL_HORIZONTAL);
-      mWidthS = S.Id(ID_Width).AddSlider( {}, mClickWidth, MAX_Width, MIN_Width);
+      mWidthS = S.Id(ID_Width)
+         .Validator<wxGenericValidator>(&mClickWidth)
+         .AddSlider( {}, mClickWidth, MAX_Width, MIN_Width);
       mWidthS->SetName(_("Max Spike Width"));
-      mWidthS->SetValidator(wxGenericValidator(&mClickWidth));
       mWidthS->SetMinSize(wxSize(150, -1));
    }
    S.EndMultiColumn();
