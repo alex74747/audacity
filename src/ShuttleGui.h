@@ -308,7 +308,7 @@ protected:
    void PushSizer();
    void PopSizer();
 
-   void UpdateSizersCore( bool bPrepend, int Flags );
+   void UpdateSizersCore( bool bPrepend, int Flags, bool prompt = false );
    void UpdateSizers();
    void UpdateSizersC();
    void UpdateSizersAtStart();
