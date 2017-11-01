@@ -326,8 +326,6 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                         S
                            .AddRadioButton();
                      }
-                     S
-                        .AddRadioButton();
                   }
                   S.EndHorizontalLay();
                }
