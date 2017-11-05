@@ -37,9 +37,13 @@
 #include "ProjectSettings.h"
 #include "UndoManager.h"
 #include "commands/CommandManager.h"
+#include "prefs/TracksPrefs.h"
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ErrorDialog.h"
+#include "tracks/ui/Scrubbing.h" // uh oh
+#include "AdornedRulerPanel.h"
+#include "toolbars/ControlToolBar.h"
 
 #include <unordered_set>
 
@@ -593,6 +597,18 @@ void MenuManager::ModifyToolbarMenus(AudacityProject &project)
    // Refreshes can occur during shutdown and the toolmanager may already
    // be deleted, so protect against it.
    auto &toolManager = ToolManager::Get( project );
+
+   /* Handle changes of the pinned playhead state */
+   {
+      auto &ruler = AdornedRulerPanel::Get( project );
+      // Update button image
+      ruler.UpdateButtonStates();
+
+      bool value = TracksPrefs::GetPinnedHeadPreference();
+      auto &scrubber = Scrubber::Get( project );
+      if (scrubber.HasMark())
+         scrubber.SetScrollScrubbing(value);
+   }
 
    auto &settings = ProjectSettings::Get( project );
 

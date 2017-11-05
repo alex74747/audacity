@@ -2382,12 +2382,4 @@ void AdornedRulerPanel::TogglePinnedHead()
    bool value = !TracksPrefs::GetPinnedHeadPreference();
    TracksPrefs::SetPinnedHeadPreference(value, true);
    MenuManager::ModifyAllProjectToolbarMenus();
-
-   auto &project = *mProject;
-   // Update button image
-   UpdateButtonStates();
-
-   auto &scrubber = Scrubber::Get( project );
-   if (scrubber.HasMark())
-      scrubber.SetScrollScrubbing(value);
 }
