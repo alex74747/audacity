@@ -123,7 +123,7 @@ wxString EffectAutoDuck::ManualPage()
    return wxT("Auto_Duck");
 }
 
-// EffectIdentInterface implementation
+// EffectDefinitionInterface implementation
 
 EffectType EffectAutoDuck::GetType()
 {
@@ -131,8 +131,18 @@ EffectType EffectAutoDuck::GetType()
 }
 
 // EffectClientInterface implementation
+bool EffectAutoDuck::DefineParams( ShuttleParams & S ){
+   S.SHUTTLE_PARAM(  mDuckAmountDb, DuckAmountDb);
+   S.SHUTTLE_PARAM(  mInnerFadeDownLen, InnerFadeDownLen);
+   S.SHUTTLE_PARAM(  mInnerFadeUpLen, InnerFadeUpLen);
+   S.SHUTTLE_PARAM(  mOuterFadeDownLen, OuterFadeDownLen);
+   S.SHUTTLE_PARAM(  mOuterFadeUpLen, OuterFadeUpLen);
+   S.SHUTTLE_PARAM(  mThresholdDb, ThresholdDb);
+   S.SHUTTLE_PARAM(  mMaximumPause, MaximumPause);
+   return true;
+}
 
-bool EffectAutoDuck::GetAutomationParameters(EffectAutomationParameters & parms)
+bool EffectAutoDuck::GetAutomationParameters(CommandAutomationParameters & parms)
 {
    parms.Write(KEY_DuckAmountDb, mDuckAmountDb);
    parms.Write(KEY_InnerFadeDownLen, mInnerFadeDownLen);
@@ -145,7 +155,7 @@ bool EffectAutoDuck::GetAutomationParameters(EffectAutomationParameters & parms)
    return true;
 }
 
-bool EffectAutoDuck::SetAutomationParameters(EffectAutomationParameters & parms)
+bool EffectAutoDuck::SetAutomationParameters(CommandAutomationParameters & parms)
 {
    ReadAndVerifyDouble(DuckAmountDb);
    ReadAndVerifyDouble(InnerFadeDownLen);

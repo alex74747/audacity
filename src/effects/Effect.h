@@ -43,6 +43,7 @@ class wxWindow;
 #include "../Track.h"
 
 class ShuttleGui;
+class AudacityCommand;
 
 #define BUILTIN_EFFECT_PREFIX wxT("Built-in Effect: ")
 
@@ -85,7 +86,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    wxString GetVersion() override;
    wxString GetDescription() override;
 
-   // EffectIdentInterface implementation
+   // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
    wxString GetFamily() override; // returns UNTRANSLATED
@@ -130,8 +131,8 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
 
    bool ShowInterface(wxWindow *parent, bool forceModal = false) override;
 
-   bool GetAutomationParameters(EffectAutomationParameters & parms) override;
-   bool SetAutomationParameters(EffectAutomationParameters & parms) override;
+   bool GetAutomationParameters(CommandAutomationParameters & parms) override;
+   bool SetAutomationParameters(CommandAutomationParameters & parms) override;
 
    bool LoadUserPreset(const wxString & name) override;
    bool SaveUserPreset(const wxString & name) override;
@@ -594,6 +595,9 @@ public:
    EffectUIHost(wxWindow *parent,
                 Effect *effect,
                 EffectUIClientInterface *client);
+   EffectUIHost(wxWindow *parent,
+                AudacityCommand *command,
+                EffectUIClientInterface *client);
    virtual ~EffectUIHost();
 
    bool TransferDataToWindow() override;
@@ -641,6 +645,7 @@ private:
    AudacityProject *mProject;
    wxWindow *mParent;
    Effect *mEffect;
+   AudacityCommand * mCommand;
    EffectUIClientInterface *mClient;
 
    wxArrayString mUserPresets;

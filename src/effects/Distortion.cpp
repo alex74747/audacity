@@ -208,7 +208,7 @@ wxString EffectDistortion::ManualPage()
    return wxT("Distortion");
 }
 
-// EffectIdentInterface implementation
+// EffectDefinitionInterface implementation
 
 EffectType EffectDistortion::GetType()
 {
@@ -282,8 +282,19 @@ size_t EffectDistortion::RealtimeProcess(int group,
 
    return InstanceProcess(mSlaves[group], inbuf, outbuf, numSamples);
 }
+bool EffectDistortion::DefineParams( ShuttleParams & S ){
+   wxArrayString tables( kNumTableTypes, kTableTypeStrings );
+   S.SHUTTLE_ENUM_PARAM( mParams.mTableChoiceIndx, TableTypeIndx, tables );
+   S.SHUTTLE_PARAM( mParams.mDCBlock,       DCBlock       );
+   S.SHUTTLE_PARAM( mParams.mThreshold_dB,  Threshold_dB  );
+   S.SHUTTLE_PARAM( mParams.mNoiseFloor,    NoiseFloor    );
+   S.SHUTTLE_PARAM( mParams.mParam1,        Param1        );
+   S.SHUTTLE_PARAM( mParams.mParam2,        Param2        );
+   S.SHUTTLE_PARAM( mParams.mRepeats,       Repeats       );
+   return true;
+}
 
-bool EffectDistortion::GetAutomationParameters(EffectAutomationParameters & parms)
+bool EffectDistortion::GetAutomationParameters(CommandAutomationParameters & parms)
 {
    parms.Write(KEY_TableTypeIndx, kTableTypeStrings[mParams.mTableChoiceIndx]);
    parms.Write(KEY_DCBlock, mParams.mDCBlock);
@@ -296,7 +307,7 @@ bool EffectDistortion::GetAutomationParameters(EffectAutomationParameters & parm
    return true;
 }
 
-bool EffectDistortion::SetAutomationParameters(EffectAutomationParameters & parms)
+bool EffectDistortion::SetAutomationParameters(CommandAutomationParameters & parms)
 {
    ReadAndVerifyEnum(TableTypeIndx,  wxArrayString(kNumTableTypes, kTableTypeStrings));
    ReadAndVerifyBool(DCBlock);

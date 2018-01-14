@@ -248,7 +248,7 @@ wxString NyquistEffect::HelpPage()
    return wxEmptyString;
 }
 
-// EffectIdentInterface implementation
+// EffectDefinitionInterface implementation
 
 EffectType NyquistEffect::GetType()
 {
@@ -277,7 +277,7 @@ bool NyquistEffect::IsDefault()
 
 // EffectClientInterface implementation
 
-bool NyquistEffect::GetAutomationParameters(EffectAutomationParameters & parms)
+bool NyquistEffect::GetAutomationParameters(CommandAutomationParameters & parms)
 {
    if (mExternal)
    {
@@ -324,7 +324,7 @@ bool NyquistEffect::GetAutomationParameters(EffectAutomationParameters & parms)
    return true;
 }
 
-bool NyquistEffect::SetAutomationParameters(EffectAutomationParameters & parms)
+bool NyquistEffect::SetAutomationParameters(CommandAutomationParameters & parms)
 {
    if (mExternal)
    {

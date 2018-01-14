@@ -68,7 +68,7 @@ class EffectPlugs;
 class TrackPanel;
 class FreqWindow;
 class ContrastDialog;
-class Meter;
+class MeterPanel;
 
 // toolbar classes
 class ControlToolBar;
@@ -157,6 +157,22 @@ class ImportXMLTagHandler final : public XMLTagHandler
  private:
    AudacityProject* mProject;
 };
+
+class EffectPlugs;
+typedef wxArrayString PluginIDList;
+class CommandContext;
+class CommandManager;
+class Track;
+class TrackHolder;
+class TrackList;
+class WaveClip;
+class WaveTrack;
+
+#include "./commands/CommandFlag.h"
+#include "../include/audacity/EffectInterface.h"
+
+#include "./commands/CommandManager.h"
+
 
 class AUDACITY_DLL_API AudacityProject final : public wxFrame,
                                      public TrackPanelListener,
@@ -494,10 +510,10 @@ public:
    const ToolsToolBar *GetToolsToolBar() const;
    TranscriptionToolBar *GetTranscriptionToolBar();
 
-   Meter *GetPlaybackMeter();
-   void SetPlaybackMeter(Meter *playback);
-   Meter *GetCaptureMeter();
-   void SetCaptureMeter(Meter *capture);
+   MeterPanel *GetPlaybackMeter();
+   void SetPlaybackMeter(MeterPanel *playback);
+   MeterPanel *GetCaptureMeter();
+   void SetCaptureMeter(MeterPanel *capture);
 
    LyricsWindow* GetLyricsWindow() { return mLyricsWindow; }
    MixerBoard* GetMixerBoard() { return mMixerBoard; }
@@ -679,8 +695,8 @@ private:
    bool mShownOnce{ false };
 
    // Project owned meters
-   Meter *mPlaybackMeter{};
-   Meter *mCaptureMeter{};
+   MeterPanel *mPlaybackMeter{};
+   MeterPanel *mCaptureMeter{};
 
    std::unique_ptr<ToolManager> mToolManager;
 

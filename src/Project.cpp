@@ -167,6 +167,7 @@ scroll information.  It also has some status flags.
 #include "commands/CommandTargets.h"
 #include "commands/Command.h"
 #include "commands/CommandType.h"
+#include "commands/CommandContext.h"
 
 #include "../images/AudacityLogoAlpha.xpm"
 
@@ -4299,8 +4300,10 @@ bool AudacityProject::Import(const wxString &fileName, WaveTrackArray* pTrackArr
       //TODO: All we want is a SelectAll()
       SelectNone();
       SelectAllIfNone();
+      const CommandContext context( *this);
       DoEffect(EffectManager::Get().GetEffectByIdentifier(wxT("Normalize")),
-               OnEffectFlags::kConfigured);
+         context,
+         OnEffectFlags::kConfigured);
    }
 
    // This is a no-fail:
@@ -4628,7 +4631,7 @@ void AudacityProject::UpdateLyrics()
    if( !mLyricsWindow->IsVisible() )
       return;
 
-   Lyrics* pLyricsPanel = mLyricsWindow->GetLyricsPanel();
+   LyricsPanel* pLyricsPanel = mLyricsWindow->GetLyricsPanel();
    pLyricsPanel->Clear();
    pLyricsPanel->AddLabels(pLabelTrack);
    pLyricsPanel->Finish(pLabelTrack->GetEndTime());
@@ -4871,12 +4874,12 @@ TranscriptionToolBar *AudacityProject::GetTranscriptionToolBar()
            NULL);
 }
 
-Meter *AudacityProject::GetPlaybackMeter()
+MeterPanel *AudacityProject::GetPlaybackMeter()
 {
    return mPlaybackMeter;
 }
 
-void AudacityProject::SetPlaybackMeter(Meter *playback)
+void AudacityProject::SetPlaybackMeter(MeterPanel *playback)
 {
    mPlaybackMeter = playback;
    if (gAudioIO)
@@ -4885,12 +4888,12 @@ void AudacityProject::SetPlaybackMeter(Meter *playback)
    }
 }
 
-Meter *AudacityProject::GetCaptureMeter()
+MeterPanel *AudacityProject::GetCaptureMeter()
 {
    return mCaptureMeter;
 }
 
-void AudacityProject::SetCaptureMeter(Meter *capture)
+void AudacityProject::SetCaptureMeter(MeterPanel *capture)
 {
    mCaptureMeter = capture;
 
@@ -5158,7 +5161,7 @@ void AudacityProject::SafeDisplayStatusMessage(const wxChar *msg)
                                 TargetFactory::MessageDefault());
    CommandType *type = CommandDirectory::Get()->LookUp(wxT("Message"));
    wxASSERT_MSG(type != NULL, wxT("Message command not found!"));
-   CommandHolder statusCmd = type->Create(std::move(target));
+   OldStyleCommandPointer statusCmd = type->Create(std::move(target));
    statusCmd->SetParameter(wxT("MessageString"), msg);
    ScriptCommandRelay::PostCommand(this, statusCmd);
 

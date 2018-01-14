@@ -113,7 +113,7 @@ LyricsWindow::LyricsWindow(AudacityProject *parent):
    //
    //pToolBar->Realize();
 
-   mLyricsPanel = safenew Lyrics(this, -1, panelPos, panelSize);
+   mLyricsPanel = safenew LyricsPanel(this, -1, panelPos, panelSize);
 
    //vvv Highlight style is broken in ported version.
    //switch (mLyricsPanel->GetLyricsStyle())
@@ -148,12 +148,12 @@ void LyricsWindow::OnCloseWindow(wxCloseEvent & WXUNUSED(event))
 
 void LyricsWindow::OnStyle_BouncingBall(wxCommandEvent & WXUNUSED(event))
 {
-   mLyricsPanel->SetLyricsStyle(Lyrics::kBouncingBallLyrics);
+   mLyricsPanel->SetLyricsStyle(LyricsPanel::kBouncingBallLyrics);
 }
 
 void LyricsWindow::OnStyle_Highlight(wxCommandEvent & WXUNUSED(event))
 {
-   mLyricsPanel->SetLyricsStyle(Lyrics::kHighlightLyrics);
+   mLyricsPanel->SetLyricsStyle(LyricsPanel::kHighlightLyrics);
 }
 
 void LyricsWindow::OnTimer(wxCommandEvent &event)
