@@ -37,6 +37,7 @@
 #include "../Audacity.h"
 #include "../Experimental.h"
 
+#include <algorithm>
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
@@ -761,15 +762,23 @@ void ControlToolBar::StopPlaying(bool stopStream /* = true*/)
 
 void ControlToolBar::OnRecord(wxCommandEvent &evt)
 {
+   DoRecord(evt);
+}
+
+bool ControlToolBar::DoRecord
+(wxCommandEvent &evt, std::vector< std::vector< float > > *pCrossfadeData)
+{
    if (gAudioIO->IsBusy()) {
       mRecord->PopUp();
-      return;
+      return false;
    }
+
    AudacityProject *p = GetActiveProject();
 
-   if( evt.GetInt() == 1 ) // used when called by keyboard shortcut. Default (0) ignored.
+   bool preRoll = (pCrossfadeData != 0);
+   if( evt.GetInt() == 1  || preRoll ) // used when called by keyboard shortcut. Default (0) ignored.
       mRecord->SetShift(true);
-   if( evt.GetInt() == 2 )
+   else if (evt.GetInt() == 2)
       mRecord->SetShift(false);
 
    SetRecord(true, mRecord->WasShiftDown());
@@ -793,12 +802,12 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
       bool duplex;
       gPrefs->Read(wxT("/AudioIO/Duplex"), &duplex, true);
 
-      if(duplex){
+      if(duplex) {
          playbackTracks = t->GetWaveTrackArray(false);
 #ifdef EXPERIMENTAL_MIDI_OUT
          midiTracks = t->GetNoteTrackArray(false);
 #endif
-     }
+      }
       else {
          playbackTracks = WaveTrackArray();
 #ifdef EXPERIMENTAL_MIDI_OUT
@@ -806,7 +815,8 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 #endif
      }
 
-      // If SHIFT key was down, the user wants append to tracks
+      // If SHIFT key was down, or punching in,
+      // the user wants append to tracks
       int recordingChannels = 0;
       bool shifted = mRecord->WasShiftDown();
       if (shifted) {
@@ -825,6 +835,11 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 
                if (tt->GetSelected()) {
                   sel = true;
+// todo move this down
+                  if (duplex && !preRoll)
+                     playbackTracks.Remove(wt);
+                  else if (preRoll && !duplex)
+                     playbackTracks.Add(wt);
                   if (wt->GetEndTime() > t0) {
                      t0 = wt->GetEndTime();
                   }
@@ -834,6 +849,8 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
 
          // Use end time of all wave tracks if none selected
          if (!sel) {
+            if (preRoll && !duplex)
+               playbackTracks = t->GetWaveTrackArray(false);
             t0 = allt0;
          }
 
@@ -862,6 +879,7 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          t1 = 1000000000.0;     // record for a long, long time (tens of years)
       }
       else {
+         // Not appending, create new tracks
          recordingChannels = gPrefs->Read(wxT("/AudioIO/RecordChannels"), 2);
          for (int c = 0; c < recordingChannels; c++) {
             WaveTrack *newTrack = p->GetTrackFactory()->NewWaveTrack();
@@ -895,9 +913,15 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
       }
 
       //Automated Input Level Adjustment Initialization
-      #ifdef AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-         gAudioIO->AILAInitialize();
-      #endif
+#ifdef AUTOMATED_INPUT_LEVEL_ADJUSTMENT
+      gAudioIO->AILAInitialize();
+#endif
+         
+      if (preRoll) {
+         const double preRollDuration =
+            gPrefs->Read(AUDIO_PRE_ROLL_KEY, DEFAULT_PRE_ROLL_SECONDS);
+         t0 = std::max(0.0, t0 - preRollDuration);
+      }
 
       int token = gAudioIO->StartStream(playbackTracks,
                                         newRecordingTracks,
@@ -905,7 +929,9 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
                                         midiTracks,
 #endif
                                         t->GetTimeTrack(),
-                                        p->GetRate(), t0, t1, p);
+                                        p->GetRate(), t0, t1, p,
+                                        false, 0, 0, NULL,
+                                        pCrossfadeData);
 
       bool success = (token != 0);
 
@@ -930,7 +956,11 @@ void ControlToolBar::OnRecord(wxCommandEvent &evt)
          SetStop(false);
          SetRecord(false);
       }
+
+      return success;
    }
+
+   return false;
 }
 
 

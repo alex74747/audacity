@@ -520,6 +520,10 @@ bool AudioIO::ValidateDeviceNames(wxString play, wxString rec)
 }
 
 AudioIO::AudioIO()
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+   : mCrossfadeData(new CrossfadeData)
+   , mStartRecordTimeWarped(0)
+#endif
 {
    mAudioThreadShouldCallFillBuffersOnce = false;
    mAudioThreadFillBuffersLoopRunning = false;
@@ -549,6 +553,7 @@ AudioIO::AudioIO()
 
    mLastPaError = paNoError;
 
+   mLatencyCorrection = 0;
    mLastRecordingOffset = 0.0;
    mNumCaptureChannels = 0;
    mPaused = false;
@@ -647,6 +652,10 @@ AudioIO::~AudioIO()
       DeleteSamples(mSilentBuf);
 
    delete mThread;
+
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+   delete mCrossfadeData;
+#endif
 }
 
 void AudioIO::SetMixer(int inputSource)
@@ -1154,11 +1163,16 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
                          bool playLooped /* = false */,
                          double cutPreviewGapStart /* = 0.0 */,
                          double cutPreviewGapLen, /* = 0.0 */
-                         const double *pStartTime /* = 0 */)
+                         const double *pStartTime, /* = 0.0 */
+                         CrossfadeData *pCrossfadeData /* = NULL */)
 {
+#if !(defined EXPERIMENTAL_PUNCH_AND_ROLL)
+   pCrossfadeData;
+#endif
+
    if( IsBusy() )
       return 0;
-
+   
    // We just want to set mStreamToken to -1 - this way avoids
    // an extremely rare but possible race condition, if two functions
    // somehow called StartStream at the same time...
@@ -1197,6 +1211,7 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
    mTimeTrack = timeTrack;
    mListener = listener;
    mRate    = sampleRate;
+   mStartRecordTime = t0;
    mT0      = t0;
    mT1      = t1;
    mTime    = t0;
@@ -1217,6 +1232,7 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
 
    // with ComputeWarpedLength, it is now possible the calculate the warped length with 100% accuracy
    // (ignoring accumulated rounding errors during playback) which fixes the 'missing sound at the end' bug
+   mWarpedTime0 = 0.0;
    mWarpedTime = 0.0;
    if(mTimeTrack)
       mWarpedLength = mTimeTrack->ComputeWarpedLength(mT0, mT1);
@@ -1402,7 +1418,7 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
          {
             i++;
             chanCnt++;
-         }
+   }
 
          em.RealtimeAddProcessor(group++, chanCnt, vt->GetRate());
       }
@@ -1425,6 +1441,7 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
          mWarpedTime = mTimeTrack->ComputeWarpedLength(mT0, mTime);
       else
          mWarpedTime = mTime - mT0;
+      mWarpedTime0 = mWarpedTime;
    }
 
    // We signal the audio thread to call FillBuffers, to prime the RingBuffers
@@ -1495,6 +1512,25 @@ int AudioIO::StartStream(WaveTrackArray playbackTracks,
    //
    mStreamToken = (++mNextStreamToken);
 
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+   if (pCrossfadeData && mNumCaptureChannels > 0) {
+      // Prepare for punch and roll
+      mCrossfadeData->swap(*pCrossfadeData);
+      // Assume same ending time for all capture channels
+      mStartRecordTime = mCaptureTracks[0]->GetEndTime();
+      mStartRecordTimeWarped = mTimeTrack
+         ? mTimeTrack->ComputeWarpedLength(mT0, mStartRecordTime)
+         : mStartRecordTime - mT0;
+   }
+   else
+      mCrossfadeData->resize(0);
+#endif
+
+   // PRL: moved this here out of StopStream to avoid doing it in the callback,
+   // now that punch and roll needs it too
+   mLatencyCorrection = DEFAULT_LATENCY_CORRECTION;
+   gPrefs->Read(wxT("/AudioIO/LatencyCorrection"), &mLatencyCorrection);
+
    return mStreamToken;
 }
 
@@ -1503,7 +1539,7 @@ void AudioIO::StartStreamCleanup(bool bOnlyBuffers)
 #if defined(EXPERIMENTAL_REALTIME_EFFECTS)
    if (mNumPlaybackChannels > 0)
    {
-      EffectManager::Get().RealtimeFinalize();
+   EffectManager::Get().RealtimeFinalize();
    }
 #endif
 
@@ -1713,7 +1749,7 @@ void AudioIO::StopStream()
    // No longer need effects processing
    if (mNumPlaybackChannels > 0)
    {
-      EffectManager::Get().RealtimeFinalize();
+   EffectManager::Get().RealtimeFinalize();
    }
 #endif
 
@@ -1864,6 +1900,10 @@ void AudioIO::StopStream()
          delete[] mPlaybackMixers;
       }
 
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+      mCrossfadeData->resize(0);
+#endif
+
       //
       // Offset all recorded tracks to account for latency
       //
@@ -1876,61 +1916,59 @@ void AudioIO::StopStream()
          // case that we do not apply latency correction when recording the
          // first track in a project.
          //
-         double latencyCorrection = DEFAULT_LATENCY_CORRECTION;
-         gPrefs->Read(wxT("/AudioIO/LatencyCorrection"), &latencyCorrection);
 
          double recordingOffset =
-            mLastRecordingOffset + latencyCorrection / 1000.0;
+            mLastRecordingOffset + mLatencyCorrection / 1000.0;
 
          for( unsigned int i = 0; i < mCaptureTracks.GetCount(); i++ )
-            {
-               delete mCaptureBuffers[i];
-               delete mResample[i];
+         {
+            delete mCaptureBuffers[i];
+            delete mResample[i];
 
-               WaveTrack* track = mCaptureTracks[i];
-               track->Flush();
+            WaveTrack* track = mCaptureTracks[i];
+            track->Flush();
 
-               if (mPlaybackTracks.GetCount() > 0)
-               {  // only do latency correction if some tracks are being played back
-                  WaveTrackArray playbackTracks;
-                  AudacityProject *p = GetActiveProject();
-                  // we need to get this as mPlaybackTracks does not contain tracks being recorded into
-                  playbackTracks = p->GetTracks()->GetWaveTrackArray(false);
-                  bool appendRecord = false;
-                  for( unsigned int j = 0; j < playbackTracks.GetCount(); j++)
-                  {  // find if we are recording into an existing track (append-record)
-                     WaveTrack* trackP = playbackTracks[j];
-                     if( track == trackP )
+            if (mPlaybackTracks.GetCount() > 0)
+            {  // only do latency correction if some tracks are being played back
+               WaveTrackArray playbackTracks;
+               AudacityProject *p = GetActiveProject();
+               // we need to get this as mPlaybackTracks does not contain tracks being recorded into
+               playbackTracks = p->GetTracks()->GetWaveTrackArray(false);
+               bool appendRecord = false;
+               for( unsigned int j = 0; j < playbackTracks.GetCount(); j++)
+               {  // find if we are recording into an existing track (append-record)
+                  WaveTrack* trackP = playbackTracks[j];
+                  if( track == trackP )
+                  {
+                     if (track->GetStartTime() != mStartRecordTime)  // in a new track if these are equal
                      {
-                        if( track->GetStartTime() != mT0 )  // in a new track if these are equal
-                        {
-                           appendRecord = true;
-                           break;
-                        }
-                     }
-                  }
-                  if( appendRecord )
-                  {  // append-recording
-                     bool bResult = true;
-                     if (recordingOffset < 0)
-                        bResult = track->Clear(mT0, mT0 - recordingOffset); // cut the latency out
-                     else
-                        bResult = track->InsertSilence(mT0, recordingOffset); // put silence in
-                     wxASSERT(bResult); // TO DO: Actually handle this.
-                  }
-                  else
-                  {  // recording into a new track
-                     track->SetOffset(track->GetStartTime() + recordingOffset);
-                     if(track->GetEndTime() < 0.)
-                     {
-                        wxMessageDialog m(NULL, _("Latency Correction setting has caused the recorded audio to be hidden before zero.\nAudacity has brought it back to start at zero.\nYou may have to use the Time Shift Tool (<---> or F5) to drag the track to the right place."),
-                           _("Latency problem"), wxOK);
-                        m.ShowModal();
-                        track->SetOffset(0.);
+                        appendRecord = true;
+                        break;
                      }
                   }
                }
+               if( appendRecord )
+               {  // append-recording
+                  bool bResult = true;
+                  if (recordingOffset < 0)
+                     bResult = track->Clear(mStartRecordTime, mStartRecordTime - recordingOffset); // cut the latency out
+                  else
+                     bResult = track->InsertSilence(mStartRecordTime, recordingOffset); // put silence in
+                  wxASSERT(bResult); // TO DO: Actually handle this.
+               }
+               else
+               {  // recording into a new track
+                  track->SetOffset(track->GetStartTime() + recordingOffset);
+                  if(track->GetEndTime() < 0.)
+                  {
+                     wxMessageDialog m(NULL, _("Latency Correction setting has caused the recorded audio to be hidden before zero.\nAudacity has brought it back to start at zero.\nYou may have to use the Time Shift Tool (<---> or F5) to drag the track to the right place."),
+                        _("Latency problem"), wxOK);
+                     m.ShowModal();
+                     track->SetOffset(0.);
+                  }
+               }
             }
+         }
 
          delete[] mCaptureBuffers;
          delete[] mResample;
@@ -2942,30 +2980,87 @@ void AudioIO::FillBuffers()
 
             XMLStringWriter appendLog;
 
-            if( mFactor == 1.0 )
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+            int lenPreRoll = 0;
+            int lenLatency = 0;
+            int lenCrossfade = 0;
+            if (mCrossfadeData->size())
             {
-               samplePtr temp = NewSamples(avail, trackFormat);
-               mCaptureBuffers[i]->Get   (temp, trackFormat, avail);
-               mCaptureTracks[i]-> Append(temp, trackFormat, avail, 1,
-                                          &appendLog);
-               DeleteSamples(temp);
+               // PRL:
+               // That means we are doing punch and roll.  Depending on
+               // the time, we must either
+               // (1) discard input during pre-roll,
+               // (2) fill the latency period in the ring buffer which
+               // only gets discared later,
+               // (3) crossfade the recording with the given data,
+               // (4) just copy.
+
+               // So do all of 2, 3, and 4 as copying input data,
+               // then revisit the third
+               // portion to adjust sample values.
+
+               // This is positive if and only if we are still
+               // pre-rolling
+               lenPreRoll = int(mRate * (mStartRecordTimeWarped - mWarpedTime0));
+
+               const double recordingOffset =
+                  mLastRecordingOffset + mLatencyCorrection / 1000.0;
+
+               if (recordingOffset < 0)
+                  lenLatency = int(-recordingOffset * mRate);
+
+               lenCrossfade = int((*mCrossfadeData)[i].size());
             }
-            else
+
+            // (1) Discard
+            int toDiscard = std::min(avail, std::max(0, lenPreRoll));
+            if (toDiscard > 0) {
+               mCaptureBuffers[i]->Discard(toDiscard);
+               avail -= toDiscard;
+            }
+#endif
+
+            if (avail > 0)
             {
-               int size = lrint(avail * mFactor);
-               samplePtr temp1 = NewSamples(avail, floatSample);
-               samplePtr temp2 = NewSamples(size, floatSample);
-               mCaptureBuffers[i]->Get(temp1, floatSample, avail);
-               /* we are re-sampling on the fly. The last resampling call
-                * must flush any samples left in the rate conversion buffer
-                * so that they get recorded
-                */
-               size = mResample[i]->Process(mFactor, (float *)temp1, avail, !IsStreamActive(),
-                                            &size, (float *)temp2, size);
-               mCaptureTracks[i]-> Append(temp2, floatSample, size, 1,
-                                          &appendLog);
-               DeleteSamples(temp1);
-               DeleteSamples(temp2);
+               if (mFactor == 1.0)
+               {
+                  samplePtr temp = NewSamples(avail, trackFormat);
+                  mCaptureBuffers[i]->Get(temp, trackFormat, avail);
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+                  // PRL: (3) Crossfading
+                  if (mCrossfadeData->size())
+                  {
+                     // to do
+                  }
+#endif
+                  mCaptureTracks[i]->Append(temp, trackFormat, avail, 1,
+                     &appendLog);
+                  DeleteSamples(temp);
+               }
+               else
+               {
+                  int size = lrint(avail * mFactor);
+                  samplePtr temp1 = NewSamples(avail, floatSample);
+                  samplePtr temp2 = NewSamples(size, floatSample);
+                  mCaptureBuffers[i]->Get(temp1, floatSample, avail);
+                  /* we are re-sampling on the fly. The last resampling call
+                   * must flush any samples left in the rate conversion buffer
+                   * so that they get recorded
+                   */
+                  size = mResample[i]->Process(mFactor, (float *)temp1, avail, !IsStreamActive(),
+                     &size, (float *)temp2, size);
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+                  // PRL: (3) Crossfading
+                  if (mCrossfadeData->size())
+                  {
+                     // Mixed rate case! Um, to do...
+                  }
+#endif
+                  mCaptureTracks[i]->Append(temp2, floatSample, size, 1,
+                     &appendLog);
+                  DeleteSamples(temp1);
+                  DeleteSamples(temp2);
+               }
             }
 
             if (!appendLog.IsEmpty())
@@ -3595,6 +3690,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                gAudioIO->mWarpedTime = gAudioIO->mTimeTrack->ComputeWarpedLength(gAudioIO->mT0, gAudioIO->mTime);
             else
                gAudioIO->mWarpedTime = gAudioIO->mTime - gAudioIO->mT0;
+            gAudioIO->mWarpedTime0 = gAudioIO->mWarpedTime;
             for (i = 0; i < (unsigned int)numPlaybackTracks; i++)
             {
                gAudioIO->mPlaybackMixers[i]->Reposition(gAudioIO->mTime);
@@ -3688,7 +3784,6 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
                                                          (int)framesPerBuffer);
                chanCnt++;
             }
-
 
             if (linkFlag)
             {
@@ -3786,6 +3881,10 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 #if defined(EXPERIMENTAL_REALTIME_EFFECTS)
          em.RealtimeProcessEnd();
 #endif
+
+         gAudioIO->mWarpedTime0 += framesPerBuffer / gAudioIO->mRate;
+         if (gAudioIO->mPlayLooped && gAudioIO->mWarpedTime0 > gAudioIO->mWarpedLength)
+            gAudioIO->mWarpedTime0 -= gAudioIO->mWarpedLength;
 
          gAudioIO->mLastPlaybackTimeMillis = ::wxGetLocalTimeMillis();
 

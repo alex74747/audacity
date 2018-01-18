@@ -314,6 +314,10 @@ void OnToggleSWPlaythrough();
 #endif
 void OnRescanDevices();
 
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+void OnPunchAndRoll();
+#endif
+
 // Import Submenu
 void OnImport();
 void OnImportLabels();

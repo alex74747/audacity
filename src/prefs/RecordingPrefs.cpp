@@ -19,6 +19,7 @@
 *//********************************************************************/
 
 #include "../Audacity.h"
+#include "../Experimental.h"
 
 #include <wx/defs.h>
 #include <wx/textctrl.h>
@@ -168,6 +169,34 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
       }
       S.EndStatic();
    #endif
+
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+      S.StartStatic(_("Punch and Roll Recording"));
+      {
+         S.StartThreeColumn();
+         {
+            w = S.TieNumericTextBox(_("Pre-ro&ll duration:"),
+               AUDIO_PRE_ROLL_KEY,
+               DEFAULT_PRE_ROLL_SECONDS,
+               9);
+            S.AddUnits(_("seconds"));
+            w->SetName(w->GetName() + wxT(" ") + _("seconds"));
+         }
+#if 0
+         {
+            w = S.TieNumericTextBox(_("Cross&fade:"),
+               AUDIO_ROLL_CROSSFADE_KEY,
+               DEFAULT_ROLL_CROSSFADE_MS,
+               9);
+            S.AddUnits(_("milliseconds"));
+            w->SetName(w->GetName() + wxT(" ") + _("milliseconds"));
+         }
+#endif
+         S.EndThreeColumn();
+      }
+      S.EndStatic();
+#endif
+
 }
 
 bool RecordingPrefs::Apply()

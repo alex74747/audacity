@@ -845,6 +845,14 @@ void AudacityProject::CreateMenusAndCommands()
 #endif
    c->AddItem(wxT("RescanDevices"), _("R&escan Audio Devices"), FN(OnRescanDevices));
 
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+      c->AddItem(wxT("PunchAndRoll"), _("Punc&h and Roll Record"), FN(OnPunchAndRoll),
+      WaveTracksExistFlag | AudioIONotBusyFlag,
+      WaveTracksExistFlag | AudioIONotBusyFlag);
+#endif
+
+   c->EndMenu();
+
    //////////////////////////////////////////////////////////////////////////
    // Tracks Menu (formerly Project Menu)
    //////////////////////////////////////////////////////////////////////////
@@ -6251,6 +6259,74 @@ void AudacityProject::OnRescanDevices()
 {
    DeviceManager::Instance()->Rescan();
 }
+
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+void AudacityProject::OnPunchAndRoll()
+{
+   if (!gAudioIO->IsBusy()) {
+      mViewInfo.selectedRegion.collapseToT0();
+      const double t1 = std::max(0.0, mViewInfo.selectedRegion.t1());
+
+      int nWaveTracks = 0;
+      int nSelectedWaveTracks = 0;
+      {
+         TrackListIterator iter(mTracks);
+         for (Track *track = iter.First(); track; track = iter.Next()) {
+            if (track->GetKind() == Track::Wave) {
+               ++nWaveTracks;
+               if (track->GetSelected()) {
+                  ++nSelectedWaveTracks;
+               }
+            }
+         }
+      }
+
+      if (nWaveTracks == 0)
+         return;
+
+      const double crossFade =
+         gPrefs->Read(AUDIO_ROLL_CROSSFADE_KEY, DEFAULT_ROLL_CROSSFADE_MS)
+         / 1000.0;
+
+      // Delete from selected wave tracks only, or if no selected wave tracks, from all.
+      // (Just as append-record will appened to selected wave tracks only, or to all.)
+      // Remember a part of the deletion for crossfading with the new recording.
+      AudioIO::CrossfadeData crossfadeData
+         (nSelectedWaveTracks > 0 ? nSelectedWaveTracks : nWaveTracks);
+      {
+         TrackListIterator iter(mTracks);
+         int ii = 0;
+         for (Track *track = iter.First(); track; track = iter.Next()) {
+            if (track->GetKind() == Track::Wave &&
+                (nSelectedWaveTracks == 0 || track->GetSelected())) {
+               WaveTrack *wt = static_cast<WaveTrack*>(track);
+               const sampleCount getLen = crossFade * wt->GetRate();
+               crossfadeData[ii].resize(getLen);
+               if (getLen > 0) {
+                  float *const samples = &crossfadeData[ii][0];
+                  const sampleCount pos = wt->TimeToLongSamples(t1);
+                  wt->Get((samplePtr)samples, floatSample, pos, getLen);
+               }
+               ++ii;
+               wt->Clear(t1, wt->GetEndTime());
+            }
+         }
+      }
+
+      wxCommandEvent evt;
+      evt.SetInt(1);
+
+      bool success = GetControlToolBar()->DoRecord(evt, &crossfadeData);
+
+      if (success)
+         // Undo state gets pushed when record finishes, in TrackPanel::OnTimer
+         ;
+      else
+         // Roll back that deletion
+         SetStateTo(GetUndoManager()->GetCurrentState());
+   }
+}
+#endif
 
 int AudacityProject::DoAddLabel(const SelectedRegion &region)
 {

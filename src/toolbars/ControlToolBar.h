@@ -14,6 +14,8 @@
 #ifndef __AUDACITY_CONTROL_TOOLBAR__
 #define __AUDACITY_CONTROL_TOOLBAR__
 
+#include <vector>
+
 #include "ToolBar.h"
 #include "../Theme.h"
 
@@ -53,6 +55,11 @@ class ControlToolBar:public ToolBar {
    void OnFF(wxCommandEvent & evt);
    void OnPause(wxCommandEvent & evt);
 
+   bool DoRecord
+      (wxCommandEvent &evt,
+       std::vector< std::vector< float > > *pCrossfadeData = NULL);
+      // returns true iff stream starts
+   
    //These allow buttons to be controlled externally:
    void SetPlay(bool down, bool looped=false, bool cutPreview = false);
    void SetStop(bool down);

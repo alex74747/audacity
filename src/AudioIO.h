@@ -29,6 +29,7 @@
 #include "portmixer.h"
 #endif
 
+#include <vector>
 #include <wx/string.h>
 #include <wx/thread.h>
 
@@ -62,6 +63,12 @@ class AudioIOListener;
 
 #define DEFAULT_LATENCY_DURATION 100.0
 #define DEFAULT_LATENCY_CORRECTION -130.0
+
+#define AUDIO_PRE_ROLL_KEY (wxT("/AudioIO/PreRoll"))
+#define DEFAULT_PRE_ROLL_SECONDS 5.0
+
+#define AUDIO_ROLL_CROSSFADE_KEY (wxT("/AudioIO/Crossfade"))
+#define DEFAULT_ROLL_CROSSFADE_MS 10.0
 
 #ifdef AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    #define AILA_DEF_TARGET_PEAK 92
@@ -99,6 +106,8 @@ class AUDACITY_DLL_API AudioIO {
     * If successful, returns a token identifying this particular stream
     * instance.  For use with IsStreamActive() below */
 
+   typedef std::vector< std::vector < float > > CrossfadeData;
+
    int StartStream(WaveTrackArray playbackTracks, WaveTrackArray captureTracks,
 #ifdef EXPERIMENTAL_MIDI_OUT
                    NoteTrackArray midiTracks,
@@ -111,7 +120,8 @@ class AUDACITY_DLL_API AudioIO {
                    double cutPreviewGapLen = 0.0,
                    // May be other than t0,
                    // but will be constrained between t0 and t1
-                   const double *pStartTime = 0);
+                   const double *pStartTime = 0,
+                   CrossfadeData *pCrossfadeData = NULL);
 
    /** \brief Stop recording, playback or input monitoring.
     *
@@ -494,14 +504,22 @@ private:
    WaveTrackArray      mPlaybackTracks;
 
    Mixer             **mPlaybackMixers;
+
+#ifdef EXPERIMENTAL_PUNCH_AND_ROLL
+   CrossfadeData      *mCrossfadeData;
+   double              mStartRecordTimeWarped; // warped, i.e. real time
+#endif
+
    volatile int        mStreamToken;
    static int          mNextStreamToken;
    double              mFactor;
    double              mRate;
+   double              mStartRecordTime; // usually same as mT0, unless there is preroll
    double              mT0; // playback starts at offset of mT0
    double              mT1; // and ends at offset of mT1
    double              mTime; // current time position during playback
-   double              mWarpedTime; // current time after warping, starting at zero (unlike mTime)
+   double              mWarpedTime0; // time of start of playback ring buffer, after warping, starting at zero (unlike mTime)
+   double              mWarpedTime; // time of end of playback ring buffer, after warping, starting at zero (unlike mTime)
    double              mWarpedLength; // total length after warping
    double              mSeek;
    double              mPlaybackRingBufferSecs;
@@ -528,6 +546,7 @@ private:
    volatile bool       mMidiThreadFillBuffersLoopActive;
 #endif
 
+   double              mLatencyCorrection;
    volatile double     mLastRecordingOffset;
    PaError             mLastPaError;
 

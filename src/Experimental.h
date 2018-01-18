@@ -173,4 +173,8 @@
 // Define to enable Nyquist time/date property list
 // #define EXPERIMENTAL_NYQUIST_TIME_PROPERTY
 
+
+// Paul Licameli (PRL) 1 Dec 2014
+#define EXPERIMENTAL_PUNCH_AND_ROLL
+
 #endif
