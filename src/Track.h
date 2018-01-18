@@ -23,6 +23,9 @@
 #include "SampleFormat.h"
 #include "xml/XMLTagHandler.h"
 
+class TrackFactory;
+class XMLWriter;
+
 #ifdef __WXMSW__
 #pragma warning(disable:4284)
 #endif
@@ -427,6 +430,12 @@ class AUDACITY_DLL_API TrackList:public wxEvtHandler
    virtual bool Load(wxTextFile * in, DirManager * dirManager);
    virtual bool Save(wxTextFile * out, bool overwrite);
 #endif
+
+   XMLTagHandler *HandleXMLChild
+      (const wxChar *tag, TrackFactory *trackFactory);
+   void WriteXML
+      (XMLWriter &xmlFile, bool bWantSaveCompressed,
+       const wxArrayString &strOtherNamesArray);
 
  private:
    void RecalcPositions(const TrackListNode *node);

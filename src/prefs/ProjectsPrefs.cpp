@@ -70,6 +70,10 @@ void ProjectsPrefs::PopulateOrExchange(ShuttleGui & S)
       S.EndRadioButtonGroup();
    }
    S.EndStatic();
+
+   S.TieCheckBox(_("Save &undo and redo history to disk"),
+      wxT("/Undo/Persistency"),
+      false);
 }
 
 bool ProjectsPrefs::Apply()

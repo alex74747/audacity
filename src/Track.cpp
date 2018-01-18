@@ -15,12 +15,14 @@ and TimeTrack.
 
 *//*******************************************************************/
 
+#include "Audacity.h"
+#include "Track.h"
+
 #include <float.h>
 #include <wx/file.h>
 #include <wx/textfile.h>
 #include <wx/log.h>
 
-#include "Track.h"
 #include "WaveTrack.h"
 #include "NoteTrack.h"
 #include "LabelTrack.h"
@@ -1348,3 +1350,78 @@ double TrackList::GetEndTime() const
    return max;
 }
 
+XMLTagHandler *TrackList::HandleXMLChild
+(const wxChar *tag, TrackFactory *trackFactory)
+{
+   if (!wxStrcmp(tag, wxT("wavetrack"))) {
+      WaveTrack *newTrack = trackFactory->NewWaveTrack();
+      Add(newTrack);
+      return newTrack;
+   }
+
+#ifdef USE_MIDI
+   if (!wxStrcmp(tag, wxT("notetrack"))) {
+      NoteTrack *newTrack = trackFactory->NewNoteTrack();
+      Add(newTrack);
+      return newTrack;
+   }
+#endif // USE_MIDI
+
+   if (!wxStrcmp(tag, wxT("labeltrack"))) {
+      LabelTrack *newTrack = trackFactory->NewLabelTrack();
+      Add(newTrack);
+      return newTrack;
+   }
+
+   if (!wxStrcmp(tag, wxT("timetrack"))) {
+      TimeTrack *newTrack = trackFactory->NewTimeTrack();
+      Add(newTrack);
+      return newTrack;
+   }
+
+   return NULL;
+}
+
+void TrackList::WriteXML
+(XMLWriter &xmlFile, bool bWantSaveCompressed, const wxArrayString &strOtherNamesArray)
+{
+   Track *t;
+   WaveTrack* pWaveTrack;
+   TrackListIterator iter(this);
+   t = iter.First();
+   unsigned int ndx = 0;
+   while (t) {
+      if ((t->GetKind() == Track::Wave) && bWantSaveCompressed)
+      {
+         //vvv This should probably be a method, WaveTrack::WriteCompressedTrackXML().
+         xmlFile.StartTag(wxT("import"));
+         xmlFile.WriteAttr(wxT("filename"), strOtherNamesArray[ndx]); // Assumes mTracks order hasn't changed!
+
+         // Don't store "channel" and "linked" tags because the importer can figure that out,
+         // e.g., from stereo Ogg files.
+         //    xmlFile.WriteAttr(wxT("channel"), t->GetChannel());
+         //    xmlFile.WriteAttr(wxT("linked"), t->GetLinked());
+
+         xmlFile.WriteAttr(wxT("offset"), t->GetOffset(), 8);
+         xmlFile.WriteAttr(wxT("mute"), t->GetMute());
+         xmlFile.WriteAttr(wxT("solo"), t->GetSolo());
+         xmlFile.WriteAttr(wxT("height"), t->GetActualHeight());
+         xmlFile.WriteAttr(wxT("minimized"), t->GetMinimized());
+
+         pWaveTrack = (WaveTrack*)t;
+         // Don't store "rate" tag because the importer can figure that out.
+         //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
+         xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
+         xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
+         xmlFile.EndTag(wxT("import"));
+
+         ndx++;
+         if (t->GetLinked())
+            t = iter.Next();
+      }
+      else
+         t->WriteXML(xmlFile);
+
+      t = iter.Next();
+   }
+}

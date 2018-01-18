@@ -49,12 +49,16 @@
 #define __AUDACITY_UNDOMANAGER__
 
 #include <wx/dynarray.h>
+#include <wx/longlong.h>
 #include <wx/string.h>
 #include "ondemand/ODTaskThread.h"
 #include "SelectedRegion.h"
+#include "xml/XMLTagHandler.h"
 
 class Track;
 class TrackList;
+class TrackFactory;
+class XMLWriter;
 
 struct UndoStackElem {
    TrackList *tracks;
@@ -62,6 +66,13 @@ struct UndoStackElem {
    wxString shortDescription;
    SelectedRegion selectedRegion;
    wxLongLong spaceUsage;
+   enum { UNSAVED, AUTOSAVED, SAVED } saved;
+
+   UndoStackElem()
+      : tracks(0), spaceUsage(0), saved(UNSAVED)
+   {}
+
+   ~UndoStackElem();
 };
 
 WX_DEFINE_USER_EXPORTED_ARRAY(UndoStackElem *, UndoStack, class AUDACITY_DLL_API);
@@ -74,9 +85,9 @@ const int PUSH_CONSOLIDATE = 1;
 const int PUSH_CALC_SPACE = 2;
 const int PUSH_AUTOSAVE = 4;
 
-class AUDACITY_DLL_API UndoManager {
+class AUDACITY_DLL_API UndoManager : public XMLTagHandler {
  public:
-   UndoManager();
+   UndoManager(TrackFactory *factory);
    ~UndoManager();
 
    void PushState(TrackList * l,
@@ -86,6 +97,7 @@ class AUDACITY_DLL_API UndoManager {
    void ModifyState(TrackList * l,
                     const SelectedRegion &selectedRegion);
    void ClearStates();
+   void AbandonAutoSavedStates();
    void RemoveStates(int num);  // removes the 'num' oldest states
    void RemoveStateAt(int n);   // removes the n'th state (1 is oldest)
    unsigned int GetNumStates();
@@ -112,19 +124,41 @@ class AUDACITY_DLL_API UndoManager {
    bool HasODChangesFlag();
    void ResetODChangesFlag();
 
- private:
+   // Called when closing the project
+   void CloseLockBlocks();
+
+   void WriteXML(XMLWriter &xmlFile, bool autoSaving);
+
+   virtual bool HandleXMLTag(const wxChar *tag, const wxChar **attrs);
+   virtual void HandleXMLEndTag(const wxChar *tag);
+   virtual XMLTagHandler *HandleXMLChild(const wxChar *tag);
+
+private:
+   static void AbandonAutoSavedStates(UndoStack &stack);
+   void AbandonOldSavedStates();
+   static void CloseLockState(UndoStackElem &state);
    wxLongLong CalculateSpaceUsage(int index);
 
+   // Persistent:
+
    int current;
-   int saved;
    UndoStack stack;
 
+   // Not persistent:
+
+   UndoStack otherSaved; // States saved to .aup, then removed from the history,
+   // but no other save has happened yet, so the block files must be found and
+   // locked on close of the project.
+
+   int saved;
    wxString lastAction;
    int consolidationCount;
 
    bool mODChanges;
    ODLock mODChangesMutex;//mODChanges is accessed from many threads.
 
+   // Needed only during deserialization
+   TrackFactory *mFactory;
 };
 
 #endif

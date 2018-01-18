@@ -394,6 +394,8 @@ void NextWindow();
 
 void OnResample();
 
+void CrashMe();
+
 // Make sure we return to "public" for subsequent declarations in Project.h.
 public:
 

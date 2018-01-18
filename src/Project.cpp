@@ -734,6 +734,12 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
                                  const wxPoint & pos,
                                  const wxSize & size)
    : wxFrame(parent, id, wxT("Audacity"), pos, size),
+     // MM: DirManager is created dynamically, freed on demand via ref-counting
+     // MM: We don't need to Ref() here because it start with refcount=1
+     mDirManager(new DirManager),
+     mTrackFactory(new TrackFactory(mDirManager)),
+     mUndoManager(mTrackFactory),
+
      mRegionSave(),
      mLastPlayMode(normalPlay),
      mRate((double) gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleRate"), AudioIO::GetOptimalSupportedSampleRate())),
@@ -744,7 +750,7 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
      mDirty(false),
      mRuler(NULL),
      mTrackPanel(NULL),
-     mTrackFactory(NULL),
+
      mAutoScrolling(false),
      mActive(true),
      mHistoryWindow(NULL),
@@ -779,10 +785,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
    mStatusBar->SetStatusWidths(2, widths);
 
    wxGetApp().SetMissingAliasedFileWarningShouldShow(true);
-
-   // MM: DirManager is created dynamically, freed on demand via ref-counting
-   // MM: We don't need to Ref() here because it start with refcount=1
-   mDirManager = new DirManager();
 
    // Create track list
    mTracks = new TrackList();
@@ -1011,8 +1013,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
    // Create tags object
    mTags = new Tags();
-
-   mTrackFactory = new TrackFactory(mDirManager);
 
    wxString msg = wxString::Format(_("Welcome to Audacity version %s"),
                                    AUDACITY_VERSION_STRING);
@@ -2031,7 +2031,12 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
                                    wxYES_NO | wxCANCEL | wxICON_QUESTION,
                                    this);
 
-         if (result == wxCANCEL || (result == wxYES && !Save())) {
+         if (result == wxNO) {
+            // Avoid orphan blocks because of undo states that were
+            // auto-saved.
+            mUndoManager.AbandonAutoSavedStates();
+         }
+         else if (result == wxCANCEL || (result == wxYES && !Save())) {
             event.Veto();
             return;
          }
@@ -2094,6 +2099,9 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
       delete mLastSavedTracks;
       mLastSavedTracks = NULL;
    }
+
+   // Likewise, lock blocks needed for persistent undo/redo
+   mUndoManager.CloseLockBlocks();
 
    // Get rid of the history window
    // LL:  Destroy it before the TrackPanel and ToolBars since they
@@ -2519,6 +2527,8 @@ void AudacityProject::OpenFile(wxString fileName, bool addtohistory)
       return;
    }
 
+   mUndoManager.ClearStates();
+
    ///
    /// Parse project file
    ///
@@ -2650,6 +2660,9 @@ void AudacityProject::OpenFile(wxString fileName, bool addtohistory)
 
       if (mIsRecovered)
       {
+         // PRL:  to do:  figure out how to recover the saved redo history
+         // without destroying it in the PushState() below.
+
          // This project has been recovered, so write a new auto-save file
          // now and then delete the old one in the auto-save folder. Note that
          // at this point mFileName != fileName, because when opening a
@@ -3028,30 +3041,18 @@ XMLTagHandler *AudacityProject::HandleXMLChild(const wxChar *tag)
       return mTags;
    }
 
-   if (!wxStrcmp(tag, wxT("wavetrack"))) {
-      WaveTrack *newTrack = mTrackFactory->NewWaveTrack();
-      mTracks->Add(newTrack);
-      return newTrack;
+   {
+      XMLTagHandler *handler =
+         GetTracks()->HandleXMLChild(tag, GetTrackFactory());
+      if (handler)
+         return handler;
    }
 
-   #ifdef USE_MIDI
-   if (!wxStrcmp(tag, wxT("notetrack"))) {
-      NoteTrack *newTrack = mTrackFactory->NewNoteTrack();
-      mTracks->Add(newTrack);
-      return newTrack;
-   }
-   #endif // USE_MIDI
-
-   if (!wxStrcmp(tag, wxT("labeltrack"))) {
-      LabelTrack *newTrack = mTrackFactory->NewLabelTrack();
-      mTracks->Add(newTrack);
-      return newTrack;
-   }
-
-   if (!wxStrcmp(tag, wxT("timetrack"))) {
-      TimeTrack *newTrack = mTrackFactory->NewTimeTrack();
-      mTracks->Add(newTrack);
-      return newTrack;
+   {
+      XMLTagHandler *handler =
+         mUndoManager.HandleXMLChild(tag);
+      if (handler)
+         return handler;
    }
 
    if (!wxStrcmp(tag, wxT("recordingrecovery"))) {
@@ -3129,46 +3130,13 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile)
 
    mTags->WriteXML(xmlFile);
 
-   Track *t;
-   WaveTrack* pWaveTrack;
-   TrackListIterator iter(mTracks);
-   t = iter.First();
-   unsigned int ndx = 0;
-   while (t) {
-      if ((t->GetKind() == Track::Wave) && mWantSaveCompressed)
-      {
-         //vvv This should probably be a method, WaveTrack::WriteCompressedTrackXML().
-         xmlFile.StartTag(wxT("import"));
-         xmlFile.WriteAttr(wxT("filename"), mStrOtherNamesArray[ndx]); // Assumes mTracks order hasn't changed!
-
-         // Don't store "channel" and "linked" tags because the importer can figure that out,
-         // e.g., from stereo Ogg files.
-         //    xmlFile.WriteAttr(wxT("channel"), t->GetChannel());
-         //    xmlFile.WriteAttr(wxT("linked"), t->GetLinked());
-
-         xmlFile.WriteAttr(wxT("offset"), t->GetOffset(), 8);
-         xmlFile.WriteAttr(wxT("mute"), t->GetMute());
-         xmlFile.WriteAttr(wxT("solo"), t->GetSolo());
-         xmlFile.WriteAttr(wxT("height"), t->GetActualHeight());
-         xmlFile.WriteAttr(wxT("minimized"), t->GetMinimized());
-
-         pWaveTrack = (WaveTrack*)t;
-         // Don't store "rate" tag because the importer can figure that out.
-         //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
-         xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
-         xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
-         xmlFile.EndTag(wxT("import"));
-
-         ndx++;
-         if (t->GetLinked())
-            t = iter.Next();
-      }
-      else
-         t->WriteXML(xmlFile);
-
-      t = iter.Next();
-   }
+   GetTracks()->WriteXML(xmlFile, mWantSaveCompressed, mStrOtherNamesArray);
    mStrOtherNamesArray.Clear();
+
+   bool writeUndo = false;
+   gPrefs->Read(wxT("/Undo/Persistency"), &writeUndo, false);
+   if (writeUndo)
+      mUndoManager.WriteXML(xmlFile, mAutoSaving);
 
    if (!mAutoSaving)
    {
@@ -3789,10 +3757,13 @@ void AudacityProject::InitialState()
       mImportXMLTagHandler = NULL;
    }
 
-   mUndoManager.ClearStates();
-
-   mUndoManager.PushState(mTracks, mViewInfo.selectedRegion,
-                          _("Created new project"), wxT(""));
+   if (mUndoManager.GetNumStates() > 0) {
+      // Was loaded from disk with persistent undo history
+   }
+   else {
+      mUndoManager.PushState(mTracks, mViewInfo.selectedRegion,
+         _("Created new project"), wxT(""));
+   }
 
    mUndoManager.StateSaved();
 

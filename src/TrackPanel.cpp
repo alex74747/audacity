@@ -202,7 +202,6 @@ is time to refresh some aspect of the screen.
 
 #include "NoteTrack.h"
 #include "Prefs.h"
-#include "Project.h"
 #include "Snap.h"
 #include "Theme.h"
 #include "TimeTrack.h"

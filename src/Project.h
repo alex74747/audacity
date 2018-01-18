@@ -469,9 +469,13 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
 
  private:
 
+   DirManager *mDirManager; // MM: DirManager now created dynamically
+   TrackFactory *mTrackFactory;
+   // History/Undo manager
+   UndoManager mUndoManager;
+
    // The project's name and file info
    wxString mFileName;
-   DirManager *mDirManager; // MM: DirManager now created dynamically
 
    double mRate;
    sampleFormat mDefaultFormat;
@@ -501,8 +505,6 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
    //shared by all projects
    static ODLock *msAllProjectDeleteMutex;
 
-   // History/Undo manager
-   UndoManager mUndoManager;
    bool mDirty;
 
    // Commands
@@ -520,7 +522,6 @@ class AUDACITY_DLL_API AudacityProject:  public wxFrame,
 
    AdornedRulerPanel *mRuler;
    TrackPanel *mTrackPanel;
-   TrackFactory *mTrackFactory;
    wxPanel * mMainPanel;
    wxScrollBar *mHsbar;
    wxScrollBar *mVsbar;

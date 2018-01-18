@@ -448,6 +448,10 @@ void AudacityProject::CreateMenusAndCommands()
               AlwaysEnabledFlag,
               AlwaysEnabledFlag);
 
+   c->AddItem(wxT("CrashMe"), _("Crash Me"), FN(CrashMe),
+      AlwaysEnabledFlag,
+      AlwaysEnabledFlag);
+
    c->EndMenu();
 
    /////////////////////////////////////////////////////////////////////////////
@@ -6626,3 +6630,7 @@ void AudacityProject::OnFullScreen()
       wxTopLevelWindow::ShowFullScreen(true);
 }
 
+void AudacityProject::CrashMe()
+{
+   *(int*)0 = 0;
+}
