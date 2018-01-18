@@ -484,109 +484,194 @@ void PowerSpectrum(int NumSamples, float *In, float *Out)
 
 int NumWindowFuncs()
 {
-   return 10;
+   return WFCNumChoices;
 }
 
 const wxChar *WindowFuncName(int whichFunction)
 {
    switch (whichFunction) {
    default:
-   case 0:
+   case WFCRectangular:
       return _("Rectangular");
-   case 1:
+   case WFCBartlett:
       return wxT("Bartlett");
-   case 2:
+   case WFCHamming:
       return wxT("Hamming");
-   case 3:
+   case WFCHann:
       return wxT("Hanning");
-   case 4:
+   case WFCBlackman:
       return wxT("Blackman");
-   case 5:
+   case WFCBlackmanHarris:
       return wxT("Blackman-Harris");
-   case 6:
+   case WFCWelch:
       return wxT("Welch");
-   case 7:
+   case WFCGaussian2_5:
       return wxT("Gaussian(a=2.5)");
-   case 8:
+   case WFCGaussian3_5:
       return wxT("Gaussian(a=3.5)");
-   case 9:
+   case WFCGaussian4_5:
       return wxT("Gaussian(a=4.5)");
    }
 }
 
-void WindowFunc(int whichFunction, int NumSamples, float *in)
+void NewWindowFunc(int whichFunction, int NumSamples, bool extraSample, float *in)
 {
-   int i;
-   double A;
+   if (extraSample)
+      --NumSamples;
 
-   switch( whichFunction )
+   switch (whichFunction) {
+   case WFCRectangular:
+      // Multiply all by 1.0f -- do nothing
+      break;
+   case WFCBartlett:
    {
-   case 1:
       // Bartlett (triangular) window
-      for (i = 0; i < NumSamples / 2; i++) {
-         in[i] *= (i / (float) (NumSamples / 2));
-         in[i + (NumSamples / 2)] *=
-             (1.0 - (i / (float) (NumSamples / 2)));
+      const int nPairs = (NumSamples - 1) / 2; // whether even or odd NumSamples, this is correct
+      const float denom = NumSamples / 2.0f;
+      in[0] = 0.0f;
+      for (int ii = 1;
+           ii <= nPairs; // Yes, <=
+           ++ii) {
+         const float value = ii / denom;
+         in[ii] *= value;
+         in[NumSamples - ii] *= value;
       }
+      // When NumSamples is even, in[half] should be multiplied by 1.0, so unchanged
+      // When odd, the value of 1.0 is not reached
+   }
       break;
-   case 2:
+   case WFCHamming:
+   {
       // Hamming
-      for (i = 0; i < NumSamples; i++)
-         in[i] *= 0.54 - 0.46 * cos(2 * M_PI * i / (NumSamples - 1));
+      const double multiplier = 2 * M_PI / NumSamples;
+      static const double coeff0 = 0.54, coeff1 = -0.46;
+      for (int ii = 0; ii < NumSamples; ++ii)
+         in[ii] *= coeff0 + coeff1 * cos(ii * multiplier);
+   }
       break;
-   case 3:
+   case WFCHann:
+   {
       // Hanning
-      for (i = 0; i < NumSamples; i++)
-         in[i] *= 0.50 - 0.50 * cos(2 * M_PI * i / (NumSamples - 1));
+      const double multiplier = 2 * M_PI / NumSamples;
+      static const double coeff0 = 0.5, coeff1 = -0.5;
+      for (int ii = 0; ii < NumSamples; ++ii)
+         in[ii] *= coeff0 + coeff1 * cos(ii * multiplier);
+   }
       break;
-   case 4:
+   case WFCBlackman:
+   {
       // Blackman
-      for (i = 0; i < NumSamples; i++) {
-          in[i] *= 0.42 - 0.5 * cos (2 * M_PI * i / (NumSamples - 1)) + 0.08 * cos (4 * M_PI * i / (NumSamples - 1));
-      }
+      const double multiplier = 2 * M_PI / NumSamples;
+      const double multiplier2 = 2 * multiplier;
+      static const double coeff0 = 0.42, coeff1 = -0.5, coeff2 = 0.08;
+      for (int ii = 0; ii < NumSamples; ++ii)
+         in[ii] *= coeff0 + coeff1 * cos(ii * multiplier) + coeff2 * cos(ii * multiplier2);
+   }
       break;
-   case 5:
+   case WFCBlackmanHarris:
+   {
       // Blackman-Harris
-      for (i = 0; i < NumSamples; i++) {
-          in[i] *= 0.35875 - 0.48829 * cos(2 * M_PI * i /(NumSamples-1)) + 0.14128 * cos(4 * M_PI * i/(NumSamples-1)) - 0.01168 * cos(6 * M_PI * i/(NumSamples-1));
-      }
+      const double multiplier = 2 * M_PI / NumSamples;
+      const double multiplier2 = 2 * multiplier;
+      const double multiplier3 = 3 * multiplier;
+      static const double coeff0 = 0.35875, coeff1 = -0.48829, coeff2 = 0.14128, coeff3 = -0.01168;
+      for (int ii = 0; ii < NumSamples; ++ii)
+         in[ii] *= coeff0 + coeff1 * cos(ii * multiplier) + coeff2 * cos(ii * multiplier2) + coeff3 * cos(ii * multiplier3);
+   }
       break;
-   case 6:
+   case WFCWelch:
+   {
       // Welch
-      for (i = 0; i < NumSamples; i++) {
-          in[i] *= 4*i/(float)NumSamples*(1-(i/(float)NumSamples));
+      const float N = NumSamples;
+      for (int ii = 0; ii < NumSamples; ++ii) {
+         const float iOverN = ii / N;
+         in[ii] *= 4 * iOverN * (1 - iOverN);
       }
+   }
       break;
-   case 7:
+   case WFCGaussian2_5:
+   {
       // Gaussian (a=2.5)
       // Precalculate some values, and simplify the fmla to try and reduce overhead
-      A=-2*2.5*2.5;
-
-      for (i = 0; i < NumSamples; i++) {
-          // full
-          // in[i] *= exp(-0.5*(A*((i-NumSamples/2)/NumSamples/2))*(A*((i-NumSamples/2)/NumSamples/2)));
-          // reduced
-          in[i] *= exp(A*(0.25 + ((i/(float)NumSamples)*(i/(float)NumSamples)) - (i/(float)NumSamples)));
+      static const double A = -2 * 2.5*2.5;
+      const float N = NumSamples;
+      for (int ii = 0; ii < NumSamples; ++ii) {
+         const float iOverN = ii / N;
+         // full
+         // in[ii] *= exp(-0.5*(A*((ii-NumSamples/2)/NumSamples/2))*(A*((ii-NumSamples/2)/NumSamples/2)));
+         // reduced
+         in[ii] *= exp(A * (0.25 + (iOverN * iOverN) - iOverN));
       }
+   }
       break;
-   case 8:
+   case WFCGaussian3_5:
+   {
       // Gaussian (a=3.5)
-      A=-2*3.5*3.5;
-      for (i = 0; i < NumSamples; i++) {
-          // reduced
-          in[i] *= exp(A*(0.25 + ((i/(float)NumSamples)*(i/(float)NumSamples)) - (i/(float)NumSamples)));
+      static const double A = -2 * 3.5*3.5;
+      const float N = NumSamples;
+      for (int ii = 0; ii < NumSamples; ++ii) {
+         const float iOverN = ii / N;
+         in[ii] *= exp(A * (0.25 + (iOverN * iOverN) - iOverN));
       }
+   }
       break;
-   case 9:
+   case WFCGaussian4_5:
+   {
       // Gaussian (a=4.5)
-      A=-2*4.5*4.5;
-
-      for (i = 0; i < NumSamples; i++) {
-          // reduced
-          in[i] *= exp(A*(0.25 + ((i/(float)NumSamples)*(i/(float)NumSamples)) - (i/(float)NumSamples)));
+      static const double A = -2 * 4.5*4.5;
+      const float N = NumSamples;
+      for (int ii = 0; ii < NumSamples; ++ii) {
+         const float iOverN = ii / N;
+         in[ii] *= exp(A * (0.25 + (iOverN * iOverN) - iOverN));
       }
+   }
       break;
    default:
-      fprintf(stderr,"FFT::WindowFunc - Invalid window function: %d\n",whichFunction);
+      fprintf(stderr, "FFT::WindowFunc - Invalid window function: %d\n", whichFunction);
    }
+
+   if (extraSample && whichFunction != WFCRectangular) {
+      double value = 0.0;
+      switch (whichFunction) {
+      case WFCHamming:
+         value = 0.08;
+         break;
+      case WFCGaussian2_5:
+         value = exp(-2 * 2.5 * 2.5 * 0.25);
+         break;
+      case WFCGaussian3_5:
+         value = exp(-2 * 3.5 * 3.5 * 0.25);
+         break;
+      case WFCGaussian4_5:
+         value = exp(-2 * 4.5 * 4.5 * 0.25);
+         break;
+      default:
+         break;
+      }
+      in[NumSamples] *= value;
+   }
+}
+
+// See cautions in FFT.h !
+void WindowFunc(int whichFunction, int NumSamples, float *in)
+{
+   bool extraSample = false;
+   switch (whichFunction)
+   {
+   case WFCHamming:
+   case WFCHann:
+   case WFCBlackman:
+   case WFCBlackmanHarris:
+      extraSample = true;
+      break;
+   default:
+      break;
+   case WFCBartlett:
+      // PRL:  Do nothing here either
+      // But I want to comment that the old function did this case
+      // wrong in the second half of the array, in case NumSamples was odd
+      // but I think that never happened, so I am not bothering to preserve that
+      break;
+   }
+   NewWindowFunc(whichFunction, NumSamples, extraSample, in);
 }

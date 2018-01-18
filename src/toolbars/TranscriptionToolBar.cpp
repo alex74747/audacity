@@ -405,6 +405,7 @@ void TranscriptionToolBar::PlayAtSpeed(bool looped, bool cutPreview)
    // Can't do anything without an active project
    AudacityProject * p = GetActiveProject();
    if (!p) {
+      SetPlaying(false, looped, cutPreview);
       return;
    }
 
@@ -412,12 +413,10 @@ void TranscriptionToolBar::PlayAtSpeed(bool looped, bool cutPreview)
    if (!mTimeTrack) {
       mTimeTrack = new TimeTrack(p->GetDirManager());
       if (!mTimeTrack) {
+         SetPlaying(false, looped, cutPreview);
          return;
       }
    }
-
-   // Pop up the button
-   SetButton(false, mButtons[TTB_PlaySpeed]);
 
    // If IO is busy, abort immediately
    if (gAudioIO->IsBusy()) {
@@ -433,17 +432,17 @@ void TranscriptionToolBar::PlayAtSpeed(bool looped, bool cutPreview)
    double playRegionStart, playRegionEnd;
    p->GetPlayRegion(&playRegionStart, &playRegionEnd);
 
+   SetPlaying(true, looped, cutPreview);
+
    // Start playing
    if (playRegionStart >= 0) {
 //      playRegionEnd = playRegionStart + (playRegionEnd-playRegionStart)* 100.0/mPlaySpeed;
 #ifdef EXPERIMENTAL_MIDI_OUT
       gAudioIO->SetMidiPlaySpeed(mPlaySpeed);
 #endif
-      p->GetControlToolBar()->PlayPlayRegion(playRegionStart,
-                                             playRegionEnd,
-                                             looped,
-                                             cutPreview,
-                                             mTimeTrack);
+      p->GetControlToolBar()->
+         PlayPlayRegion(SelectedRegion(playRegionStart, playRegionEnd),
+                        looped, cutPreview, mTimeTrack);
    }
 }
 
@@ -915,6 +914,11 @@ void TranscriptionToolBar::SetPlaying(bool down, bool looped, bool cutPreview)
       button->SetAlternateIdx(0);
       button->PopUp();
    }
+}
+
+bool TranscriptionToolBar::PlayIsDown() const
+{
+   return mButtons[TTB_PlaySpeed]->IsDown();
 }
 
 void TranscriptionToolBar::AdjustPlaySpeed(float adj)

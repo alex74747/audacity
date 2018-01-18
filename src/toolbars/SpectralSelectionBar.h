@@ -24,6 +24,7 @@ class wxDC;
 class wxRadioButton;
 class wxSizeEvent;
 
+class AButton;
 class SpectralSelectionBarListener;
 class NumericTextCtrl;
 
@@ -46,10 +47,16 @@ public:
    void SetLogFrequencySelectionFormatName(const wxString & formatName);
    void SetListener(SpectralSelectionBarListener *l);
 
+   bool PlayIsDown() const;
+   void SetEnabled(bool enabled);
+   void SetPlaying(bool down, bool looped);
+   void Play(bool looped);
+
 private:
 
    void ValuesToControls();
    void OnUpdate(wxCommandEvent &evt);
+   void OnPlay(wxCommandEvent & event);
    void OnCtrl(wxCommandEvent &evt);
    void OnChoice(wxCommandEvent &evt);
 
@@ -66,6 +73,7 @@ private:
    double mLow; // hertz
    double mHigh; // hertz
 
+   AButton *mPlayButton;
    NumericTextCtrl *mCenterCtrl, *mWidthCtrl, *mLowCtrl, *mHighCtrl;
    wxChoice *mChoice;
 

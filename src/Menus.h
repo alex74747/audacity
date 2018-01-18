@@ -133,6 +133,11 @@ void OnSetPlaySpeed();
 void OnPlaySpeedInc();
 void OnPlaySpeedDec();
 
+        // Spectral selection play
+
+void OnPlayFrequencies();
+void OnPlayFrequenciesLooped();
+
         // Selection-Editing Commands
 
 void OnCursorUp();

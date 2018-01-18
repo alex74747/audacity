@@ -2623,7 +2623,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
          mPlayPos = mRegion.t1();
       }
 
-      mProject->GetControlToolBar()->PlayPlayRegion(mPlayPos, mRegion.t1());
+      mProject->GetControlToolBar()->PlayPlayRegion(SelectedRegion(mPlayPos, mRegion.t1()));
    }
 }
 

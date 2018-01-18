@@ -33,6 +33,9 @@ with changes in the SpectralSelectionBar.
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
+#include "SpectralSelectionBar.h"
+#include "SpectralSelectionBarListener.h"
+
 #ifndef WX_PRECOMP
 #include <wx/defs.h>
 #include <wx/button.h>
@@ -47,12 +50,14 @@ with changes in the SpectralSelectionBar.
 #endif
 #include <wx/statline.h>
 
-#include "SpectralSelectionBarListener.h"
-#include "SpectralSelectionBar.h"
-
+#include "ControlToolBar.h"
+#include "../AllThemeResources.h"
 #include "../AudacityApp.h"
+#include "../AudioIO.h"
 #include "../Prefs.h"
+#include "../Project.h"
 #include "../SelectedRegion.h"
+#include "../widgets/AButton.h"
 #include "../widgets/NumericTextCtrl.h"
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
@@ -61,6 +66,7 @@ IMPLEMENT_CLASS(SpectralSelectionBar, ToolBar);
 
 enum {
    SpectralSelectionBarFirstID = 2750,
+   OnPlayId,
    OnCenterID,
    OnWidthID,
    OnLowID,
@@ -70,6 +76,7 @@ enum {
 
 BEGIN_EVENT_TABLE(SpectralSelectionBar, ToolBar)
    EVT_SIZE(SpectralSelectionBar::OnSize)
+   EVT_BUTTON(OnPlayId, SpectralSelectionBar::OnPlay)
    EVT_TEXT(OnCenterID, SpectralSelectionBar::OnCtrl)
    EVT_TEXT(OnWidthID, SpectralSelectionBar::OnCtrl)
    EVT_TEXT(OnLowID, SpectralSelectionBar::OnCtrl)
@@ -144,6 +151,23 @@ void SpectralSelectionBar::Populate()
 
    wxBoxSizer *subSizer = new wxBoxSizer(wxHORIZONTAL);
 
+   mPlayButton = ToolBar::MakeButton(
+      bmpRecoloredUpSmall, bmpRecoloredDownSmall, bmpRecoloredHiliteSmall,
+      bmpPlay, bmpPlay, bmpPlayDisabled,
+      wxWindowID(OnPlayId),
+      wxDefaultPosition,
+      false,
+      theTheme.ImageSize(bmpRecoloredUpSmall));
+   mPlayButton->SetLabel(_("Play selected frequencies"));
+   // Unlike ControlToolBar, does not have a focus rect.  Shouldn't it?
+   // mPlayButton->SetFocusRect( mPlayButton->GetRect().Deflate( 4, 4 ) );
+   subSizer->Add(mPlayButton, 0, wxALIGN_CENTER);
+   ToolBar::MakeAlternateImages(*mPlayButton, 1,
+      bmpRecoloredUpSmall, bmpRecoloredDownSmall, bmpRecoloredHiliteSmall,
+      bmpLoop, bmpLoop, bmpLoopDisabled,
+      theTheme.ImageSize(bmpRecoloredUpSmall));
+   mPlayButton->FollowModifierKeys();
+
    mCenterCtrl = new NumericTextCtrl(
       NumericConverter::FREQUENCY, this, OnCenterID, frequencyFormatName, 0.0);
    mCenterCtrl->SetName(_("Center Frequency:"));
@@ -211,6 +235,49 @@ void SpectralSelectionBar::SetListener(SpectralSelectionBarListener *l)
    SetLogFrequencySelectionFormatName(mListener->SSBL_GetLogFrequencySelectionFormatName());
 };
 
+bool SpectralSelectionBar::PlayIsDown() const
+{
+   return mPlayButton->IsDown();
+}
+
+void SpectralSelectionBar::SetEnabled(bool enabled)
+{
+   mPlayButton->SetEnabled(enabled);
+}
+
+void SpectralSelectionBar::SetPlaying(bool down, bool looped)
+{
+   if (down) {
+      mPlayButton->SetAlternateIdx(looped ? 1 : 0);
+      mPlayButton->PushDown();
+   }
+   else {
+      mPlayButton->SetAlternateIdx(0);
+      mPlayButton->PopUp();
+   }
+}
+
+void SpectralSelectionBar::Play(bool looped)
+{
+   AudacityProject *const p = GetActiveProject();
+   if (!p) {
+      SetPlaying(false, looped);
+      return;
+   }
+   // If IO is busy, abort immediately
+   if (gAudioIO->IsBusy()) {
+      p->GetControlToolBar()->StopPlaying();
+   }
+
+   // NOT asking the ruler for the play region, as with
+   // transcription toolbar, so we don't honor the locked
+   // region.  That makes sense if the point is to play
+   // spectral SELECTION, always.
+   const SelectedRegion &region = p->mViewInfo.selectedRegion;
+   SetPlaying(true, looped);
+   p->GetControlToolBar()->PlayPlayRegion(region, looped, false, NULL);
+}
+
 void SpectralSelectionBar::OnSize(wxSizeEvent &evt)
 {
    Refresh(true);
@@ -268,6 +335,12 @@ void SpectralSelectionBar::ModifySpectralSelection(bool done)
    // Notify project and track panel, which may change
    // the values again, and call back to us in SetFrequencies()
    mListener->SSBL_ModifySpectralSelection(bottom, top, done);
+}
+
+void SpectralSelectionBar::OnPlay(wxCommandEvent &)
+{
+   const bool looped = mPlayButton->WasShiftDown();
+   Play(looped);
 }
 
 void SpectralSelectionBar::OnCtrl(wxCommandEvent & event)
