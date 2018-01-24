@@ -212,6 +212,14 @@ void QuitAudacity();
 #define MAX_AUDIO (1. - 1./(1<<15))
 #define JUST_BELOW_MAX_AUDIO (1.f - 1.f/(1<<14))
 
+// Convenience function for declaring a loop index variable with auto to have
+// the same type as the bound; so you don't fuss over whether it should be int
+// or size_t or something else.  Looks nicer than decltype(T){}
+template<typename T> T InitIndex(T) { return T{}; }
+
+// Two argument alternative.
+template<typename T, typename U>
+   T InitIndex(T /*bound*/, U value) { return T( value ); }
 
 // This renames a good use of this C++ keyword that we don't need to review when hunting for leaks.
 #define PROHIBITED = delete

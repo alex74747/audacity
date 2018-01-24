@@ -4637,7 +4637,7 @@ static void DoSoftwarePlaythrough(const void *inputBuffer,
 
    // One mono input channel goes to both output channels...
    if (inputChannels == 1)
-      for (int i=0; i < len; i++)
+      for (auto i = InitIndex(len); i < len; i++)
          outputBuffer[2*i + 1] = outputBuffer[2*i];
 }
 
@@ -4932,7 +4932,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
          const WaveTrack **chans = (const WaveTrack **) alloca(numPlaybackChannels * sizeof(WaveTrack *));
          float **tempBufs = (float **) alloca(numPlaybackChannels * sizeof(float *));
-         for (unsigned int c = 0; c < numPlaybackChannels; c++)
+         for (auto c = InitIndex(numPlaybackChannels); c < numPlaybackChannels; c++)
          {
             tempBufs[c] = (float *) alloca(framesPerBuffer * sizeof(float));
          }

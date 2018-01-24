@@ -471,7 +471,7 @@ bool VampEffect::Process()
 
          if (request < block)
          {
-            for (unsigned int c = 0; c < channels; ++c)
+            for (auto c = InitIndex(channels); c < channels; ++c)
             {
                for (decltype(block) i = request; i < block; ++i)
                {

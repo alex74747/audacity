@@ -396,7 +396,7 @@ bool EffectCompressor::TwoBufferProcessPass1
       // Initialize the mLastLevel to the peak level in the first buffer
       // This avoids problems with large spike events near the beginning of the track
       mLastLevel = mThreshold;
-      for(size_t i=0; i<len2; i++) {
+      for(auto i = InitIndex(len2); i < len2; i++) {
          if(mLastLevel < fabs(buffer2[i]))
             mLastLevel = fabs(buffer2[i]);
       }
@@ -408,7 +408,7 @@ bool EffectCompressor::TwoBufferProcessPass1
    }
 
    if(buffer1 != NULL) {
-      for (size_t i = 0; i < len1; i++) {
+      for (auto i = InitIndex(len1); i < len1; i++) {
          buffer1[i] = DoCompression(buffer1[i], mFollow1[i]);
       }
    }
@@ -429,7 +429,7 @@ bool EffectCompressor::ProcessPass2(float *buffer, size_t len)
 {
    if (mMax != 0)
    {
-      for (size_t i = 0; i < len; i++)
+      for (auto i = InitIndex(len); i < len; i++)
          buffer[i] /= mMax;
    }
 
@@ -505,7 +505,7 @@ void EffectCompressor::Follow(float *buffer, float *env, size_t len, float *prev
    }
    // First apply a peak detect with the requested decay rate
    last = mLastLevel;
-   for(size_t i=0; i<len; i++) {
+   for(auto i = InitIndex(len); i < len; i++) {
       if(mUsePeak)
          level = fabs(buffer[i]);
       else // use RMS
@@ -529,7 +529,7 @@ void EffectCompressor::Follow(float *buffer, float *env, size_t len, float *prev
 
    // Next do the same process in reverse direction to get the requested attack rate
    last = mLastLevel;
-   for(size_t i = len; i--;) {
+   for(auto i = len; i--;) {
       last *= mAttackInverseFactor;
       if(last < mThreshold)
          last = mThreshold;
@@ -541,7 +541,7 @@ void EffectCompressor::Follow(float *buffer, float *env, size_t len, float *prev
 
    if((previous != NULL) && (previous_len > 0)) {
       // If the previous envelope was passed, propagate the rise back until we intersect
-      for(size_t i = previous_len; i--;) {
+      for(auto i = previous_len; i--;) {
          last *= mAttackInverseFactor;
          if(last < mThreshold)
             last = mThreshold;
@@ -553,7 +553,7 @@ void EffectCompressor::Follow(float *buffer, float *env, size_t len, float *prev
       // If we can't back up far enough, project the starting level forward
       // until we intersect the desired envelope
       last = previous[0];
-      for(size_t i=1; i<previous_len; i++) {
+      for(auto i = InitIndex(previous_len, 1u); i < previous_len; i++) {
          last *= mAttackFactor;
          if(previous[i] > last)
             previous[i] = last;
@@ -561,7 +561,7 @@ void EffectCompressor::Follow(float *buffer, float *env, size_t len, float *prev
             return;
       }
       // If we still didn't intersect, then continue ramp up into current buffer
-      for(size_t i=0; i<len; i++) {
+      for(auto i = InitIndex(len); i < len; i++) {
          last *= mAttackFactor;
          if(buffer[i] > last)
             buffer[i] = last;

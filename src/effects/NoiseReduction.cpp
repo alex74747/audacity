@@ -702,7 +702,7 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
       std::fill(pScratch, pScratch + mSpectrumSize, 0.0f);
    }
 
-   for (size_t ii = 0; ii < mSpectrumSize; ++ii)
+   for (auto ii = InitIndex(mSpectrumSize); ii < mSpectrumSize; ++ii)
       gains[ii] = log(gains[ii]);
 
    // ii must be signed
@@ -715,7 +715,7 @@ void EffectNoiseReduction::Worker::ApplyFreqSmoothing(FloatVector &gains)
       mFreqSmoothingScratch[ii] /= (j1 - j0 + 1);
    }
 
-   for (size_t ii = 0; ii < mSpectrumSize; ++ii)
+   for (auto ii = InitIndex(mSpectrumSize); ii < mSpectrumSize; ++ii)
       gains[ii] = exp(mFreqSmoothingScratch[ii]);
 }
 
@@ -959,8 +959,8 @@ void EffectNoiseReduction::Worker::FillFirstHistoryWindow()
       float *pImag = &record.mImagFFTs[1];
       float *pPower = &record.mSpectrums[1];
       int *pBitReversed = &hFFT->BitReversed[1];
-      const auto last = mSpectrumSize - 1;
-      for (unsigned int ii = 1; ii < last; ++ii) {
+      auto last = mSpectrumSize - 1;
+      for (auto ii = InitIndex(last, 1); ii < last; ++ii) {
          const int kk = *pBitReversed++;
          const float realPart = *pReal++ = mFFTBuffer[kk];
          const float imagPart = *pImag++ = mFFTBuffer[kk + 1];
@@ -1036,7 +1036,7 @@ void EffectNoiseReduction::Worker::GatherStatistics(Statistics &statistics)
       // NEW statistics
       const float *pPower = &mQueue[0]->mSpectrums[0];
       float *pSum = &statistics.mSums[0];
-      for (size_t jj = 0; jj < mSpectrumSize; ++jj) {
+      for (auto jj = InitIndex(mSpectrumSize); jj < mSpectrumSize; ++jj) {
          *pSum++ += *pPower++;
       }
    }
@@ -1173,7 +1173,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
 
       // First, the attack, which goes backward in time, which is,
       // toward higher indices in the queue.
-      for (size_t jj = 0; jj < mSpectrumSize; ++jj) {
+      for (auto jj = InitIndex(mSpectrumSize); jj < mSpectrumSize; ++jj) {
          for (unsigned ii = mCenter + 1; ii < mHistoryLen; ++ii) {
             const float minimum =
                std::max(mNoiseAttenFactor,
@@ -1253,7 +1253,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
          float *pOut = &mOutOverlapBuffer[0];
          float *pWindow = &mOutWindow[0];
          int *pBitReversed = &hFFT->BitReversed[0];
-         for (unsigned int jj = 0; jj < last; ++jj) {
+         for (auto jj = InitIndex(last); jj < last; ++jj) {
             int kk = *pBitReversed++;
             *pOut++ += mFFTBuffer[kk] * (*pWindow++);
             *pOut++ += mFFTBuffer[kk + 1] * (*pWindow++);
@@ -1262,7 +1262,7 @@ void EffectNoiseReduction::Worker::ReduceNoise
       else {
          float *pOut = &mOutOverlapBuffer[0];
          int *pBitReversed = &hFFT->BitReversed[0];
-         for (unsigned int jj = 0; jj < last; ++jj) {
+         for (auto jj = InitIndex(last); jj < last; ++jj) {
             int kk = *pBitReversed++;
             *pOut++ += mFFTBuffer[kk];
             *pOut++ += mFFTBuffer[kk + 1];

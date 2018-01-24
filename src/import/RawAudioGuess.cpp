@@ -328,7 +328,7 @@ static int GuessFloatFormats(unsigned numTests, const ArrayOf<char> rawData[], s
     * floats with a 1-byte offset.
     */
 
-   for(unsigned int prec = 0; prec < 2; prec++) {
+   for(unsigned int prec = 0; prec < 2u; prec++) {
       for(int endian = 0; endian < 2; endian++) {
          for(size_t offset = 0; offset < (4 * prec + 4); offset++) {
             unsigned finiteVotes = 0;

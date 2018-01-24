@@ -296,7 +296,7 @@ Mixer::Mixer(const WaveTrackConstArray &inputTracks,
 
    mBuffer.reinit(mNumBuffers);
    mTemp.reinit(mNumBuffers);
-   for (unsigned int c = 0; c < mNumBuffers; c++) {
+   for (auto c = InitIndex(mNumBuffers); c < mNumBuffers; c++) {
       mBuffer[c].Allocate(mInterleavedBufferSize, mFormat);
       mTemp[c].Allocate(mInterleavedBufferSize, floatSample);
    }
@@ -354,7 +354,7 @@ void Mixer::ApplyTrackGains(bool apply)
 
 void Mixer::Clear()
 {
-   for (unsigned int c = 0; c < mNumBuffers; c++) {
+   for (auto c = InitIndex(mNumBuffers); c < mNumBuffers; c++) {
       memset(mTemp[c].ptr(), 0, mInterleavedBufferSize * SAMPLE_SIZE(floatSample));
    }
 }
@@ -363,7 +363,7 @@ void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
                 samplePtr src, SampleBuffer *dests,
                 int len, bool interleaved)
 {
-   for (unsigned int c = 0; c < numChannels; c++) {
+   for (auto c = InitIndex(numChannels); c < numChannels; c++) {
       if (!channelFlags[c])
          continue;
 
@@ -746,8 +746,8 @@ MixerSpec::MixerSpec( unsigned numTracks, unsigned maxNumChannels )
 
    Alloc();
 
-   for( unsigned int i = 0; i < mNumTracks; i++ )
-      for( unsigned int j = 0; j < mNumChannels; j++ )
+   for( auto i = InitIndex(mNumTracks); i < mNumTracks; i++ )
+      for( auto j = InitIndex(mNumChannels); j < mNumChannels; j++ )
          mMap[ i ][ j ] = ( i == j );
 }
 
@@ -759,8 +759,8 @@ MixerSpec::MixerSpec( const MixerSpec &mixerSpec )
 
    Alloc();
 
-   for( unsigned int i = 0; i < mNumTracks; i++ )
-      for( unsigned int j = 0; j < mNumChannels; j++ )
+   for( auto i = InitIndex(mNumTracks); i < mNumTracks; i++ )
+      for( auto j = InitIndex(mNumChannels); j < mNumChannels; j++ )
          mMap[ i ][ j ] = mixerSpec.mMap[ i ][ j ];
 }
 
@@ -781,12 +781,12 @@ bool MixerSpec::SetNumChannels( unsigned newNumChannels )
    if( newNumChannels > mMaxNumChannels )
       return false;
 
-   for( unsigned int i = 0; i < mNumTracks; i++ )
+   for( auto i = InitIndex(mNumTracks); i < mNumTracks; i++ )
    {
-      for( unsigned int j = newNumChannels; j < mNumChannels; j++ )
+      for( auto j = InitIndex(newNumChannels); j < mNumChannels; j++ )
          mMap[ i ][ j ] = false;
 
-      for( unsigned int j = mNumChannels; j < newNumChannels; j++ )
+      for( auto j = InitIndex(newNumChannels); j < newNumChannels; j++ )
          mMap[ i ][ j ] = false;
    }
 
@@ -802,8 +802,8 @@ MixerSpec& MixerSpec::operator=( const MixerSpec &mixerSpec )
 
    Alloc();
 
-   for( unsigned int i = 0; i < mNumTracks; i++ )
-      for( unsigned int j = 0; j < mNumChannels; j++ )
+   for( auto i = InitIndex(mNumTracks); i < mNumTracks; i++ )
+      for( auto j = InitIndex(mNumChannels); j < mNumChannels; j++ )
          mMap[ i ][ j ] = mixerSpec.mMap[ i ][ j ];
 
    return *this;

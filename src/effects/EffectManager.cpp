@@ -605,7 +605,7 @@ size_t EffectManager::RealtimeProcess(int group, unsigned chans, float **buffers
 
    // And populate the input with the buffers we've been given while allocating
    // NEW output buffers
-   for (unsigned int i = 0; i < chans; i++)
+   for (auto i = InitIndex(chans); i < chans; i++)
    {
       ibuf[i] = buffers[i];
       obuf[i] = (float *) alloca(numSamples * sizeof(float));
@@ -622,7 +622,7 @@ size_t EffectManager::RealtimeProcess(int group, unsigned chans, float **buffers
          called++;
       }
 
-      for (unsigned int j = 0; j < chans; j++)
+      for (auto j = InitIndex(chans); j < chans; j++)
       {
          float *temp;
          temp = ibuf[j];
@@ -637,7 +637,7 @@ size_t EffectManager::RealtimeProcess(int group, unsigned chans, float **buffers
    // is odd.
    if (called & 1)
    {
-      for (unsigned int i = 0; i < chans; i++)
+      for (auto i = InitIndex(chans); i < chans; i++)
       {
          memcpy(buffers[i], ibuf[i], numSamples * sizeof(float));
       }

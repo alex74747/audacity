@@ -788,7 +788,7 @@ ProgressResult FFmpegImportFileHandle::WriteData(streamContext *sc)
 
    // Write audio into WaveTracks
    auto iter2 = iter->begin();
-   for (size_t chn=0; chn < nChannels; ++iter2, ++chn)
+   for (auto chn = InitIndex(nChannels); chn < nChannels; ++iter2, ++chn)
    {
       iter2->get()->Append((samplePtr)tmp[chn].get(), sc->m_osamplefmt, index);
    }

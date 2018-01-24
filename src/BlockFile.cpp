@@ -346,7 +346,7 @@ void BlockFile::FixSummary(void *data)
       unsigned int *buffer = (unsigned int *)data;
       auto len = mSummaryInfo.totalSummaryBytes / 4;
 
-      for(unsigned int i=0; i<len; i++)
+      for(auto i = InitIndex(len); i<len; i++)
          buffer[i] = wxUINT32_SWAP_ALWAYS(buffer[i]);
 
       ComputeMinMax256(summary256, &min, &max, &bad);
@@ -356,7 +356,7 @@ void BlockFile::FixSummary(void *data)
       }
 
       // Hmmm, no better, we should swap back
-      for(unsigned i=0; i<len; i++)
+      for(auto i = InitIndex(len); i<len; i++)
          buffer[i] = wxUINT32_SWAP_ALWAYS(buffer[i]);
    }
 }
@@ -576,7 +576,7 @@ size_t BlockFile::CommonReadData(
             // significant bytes -- we want it in the 3 least
             // significant bytes.
             int *intPtr = (int *)data;
-            for( size_t i = 0; i < framesRead; i++ )
+            for( auto i = InitIndex(framesRead); i < framesRead; i++ )
                intPtr[i] = intPtr[i] >> 8;
          }
          else if (format == int16Sample &&
@@ -588,7 +588,7 @@ size_t BlockFile::CommonReadData(
             SampleBuffer buffer(len * channels, int16Sample);
             framesRead = SFCall<sf_count_t>(
                sf_readf_short, sf.get(), (short *)buffer.ptr(), len);
-            for (size_t i = 0; i < framesRead; i++)
+            for (auto i = InitIndex(framesRead); i < framesRead; i++)
                ((short *)data)[i] =
                ((short *)buffer.ptr())[(channels * i) + channel];
          }

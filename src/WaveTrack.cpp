@@ -1974,7 +1974,7 @@ bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
       {
          wxASSERT( format==floatSample );
          float * pBuffer = (float*)buffer;
-         for(size_t i=0;i<len;i++)
+         for(auto i = InitIndex(len); i < len; i++)
             pBuffer[i]=2.0f;
       }
       else

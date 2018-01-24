@@ -272,8 +272,8 @@ Envelope::Envelope(const Envelope &orig)
 
 void Envelope::CopyRange(const Envelope &orig, size_t begin, size_t end)
 {
-   size_t len = orig.mEnv.size();
-   size_t i = begin;
+   auto len = orig.mEnv.size();
+   auto i = begin;
 
    // Create the point at 0 if it needs interpolated representation
    if ( i > 0 )
@@ -917,7 +917,7 @@ std::pair< int, int > Envelope::ExpandRegion
 
    // Shift points.
    auto len = mEnv.size();
-   for ( unsigned int ii = index; ii < len; ++ii ) {
+   for ( auto ii = InitIndex(len, index); ii < len; ++ii ) {
       auto &point = mEnv[ ii ];
       point.SetT( point.GetT() + tlen );
    }

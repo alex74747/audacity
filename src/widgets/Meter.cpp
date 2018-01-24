@@ -483,7 +483,7 @@ void Meter::OnPaint(wxPaintEvent & WXUNUSED(event))
       wxColor red(255, 0, 0);
    
       // Draw the meter bars at maximum levels
-      for (unsigned int i = 0; i < mNumBars; i++)
+      for (auto i = InitIndex(mNumBars); i < mNumBars; i++)
       {
          // Give it a recessed look
          AColor::Bevel(dc, false, mBar[i].b);
@@ -588,7 +588,7 @@ void Meter::OnPaint(wxPaintEvent & WXUNUSED(event))
    destDC.DrawBitmap(*mBitmap, 0, 0);
 
    // Go draw the meter bars, Left & Right channels using current levels
-   for (unsigned int i = 0; i < mNumBars; i++)
+   for (auto i = InitIndex(mNumBars); i < mNumBars; i++)
    {
       DrawMeterBar(destDC, &mBar[i]);
    }
@@ -929,8 +929,8 @@ void Meter::UpdateDisplay(unsigned numChannels, int numFrames, float *sampleData
    memset(&msg, 0, sizeof(msg));
    msg.numFrames = numFrames;
 
-   for(int i=0; i<numFrames; i++) {
-      for(unsigned int j=0; j<num; j++) {
+   for(auto i = InitIndex(numFrames); i < numFrames; i++) {
+      for(auto j = InitIndex(num); j<num; j++) {
          msg.peak[j] = floatMax(msg.peak[j], fabs(sptr[j]));
          msg.rms[j] += sptr[j]*sptr[j];
 
@@ -950,7 +950,7 @@ void Meter::UpdateDisplay(unsigned numChannels, int numFrames, float *sampleData
       }
       sptr += numChannels;
    }
-   for(unsigned int j=0; j<mNumBars; j++)
+   for(auto j = InitIndex(mNumBars); j < mNumBars; j++)
       msg.rms[j] = sqrt(msg.rms[j]/numFrames);
 
    mQueue.Put(msg);
@@ -1026,7 +1026,7 @@ void Meter::OnMeterUpdate(wxTimerEvent & WXUNUSED(event))
       double deltaT = msg.numFrames / mRate;
 
       mT += deltaT;
-      for(unsigned int j=0; j<mNumBars; j++) {
+      for(auto j = InitIndex(mNumBars); j < mNumBars; j++) {
          mBar[j].isclipping = false;
 
          //
@@ -1101,7 +1101,7 @@ float Meter::GetMaxPeak() const
 {
    float maxPeak = 0.;
 
-   for(unsigned int j=0; j<mNumBars; j++)
+   for(auto j = InitIndex(mNumBars); j < mNumBars; j++)
       maxPeak = mBar[j].peak > maxPeak ? mBar[j].peak : maxPeak;
 
    return(maxPeak);
@@ -1535,7 +1535,7 @@ void Meter::RepaintBarsNow()
    if (mLayoutValid)
    {
       // Invalidate the bars so they get redrawn
-      for (unsigned int i = 0; i < mNumBars; i++)
+      for (auto i = InitIndex(mNumBars); i < mNumBars; i++)
       {
          Refresh(false);
       }
@@ -2246,7 +2246,7 @@ wxAccStatus MeterAx::GetName(int WXUNUSED(childId), wxString* name)
 
       float peak = 0.;
       bool clipped = false;
-      for (unsigned int i = 0; i < m->mNumBars; i++)
+      for (auto i = InitIndex(m->mNumBars); i < m->mNumBars; i++)
       {
          peak = wxMax(peak, m->mBar[i].peakPeakHold);
          if (m->mBar[i].clipping)
