@@ -1236,6 +1236,7 @@ public:
 
 //-- Start and end functions.  These are used for sizer, or other window containers
 //   and create the appropriate widget.
+
    void StartHorizontalLay(int PositionFlags=wxALIGN_CENTRE, int iProp=1);
    void EndHorizontalLay();
 
@@ -1248,7 +1249,7 @@ public:
 
    wxScrolledWindow * StartScroller(int iStyle=0);
    void EndScroller();
-   wxPanel * StartPanel(int iStyle=0);
+   wxPanel * StartPanel(int iStyle = 0, int border = 2); // not -1
    void EndPanel();
    void StartMultiColumn(int nCols, int PositionFlags=wxALIGN_LEFT);
    void EndMultiColumn();
@@ -1273,7 +1274,7 @@ public:
 
    void EndNotebookPage();
 
-   wxPanel * StartInvisiblePanel();
+   wxPanel * StartInvisiblePanel( int border = 0 ); // not -1
    void EndInvisiblePanel();
 
    // Introduce a sequence of calls to AddRadioButton.

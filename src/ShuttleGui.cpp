@@ -1486,7 +1486,7 @@ void ShuttleGuiBase::EndScroller()
    mpState -> mpParent = mpState -> mpParent->GetParent();
 }
 
-wxPanel * ShuttleGuiBase::StartPanel(int iStyle)
+wxPanel * ShuttleGuiBase::StartPanel(int iStyle, int border)
 {
    UseUpId();
    wxPanel * pPanel;
@@ -1502,7 +1502,8 @@ wxPanel * ShuttleGuiBase::StartPanel(int iStyle)
          );
    }
    SetProportions(0);
-   mpState -> miBorder=2;
+   if (border >= 0)
+      mpState -> miBorder = border;
    UpdateSizers();  // adds window in to current sizer.
 
    // create a sizer within the window...
@@ -1615,7 +1616,7 @@ void InvisiblePanel::OnPaint( wxPaintEvent & WXUNUSED(event))
    // event.Skip(); // swallow the paint event.
 }
 
-wxPanel * ShuttleGuiBase::StartInvisiblePanel()
+wxPanel * ShuttleGuiBase::StartInvisiblePanel(int border)
 {
    UseUpId();
    wxPanel * pPanel;
@@ -1626,7 +1627,8 @@ wxPanel * ShuttleGuiBase::StartInvisiblePanel()
       wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE)
       );
    SetProportions( 1 );
-   mpState -> miBorder=0;
+   if (border >= 0)
+      mpState -> miBorder = border;
    UpdateSizers();  // adds window in to current sizer.
 
    // create a sizer within the window...
