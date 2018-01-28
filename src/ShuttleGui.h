@@ -149,6 +149,9 @@ struct GroupOptions {
    GroupOptions &Proportion( int prop )
    { proportion = prop; return *this; }
 
+   GroupOptions &Border( int bor )
+   { border = bor; return *this; }
+
    GroupOptions &StretchyRow( size_t row )
    { stretchyRows.push_back(row); return *this; }
 
@@ -157,6 +160,7 @@ struct GroupOptions {
 
    int positionFlags { wxALIGN_LEFT };
    int proportion{ 0 };
+   int border{ -1 };
    std::vector<size_t> stretchyRows, stretchyColumns;
 };
 
@@ -1257,18 +1261,23 @@ public:
 
 //-- Start and end functions.  These are used for sizer, or other window containers
 //   and create the appropriate widget.
+// Each can take a border argument, which if nonnegative applies to every
+// control within the group, except where a nested group specifies another
+// border; and, in case of static boxes only, to the group itself within its
+// immediately containing group.
 
-   void StartHorizontalLay(int PositionFlags=wxALIGN_CENTRE, int iProp=1);
+   void StartHorizontalLay(
+      int PositionFlags = wxALIGN_CENTRE, int iProp = 1, int border = -1);
    void EndHorizontalLay();
 
-   void StartVerticalLay(int iProp=1);
-   void StartVerticalLay(int PositionFlags, int iProp);
+   void StartVerticalLay(int iProp = 1, int border = -1);
+   void StartVerticalLay2(int PositionFlags, int iProp, int border = -1);
    void EndVerticalLay();
 
-   void StartWrapLay(int PositionFlags=wxEXPAND, int iProp = 0);
+   void StartWrapLay(int PositionFlags=wxEXPAND, int iProp = 0, int border = -1);
    void EndWrapLay();
 
-   wxScrolledWindow * StartScroller(int iStyle=0);
+   wxScrolledWindow * StartScroller(int iStyle=0, int border = -1);
    void EndScroller();
    wxPanel * StartPanel(int iStyle = 0, int border = 2); // not -1
    void EndPanel();
@@ -1285,9 +1294,11 @@ public:
    { StartMultiColumn(3, options); }
    void EndThreeColumn(){ EndMultiColumn(); }
 
-   wxStaticBox * StartStatic( const TranslatableString & Str, int iProp=0 );
+   wxStaticBox * StartStatic(
+      const TranslatableString & Str, int iProp = 0, int border = -1 );
    void EndStatic();
 
+   // No border arugment here.  That's in StartNotebookPage.
    wxNotebook * StartNotebook();
    void EndNotebook();
 
@@ -1296,7 +1307,8 @@ public:
 
    // Use within any kind of book control:
    // IDs of notebook pages cannot be chosen by the caller
-   wxNotebookPage * StartNotebookPage( const TranslatableString & Name );
+   wxNotebookPage * StartNotebookPage(
+      const TranslatableString & Name, int border = -1 );
 
    void EndNotebookPage();
 
@@ -1357,7 +1369,8 @@ public:
       long buttons = eOkButton | eCancelButton,
       DialogDefinition::Items items = {},
       wxWindow *extra = nullptr,
-      DialogDefinition::Item extraItem = {});
+      DialogDefinition::Item extraItem = {},
+      int border = -1 );
 
    wxSizerItem * AddSpace( int width, int height, int prop = 0 );
    wxSizerItem * AddSpace( int size ) { return AddSpace( size, size ); };

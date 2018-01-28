@@ -1380,7 +1380,8 @@ ShuttleGuiBase & ShuttleGuiBase::Prop( int iProp )
 ///  @param iProp The resizing proportion value.
 /// Use iProp == 0 for a minimum sized static box.
 /// Use iProp == 1 for a box that grows if there is space to spare.
-wxStaticBox * ShuttleGuiBase::StartStatic(const TranslatableString &Str, int iProp)
+wxStaticBox * ShuttleGuiBase::StartStatic(
+   const TranslatableString &Str, int iProp, int border)
 {
    UseUpId();
    auto translated = Str.Translation();
@@ -1421,7 +1422,7 @@ void ShuttleGuiBase::EndStatic()
 /// dynamically repopulates a dialog.  It also controls the
 /// background colour.  Look at the code for details.
 ///  @param istyle deprecated parameter, but has been used for hacking.
-wxScrolledWindow * ShuttleGuiBase::StartScroller(int iStyle)
+wxScrolledWindow * ShuttleGuiBase::StartScroller(int iStyle, int border)
 {
    UseUpId();
 
@@ -1541,7 +1542,7 @@ void ShuttleGuiBase::EndSimplebook()
 
 
 wxNotebookPage * ShuttleGuiBase::StartNotebookPage(
-   const TranslatableString & Name )
+   const TranslatableString & Name, int border )
 {
    auto pNotebook = static_cast< wxBookCtrlBase* >( mpState -> mpParent );
    wxNotebookPage * pPage = safenew wxPanelWrapper(GetParent());
@@ -1633,7 +1634,8 @@ void ShuttleGuiBase::EndInvisiblePanel()
 ///  - Use wxCENTRE and 1 for no expansion.
 /// @param PositionFlag  Typically wxEXPAND or wxALIGN_CENTER.
 /// @param iProp         Proportionality for resizing.
-void ShuttleGuiBase::StartHorizontalLay( int PositionFlags, int iProp)
+void ShuttleGuiBase::StartHorizontalLay(
+   int PositionFlags, int iProp, int border )
 {
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxHORIZONTAL );
@@ -1646,14 +1648,14 @@ void ShuttleGuiBase::EndHorizontalLay()
    mpState -> PopSizer();
 }
 
-void ShuttleGuiBase::StartVerticalLay(int iProp)
+void ShuttleGuiBase::StartVerticalLay(int iProp, int border)
 {
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxVERTICAL );
    UpdateSizers();
 }
 
-void ShuttleGuiBase::StartVerticalLay(int PositionFlags, int iProp)
+void ShuttleGuiBase::StartVerticalLay2(int PositionFlags, int iProp, int border)
 {
    miSizerProp=iProp;
    mpSubSizer = std::make_unique<wxBoxSizer>( wxVERTICAL );
@@ -1666,7 +1668,7 @@ void ShuttleGuiBase::EndVerticalLay()
    mpState -> PopSizer();
 }
 
-void ShuttleGuiBase::StartWrapLay(int PositionFlags, int iProp)
+void ShuttleGuiBase::StartWrapLay(int PositionFlags, int iProp, int border)
 {
    miSizerProp = iProp;
    mpSubSizer = std::make_unique<wxWrapSizer>(wxHORIZONTAL, 0);
@@ -2328,9 +2330,10 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(
 
 void ShuttleGuiBase::AddStandardButtons(
    long buttons, DialogDefinition::Items items, wxWindow *extra,
-   DialogDefinition::Item extraItem )
+   DialogDefinition::Item extraItem,
+   int border)
 {
-   StartVerticalLay( false );
+   StartVerticalLay( false, border );
 
    miSizerProp = false;
    mpSubSizer = CreateStdButtonSizer(
@@ -2338,7 +2341,7 @@ void ShuttleGuiBase::AddStandardButtons(
       mpState -> mpValidationState,
       buttons, items, extra, extraItem );
    UpdateSizers();
-   mpState -> PopSizer();
+   mpState -> PopSizer(); // to complement UpdateSizers
 
    EndVerticalLay();
 }
