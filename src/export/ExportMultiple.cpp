@@ -380,8 +380,6 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             S.EndMultiColumn();
          }
          S.EndMultiColumn();
-
-         S.SetBorder(3);
       }
       S.EndStatic();
 
