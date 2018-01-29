@@ -722,8 +722,6 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
    const auto eitherEnabler = [saveEnabler, exportEnabler]{ return
       saveEnabler() || exportEnabler(); };
 
-   S.SetBorder(5);
-
    using Options = NumericTextCtrl::Options;
    /* i18n-hint a format string for hours, minutes, and seconds */
    auto strFormat = XO("099 h 060 m 060 s");

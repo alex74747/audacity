@@ -281,8 +281,6 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
       GetCurrentSettingsGroup(),
       L"VinylChoice", mFromVinyl, mFromVinyl);
 
-   S.SetBorder(5);
-
    S.StartVerticalLay(0);
    {
       S.AddSpace(0, 5);

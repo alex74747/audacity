@@ -349,7 +349,6 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
 
    S.StartVerticalLay(false);
    {
-      S.SetBorder(5);
       S.StartTwoColumn();
       {
          S
@@ -372,7 +371,6 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
       }
       S.EndTwoColumn();
 
-      S.SetBorder(5);
       S.StartMultiColumn(3);
       {
          // Offset text

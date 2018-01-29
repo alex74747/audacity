@@ -2258,4 +2258,3 @@ int Effect::MessageBox( const TranslatableString& message,
    return AudacityMessageBox( message, title, style, mUIParent );
 }
 
-

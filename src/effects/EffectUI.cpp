@@ -2015,7 +2015,6 @@ void EffectDialog::Init()
 {
    ShuttleGui S(this);
 
-   S.SetBorder(5);
    S.StartVerticalLay(true);
    {
       PopulateOrExchange(S);
