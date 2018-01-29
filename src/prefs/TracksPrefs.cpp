@@ -276,8 +276,7 @@ ManualPageID TracksPrefs::HelpPageName()
 
 void TracksPrefs::PopulateOrExchange(ShuttleGui & S)
 {
-   S.SetBorder(2);
-   S.StartScroller();
+   S.StartScroller(0, 2);
 
    S
       .StartStatic(XO("Display"));

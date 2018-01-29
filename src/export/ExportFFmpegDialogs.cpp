@@ -1864,10 +1864,9 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
                .Assign(mCodecList);
          }
          S.EndMultiColumn();
-         S.StartVerticalLay();
+         S.StartVerticalLay(1, 3);
          {
             //S.StartScroller( );
-            S.SetBorder( 3 );
             S.StartStatic(XO("General Options"), 0);
             {
                S.StartMultiColumn(8, wxEXPAND);
@@ -2073,7 +2072,6 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
             }
             S.EndStatic();
             //S.EndScroller();
-            S.SetBorder( 5 );
 
             S
                .AddStandardButtons( eCancelButton, {

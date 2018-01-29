@@ -394,8 +394,7 @@ void RateMenuTable::OnRateOther()
       using namespace DialogDefinition;
       S.StartVerticalLay(true);
       {
-         S.SetBorder(10);
-         S.StartHorizontalLay(wxEXPAND, false);
+         S.StartHorizontalLay(wxEXPAND, false, 10);
          {
             S
                .Target( Choice( rate, Verbatim( rates ) ) )
