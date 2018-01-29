@@ -1553,7 +1553,6 @@ void EffectUIHost::OnSaveAs()
                .Assign( text );
          }
          S.EndHorizontalLay();
-         S.SetBorder(10);
          S.AddStandardButtons();
       }
       S.EndVerticalLay();

@@ -106,7 +106,6 @@ void HelpSystem::ShowInfoDialog( wxWindow *parent,
             wxTE_AUTO_URL | wxTE_NOHIDESEL | wxHSCROLL )
          .AddTextWindow(message);
 
-      S.SetBorder( 0 );
       S.StartHorizontalLay(wxALIGN_CENTER_HORIZONTAL, 0);
       {
          S
