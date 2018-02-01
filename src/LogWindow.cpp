@@ -110,8 +110,10 @@ void LogWindow::Show(bool show)
    {
       S.StartVerticalLay(true);
       {
-         sText = S.Style(wxTE_MULTILINE | wxHSCROLL | wxTE_READONLY | wxTE_RICH)
-            .AddTextWindow({});
+         wxTextCtrl *pText =
+         S.Style(wxTE_MULTILINE | wxHSCROLL | wxTE_READONLY | wxTE_RICH)
+            .AddTextWindow({}); // Populate this text window below
+         sText = pText;
          
          // Populated TextWindow created above
          if (pLogger) *sText << pLogger->GetBuffer();
