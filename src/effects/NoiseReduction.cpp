@@ -1370,6 +1370,7 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(3,
          GroupOptions{}.Position(wxEXPAND).StretchyColumn(2));
       {
+         //
          for (const auto &info : controlInfo())
             info.CreateControls(mTempSettings.*(info.field), S);
       }
@@ -1479,6 +1480,7 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(3,
          GroupOptions{}.Position(wxEXPAND).StretchyColumn(2));
       {
+         //
          for ( const auto &info : advancedControlInfo() )
             info.CreateControls(mTempSettings.*(info.field), S);
       }
