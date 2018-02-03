@@ -1178,9 +1178,8 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
       {
          S.StartStatic( XO("Effect Settings") );
          {
-            S.StartMultiColumn(5);
+            S.StartMultiColumn(5, GroupOptions{}.StretchyColumn(3));
             {
-               S.SetStretchyCol( 3 );
                wxControl *item;
 
                // Add the duration control for generators
@@ -1383,10 +1382,8 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
       {
          S.StartStatic( XO("Effect Output") );
          {
-            S.StartMultiColumn( 2 );
+            S.StartMultiColumn( 2, GroupOptions{}.StretchyColumn( 1 ) );
             {
-               S.SetStretchyCol( 1 );
-
                wxControl *item;
 
                for (unsigned long p = 0; p < mData->PortCount; p++)
