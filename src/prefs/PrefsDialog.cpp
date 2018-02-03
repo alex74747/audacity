@@ -468,6 +468,7 @@ PrefsDialog::PrefsDialog(
 
    S.StartVerticalLay(true);
    {
+      //
       if (!uniquePage) {
          S.StartHorizontalLay(wxALIGN_LEFT | wxEXPAND, true);
          {

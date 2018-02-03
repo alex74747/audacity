@@ -847,6 +847,7 @@ void NyqBench::PopulateOrExchange(ShuttleGui & S)
       wxStaticBoxSizer *outputs;
       wxBoxSizer *bs;
 
+      //
       mSplitter = new wxSplitterWindow(this,
                                        wxID_ANY,
                                        wxDefaultPosition,
@@ -854,7 +855,8 @@ void NyqBench::PopulateOrExchange(ShuttleGui & S)
                                        wxSP_LIVE_UPDATE |
                                        wxSP_3DSASH |
                                        wxSP_NOBORDER);
-      
+
+      //
       scriptp = new wxPanel(mSplitter,
                             wxID_ANY,
                             wxDefaultPosition,
@@ -864,6 +866,7 @@ void NyqBench::PopulateOrExchange(ShuttleGui & S)
       bs = new wxBoxSizer(wxVERTICAL);
       scriptp->SetSizer(bs);
 
+      //
       mScriptBox = new wxStaticBox(scriptp,
                                    wxID_ANY,
                                    _("Script"));
@@ -872,6 +875,7 @@ void NyqBench::PopulateOrExchange(ShuttleGui & S)
                                      wxVERTICAL);
       bs->Add(scripts, true, wxEXPAND);
 
+      //etc
       mScript = new NyqTextCtrl(scriptp,
                                 ID_SCRIPT,
                                 wxEmptyString,

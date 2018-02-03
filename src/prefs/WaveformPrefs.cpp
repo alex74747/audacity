@@ -82,6 +82,8 @@ void WaveformPrefs::PopulateOrExchange(ShuttleGui & S)
 
    // S.StartStatic(XO("Track Settings"));
    {
+      //
+      //
       if (mWt) {
          S
             .Id(ID_DEFAULTS)

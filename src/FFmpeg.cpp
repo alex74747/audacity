@@ -143,6 +143,8 @@ public:
                                .Border(3)
                                .StretchyColumn(0));
          {
+            //
+            //
             if (mFullPath.GetFullPath().empty())
             {
                S
