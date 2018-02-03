@@ -1467,6 +1467,7 @@ void ShuttleGuiBase::EndScroller()
    mpState -> mpParent->SetMinSize( wxSize(xMin, yMin) );
 
    mpState -> PopSizer();
+   auto pScroller = static_cast<wxScrolledWindow*>(mpState -> mpParent);
    mpState -> mpParent = mpState -> mpParent->GetParent();
 }
 
@@ -1500,6 +1501,7 @@ wxPanel * ShuttleGuiBase::StartPanel(int iStyle, int border)
 void ShuttleGuiBase::EndPanel()
 {
    mpState -> PopSizer();
+   auto pPanel = static_cast<wxPanel*>(mpState -> mpParent);
    mpState -> mpParent = mpState -> mpParent->GetParent();
 }
 
