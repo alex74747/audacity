@@ -322,6 +322,7 @@ private:
 protected:
    std::shared_ptr<TrackControls> GetControls() override;
    std::shared_ptr<TrackVRulerControls> GetVRulerControls() override;
+   friend class GetInfoCommand;
 };
 
 #endif
