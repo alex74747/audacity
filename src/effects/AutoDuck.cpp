@@ -403,7 +403,7 @@ bool EffectAutoDuck::Process()
       SelectedTrackListOfKindIterator iter(Track::Wave, mOutputTracks.get());
       Track *iterTrack = iter.First();
 
-      int trackNumber = 0;
+      int trackNum = 0;
 
       while (iterTrack)
       {
@@ -412,7 +412,7 @@ bool EffectAutoDuck::Process()
          for (size_t i = 0; i < regions.GetCount(); i++)
          {
             const AutoDuckRegion& region = regions[i];
-            if (ApplyDuckFade(trackNumber, t, region.t0, region.t1))
+            if (ApplyDuckFade(trackNum, t, region.t0, region.t1))
             {
                cancel = true;
                break;
@@ -423,7 +423,7 @@ bool EffectAutoDuck::Process()
             break;
 
          iterTrack = iter.Next();
-         trackNumber++;
+         trackNum++;
       }
    }
 
@@ -524,7 +524,7 @@ bool EffectAutoDuck::TransferDataFromWindow()
 // EffectAutoDuck implementation
 
 // this currently does an exponential fade
-bool EffectAutoDuck::ApplyDuckFade(int trackNumber, WaveTrack* t,
+bool EffectAutoDuck::ApplyDuckFade(int trackNum, WaveTrack* t,
                                    double t0, double t1)
 {
    bool cancel = false;
@@ -577,7 +577,7 @@ bool EffectAutoDuck::ApplyDuckFade(int trackNumber, WaveTrack* t,
 
       float curTime = t->LongSamplesToTime(pos);
       float fractionFinished = (curTime - mT0) / (mT1 - mT0);
-      if (TotalProgress( (trackNumber + 1 + fractionFinished) /
+      if (TotalProgress( (trackNum + 1 + fractionFinished) /
                          (GetNumWaveTracks() + 1) ))
       {
          cancel = true;
