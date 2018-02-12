@@ -92,6 +92,7 @@ public:
 
    // EffectClientInterface implementation
 
+   bool DefineParams( ShuttleParams & S ) override;
    bool GetAutomationParameters(CommandAutomationParameters & parms) override;
    bool SetAutomationParameters(CommandAutomationParameters & parms) override;
 
@@ -115,6 +116,7 @@ public:
    void Stop();
 
 private:
+   static int mReentryCount;
    // NyquistEffect implementation
 
    bool ProcessOne();
