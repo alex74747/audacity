@@ -536,6 +536,7 @@ void DoSelectSomething(AudacityProject &project)
 struct Handler
    : CommandHandlerObject // MUST be the first base class!
    , PrefsListener
+   , ClientData::Base
 {
 
 void OnSelectAll(const CommandContext &context)
