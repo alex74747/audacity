@@ -149,7 +149,7 @@ class AUDACITY_DLL_API WaveTrack final : public PlayableTrack {
    WaveformSettings &GetWaveformSettings();
    WaveformSettings &GetIndependentWaveformSettings();
    void SetWaveformSettings(std::unique_ptr<WaveformSettings> &&pSettings);
-
+   void UseSpectralPrefs( bool bUse=true );
    //
    // High-level editing
    //
