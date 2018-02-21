@@ -1584,7 +1584,7 @@ void AudacityProject::CreateMenusAndCommands()
 
       // Effects Manager also (now) manages Generic commands.
       // plug-in manager, as if an effect.  
-      c->BeginSubMenu(_("&Automation"));
+      c->BeginSubMenu(_("&Scriptables"));
 
       // Note that the PLUGIN_SYMBOL must have a space between words, 
       // whereas the short-form used here must not.

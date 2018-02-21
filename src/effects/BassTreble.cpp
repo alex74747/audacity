@@ -180,7 +180,7 @@ bool EffectBassTreble::DefineParams( ShuttleParams & S ){
    return true;
 }
 
-bool EffectBassTreble::GetAutomationParameters(CommandAutomationParameters & parms)
+bool EffectBassTreble::GetAutomationParameters(CommandParameters & parms)
 {
    parms.Write(KEY_Bass, mBass);
    parms.Write(KEY_Treble, mTreble);
@@ -190,7 +190,7 @@ bool EffectBassTreble::GetAutomationParameters(CommandAutomationParameters & par
    return true;
 }
 
-bool EffectBassTreble::SetAutomationParameters(CommandAutomationParameters & parms)
+bool EffectBassTreble::SetAutomationParameters(CommandParameters & parms)
 {
    ReadAndVerifyDouble(Bass);
    ReadAndVerifyDouble(Treble);

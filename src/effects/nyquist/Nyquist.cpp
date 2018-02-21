@@ -343,7 +343,7 @@ bool NyquistEffect::DefineParams( ShuttleParams & S )
    return true;
 }
 
-bool NyquistEffect::GetAutomationParameters(CommandAutomationParameters & parms)
+bool NyquistEffect::GetAutomationParameters(CommandParameters & parms)
 {
    if (mExternal)
    {
@@ -390,7 +390,7 @@ bool NyquistEffect::GetAutomationParameters(CommandAutomationParameters & parms)
    return true;
 }
 
-bool NyquistEffect::SetAutomationParameters(CommandAutomationParameters & parms)
+bool NyquistEffect::SetAutomationParameters(CommandParameters & parms)
 {
    if (mExternal)
    {
