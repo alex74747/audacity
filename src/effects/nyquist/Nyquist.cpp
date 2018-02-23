@@ -309,7 +309,7 @@ bool NyquistEffect::DefineParams( ShuttleParams & S )
       return true;
    }
 
-   for (size_t c = 0, cnt = mControls.GetCount(); c < cnt; c++)
+   for (size_t c = 0, cnt = mControls.size(); c < cnt; c++)
    {
       NyqControl & ctrl = mControls[c];
       double d = ctrl.val;
