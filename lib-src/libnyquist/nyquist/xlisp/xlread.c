@@ -431,7 +431,7 @@ LVAL rmquote(void)
 /* rmdquote - read macro for '"' */
 LVAL rmdquote(void)
 {
-    unsigned char buf[STRMAX+1],*p,*sptr;
+    char buf[STRMAX+1],*p,*sptr;
     LVAL fptr,str,newstr,mch;
     int len,blen,ch,d2,d3;
 
@@ -481,8 +481,8 @@ LVAL rmdquote(void)
         if (blen >= STRMAX) {
              newstr = new_string(len + STRMAX + 1);
             sptr = getstring(newstr); *sptr = '\0';
-            if (str) strcat((char *) sptr, (char *) getstring(str));
-            *p = '\0'; strcat((char *) sptr, (char *) buf);
+            if (str) strcat(sptr, getstring(str));
+            *p = '\0'; strcat(sptr, buf);
             p = buf; blen = 0;
             len += STRMAX;
             str = newstr;
@@ -496,8 +496,8 @@ LVAL rmdquote(void)
     if (str == NIL || blen) {
         newstr = new_string(len + blen + 1);
         sptr = getstring(newstr); *sptr = '\0';
-        if (str) strcat((char *) sptr, (char *) getstring(str));
-        *p = '\0'; strcat((char *) sptr, (char *) buf);
+        if (str) strcat(sptr, getstring(str));
+        *p = '\0'; strcat(sptr, buf);
         str = newstr;
     }
 

@@ -138,12 +138,12 @@ LOCAL LVAL flatsize(int pflag)
 /* xlopen - open a text or binary file */
 LVAL xlopen(int binaryflag)
 {
-    char *name,*mode=NULL;
+    char *name, *mode=NULL;
     FILE *fp;
     LVAL dir;
 
     /* get the file name and direction */
-    name = (char *)getstring(xlgetfname());
+    name = getstring(xlgetfname());
     if (!xlgetkeyarg(k_direction,&dir))
         dir = k_input;
 
@@ -473,7 +473,7 @@ LVAL xwrfloat(void)
 /* xreadline - read a line from a file */
 LVAL xreadline(void)
 {
-    unsigned char buf[STRMAX+1],*p,*sptr;
+    char buf[STRMAX+1],*p,*sptr;
     LVAL fptr,str,newstr;
     int len,blen,ch;
 
@@ -492,8 +492,8 @@ LVAL xreadline(void)
         if (blen >= STRMAX) {
              newstr = new_string(len + STRMAX + 1);
             sptr = getstring(newstr); *sptr = '\0';
-            if (str) strcat((char *) sptr, (char *) getstring(str));
-            *p = '\0'; strcat((char *) sptr, (char *) buf);
+            if (str) strcat(sptr, getstring(str));
+            *p = '\0'; strcat(sptr, buf);
             p = buf; blen = 0;
             len += STRMAX;
             str = newstr;
@@ -513,8 +513,8 @@ LVAL xreadline(void)
     if (str == NIL || blen) {
         newstr = new_string(len + blen + 1);
         sptr = getstring(newstr); *sptr = '\0';
-        if (str) strcat((char *) sptr, (char *) getstring(str));
-        *p = '\0'; strcat((char *) sptr, (char *) buf);
+        if (str) strcat(sptr, getstring(str));
+        *p = '\0'; strcat(sptr, buf);
         str = newstr;
     }
 
@@ -530,7 +530,7 @@ LVAL xreadline(void)
 LVAL xmkstrinput(void)
 {
     int start,end,len,i;
-    unsigned char *str;
+    char *str;
     LVAL string,val;
 
     /* protect the return value */
@@ -614,7 +614,7 @@ LVAL xgetlstoutput(void)
 /* xformat - formatted output function */
 LVAL xformat(void)
 {
-    unsigned char *fmt;
+    char *fmt;
     LVAL stream,val;
     int ch;
 
@@ -675,7 +675,7 @@ LVAL xformat(void)
 /* getstroutput - get the output stream string (internal) */
 LOCAL LVAL getstroutput(LVAL stream)
 {
-    unsigned char *str;
+    char *str;
     LVAL next,val;
     int len,ch;
 
@@ -699,11 +699,10 @@ LOCAL LVAL getstroutput(LVAL stream)
 
 LVAL xlistdir(void)
 {
-    const char *path;
+    char *path;
     LVAL result = NULL;
     LVAL *tail;
-    /* get the path, converting unsigned char * to char * */
-    path = (char *)getstring(xlgetfname());
+    path = getstring(xlgetfname());
     /* try to start listing */
     if (osdir_list_start(path)) {
         const char *filename;

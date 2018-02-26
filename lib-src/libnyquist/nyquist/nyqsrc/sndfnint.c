@@ -625,7 +625,7 @@ LVAL xlc_snd_max(void)
 /**/
 LVAL xlc_snd_read(void)
 {
-    unsigned char * arg1 = getstring(xlgastring());
+    char * arg1 = getstring(xlgastring());
     double arg2 = testarg2(xlgaanynum());
     double arg3 = testarg2(xlgaanynum());
     long arg4 = getfixnum(xlgafixnum());
@@ -2183,7 +2183,7 @@ LVAL xlc_snd_save(void)
 {
     LVAL arg1 = xlgetarg();
     long arg2 = getfixnum(xlgafixnum());
-    unsigned char * arg3 = getstring(xlgastring());
+    char * arg3 = getstring(xlgastring());
     long arg4 = getfixnum(xlgafixnum());
     long arg5 = getfixnum(xlgafixnum());
     long arg6 = getfixnum(xlgafixnum());
@@ -2214,7 +2214,7 @@ LVAL xlc_snd_overwrite(void)
 {
     LVAL arg1 = xlgetarg();
     long arg2 = getfixnum(xlgafixnum());
-    unsigned char * arg3 = getstring(xlgastring());
+    char * arg3 = getstring(xlgastring());
     double arg4 = testarg2(xlgaanynum());
     long arg5 = getfixnum(xlgafixnum());
     long arg6 = getfixnum(xlgafixnum());

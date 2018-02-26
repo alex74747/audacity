@@ -12,7 +12,7 @@ typedef struct read_susp_struct {
 } read_susp_node, *read_susp_type;
 
 
-LVAL snd_make_read(unsigned char *filename, time_type offset, time_type t0,
+LVAL snd_make_read(const char *filename, time_type offset, time_type t0,
         long *format, long *channels, long *mode, long *bits, long *swap,
         double *srate, double *dur, long *flags, long *byte_offset);
 /* LISP: (SND-READ STRING ANYNUM ANYNUM FIXNUM* FIXNUM* FIXNUM* FIXNUM* FIXNUM* ANYNUM* ANYNUM* FIXNUM^ FIXNUM^) */

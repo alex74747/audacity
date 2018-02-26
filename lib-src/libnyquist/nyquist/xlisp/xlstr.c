@@ -49,7 +49,7 @@ LVAL xstrigtr(void) { return (strcompare('>',TRUE)); } /* string-greaterp */
 LOCAL LVAL strcompare(int fcn, int icase)
 {
     int start1,end1,start2,end2,ch1,ch2;
-    unsigned char *p1,*p2;
+    char *p1,*p2;
     LVAL str1,str2;
 
     /* get the strings */
@@ -107,7 +107,7 @@ LVAL xndowncase(void) { return (changecase('D',TRUE)); }
 /* changecase - change case */
 LOCAL LVAL changecase(int fcn, int destructive)
 {
-    unsigned char *srcp,*dstp;
+    char *srcp,*dstp;
     int start,end,len,ch,i;
     LVAL src,dst;
 
@@ -145,7 +145,7 @@ LOCAL LVAL changecase(int fcn, int destructive)
 LVAL xstrsearch(void)
 {
     int start,end,pat_len,str_len;
-    unsigned char *pat,*str,*patptr,*strptr,*patend;
+    char *pat,*str,*patptr,*strptr,*patend;
     LVAL str1,str2;
 
     /* get the strings */
@@ -187,7 +187,7 @@ LVAL xrighttrim(void) { return (trim(TRIGHT)); }
 /* trim - trim character from a string */
 LOCAL LVAL trim(int fcn)
 {
-    unsigned char *leftp,*rightp,*dstp;
+    char *leftp,*rightp,*dstp;
     LVAL bag,src,dst;
 
     /* get the bag and the string */
@@ -257,7 +257,7 @@ LOCAL void getbounds(LVAL str, LVAL skey, LVAL ekey, int *pstart, int *pend)
 /* inbag - test if a character is in a bag */
 LOCAL int inbag(int ch, LVAL bag)
 {
-    unsigned char *p;
+    char *p;
     for (p = getstring(bag); *p != '\0'; ++p)
         if (*p == ch)
             return (TRUE);
@@ -268,7 +268,7 @@ LOCAL int inbag(int ch, LVAL bag)
 LVAL xstrcat(void)
 {
     LVAL *saveargv,tmp,val;
-    unsigned char *str;
+    char *str;
     int saveargc,len;
 
     /* save the argument list */
@@ -292,7 +292,7 @@ LVAL xstrcat(void)
     /* combine the strings */
     for (*str = '\0'; moreargs(); ) {
         tmp = nextarg();
-        strcat((char *) str, (char *) getstring(tmp));
+        strcat(str, getstring(tmp));
     }
 
     /* return the new string */
@@ -302,7 +302,7 @@ LVAL xstrcat(void)
 /* xsubseq - return a subsequence */
 LVAL xsubseq(void)
 {
-    unsigned char *srcp,*dstp;
+    char *srcp,*dstp;
     int start,end,len;
     LVAL src,dst;
 

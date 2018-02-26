@@ -101,7 +101,7 @@ void read_print_tree(snd_susp_type a_susp, int n)
 
 
 LVAL snd_make_read(
-  unsigned char *filename, 	/* file to read */
+  const char *filename, 	/* file to read */
   time_type offset, 	/* offset to skip (in seconds) */
   time_type t0,		/* start time of resulting sound */
   long *format,		/* AIFF, IRCAM, NeXT, etc. */
@@ -171,8 +171,8 @@ LVAL snd_make_read(
     }
 
     susp->sndfile = NULL;
-    if (ok_to_open((const char *) filename, "rb"))
-        susp->sndfile = sf_open((const char *) filename, SFM_READ,
+    if (ok_to_open(filename, "rb"))
+        susp->sndfile = sf_open(filename, SFM_READ,
                                 &(susp->sf_info));
 
     if (!susp->sndfile) {

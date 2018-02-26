@@ -166,7 +166,7 @@ LVAL xlenter(const char *name)
     array = getvalue(obarray);
     i = hash(name,HSIZE);
     for (sym = getelement(array,i); sym; sym = cdr(sym))
-        if (strcmp(name,(char *) getstring(getpname(car(sym)))) == 0)
+        if (strcmp(name, getstring(getpname(car(sym)))) == 0)
             return (car(sym));
 
     /* make a new symbol node and link it into the list */

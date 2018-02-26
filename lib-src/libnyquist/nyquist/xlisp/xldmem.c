@@ -46,7 +46,7 @@ long xldmem_trace = 0;	/* debugging */
 /* forward declarations */
 FORWARD LOCAL void findmem(void);
 FORWARD LVAL newnode(int type);
-FORWARD LOCAL unsigned char *stralloc(int size);
+FORWARD LOCAL char *stralloc(int size);
 FORWARD LOCAL int addseg(void);
 FORWARD void mark(LVAL ptr);
 FORWARD LOCAL void sweep(void);
@@ -110,7 +110,7 @@ LVAL cvstring(const char *str)
     val = newnode(STRING);
     val->n_strlen = strlen(str) + 1;
     val->n_string = stralloc(getslength(val));
-    strcpy((char *) getstring(val),str);
+    strcpy(getstring(val), str);
     xlpop();
     return (val);
 }
@@ -123,7 +123,7 @@ LVAL new_string(int size)
     val = newnode(STRING);
     val->n_strlen = size;
     val->n_string = stralloc(getslength(val));
-    strcpy((char *) getstring(val),"");
+    strcpy(getstring(val), "");
     xlpop();
     return (val);
 }
@@ -279,14 +279,14 @@ LVAL newnode(int type)
 }
 
 /* stralloc - allocate memory for a string adding a byte for the terminator */
-LOCAL unsigned char *stralloc(int size)
+LOCAL char *stralloc(int size)
 {
-    unsigned char *sptr;
+    char *sptr;
 
     /* allocate memory for the string copy */
-    if ((sptr = (unsigned char *)malloc(size)) == NULL) {
+    if ((sptr = malloc(size)) == NULL) {
         gc();  
-        if ((sptr = (unsigned char *)malloc(size)) == NULL)
+        if ((sptr = malloc(size)) == NULL)
             xlfail("insufficient string space");
     }
     total += (long)size;
@@ -675,28 +675,28 @@ LVAL xinfo()
 /* xsave - save the memory image */
 LVAL xsave(void)
 {
-    unsigned char *name;
+    char *name;
 
     /* get the file name, verbose flag and print flag */
     name = getstring(xlgetfname());
     xllastarg();
 
     /* save the memory image */
-    return (xlisave((char *) name) ? s_true : NIL);
+    return (xlisave(name) ? s_true : NIL);
 }
 
 /* xrestore - restore a saved memory image */
 LVAL xrestore(void)
 {
     extern jmp_buf top_level;
-    unsigned char *name;
+    char *name;
 
     /* get the file name, verbose flag and print flag */
     name = getstring(xlgetfname());
     xllastarg();
 
     /* restore the saved memory image */
-    if (!xlirestore((char *) name))
+    if (!xlirestore(name))
         return (NIL);
 
     /* return directly to the top level */

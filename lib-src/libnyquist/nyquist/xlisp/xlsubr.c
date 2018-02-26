@@ -178,8 +178,8 @@ int lval_equal(LVAL arg1, LVAL arg2)
         case FLONUM:
             return (floatp(arg2) ? getflonum(arg1)==getflonum(arg2) : FALSE);
         case STRING:
-            return (stringp(arg2) ? strcmp((char *) getstring(arg1),
-                                           (char *) getstring(arg2)) == 0 : FALSE);
+            return (stringp(arg2) ? strcmp(getstring(arg1),
+                                           getstring(arg2)) == 0 : FALSE);
         case CONS:
             return (consp(arg2) ? lval_equal(car(arg1),car(arg2))
                                && lval_equal(cdr(arg1),cdr(arg2)) : FALSE);

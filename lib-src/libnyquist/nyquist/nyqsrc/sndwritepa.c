@@ -160,7 +160,7 @@ LVAL prepare_audio(LVAL play, SF_INFO *sf_info, PaStream **audio_stream)
     LVAL pref = xlenter("*SND-DEVICE*");
 
     int pref_num = -1;
-    unsigned char *pref_string = NULL;
+    char *pref_string = NULL;
     list = getvalue(list);
     if (list == s_unbound) list = NULL;
     pref = getvalue(pref);
@@ -196,7 +196,7 @@ LVAL prepare_audio(LVAL play, SF_INFO *sf_info, PaStream **audio_stream)
         if (j == -1) {
             if (pref_num >= 0 && pref_num == i) j = i;
             else if (pref_string &&
-                strstr(device_info->name, (char *) pref_string)) j = i;
+                strstr(device_info->name, pref_string)) j = i;
         }
     }
 
@@ -349,7 +349,7 @@ long lookup_format(long format, long mode, long bits, long swap)
 double sound_save(
   LVAL snd_expr,
   long n,
-  unsigned char *filename,
+  char *filename,
   long format,
   long mode,
   long bits,
@@ -394,8 +394,8 @@ double sound_save(
          */ 
         if (filename[0]) {
             sndfile = NULL;
-            if (ok_to_open((char *) filename, "wb"))
-                sndfile = sf_open((char *) filename, SFM_WRITE, &sf_info);
+            if (ok_to_open(filename, "wb"))
+                sndfile = sf_open(filename, SFM_WRITE, &sf_info);
             if (sndfile) {
                 /* use proper scale factor: 8000 vs 7FFF */
                 sf_command(sndfile, SFC_SET_CLIPPING, NULL, SF_TRUE);
@@ -421,8 +421,8 @@ double sound_save(
         *sr = sf_info.samplerate;
         if (filename[0]) {
             sndfile = NULL;
-            if (ok_to_open((char *) filename, "wb")) {
-                sndfile = sf_open((char *) filename, SFM_WRITE, &sf_info);
+            if (ok_to_open(filename, "wb")) {
+                sndfile = sf_open(filename, SFM_WRITE, &sf_info);
                 if (sndfile) {
                     /* use proper scale factor: 8000 vs 7FFF */
                     sf_command(sndfile, SFC_SET_CLIPPING, NULL, SF_TRUE);
@@ -464,7 +464,7 @@ double sound_save(
  * sound sample rate and channels. Otherwise, open the file
  * and see if the sample rate and channele match.
  */
-SNDFILE *open_for_write(unsigned char *filename, long direction,
+SNDFILE *open_for_write(const char *filename, long direction,
                         long format, SF_INFO *sf_info, int channels,
                         long srate, double offset, float **buf)
 /* channels and srate are based on the sound we're writing to the file */
@@ -481,8 +481,8 @@ SNDFILE *open_for_write(unsigned char *filename, long direction,
         sf_info->format = 0;
     }
     sndfile = NULL;
-    if (ok_to_open((char *) filename, "w"))
-        sndfile = sf_open((const char *) filename, direction, sf_info);
+    if (ok_to_open(filename, "w"))
+        sndfile = sf_open(filename, direction, sf_info);
 
     if (!sndfile) {
         snprintf(error, sizeof(error), "snd_overwrite: cannot open file %s", filename);
@@ -530,7 +530,7 @@ SNDFILE *open_for_write(unsigned char *filename, long direction,
 double sound_overwrite(
   LVAL snd_expr,
   long n,
-  unsigned char *filename,
+  char *filename,
   double offset_secs,
   long format,
   long mode,
@@ -547,8 +547,8 @@ double sound_overwrite(
     */
     // first check if sound file exists, do not create new file
     FILE *file = NULL;
-    if (ok_to_open((char *) filename, "rb"))
-        file = fopen((char *) filename, "rb");
+    if (ok_to_open(filename, "rb"))
+        file = fopen(filename, "rb");
     // if not then fail
     if (!file) {
         *duration = 0;

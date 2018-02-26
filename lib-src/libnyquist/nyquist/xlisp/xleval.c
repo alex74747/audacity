@@ -625,7 +625,7 @@ LVAL xlclose(LVAL name, LVAL type, LVAL fargs, LVAL body, LVAL env, LVAL fenv)
             }
             else if (symbolp(arg)) {
                 strcpy(keyname,":");
-                strcat(keyname,(char *) getstring(getpname(arg)));
+                strcat(keyname, getstring(getpname(arg)));
                 key = xlenter(keyname);
             }
 
@@ -818,7 +818,7 @@ LOCAL void doenter(LVAL sym, int argc, LVAL *argv)
     ++xltrcindent;
 
     /* display the function call */
-    sprintf(buf,"Entering: %s, Argument list: (",getstring(getpname(sym)));
+    sprintf(buf,"Entering: %s, Argument list: (", getstring(getpname(sym)));
     trcputstr(buf);
     while (--argc >= 0) {
         trcprin1(*argv++);
@@ -839,7 +839,7 @@ LOCAL void doexit(LVAL sym, LVAL val)
         trcputstr(" ");
     
     /* display the function value */
-    sprintf(buf,"Exiting: %s, Value: ",getstring(getpname(sym)));
+    sprintf(buf,"Exiting: %s, Value: ", getstring(getpname(sym)));
     trcputstr(buf);
     trcprin1(val);
     trcputstr("\n");

@@ -187,7 +187,7 @@ typedef struct node {
         } n_xchar;
         struct xstring {	/* string node */
             int xs_length;		/* string length */
-            unsigned char *xs_string;	/* string pointer */
+            char *xs_string;	/* string pointer */
         } n_xstring;
         struct xstream { 	/* stream node */
             FILE *xs_fp;		/* the file pointer */

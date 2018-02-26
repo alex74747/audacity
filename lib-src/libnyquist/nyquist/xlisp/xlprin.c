@@ -72,7 +72,7 @@ void xlprint(LVAL fptr, LVAL vptr, int flag)
             xlputc(fptr,')');
             break;
     case SYMBOL:
-            putsymbol(fptr,(char *) getstring(getpname(vptr)),flag);
+            putsymbol(fptr, getstring(getpname(vptr)),flag);
             break;
     case FIXNUM:
             putfixnum(fptr,getfixnum(vptr));
@@ -185,7 +185,7 @@ LOCAL void putsymbol(LVAL fptr, char *str, int escflag)
 /* putstring - output a string */
 LOCAL void putstring(LVAL fptr, LVAL str)
 {
-    unsigned char *p;
+    char *p;
     int ch;
 
     /* output each character */
@@ -196,7 +196,7 @@ LOCAL void putstring(LVAL fptr, LVAL str)
 /* putqstring - output a quoted string */
 LOCAL void putqstring(LVAL fptr, LVAL str)
 {
-    unsigned char *p;
+    char *p;
     int ch;
 
     /* get the string pointer */
@@ -287,10 +287,10 @@ LOCAL void putclosure(LVAL fptr, LVAL val)
 /* putfixnum - output a fixnum */
 LOCAL void putfixnum(LVAL fptr, FIXTYPE n)
 {
-    unsigned char *fmt;
+    char *fmt;
     LVAL val;
     fmt = ((val = getvalue(s_ifmt)) && stringp(val) ? getstring(val)
-                                                    : (unsigned char *)IFMT);
+                                                    : IFMT);
     sprintf(buf, (char *) fmt,n);
     xlputstr(fptr,buf);
 }
@@ -298,10 +298,10 @@ LOCAL void putfixnum(LVAL fptr, FIXTYPE n)
 /* putflonum - output a flonum */
 LOCAL void putflonum(LVAL fptr, FLOTYPE n)
 {
-    unsigned char *fmt;
+    char *fmt;
     LVAL val;
     fmt = ((val = getvalue(s_ffmt)) && stringp(val) ? getstring(val)
-                                                    : (unsigned char *)"%g");
+                                                    : "%g");
     sprintf(buf,(char *) fmt,n);
     xlputstr(fptr,buf);
 }

@@ -235,7 +235,7 @@ LOCAL LVAL nyx_dup_value(LVAL val)
          break;
 
          case STRING:
-            nval = cvstring((char *) getstring(val));
+            nval = cvstring(getstring(val));
          break;
 
          case VECTOR:
@@ -325,7 +325,7 @@ LOCAL void nyx_save_obarray()
       // Scan all elements
       for (sym = getelement(nyx_obarray, i); sym; sym = cdr(sym)) {
          LVAL syma = car(sym);
-         char *name = (char *) getstring(getpname(syma));
+         char *name = getstring(getpname(syma));
          LVAL nsym = xlenter(name);
 
          // Ignore *OBARRAY* since there's no need to copy it
@@ -366,7 +366,7 @@ LOCAL void nyx_restore_obarray()
       // Scan all elements
       for (dcon = getelement(obvec, i); dcon; dcon = cdr(dcon)) {
          LVAL dsym = car(dcon);
-         char *name = (char *)getstring(getpname(dsym));
+         char *name = getstring(getpname(dsym));
          LVAL scon;
 
          // Ignore *OBARRAY* since setting it causes the input array to be
@@ -385,7 +385,7 @@ LOCAL void nyx_restore_obarray()
             LVAL ssym = car(scon);
 
             // If found, then set the current symbols value to the original.
-            if (strcmp(name, (char *)getstring(getpname(ssym))) == 0) {
+            if (strcmp(name, getstring(getpname(ssym))) == 0) {
                setvalue(dsym, nyx_dup_value(getvalue(ssym)));
                setplist(dsym, nyx_dup_value(getplist(ssym)));
                setfunction(dsym, nyx_dup_value(getfunction(ssym)));
@@ -1094,7 +1094,7 @@ const char *nyx_get_string()
       return NULL;
    }
 
-   return (const char *)getstring(nyx_result);
+   return getstring(nyx_result);
 }
 
 unsigned int nyx_get_num_labels()
@@ -1164,7 +1164,7 @@ void nyx_get_label(unsigned int index,
       *end_time = (double)getfixnum(t1_expr);
    }
 
-   *label = (const char *)getstring(str_expr);
+   *label = getstring(str_expr);
 }
 
 const char *nyx_get_error_str()
@@ -1328,8 +1328,8 @@ void oscheck(void)
 LVAL xsystem()
 {
    if (moreargs()) {
-      unsigned char *cmd;
-      cmd = (unsigned char *)getstring(xlgastring());
+      char *cmd;
+      cmd = getstring(xlgastring());
       fprintf(stderr, "Will not execute system command: %s\n", cmd);
    }
    return s_true;
@@ -1338,7 +1338,7 @@ LVAL xsystem()
 /* xsetdir -- set current directory of the process */
 LVAL xsetdir()
 {
-   char *dir = (char *)getstring(xlgastring());
+   char *dir = getstring(xlgastring());
    int result;
    LVAL cwd = NULL;
    int verbose = TRUE;

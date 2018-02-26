@@ -37,7 +37,7 @@ LOCAL void readnode(int type, LVAL node);
 int xlisave(const char *fname)
 {
     char fullname[STRMAX+1];
-    unsigned char *cp;
+    char *cp;
     SEGMENT *seg;
     int n,i,max;
     LVAL p;
@@ -136,7 +136,7 @@ int xlirestore(const char *fname)
 {
     extern FUNDEF *funtab;
     char fullname[STRMAX+1];
-    unsigned char *cp;
+    char *cp;
     int n,i,max,type;
     SEGMENT *seg;
     LVAL p;
@@ -227,7 +227,7 @@ done:
                 break;
             case STRING:
                 max = getslength(p);
-                if ((p->n_string = (unsigned char *)malloc(max)) == NULL)
+                if ((p->n_string = malloc(max)) == NULL)
                     xlfatal("insufficient memory - string");
                 total += (long)max;
                 for (cp = getstring(p); --max >= 0; )
@@ -282,7 +282,7 @@ LOCAL void freeimage(void)
                 break;
             case STRING:
                 if (getslength(p))
-                    free((void *) getstring(p));
+                    free(getstring(p));
                 break;
             case STREAM:
                 if ((fp = getfile(p)) && (fp != stdin && fp != stdout && fp != STDERR))

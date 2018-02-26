@@ -314,7 +314,7 @@ LVAL xgensym(void)
         case SYMBOL:
                 x = getpname(x);
         case STRING:
-                strncpy(gsprefix, (char *) getstring(x),STRMAX);
+                strncpy(gsprefix, getstring(x),STRMAX);
                 gsprefix[STRMAX] = '\0';
                 break;
         case FIXNUM:
@@ -355,8 +355,8 @@ LOCAL LVAL makesymbol(int iflag)
     xllastarg();
 
     /* make the symbol */
-    return (iflag ? xlenter((char *) getstring(pname))
-                      : xlmakesym((char *) getstring(pname)));
+    return (iflag ? xlenter(getstring(pname))
+                      : xlmakesym(getstring(pname)));
 }
 
 /* xsymname - get the print name of a symbol */
@@ -471,7 +471,7 @@ LVAL xremprop(void)
 /* xhash - compute the hash value of a string or symbol */
 LVAL xhash(void)
 {
-    unsigned char *str;
+    char *str;
     LVAL len,val;
     int n;
 
@@ -559,7 +559,7 @@ LVAL xerror(void)
     xllastarg();
 
     /* signal the error */
-    xlerror((char *) getstring(emsg),arg);
+    xlerror(getstring(emsg),arg);
     return NIL; /* won't ever happen */
 }
 
@@ -575,7 +575,7 @@ LVAL xcerror(void)
     xllastarg();
 
     /* signal the error */
-    xlcerror((char *) getstring(cmsg), (char *) getstring(emsg),arg);
+    xlcerror(getstring(cmsg), getstring(emsg), arg);
 
     /* return nil */
     return (NIL);
@@ -592,7 +592,7 @@ LVAL xbreak(void)
     xllastarg();
 
     /* enter the break loop */
-    xlbreak((emsg ? (char *) getstring(emsg) : "**BREAK**"),arg);
+    xlbreak((emsg ? getstring(emsg) : "**BREAK**"),arg);
 
     /* return nil */
     return (NIL);
