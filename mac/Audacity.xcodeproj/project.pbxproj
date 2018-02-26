@@ -3086,6 +3086,8 @@
 		5E667A641F0BEE8C00C942A5 /* NoteTrackVZoomHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoteTrackVZoomHandle.h; sourceTree = "<group>"; };
 		5E667A671F0D723A00C942A5 /* TrackPanelResizerCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackPanelResizerCell.cpp; sourceTree = "<group>"; };
 		5E667A681F0D723A00C942A5 /* TrackPanelResizerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackPanelResizerCell.h; sourceTree = "<group>"; };
+		5E6C023E20445CC400E10ACF /* osdefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = osdefs.h; sourceTree = "<group>"; };
+		5E6C023F20445CC400E10ACF /* osptrs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = osptrs.h; sourceTree = "<group>"; };
 		5E7396391DAFD82D00BA0A4D /* PopupMenuTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PopupMenuTable.cpp; sourceTree = "<group>"; };
 		5E73963A1DAFD82D00BA0A4D /* PopupMenuTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopupMenuTable.h; sourceTree = "<group>"; };
 		5E73963C1DAFD86000BA0A4D /* ZoomHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZoomHandle.cpp; sourceTree = "<group>"; };
@@ -5236,6 +5238,8 @@
 			isa = PBXGroup;
 			children = (
 				284A827B0F3158A2001D7A67 /* extern.c */,
+				5E6C023E20445CC400E10ACF /* osdefs.h */,
+				5E6C023F20445CC400E10ACF /* osptrs.h */,
 				284A827F0F3158A2001D7A67 /* path.c */,
 				28CC03B01AD3874500826380 /* security.c */,
 				284A82800F3158A2001D7A67 /* xlbfun.c */,
