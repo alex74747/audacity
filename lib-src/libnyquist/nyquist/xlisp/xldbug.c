@@ -22,7 +22,7 @@ FORWARD LOCAL void breakloop(const char *hdr, const char *cmsg,
 void xlabort(const char *emsg)
 {
     xlsignal(emsg,s_unbound);
-    xlerrprint("error",(const char *) NULL,emsg,s_unbound);
+    xlerrprint("error", NULL, emsg, s_unbound);
     xlbrklevel();
 }
 
