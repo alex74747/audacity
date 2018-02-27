@@ -199,9 +199,6 @@ LOCAL void putqstring(LVAL fptr, LVAL str)
     char *p;
     int ch;
 
-    /* get the string pointer */
-    p = getstring(str);
-
     /* output the initial quote */
     xlputc(fptr,'"');
 
