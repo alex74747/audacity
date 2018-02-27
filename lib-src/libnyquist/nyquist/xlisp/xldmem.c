@@ -678,7 +678,7 @@ LVAL xsave(void)
     char *name;
 
     /* get the file name, verbose flag and print flag */
-    name = getstring(xlgetfname());
+    name = getstring(xlnarrowstring(xlgetfname()));
     xllastarg();
 
     /* save the memory image */
@@ -692,7 +692,7 @@ LVAL xrestore(void)
     char *name;
 
     /* get the file name, verbose flag and print flag */
-    name = getstring(xlgetfname());
+    name = getstring(xlnarrowstring(xlgetfname()));
     xllastarg();
 
     /* restore the saved memory image */

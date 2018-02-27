@@ -165,7 +165,7 @@ LVAL prepare_audio(LVAL play, SF_INFO *sf_info, PaStream **audio_stream)
     if (list == s_unbound) list = NULL;
     pref = getvalue(pref);
     if (pref == s_unbound) pref = NULL;
-    if (stringp(pref)) pref_string = getstring(pref);
+    if (stringp(pref)) pref_string = getstring(xlnarrowstring(pref));
     else if (fixp(pref)) pref_num = getfixnum(pref);
 
     if (!portaudio_initialized) {

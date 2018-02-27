@@ -114,7 +114,7 @@ int xlisave(const char *fname)
                 break;
             case STRING:
                 max = getslength(p);
-                for (cp = getstring(p); --max >= 0; )
+                for (cp = getstring(xlnarrowstring(p)); --max >= 0; )
                     osbputc(*cp++,fp);
                 break;
             case EXTERN:

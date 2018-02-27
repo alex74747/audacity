@@ -1329,7 +1329,7 @@ LVAL xsystem()
 {
    if (moreargs()) {
       char *cmd;
-      cmd = getstring(xlgastring());
+      cmd = getstring(xlnarrowstring(xlgastring()));
       fprintf(stderr, "Will not execute system command: %s\n", cmd);
    }
    return s_true;
@@ -1338,7 +1338,8 @@ LVAL xsystem()
 /* xsetdir -- set current directory of the process */
 LVAL xsetdir()
 {
-   char *dir = getstring(xlgastring());
+   char *dir = getstring(xlnarrowstring(xlgastring()));
+   /* dir will be reassigned.  Don't need xlprot1 */
    int result;
    LVAL cwd = NULL;
    int verbose = TRUE;

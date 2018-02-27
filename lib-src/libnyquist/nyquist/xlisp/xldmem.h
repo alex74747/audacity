@@ -217,3 +217,6 @@ extern xtype_desc create_desc(char *type_name, void (*fm)(void*),
                               void (*sm)(FILE*, void*), 
                               unsigned char * (*rm)(FILE*), 
                               void (*mm)(void*));
+
+#define xlnarrowstring(x) (x)
+

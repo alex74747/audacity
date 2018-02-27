@@ -55,7 +55,7 @@ extern LVAL exttype();
 /* xget_env - get the value of an environment variable */
 LVAL xget_env(void)
 {
-    const char *name = getstring(xlgetfname());
+    const char *name = getstring(xlnarrowstring(xlgetfname()));
     char *val;
 
     /* check for too many arguments */
@@ -73,7 +73,10 @@ LVAL xload(void)
     int vflag,pflag;
     LVAL arg;
 
-    name = getstring(xlgetfname());
+    LVAL narrowstring = xlnarrowstring(xlgetfname());
+    /* must protect before passing it into xlload */
+    xlprot1(narrowstring);
+    name = getstring(narrowstring);
 
     /* get the :verbose flag */
     if (xlgetkeyarg(k_verbose,&arg))
@@ -97,7 +100,7 @@ LVAL xtranscript(void)
     char *name;
 
     /* get the transcript file name */
-    name = (moreargs() ? getstring(xlgetfname()) : NULL);
+    name = (moreargs() ? getstring(xlnarrowstring(xlgetfname())) : NULL);
     xllastarg();
 
     /* close the current transcript */

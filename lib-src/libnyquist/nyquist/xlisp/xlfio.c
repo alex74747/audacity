@@ -143,7 +143,7 @@ LVAL xlopen(int binaryflag)
     LVAL dir;
 
     /* get the file name and direction */
-    name = getstring(xlgetfname());
+    name = getstring(xlnarrowstring(xlgetfname()));
     if (!xlgetkeyarg(k_direction,&dir))
         dir = k_input;
 
@@ -702,7 +702,7 @@ LVAL xlistdir(void)
     char *path;
     LVAL result = NULL;
     LVAL *tail;
-    path = getstring(xlgetfname());
+    path = getstring(xlnarrowstring(xlgetfname()));
     /* try to start listing */
     if (osdir_list_start(path)) {
         const char *filename;

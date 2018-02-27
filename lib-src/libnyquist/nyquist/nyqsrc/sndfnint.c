@@ -625,7 +625,7 @@ LVAL xlc_snd_max(void)
 /**/
 LVAL xlc_snd_read(void)
 {
-    char * arg1 = getstring(xlgastring());
+    char * arg1 = getstring(xlnarrowstring(xlgastring()));
     double arg2 = testarg2(xlgaanynum());
     double arg3 = testarg2(xlgaanynum());
     long arg4 = getfixnum(xlgafixnum());
@@ -2183,7 +2183,10 @@ LVAL xlc_snd_save(void)
 {
     LVAL arg1 = xlgetarg();
     long arg2 = getfixnum(xlgafixnum());
-    char * arg3 = getstring(xlgastring());
+    LVAL narrowstring = xlnarrowstring(xlgastring());
+    /* need this because sound_save calls gc before using filename */
+    xlprot1(narrowstring);
+    char * arg3 = getstring(narrowstring);
     long arg4 = getfixnum(xlgafixnum());
     long arg5 = getfixnum(xlgafixnum());
     long arg6 = getfixnum(xlgafixnum());
@@ -2214,7 +2217,7 @@ LVAL xlc_snd_overwrite(void)
 {
     LVAL arg1 = xlgetarg();
     long arg2 = getfixnum(xlgafixnum());
-    char * arg3 = getstring(xlgastring());
+    char * arg3 = getstring(xlnarrowstring(xlgastring()));
     double arg4 = testarg2(xlgaanynum());
     long arg5 = getfixnum(xlgafixnum());
     long arg6 = getfixnum(xlgafixnum());

@@ -219,8 +219,9 @@ const char *find_in_xlisp_path(const char *fname)
 LVAL xfind_in_xlisp_path()
 {
    LVAL string = xlgastring();
-   const char *path = getstring(string);
+   const char *path = getstring(xlnarrowstring(string));
+   /* no xlprot1 needed */
    xllastarg();
-   path = find_in_xlisp_path(path);
+   path = find_in_xlisp_path(path); /* always returns different pointer */
    return (path ? cvstring(path) : NULL);
 }
