@@ -219,4 +219,5 @@ extern xtype_desc create_desc(char *type_name, void (*fm)(void*),
                               void (*mm)(void*));
 
 #define xlnarrowstring(x) (x)
+#define XLSTRING_FMT "%s"
 

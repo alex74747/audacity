@@ -260,7 +260,7 @@ LOCAL void putclosure(LVAL fptr, LVAL val)
 {
     LVAL name;
     if ((name = getname(val)))
-        sprintf(buf,"#<Closure-%s: #",getstring(getpname(name)));
+        sprintf(buf, "#<Closure-" XLSTRING_FMT ": #", getstring(getpname(name)));
     else
         strcpy(buf,"#<Closure: #");
     xlputstr(fptr,buf);

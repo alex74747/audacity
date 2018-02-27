@@ -327,7 +327,7 @@ LVAL xgensym(void)
     xllastarg();
 
     /* create the pname of the new symbol */
-    sprintf(sym,"%s%d",gsprefix,gsnumber++);
+    sprintf(sym, XLSTRING_FMT "%d", gsprefix, gsnumber++);
 
     /* make a symbol with this print name */
     return (xlmakesym(sym));

@@ -85,7 +85,7 @@ void xlcerror(const char *cmsg, const char *emsg, LVAL arg)
 void xlerrprint(const char *hdr, const char *cmsg, const char *emsg, LVAL arg)
 {
     /* print the error message */
-    sprintf(buf,"%s: %s",hdr,emsg);
+    sprintf(buf, "%s: " XLSTRING_FMT, hdr, emsg);
     errputstr(buf);
 
     /* print the argument */
@@ -100,7 +100,7 @@ void xlerrprint(const char *hdr, const char *cmsg, const char *emsg, LVAL arg)
 
     /* print the continuation message */
     if (cmsg) {
-        sprintf(buf,"if continued: %s\n",cmsg);
+        sprintf(buf, "if continued: " XLSTRING_FMT "\n", cmsg);
         errputstr(buf);
     }
 }
