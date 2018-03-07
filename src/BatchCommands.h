@@ -25,6 +25,12 @@ class CommandManager;
 class AudacityProject;
 class wxArrayStringEx;
 
+// MacroName is a distinct string-wrapper type, which is permissible to be
+// shown to the user.  The name is either that of a file the user made, or
+// the (localized) name of one of a few built-in macros.
+using MacroName = Identifier;
+using MacroNames = std::vector<MacroName>;
+
 class MacroCommandsCatalog {
 public:
    // A triple of user-visible name, internal string identifier and type/help string.
@@ -81,8 +87,8 @@ class MacroCommands final {
 
    // These commands do not depend on the command list.
    static void MigrateLegacyChains();
-   static wxArrayString GetNames();
-   static wxArrayStringEx GetNamesOfDefaultMacros();
+   static MacroNames GetNames();
+   static MacroNames GetNamesOfDefaultMacros();
 
    static wxString GetCurrentParamsFor(const CommandID & command);
    static wxString PromptForParamsFor(
@@ -92,12 +98,12 @@ class MacroCommands final {
    // These commands do depend on the command list.
    void ResetMacro();
 
-   void RestoreMacro(const wxString & name);
-   wxString ReadMacro(const wxString & macro, wxWindow *parent = nullptr);
-   wxString WriteMacro(const wxString & macro, wxWindow *parent = nullptr);
-   bool AddMacro(const wxString & macro);
-   bool DeleteMacro(const wxString & name);
-   bool RenameMacro(const wxString & oldmacro, const wxString & newmacro);
+   void RestoreMacro(const MacroName & name);
+   wxString ReadMacro(const MacroName & macro, wxWindow *parent = nullptr);
+   wxString WriteMacro(const MacroName & macro, wxWindow *parent = nullptr);
+   bool AddMacro(const MacroName & macro);
+   bool DeleteMacro(const MacroName & name);
+   bool RenameMacro(const MacroName & oldmacro, const MacroName & newmacro);
 
    void AddToMacro(const CommandID & command, int before = -1);
    void AddToMacro(const CommandID & command, const wxString & params, int before = -1);

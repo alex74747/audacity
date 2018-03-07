@@ -58,8 +58,7 @@ MacroCommands::MacroCommands( AudacityProject &project )
    auto names = GetNames();
    auto defaults = GetNamesOfDefaultMacros();
 
-   for( size_t i = 0;i<defaults.size();i++){
-      wxString name = defaults[i];
+   for( const auto &name : names ){
       if ( ! make_iterator_range( names ).contains(name) ) {
          AddMacro(name);
          RestoreMacro(name);
@@ -71,7 +70,7 @@ MacroCommands::MacroCommands( AudacityProject &project )
 static const auto MP3Conversion = XO("MP3 Conversion");
 static const auto FadeEnds      = XO("Fade Ends");
 
-wxArrayStringEx MacroCommands::GetNamesOfDefaultMacros()
+MacroNames MacroCommands::GetNamesOfDefaultMacros()
 {
    return {
       MP3Conversion.Translation() ,
@@ -79,7 +78,7 @@ wxArrayStringEx MacroCommands::GetNamesOfDefaultMacros()
    };
 }
 
-void MacroCommands::RestoreMacro(const wxString & name)
+void MacroCommands::RestoreMacro(const MacroName & name)
 {
 // TIDY-ME: Effects change their name with localisation.
 // Commands (at least currently) don't.  Messy.
@@ -119,13 +118,13 @@ int MacroCommands::GetCount()
    return (int)mCommandMacro.size();
 }
 
-wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
+wxString MacroCommands::ReadMacro(const MacroName & macro, wxWindow *parent)
 {
    // Clear any previous macro
    ResetMacro();
 
    // Build the filename
-   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro.GET(), L"txt" };
 
    // But, ask the user for the real name if we're importing
    if (parent) {
@@ -201,7 +200,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
    return name.GetName();
 }
 
-wxString MacroCommands::WriteMacro(const wxString & macro, wxWindow *parent)
+wxString MacroCommands::WriteMacro(const MacroName & macro, wxWindow *parent)
 {
    // Build the default filename
    wxFileNameWrapper name(FileNames::MacroDir(), macro, L"txt");
@@ -260,10 +259,10 @@ wxString MacroCommands::WriteMacro(const wxString & macro, wxWindow *parent)
    return name.GetName();
 }
 
-bool MacroCommands::AddMacro(const wxString & macro)
+bool MacroCommands::AddMacro(const MacroName & macro)
 {
    // Build the filename
-   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro.GET(), L"txt" };
 
    // Set the file name
    wxTextFile tf(name.GetFullPath());
@@ -272,26 +271,26 @@ bool MacroCommands::AddMacro(const wxString & macro)
    return tf.Create();
 }
 
-bool MacroCommands::DeleteMacro(const wxString & macro)
+bool MacroCommands::DeleteMacro(const MacroName & macro)
 {
    // Build the filename
-   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro.GET(), L"txt" };
 
    // Delete it...wxRemoveFile will display errors
    auto result = wxRemoveFile(name.GetFullPath());
 
    // Delete any legacy chain that it shadowed
-   auto oldPath = wxFileNameWrapper{ FileNames::LegacyChainDir(), macro, L"txt" };
+   auto oldPath = wxFileNameWrapper{ FileNames::LegacyChainDir(), macro.GET(), L"txt" };
    wxRemoveFile(oldPath.GetFullPath()); // Don't care about this return value
 
    return result;
 }
 
-bool MacroCommands::RenameMacro(const wxString & oldmacro, const wxString & newmacro)
+bool MacroCommands::RenameMacro(const MacroName & oldmacro, const MacroName & newmacro)
 {
    // Build the filenames
-   wxFileNameWrapper oname{ FileNames::MacroDir(), oldmacro, L"txt" };
-   wxFileNameWrapper nname{ FileNames::MacroDir(), newmacro, L"txt" };
+   wxFileNameWrapper oname{ FileNames::MacroDir(), oldmacro.GET(), L"txt" };
+   wxFileNameWrapper nname{ FileNames::MacroDir(), newmacro.GET(), L"txt" };
 
    // Rename it...wxRenameFile will display errors
    return wxRenameFile(oname.GetFullPath(), nname.GetFullPath());
@@ -916,15 +915,14 @@ void MacroCommands::MigrateLegacyChains()
    // To do:  use std::once
 }
 
-wxArrayString MacroCommands::GetNames()
+MacroNames MacroCommands::GetNames()
 {
    MigrateLegacyChains();
 
-   wxArrayString names;
+   MacroNames names;
    FilePaths files;
    wxDirWrapper::GetAllFiles(FileNames::MacroDir(),
       &files, L"*.txt", wxDIR_FILES);
-   size_t i;
 
    wxFileNameWrapper ff;
    for ( const auto &file : files ) {

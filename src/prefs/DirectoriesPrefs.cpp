@@ -334,7 +334,7 @@ void DirectoriesPrefs::OnTempText(wxCommandEvent & WXUNUSED(evt))
 
    if (mTempText && mFreeSpace)
    {
-      FilePath path = mTempText->GetValue();
+      DirectoryPath path = mTempText->GetValue();
 
       wxLongLong space;
       wxGetDiskSpace(path.GET(), NULL, &space);

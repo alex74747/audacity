@@ -194,7 +194,10 @@ void ApplyMacroDialog::PopulateMacros()
    int topItem = mMacros->GetTopItem();
    mMacros->DeleteAllItems();
    for (i = 0; i < (int)names.size(); i++) {
-      mMacros->InsertItem(i, names[i]);
+      // using GET to expose MacroName to the user, which is allowed
+      // (it's either the name of a file the user made, or a localized
+      // string naming a built-in macro)
+      mMacros->InsertItem(i, names[i].GET());
    }
 
    int item = mMacros->FindItem(-1, mActiveMacro);
@@ -239,9 +242,15 @@ void ApplyMacroDialog::OnApplyToProject(wxCommandEvent & WXUNUSED(event))
    ApplyMacroToProject( item );
 }
 
-CommandID ApplyMacroDialog::MacroIdOfName( const wxString & MacroName )
+CommandID ApplyMacroDialog::MacroIdOfName( const MacroName & name )
 {
-   wxString Temp = MacroName;
+   // using GET to Computing an identifier string from a MacroName
+   // (which is a user-friendly name)
+   // PRL:
+   // This is an internal Identifier but it may depend on a locale-dependent
+   // string naming one of the built-in macros that isn't in a file.
+   // Is that all right?
+   wxString Temp = name.GET();
    Temp.Replace(" ","");
    Temp = wxString( "Macro_" ) + Temp;
    return Temp;

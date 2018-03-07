@@ -791,14 +791,17 @@ MenuTable::BaseItemPtrs PopulateMacrosMenu( CommandFlag flags  )
 {
    MenuTable::BaseItemPtrs result;
    auto names = MacroCommands::GetNames(); // these names come from filenames
-   int i;
 
    // This finder scope may be redundant, but harmless
    auto scope = MenuTable::FinderScope( findCommandHandler );
-   for (i = 0; i < (int)names.size(); i++) {
-      auto MacroID = ApplyMacroDialog::MacroIdOfName( names[i] );
+
+   for ( const auto &name : names ) {
+      auto MacroID = ApplyMacroDialog::MacroIdOfName( name );
       result.push_back( MenuTable::Command( MacroID,
-         Verbatim( names[i] ), // file name verbatim
+         // using GET to expose MacroName to the user, which is allowed
+         // (it's either the name of a file the user made, or a localized
+         // string naming a built-in macro)
+         Verbatim( name.GET() ), // file name verbatim
          FN(OnApplyMacroDirectly),
          flags,
          CommandManager::Options{}.AllowInMacros()
