@@ -1051,6 +1051,13 @@ void FrequencyPlotDialog::Recalc()
    DrawPlot();
 }
 
+// Allow TranslatableString to work with shift output operators
+template< typename Sink >
+inline Sink &operator <<( Sink &sink, const TranslatableString &str )
+{
+   return sink << str.Translation();
+}
+
 void FrequencyPlotDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 {
    wxString fName = _("spectrum.txt");

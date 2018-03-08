@@ -254,7 +254,7 @@ size_t Importer::SelectDefaultOpenType( const FileNames::FileTypes &fileTypes )
       begin,
       std::find_if( begin, fileTypes.end(),
          [&type](const FileNames::FileType &fileType){
-            return fileType.description.Translation() == type; } ) );
+            return (const wxString&)fileType.description.Translation() == type; } ) );
    return (index == fileTypes.size()) ? 0 : index;
 }
 
@@ -511,7 +511,7 @@ bool Importer::Import( AudacityProject &project,
 
       for (const auto &plugin : sImportPluginList())
       {
-         if (plugin->GetPluginFormatDescription().Translation() == type )
+         if (plugin->GetPluginFormatDescription().Translation() == LocalizedString{ type } )
          {
             // This plugin corresponds to user-selected filter, try it first.
             wxLogDebug(L"Inserting %s",plugin->GetPluginStringID());

@@ -84,10 +84,11 @@ public:
       This is a deliberately ugly-looking function name.  Use with caution. */
    Identifier MSGID() const;
 
-   wxString Translation() const { return DoFormat( false ); }
+   // Translations may contain menu accelerator and hotkey codes
+   LocalizedString Translation() const;
 
    //! Format as an English string for debugging logs and developers' eyes, not for end users
-   wxString Debug() const { return DoFormat( true ); }
+   LocalizedString Debug() const;
 
    // use sparingly!
    VerbatimString mention() const;
@@ -209,8 +210,8 @@ public:
    TranslatableString Stripped( unsigned options = MenuCodes ) const
    { return TranslatableString{ *this }.Strip( options ); }
 
-   wxString StrippedTranslation() const { return Stripped().Translation(); }
-
+   LocalizedString StrippedTranslation() const;
+ 
 private:
    static const Formatter NullContextFormatter;
 
@@ -253,8 +254,7 @@ private:
          -> decltype(
             TranslatableString::TranslateArgument( arg.get(), debug ) )
    { return TranslatableString::TranslateArgument( arg.get(), debug ); }
-   static wxString TranslateArgument( const TranslatableString &arg, bool debug )
-   { return arg.DoFormat( debug ); }
+   static wxString TranslateArgument ( const TranslatableString &arg, bool debug );
 
    template< size_t N > struct PluralTemp{
       TranslatableString &ts;
@@ -317,13 +317,6 @@ namespace std
          return Hasher{}( stdstr );
       }
    };
-}
-
-//! Allow TranslatableString to work with shift output operators
-template< typename Sink >
-inline Sink &operator <<( Sink &sink, const TranslatableString &str )
-{
-   return sink << str.Translation();
 }
 
 //! Require calls to the one-argument constructor to go through this distinct global function name.

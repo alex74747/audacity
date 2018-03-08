@@ -526,6 +526,13 @@ void ContrastDialog::results()
    }
 }
 
+// Allow TranslatableString to work with shift output operators
+template< typename Sink >
+inline Sink &operator <<( Sink &sink, const TranslatableString &str )
+{
+   return sink << str.Translation();
+}
+
 void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 {
    // TODO: Handle silence checks better (-infinity dB)
@@ -558,7 +565,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    /* i18n-hint: WCAG abbreviates Web Content Accessibility Guidelines */
       << XO("WCAG 2.0 Success Criteria 1.4.7 Contrast Results") << '\n'
       << '\n'
-      << XO("Filename = %s.").Format( ProjectFileIO::Get(*project).GetFileName() ) << '\n'
+      << XO("Filename = %s.").Format( ProjectFileIO::Get(*project).GetFileName().GET() ) << '\n'
       << '\n'
       << XO("Foreground") << '\n';
 

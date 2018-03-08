@@ -319,6 +319,13 @@ AboutDialog::AboutDialog(wxWindow * parent)
 
 #define ABOUT_DIALOG_WIDTH 506
 
+// Allow TranslatableString to work with shift output operators
+template< typename Sink >
+inline Sink &operator <<( Sink &sink, const TranslatableString &str )
+{
+   return sink << str.Translation();
+}
+
 void AboutDialog::PopulateAudacityPage( ShuttleGui & S )
 {
    CreateCreditsList();
@@ -367,7 +374,7 @@ visit our %s.")
             .Format( XC("forum", "accusative") ) );
    auto par2StrTranslated = par2Str.Translation();
 
-   if( par2StrTranslated == par2Str.MSGID().GET() )
+   if( (wxString&)par2StrTranslated == par2Str.MSGID().GET() )
       par2StrTranslated.Replace( L", in English,", L"" );
 
    /* i18n-hint: The translation of "translator_credits" will appear
@@ -377,7 +384,7 @@ visit our %s.")
     *  For example:  "English translation by Dominic Mazzoni." */
    auto translatorCreditsMsgid = XO("translator_credits");
    auto translatorCredits = translatorCreditsMsgid.Translation();
-   if ( translatorCredits == translatorCreditsMsgid.MSGID().GET() )
+   if ( (wxString&)translatorCredits == translatorCreditsMsgid.MSGID().GET() )
       // We're in an English locale
       translatorCredits.clear();
    else

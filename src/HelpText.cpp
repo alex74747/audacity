@@ -200,6 +200,13 @@ TranslatableString TitleText( const wxString & Key )
    return Verbatim( Key );
 }
 
+// Allow TranslatableString to work with shift output operators
+template< typename Sink >
+inline Sink &operator <<( Sink &sink, const TranslatableString &str )
+{
+   return sink << str.Translation();
+}
+
 static wxString HelpTextBuiltIn( const wxString & Key )
 {
    // PRL:  Is it necessary to define these outside of conditional compilation so that both get into the .pot file?

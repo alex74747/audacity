@@ -765,7 +765,7 @@ void MacrosWindow::AddItem(const CommandID &Action, const wxString &Params)
       :
          // uh oh, using GET to expose an internal name to the user!
          // in default of any better friendly name
-        Action.GET();
+        wxString{Action.GET()};
 
    int i = mList->GetItemCount();
 

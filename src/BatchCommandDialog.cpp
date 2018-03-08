@@ -190,7 +190,7 @@ void MacroCommandDialog::OnItemSelected(wxListEvent &event)
    mUsePreset->Enable(em.HasPresets(ID));
 
    auto value = command.name.StrippedTranslation();
-   if ( value == mCommand->GetValue() )
+   if ( value == LocalizedString{ mCommand->GetValue() } )
       // This uses the assumption of uniqueness of translated names!
       return;
 

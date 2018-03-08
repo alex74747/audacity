@@ -704,6 +704,13 @@ int AudioIOBase::getRecordDevIndex(const wxString &devNameArg)
    return deviceNum;
 }
 
+// Allow TranslatableString to work with shift output operators
+template< typename Sink >
+inline Sink &operator <<( Sink &sink, const TranslatableString &str )
+{
+   return sink << str.Translation();
+}
+
 wxString AudioIOBase::GetDeviceInfo()
 {
    wxStringOutputStream o;

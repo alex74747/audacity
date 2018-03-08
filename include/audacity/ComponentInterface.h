@@ -60,47 +60,51 @@ that internal string is not broken.
 ********************************************************************************/
 template< typename IdentifierType >
 class IdentInterfaceSymbol
+   : private TranslatableString
 {
 public:
    using Identifier = IdentifierType;
+   using TranslatableString::Translation;
 
    IdentInterfaceSymbol() = default;
    
    // Allows implicit construction from an internal string re-used as a msgid
    IdentInterfaceSymbol( const Identifier &internal )
-      : mInternal{ internal }, mMsgid{ internal.GET(), {} }
+      : TranslatableString{ internal.GET(), {} }
+      , mInternal{ internal }
    {}
 
    // Allows implicit construction from a msgid re-used as an internal string
    IdentInterfaceSymbol( const TranslatableString &internal )
-      : mInternal{ internal.MSGID().GET(), }, mMsgid{ internal }
+      : TranslatableString{ internal }
+      , mInternal{ internal.MSGID(), }
    {}
 
    // Allows implicit construction from an internal string re-used as a msgid
-   IdentInterfaceSymbol( const wxString &internal )
-      : mInternal{ internal }, mMsgid{ internal, {} }
+   IdentInterfaceSymbol( const ::wxString &internal )
+      : TranslatableString{ internal, {} }
+      , mInternal{ internal }
    {}
 
    // Allows implicit construction from an internal string re-used as a msgid
    IdentInterfaceSymbol( const wxChar *msgid )
-      : mInternal{ msgid }, mMsgid{ msgid, {} }
+      : TranslatableString{ msgid, {} }
+      , mInternal{ msgid }
    {}
 
    // Two-argument version distinguishes internal from translatable string
    // such as when the first squeezes spaces out
    IdentInterfaceSymbol( const Identifier &internal,
                          const TranslatableString &msgid )
-      : mInternal{ internal.GET() }
       // Do not permit non-empty msgid with empty internal
-      , mMsgid{ internal.empty() ? TranslatableString{} : msgid }
+      : TranslatableString{ internal.empty() ? TranslatableString{} : msgid }
+      , mInternal{ internal }
    {}
 
    const Identifier &Internal() const { return mInternal; }
-   const TranslatableString &Msgid() const { return mMsgid; }
-   const TranslatableString Stripped() const { return mMsgid.Stripped(); }
-   const wxString Translation() const { return mMsgid.Translation(); }
-   const wxString StrippedTranslation() const
-      { return Stripped().Translation(); }
+   const TranslatableString Stripped() const;
+   const TranslatableString &Msgid() const { return *this; }
+   LocalizedString StrippedTranslation() const;
 
    bool empty() const { return mInternal.empty(); }
 
@@ -114,7 +118,6 @@ public:
 
 private:
    Identifier mInternal;
-   TranslatableString mMsgid;
 };
 
 using ComponentInterfaceSymbol = IdentInterfaceSymbol< CommandID >;

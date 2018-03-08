@@ -2482,3 +2482,14 @@ void AudacityApp::AssociateFileTypes()
 }
 #endif
 
+// Find a better place for these
+template<> LocalizedString ComponentInterfaceSymbol::StrippedTranslation() const
+{ return Msgid().Stripped().Translation(); }
+
+template<>
+const TranslatableString ComponentInterfaceSymbol::Stripped() const
+{ return Msgid().Stripped(); }
+
+template<>
+const TranslatableString EnumValueSymbol::Stripped() const
+{ return Msgid().Stripped(); }

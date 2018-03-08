@@ -86,6 +86,24 @@ TranslatableString &TranslatableString::Strip( unsigned codes ) &
    return *this;
 }
 
+#include "Internat.h"
+LocalizedString TranslatableString::Translation() const
+{
+   return DoFormat( false );
+}
+
+LocalizedString TranslatableString::StrippedTranslation() const
+{
+   return Stripped().Translation();
+}
+
+// Format as an English string for debugging logs and developers' eyes, not
+// for end users
+LocalizedString TranslatableString::Debug() const
+{
+   return DoFormat( true );
+}
+
 wxString TranslatableString::DoGetContext( const Formatter &formatter )
 {
    return formatter ? formatter( {}, Request::Context ) : wxString{};
@@ -149,4 +167,16 @@ TranslatableString &TranslatableString::Join(
    return *this;
 }
 
-const TranslatableString TranslatableString::Inaudible{ L"\a" };
+const TranslatableString TranslatableString::Inaudible{ L"\a", {} };
+
+VerbatimString TranslatableString::mention() const
+{
+   return VerbatimString{ wxGetTranslation( mMsgid ) };
+}
+
+wxString TranslatableString::TranslateArgument(
+   const TranslatableString &arg, bool debug)
+{
+   return arg.DoFormat( debug );
+}
+

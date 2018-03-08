@@ -272,14 +272,14 @@ void BenchmarkDialog::OnSave( wxCommandEvent & WXUNUSED(event))
    leave untranslated file extension .txt */
    auto fName = XO("benchmark.txt").Translation();
 
-   fName = FileNames::SelectFile(FileNames::Operation::Export,
+   fName = LocalizedString{FileNames::SelectFile(FileNames::Operation::Export,
       XO("Export Benchmark Data as:"),
       wxEmptyString,
       fName,
       L"txt",
       { FileNames::TextFiles },
       wxFD_SAVE | wxRESIZE_BORDER,
-      this).GET();
+      this).GET()};
 
    if (fName.empty())
       return;
