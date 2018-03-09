@@ -29,7 +29,7 @@ class ImportCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return IMPORT_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return IMPORT_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Imports from a file.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -47,7 +47,7 @@ class ExportCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return EXPORT_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return EXPORT_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Exports to a file.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

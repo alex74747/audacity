@@ -26,7 +26,7 @@ class DemoCommand final : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return DEMO_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return DEMO_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Does the demo action.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

@@ -26,7 +26,7 @@ class SetLabelCommand : public AudacityCommand
 public:
    SetLabelCommand();
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SET_LABEL_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SET_LABEL_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Sets various values for a label.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

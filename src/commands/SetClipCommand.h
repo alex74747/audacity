@@ -27,7 +27,7 @@ class SetClipCommand : public SetTrackBase
 public:
    SetClipCommand();
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SET_CLIP_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SET_CLIP_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Sets various values for a clip.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

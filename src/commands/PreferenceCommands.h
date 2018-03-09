@@ -33,7 +33,7 @@ class GetPreferenceCommand final : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return GET_PREFERENCE_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return GET_PREFERENCE_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Gets the value of a single preference.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -51,7 +51,7 @@ class SetPreferenceCommand final : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SET_PREFERENCE_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SET_PREFERENCE_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Sets the value of a single preference.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

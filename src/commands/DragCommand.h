@@ -26,7 +26,7 @@ class DragCommand : public AudacityCommand
 public:
    DragCommand();
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return DRAG_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return DRAG_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Drags mouse from one place to another.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

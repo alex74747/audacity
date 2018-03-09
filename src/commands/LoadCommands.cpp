@@ -176,12 +176,7 @@ wxString BuiltinCommandsModule::GetPath()
    return mPath;
 }
 
-wxString BuiltinCommandsModule::GetSymbol()
-{
-   return XO("Builtin Commands");
-}
-
-wxString BuiltinCommandsModule::GetName()
+IdentInterfaceSymbol BuiltinCommandsModule::GetSymbol()
 {
    return XO("Builtin Commands");
 }

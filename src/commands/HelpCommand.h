@@ -29,7 +29,7 @@ class HelpCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return HELP_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return HELP_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Gives help on a command.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

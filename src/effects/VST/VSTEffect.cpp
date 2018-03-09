@@ -209,14 +209,9 @@ public:
       return mPath;
    }
 
-   wxString GetSymbol() override
+   IdentInterfaceSymbol GetSymbol() override
    {
       return mName;
-   }
-
-   wxString GetName() override
-   {
-      return GetSymbol();
    }
 
    wxString GetVendor() override
@@ -314,14 +309,9 @@ wxString VSTEffectsModule::GetPath()
    return mPath;
 }
 
-wxString VSTEffectsModule::GetSymbol()
+IdentInterfaceSymbol VSTEffectsModule::GetSymbol()
 {
    return XO("VST Effects");
-}
-
-wxString VSTEffectsModule::GetName()
-{
-   return GetSymbol();
 }
 
 wxString VSTEffectsModule::GetVendor()
@@ -562,7 +552,8 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
                if (idCnt > 3)
                {
                   progress.create( _("Scanning Shell VST"),
-                        wxString::Format(_("Registering %d of %d: %-64.64s"), 0, idCnt, proc.GetName()),
+                        wxString::Format(_("Registering %d of %d: %-64.64s"), 0, idCnt,
+                                         proc.GetSymbol().Translation()),
                         static_cast<int>(idCnt),
                         nullptr,
                         wxPD_APP_MODAL |
@@ -636,7 +627,8 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
                {
                   idNdx++;
                   cont = progress->Update(idNdx,
-                                          wxString::Format(_("Registering %d of %d: %-64.64s"), idNdx, idCnt, proc.GetName()));
+                     wxString::Format(_("Registering %d of %d: %-64.64s"), idNdx, idCnt,
+                        proc.GetSymbol().Translation() ));
                }
 
                if (!skip && cont)
@@ -720,7 +712,7 @@ void VSTEffectsModule::Check(const wxChar *path)
       {
          out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyBegin, wxEmptyString);
          out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyPath, effect.GetPath());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyName, effect.GetName());
+         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyName, effect.GetSymbol().Internal());
          out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyVendor, effect.GetVendor());
          out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyVersion, effect.GetVersion());
          out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyDescription, effect.GetDescription());
@@ -1183,14 +1175,9 @@ wxString VSTEffect::GetPath()
    return mPath;
 }
 
-wxString VSTEffect::GetSymbol()
+IdentInterfaceSymbol VSTEffect::GetSymbol()
 {
    return mName;
-}
-
-wxString VSTEffect::GetName()
-{
-   return GetSymbol();
 }
 
 wxString VSTEffect::GetVendor()
@@ -3620,7 +3607,8 @@ void VSTEffect::SaveXML(const wxFileName & fn)
    xmlFile.WriteAttr(wxT("version"), wxT("2"));
 
    xmlFile.StartTag(wxT("effect"));
-   xmlFile.WriteAttr(wxT("name"), GetName());
+   // Use internal name only in persistent information
+   xmlFile.WriteAttr(wxT("name"), GetSymbol().Internal());
    xmlFile.WriteAttr(wxT("uniqueID"), mAEffect->uniqueID);
    xmlFile.WriteAttr(wxT("version"), mAEffect->version);
    xmlFile.WriteAttr(wxT("numParams"), mAEffect->numParams);
@@ -3732,7 +3720,7 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
                return false;
             }
 
-            if (value != GetName())
+            if (value != GetSymbol().Internal())
             {
                wxString msg;
                msg.Printf(_("This parameter file was saved from %s.  Continue?"), value);

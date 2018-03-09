@@ -34,7 +34,7 @@ class SelectTimeCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SELECT_TIME_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SELECT_TIME_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Selects a time range.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -58,7 +58,7 @@ class SelectFrequenciesCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SELECT_FREQUENCIES_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SELECT_FREQUENCIES_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Selects a frequency range.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -79,7 +79,7 @@ class SelectTracksCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SELECT_TRACKS_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SELECT_TRACKS_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Selects a range of tracks.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -101,7 +101,7 @@ class SelectCommand : public AudacityCommand
 {
 public:
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SELECT_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SELECT_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Selects Audio.");};
    bool DefineParams( ShuttleParams & S ) override { 
       return 

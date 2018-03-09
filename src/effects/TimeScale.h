@@ -34,8 +34,7 @@ public:
 
    // IdentInterface implementation
 
-   wxString GetSymbol() override;
-   wxString GetName() override;
+   IdentInterfaceSymbol GetSymbol() override;
    wxString GetDescription() override;
    wxString ManualPage() override;
 

@@ -68,7 +68,7 @@ EffectNoise::~EffectNoise()
 
 // IdentInterface implementation
 
-wxString EffectNoise::GetSymbol()
+IdentInterfaceSymbol EffectNoise::GetSymbol()
 {
    return NOISE_PLUGIN_SYMBOL;
 }

@@ -239,12 +239,7 @@ wxString BuiltinEffectsModule::GetPath()
    return mPath;
 }
 
-wxString BuiltinEffectsModule::GetSymbol()
-{
-   return XO("Builtin Effects");
-}
-
-wxString BuiltinEffectsModule::GetName()
+IdentInterfaceSymbol BuiltinEffectsModule::GetSymbol()
 {
    return XO("Builtin Effects");
 }

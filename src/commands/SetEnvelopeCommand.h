@@ -27,7 +27,7 @@ class SetEnvelopeCommand : public SetTrackBase
 public:
    SetEnvelopeCommand();
    // CommandDefinitionInterface overrides
-   wxString GetSymbol() override {return SET_ENVELOPE_PLUGIN_SYMBOL;};
+   IdentInterfaceSymbol GetSymbol() override {return SET_ENVELOPE_PLUGIN_SYMBOL;};
    wxString GetDescription() override {return _("Sets an envelope point position.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

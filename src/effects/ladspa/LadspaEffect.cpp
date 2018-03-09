@@ -112,14 +112,9 @@ wxString LadspaEffectsModule::GetPath()
    return mPath;
 }
 
-wxString LadspaEffectsModule::GetSymbol()
+IdentInterfaceSymbol LadspaEffectsModule::GetSymbol()
 {
    return XO("LADSPA Effects");
-}
-
-wxString LadspaEffectsModule::GetName()
-{
-   return GetSymbol();
 }
 
 wxString LadspaEffectsModule::GetVendor()
@@ -619,14 +614,9 @@ wxString LadspaEffect::GetPath()
    return wxString::Format(wxT("%s;%d"), mPath, mIndex);
 }
 
-wxString LadspaEffect::GetSymbol()
+IdentInterfaceSymbol LadspaEffect::GetSymbol()
 {
    return LAT1CTOWX(mData->Name);
-}
-
-wxString LadspaEffect::GetName()
-{
-   return GetSymbol();
 }
 
 wxString LadspaEffect::GetVendor()

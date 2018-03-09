@@ -179,7 +179,7 @@ EffectScienFilter::~EffectScienFilter()
 
 // IdentInterface implementation
 
-wxString EffectScienFilter::GetSymbol()
+IdentInterfaceSymbol EffectScienFilter::GetSymbol()
 {
    return CLASSICFILTERS_PLUGIN_SYMBOL;
 }

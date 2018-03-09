@@ -79,7 +79,7 @@ EffectAmplify::~EffectAmplify()
 
 // IdentInterface implementation
 
-wxString EffectAmplify::GetSymbol()
+IdentInterfaceSymbol EffectAmplify::GetSymbol()
 {
    return AMPLIFY_PLUGIN_SYMBOL;
 }

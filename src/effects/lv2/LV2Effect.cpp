@@ -330,14 +330,9 @@ wxString LV2Effect::GetPath()
    return LilvString(lilv_plugin_get_uri(mPlug));
 }
 
-wxString LV2Effect::GetSymbol()
+IdentInterfaceSymbol LV2Effect::GetSymbol()
 {
    return LilvString(lilv_plugin_get_name(mPlug), true);
-}
-
-wxString LV2Effect::GetName()
-{
-   return GetSymbol();
 }
 
 wxString LV2Effect::GetVendor()

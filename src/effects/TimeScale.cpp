@@ -84,14 +84,11 @@ EffectTimeScale::~EffectTimeScale()
 
 // IdentInterface implementation
 
-wxString EffectTimeScale::GetSymbol()
+IdentInterfaceSymbol EffectTimeScale::GetSymbol()
 {
-   return TIMESCALE_PLUGIN_SYMBOL;
-}
-
-wxString EffectTimeScale::GetName()
-{
-   return XO("Sliding Time Scale/Pitch Shift");
+   // two strings here
+   // unusual case
+   return { TIMESCALE_PLUGIN_SYMBOL, XO("Sliding Time Scale/Pitch Shift") };
 }
 
 wxString EffectTimeScale::GetDescription()

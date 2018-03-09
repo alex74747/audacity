@@ -285,7 +285,7 @@ EffectEqualization::~EffectEqualization()
 
 // IdentInterface implementation
 
-wxString EffectEqualization::GetSymbol()
+IdentInterfaceSymbol EffectEqualization::GetSymbol()
 {
    return EQUALIZATION_PLUGIN_SYMBOL;
 }
