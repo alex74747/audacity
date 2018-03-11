@@ -298,3 +298,12 @@ wxString Internat::StripAccelerators(const wxString &s)
    }
    return result;
 }
+
+#include "../include/audacity/IdentInterface.h"
+
+TranslatedInternalString::TranslatedInternalString(
+   const IdentInterfaceSymbol &symbol )
+: mInternal( symbol.Internal() )
+, mTranslated( GetCustomTranslation( symbol.Msgid() ) )
+{
+}

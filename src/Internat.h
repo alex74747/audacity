@@ -184,6 +184,8 @@ inline wxArrayString LocalizedStrings(const wxArrayString &strings)
    return LocalizedStrings( &strings[0], strings.size() );
 }
 
+class IdentInterfaceSymbol;
+
 // This object pairs an internal string, maybe empty, with a translated string.
 // Any internal string may be written to configuration or other files and,
 // for compatibility, should not vary between Audacity versions.
@@ -208,7 +210,13 @@ public:
    : mInternal{ internal }, mTranslated{ translated }
    {}
 
+   // Construct by copying the internal string and translating the msgid
+   // stored in symbol
+   explicit TranslatedInternalString( const IdentInterfaceSymbol &symbol );
+
    const wxString &Internal() const { return mInternal; }
+   const wxString &InternalElseTranslated() const
+      { return mInternal.empty() ? mTranslated : mInternal; }
    const wxString &Translated() const { return mTranslated; }
 
 private:
