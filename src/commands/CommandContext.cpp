@@ -128,7 +128,8 @@ void CommandContext::EndField() const
    if( pOutput )
       pOutput->EndField();
 }
-void CommandContext::AddItem(const wxString &value , const wxString &name ) const
+void CommandContext::AddItem(
+   const TranslatedInternalString &value , const wxString &name ) const
 {
    if( pOutput )
       pOutput->AddItem( value, name );

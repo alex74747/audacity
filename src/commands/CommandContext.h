@@ -46,7 +46,8 @@ public:
    void EndStruct() const;
    void StartField(const wxString &name) const;
    void EndField() const;
-   void AddItem(const wxString &value , const wxString &name="" ) const;
+   void AddItem(
+      const TranslatedInternalString &value , const wxString &name="" ) const;
    void AddBool(const bool value      , const wxString &name="" ) const;
    void AddItem(const double value    , const wxString &name="" ) const;
 

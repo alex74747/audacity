@@ -2366,9 +2366,9 @@ wxCheckBox * ShuttleGuiGetDefinition::TieCheckBox(
    const bool bDefault) 
 { 
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "bool", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("bool") }, "type" );
    AddBool( bDefault, "default"  );
    EndStruct();
    return ShuttleGui::TieCheckBox( Prompt, SettingName, bDefault );
@@ -2379,9 +2379,9 @@ wxCheckBox * ShuttleGuiGetDefinition::TieCheckBoxOnRight(
    const bool bDefault) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "bool", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("bool") }, "type" );
    AddBool( bDefault, "default"  );
    EndStruct();
    return ShuttleGui::TieCheckBoxOnRight( Prompt, SettingName, bDefault );
@@ -2394,14 +2394,15 @@ wxChoice * ShuttleGuiGetDefinition::TieChoice(
    const wxArrayString & TranslatedChoices ) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "enum", "type" );
-   AddItem( Default, "default"  );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("enum") }, "type" );
+   AddItem( TranslatedInternalString{ Default }, "default"  );
    StartField( "enum" );
    StartArray();
    for( size_t i=0;i<Choices.Count(); i++ )
-      AddItem( Choices[i] );
+      // To do: pass a pair
+      AddItem( TranslatedInternalString{ Choices[i] } );
    EndArray();
    EndField();
    EndStruct();
@@ -2415,14 +2416,15 @@ wxChoice * ShuttleGuiGetDefinition::TieChoice(
    const std::vector<int> & TranslatedChoices) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "enum", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("enum") }, "type" );
    AddItem( Default, "default"  );
    StartField( "enum" );
    StartArray();
    for( size_t i=0;i<Choices.Count(); i++ )
-      AddItem( Choices[i] );
+      // To do: pass a pair
+      AddItem( TranslatedInternalString{ Choices[i] } );
    EndArray();
    EndField();
    EndStruct();
@@ -2435,9 +2437,9 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieTextBox(
    const int nChars) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "string", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("string") }, "type" );
    AddItem( Default, "default"  );
    EndStruct();
    return ShuttleGui::TieTextBox( Prompt, SettingName, Default, nChars );
@@ -2449,10 +2451,10 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieTextBox(
    const int nChars) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "string", "type" );
-   AddItem( Default, "default"  );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("string") }, "type" );
+   AddItem( TranslatedInternalString{ Default }, "default"  );
    EndStruct();
    return ShuttleGui::TieTextBox( Prompt, SettingName, Default, nChars );
 }
@@ -2463,9 +2465,9 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieNumericTextBox(
    const int nChars) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "number", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("number") }, "type" );
    AddItem( Default, "default"  );
    EndStruct();
    return ShuttleGui::TieNumericTextBox( Prompt, SettingName, Default, nChars );
@@ -2477,10 +2479,10 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieNumericTextBox(
    const int nChars) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "number", "type" );
-   AddItem( Default, "default"  );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("number") }, "type" );
+   AddItem( TranslatedInternalString{ Default }, "default"  );
    EndStruct();
    return ShuttleGui::TieNumericTextBox( Prompt, SettingName, Default, nChars );
 }
@@ -2492,9 +2494,9 @@ wxSlider * ShuttleGuiGetDefinition::TieSlider(
    const int min) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "number", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("number") }, "type" );
    AddItem( iDefault, "default"  );
    EndStruct();
    return ShuttleGui::TieSlider( Prompt, SettingName, iDefault, max, min );
@@ -2507,9 +2509,9 @@ wxSpinCtrl * ShuttleGuiGetDefinition::TieSpinCtrl(
    const int min) 
 {
    StartStruct();
-   AddItem( SettingName, "id" );
-   AddItem( Prompt, "prompt" );
-   AddItem( "number", "type" );
+   AddItem( TranslatedInternalString{ SettingName }, "id" );
+   AddItem( TranslatedInternalString{ Prompt }, "prompt" );
+   AddItem( TranslatedInternalString{ wxT("number") }, "type" );
    AddItem( Value, "default"  );
    EndStruct();
    return ShuttleGui::TieSpinCtrl( Prompt, SettingName, Value, max, min );

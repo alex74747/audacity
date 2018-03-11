@@ -239,8 +239,13 @@ void EffectManager::GetCommandDefinition(const PluginID & ID, const CommandConte
    // This is capturing the output context into the shuttle.
    ShuttleGetDefinition S(  *context.pOutput.get()->mStatusTarget.get() );
    S.StartStruct();
-   S.AddItem( GetCommandIdentifier( ID ), "id" );
-   S.AddItem( GetCommandName( ID ), "name" );
+
+   // Internal string only, meant for writing into scripts,
+   // is the English name CamelCased, not the same as Msgid:
+   S.AddItem( TranslatedInternalString{ GetCommandIdentifier( ID ) }, "id" );
+   // Pass the translated name only here, without the msgid!
+   S.AddItem( TranslatedInternalString{ {}, GetCommandName( ID ) }, "name" );
+
    if( bHasParams ){
       S.StartField( "params" );
       S.StartArray();
@@ -248,8 +253,9 @@ void EffectManager::GetCommandDefinition(const PluginID & ID, const CommandConte
       S.EndArray();
       S.EndField();
    }
-   S.AddItem( GetCommandUrl( ID ), "url" );
-   S.AddItem( GetCommandTip( ID ), "tip" );
+   S.AddItem( TranslatedInternalString{ GetCommandUrl( ID ) }, "url" );
+   // The tip is a translated string!
+   S.AddItem( TranslatedInternalString{ {}, GetCommandTip( ID ) }, "tip" );
    S.EndStruct();
 }
 

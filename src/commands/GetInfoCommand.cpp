@@ -168,8 +168,9 @@ bool GetInfoCommand::SendMenus(const CommandContext &context)
       context.StartArray();
       context.AddItem( 0 );
       context.AddItem( 0 );
-      context.AddItem( Label );
-      context.AddItem( "" );
+      // What InternalString, if any, should be recovered from menu item text?
+      context.AddItem( { {}, Label } );
+      context.AddItem( TranslatedInternalString{} );
       context.EndArray();
       ExploreMenu( context, pBar->GetMenu( i ), pBar->GetId(), 1 );
    }
@@ -230,7 +231,8 @@ bool GetInfoCommand::SendBoxes(const CommandContext &context)
    context.AddItem( R.GetTop() );
    context.AddItem( R.GetRight() );
    context.AddItem( R.GetBottom() );
-   context.AddItem( "Audacity Window" ); 
+   static const auto str = XO("Audacity Window");
+   context.AddItem( TranslatedInternalString{ wxString{ str } } );
    context.EndArray( );
 
    ExploreAdornments( context, pWin->GetPosition()+wxSize( 6,-1), pWin, pWin->GetId(), 1 );
@@ -252,7 +254,8 @@ bool GetInfoCommand::SendTracks(const CommandContext & context)
       Track * fTrack = panel->GetFocusedTrack();
 
       context.StartStruct();
-      context.AddItem( trk->GetName(), "name" );
+      // Send a user-supplied string verbatim, no internal string
+      context.AddItem( { {}, trk->GetName() }, "name" );
       context.AddBool( (trk == fTrack), "focused");
       auto t = dynamic_cast<WaveTrack*>( trk );
       if( t )
@@ -376,7 +379,8 @@ bool GetInfoCommand::SendLabels(const CommandContext &context)
                context.AddItem( (double)i, "track" );
                context.AddItem( label.getT0(), "start" );
                context.AddItem( label.getT1(), "end" );
-               context.AddItem( label.title, "text" );
+               // Send a user-supplied string verbatim, no internal string
+               context.AddItem( { {}, label.title }, "text" );
                context.EndStruct();
             }
 #else
@@ -387,7 +391,8 @@ bool GetInfoCommand::SendLabels(const CommandContext &context)
                context.StartArray();
                context.AddItem( label.getT0() ); // start
                context.AddItem( label.getT1() ); // end
-               context.AddItem( label.title ); //text.
+               // Send a user-supplied string verbatim, no internal string
+               context.AddItem( { {}, label.title } ); //text.
                context.EndArray();
             }
             context.EndArray();
@@ -449,10 +454,12 @@ void GetInfoCommand::ExploreMenu( const CommandContext &context, wxMenu * pMenu,
       context.StartStruct();
       context.AddItem( depth, "0" );
       context.AddItem( flags, "1" );
-      context.AddItem( Label, "2" );
-      context.AddItem( Accel, "3" );
+      // Should "2" be combined with "id" passing Name as first argument
+      // of TranslatedInternalString?
+      context.AddItem( TranslatedInternalString{ {}, Label }, "2" );
+      context.AddItem( TranslatedInternalString{ Accel }, "3" );
       if( !Name.IsEmpty() )
-         context.AddItem( Name, "id" );// It is called Scripting ID outside Audacity.
+         context.AddItem( TranslatedInternalString{ Name }, "id" );// It is called Scripting ID outside Audacity.
       context.EndStruct();
 
       if (item->IsSubMenu()) {
@@ -481,7 +488,8 @@ void GetInfoCommand::ExploreAdornments( const CommandContext &context,
    context.AddItem( R.GetTop() );
    context.AddItem( R.GetRight() );
    context.AddItem( R.GetBottom() );
-   context.AddItem( "MenuBar" ); 
+   static const auto str = XO("MenuBar");
+   context.AddItem( TranslatedInternalString{ wxString{ str } } );
    context.EndArray();
 }
 
@@ -562,7 +570,9 @@ void GetInfoCommand::ExploreTrackPanel( const CommandContext &context,
          context.AddItem( R.GetTop() );
          context.AddItem( R.GetRight() );
          context.AddItem( R.GetBottom() );
-         context.AddItem( "VRuler" ); 
+         // i81n-hint: abbreviating "vertical ruler"
+         static const auto str = XO("VRuler");
+         context.AddItem( TranslatedInternalString{ wxString{ str } } );
          context.EndArray();
       }
    }
@@ -605,7 +615,9 @@ void GetInfoCommand::ExploreWindows( const CommandContext &context,
       context.AddItem( R.GetTop() );
       context.AddItem( R.GetRight() );
       context.AddItem( R.GetBottom() );
-      context.AddItem( Name );
+      // Whatever the wxWidgets window "name" is (not the same as the title)
+      // This may not be a user-friendly string
+      context.AddItem( TranslatedInternalString{ Name } );
       context.AddItem( item->GetId() );
       context.EndArray();
 

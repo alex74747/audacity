@@ -82,7 +82,12 @@ public:
    virtual void EndArray();
    virtual void StartStruct();
    virtual void EndStruct();
-   virtual void AddItem(const wxString &value , const wxString &name="" );
+
+   // Whether the internal or the translated string of value used is the
+   // decision of the subclass
+   virtual void AddItem(
+      const TranslatedInternalString &value , const wxString &name="" );
+
    virtual void AddBool(const bool value      , const wxString &name="" );
    virtual void AddItem(const double value    , const wxString &name="" );
    virtual void StartField( const wxString &name="" );
@@ -102,7 +107,8 @@ public:
    void EndArray() override { mTarget.EndArray();}
    void StartStruct() override { mTarget.StartStruct();}
    void EndStruct() override { mTarget.EndStruct();}
-   void AddItem(const wxString &value , const wxString &name="" ) override
+   void AddItem(const TranslatedInternalString &value , const wxString &name="" )
+         override
       { mTarget.AddItem(value,name);}
    void AddBool(const bool value      , const wxString &name="" ) override
       { mTarget.AddBool(value,name);}
@@ -125,7 +131,8 @@ public:
    virtual void EndArray() override;
    virtual void StartStruct() override;
    virtual void EndStruct() override;
-   virtual void AddItem(const wxString &value , const wxString &name="" )override;
+   virtual void AddItem(
+      const TranslatedInternalString &value , const wxString &name="" )override;
    virtual void AddBool(const bool value      , const wxString &name="" )override;
    virtual void AddItem(const double value    , const wxString &name="" )override;
    virtual void StartField( const wxString &name="" )override;
@@ -140,7 +147,8 @@ public:
    virtual void EndArray() override;
    virtual void StartStruct() override;
    virtual void EndStruct() override;
-   virtual void AddItem(const wxString &value , const wxString &name="" )override;
+   virtual void AddItem(
+      const TranslatedInternalString &value , const wxString &name="" )override;
    virtual void AddBool(const bool value      , const wxString &name="" )override;
    virtual void AddItem(const double value    , const wxString &name="" )override;
    virtual void StartField( const wxString &name="" )override;
@@ -366,7 +374,8 @@ public:
       if (mStatusTarget)
          mStatusTarget->EndField();
    }
-   void AddItem(const wxString &value , const wxString &name="" )
+   void AddItem(
+      const TranslatedInternalString &value , const wxString &name="" )
    {
       if (mStatusTarget)
          mStatusTarget->AddItem( value, name );

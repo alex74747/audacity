@@ -580,22 +580,23 @@ ShuttleGetDefinition::ShuttleGetDefinition( CommandMessageTarget & target ) : Co
 void ShuttleGetDefinition::Define( bool & var,     const wxChar * key, const bool vdefault, const bool vmin, const bool vmax, const bool vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "bool", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("bool") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
-      AddItem( vdefault ? "True" : "False", "default" );
+      AddItem( TranslatedInternalString{
+         vdefault ? wxT("True") : wxT("False") }, "default" );
    EndStruct();
 }
 
 void ShuttleGetDefinition::Define( int & var,      const wxChar * key, const int vdefault, const int vmin, const int vmax, const int vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "int", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("int") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    EndStruct();
@@ -604,10 +605,10 @@ void ShuttleGetDefinition::Define( int & var,      const wxChar * key, const int
 void ShuttleGetDefinition::Define( size_t & var,      const wxChar * key, const int vdefault, const int vmin, const int vmax, const int vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "size_t", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("size_t") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    EndStruct();
@@ -617,10 +618,10 @@ void ShuttleGetDefinition::Define( size_t & var,      const wxChar * key, const 
 void ShuttleGetDefinition::Define( float & var,   const wxChar * key, const float vdefault, const float vmin, const float vmax, const float vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "float", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("float") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    EndStruct();
@@ -629,10 +630,10 @@ void ShuttleGetDefinition::Define( float & var,   const wxChar * key, const floa
 void ShuttleGetDefinition::Define( double & var,   const wxChar * key, const float vdefault, const float vmin, const float vmax, const float vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "float", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("float") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    EndStruct();
@@ -641,10 +642,10 @@ void ShuttleGetDefinition::Define( double & var,   const wxChar * key, const flo
 void ShuttleGetDefinition::Define( double & var,   const wxChar * key, const double vdefault, const double vmin, const double vmax, const double vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "double", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("double") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    EndStruct();
@@ -654,12 +655,12 @@ void ShuttleGetDefinition::Define( double & var,   const wxChar * key, const dou
 void ShuttleGetDefinition::Define( wxString &var, const wxChar * key, const wxString vdefault, const wxString vmin, const wxString vmax, const wxString vscl )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "string", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("string") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
-      AddItem( vdefault, "default"  );
+      AddItem( TranslatedInternalString{ vdefault }, "default"  );
    EndStruct();
 }
 
@@ -667,16 +668,17 @@ void ShuttleGetDefinition::Define( wxString &var, const wxChar * key, const wxSt
 void ShuttleGetDefinition::DefineEnum( wxString &var, const wxChar * key, const wxString vdefault, wxArrayString strings )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "enum", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("enum") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
-      AddItem( vdefault, "default"  );
+      AddItem( TranslatedInternalString{ vdefault }, "default"  );
    StartField( "enum" );
    StartArray();
    for( size_t i=0;i<strings.Count(); i++ )
-      AddItem( strings[i] );
+      // To do: pass a pair
+      AddItem( TranslatedInternalString{ strings[i] } );
    EndArray();
    EndField();
    EndStruct();
@@ -685,16 +687,17 @@ void ShuttleGetDefinition::DefineEnum( wxString &var, const wxChar * key, const 
 void ShuttleGetDefinition::DefineEnum( int&var, const wxChar * key, const int vdefault, wxArrayString strings )
 {
    StartStruct();
-   AddItem( wxString(key), "key" );
-   AddItem( "enum", "type" );
+   AddItem( TranslatedInternalString{ wxString(key) }, "key" );
+   AddItem( TranslatedInternalString{ wxT("enum") }, "type" );
    if( IsOptional() )
-      AddItem( "unchanged", "default" );
+      AddItem( TranslatedInternalString{ wxT("unchanged") }, "default" );
    else
       AddItem( (double)vdefault, "default"  );
    StartField( "enum" );
    StartArray();
    for( size_t i=0;i<strings.Count(); i++ )
-      AddItem( strings[i] );
+      // To do: pass a pair
+      AddItem( TranslatedInternalString{ strings[i] } );
    EndArray();
    EndField();
    EndStruct();

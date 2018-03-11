@@ -55,7 +55,9 @@ void CommandMessageTarget::EndStruct(){
    }
    Update( " }" );
 }
-void CommandMessageTarget::AddItem(const wxString &value, const wxString &name){
+void CommandMessageTarget::AddItem(
+   const TranslatedInternalString &v, const wxString &name){
+   const auto &value = v.InternalElseTranslated();
    wxString Padding;
    Padding.Pad( mCounts.GetCount() *2 -2);
    Padding = (( value.length() < 15 ) || (mCounts.Last()<=0))  ? "" : wxString("\n") + Padding;
@@ -122,7 +124,9 @@ void LispyCommandMessageTarget::EndStruct(){
    }
    Update( ")" );
 }
-void LispyCommandMessageTarget::AddItem(const wxString &value, const wxString &name){
+void LispyCommandMessageTarget::AddItem(
+   const TranslatedInternalString &v, const wxString &name){
+   const auto &value = v.InternalElseTranslated();
    wxString Padding = "";
    if( name.IsEmpty() )
       Update( wxString::Format( "%s%s\"%s\"", (mCounts.Last()>0)?" ":"", Padding, Escaped(value)));
@@ -195,7 +199,9 @@ void BriefCommandMessageTarget::EndStruct(){
    if( mCounts.GetCount() <= 3 )
       Update( " " );
 }
-void BriefCommandMessageTarget::AddItem(const wxString &value, const wxString &WXUNUSED(name)){
+void BriefCommandMessageTarget::AddItem(
+   const TranslatedInternalString &v, const wxString &WXUNUSED(name)) {
+   const auto &value = v.InternalElseTranslated();
    if( mCounts.GetCount() <= 3 )
       Update( wxString::Format( "%s\"%s\"", (mCounts.Last()>0)?" ":"",Escaped(value)));
    mCounts.Last() += 1;
