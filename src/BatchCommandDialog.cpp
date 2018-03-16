@@ -189,11 +189,11 @@ void MacroCommandDialog::OnItemSelected(wxListEvent &event)
    mEditParams->Enable(!ID.empty());
    mUsePreset->Enable(em.HasPresets(ID));
 
-   auto value = command.name.StrippedTranslation();
-   if ( value == mCommand->GetValue() )
+   if ( command.name.Internal() == mInternalCommandName )
       // This uses the assumption of uniqueness of translated names!
       return;
 
+   auto value = command.name.StrippedTranslation();
    mCommand->SetValue(value);
    mInternalCommandName = command.name.Internal();
 

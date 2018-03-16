@@ -384,7 +384,7 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
    }
 
    // Sort commands by their user-visible names.
-   // PRL:  What exactly should happen if first members of pairs are not unique?
+   // PRL:  What exactly should happen if translations are not unique?
    // I'm not sure, but at least I can sort stably for a better defined result.
    auto less =
       [](const Entry &a, const Entry &b)
@@ -397,8 +397,14 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
       [](const Entry &a, const Entry &b)
          { return a.name.StrippedTranslation() ==
             b.name.StrippedTranslation(); };
+
+#if 0
    std::unique_copy(
       commands.begin(), commands.end(), std::back_inserter(mCommands), equal);
+#else
+   std::copy(
+      commands.begin(), commands.end(), std::back_inserter(mCommands));
+#endif
 }
 
 // binary search
