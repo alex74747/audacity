@@ -91,8 +91,9 @@ public:
 
    size_t as_size_t() const {
       wxASSERT(value >= 0);
-      wxASSERT(static_cast<std::make_unsigned<type>::type>(value) <= std::numeric_limits<size_t>::max());
-      return value;
+      wxASSERT(static_cast<std::make_unsigned<type>::type>(value)
+                  <= std::numeric_limits<size_t>::max());
+      return static_cast<size_t>(value);
    }
 
    sampleCount &operator += (sampleCount b) { value += b.value; return *this; }
