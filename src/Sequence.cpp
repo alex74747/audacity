@@ -861,12 +861,14 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             // The check intended here was already done in DirManager::HandleXMLTag(), where
             // it let the block be built, then checked against mMaxSamples, and deleted the block
             // if the size of the block is bigger than mMaxSamples.
-            if (static_cast<unsigned long long>(nValue) > mMaxSamples)
+            if (nValue < 0 ||
+                static_cast<unsigned long long>(nValue) > mMaxSamples)
             {
                mErrorOpening = true;
                return false;
             }
-            mDirManager->SetLoadingBlockLength(nValue);
+            // Previous checks prove this is non-narrowing
+            mDirManager->SetLoadingBlockLength(static_cast<size_t>(nValue));
          }
       } // while
 
@@ -907,7 +909,7 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
             }
 
             // nValue is now safe for size_t
-            mMaxSamples = nValue;
+            mMaxSamples = static_cast<size_t>(nValue);
 
             // PRL:  Is the following really okay?  DirManager might be shared across projects!
             // PRL:  Yes, because it only affects DirManager's behavior in opening the project.

@@ -737,8 +737,11 @@ bool ExportFFmpeg::Finalize()
          pkt.pts = av_rescale_q(pkt.pts, mEncAudioCodecCtx->time_base, mEncAudioStream->time_base);
       if (pkt.dts != int64_t(AV_NOPTS_VALUE))
          pkt.dts = av_rescale_q(pkt.dts, mEncAudioCodecCtx->time_base, mEncAudioStream->time_base);
-      if (pkt.duration)
-         pkt.duration = av_rescale_q(pkt.duration, mEncAudioCodecCtx->time_base, mEncAudioStream->time_base);
+      if (pkt.duration) {
+         auto result = av_rescale_q(pkt.duration, mEncAudioCodecCtx->time_base, mEncAudioStream->time_base);
+         wxASSERT(result <= std::numeric_limits<int>::max());
+         pkt.duration = static_cast<int>(result);
+      }
 
       if (av_interleaved_write_frame(mEncFormatCtx.get(), &pkt) != 0)
       {

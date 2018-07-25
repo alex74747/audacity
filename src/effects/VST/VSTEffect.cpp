@@ -3039,8 +3039,11 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    }
 
    // Allocate memory for the contents
-   ArrayOf<unsigned char> data{ size_t(f.Length()) };
-   if (!data)
+   auto llength = f.Length();
+   auto length = static_cast<size_t>(llength);
+   ArrayOf<unsigned char> data;
+   if (llength > std::numeric_limits<size_t>::max() ||
+       (data.reinit( length ), !data))
    {
       AudacityMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),
@@ -3053,7 +3056,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    do
    {
       // Read in the whole file
-      ssize_t len = f.Read((void *) bptr, f.Length());
+      ssize_t len = f.Read((void *) bptr, length);
       if (f.Error())
       {
          AudacityMessageBox(_("Unable to read presets file."),
@@ -3210,8 +3213,11 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    }
 
    // Allocate memory for the contents
-   ArrayOf<unsigned char> data{ size_t(f.Length()) };
-   if (!data)
+   auto llength = f.Length();
+   auto length = static_cast<size_t>(llength);
+   ArrayOf<unsigned char> data;
+   if (llength > std::numeric_limits<size_t>::max() ||
+       (data.reinit( length ), !data))
    {
       AudacityMessageBox(_("Unable to allocate memory when loading presets file."),
                    _("Error Loading VST Presets"),

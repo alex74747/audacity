@@ -738,7 +738,11 @@ bool AutoSaveFile::Decode(const wxString & fileName)
       return true;
    }
 
-   len = file.Length() - len;
+   auto length = file.Length();
+   if (length - len > std::numeric_limits<size_t>::max())
+      return false;   
+   len = static_cast<size_t>(length - len);
+
    using Chars = ArrayOf < char >;
    using WxChars = ArrayOf < wxChar >;
    Chars buf{ len };

@@ -1672,7 +1672,7 @@ ProgressResult TimerProgressDialog::UpdateProgress()
 
    wxLongLong_t remains = mStartTime + mDuration - now;
 
-   int nGaugeValue = (1000 * elapsed) / mDuration; // range = [0,1000]
+   auto nnGaugeValue = (1000 * elapsed) / mDuration; // range = [0,1000]
    // Running in TimerRecordDialog::RunWaitDialog(), for some unknown reason, 
    // nGaugeValue here is often a little over 1000. 
    // From testing, it's never shown bigger than 1009, but 
@@ -1684,7 +1684,9 @@ ProgressResult TimerProgressDialog::UpdateProgress()
    // beyond the completion time. My gusess is that the microsleep in RunWaitDialog was originally 10 ms
    // (same as other uses of Update) but was updated to kTimerInterval = 50 ms, thus triggering
    // the Assert (Bug 1367). By calling Update() before sleeping then I think nGaugeValue <= 1000 should work.
-   wxASSERT((nGaugeValue >= 0) && (nGaugeValue <= 1000));
+   wxASSERT((nnGaugeValue >= 0) && (nnGaugeValue <= 1000));
+   auto nGaugeValue =
+      std::max(0, std::min(1000, static_cast<int>(nnGaugeValue) ) );
 
    if (nGaugeValue != mLastValue)
    {

@@ -46,8 +46,8 @@ void ZoomInfo::UpdatePrefs()
 /// Converts a position (mouse X coordinate) to
 /// project time, in seconds.  Needs the left edge of
 /// the track as an additional parameter.
-double ZoomInfo::PositionToTime(wxInt64 position,
-   wxInt64 origin
+double ZoomInfo::PositionToTime(PositionType position,
+   PositionType origin
    , bool // ignoreFisheye
 ) const
 {
@@ -56,16 +56,16 @@ double ZoomInfo::PositionToTime(wxInt64 position,
 
 
 /// STM: Converts a project time to screen x position.
-wxInt64 ZoomInfo::TimeToPosition(double projectTime,
-   wxInt64 origin
+ZoomInfo::PositionType ZoomInfo::TimeToPosition(double projectTime,
+   PositionType origin
    , bool // ignoreFisheye
 ) const
 {
    double t = 0.5 + zoom * (projectTime - h) + origin ;
-   if( t < wxINT64_MIN )
-      return wxINT64_MIN;
-   if( t > wxINT64_MAX )
-      return wxINT64_MAX;
+   if( t < MIN_POSITION )
+      return MIN_POSITION;
+   if( t > MAX_POSITION )
+      return MAX_POSITION;
    t = floor( t );
    return t;
 }
@@ -115,12 +115,12 @@ void ZoomInfo::ZoomBy(double multiplier)
 }
 
 void ZoomInfo::FindIntervals
-   (double /*rate*/, Intervals &results, wxInt64 width, wxInt64 origin) const
+   (double /*rate*/, Intervals &results, PositionType width, PositionType origin) const
 {
    results.clear();
    results.reserve(2);
 
-   const wxInt64 rightmost(origin + (0.5 + width));
+   const PositionType rightmost(origin + (0.5 + width));
    wxASSERT(origin <= rightmost);
    {
       results.push_back(Interval(origin, zoom, false));
@@ -158,7 +158,7 @@ void ViewInfo::UpdatePrefs()
       true);
 }
 
-void ViewInfo::SetBeforeScreenWidth(wxInt64 beforeWidth, wxInt64 screenWidth, double lowerBoundTime)
+void ViewInfo::SetBeforeScreenWidth(PositionType beforeWidth, PositionType screenWidth, double lowerBoundTime)
 {
    h =
       std::max(lowerBoundTime,

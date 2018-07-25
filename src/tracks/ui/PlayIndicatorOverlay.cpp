@@ -209,7 +209,9 @@ void PlayIndicatorOverlay::OnTimer(wxCommandEvent &event)
       mProject->TP_RedrawScrollbars();
 
       if (onScreen)
-         mNewIndicatorX = viewInfo.TimeToPosition(playPos, trackPanel->GetLeftOffset());
+         // that assures no narrowing loss
+         mNewIndicatorX = static_cast<int>(
+            viewInfo.TimeToPosition(playPos, trackPanel->GetLeftOffset()));
       else
          mNewIndicatorX = -1;
 

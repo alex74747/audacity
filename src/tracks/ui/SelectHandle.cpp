@@ -183,7 +183,7 @@ namespace
 
    SelectionBoundary ChooseBoundary
       (const ViewInfo &viewInfo,
-       wxCoord xx, wxCoord yy, const Track *pTrack, const wxRect &rect,
+       wxInt64 xx, wxInt64 yy, const Track *pTrack, const wxRect &rect,
        bool mayDragWidth, bool onlyWithinSnapDistance,
        double *pPinValue = NULL)
    {

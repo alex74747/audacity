@@ -434,7 +434,7 @@ bool FFmpegImportFileHandle::InitCodecs()
 
          // Stream is decodeable and it is audio. Add it and its decription to the arrays
          wxString strinfo;
-         int duration = 0;
+         int64_t duration = 0;
          if (sc->m_stream->duration > 0)
             duration = sc->m_stream->duration * sc->m_stream->time_base.num / sc->m_stream->time_base.den;
          else

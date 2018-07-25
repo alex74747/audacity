@@ -93,10 +93,11 @@ public:
    mutable int width; /// width of the text in pixels.
 
 // Working storage for on-screen layout.
-   mutable int x;     /// Pixel position of left hand glyph
-   mutable int x1;    /// Pixel position of right hand glyph
-   mutable int xText; /// Pixel position of left hand side of text box
-   mutable int y;     /// Pixel position of label.
+   using PositionType = wxInt64;
+   mutable PositionType x;     /// Pixel position of left hand glyph
+   mutable PositionType x1;    /// Pixel position of right hand glyph
+   mutable PositionType xText; /// Pixel position of left hand side of text box
+   mutable int y;     /// Pixel position of label.  Only int width!
 
    bool updated;                  /// flag to tell if the label times were updated
 };

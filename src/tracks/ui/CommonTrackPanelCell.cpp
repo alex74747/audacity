@@ -79,7 +79,6 @@ unsigned CommonTrackPanelCell::HandleWheelRotation
       int trackLeftEdge = pProject->GetTrackPanel()->GetLeftOffset();
 
       // Time corresponding to mouse position
-      wxCoord xx;
       double center_h;
       double mouse_h = viewInfo.PositionToTime(event.m_x, trackLeftEdge);
 
@@ -102,7 +101,7 @@ unsigned CommonTrackPanelCell::HandleWheelRotation
       else
          center_h = mouse_h;
 
-      xx = viewInfo.TimeToPosition(center_h, trackLeftEdge);
+      auto xx = viewInfo.TimeToPosition(center_h, trackLeftEdge);
 
       // Time corresponding to last (most far right) audio.
       double audioEndTime = pProject->GetTracks()->GetEndTime();
@@ -121,7 +120,7 @@ unsigned CommonTrackPanelCell::HandleWheelRotation
       }
 #endif
 
-      wxCoord xTrackEnd = viewInfo.TimeToPosition( audioEndTime );
+      auto xTrackEnd = viewInfo.TimeToPosition( audioEndTime );
       viewInfo.ZoomBy(pow(2.0, steps));
 
       double new_center_h = viewInfo.PositionToTime(xx, trackLeftEdge);

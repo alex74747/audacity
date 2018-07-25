@@ -5539,10 +5539,10 @@ void AudacityProject::PlaybackScroller::OnTimer(wxCommandEvent &event)
 
       ViewInfo &viewInfo = mProject->GetViewInfo();
       TrackPanel *const trackPanel = mProject->GetTrackPanel();
-      const int posX = viewInfo.TimeToPosition(viewInfo.mRecentStreamTime);
+      auto posX = viewInfo.TimeToPosition(viewInfo.mRecentStreamTime);
       int width;
       trackPanel->GetTracksUsableArea(&width, NULL);
-      int deltaX;
+      decltype(posX) deltaX = 0;
       switch (mMode)
       {
          default:

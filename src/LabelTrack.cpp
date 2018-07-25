@@ -71,6 +71,10 @@ for drawing different aspects of the label and its text box.
 #include "effects/TimeWarper.h"
 #include "widgets/ErrorDialog.h"
 
+static_assert(
+   std::is_same<ZoomInfo::PositionType, LabelStruct::PositionType>::value,
+   "Width mismatch");
+
 enum
 {
    OnCutSelectedTextID = 1,      // OSX doesn't like a 0 menu id
@@ -461,7 +465,7 @@ void LabelTrack::ComputeTextPosition(const wxRect & r, int index) const
 /// Function assumes that the labels are sorted.
 void LabelTrack::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) const
 {
-   int xUsed[MAX_NUM_ROWS];
+   ZoomInfo::PositionType xUsed[MAX_NUM_ROWS];
 
    int iRow;
    // Rows are the 'same' height as icons or as the text,
@@ -480,15 +484,15 @@ void LabelTrack::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) const
    {
       // Bug 502: With dragging left of zeros, labels can be in 
       // negative space.  So set least possible value as starting point.
-      const int xStart = INT_MIN;
+      constexpr auto xStart = ZoomInfo::MIN_POSITION;
       for (auto &x : xUsed)
          x = xStart;
    }
    int nRowsUsed=0;
 
    { int i = -1; for (auto &labelStruct : mLabels) { ++i;
-      const int x = zoomInfo.TimeToPosition(labelStruct.getT0(), r.x);
-      const int x1 = zoomInfo.TimeToPosition(labelStruct.getT1(), r.x);
+      const auto x = zoomInfo.TimeToPosition(labelStruct.getT0(), r.x);
+      const auto x1 = zoomInfo.TimeToPosition(labelStruct.getT1(), r.x);
       int y = r.y;
 
       labelStruct.x=x;

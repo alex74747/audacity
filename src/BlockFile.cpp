@@ -480,6 +480,16 @@ bool BlockFile::Read64K(float *buffer,
    return result;
 }
 
+namespace {
+   // Narrowing casts from sf_count_t to size_t are hidden in here
+   inline size_t checkFrames(size_t len, sf_count_t result)
+   {
+      // This should always be true
+      wxASSERT(result <= static_cast<sf_count_t>(len));
+      return static_cast<size_t>(result);
+   }
+}
+
 size_t BlockFile::CommonReadData(
    bool mayThrow,
    const wxFileName &fileName, bool &mSilentLog,
@@ -563,14 +573,14 @@ size_t BlockFile::CommonReadData(
              sf_subtype_is_integer(info.format)) {
             // If both the src and dest formats are integer formats,
             // read integers directly from the file, comversions not needed
-            framesRead = SFCall<sf_count_t>(
-               sf_readf_short, sf.get(), (short *)data, len);
+            framesRead = checkFrames(len, SFCall<sf_count_t>(
+               sf_readf_short, sf.get(), (short *)data, len) );
          }
          else if (channels == 1 &&
                   format == int24Sample &&
                   sf_subtype_is_integer(info.format)) {
-            framesRead = SFCall<sf_count_t>(
-               sf_readf_int, sf.get(), (int *)data, len);
+            framesRead = checkFrames(len, SFCall<sf_count_t>(
+               sf_readf_int, sf.get(), (int *)data, len) );
 
             // libsndfile gave us the 3 byte sample in the 3 most
             // significant bytes -- we want it in the 3 least
@@ -586,8 +596,8 @@ size_t BlockFile::CommonReadData(
             // read 16-bit data directly.  This is a pretty common
             // case, as most audio files are 16-bit.
             SampleBuffer buffer(len * channels, int16Sample);
-            framesRead = SFCall<sf_count_t>(
-               sf_readf_short, sf.get(), (short *)buffer.ptr(), len);
+            framesRead = checkFrames(len, SFCall<sf_count_t>(
+               sf_readf_short, sf.get(), (short *)buffer.ptr(), len) );
             for (size_t i = 0; i < framesRead; i++)
                ((short *)data)[i] =
                ((short *)buffer.ptr())[(channels * i) + channel];
@@ -597,8 +607,8 @@ size_t BlockFile::CommonReadData(
             // scaling, and pass us normalized data as floats.  We can
             // then convert to whatever format we want.
             SampleBuffer buffer(len * channels, floatSample);
-            framesRead = SFCall<sf_count_t>(
-               sf_readf_float, sf.get(), (float *)buffer.ptr(), len);
+            framesRead = checkFrames(len, SFCall<sf_count_t>(
+               sf_readf_float, sf.get(), (float *)buffer.ptr(), len) );
             auto bufferPtr = (samplePtr)((float *)buffer.ptr() + channel);
             CopySamples(bufferPtr, floatSample,
                         (samplePtr)data, format,

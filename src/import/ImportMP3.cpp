@@ -470,14 +470,21 @@ enum mad_flow input_cb(void *_data, struct mad_stream *stream)
       data->eof = true; /* so on next call, we will tell mad to stop */
       
       return MAD_FLOW_CONTINUE;
-   }
+   } 
 
-   off_t read = data->file->Read(data->inputBuffer.get() + unconsumedBytes,
+   auto read = data->file->Read(data->inputBuffer.get() + unconsumedBytes,
                                  INPUT_BUFFER_SIZE - unconsumedBytes);
 
-   mad_stream_buffer(stream, data->inputBuffer.get(), read + unconsumedBytes);
+   auto size = read + unconsumedBytes;
+   if (size < 0) {
+      wxASSERT(false);
+      size = 0;
+   }
+   auto usize = static_cast<std::make_unsigned<decltype(size)>::type>(size);
 
-   data->inputBufferFill = int(read + unconsumedBytes);
+   mad_stream_buffer(stream, data->inputBuffer.get(), usize);
+
+   data->inputBufferFill = int(usize);
 
    return MAD_FLOW_CONTINUE;
 }

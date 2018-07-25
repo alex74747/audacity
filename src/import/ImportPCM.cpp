@@ -342,6 +342,16 @@ struct id3_tag_deleter {
 using id3_tag_holder = std::unique_ptr<id3_tag, id3_tag_deleter>;
 #endif
 
+namespace {
+   // Narrowing casts from sf_count_t to size_t are hidden in here
+   inline size_t checkFrames(size_t len, sf_count_t result)
+   {
+      // This should always be true
+      wxASSERT(result <= static_cast<sf_count_t>(len));
+      return static_cast<size_t>(result);
+   }
+}
+
 ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
                                 TrackHolders &outTracks,
                                 Tags *tags)
@@ -472,10 +482,14 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
          block = maxBlock;
 
          if (mFormat == int16Sample)
-            block = SFCall<sf_count_t>(sf_readf_short, mFile.get(), (short *)srcbuffer.ptr(), block);
+            block = checkFrames(block,
+               SFCall<sf_count_t>(sf_readf_short, mFile.get(),
+                                  (short *)srcbuffer.ptr(), block) );
          //import 24 bit int as float and have the append function convert it.  This is how PCMAliasBlockFile works too.
          else
-            block = SFCall<sf_count_t>(sf_readf_float, mFile.get(), (float *)srcbuffer.ptr(), block);
+            block = checkFrames(block,
+               SFCall<sf_count_t>(sf_readf_float, mFile.get(),
+                                  (float *)srcbuffer.ptr(), block) );
 
          if(block < 0 || block > (long)maxBlock) {
             wxASSERT(false);

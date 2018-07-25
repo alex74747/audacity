@@ -87,7 +87,8 @@ BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const wxString &projDir, const w
 {
    wxFileNameWrapper summaryFileName;
    wxFileNameWrapper aliasFileName;
-   int aliasStart=0, aliasLen=0, aliasChannel=0;
+   sampleCount aliasStart=0;
+   int aliasLen=0, aliasChannel=0;
    int summaryLen=0;
    bool noRMS = false;
    long nValue;

@@ -95,6 +95,16 @@ class ImportRawDialog final : public wxDialogWrapper {
    DECLARE_EVENT_TABLE()
 };
 
+namespace {
+   // Narrowing casts from sf_count_t to size_t are hidden in here
+   inline size_t checkFrames(size_t len, sf_count_t result)
+   {
+      // This should always be true
+      wxASSERT(result <= static_cast<sf_count_t>(len));
+      return static_cast<size_t>(result);
+   }
+}
+
 // This function leaves outTracks empty as an indication of error,
 // but may also throw FileException to make use of the application's
 // user visible error reporting.
@@ -241,7 +251,7 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
             sf_result = SFCall<sf_count_t>(sf_readf_float, sndFile.get(), (float *)srcbuffer.ptr(), block);
 
          if (sf_result >= 0) {
-            block = sf_result;
+            block = checkFrames(block, sf_result);
          }
          else {
             // This is not supposed to happen, sndfile.h says result is always

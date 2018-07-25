@@ -961,9 +961,6 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
    // (i.e. we've been invalidated).  Recompute all
    // tick positions and font size.
 
-   int i;
-   int j;
-
    if (!mUserFonts) {
       int fontSize = 4;
       wxCoord strW, strH, strD, strL;
@@ -1046,10 +1043,10 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
    mBits.reinit(size);
    if (mUserBits)
-      for(i=0; i<=mLength; i++)
+      for(int i = 0; i <= mLength; i++)
          mBits[i] = mUserBits[i];
    else
-      for(i=0; i<=mLength; i++)
+      for(int i = 0; i <= mLength; i++)
          mBits[i] = 0;
 
    // *************** Label calculation routine **************
@@ -1060,7 +1057,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
       int numLabel = mNumMajor;
 
-      i = 0;
+      int i = 0;
       while((i<numLabel) && (i<=mLength)) {
 
          TickCustom(i, true, false);
@@ -1100,14 +1097,15 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       // Major and minor ticks
       for (int jj = 0; jj < 2; ++jj) {
          const double denom = jj == 0 ? mMajor : mMinor;
-         i = -1; j = 0;
+         int i = -1;
+         ZoomInfo::PositionType pos = 0;
          double d, warpedD, nextD;
 
          double prevTime = 0.0, time = 0.0;
          if (zoomInfo != NULL) {
-            j = zoomInfo->TimeToPosition(mMin);
-            prevTime = zoomInfo->PositionToTime(--j);
-            time = zoomInfo->PositionToTime(++j);
+            pos = zoomInfo->TimeToPosition(mMin);
+            prevTime = zoomInfo->PositionToTime(--pos);
+            time = zoomInfo->PositionToTime(++pos);
             d = (prevTime + time) / 2.0;
          }
          else
@@ -1124,7 +1122,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
             if (zoomInfo)
             {
                prevTime = time;
-               time = zoomInfo->PositionToTime(++j);
+               time = zoomInfo->PositionToTime(++pos);
                nextD = (prevTime + time) / 2.0;
                // wxASSERT(time >= prevTime);
             }
@@ -1138,7 +1136,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
 
             if (floor(sg * warpedD / denom) > step) {
                step = floor(sg * warpedD / denom);
-               bool major = jj == 0;
+               bool major = pos == 0;
                Tick(i, sg * step * denom, major, !major);
                if( !major && mMinorLabels[mNumMinor-1].text.IsEmpty() ){
                   nDroppedMinorLabels++;
@@ -1185,7 +1183,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       double delta=hiLog-loLog, steps=fabs(delta);
       double step = delta>=0 ? 10 : 0.1;
       double rMin=std::min(mMin, mMax), rMax=std::max(mMin, mMax);
-      for(i=0; i<=steps; i++)
+      for(int i = 0; i <= steps; i++)
       {  // if(i!=0)
          {  val = decade;
             if(val >= rMin && val < rMax) {
@@ -1205,8 +1203,8 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       {  start=9; end=1; mstep=-1;
       }
       steps++;
-      for(i=0; i<=steps; i++) {
-         for(j=start; j!=end; j+=mstep) {
+      for(int i = 0; i <= steps; i++) {
+         for(int j = start; j != end; j += mstep) {
             val = decade * j;
             if(val >= rMin && val < rMax) {
                const int pos(0.5 + mLength * numberScale.ValueToPosition(val));
@@ -1224,7 +1222,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
       {  start=100; end= 10; mstep=-1;
       }
       steps++;
-      for (i = 0; i <= steps; i++) {
+      for (int i = 0; i <= steps; i++) {
          // PRL:  Bug1038.  Don't label 1.6, rounded, as a duplicate tick for "2"
          if (!(mFormat == IntFormat && decade < 10.0)) {
             for (int f = start; f != (int)(end); f += mstep) {
@@ -1265,15 +1263,15 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
          displacementy=0;
       }
    }
-   for(i=0; i<mNumMajor; i++) {
+   for(int i = 0; i < mNumMajor; i++) {
       mMajorLabels[i].lx+= displacementx;
       mMajorLabels[i].ly+= displacementy;
    }
-   for(i=0; i<mNumMinor; i++) {
+   for(int i = 0; i < mNumMinor; i++) {
       mMinorLabels[i].lx+= displacementx;
       mMinorLabels[i].ly+= displacementy;
    }
-   for(i=0; i<mNumMinorMinor; i++) {
+   for(int i = 0; i < mNumMinorMinor; i++) {
       mMinorMinorLabels[i].lx+= displacementx;
       mMinorMinorLabels[i].ly+= displacementy;
    }

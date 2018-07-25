@@ -1873,7 +1873,7 @@ void TrackPanel::ScrollIntoView(double pos)
    int w;
    GetTracksUsableArea( &w, NULL );
 
-   int pixel = mViewInfo->TimeToPosition(pos);
+   auto pixel = mViewInfo->TimeToPosition(pos);
    if (pixel < 0 || pixel >= w)
    {
       mListener->TP_ScrollWindow

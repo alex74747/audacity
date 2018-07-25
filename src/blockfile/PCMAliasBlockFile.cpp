@@ -125,7 +125,8 @@ BlockFilePtr PCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **attr
 {
    wxFileNameWrapper summaryFileName;
    wxFileNameWrapper aliasFileName;
-   int aliasStart=0, aliasLen=0, aliasChannel=0;
+   sampleCount aliasStart=0;
+   int aliasLen=0, aliasChannel=0;
    float min = 0.0f, max = 0.0f, rms = 0.0f;
    double dblValue;
    long nValue;
