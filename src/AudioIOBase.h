@@ -38,6 +38,10 @@ class MeterPanelBase;
 class SelectedRegionEvent;
 using PRCrossfadeData = std::vector< std::vector < float > >;
 
+class Mixer;
+class WaveTrack;
+using WaveTrackArray = std::vector < std::shared_ptr < WaveTrack > >;
+
 #define BAD_STREAM_TIME (-DBL_MAX)
 
 // For putting an increment of work in the scrubbing queue
@@ -492,6 +496,9 @@ protected:
 
       void MessageProducer( SelectedRegionEvent &evt );
       void MessageConsumer( double queueTime );
+      void RestartLoopPlay(
+         const WaveTrackArray &playbackTracks,
+         const std::unique_ptr<Mixer> mixers[]);
 
       /** \brief True if the end time is before the start time */
       bool ReversedTime() const

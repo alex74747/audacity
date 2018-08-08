@@ -2934,11 +2934,9 @@ void AudioIO::FillBuffers()
 
                // msmeyer: If playing looped, check if we are at the end of the buffer
                // and if yes, restart from the beginning.
-               if (realTimeRemaining <= 0)
-               {
-                  for (i = 0; i < mPlaybackTracks.size(); i++)
-                     mPlaybackMixers[i]->Restart();
-                  mPlaybackSchedule.RealTimeRestart();
+               if (realTimeRemaining <= 0) {
+                  mPlaybackSchedule.RestartLoopPlay(
+                     mPlaybackTracks, &mPlaybackMixers[0] );
                   realTimeRemaining = mPlaybackSchedule.RealTimeRemaining();
                }
             }

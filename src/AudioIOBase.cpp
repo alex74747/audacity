@@ -463,6 +463,26 @@ void AudioIOBase::PlaybackSchedule::MessageProducer( SelectedRegionEvent &evt)
    mMessageChannel.Write( { region.t0(), region.t1() } );
 }
 
+#include "Mix.h"
+void AudioIOBase::PlaybackSchedule::RestartLoopPlay(
+   const WaveTrackArray &playbackTracks,
+   const std::unique_ptr<Mixer> mixers[])
+{
+#ifdef EXPERIMENTAL_UPDATING_LOOP_PLAY
+   
+   for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii)
+      mixers[ii]->SetTimesAndSpeed(mT0, mT1, 1.0);
+   
+#else
+
+   for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii)
+      mixers[ii]->Restart();
+
+#endif
+
+   RealTimeRestart();
+}
+
 double AudioIOBase::PlaybackSchedule::LimitTrackTime() const
 {
    // Track time readout for the main thread
@@ -1255,7 +1275,23 @@ void AudioIOBase::PlaybackSchedule::MessageConsumer( double queueTime )
    // This executes in the AudioThread and is the consumer
 
    auto data = mMessageChannel.Read();
-   // TODO use data
+
+   // Now update the variables used in the test for end of loop, maybe
+   if ( !(mT0 == data.mT0 && mT1 == data.mT1) &&
+         ( data.mT0 < data.mT1 ) ) {
+      mT0 = data.mT0;
+      mT1 = data.mT1;
+      mWarpedLength = RealDuration( mT1 );
+
+      mTime = mT0;
+      if (mEnvelope)
+         mTime = SolveWarpedLength(*mEnvelope, mTime, -queueTime);
+      else
+         //mTime -= queueTime
+         ;
+
+//      RealTimeInit();
+   }
 }
 
 double AudioIOBase::PlaybackSchedule::AdvancedTrackTime(

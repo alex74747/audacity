@@ -251,4 +251,7 @@
 // Jonatã Bolzan Loss 31 Dec 2019
 #define EXPERIMENTAL_TIMER_TOOLBAR
 
+// PRL 8 Aug 2018
+#define EXPERIMENTAL_UPDATING_LOOP_PLAY
+
 #endif
