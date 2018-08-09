@@ -463,6 +463,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "Project.h"
 #include "DBConnection.h"
 #include "ProjectFileIO.h"
+#include "ViewInfo.h" // for SelectedRegionEvent
 #include "WaveTrack.h"
 
 #include "effects/RealtimeEffectManager.h"
@@ -1077,6 +1078,11 @@ AudioIO::AudioIO()
 
 AudioIO::~AudioIO()
 {
+   if (mOwningProject)
+      // Unlikely that this will be destroyed earlier than any projects, but
+      // be prepared anyway
+      ResetOwningProject();
+
 #if defined(USE_PORTMIXER)
    if (mPortMixer) {
       #if __WXMAC__
@@ -1239,7 +1245,7 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
    mCallbackCount = 0;
    mAudioFramesPerBuffer = 0;
 #endif
-   mOwningProject = options.pProject;
+   SetOwningProject( options.pProject );
 
    // PRL:  Protection from crash reported by David Bailes, involving starting
    // and stopping with frequent changes of active window, hard to reproduce
@@ -1438,6 +1444,35 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
 wxString AudioIO::LastPaErrorString()
 {
    return wxString::Format(wxT("%d %s."), (int) mLastPaError, Pa_GetErrorText(mLastPaError));
+}
+
+void AudioIO::SetOwningProject( AudacityProject *pProject )
+{
+   if (mOwningProject) {
+      wxASSERT(false);
+      ResetOwningProject();
+   }
+
+   mOwningProject = pProject;
+
+   ViewInfo::Get( *mOwningProject ).selectedRegion.Bind(
+      EVT_SELECTED_REGION_CHANGE, AudioIO::LoopPlayUpdate);
+}
+
+void AudioIO::ResetOwningProject()
+{
+   if ( mOwningProject )
+      ViewInfo::Get( *mOwningProject ).selectedRegion.Unbind(
+         EVT_SELECTED_REGION_CHANGE, AudioIO::LoopPlayUpdate);
+
+   mOwningProject = nullptr;
+}
+
+void AudioIO::LoopPlayUpdate( SelectedRegionEvent &evt )
+{
+   evt.Skip();
+
+   AudioIO::Get()->mPlaybackSchedule.MessageProducer( evt );
 }
 
 void AudioIO::StartMonitoring( const AudioIOStartStreamOptions &options )
@@ -2416,7 +2451,7 @@ void AudioIO::StopStream()
 
    mInputMeter.Release();
    mOutputMeter.Release();
-   mOwningProject = nullptr;
+   ResetOwningProject();
 
    if (pListener && mNumCaptureChannels > 0)
       pListener->OnAudioIOStopRecording();
@@ -2890,6 +2925,13 @@ void AudioIO::FillBuffers()
             case PlaybackSchedule::PLAY_LOOPED:
             {
                done = !progress || (available == 0);
+
+               // Poll for selection change events here before testing for the
+               // end of loop
+               mPlaybackSchedule.MessageConsumer(
+                  mPlaybackBuffers[0]->AvailForGet() / mRate
+               );
+
                // msmeyer: If playing looped, check if we are at the end of the buffer
                // and if yes, restart from the beginning.
                if (realTimeRemaining <= 0)

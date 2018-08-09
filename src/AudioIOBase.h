@@ -35,6 +35,7 @@ class AudacityProject;
 class AudioIOListener;
 class BoundedEnvelope;
 class MeterPanelBase;
+class SelectedRegionEvent;
 using PRCrossfadeData = std::vector< std::vector < float > >;
 
 #define BAD_STREAM_TIME (-DBL_MAX)
@@ -366,7 +367,7 @@ protected:
    static wxString DeviceName(const PaDeviceInfo* info);
    static wxString HostName(const PaDeviceInfo* info);
 
-   AudacityProject    *mOwningProject;
+   wxWeakRef<AudacityProject> mOwningProject;
 
    /// True if audio playback is paused
    bool                mPaused;
@@ -471,10 +472,26 @@ protected:
       double              mCutPreviewGapStart;
       double              mCutPreviewGapLen;
 
+      // The main thread writes changes in response to user events, and
+      // the audio thread later reads, and changes the playback.
+      struct SlotData {
+         // Only a pair of times is communicated, for dynamic change of
+         // loop play bounds.  But in future we might communicate more
+         // complicated changes -- such as computing temporary sample data
+         // to be played in response to a real-time non-destructive effect
+         // slider.
+         double mT0;
+         double mT1;
+      };
+      MessageBuffer<SlotData> mMessageChannel;
+
       void Init(
          double t0, double t1,
          const AudioIOStartStreamOptions &options,
          const RecordingSchedule *pRecordingSchedule );
+
+      void MessageProducer( SelectedRegionEvent &evt );
+      void MessageConsumer( double queueTime );
 
       /** \brief True if the end time is before the start time */
       bool ReversedTime() const

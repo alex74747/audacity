@@ -445,6 +445,22 @@ void AudioIOBase::PlaybackSchedule::Init(
    else
 #endif
       mWarpedLength = RealDuration(mT1);
+
+   mMessageChannel.Initialize();
+   mMessageChannel.Write( { mT0, mT1 } );
+}
+
+#include "ViewInfo.h"
+void AudioIOBase::PlaybackSchedule::MessageProducer( SelectedRegionEvent &evt)
+{
+   // This executes in the main thread and is a producer of messages for
+   // the AudioThread
+   auto *pRegion = evt.pRegion.get();
+   if (!pRegion)
+      return;
+   const SelectedRegion &region = *pRegion;
+
+   mMessageChannel.Write( { region.t0(), region.t1() } );
 }
 
 double AudioIOBase::PlaybackSchedule::LimitTrackTime() const
@@ -1232,6 +1248,14 @@ double SolveWarpedLength(const Envelope &env, double t0, double length)
 {
    return env.SolveIntegralOfInverse(t0, length);
 }
+}
+
+void AudioIOBase::PlaybackSchedule::MessageConsumer( double queueTime )
+{
+   // This executes in the AudioThread and is the consumer
+
+   auto data = mMessageChannel.Read();
+   // TODO use data
 }
 
 double AudioIOBase::PlaybackSchedule::AdvancedTrackTime(
