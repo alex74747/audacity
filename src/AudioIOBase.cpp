@@ -464,23 +464,37 @@ void AudioIOBase::PlaybackSchedule::MessageProducer( SelectedRegionEvent &evt)
 }
 
 #include "Mix.h"
-void AudioIOBase::PlaybackSchedule::RestartLoopPlay(
+void AudioIOBase::PlaybackSchedule::UpdateLoopPlay(
+   double realTimeRemaining,
    const WaveTrackArray &playbackTracks,
    const std::unique_ptr<Mixer> mixers[])
 {
 #ifdef EXPERIMENTAL_UPDATING_LOOP_PLAY
    
+   // Always update bounds:  let mixer know if t1 changes, even if not looping
    for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii)
       mixers[ii]->SetTimesAndSpeed(mT0, mT1, 1.0);
-   
+
+   if (realTimeRemaining <= 0) {
+      for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii) {
+         mixers[ii]->Reposition(mT0);
+         mixers[ii]->MakeResamplers();
+      }
+      RealTimeRestart();
+   }
+
 #else
 
-   for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii)
-      mixers[ii]->Restart();
+   // msmeyer: If playing looped, check if we are at the end of the buffer
+   // and if yes, restart from the beginning.
+   if (realTimeRemaining <= 0) {
+      for (size_t ii = 0, nn = playbackTracks.size(); ii < nn; ++ii)
+         mixers[ii]->Restart();
+      RealTimeRestart();
+   }
 
 #endif
 
-   RealTimeRestart();
 }
 
 double AudioIOBase::PlaybackSchedule::LimitTrackTime() const

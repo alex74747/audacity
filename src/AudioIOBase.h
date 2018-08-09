@@ -496,7 +496,8 @@ protected:
 
       void MessageProducer( SelectedRegionEvent &evt );
       void MessageConsumer( double queueTime );
-      void RestartLoopPlay(
+      void UpdateLoopPlay(
+         double RealTimeRemaining,
          const WaveTrackArray &playbackTracks,
          const std::unique_ptr<Mixer> mixers[]);
 

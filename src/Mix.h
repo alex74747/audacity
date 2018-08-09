@@ -129,7 +129,8 @@ class AUDACITY_DLL_API Mixer {
    /// Process() is called.
    void Reposition(double t, bool bSkipping = false);
 
-   // Used in scrubbing.
+   // Used in scrubbing and adjustable loop play.  Changes bounds, but does
+   // not update the position.
    void SetTimesAndSpeed(double t0, double t1, double speed);
    void SetSpeedForPlayAtSpeed(double speed);
    void SetSpeedForKeyboardScrubbing(double speed, double startTime);
@@ -155,6 +156,7 @@ class AUDACITY_DLL_API Mixer {
                                 int *queueStart, int *queueLen,
                                 Resample * pResample);
 
+ public:
    void MakeResamplers();
 
  private:

@@ -774,7 +774,6 @@ void Mixer::SetTimesAndSpeed(double t0, double t1, double speed)
    mT0 = t0;
    mT1 = t1;
    mSpeed = fabs(speed);
-   Reposition(t0);
 }
 
 void Mixer::SetSpeedForPlayAtSpeed(double speed)

@@ -2907,6 +2907,7 @@ void AudioIO::FillBuffers()
                      if (!mSilentScrub)
                      {
                         for (i = 0; i < mPlaybackTracks.size(); i++) {
+                           /*
                            if (mPlaybackSchedule.mPlayMode == PlaybackSchedule::PLAY_AT_SPEED)
                               mPlaybackMixers[i]->SetSpeedForPlayAtSpeed(mScrubSpeed);
                            else if (mPlaybackSchedule.mPlayMode == PlaybackSchedule::PLAY_KEYBOARD_SCRUB)
@@ -2914,7 +2915,13 @@ void AudioIO::FillBuffers()
                            else
                               mPlaybackMixers[i]->SetTimesAndSpeed(
                                  startTime, endTime, fabs( mScrubSpeed ));
+                           */
+                           auto &mixer = *mPlaybackMixers[i];
+                           mixer.SetTimesAndSpeed(
+                              startTime, endTime, fabs( mScrubSpeed ));
+                           mixer.Reposition(startTime);
                         }
+                        mTimeQueue.mLastTime = startTime;
                      }
                      mTimeQueue.mLastTime = startTime;
                   }
@@ -2932,13 +2939,9 @@ void AudioIO::FillBuffers()
                   mPlaybackBuffers[0]->AvailForGet() / mRate
                );
 
-               // msmeyer: If playing looped, check if we are at the end of the buffer
-               // and if yes, restart from the beginning.
-               if (realTimeRemaining <= 0) {
-                  mPlaybackSchedule.RestartLoopPlay(
-                     mPlaybackTracks, &mPlaybackMixers[0] );
-                  realTimeRemaining = mPlaybackSchedule.RealTimeRemaining();
-               }
+               mPlaybackSchedule.UpdateLoopPlay( realTimeRemaining,
+                  mPlaybackTracks, &mPlaybackMixers[0] );
+               realTimeRemaining = mPlaybackSchedule.RealTimeRemaining();
             }
                break;
             default:
