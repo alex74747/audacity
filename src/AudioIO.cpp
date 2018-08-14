@@ -2726,6 +2726,7 @@ void AudioIO::FillBuffers()
       // The exception is if we're at the end of the selected
       // region - then we should just fill the buffer.
       //
+
       // May produce a larger amount when initially priming the buffer, or
       // perhaps again later in play to avoid underfilling the queue and falling
       // behind the real-time demand on the consumer side in the callback.
@@ -2734,11 +2735,19 @@ void AudioIO::FillBuffers()
          mPlaybackQueueMinimum - std::min(mPlaybackQueueMinimum, nReady);
 
       // wxASSERT( nNeeded <= nAvailable );
+      
+      // Produce some extra silence so that the time queue consumer can
+      // satisfy its end condition
+      double extraRealTime =
+         (mPlaybackSchedule.PlayingAtSpeed() ||
+          mPlaybackSchedule.PlayingStraight())
+         ? TimeQueueGrainSize / mRate
+         : 0;
 
       auto realTimeRemaining = mPlaybackSchedule.RealTimeRemaining();
       if (nAvailable >= mPlaybackSamplesToCopy ||
           (mPlaybackSchedule.PlayingStraight() &&
-           nAvailable / mRate >= realTimeRemaining))
+           nAvailable / mRate >= realTimeRemaining + extraRealTime))
       {
          // Limit maximum buffer size (increases performance)
          auto available = std::min( nAvailable,
@@ -2768,14 +2777,17 @@ void AudioIO::FillBuffers()
                double deltat = frames / mRate;
                if (deltat > realTimeRemaining)
                {
-                  frames = realTimeRemaining * mRate;
-                  toProcess = frames;
+                  auto extra =
+                     std::min( extraRealTime, deltat - realTimeRemaining );
+                  frames = (realTimeRemaining + extra) * mRate;
+                  toProcess = std::max( 0.0, realTimeRemaining ) * mRate;
                   // Don't fall into an infinite loop, if loop-playing a selection
                   // that is so short, it has no samples: detect that case
                   progress =
                      !(mPlaybackSchedule.Looping() &&
                        mPlaybackSchedule.mWarpedTime == 0.0 && frames == 0);
-                  mPlaybackSchedule.RealTimeAdvance( realTimeRemaining );
+                  mPlaybackSchedule.RealTimeAdvance(
+                     realTimeRemaining + extra );
                }
                else
                   mPlaybackSchedule.RealTimeAdvance( deltat );
@@ -3819,12 +3831,12 @@ bool AudioIoCallback::FillOutputBuffers(
    mMaxFramesOutput = 0;
 
    // Quick returns if next to nothing to do.
-   if (mStreamToken <= 0)
+   if (mStreamToken <= 0 ||
+       !outputBuffer ||
+       numPlaybackChannels <= 0) {
+      mMaxFramesOutput = framesPerBuffer;
       return false;
-   if( !outputBuffer )
-      return false;
-   if(numPlaybackChannels <= 0) 
-      return false;
+   }
 
    float *outputFloats = (float *)outputBuffer;
 
@@ -4008,11 +4020,7 @@ void AudioIoCallback::UpdateTimePosition(unsigned long framesPerBuffer)
       return;
 
    // Update the position seen by drawing code
-   if (mPlaybackSchedule.Interactive())
-      // To do: do this in all cases and remove TrackTimeUpdate
-      mPlaybackSchedule.SetTrackTime( mTimeQueue.Consumer( mMaxFramesOutput, mRate ) );
-   else
-      mPlaybackSchedule.TrackTimeUpdate( framesPerBuffer / mRate );
+   mPlaybackSchedule.SetTrackTime( mTimeQueue.Consumer( mMaxFramesOutput, mRate ) );
 }
 
 // return true, IFF we have fully handled the callback.

@@ -432,10 +432,6 @@ protected:
       double AdvancedTrackTime(
          double trackTime, double realElapsed, double speed) const;
 
-      // Use the function above in the callback after consuming samples from the
-      // playback ring buffers, during usual straight or looping play
-      void TrackTimeUpdate(double realElapsed);
-
       // Convert time between mT0 and argument to real duration, according to
       // time track if one is given; result is always nonnegative
       double RealDuration(double trackTime1) const;

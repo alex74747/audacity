@@ -1292,18 +1292,6 @@ double AudioIOBase::PlaybackSchedule::AdvancedTrackTime(
    return time;
 }
 
-void AudioIOBase::PlaybackSchedule::TrackTimeUpdate(double realElapsed)
-{
-   // Update mTime within the PortAudio callback
-
-   if (Interactive())
-      return;
-
-   auto time = GetTrackTime();
-   auto newTime = AdvancedTrackTime( time, realElapsed, 1.0 );
-   SetTrackTime( newTime );
-}
-
 double AudioIOBase::PlaybackSchedule::RealDuration(double trackTime1) const
 {
    double duration;
