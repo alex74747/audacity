@@ -1152,7 +1152,7 @@ void Ruler::Update(const TimeTrack* timetrack)// Envelope *speedEnv, long minSpe
          // Old code dropped the labels AND their ticks, like so:
          //    mNumMinor = 0;
          // Nowadays we just drop the labels.
-         for(i=0; i<mNumMinor; i++)
+         for(int i=0; i<mNumMinor; i++)
             mMinorLabels[i].text = "";
       }
 
