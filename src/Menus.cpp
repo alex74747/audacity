@@ -645,7 +645,7 @@ void MenuManager::UpdateMenus(AudacityProject &project, bool checkActive)
    if (&project != GetActiveProject())
       return;
 
-   auto flags = GetMenuManager(project).GetUpdateFlags(project, checkActive);
+   auto flags = GetUpdateFlags(project, checkActive);
    auto flags2 = flags;
 
    // We can enable some extra items if we have select-all-on-none.
@@ -766,7 +766,7 @@ bool MenuManager::TryToMakeActionAllowed
    bool bAllowed;
 
    if( !flags )
-      flags = GetMenuManager(project).GetUpdateFlags(project);
+      flags = GetUpdateFlags(project);
 
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    if( bAllowed )
@@ -779,7 +779,7 @@ bool MenuManager::TryToMakeActionAllowed
    if( mStopIfWasPaused && (MissingFlags & AudioIONotBusyFlag ) ){
       project.StopIfPaused();
       // Hope this will now reflect stopped audio.
-      flags = GetMenuManager(project).GetUpdateFlags(project);
+      flags = GetUpdateFlags(project);
       bAllowed = ((flags & mask) == (flagsRqd & mask));
       if( bAllowed )
          return true;
@@ -809,7 +809,7 @@ bool MenuManager::TryToMakeActionAllowed
    // This was 'OnSelectAll'.  Changing it to DoSelectSomething means if
    // selecting all tracks is enough, we just do that.
    SelectActions::DoSelectSomething(project);
-   flags = GetMenuManager(project).GetUpdateFlags(project);
+   flags = GetUpdateFlags(project);
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    return bAllowed;
 }

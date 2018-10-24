@@ -759,7 +759,7 @@ void DeviceToolBar::OnChoice(wxCommandEvent &event)
    if (gAudioIO) {
       // We cannot have gotten here if gAudioIO->IsAudioTokenActive(),
       // per the setting of AudioIONotBusyFlag and AudioIOBusyFlag in
-      // AudacityProject::GetUpdateFlags().
+      // MenuManager::GetUpdateFlags().
       // However, we can have an invalid audio token (so IsAudioTokenActive()
       // is false), but be monitoring.
       // If monitoring, have to stop the stream, so HandleDeviceChange() can work.
