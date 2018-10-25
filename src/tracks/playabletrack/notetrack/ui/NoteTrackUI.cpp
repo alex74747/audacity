@@ -16,9 +16,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackControls.h"
 #include "NoteTrackVRulerControls.h"
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../Project.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../ui/SelectHandle.h"
 #include "StretchHandle.h"
 

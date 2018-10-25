@@ -11,7 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_ENVELOPE_HANDLE__
 #define __AUDACITY_ENVELOPE_HANDLE__
 
-#include "../../UIHandle.h"
+#include "../../widgets/cellularPanel/Handle.h"
 #include "../../MemoryX.h"
 
 #include <vector>

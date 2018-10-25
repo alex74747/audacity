@@ -15,7 +15,7 @@ class wxMouseState;
 class NoteTrack;
 
 #include "../../../../MemoryX.h"
-#include "../../../../UIHandle.h"
+#include "../../../../widgets/cellularPanel/Handle.h"
 #include <wx/gdicmn.h>
 
 class NoteTrackVZoomHandle : public UIHandle

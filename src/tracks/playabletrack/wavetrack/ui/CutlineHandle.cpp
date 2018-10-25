@@ -14,11 +14,11 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../../MemoryX.h"
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
 #include "../../../../Snap.h" // for kPixelTolerance
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../../UndoManager.h"
 #include "../../../../WaveTrack.h"
 #include "../../../../WaveTrackLocation.h"

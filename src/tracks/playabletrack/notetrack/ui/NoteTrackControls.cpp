@@ -18,12 +18,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ui/PlayableTrackButtonHandles.h"
 #include "NoteTrackSliderHandles.h"
 
-#include "../../../../HitTestResult.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../../NoteTrack.h"
 #include "../../../../widgets/PopupMenuTable.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 NoteTrackControls::~NoteTrackControls()

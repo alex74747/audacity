@@ -151,8 +151,8 @@ is time to refresh some aspect of the screen.
 #include "Experimental.h"
 #include "TrackPanel.h"
 #include "Project.h"
-#include "TrackPanelCellIterator.h"
-#include "TrackPanelMouseEvent.h"
+#include "widgets/cellularPanel/CellIterator.h"
+#include "widgets/cellularPanel/MouseEvent.h"
 #include "TrackPanelResizeHandle.h"
 //#define DEBUG_DRAW_TIMING 1
 
@@ -162,7 +162,7 @@ is time to refresh some aspect of the screen.
 #include "float_cast.h"
 
 #include "Prefs.h"
-#include "RefreshCode.h"
+#include "widgets/cellularPanel/RefreshCode.h"
 #include "TrackArtist.h"
 #include "TrackPanelAx.h"
 #include "WaveTrack.h"

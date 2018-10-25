@@ -12,7 +12,7 @@ Paul Licameli
 #define __AUDACITY_CUTLINE_HANDLE__
 
 #include "../../../../MemoryX.h"
-#include "../../../../UIHandle.h"
+#include "../../../../widgets/cellularPanel/Handle.h"
 #include "../../../../MemoryX.h"
 #include "../../../../WaveTrackLocation.h"
 

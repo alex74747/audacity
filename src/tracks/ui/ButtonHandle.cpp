@@ -13,11 +13,11 @@ Paul Licameli
 
 #include "../../MemoryX.h"
 
-#include "../../HitTestResult.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
 #include "../../Project.h"
-#include "../../RefreshCode.h"
+#include "../../widgets/cellularPanel/RefreshCode.h"
 #include "../../Track.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "../../widgets/cellularPanel/MouseEvent.h"
 #include "../ui/TrackControls.h"
 
 ButtonHandle::ButtonHandle

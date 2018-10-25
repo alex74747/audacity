@@ -12,12 +12,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "PlayableTrackButtonHandles.h"
 
 #include "../../../commands/CommandManager.h"
-#include "../../../HitTestResult.h"
+#include "../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../Project.h"
-#include "../../../RefreshCode.h"
+#include "../../../widgets/cellularPanel/RefreshCode.h"
 #include "../../../Track.h"
 #include "../../../TrackPanel.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "../../../widgets/cellularPanel/MouseEvent.h"
 
 MuteButtonHandle::MuteButtonHandle
 ( const std::shared_ptr<Track> &pTrack, const wxRect &rect )

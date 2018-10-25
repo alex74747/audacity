@@ -2,19 +2,18 @@
 
 Audacity: A Digital Audio Editor
 
-TrackPanelCellIterator.h
+CellIterator.h
 
 Paul Licameli
 
 **********************************************************************/
 
-#ifndef __AUDACITY_TRACK_PANEL_CELL_ITERATOR__
-#define __AUDACITY_TRACK_PANEL_CELL_ITERATOR__
+#ifndef __AUDACITY_CELLULAR_PANEL_CELL_ITERATOR__
+#define __AUDACITY_CELLULAR_PANEL_CELL_ITERATOR__
 
-#include "Track.h"
 #include <wx/gdicmn.h>
 #include <iterator>
-#include "MemoryX.h"
+#include "../../MemoryX.h"
 
 class Track;
 class TrackPanelCell;

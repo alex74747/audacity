@@ -12,7 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_TRACK_PANEL_RESIZE_HANDLE__
 
 #include "MemoryX.h"
-#include "UIHandle.h"
+#include "widgets/cellularPanel/Handle.h"
 
 class Track;
 class TrackPanelCellIterator;

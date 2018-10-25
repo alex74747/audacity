@@ -11,10 +11,10 @@ Paul Licameli
 #include "../../Audacity.h"
 #include "SliderHandle.h"
 #include "../../widgets/ASlider.h"
-#include "../../HitTestResult.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
 #include "../../Project.h"
-#include "../../RefreshCode.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "../../widgets/cellularPanel/RefreshCode.h"
+#include "../../widgets/cellularPanel/MouseEvent.h"
 
 SliderHandle::SliderHandle
 ( SliderFn sliderFn, const wxRect &rect, const std::shared_ptr<Track> &pTrack )

@@ -18,11 +18,11 @@
 
 #include "Experimental.h"
 
-#include "HitTestResult.h"
+#include "widgets/cellularPanel/HitTestResult.h"
 
 #include "SelectedRegion.h"
 
-#include "CellularPanel.h"
+#include "widgets/cellularPanel/Panel.h"
 
 #include "SelectionState.h"
 

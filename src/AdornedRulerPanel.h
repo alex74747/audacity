@@ -11,7 +11,7 @@
 #ifndef __AUDACITY_ADORNED_RULER_PANEL__
 #define __AUDACITY_ADORNED_RULER_PANEL__
 
-#include "CellularPanel.h"
+#include "widgets/cellularPanel/Panel.h"
 #include "widgets/Ruler.h"
 
 #include "MemoryX.h"

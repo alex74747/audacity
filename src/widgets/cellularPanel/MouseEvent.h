@@ -2,21 +2,21 @@
 
 Audacity: A Digital Audio Editor
 
-TrackPanelMouseEvent.h
+MouseEvent.h
 
 Paul Licameli
 
 **********************************************************************/
 
-#ifndef __AUDACITY_TRACK_PANEL_MOUSE_EVENT__
-#define __AUDACITY_TRACK_PANEL_MOUSE_EVENT__
+#ifndef __AUDACITY_CELLULAR_PANEL_MOUSE_EVENT__
+#define __AUDACITY_CELLULAR_PANEL_MOUSE_EVENT__
 
 class wxMouseEvent;
 class wxMouseState;
 class wxRect;
 class wxSize;
 class TrackPanelCell;
-#include "MemoryX.h"
+#include "../../MemoryX.h"
 
 // This is a hack so that the code that fakes a MOUSE_LEFT_BTN_UP on
 // capture lost doesn't get in the way of handling MOUSE_RIGHT_BTN_UP.

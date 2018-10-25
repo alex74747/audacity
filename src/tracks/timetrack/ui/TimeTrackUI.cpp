@@ -12,8 +12,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "TimeTrackControls.h"
 #include "TimeTrackVRulerControls.h"
 
-#include "../../../HitTestResult.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "../../../widgets/cellularPanel/HitTestResult.h"
+#include "../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../Project.h"
 
 #include "../../ui/EnvelopeHandle.h"

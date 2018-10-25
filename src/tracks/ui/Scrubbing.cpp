@@ -18,7 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../Menus.h"
 #include "../../Project.h"
 #include "../../TrackPanel.h"
-#include "../../TrackPanelCell.h"
+#include "../../widgets/cellularPanel/Cell.h"
 #include "../../prefs/PlaybackPrefs.h"
 #include "../../prefs/TracksPrefs.h"
 #include "../../toolbars/ControlToolBar.h"

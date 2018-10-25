@@ -15,7 +15,7 @@ class wxMouseState;
 class WaveTrack;
 #include <wx/gdicmn.h>
 #include "../../../../MemoryX.h"
-#include "../../../../UIHandle.h"
+#include "../../../../widgets/cellularPanel/Handle.h"
 
 
 // Note that these can be with or without spectrum view which

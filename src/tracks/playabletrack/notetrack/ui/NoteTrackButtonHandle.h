@@ -16,7 +16,7 @@ class NoteTrack;
 
 #include <wx/gdicmn.h>
 #include "../../../../MemoryX.h"
-#include "../../../../UIHandle.h"
+#include "../../../../widgets/cellularPanel/Handle.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // TODO: do appearance changes as in ButtonHandle, or even, inherit from that

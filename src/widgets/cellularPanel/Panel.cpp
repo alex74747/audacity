@@ -2,7 +2,7 @@
 
   Audacity: A Digital Audio Editor
 
-  CellularPanel.cpp
+  Panel.cpp
 
   Dominic Mazzoni
   and lots of other contributors
@@ -27,11 +27,11 @@
 
 *//*****************************************************************/
 
-#include "Audacity.h"
-#include "CellularPanel.h"
-#include "Project.h"
-#include "UIHandle.h"
-#include "TrackPanelMouseEvent.h"
+#include "../../Audacity.h"
+#include "Panel.h"
+#include "../../Project.h"
+#include "Handle.h"
+#include "MouseEvent.h"
 #include "HitTestResult.h"
 #include "RefreshCode.h"
 

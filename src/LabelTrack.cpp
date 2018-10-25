@@ -58,7 +58,7 @@ for drawing different aspects of the label and its text box.
 #include "Internat.h"
 #include "Menus.h"
 #include "Prefs.h"
-#include "RefreshCode.h"
+#include "widgets/cellularPanel/RefreshCode.h"
 #include "Theme.h"
 #include "AllThemeResources.h"
 #include "AColor.h"

@@ -2,14 +2,14 @@
 
 Audacity: A Digital Audio Editor
 
-TrackPanelCell.h
+Cell.h
 
 Paul Licameli
 
 **********************************************************************/
 
-#ifndef __AUDACITY_TRACK_PANEL_CELL__
-#define __AUDACITY_TRACK_PANEL_CELL__
+#ifndef __AUDACITY_CELLULAR_PANEL_CELL__
+#define __AUDACITY_CELLULAR_PANEL_CELL__
 
 #include "MemoryX.h"
 

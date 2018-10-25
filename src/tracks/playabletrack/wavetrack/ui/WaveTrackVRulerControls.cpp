@@ -12,13 +12,13 @@ Paul Licameli split from TrackPanel.cpp
 #include "WaveTrackVRulerControls.h"
 #include "WaveTrackVZoomHandle.h"
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../NumberScale.h"
 #include "../../../../prefs/SpectrogramSettings.h"
 #include "../../../../prefs/WaveformSettings.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../../WaveTrack.h"
 
 ///////////////////////////////////////////////////////////////////////////////

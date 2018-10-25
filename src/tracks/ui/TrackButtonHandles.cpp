@@ -11,9 +11,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../Audacity.h"
 #include "TrackButtonHandles.h"
 
-#include "../../HitTestResult.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
 #include "../../Project.h"
-#include "../../RefreshCode.h"
+#include "../../widgets/cellularPanel/RefreshCode.h"
 #include "../../Track.h"
 #include "../../TrackPanel.h"
 #include "../../commands/CommandManager.h"

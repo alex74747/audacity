@@ -18,10 +18,10 @@ Paul Licameli split from TrackPanel.cpp
 #include <wx/event.h>
 #include <wx/gdicmn.h>
 
-#include "../../HitTestResult.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
 #include "../../Project.h"
-#include "../../RefreshCode.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "../../widgets/cellularPanel/RefreshCode.h"
+#include "../../widgets/cellularPanel/MouseEvent.h"
 #include "../../ViewInfo.h"
 #include "../../../images/Cursors.h"
 

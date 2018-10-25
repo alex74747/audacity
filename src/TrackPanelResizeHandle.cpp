@@ -17,11 +17,11 @@ Paul Licameli split from TrackPanel.cpp
 #include <wx/cursor.h>
 #include <wx/translation.h>
 
-#include "HitTestResult.h"
+#include "widgets/cellularPanel/HitTestResult.h"
 #include "Project.h"
-#include "RefreshCode.h"
+#include "widgets/cellularPanel/RefreshCode.h"
 #include "Track.h"
-#include "TrackPanelMouseEvent.h"
+#include "widgets/cellularPanel/MouseEvent.h"
 #include "tracks/ui/TrackControls.h"
 
 HitTestPreview TrackPanelResizeHandle::HitPreview(bool bLinked)

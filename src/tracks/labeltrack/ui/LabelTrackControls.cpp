@@ -10,11 +10,11 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../Audacity.h"
 #include "LabelTrackControls.h"
-#include "../../../HitTestResult.h"
+#include "../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../LabelTrack.h"
 #include "../../../widgets/PopupMenuTable.h"
 #include "../../../Prefs.h"
-#include "../../../RefreshCode.h"
+#include "../../../widgets/cellularPanel/RefreshCode.h"
 #include "../../../ShuttleGui.h"
 #include "../../../widgets/wxPanelWrapper.h"
 #include <wx/dialog.h>

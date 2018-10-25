@@ -12,7 +12,7 @@ Paul Licameli
 #define __AUDACITY_SLIDER_HANDLE__
 
 #include "../../MemoryX.h"
-#include "../../UIHandle.h"
+#include "../../widgets/cellularPanel/Handle.h"
 #include <wx/gdicmn.h>
 
 class wxMouseEvent;

@@ -2,7 +2,7 @@
 
 Audacity: A Digital Audio Editor
 
-UIHandle.h
+Handle.h
 
 Paul Licameli
 
@@ -12,7 +12,7 @@ Paul Licameli
 #define __AUDACITY_UI_HANDLE__
 
 #include <utility>
-#include "MemoryX.h"
+#include "../../MemoryX.h"
 
 class wxDC;
 class wxRect;

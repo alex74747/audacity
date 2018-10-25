@@ -13,9 +13,9 @@
 
 #ifdef EXPERIMENTAL_MIDI_OUT
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
 #include "../../../../TrackPanel.h" // for TrackInfo
 #include "../../../../UndoManager.h"
 #include "../../../../NoteTrack.h"

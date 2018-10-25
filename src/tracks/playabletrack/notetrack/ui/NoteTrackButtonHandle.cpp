@@ -14,11 +14,11 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "NoteTrackButtonHandle.h"
 
-#include "../../../../HitTestResult.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../../NoteTrack.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
 #include "../../../../TrackPanel.h"
 
 NoteTrackButtonHandle::NoteTrackButtonHandle

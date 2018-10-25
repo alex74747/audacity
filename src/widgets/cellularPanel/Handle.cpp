@@ -2,14 +2,14 @@
 
 Audacity: A Digital Audio Editor
 
-UIHandle.cpp
+Handle.cpp
 
 Paul Licameli
 
 **********************************************************************/
 
-#include "Audacity.h"
-#include "UIHandle.h"
+#include "../../Audacity.h"
+#include "Handle.h"
 #include "RefreshCode.h"
 
 UIHandle::~UIHandle()

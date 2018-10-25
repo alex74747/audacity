@@ -12,8 +12,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackPanelResizerCell.h"
 
 #include "TrackPanelResizeHandle.h"
-#include "TrackPanelMouseEvent.h"
-#include "HitTestResult.h"
+#include "widgets/cellularPanel/MouseEvent.h"
+#include "widgets/cellularPanel/HitTestResult.h"
 
 #include <wx/mousestate.h>
 

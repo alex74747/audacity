@@ -9,11 +9,11 @@ Paul Licameli split from TrackPanel.cpp
 **********************************************************************/
 
 #include "../../Track.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "../../widgets/cellularPanel/MouseEvent.h"
 #include "TrackControls.h"
 #include "TrackVRulerControls.h"
 
-#include "../../HitTestResult.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
 #include "../../Project.h"
 #include "../../toolbars/ToolsToolBar.h"
 

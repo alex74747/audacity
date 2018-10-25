@@ -2,7 +2,7 @@
 
  Audacity: A Digital Audio Editor
 
- TrackPanel.h
+ Panel.h
 
  Paul Licameli
 
@@ -12,7 +12,7 @@
 #define __AUDACITY_CELLULAR_PANEL__
 
 #include <wx/cursor.h>
-#include "widgets/OverlayPanel.h"
+#include "../OverlayPanel.h"
 
 class ViewInfo;
 class AudacityProject;

@@ -12,9 +12,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "WaveTrackControls.h"
 #include "WaveTrackVRulerControls.h"
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../Project.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 #include "../../../../toolbars/ToolsToolBar.h"
 
 #include "CutlineHandle.h"

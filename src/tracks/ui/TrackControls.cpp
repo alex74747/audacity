@@ -12,12 +12,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackControls.h"
 #include "TrackButtonHandles.h"
 #include "TrackSelectHandle.h"
-#include "../../HitTestResult.h"
-#include "../../RefreshCode.h"
+#include "../../widgets/cellularPanel/HitTestResult.h"
+#include "../../widgets/cellularPanel/RefreshCode.h"
 #include "../../Menus.h"
 #include "../../Project.h"
 #include "../../TrackPanel.h" // for TrackInfo
-#include "../../TrackPanelMouseEvent.h"
+#include "../../widgets/cellularPanel/MouseEvent.h"
 #include "../../Track.h"
 #include <wx/textdlg.h>
 #include "../../commands/CommandType.h"

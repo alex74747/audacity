@@ -15,8 +15,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../AColor.h"
 #include "../../AdornedRulerPanel.h"
 #include "../../Project.h"
-#include "../../TrackPanelCell.h"
-#include "../../TrackPanelCellIterator.h"
+#include "../../widgets/cellularPanel/Cell.h"
+#include "../../widgets/cellularPanel/CellIterator.h"
 #include "../../TrackPanelAx.h"
 #include "../../ViewInfo.h"
 

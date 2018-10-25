@@ -15,11 +15,11 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackVRulerControls.h"
 #include "NoteTrackVZoomHandle.h"
 
-#include "../../../../HitTestResult.h"
+#include "../../../../widgets/cellularPanel/HitTestResult.h"
 #include "../../../../NoteTrack.h"
 #include "../../../../Project.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../widgets/cellularPanel/RefreshCode.h"
+#include "../../../../widgets/cellularPanel/MouseEvent.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

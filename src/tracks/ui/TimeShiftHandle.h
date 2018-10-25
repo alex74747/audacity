@@ -11,7 +11,7 @@ Paul Licameli
 #ifndef __AUDACITY_TIMESHIFT_HANDLE__
 #define __AUDACITY_TIMESHIFT_HANDLE__
 
-#include "../../UIHandle.h"
+#include "../../widgets/cellularPanel/Handle.h"
 
 #include "../../MemoryX.h"
 

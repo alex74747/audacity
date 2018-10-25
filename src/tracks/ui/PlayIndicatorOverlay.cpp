@@ -16,8 +16,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../AudioIO.h"
 #include "../../Project.h"
 #include "../../TrackPanel.h"
-#include "../../TrackPanelCell.h"
-#include "../../TrackPanelCellIterator.h"
+#include "../../widgets/cellularPanel/Cell.h"
+#include "../../widgets/cellularPanel/CellIterator.h"
 #include "Scrubbing.h"
 
 #include <wx/dc.h>

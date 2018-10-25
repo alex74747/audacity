@@ -10,7 +10,7 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../Audacity.h"
 #include "TimeTrackVRulerControls.h"
-#include "../../../HitTestResult.h"
+#include "../../../widgets/cellularPanel/HitTestResult.h"
 
 TimeTrackVRulerControls::~TimeTrackVRulerControls()
 {
