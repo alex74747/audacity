@@ -36,8 +36,8 @@
 #include "WaveTrack.h"
 #include "FFT.h"
 #include "Profiler.h"
-#include "InconsistencyException.h"
-#include "UserException.h"
+#include "exceptions/InconsistencyException.h"
+#include "exceptions/UserException.h"
 
 #include "prefs/SpectrogramSettings.h"
 

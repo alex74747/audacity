@@ -37,7 +37,7 @@
 #include <wx/intl.h>    // needed for _("translated stings") even if we
                         // don't have libflac available
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "Import.h"
 #include "ImportPlugin.h"
 

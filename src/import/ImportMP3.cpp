@@ -39,7 +39,7 @@
 #include <wx/defs.h>
 #include <wx/intl.h>
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "../Prefs.h"
 #include "Import.h"
 #include "ImportPlugin.h"

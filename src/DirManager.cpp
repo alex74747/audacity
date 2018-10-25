@@ -87,9 +87,9 @@
 #endif
 
 #include "AudacityApp.h"
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 #include "BlockFile.h"
-#include "FileException.h"
+#include "exceptions/FileException.h"
 #include "FileNames.h"
 #include "blockfile/LegacyBlockFile.h"
 #include "blockfile/LegacyAliasBlockFile.h"
@@ -98,7 +98,7 @@
 #include "blockfile/PCMAliasBlockFile.h"
 #include "blockfile/ODPCMAliasBlockFile.h"
 #include "blockfile/ODDecodeBlockFile.h"
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 #include "Internat.h"
 #include "Project.h"
 #include "Prefs.h"

@@ -66,7 +66,7 @@ to get its definition, rather than rolling our own.
 #include <wx/utils.h>
 #include <wx/log.h>
 
-#include "../FileException.h"
+#include "../exceptions/FileException.h"
 #include "../Prefs.h"
 
 #include "../FileFormats.h"

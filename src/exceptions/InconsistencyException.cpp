@@ -6,9 +6,9 @@
 //
 //
 
-#include "Audacity.h"
+#include "../Audacity.h"
 #include "InconsistencyException.h"
-#include "Internat.h"
+#include "../Internat.h"
 
 InconsistencyException::~InconsistencyException()
 {

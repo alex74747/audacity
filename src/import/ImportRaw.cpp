@@ -27,12 +27,12 @@ and sample size to help you importing data of an unknown format.
 #include "Import.h"
 
 #include "../DirManager.h"
-#include "../FileException.h"
+#include "../exceptions/FileException.h"
 #include "../FileFormats.h"
 #include "../Internat.h"
 #include "../Prefs.h"
 #include "../ShuttleGui.h"
-#include "../UserException.h"
+#include "../exceptions/UserException.h"
 #include "../WaveTrack.h"
 #include "../prefs/QualityPrefs.h"
 

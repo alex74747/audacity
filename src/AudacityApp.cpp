@@ -59,7 +59,7 @@ It handles initialization and termination by subclassing wxApp.
 #include <sys/stat.h>
 #endif
 
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 #include "AudacityLogger.h"
 #include "AboutDialog.h"
 #include "AColor.h"

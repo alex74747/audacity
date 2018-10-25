@@ -6,10 +6,9 @@
 //
 //
 
-#include "Audacity.h"
+#include "../Audacity.h"
 #include "FileException.h"
-#include "Internat.h"
-#include "Prefs.h"
+#include "../Internat.h"
 
 FileException::~FileException()
 {

@@ -27,7 +27,7 @@ messaging from a command back to its invoker.
 #include <wx/variant.h>
 #include <wx/arrstr.h>
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "Validators.h"
 #include "CommandType.h"
 #include "CommandMisc.h"

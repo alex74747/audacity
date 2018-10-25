@@ -106,8 +106,6 @@ audacity_SOURCES = \
 	Audacity.h \
 	AudacityApp.cpp \
 	AudacityApp.h \
-	AudacityException.cpp \
-	AudacityException.h \
 	AudacityLogger.cpp \
 	AudacityLogger.h \
 	AudioIO.cpp \
@@ -140,8 +138,6 @@ audacity_SOURCES = \
 	FFmpeg.h \
 	FFT.cpp \
 	FFT.h \
-	FileException.cpp \
-	FileException.h \
 	FileIO.cpp \
 	FileIO.h \
 	FileNames.cpp \
@@ -156,8 +152,6 @@ audacity_SOURCES = \
 	HitTestResult.h \
 	ImageManipulation.cpp \
 	ImageManipulation.h \
-	InconsistencyException.cpp \
-	InconsistencyException.h \
 	InterpolateAudio.cpp \
 	InterpolateAudio.h \
 	LabelDialog.cpp \
@@ -264,8 +258,6 @@ audacity_SOURCES = \
 	UIHandle.cpp \
 	UndoManager.cpp \
 	UndoManager.h \
-	UserException.cpp \
-	UserException.h \
 	ViewInfo.cpp \
 	ViewInfo.h \
 	VoiceKey.cpp \
@@ -440,6 +432,14 @@ audacity_SOURCES = \
 	effects/TwoPassSimpleMono.h \
 	effects/Wahwah.cpp \
 	effects/Wahwah.h \
+	exceptions/AudacityException.cpp \
+	exceptions/AudacityException.h \
+	exceptions/FileException.cpp \
+	exceptions/FileException.h \
+	exceptions/InconsistencyException.cpp \
+	exceptions/InconsistencyException.h \
+	exceptions/UserException.cpp \
+	exceptions/UserException.h \
 	export/Export.cpp \
 	export/Export.h \
 	export/ExportCL.cpp \

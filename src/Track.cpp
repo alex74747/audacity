@@ -38,7 +38,7 @@ and TimeTrack.
 #include "DirManager.h"
 
 #include "Experimental.h"
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 
 #include "TrackPanel.h" // for TrackInfo
 

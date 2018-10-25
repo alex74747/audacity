@@ -445,7 +445,7 @@ TimeTrack and AudioIOListener and whether the playback is looped.
 #include <wx/txtstrm.h>
 
 #include "AudacityApp.h"
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 #include "Mix.h"
 #include "Resample.h"
 #include "RingBuffer.h"

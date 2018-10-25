@@ -34,7 +34,7 @@
 #include "Prefs.h"
 #include "effects/TimeWarper.h"
 
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 
 #include "TrackPanel.h" // For TrackInfo
 #include "AllThemeResources.h"

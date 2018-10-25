@@ -87,7 +87,7 @@ CommandManager.  It holds the callback for one command.
 #include <wx/log.h>
 #include <wx/tokenzr.h>
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "../Menus.h"
 #include "../Prefs.h"
 #include "../Project.h"

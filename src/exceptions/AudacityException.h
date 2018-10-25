@@ -20,7 +20,7 @@
 #include <wx/app.h>
 #include <exception>
 
-#include "Internat.h"
+#include "../Internat.h"
 
 class wxString;
 

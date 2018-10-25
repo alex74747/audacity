@@ -38,7 +38,7 @@ greater use in future.
 
 #include "audacity/ConfigInterface.h"
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "../AudioIO.h"
 #include "../LabelTrack.h"
 #include "../Menus.h"

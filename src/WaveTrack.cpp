@@ -56,7 +56,7 @@ Track classes.
 #include "prefs/TracksPrefs.h"
 #include "prefs/WaveformPrefs.h"
 
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 
 #include "Experimental.h"
 

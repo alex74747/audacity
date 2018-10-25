@@ -32,7 +32,7 @@
 #include <wx/imaglist.h>
 #include <wx/settings.h>
 
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 #include "ShuttleGui.h"
 #include "Menus.h"
 #include "Prefs.h"

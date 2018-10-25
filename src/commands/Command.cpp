@@ -82,7 +82,7 @@ classes derived from it.
 #include <wx/variant.h>
 #include <wx/arrstr.h>
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "Validators.h"
 #include "CommandType.h"
 #include "CommandMisc.h"

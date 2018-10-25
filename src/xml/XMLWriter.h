@@ -14,7 +14,7 @@
 #include <wx/arrstr.h>
 #include <wx/ffile.h>
 
-#include "../FileException.h"
+#include "../exceptions/FileException.h"
 
 ///
 /// XMLWriter

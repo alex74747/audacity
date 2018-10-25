@@ -36,7 +36,7 @@ ShuttleGui.
 
 #include "audacity/ConfigInterface.h"
 
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "../AudioIO.h"
 #include "../LabelTrack.h"
 #include "../Mix.h"

@@ -40,7 +40,7 @@
 #include <wx/ffile.h>
 #include <wx/log.h>
 
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 
 #include "BlockFile.h"
 #include "blockfile/ODDecodeBlockFile.h"
@@ -49,7 +49,7 @@
 #include "blockfile/SimpleBlockFile.h"
 #include "blockfile/SilentBlockFile.h"
 
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 
 #include "widgets/ErrorDialog.h"
 

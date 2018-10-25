@@ -88,7 +88,7 @@ scroll information.  It also has some status flags.
 #endif
 
 #include "AdornedRulerPanel.h"
-#include "AudacityException.h"
+#include "exceptions/AudacityException.h"
 #include "FreqWindow.h"
 #include "effects/Contrast.h"
 #include "AutoRecovery.h"
@@ -99,7 +99,7 @@ scroll information.  It also has some status flags.
 #include "Dependencies.h"
 #include "Diags.h"
 #include "HistoryWindow.h"
-#include "InconsistencyException.h"
+#include "exceptions/InconsistencyException.h"
 #include "MixerBoard.h"
 #include "Internat.h"
 #include "import/Import.h"

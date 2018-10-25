@@ -46,7 +46,7 @@ Licensed under the GNU General Public License v2 or later
 #endif
 
 // all the includes live here by default
-#include "../AudacityException.h"
+#include "../exceptions/AudacityException.h"
 #include "../SampleFormat.h"
 #include "../Tags.h"
 #include "../Internat.h"
