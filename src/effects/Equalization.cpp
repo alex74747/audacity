@@ -1238,14 +1238,14 @@ bool EffectEqualization::TransferDataToWindow()
 //
 bool EffectEqualization::TransferDataFromWindow()
 {
-   wxString tip;
+   LocalizedString tip;
 
    bool rr = false;
    float dB = (float) mdBMinSlider->GetValue();
    if (dB != mdBMin) {
       rr = true;
       mdBMin = dB;
-      tip.Printf(_("%d dB"), (int)mdBMin);
+      tip = _("%d dB").Format( (int)mdBMin);
       mdBMinSlider->SetToolTip(tip);
    }
 
@@ -1253,7 +1253,7 @@ bool EffectEqualization::TransferDataFromWindow()
    if (dB != mdBMax) {
       rr = true;
       mdBMax = dB;
-      tip.Printf(_("%d dB"), (int)mdBMax);
+      tip = _("%d dB").Format( (int)mdBMax);
       mdBMaxSlider->SetToolTip(tip);
    }
 
@@ -1283,7 +1283,7 @@ bool EffectEqualization::TransferDataFromWindow()
 
       if( mMSlider)
       {
-         tip.Printf(L"%d", (int)mM);
+         tip = LocalizedString{ L"%d" }.Format( (int)mM);
          mMText->SetLabel(tip);
          mMText->SetName(mMText->GetLabel()); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
          mMSlider->SetToolTip(tip);

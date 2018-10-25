@@ -584,14 +584,14 @@ bool EffectScienFilter::TransferDataFromWindow()
 bool EffectScienFilter::TransferGraphLimitsFromWindow()
 {
    // Read the sliders and send to the panel
-   wxString tip;
+   LocalizedString tip;
 
    bool rr = false;
    int dB = mdBMinSlider->GetValue();
    if (dB != mdBMin) {
       rr = true;
       mdBMin = dB;
-      tip.Printf(_("%d dB"), (int)mdBMin);
+      tip = _("%d dB").Format( (int)mdBMin);
       mdBMinSlider->SetToolTip(tip);
    }
 
@@ -599,7 +599,7 @@ bool EffectScienFilter::TransferGraphLimitsFromWindow()
    if (dB != mdBMax) {
       rr = true;
       mdBMax = dB;
-      tip.Printf(_("%d dB"),(int)mdBMax);
+      tip = _("%d dB").Format((int)mdBMax);
       mdBMaxSlider->SetToolTip(tip);
    }
 
