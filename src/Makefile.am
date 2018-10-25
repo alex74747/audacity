@@ -205,6 +205,8 @@ audacity_SOURCES = \
 	RingBuffer.h \
 	Screenshot.cpp \
 	Screenshot.h \
+	Scrolling.cpp \
+	Scrolling.h \
 	SelectedRegion.cpp \
 	SelectedRegion.h \
 	SelectionState.cpp \

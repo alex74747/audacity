@@ -1290,6 +1290,7 @@
 		5EFE0E2421820C2000F67582 /* FileException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFE0E1D21820C2000F67582 /* FileException.cpp */; };
 		5EFE0E2521820C2000F67582 /* InconsistencyException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFE0E1F21820C2000F67582 /* InconsistencyException.cpp */; };
 		5EFE0E2621820C2000F67582 /* UserException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFE0E2121820C2000F67582 /* UserException.cpp */; };
+		5EFE0E3721821B0500F67582 /* Scrolling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFE0E3521821B0500F67582 /* Scrolling.cpp */; };
 		659B26C5207501970039894A /* WindowAccessible.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659B26C3207501970039894A /* WindowAccessible.cpp */; };
 		8406A93812D0F2510011EA01 /* EQDefaultCurves.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8406A93712D0F2510011EA01 /* EQDefaultCurves.xml */; };
 		8484F31413086237002DF7F0 /* DeviceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8484F31213086237002DF7F0 /* DeviceManager.cpp */; };
@@ -3230,6 +3231,8 @@
 		5EFE0E2021820C2000F67582 /* InconsistencyException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InconsistencyException.h; path = exceptions/InconsistencyException.h; sourceTree = "<group>"; };
 		5EFE0E2121820C2000F67582 /* UserException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UserException.cpp; path = exceptions/UserException.cpp; sourceTree = "<group>"; };
 		5EFE0E2221820C2000F67582 /* UserException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserException.h; path = exceptions/UserException.h; sourceTree = "<group>"; };
+		5EFE0E3521821B0500F67582 /* Scrolling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scrolling.cpp; sourceTree = "<group>"; };
+		5EFE0E3621821B0500F67582 /* Scrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scrolling.h; sourceTree = "<group>"; };
 		659B26C3207501970039894A /* WindowAccessible.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowAccessible.cpp; sourceTree = "<group>"; };
 		659B26C4207501970039894A /* WindowAccessible.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowAccessible.h; sourceTree = "<group>"; };
 		82FF184D13CF01A600C1B664 /* dBTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dBTable.cpp; path = sbsms/src/dBTable.cpp; sourceTree = "<group>"; };
@@ -4139,6 +4142,7 @@
 				1790B0D409883BFD008A330A /* RingBuffer.cpp */,
 				1790B0D609883BFD008A330A /* SampleFormat.cpp */,
 				285DE1F80BF03C7800A20DF0 /* Screenshot.cpp */,
+				5EFE0E3521821B0500F67582 /* Scrolling.cpp */,
 				28D8425B1AD8D69D00551353 /* SelectedRegion.cpp */,
 				5E2A19921EED688500217B58 /* SelectionState.cpp */,
 				1790B0DA09883BFD008A330A /* Sequence.cpp */,
@@ -4244,6 +4248,7 @@
 				1790B0D509883BFD008A330A /* RingBuffer.h */,
 				1790B0D709883BFD008A330A /* SampleFormat.h */,
 				285DE1F90BF03C7800A20DF0 /* Screenshot.h */,
+				5EFE0E3621821B0500F67582 /* Scrolling.h */,
 				2813897919E6163C004111ED /* SelectedRegion.h */,
 				5E2A19931EED688500217B58 /* SelectionState.h */,
 				1790B0DB09883BFD008A330A /* Sequence.h */,
@@ -8039,6 +8044,7 @@
 				186CCEA40E523C8E00659159 /* Profiler.cpp in Sources */,
 				18D8314E0ED0F56300FD870D /* Contrast.cpp in Sources */,
 				ED2707500EF9C64F007D4FFD /* SBSMSEffect.cpp in Sources */,
+				5EFE0E3721821B0500F67582 /* Scrolling.cpp in Sources */,
 				ED2707510EF9C64F007D4FFD /* TimeScale.cpp in Sources */,
 				18A2840F0F79BCAB0013A1BE /* Generator.cpp in Sources */,
 				28CCDD000F939FD70081F2FC /* FileHistory.cpp in Sources */,
