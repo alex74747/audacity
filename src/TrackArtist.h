@@ -28,8 +28,6 @@
 
 class wxRect;
 
-class NoteTrack;
-class Ruler;
 class SelectedRegion;
 class Track;
 class TrackPanel;
@@ -37,8 +35,6 @@ struct TrackPanelDrawingContext;
 class ZoomInfo;
 
 namespace TrackArt {
-   void DrawVRuler(TrackPanelDrawingContext &context,
-                   const Track *t, const wxRect & rect, bool bSelected );
    
 #if 0
    void DrawTrackNames(TrackPanelDrawingContext &context,
@@ -72,6 +68,7 @@ public:
       PassTracks,
       PassMargins,
       PassBorders,
+      PassControls,
       
       NPasses
    };
@@ -126,8 +123,6 @@ public:
    wxPen clippedPen;
    wxPen muteClippedPen;
    wxPen blankSelectedPen;
-
-   std::unique_ptr<Ruler> vruler;
 
 #ifdef EXPERIMENTAL_FFT_Y_GRID
    bool fftYGridOld;
