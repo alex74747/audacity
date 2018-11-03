@@ -2745,6 +2745,21 @@ TrackPanel *(*TrackPanel::FactoryFunction)(
               AudacityProject * project,
               AdornedRulerPanel * ruler) = TrackPanelFactory;
 
+TrackPanelDrawable::~TrackPanelDrawable()
+{
+}
+
+void TrackPanelDrawable::Draw(
+   TrackPanelDrawingContext &, const wxRect &, unsigned )
+{
+}
+
+wxRect TrackPanelDrawable::DrawingArea(
+   const wxRect &rect, const wxRect &, unsigned )
+{
+   return rect;
+}
+
 TrackPanelNode::TrackPanelNode()
 {
 }
