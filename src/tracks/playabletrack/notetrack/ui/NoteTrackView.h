@@ -70,6 +70,11 @@ private:
        const AudacityProject *pProject, int currentTool, bool bMultiTool)
       override;
 
+   // TrackPanelDrawable implementation
+   void Draw(
+      TrackPanelDrawingContext &context,
+      const wxRect &rect, unsigned iPass ) override;
+
    int mBottomNote{ MinPitch }, mTopNote{ MaxPitch };
 #if 0
    // Also unused from vertical scrolling
