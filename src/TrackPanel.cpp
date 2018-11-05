@@ -595,7 +595,7 @@ void TrackPanel::OnTrackListDeletion(wxEvent & e)
    // copy shared_ptr for safety, as in HandleClick
    auto handle = Target();
    if (handle) {
-      handle->OnProjectChange(GetProject());
+      handle->OnProjectChange(GetProject()); //
    }
 
    // If the focused track disappeared but there are still other tracks,
@@ -710,7 +710,7 @@ void TrackPanel::OnAudioIO(wxCommandEvent & evt)
    CallAfter( [this]{ CellularPanel::HandleCursorForPresentMouseState(); } );
 }
 
-#include "TrackPanelDrawingContext.h"
+#include "TrackPanelDrawingContext.h" //
 
 /// Draw the actual track areas.  We only draw the borders
 /// and the little buttons and menues and whatnot here, the
