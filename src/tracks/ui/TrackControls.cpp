@@ -355,6 +355,7 @@ void TrackInfo::DrawBordersWithin
 #endif
 
 #define RANGE(array) (array), (array) + (WXSIZEOF(array))
+
 using TCPLine = TrackControls::TCPLine;
 using TCPLines = TrackControls::TCPLines;
 
