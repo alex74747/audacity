@@ -177,7 +177,6 @@ namespace TrackInfo
    bool HideTopItem( const wxRect &rect, const wxRect &subRect,
                                int allowance = 0 );
 
-   unsigned DefaultNoteTrackHeight();
    unsigned DefaultWaveTrackHeight();
 
    LWSlider * GainSlider
