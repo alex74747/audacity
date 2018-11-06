@@ -1017,3 +1017,7 @@ PopupMenuTable *WaveTrackControls::GetMenuExtension(Track * pTrack)
    WaveTrackMenuTable & result = WaveTrackMenuTable::Instance( pTrack );
    return &result;
 }
+
+void WaveTrackControls::ReCreateSliders( wxWindow *pParent )
+{
+}

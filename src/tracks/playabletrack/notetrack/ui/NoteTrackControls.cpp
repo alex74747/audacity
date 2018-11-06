@@ -138,3 +138,11 @@ PopupMenuTable *NoteTrackControls::GetMenuExtension(Track *)
 }
 
 #endif
+
+void NoteTrackControls::ReCreateSliders( wxWindow *pParent )
+{
+#ifdef USE_MIDI
+#else
+   (void)pParent;
+#endif
+}
