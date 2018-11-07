@@ -1909,13 +1909,14 @@ bool LabelTrackView::DoCaptureKey(wxKeyEvent & event)
    return false;
 }
 
-unsigned LabelTrack::CaptureKey(wxKeyEvent & event, ViewInfo &, wxWindow *)
+unsigned LabelTrackView::CaptureKey(wxKeyEvent & event, ViewInfo &, wxWindow *)
 {
-   event.Skip(!LabelTrackView::Get( *this ).DoCaptureKey(event));
+   event.Skip(!DoCaptureKey(event));
    return RefreshCode::RefreshNone;
 }
 
-unsigned LabelTrack::KeyDown(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *WXUNUSED(pParent))
+unsigned LabelTrackView::KeyDown(
+   wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *WXUNUSED(pParent))
 {
    double bkpSel0 = viewInfo.selectedRegion.t0(),
       bkpSel1 = viewInfo.selectedRegion.t1();
@@ -1924,8 +1925,7 @@ unsigned LabelTrack::KeyDown(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *W
 
    // Pass keystroke to labeltrack's handler and add to history if any
    // updates were done
-   auto &view = LabelTrackView::Get( *this );
-   if (view.DoKeyDown(viewInfo.selectedRegion, event)) {
+   if (DoKeyDown(viewInfo.selectedRegion, event)) {
       pProj->PushState(_("Modified Label"),
          _("Label Edit"),
          UndoPush::CONSOLIDATE);
@@ -1933,7 +1933,7 @@ unsigned LabelTrack::KeyDown(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *W
 
    // Make sure caret is in view
    int x;
-   if (view.CalcCursorX(&x))
+   if (CalcCursorX(&x))
       TrackPanel::Get( *pProj ).ScrollIntoView(x);
 
    // If selection modified, refresh
@@ -1947,7 +1947,8 @@ unsigned LabelTrack::KeyDown(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *W
    return RefreshCode::RefreshNone;
 }
 
-unsigned LabelTrack::Char(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *)
+unsigned LabelTrackView::Char(
+   wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *)
 {
    double bkpSel0 = viewInfo.selectedRegion.t0(),
       bkpSel1 = viewInfo.selectedRegion.t1();
@@ -1956,7 +1957,7 @@ unsigned LabelTrack::Char(wxKeyEvent & event, ViewInfo &viewInfo, wxWindow *)
 
    AudacityProject *const pProj = GetActiveProject();
 
-   if (LabelTrackView::Get( *this ).DoChar(viewInfo.selectedRegion, event))
+   if (DoChar(viewInfo.selectedRegion, event))
       pProj->PushState(_("Modified Label"),
       _("Label Edit"),
       UndoPush::CONSOLIDATE);
