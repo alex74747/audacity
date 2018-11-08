@@ -36,6 +36,7 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "ViewInfo.h"
+#include "tracks/labeltrack/ui/LabelTrackView.h"
 #include "widgets/NumericTextCtrl.h"
 #include "widgets/ErrorDialog.h"
 #include "widgets/Grid.h"
@@ -417,7 +418,7 @@ bool LabelDialog::TransferDataFromWindow()
 
       // Add the label to it
       lt->AddLabel(rd.selectedRegion, rd.title);
-      lt->Unselect();
+      LabelTrackView::Get( *lt ).SetSelectedIndex( -1 );
    }
 
    return true;

@@ -19,6 +19,7 @@
 #include "../prefs/SpectrogramSettings.h"
 #include "../prefs/WaveformSettings.h"
 #include "../widgets/ErrorDialog.h"
+#include "../tracks/labeltrack/ui/LabelTrackView.h"
 
 // private helper classes and functions
 namespace {
@@ -45,14 +46,15 @@ bool DoPasteText(AudacityProject &project)
       if (pLabelTrack->HasSelection()) {
 
          // Yes, so try pasting into it
-         if (pLabelTrack->PasteSelectedText(selectedRegion.t0(),
+         auto &view = LabelTrackView::Get( *pLabelTrack );
+         if (view.PasteSelectedText(selectedRegion.t0(),
                                             selectedRegion.t1()))
          {
             project.PushState(_("Pasted text from the clipboard"), _("Paste"));
 
             // Make sure caret is in view
             int x;
-            if (pLabelTrack->CalcCursorX(&x)) {
+            if (view.CalcCursorX(&x)) {
                trackPanel.ScrollIntoView(x);
             }
 
@@ -301,7 +303,8 @@ void OnCut(const CommandContext &context)
    // in the middle of editing the label text and select "Cut".
 
    for (auto lt : tracks.Selected< LabelTrack >()) {
-      if (lt->CutSelectedText()) {
+      auto &view = LabelTrackView::Get( *lt );
+      if (view.CutSelectedText()) {
          trackPanel.Refresh(false);
          return;
       }
@@ -407,7 +410,8 @@ void OnCopy(const CommandContext &context)
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    for (auto lt : tracks.Selected< LabelTrack >()) {
-      if (lt->CopySelectedText()) {
+      auto &view = LabelTrackView::Get( *lt );
+      if (view.CopySelectedText()) {
          //trackPanel.Refresh(false);
          return;
       }

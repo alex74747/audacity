@@ -51,6 +51,7 @@
 #include "toolbars/ToolManager.h"
 #include "widgets/FileHistory.h"
 #include "widgets/ErrorDialog.h"
+#include "tracks/labeltrack/ui/LabelTrackView.h"
 
 #include <mutex>
 #include <unordered_set>
@@ -1093,7 +1094,7 @@ CommandFlag MenuManager::GetUpdateFlags
             }
          }
 
-         if (lt->IsTextSelected()) {
+         if (LabelTrackView::Get( *lt ).IsTextSelected()) {
             flags |= CutCopyAvailableFlag;
          }
       },
