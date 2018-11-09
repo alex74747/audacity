@@ -1526,13 +1526,13 @@ auto LabelStruct::RegionRelation(
 /// @iEdge - which edge is requested to move, -1 for left +1 for right.
 /// @bAllowSwapping - if we can switch which edge is being dragged.
 /// fNewTime - the NEW time for this edge of the label.
-void LabelTrackView::MayAdjustLabel
+void LabelGlyphHandle::MayAdjustLabel
 ( LabelTrackHit &hit, int iLabel, int iEdge, bool bAllowSwapping, double fNewTime)
 {
    if( iLabel < 0 )
       return;
 
-   const auto pTrack = FindLabelTrack();
+   const auto pTrack = mpLT;
    const auto &mLabels = pTrack->GetLabels();
    auto labelStruct = mLabels[ iLabel ];
 
@@ -1558,12 +1558,12 @@ void LabelTrackView::MayAdjustLabel
 }
 
 // If the index is for a real label, adjust its left and right boundary.
-void LabelTrackView::MayMoveLabel( int iLabel, int iEdge, double fNewTime)
+void LabelGlyphHandle::MayMoveLabel( int iLabel, int iEdge, double fNewTime)
 {
    if( iLabel < 0 )
       return;
 
-   const auto pTrack = FindLabelTrack();
+   const auto pTrack = mpLT;
    const auto &mLabels = pTrack->GetLabels();
    auto labelStruct = mLabels[ iLabel ];
    labelStruct.MoveLabel( iEdge, fNewTime );
@@ -1583,12 +1583,12 @@ static int Constrain( int value, int min, int max )
    return result;
 }
 
-bool LabelTrackView::HandleGlyphDragRelease
+bool LabelGlyphHandle::HandleGlyphDragRelease
 (LabelTrackHit &hit, const wxMouseEvent & evt,
  wxRect & r, const ZoomInfo &zoomInfo,
  SelectedRegion *newSel)
 {
-   const auto pTrack = FindLabelTrack();
+   const auto pTrack = mpLT;
    const auto &mLabels = pTrack->GetLabels();
    if(evt.LeftUp())
    {
@@ -1642,11 +1642,12 @@ bool LabelTrackView::HandleGlyphDragRelease
          MayAdjustLabel( hit, hit.mMouseOverLabelRight, +1, bAllowSwapping, fNewX );
       }
 
-      if( HasSelection() )
+      if( pTrack->HasSelection() )
       {
+         auto selIndex = LabelTrackView::Get( *pTrack ).GetSelectedIndex();
          //Set the selection region to be equal to
          //the NEW size of the label.
-         *newSel = mLabels[mSelIndex].selectedRegion;
+         *newSel = mLabels[ selIndex ].selectedRegion;
       }
       pTrack->SortLabels();
    }
@@ -1700,7 +1701,7 @@ void LabelTrackView::HandleTextDragRelease(const wxMouseEvent & evt)
    return;
 }
 
-void LabelTrackView::HandleGlyphClick
+void LabelGlyphHandle::HandleGlyphClick
 (LabelTrackHit &hit, const wxMouseEvent & evt,
  const wxRect & r, const ZoomInfo &zoomInfo,
  SelectedRegion *WXUNUSED(newSel))
@@ -1708,8 +1709,8 @@ void LabelTrackView::HandleGlyphClick
    if (evt.ButtonDown())
    {
       //OverGlyph sets mMouseOverLabel to be the chosen label.
-      const auto pTrack = FindLabelTrack();
-      OverGlyph(*pTrack, hit, evt.m_x, evt.m_y);
+      const auto pTrack = mpLT;
+      LabelTrackView::OverGlyph(*pTrack, hit, evt.m_x, evt.m_y);
       hit.mIsAdjustingLabel = evt.Button(wxMOUSE_BTN_LEFT) &&
          ( hit.mEdge & 3 ) != 0;
 
