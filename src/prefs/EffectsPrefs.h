@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_EFFECTS_PREFS__
 #define __AUDACITY_EFFECTS_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class ChoiceSetting;

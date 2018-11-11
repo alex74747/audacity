@@ -20,8 +20,6 @@ class ShuttleGui;
 #ifndef __AUDACITY_MIDI_IO_PREFS__
 #define __AUDACITY_MIDI_IO_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 #define MIDI_IO_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Midi IO") }

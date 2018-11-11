@@ -12,8 +12,6 @@
 #ifndef __AUDACITY_BATCH_PREFS__
 #define __AUDACITY_BATCH_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class ShuttleGui;

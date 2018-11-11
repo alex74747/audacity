@@ -11,8 +11,6 @@
 #ifndef __AUDACITY_PRINTING__
 #define __AUDACITY_PRINTING__
 
-#include <wx/defs.h>
-
 class wxString;
 class wxWindow;
 class TrackList;

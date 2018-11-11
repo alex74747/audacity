@@ -22,7 +22,6 @@
 
 #include <vector>
 
-#include <wx/defs.h>
 #include <wx/frame.h> // to inherit
 #include <wx/timer.h> // member variable
 

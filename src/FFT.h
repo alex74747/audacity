@@ -32,8 +32,6 @@
 #ifndef __AUDACITY_FFT_H__
 #define __AUDACITY_FFT_H__
 
-#include <wx/defs.h>
-
 class TranslatableString;
 
 /*
@@ -47,8 +45,10 @@ class TranslatableString;
     * 9: Gaussian(a=4.5)
 */
 
-#include <wx/defs.h>
-#include <wx/wxchar.h>
+#include <cstddef> // for size_t
+#include <wx/chartype.h> // for wxChar, a typedef
+
+class wxString;
 
 #ifndef M_PI
 #define	M_PI		3.14159265358979323846  /* pi */

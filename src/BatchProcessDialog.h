@@ -12,8 +12,6 @@
 #ifndef __AUDACITY_MACROS_WINDOW__
 #define __AUDACITY_MACROS_WINDOW__
 
-#include <wx/defs.h>
-
 #include "BatchCommands.h"
 #include "Prefs.h"
 

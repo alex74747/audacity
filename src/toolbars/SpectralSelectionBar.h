@@ -11,8 +11,6 @@ Paul Licameli
 #ifndef __AUDACITY_SPECTRAL_SELECTION_BAR__
 #define __AUDACITY_SPECTRAL_SELECTION_BAR__
 
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 class wxChoice;

@@ -14,8 +14,6 @@
 #define __AUDACITY_TOOLDOCK__
 
 #include <vector>
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 class wxCommandEvent;

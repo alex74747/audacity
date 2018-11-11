@@ -9,8 +9,6 @@
 #ifndef __AUDACITY_MOUSE_PREFS__
 #define __AUDACITY_MOUSE_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class wxListCtrl;

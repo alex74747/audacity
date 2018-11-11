@@ -13,7 +13,6 @@
 
 #include "../Audacity.h"
 
-#include <wx/defs.h>
 class wxString;
 class TranslatableString;
 

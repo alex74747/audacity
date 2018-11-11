@@ -17,7 +17,6 @@
 
 #include <functional>
 #include <vector>
-#include <wx/defs.h>
 
 #include "../Prefs.h"
 #include "../Theme.h"

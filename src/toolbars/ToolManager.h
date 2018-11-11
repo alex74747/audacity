@@ -15,7 +15,6 @@
 
 #include <functional>
 
-#include <wx/defs.h>
 #include <wx/eventfilter.h> // to inherit
 #include <wx/frame.h> // to inherit
 #include <wx/timer.h> // member variable

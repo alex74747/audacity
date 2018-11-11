@@ -8,8 +8,6 @@
 
 **********************************************************************/
 
-#include <wx/defs.h>
-
 class wxFileName;
 
 //! Update Audacity 1.0 file in-place to XML format

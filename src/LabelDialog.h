@@ -12,7 +12,6 @@
 #define __AUDACITY_LABELDIALOG__
 
 #include <vector>
-#include <wx/defs.h>
 
 #include "widgets/wxPanelWrapper.h" // to inherit
 #include "audacity/ComponentInterface.h" // member variable

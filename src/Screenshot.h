@@ -21,8 +21,6 @@
 
 #include "Audacity.h"
 
-#include <wx/defs.h>
-
 class AudacityProject;
 
 void OpenScreenshotTools( AudacityProject &project );

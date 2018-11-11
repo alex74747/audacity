@@ -13,7 +13,6 @@
 #define __AUDACITY_KEYBOARD__
 
 #include <audacity/Types.h>
-#include <wx/defs.h>
 
 class wxKeyEvent;
 

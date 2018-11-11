@@ -16,8 +16,6 @@
 
 #include "../Experimental.h"
 
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 class wxCommandEvent;

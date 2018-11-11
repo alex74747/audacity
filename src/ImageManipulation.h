@@ -9,7 +9,6 @@
 **********************************************************************/
 
 #include "MemoryX.h"
-#include <wx/defs.h>
 
 class wxColour;
 class wxImage;

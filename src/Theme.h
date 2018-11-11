@@ -17,7 +17,6 @@
 #include "Audacity.h"
 
 #include <vector>
-#include <wx/defs.h>
 #include <wx/window.h> // to inherit
 
 class wxArrayString;

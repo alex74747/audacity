@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_WARNINGS_PREFS__
 #define __AUDACITY_WARNINGS_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class ShuttleGui;

@@ -31,7 +31,6 @@ flicker-free use.
 
 #include "../Audacity.h"
 
-#include <wx/defs.h>
 #include <wx/statbmp.h> // to inherit
 
 class TranslatableString;

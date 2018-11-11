@@ -15,8 +15,6 @@
 #include "../Audacity.h"
 #include "../Experimental.h"
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class wxTextCtrl;

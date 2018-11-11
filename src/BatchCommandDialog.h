@@ -12,8 +12,6 @@
 #ifndef __AUDACITY_MACRO_COMMAND_DIALOG__
 #define __AUDACITY_MACRO_COMMAND_DIALOG__
 
-#include <wx/defs.h>
-
 #include "BatchCommands.h"
 
 class wxWindow;

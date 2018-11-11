@@ -13,13 +13,13 @@
 
 **********************************************************************/
 
-#include <wx/defs.h>
-
 #include <sndfile.h>
 
 #ifndef SNDFILE_1
 #error Requires libsndfile 1.0.3 or higher
 #endif
+
+class wxString;
 
 /* Returns the best guess as to the format, as a libsndfile
    SF_FORMAT value

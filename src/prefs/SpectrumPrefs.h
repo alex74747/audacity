@@ -24,7 +24,6 @@
 #include "../Experimental.h"
 
 #include <vector>
-#include <wx/defs.h>
 
 #include "PrefsPanel.h"
 #include "SpectrogramSettings.h"

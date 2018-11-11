@@ -14,7 +14,6 @@
 
 #include "../Audacity.h"
 
-#include <wx/defs.h>
 #include <wx/msgdlg.h> // to inherit
 #include "wxPanelWrapper.h" // to inherit
 
