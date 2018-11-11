@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_MODULE_PREFS__
 #define __AUDACITY_MODULE_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 

@@ -17,8 +17,6 @@
 #include <functional>
 #include <set>
 
-#include <wx/defs.h>
-
 class wxButton;
 class wxCheckBox;
 class wxChoice;

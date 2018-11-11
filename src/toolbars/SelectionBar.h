@@ -11,8 +11,6 @@
 #ifndef __AUDACITY_SELECTION_BAR__
 #define __AUDACITY_SELECTION_BAR__
 
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 // Column for 

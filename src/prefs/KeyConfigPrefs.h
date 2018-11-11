@@ -15,7 +15,6 @@
 class CommandManager;
 class ShuttleGui;
 
-#include <wx/defs.h>
 #include <wx/timer.h> // member variable
 
 #include "PrefsPanel.h"

@@ -14,7 +14,6 @@
 
 #include <vector>
 // #include <wx/dc.h> // for enum wxRasterOperationMode
-#include <wx/defs.h>
 #include "wxPanelWrapper.h" // to inherit
 
 #if !wxCHECK_VERSION(3,0,0)

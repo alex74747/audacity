@@ -12,8 +12,6 @@
 #ifndef __AUDACITY_BATCH_COMMANDS_DIALOG__
 #define __AUDACITY_BATCH_COMMANDS_DIALOG__
 
-#include <wx/defs.h>
-
 #include "export/Export.h"
 #include "commands/CommandFlag.h"
 #include "audacity/ComponentInterface.h" // for ComponentInterfaceSymbol

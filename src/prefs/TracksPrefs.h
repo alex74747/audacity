@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_TRACKS_PREFS__
 #define __AUDACITY_TRACKS_PREFS__
 
-//#include <wx/defs.h>
-
 #include <vector>
 #include "PrefsPanel.h"
 #include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"

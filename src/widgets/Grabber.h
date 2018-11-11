@@ -31,7 +31,6 @@ flicker-free use.
 
 
 
-#include <wx/defs.h>
 #include <wx/statbmp.h> // to inherit
 
 class TranslatableString;

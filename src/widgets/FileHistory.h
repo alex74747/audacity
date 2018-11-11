@@ -13,7 +13,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <wx/defs.h>
 #include <wx/weakref.h> // member variable
 
 #include "Identifier.h"

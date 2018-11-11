@@ -12,8 +12,6 @@
 #ifndef __AUDACITY_DEVICE_PREFS__
 #define __AUDACITY_DEVICE_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class wxChoice;

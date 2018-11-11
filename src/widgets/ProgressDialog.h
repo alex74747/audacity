@@ -21,7 +21,6 @@
 
 
 #include <vector>
-#include <wx/defs.h>
 #include <wx/evtloop.h> // member variable
 
 #include "wxPanelWrapper.h" // to inherit

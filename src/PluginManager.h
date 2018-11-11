@@ -11,11 +11,9 @@
 #ifndef __AUDACITY_PLUGINMANAGER_H__
 #define __AUDACITY_PLUGINMANAGER_H__
 
-#include <wx/defs.h>
-
-#include "wxArrayStringEx.h"
 #include <map>
 #include "MemoryX.h"
+#include "wxArrayStringEx.h"
 
 #include "audacity/EffectInterface.h"
 #include "audacity/ImporterInterface.h"

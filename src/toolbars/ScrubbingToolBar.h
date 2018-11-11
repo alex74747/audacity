@@ -14,8 +14,6 @@
 
 
 
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 class AudacityProject;

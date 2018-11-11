@@ -16,7 +16,6 @@
 #define __AUDACITY_SNAP__
 
 #include <vector>
-#include <wx/defs.h>
 #include "widgets/NumericTextCtrl.h" // member variable
 
 class AudacityProject;

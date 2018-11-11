@@ -14,8 +14,6 @@
 #ifndef __AUDACITY_EDIT_TOOLBAR__
 #define __AUDACITY_EDIT_TOOLBAR__
 
-#include <wx/defs.h>
-
 #include "ToolBar.h"
 
 class wxCommandEvent;

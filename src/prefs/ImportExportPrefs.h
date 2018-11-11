@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_IMPORT_EXPORT_PREFS__
 #define __AUDACITY_IMPORT_EXPORT_PREFS__
 
-#include <wx/defs.h>
-
 #include "PrefsPanel.h"
 
 class ShuttleGui;

@@ -22,7 +22,6 @@
 #define __AUDACITY_SPECTRUM_PREFS__
 
 #include <vector>
-#include <wx/defs.h>
 
 #include "PrefsPanel.h"
 #include "SpectrogramSettings.h"

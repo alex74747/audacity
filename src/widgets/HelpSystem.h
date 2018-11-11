@@ -23,7 +23,6 @@
 
 
 
-#include <wx/defs.h>
 #include "wxPanelWrapper.h" // to inherit
 
 class AudacityProject;

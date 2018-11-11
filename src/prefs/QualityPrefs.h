@@ -13,7 +13,6 @@
 #define __AUDACITY_QUALITY_PREFS__
 
 #include <vector>
-#include <wx/defs.h>
 
 #include "PrefsPanel.h"
 

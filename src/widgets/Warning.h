@@ -13,7 +13,6 @@
 
 
 
-#include <wx/defs.h>
 class wxString;
 class wxWindow;
 class TranslatableString;

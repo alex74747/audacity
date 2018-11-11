@@ -11,10 +11,7 @@
 #ifndef __AUDACITY_TimeDialog__
 #define __AUDACITY_TimeDialog__
 
-#include <wx/defs.h>
-
 #include "audacity/ComponentInterface.h" // member variable
-
 #include "widgets/wxPanelWrapper.h" // to inherit
 
 class NumericTextCtrl;

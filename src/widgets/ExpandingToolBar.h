@@ -12,7 +12,7 @@
 #define __AUDACITY_EXPANDING_TOOL_BAR__
 
 #include <vector>
-#include <wx/defs.h>
+#include <wx/generic/dragimgg.h> // use macros and typedefs in this header
 #include <wx/dragimag.h> // use macros and typedefs in this header
 #include <wx/timer.h> // member variable
 #include <wx/minifram.h> // to inherit
@@ -20,6 +20,8 @@
 #include "wxPanelWrapper.h" // to inherit
 
 #include <unordered_map>
+
+class wxDragImage;
 
 class AButton;
 
