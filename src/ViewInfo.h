@@ -39,6 +39,12 @@ public:
    // Be sure we don't slice
    ZoomInfo(const ZoomInfo&) PROHIBITED;
    ZoomInfo& operator= (const ZoomInfo&) PROHIBITED;
+   
+   using PositionType = wxInt64;
+   static constexpr PositionType MIN_POSITION
+      = std::numeric_limits<PositionType>::min();
+   static constexpr PositionType MAX_POSITION
+      = std::numeric_limits<PositionType>::max();
 
    void UpdatePrefs();
 
