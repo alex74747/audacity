@@ -41,6 +41,8 @@ public:
 
    ~AdornedRulerPanel();
 
+   using PositionType = wxInt64;
+
 public:
    int GetRulerHeight() { return GetRulerHeight(mShowScrubbing); }
    static int GetRulerHeight(bool showScrubBar);
@@ -98,8 +100,8 @@ private:
    enum class MenuChoice { QuickPlay, Scrub };
    void ShowContextMenu( MenuChoice choice, const wxPoint *pPosition);
 
-   double Pos2Time(int p, bool ignoreFisheye = false);
-   int Time2Pos(double t, bool ignoreFisheye = false);
+   double Pos2Time(PositionType p, bool ignoreFisheye = false);
+   PositionType Time2Pos(double t, bool ignoreFisheye = false);
 
    bool IsWithinMarker(int mousePosX, double markerTime);
 

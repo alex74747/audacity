@@ -362,6 +362,10 @@ enum {
    OnTogglePinnedStateID,
 };
 
+static_assert(
+   std::is_same<ZoomInfo::PositionType, AdornedRulerPanel::PositionType>::value,
+   "Width mismatch");
+
 BEGIN_EVENT_TABLE(AdornedRulerPanel, CellularPanel)
    EVT_PAINT(AdornedRulerPanel::OnPaint)
    EVT_SIZE(AdornedRulerPanel::OnSize)
@@ -1193,14 +1197,14 @@ void AdornedRulerPanel::UpdateRects()
 
 }
 
-double AdornedRulerPanel::Pos2Time(int p, bool ignoreFisheye)
+double AdornedRulerPanel::Pos2Time(PositionType p, bool ignoreFisheye)
 {
    return mViewInfo->PositionToTime(p, mLeftOffset
       , ignoreFisheye
    );
 }
 
-int AdornedRulerPanel::Time2Pos(double t, bool ignoreFisheye)
+auto AdornedRulerPanel::Time2Pos(double t, bool ignoreFisheye) -> PositionType
 {
    return mViewInfo->TimeToPosition(t, mLeftOffset
       , ignoreFisheye
@@ -1213,9 +1217,9 @@ bool AdornedRulerPanel::IsWithinMarker(int mousePosX, double markerTime)
    if (markerTime < 0)
       return false;
 
-   int pixelPos = Time2Pos(markerTime);
-   int boundLeft = pixelPos - SELECT_TOLERANCE_PIXEL;
-   int boundRight = pixelPos + SELECT_TOLERANCE_PIXEL;
+   auto pixelPos = Time2Pos(markerTime);
+   auto boundLeft = pixelPos - SELECT_TOLERANCE_PIXEL;
+   auto boundRight = pixelPos + SELECT_TOLERANCE_PIXEL;
 
    return mousePosX >= boundLeft && mousePosX < boundRight;
 }
@@ -1274,8 +1278,8 @@ void AdornedRulerPanel::HandleQPClick(wxMouseEvent &evt, wxCoord mousePosX)
       else {
          // Don't compare times, compare positions.
          //if (fabs(mQuickPlayPos - mPlayRegionStart) < fabs(mQuickPlayPos - mPlayRegionEnd))
-         if (abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionStart)) <
-             abs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionEnd)))
+         if (std::llabs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionStart)) <
+             std::llabs(Time2Pos(mQuickPlayPos) - Time2Pos(mPlayRegionEnd)))
             mMouseEventState = mesDraggingPlayRegionStart;
          else
             mMouseEventState = mesDraggingPlayRegionEnd;
@@ -1818,8 +1822,8 @@ void AdornedRulerPanel::DoDrawPlayRegion(wxDC * dc)
 
    if (start >= 0)
    {
-      const int x1 = Time2Pos(start);
-      const int x2 = Time2Pos(end)-2;
+      const auto x1 = Time2Pos(start);
+      const auto x2 = Time2Pos(end)-2;
       int y = mInner.y - TopMargin + mInner.height/2;
 
       bool isLocked = mProject->IsPlayRegionLocked();
@@ -1860,7 +1864,7 @@ void AdornedRulerPanel::DoDrawPlayRegion(wxDC * dc)
 
          r.x = x1 + PLAY_REGION_TRIANGLE_SIZE;
          r.y = y - PLAY_REGION_RECT_HEIGHT/2 + PLAY_REGION_GLOBAL_OFFSET_Y;
-         r.width = std::max(0, x2-x1 - PLAY_REGION_TRIANGLE_SIZE*2);
+         r.width = std::max(0, (int)(x2-x1 - PLAY_REGION_TRIANGLE_SIZE*2));
          r.height = PLAY_REGION_RECT_HEIGHT;
          dc->DrawRectangle(r);
       }
@@ -1939,8 +1943,8 @@ void AdornedRulerPanel::DrawSelection()
 void AdornedRulerPanel::DoDrawSelection(wxDC * dc)
 {
    // Draw selection
-   const int p0 = max(1, Time2Pos(mViewInfo->selectedRegion.t0()));
-   const int p1 = min(mInner.width, Time2Pos(mViewInfo->selectedRegion.t1()));
+   const int p0 = max(1, (int)Time2Pos(mViewInfo->selectedRegion.t0()));
+   const int p1 = min(mInner.width, (int)Time2Pos(mViewInfo->selectedRegion.t1()));
 
    dc->SetBrush( wxBrush( theTheme.Colour( clrRulerBackground )) );
    dc->SetPen(   wxPen(   theTheme.Colour( clrRulerBackground )) );
