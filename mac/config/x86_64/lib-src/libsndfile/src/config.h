@@ -137,7 +137,7 @@
 #define HAVE_SNPRINTF 1
 
 /* Set to 1 if you have libsqlite3. */
-#define HAVE_SQLITE3 0
+#define HAVE_SQLITE3 1
 
 /* Define to 1 if the system has the type `ssize_t'. */
 #define HAVE_SSIZE_T 1
