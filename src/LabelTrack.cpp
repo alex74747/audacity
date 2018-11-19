@@ -1163,7 +1163,7 @@ double LabelTrack::GetEndTime() const
    return end;
 }
 
-Track::Holder LabelTrack::Duplicate() const
+Track::Holder LabelTrack::Clone() const
 {
    return std::make_shared<LabelTrack>( *this );
 }

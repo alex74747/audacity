@@ -85,7 +85,7 @@ public:
 private:
    void Init(const WaveTrack &orig);
 
-   Track::Holder Duplicate() const override;
+   Track::Holder Clone() const override;
 
    friend class TrackFactory;
 
