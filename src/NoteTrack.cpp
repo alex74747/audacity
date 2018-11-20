@@ -41,6 +41,8 @@
 #include "TrackPanel.h" // For TrackInfo
 #include "AllThemeResources.h"
 
+#include "tracks/ui/TrackView.h"
+
 #ifdef SONIFY
 #include "../lib-src/portmidi/pm_common/portmidi.h"
 
@@ -112,8 +114,6 @@ NoteTrack::Holder TrackFactory::NewNoteTrack()
 NoteTrack::NoteTrack(const std::shared_ptr<DirManager> &projDirManager)
    : NoteTrackBase(projDirManager)
 {
-   SetHeight( TrackInfo::DefaultNoteTrackHeight() );
-
    mSeq = NULL;
    mSerializationLength = 0;
 

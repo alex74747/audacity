@@ -31,6 +31,7 @@
 #include "Internat.h"
 #include "ViewInfo.h"
 #include "AllThemeResources.h"
+#include "tracks/ui/TrackView.h"
 
 //TODO-MB: are these sensible values?
 #define TIMETRACK_MIN 0.01
@@ -45,8 +46,6 @@ TimeTrack::TimeTrack(const std::shared_ptr<DirManager> &projDirManager, const Zo
    Track(projDirManager)
    , mZoomInfo(zoomInfo)
 {
-   mHeight = 100;
-
    mRangeLower = 0.9;
    mRangeUpper = 1.1;
    mDisplayLog = false;
@@ -296,7 +295,7 @@ void TimeTrack::Draw
                             //
                             // LL:  It's because the ruler only Invalidate()s when the NEW value is different
                             //      than the current value.
-   mRuler->SetFlip(GetHeight() > 75 ? true : true); // MB: so why don't we just call Invalidate()? :)
+   mRuler->SetFlip(TrackView::Get( *this ).GetHeight() > 75 ? true : true); // MB: so why don't we just call Invalidate()? :)
    mRuler->SetTickColour( theTheme.Colour( clrTrackPanelText ));
    mRuler->Draw(dc, this);
 
