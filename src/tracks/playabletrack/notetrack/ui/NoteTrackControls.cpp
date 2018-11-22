@@ -15,6 +15,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../Experimental.h"
 
 #include "NoteTrackButtonHandle.h"
+#include "NoteTrackView.h"
 
 #include "../../ui/PlayableTrackButtonHandles.h"
 #include "NoteTrackSliderHandles.h"
@@ -118,7 +119,8 @@ void NoteTrackMenuTable::OnChangeOctave(wxCommandEvent &event)
       || event.GetId() == OnDownOctaveID);
 
    const bool bDown = (OnDownOctaveID == event.GetId());
-   pTrack->ShiftNoteRange((bDown) ? -12 : 12);
+   auto &view = NoteTrackView::Get( *pTrack );
+   view.ShiftNoteRange((bDown) ? -12 : 12);
 
    AudacityProject *const project = ::GetActiveProject();
    ProjectHistory::Get( *project )

@@ -27,6 +27,7 @@
 #include "../ProjectHistory.h"
 #include "../ProjectWindow.h"
 #include "../SelectUtilities.h"
+#include "../tracks/playabletrack/notetrack/ui/NoteTrackView.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/FileHistory.h"
 
@@ -102,7 +103,7 @@ bool ImportMIDI(const FilePath &fName, NoteTrack * dest)
    dest->GetGroupData().SetName(trackNameBase);
    mf.Close();
 
-   dest->ZoomAllNotes();
+   NoteTrackView::Get( *dest ).ZoomAllNotes();
    return true;
 }
 

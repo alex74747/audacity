@@ -11,6 +11,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../Audacity.h" // for USE_* macros
 
 #ifdef USE_MIDI
+
+#include "NoteTrackView.h"
 #include "NoteTrackVRulerControls.h"
 
 #include "NoteTrackVZoomHandle.h"
@@ -74,16 +76,17 @@ unsigned NoteTrackVRulerControls::HandleWheelRotation
 
    auto steps = evt.steps;
    const auto nt = static_cast<NoteTrack*>(pTrack.get());
+   auto &view = NoteTrackView::Get( *nt );
 
    if (event.CmdDown() && !event.ShiftDown()) {
       if (steps > 0)
-         nt->ZoomIn(evt.rect, evt.event.m_y);
+         view.ZoomIn(evt.rect, evt.event.m_y);
       else
-         nt->ZoomOut(evt.rect, evt.event.m_y);
+         view.ZoomOut(evt.rect, evt.event.m_y);
    } else if (!event.CmdDown() && event.ShiftDown()) {
       // Scroll some fixed number of notes, independent of zoom level or track height:
       static const int movement = 6; // 6 semitones is half an octave
-      nt->ShiftNoteRange((int) (steps * movement));
+      view.ShiftNoteRange((int) (steps * movement));
    } else {
       return RefreshNone;
    }
@@ -107,6 +110,7 @@ void NoteTrackVRulerControls::Draw(
       auto track = std::static_pointer_cast<NoteTrack>( FindTrack() );
       if ( !track )
          return;
+      auto &view = NoteTrackView::Get( *track );
 
       auto rect = rect_;
       --rect.width;
@@ -132,7 +136,7 @@ void NoteTrackVRulerControls::Draw(
       rect.y += 1;
       rect.height -= 1;
 
-      NoteTrackDisplayData data{ track.get(), rect };
+      NoteTrackDisplayData data{ view, rect };
 
       wxPen hilitePen;
       hilitePen.SetColour(120, 120, 120);

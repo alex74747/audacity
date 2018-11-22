@@ -39,6 +39,8 @@
 
 #include "AllThemeResources.h"
 
+#include "tracks/playabletrack/notetrack/ui/NoteTrackView.h"
+
 #ifdef SONIFY
 #include "../lib-src/portmidi/pm_common/portmidi.h"
 
@@ -125,8 +127,6 @@ NoteTrack::NoteTrack(const std::shared_ptr<DirManager> &projDirManager)
 #ifdef EXPERIMENTAL_MIDI_OUT
    mVelocity = 0;
 #endif
-   mBottomNote = MinPitch;
-   mTopNote = MaxPitch;
 
    mVisibleChannels = ALL_CHANNELS;
 }
@@ -192,8 +192,6 @@ Track::Holder NoteTrack::Clone() const
       // We are duplicating a default-constructed NoteTrack, and that's okay
    }
    // copy some other fields here
-   duplicate->SetBottomNote(mBottomNote);
-   duplicate->SetTopNote(mTopNote);
    duplicate->mVisibleChannels = mVisibleChannels;
    duplicate->SetOffset(GetOffset());
 #ifdef EXPERIMENTAL_MIDI_OUT
@@ -895,10 +893,10 @@ bool NoteTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 #endif
          else if (!wxStrcmp(attr, wxT("bottomnote")) &&
                   XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
-            SetBottomNote(nValue);
+            NoteTrackView::Get( *this ).SetBottomNote(nValue);
          else if (!wxStrcmp(attr, wxT("topnote")) &&
                   XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
-            SetTopNote(nValue);
+            NoteTrackView::Get( *this ).SetTopNote(nValue);
          else if (!wxStrcmp(attr, wxT("data"))) {
              std::string s(strValue.mb_str(wxConvUTF8));
              std::istringstream data(s);
@@ -937,60 +935,12 @@ void NoteTrack::WriteXML(XMLWriter &xmlFile) const
 #ifdef EXPERIMENTAL_MIDI_OUT
    xmlFile.WriteAttr(wxT("velocity"), (double) saveme->mVelocity);
 #endif
-   xmlFile.WriteAttr(wxT("bottomnote"), saveme->mBottomNote);
-   xmlFile.WriteAttr(wxT("topnote"), saveme->mTopNote);
+   xmlFile.WriteAttr( wxT("bottomnote"),
+      NoteTrackView::Get( *saveme ).GetBottomNote() );
+   xmlFile.WriteAttr( wxT("topnote"),
+      NoteTrackView::Get( *saveme ).GetTopNote() );
    xmlFile.WriteAttr(wxT("data"), wxString(data.str().c_str(), wxConvUTF8));
    xmlFile.EndTag(wxT("notetrack"));
-}
-
-void NoteTrack::SetBottomNote(int note)
-{
-   if (note < MinPitch)
-      note = MinPitch;
-   else if (note > 96)
-      note = 96;
-
-   wxCHECK(note <= mTopNote, );
-
-   mBottomNote = note;
-}
-
-void NoteTrack::SetTopNote(int note)
-{
-   if (note > MaxPitch)
-      note = MaxPitch;
-
-   wxCHECK(note >= mBottomNote, );
-
-   mTopNote = note;
-}
-
-void NoteTrack::SetNoteRange(int note1, int note2)
-{
-   // Bounds check
-   if (note1 > MaxPitch)
-      note1 = MaxPitch;
-   else if (note1 < MinPitch)
-      note1 = MinPitch;
-   if (note2 > MaxPitch)
-      note2 = MaxPitch;
-   else if (note2 < MinPitch)
-      note2 = MinPitch;
-   // Swap to ensure ordering
-   if (note2 < note1) { auto tmp = note1; note1 = note2; note2 = tmp; }
-
-   mBottomNote = note1;
-   mTopNote = note2;
-}
-
-void NoteTrack::ShiftNoteRange(int offset)
-{
-   // Ensure everything stays in bounds
-   if (mBottomNote + offset < MinPitch || mTopNote + offset > MaxPitch)
-       return;
-
-   mBottomNote += offset;
-   mTopNote += offset;
 }
 
 #if 0
@@ -1003,129 +953,8 @@ void NoteTrack::VScroll(int start, int end)
 {
     int ph = GetPitchHeight();
     int delta = ((end - start) + ph / 2) / ph;
-    ShiftNoteRange(delta);
+    NoteTrackView::Get( *this ).ShiftNoteRange(delta);
 }
 #endif
-
-void NoteTrack::Zoom(const wxRect &rect, int y, float multiplier, bool center)
-{
-   NoteTrackDisplayData data = NoteTrackDisplayData(this, rect);
-   int clickedPitch = data.YToIPitch(y);
-   int extent = mTopNote - mBottomNote + 1;
-   int newExtent = (int) (extent / multiplier);
-   float position;
-   if (center) {
-      // center the pitch that the user clicked on
-      position = .5;
-   } else {
-      // align to keep the pitch that the user clicked on in the same place
-      position = extent / (clickedPitch - mBottomNote);
-   }
-   int newBottomNote = clickedPitch - (newExtent * position);
-   int newTopNote = clickedPitch + (newExtent * (1 - position));
-   SetNoteRange(newBottomNote, newTopNote);
-}
-
-
-void NoteTrack::ZoomTo(const wxRect &rect, int start, int end)
-{
-   wxRect trackRect(0, rect.GetY(), 1, rect.GetHeight());
-   NoteTrackDisplayData data = NoteTrackDisplayData(this, trackRect);
-   int pitch1 = data.YToIPitch(start);
-   int pitch2 = data.YToIPitch(end);
-   if (pitch1 == pitch2) {
-      // Just zoom in instead of zooming to show only one note
-      Zoom(rect, start, 1, true);
-      return;
-   }
-   // It's fine for this to be in either order
-   SetNoteRange(pitch1, pitch2);
-}
-
-void NoteTrack::ZoomAllNotes()
-{
-   Alg_iterator iterator( &GetSeq(), false );
-   iterator.begin();
-   Alg_event_ptr evt;
-
-   // Go through all of the notes, finding the minimum and maximum value pitches.
-   bool hasNotes = false;
-   int minPitch = MaxPitch;
-   int maxPitch = MinPitch;
-
-   while (NULL != (evt = iterator.next())) {
-      if (evt->is_note()) {
-         int pitch = (int) evt->get_pitch();
-         hasNotes = true;
-         if (pitch < minPitch)
-            minPitch = pitch;
-         if (pitch > maxPitch)
-            maxPitch = pitch;
-      }
-   }
-
-   if (!hasNotes) {
-      // Semi-arbitary default values:
-      minPitch = 48;
-      maxPitch = 72;
-   }
-
-   SetNoteRange(minPitch, maxPitch);
-}
-
-NoteTrackDisplayData::NoteTrackDisplayData(const NoteTrack* track, const wxRect &r)
-{
-   auto span = track->GetTopNote() - track->GetBottomNote() + 1; // + 1 to make sure it includes both
-
-   mMargin = std::min((int) (r.height / (float)(span)) / 2, r.height / 4);
-
-   // Count the number of dividers between B/C and E/F
-   int numC = 0, numF = 0;
-   auto botOctave = track->GetBottomNote() / 12, botNote = track->GetBottomNote() % 12;
-   auto topOctave = track->GetTopNote() / 12, topNote = track->GetTopNote() % 12;
-   if (topOctave == botOctave)
-   {
-      if (botNote == 0) numC = 1;
-      if (topNote <= 5) numF = 1;
-   }
-   else
-   {
-      numC = topOctave - botOctave;
-      numF = topOctave - botOctave - 1;
-      if (botNote == 0) numC++;
-      if (botNote <= 5) numF++;
-      if (topOctave <= 5) numF++;
-   }
-   // Effective space, excluding the margins and the lines between some notes
-   auto effectiveHeight = r.height - (2 * (mMargin + 1)) - numC - numF;
-   // Guarenteed that both the bottom and top notes will be visible
-   // (assuming that the clamping below does not happen)
-   mPitchHeight = effectiveHeight / ((float) span);
-
-   if (mPitchHeight < MinPitchHeight)
-      mPitchHeight = MinPitchHeight;
-   if (mPitchHeight > MaxPitchHeight)
-      mPitchHeight = MaxPitchHeight;
-
-   mBottom = r.y + r.height - GetNoteMargin() - 1 - GetPitchHeight(1) +
-            botOctave * GetOctaveHeight() + GetNotePos(botNote);
-}
-
-int NoteTrackDisplayData::IPitchToY(int p) const
-{ return mBottom - (p / 12) * GetOctaveHeight() - GetNotePos(p % 12); }
-
-int NoteTrackDisplayData::YToIPitch(int y) const
-{
-   y = mBottom - y; // pixels above pitch 0
-   int octave = (y / GetOctaveHeight());
-   y -= octave * GetOctaveHeight();
-   // result is approximate because C and G are one pixel taller than
-   // mPitchHeight.
-   // Poke 1-13-18: However in practice this seems not to be an issue,
-   // as long as we use mPitchHeight and not the rounded version
-   return (y / mPitchHeight) + octave * 12;
-}
-
-const float NoteTrack::ZoomStep = powf( 2.0f, 0.25f );
 
 #endif // USE_MIDI
