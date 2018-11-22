@@ -91,6 +91,7 @@ audio tracks.
 #include "TrackPanelDrawingContext.h"
 #include "tracks/playabletrack/wavetrack/ui/WaveTrackViewGroupData.h"
 #include "tracks/labeltrack/ui/LabelTrackView.h"
+#include "tracks/playabletrack/notetrack/ui/NoteTrackView.h"
 
 
 #undef PROFILE_WAVEFORM
@@ -516,6 +517,7 @@ void TrackArt::DrawVRuler
       ,
       [&](const NoteTrack *track) {
       // The note track draws a vertical keyboard to label pitches
+         const auto &view = NoteTrackView::Get( *track );
          const auto artist = TrackArtist::Get( context );
          artist->UpdateVRuler(t, rect);
 
@@ -529,7 +531,7 @@ void TrackArt::DrawVRuler
          rect.y += 1;
          rect.height -= 1;
 
-         NoteTrackDisplayData data = NoteTrackDisplayData(track, rect);
+         NoteTrackDisplayData data{ view, rect };
 
          wxPen hilitePen;
          hilitePen.SetColour(120, 120, 120);
@@ -2809,6 +2811,7 @@ void TrackArt::DrawNoteBackground(TrackPanelDrawingContext &context,
                                      const wxBrush &bb, const wxPen &bp,
                                      const wxPen &mp)
 {
+   const auto &view = NoteTrackView::Get( *track );
    auto &dc = context.dc;
    const auto artist = TrackArtist::Get( context );
    const auto &zoomInfo = *artist->pZoomInfo;
@@ -2828,7 +2831,7 @@ void TrackArt::DrawNoteBackground(TrackPanelDrawingContext &context,
    // need overlap between MIDI data and the background region
    if (left >= right) return;
 
-   NoteTrackDisplayData data = NoteTrackDisplayData(track, rect);
+   NoteTrackDisplayData data{ view, rect };
    dc.SetBrush(bb);
    int octave = 0;
    // obottom is the window coordinate of octave divider line
@@ -2908,6 +2911,7 @@ void TrackArt::DrawNoteTrack(TrackPanelDrawingContext &context,
                                 const wxRect & rect,
                                 bool muted)
 {
+   const auto &view = NoteTrackView::Get( *track );
    auto &dc = context.dc;
    const auto artist = TrackArtist::Get( context );
    const auto &selectedRegion = *artist->pSelectedRegion;
@@ -2925,7 +2929,7 @@ void TrackArt::DrawNoteTrack(TrackPanelDrawingContext &context,
    if (!track->GetSelected())
       sel0 = sel1 = 0.0;
 
-   NoteTrackDisplayData data = NoteTrackDisplayData(track, rect);
+   NoteTrackDisplayData data{ view, rect };
 
    // reserve 1/2 note height at top and bottom of track for
    // out-of-bounds notes

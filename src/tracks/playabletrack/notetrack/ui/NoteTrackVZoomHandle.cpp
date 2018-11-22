@@ -14,6 +14,8 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../../Experimental.h"
 
+#include "NoteTrackView.h"
+
 #include "NoteTrackVRulerControls.h"
 
 #include "../../../../HitTestResult.h"
@@ -220,24 +222,25 @@ void NoteTrackVRulerMenuTable::InitMenu(Menu *WXUNUSED(pMenu), void *pUserData)
 }
 
 void NoteTrackVRulerMenuTable::OnZoom( int iZoomCode ){
+   auto &view = NoteTrackView::Get( *mpData->pTrack );
    switch( iZoomCode ){
    case kZoomReset:
-      mpData->pTrack->ZoomAllNotes();
+      view.ZoomAllNotes();
       break;
    case kZoomIn:
-      mpData->pTrack->ZoomIn(mpData->rect, mpData->yy);
+      view.ZoomIn(mpData->rect, mpData->yy);
       break;
    case kZoomOut:
-      mpData->pTrack->ZoomOut(mpData->rect, mpData->yy);
+      view.ZoomOut(mpData->rect, mpData->yy);
       break;
    case kZoomMax:
-      mpData->pTrack->ZoomMaxExtent();
+      view.ZoomMaxExtent();
       break;
    case kUpOctave:
-      mpData->pTrack->ShiftNoteRange(12);
+      view.ShiftNoteRange(12);
       break;
    case kDownOctave:
-      mpData->pTrack->ShiftNoteRange(-12);
+      view.ShiftNoteRange(-12);
       break;
    }
    GetActiveProject()->ModifyState(false);
@@ -271,6 +274,7 @@ UIHandle::Result NoteTrackVZoomHandle::Release
    auto pTrack = TrackList::Get( *pProject ).Lock(mpTrack);
    if (!pTrack)
       return RefreshNone;
+   auto &view = NoteTrackView::Get( *pTrack );
 
    const wxMouseEvent &event = evt.event;
    //const bool shiftDown = event.ShiftDown();
@@ -318,26 +322,26 @@ UIHandle::Result NoteTrackVZoomHandle::Release
       return RefreshAll;
 
    if (IsDragZooming(mZoomStart, mZoomEnd)) {
-      pTrack->ZoomTo(evt.rect, mZoomStart, mZoomEnd);
+      view.ZoomTo(evt.rect, mZoomStart, mZoomEnd);
    }
    else if (event.ShiftDown() || event.RightUp()) {
       if (event.ShiftDown() && event.RightUp()) {
-         auto oldBotNote = pTrack->GetBottomNote();
-         auto oldTopNote = pTrack->GetTopNote();
+         auto oldBotNote = view.GetBottomNote();
+         auto oldTopNote = view.GetTopNote();
          // Zoom out to show all notes
-         pTrack->ZoomAllNotes();
-         if (pTrack->GetBottomNote() == oldBotNote &&
-               pTrack->GetTopNote() == oldTopNote) {
+         view.ZoomAllNotes();
+         if (view.GetBottomNote() == oldBotNote &&
+               view.GetTopNote() == oldTopNote) {
             // However if we are already showing all notes, zoom out further
-            pTrack->ZoomMaxExtent();
+            view.ZoomMaxExtent();
          }
       } else {
          // Zoom out
-         pTrack->ZoomOut(evt.rect, mZoomEnd);
+         view.ZoomOut(evt.rect, mZoomEnd);
       }
    }
    else {
-      pTrack->ZoomIn(evt.rect, mZoomEnd);
+      view.ZoomIn(evt.rect, mZoomEnd);
    }
 
    mZoomEnd = mZoomStart = 0;

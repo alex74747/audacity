@@ -23,6 +23,7 @@
 
 #include "../Internat.h"
 #include "../NoteTrack.h"
+#include "../tracks/playabletrack/notetrack/ui/NoteTrackView.h"
 #include "../widgets/ErrorDialog.h"
 
 bool ImportMIDI(const FilePath &fName, NoteTrack * dest)
@@ -70,7 +71,7 @@ bool ImportMIDI(const FilePath &fName, NoteTrack * dest)
    dest->GetGroupData().SetName(trackNameBase);
    mf.Close();
 
-   dest->ZoomAllNotes();
+   NoteTrackView::Get( *dest ).ZoomAllNotes();
    return true;
 }
 
