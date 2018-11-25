@@ -50,7 +50,7 @@ int DoAddLabel(
 
    // If none found, start a NEW label track and use it
    if (!lt)
-      lt = tracks.Add( trackFactory.NewLabelTrack() );
+      lt = tracks.Add( trackFactory.NewLabelTrack(), true );
 
 // LLL: Commented as it seemed a little forceful to remove users
 //      selection when adding the label.  This does not happen if
@@ -235,7 +235,7 @@ void EditClipboardByLabel( AudacityProject &project,
                      regions.at(i + 1).start - region.end);
       }
       if( merged )
-         newClipboard.Add( merged );
+         newClipboard.Add( merged, wt->IsLeader() );
    }
 
    // Survived possibility of exceptions.  Commit changes to the clipboard now.
@@ -307,7 +307,7 @@ void OnPasteNewLabel(const CommandContext &context)
 
          // If no match found, add one
          if (!t)
-            t = tracks.Add( trackFactory.NewLabelTrack() );
+            t = tracks.Add( trackFactory.NewLabelTrack(), true );
 
          // Select this track so the loop picks it up
          t->SetSelected(true);

@@ -682,7 +682,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
                TrackView::Get( *newTrack ).SetMinimized(true);
             }
 
-            TrackList::Get( *p ).RegisterPendingNewTrack( newTrack );
+            TrackList::Get( *p ).RegisterPendingNewTrack( newTrack, c == 0 );
             transportTracks.captureTracks.push_back(newTrack);
             // Bug 1548.  New track needs the focus.
             TrackFocus::Get( *p ).Set( newTrack.get() );
@@ -771,7 +771,7 @@ void ProjectAudioManager::SetupCutPreviewTracks(double WXUNUSED(playStart), doub
 
             auto newTrack = track1->Duplicate();
             newTrack->Clear(cutStart, cutEnd);
-            cutPreviewTracks->Add( newTrack );
+            cutPreviewTracks->Add( newTrack, track1->IsLeader() );
          }
          // use NOTHROW-GUARANTEE:
          mCutPreviewTracks = cutPreviewTracks;
@@ -830,7 +830,7 @@ void ProjectAudioManager::OnAudioIOStopRecording()
          // Make a track with labels for recording errors
          auto uTrack = TrackFactory::Get( project ).NewLabelTrack();
          auto pTrack = uTrack.get();
-         tracks.Add( uTrack );
+         tracks.Add( uTrack, true );
          /* i18n-hint:  A name given to a track, appearing as its menu button.
           The translation should be short or else it will not display well.
           At most, about 11 Latin characters.

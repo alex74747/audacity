@@ -67,7 +67,7 @@ static ProjectFileIORegistry::Entry registerFactory{
    []( AudacityProject &project ){
       auto &trackFactory = TrackFactory::Get( project );
       auto &tracks = TrackList::Get( project );
-      return tracks.Add(trackFactory.NewWaveTrack());
+      return tracks.Add(trackFactory.NewWaveTrack(), true);
    }
 };
 

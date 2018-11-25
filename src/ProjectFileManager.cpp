@@ -166,7 +166,7 @@ auto ProjectFileManager::ReadProjectFile( const FilePath &fileName )
 
          err = Track::LoadError() || err;
 
-         mLastSavedTracks->Add(t->Duplicate());
+         mLastSavedTracks->Add(t->Duplicate(), t->IsLeader());
       }
    }
 
@@ -526,7 +526,7 @@ bool ProjectFileManager::DoSave (const bool fromSaveAs,
 
       auto &tracks = TrackList::Get( proj );
       for ( auto t : tracks.Any() ) {
-         mLastSavedTracks->Add(t->Duplicate());
+         mLastSavedTracks->Add(t->Duplicate(), t->IsLeader());
 
          //only after the xml has been saved we can mark it saved.
          //thus is because the OD blockfiles change on  background thread while this is going on.
@@ -584,7 +584,10 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    for (auto pWaveTrack : trackRange)
    {
       numWaveTracks++;
-      pSavedTrackList.Add( trackFactory.DuplicateWaveTrack( *pWaveTrack ) );
+      pSavedTrackList.Add(
+         trackFactory.DuplicateWaveTrack( *pWaveTrack ),
+         pWaveTrack->IsLeader()
+      );
    }
    auto cleanup = finally( [&] {
       // Restore the saved track states and clean up.
@@ -1565,7 +1568,7 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
       auto first = group.begin()->get();
       auto nChannels = group.size();
       for (auto &uNewTrack : group) {
-         auto newTrack = tracks.Add( uNewTrack );
+         auto newTrack = tracks.Add( uNewTrack, true );
          results.push_back(newTrack->SharedPointer());
       }
       tracks.GroupChannels(*first, nChannels);

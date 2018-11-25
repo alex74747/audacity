@@ -644,7 +644,7 @@ Track *TrackList::DoAddToHead(const std::shared_ptr<Track> &t)
    return front().get();
 }
 
-Track *TrackList::DoAdd(const std::shared_ptr<Track> &t)
+Track *TrackList::DoAdd(const std::shared_ptr<Track> &t, bool)
 {
    push_back(t);
 
@@ -936,9 +936,10 @@ TrackList::RegisterPendingChangedTrack( Updater updater, Track *src )
    return pTrack;
 }
 
-void TrackList::RegisterPendingNewTrack( const std::shared_ptr<Track> &pTrack )
+void TrackList::RegisterPendingNewTrack(
+   const std::shared_ptr<Track> &pTrack, bool leader )
 {
-   Add<Track>( pTrack );
+   Add<Track>( pTrack, leader );
    pTrack->SetId( TrackId{} );
 }
 
@@ -1039,7 +1040,7 @@ bool TrackList::ApplyPendingTracks()
    // If there are tracks to reinstate, append them to the list.
    for (auto &pendingTrack : reinstated)
       if (pendingTrack)
-         this->Add( pendingTrack ), result = true;
+         this->Add( pendingTrack, pendingTrack->IsLeader() ), result = true;
 
    // Put the pending added tracks back into the list, preserving their
    // positions.

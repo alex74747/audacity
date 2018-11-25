@@ -78,10 +78,10 @@ void DoMixAndRender
 
       // Add NEW tracks
 
-      auto pNewLeft = tracks.Add( uNewLeft );
+      auto pNewLeft = tracks.Add( uNewLeft, true );
       decltype(pNewLeft) pNewRight{};
       if (uNewRight)
-         pNewRight = tracks.Add( uNewRight );
+         pNewRight = tracks.Add( uNewRight, false );
 
       // Do this only after adding tracks to the list
       tracks.GroupChannels(*pNewLeft, pNewRight ? 2 : 1);
@@ -579,7 +579,7 @@ void OnNewWaveTrack(const CommandContext &context)
    auto defaultFormat = settings.GetDefaultFormat();
    auto rate = settings.GetRate();
 
-   auto t = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
+   auto t = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), true );
    SelectUtilities::SelectNone( project );
 
    t->SetSelected(true);
@@ -603,10 +603,13 @@ void OnNewStereoTrack(const CommandContext &context)
 
    SelectUtilities::SelectNone( project );
 
-   auto left = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
+   auto left =
+      tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), true );
    left->SetSelected(true);
 
-   auto right = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
+   auto right =
+      tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), false );
+
    right->SetSelected(true);
 
    tracks.GroupChannels(*left, 2);
@@ -624,7 +627,7 @@ void OnNewLabelTrack(const CommandContext &context)
    auto &trackFactory = TrackFactory::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   auto t = tracks.Add( trackFactory.NewLabelTrack() );
+   auto t = tracks.Add( trackFactory.NewLabelTrack(), true );
 
    SelectUtilities::SelectNone( project );
 

@@ -147,7 +147,7 @@ void ProjectHistory::PopState(const UndoState &state)
 
    for (auto t : tracks->Any())
    {
-      auto copyTrack = dstTracks.Add(t->Duplicate());
+      auto copyTrack = dstTracks.Add(t->Duplicate(), t->IsLeader());
 
       //add the track to OD if the manager exists.  later we might do a more rigorous check...
       copyTrack->TypeSwitch( [&](WaveTrack *wt) {

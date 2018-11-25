@@ -1295,8 +1295,8 @@ class TrackList final
    }
 
 private:
-   Track *DoAddToHead(const std::shared_ptr<Track> &t);
-   Track *DoAdd(const std::shared_ptr<Track> &t);
+   Track *DoAddToHead( const std::shared_ptr<Track> &t );
+   Track *DoAdd( const std::shared_ptr<Track> &t, bool leader );
 
    template< typename TrackType, typename InTrackType >
       static TrackIterRange< TrackType >
@@ -1335,14 +1335,17 @@ public:
 
    Track *FindById( TrackId id );
 
-   /// Add a Track, giving it a fresh id
+   /// Add a Track, giving it a fresh id; the track is always ungrouped
    template<typename TrackKind>
       TrackKind *AddToHead( const std::shared_ptr< TrackKind > &t )
          { return static_cast< TrackKind* >( DoAddToHead( t ) ); }
 
+   /// Add a Track at the end, giving it a fresh id; the track is ungrouped
+   /// if leader is true, otherwise if there is a previous track, then they
+   /// will share group data
    template<typename TrackKind>
-      TrackKind *Add( const std::shared_ptr< TrackKind > &t )
-         { return static_cast< TrackKind* >( DoAdd( t ) ); }
+      TrackKind *Add( const std::shared_ptr< TrackKind > &t, bool leader )
+         { return static_cast< TrackKind* >( DoAdd( t, leader ) ); }
 
    /** \brief Define a group of channels starting at the given track
    *
@@ -1526,12 +1529,14 @@ public:
    );
 
    // Like the previous, but for a NEW track, not a replacement track.  Caller
-   // supplies the track, and there are no updates.
+   // supplies the track (specifying whether it is the leader of a group),
+   // and there are no updates.
    // Pending track will have an unassigned TrackId.
    // Pending changed tracks WILL occur in iterations, always after actual
    // tracks, and in the sequence that they were added.  They can be
    // distinguished from actual tracks by TrackId.
-   void RegisterPendingNewTrack( const std::shared_ptr<Track> &pTrack );
+   void RegisterPendingNewTrack(
+      const std::shared_ptr<Track> &pTrack, bool leader );
 
    // Invoke the updaters of pending tracks.  Pass any exceptions from the
    // updater functions.

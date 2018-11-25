@@ -446,7 +446,7 @@ void OnImportLabels(const CommandContext &context)
 
       SelectUtilities::SelectNone( project );
       newTrack->SetSelected(true);
-      tracks.Add( newTrack );
+      tracks.Add( newTrack, true );
 
       ProjectHistory::Get( project ).PushState(
          wxString::Format(_("Imported labels from '%s'"), fileName),
