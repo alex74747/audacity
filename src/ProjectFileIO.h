@@ -66,6 +66,7 @@ public:
 private:
    // XMLTagHandler callback methods
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
+   void HandleXMLEndTag(const wxChar *tag) override;
 
    void UpdatePrefs() override;
 

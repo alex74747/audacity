@@ -230,7 +230,7 @@ bool TimeTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    return false;
 }
 
-void TimeTrack::HandleXMLEndTag(const wxChar * WXUNUSED(tag))
+void TimeTrack::HandleXMLEndTag(const wxChar *tag)
 {
    if(mRescaleXMLValues)
    {
@@ -238,6 +238,8 @@ void TimeTrack::HandleXMLEndTag(const wxChar * WXUNUSED(tag))
       mEnvelope->RescaleValues(GetRangeLower(), GetRangeUpper());
       mEnvelope->SetRange(TIMETRACK_MIN, TIMETRACK_MAX);
    }
+
+   Track::HandleXMLEndTag( tag );
 }
 
 XMLTagHandler *TimeTrack::HandleXMLChild(const wxChar *tag)

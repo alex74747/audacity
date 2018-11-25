@@ -164,7 +164,7 @@ auto ProjectFileManager::ReadProjectFile( const FilePath &fileName )
             err = true;
          }
 
-         err = ( !t->LinkConsistencyCheck() ) || err;
+         err = Track::LoadError() || err;
 
          mLastSavedTracks->Add(t->Duplicate());
       }

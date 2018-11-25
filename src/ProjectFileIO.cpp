@@ -166,6 +166,7 @@ bool ProjectFileIO::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 {
    auto &project = mProject;
    auto &window = GetProjectFrame( project );
+   auto &tracks = TrackList::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    auto &dirManager = DirManager::Get( project );
    auto &settings = ProjectSettings::Get( project );
@@ -389,8 +390,17 @@ bool ProjectFileIO::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    if (requiredTags < 3)
       return false;
 
+   // Certain global state must start clean
+   Track::PreLoad( tracks.shared_from_this() );
+
    // All other tests passed, so we succeed
    return true;
+}
+
+void ProjectFileIO::HandleXMLEndTag( const wxChar *tag )
+{
+   // Complete the consistency check on channel groupings
+   Track::PostLoad();
 }
 
 XMLTagHandler *ProjectFileIO::HandleXMLChild(const wxChar *tag)
