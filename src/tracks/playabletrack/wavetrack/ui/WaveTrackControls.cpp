@@ -938,7 +938,11 @@ void WaveTrackMenuTable::SplitStereo(bool stereo)
       ++nChannels;
    }
 
-   TrackList::Get( *project ).GroupChannels( *pTrack, 1 );
+   // Ungroup "all" (both) channels, not just the first -- this would work more
+   // generally in splitting more-than-stereo tracks
+   for (auto channel : channels)
+      TrackList::Get( *project ).GroupChannels( *channel, 1 );
+
    int averageHeight = totalHeight / nChannels;
 
    for (auto channel : channels)
@@ -966,6 +970,9 @@ void WaveTrackMenuTable::OnSwapChannels(wxCommandEvent &)
 
    auto &tracks = TrackList::Get( *project );
    tracks.MoveUp( partner );
+   
+   // The channels were ungrouped in SplitStereo
+   // Re-group them
    tracks.GroupChannels( *partner, 2 );
 
    if (hasFocus)
