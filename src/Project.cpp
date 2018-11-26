@@ -4095,7 +4095,6 @@ AudacityProject::AddImportedTracks(const FilePath &fileName,
    wxString trackNameBase = fileName.AfterLast(wxFILE_SEP_PATH).BeforeLast('.');
    int i = -1;
 
-   // Must add all tracks first (before using Track::IsLeader)
    for (auto &group : newTracks) {
       if (group.empty()) {
          wxASSERT(false);
@@ -4104,9 +4103,12 @@ AudacityProject::AddImportedTracks(const FilePath &fileName,
       auto first = group.begin()->get();
       auto nChannels = group.size();
       for (auto &uNewTrack : group) {
+         // Add each in its own group
          auto newTrack = tracks.Add( uNewTrack, true );
          results.push_back(newTrack->SharedPointer());
       }
+      // Request to collapse those tracks into one group
+      // (but TrackList might not yet group more than two together)
       tracks.GroupChannels(*first, nChannels);
    }
    newTracks.clear();
