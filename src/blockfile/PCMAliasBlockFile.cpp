@@ -21,6 +21,7 @@
 #include "../FileFormats.h"
 
 #include "../DirManager.h"
+#include "../WaveTrack.h"
 
 PCMAliasBlockFile::PCMAliasBlockFile(
       wxFileNameWrapper &&fileName,
@@ -165,7 +166,8 @@ BlockFilePtr PCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **attr
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
             aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
+         else if (!wxStricmp(attr, wxT("aliaschannel")) &&
+            XMLValueChecker::IsValidChannel(aliasChannel))
             aliasChannel = nValue;
          else if (!wxStricmp(attr, wxT("min")))
             min = nValue;

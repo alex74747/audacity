@@ -130,7 +130,8 @@ BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const FilePath &projDir, const w
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
             aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
+         else if (!wxStricmp(attr, wxT("aliaschannel")) &&
+            XMLValueChecker::IsValidChannel(aliasChannel))
             aliasChannel = nValue;
          else if (!wxStricmp(attr, wxT("summarylen")) && (nValue > 0))
             summaryLen = nValue;

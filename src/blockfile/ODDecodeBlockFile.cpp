@@ -290,7 +290,8 @@ BlockFilePtr ODDecodeBlockFile::BuildFromXML(DirManager &dm, const wxChar **attr
       {  // integer parameters
          if (!wxStricmp(attr, wxT("aliaslen")) && (nValue >= 0))
             aliasLen = nValue;
-         else if (!wxStricmp(attr, wxT("aliaschannel")) && XMLValueChecker::IsValidChannel(aliasChannel))
+         else if (!wxStricmp(attr, wxT("aliaschannel")) &&
+            XMLValueChecker::IsValidChannel(aliasChannel))
             aliasChannel = nValue;
          else if( !wxStricmp(attr, wxT("decodetype")) )
             decodeType = nValue;

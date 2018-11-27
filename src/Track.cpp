@@ -56,8 +56,6 @@ Track::Track(const std::shared_ptr<DirManager> &projDirManager)
    mIndex = 0;
 
    mOffset = 0.0;
-
-   mChannel = MonoChannel;
 }
 
 Track::Track(const Track &orig)
@@ -80,7 +78,6 @@ void Track::Init(const Track &orig)
 
    mSelected = orig.mSelected;
    mLinked = orig.mLinked;
-   mChannel = orig.mChannel;
 }
 
 void Track::SetName( const wxString &n )
@@ -380,7 +377,6 @@ void Track::FinishCopy
 (const Track *n, Track *dest)
 {
    if (dest) {
-      dest->SetChannel(n->GetChannel());
       dest->SetLinked(n->GetLinked());
       dest->SetName(n->GetName());
    }
@@ -405,19 +401,6 @@ bool Track::LinkConsistencyCheck()
                GetName(), l->GetName());
             err = true;
             l->SetLinked(false);
-         }
-
-         // Channels should be left and right
-         if ( !(  (GetChannel() == Track::LeftChannel &&
-                     l->GetChannel() == Track::RightChannel) ||
-                  (GetChannel() == Track::RightChannel &&
-                     l->GetChannel() == Track::LeftChannel) ) )
-         {
-            wxLogWarning(
-               wxT("Track %s and %s had left/right track links out of order. Setting tracks to not be linked."),
-               GetName(), l->GetName());
-            err = true;
-            SetLinked(false);
          }
       }
       else
@@ -704,8 +687,7 @@ Track *TrackList::DoAdd(const std::shared_ptr<Track> &t)
    return back().get();
 }
 
-void TrackList::GroupChannels(
-   Track &track, size_t groupSize, bool resetChannels )
+void TrackList::GroupChannels( Track &track, size_t groupSize )
 {
    // If group size is more than two, for now only the first two channels
    // are grouped as stereo, and any others remain mono
@@ -720,15 +702,8 @@ void TrackList::GroupChannels(
       if ( count == 0 ) {
          auto unlink = [&] ( Track &tr ) {
             if ( tr.GetLinked() ) {
-               if ( resetChannels ) {
-                  auto link = tr.GetLink();
-                  if ( link )
-                     link->SetChannel( Track::MonoChannel );
-               }
                tr.SetLinked( false );
             }
-            if ( resetChannels )
-               tr.SetChannel( Track::MonoChannel );
          };
 
          // Disassociate previous tracks -- at most one
@@ -743,10 +718,6 @@ void TrackList::GroupChannels(
          if ( groupSize > 1 ) {
             const auto channel = *iter++;
             channel->SetLinked( true );
-            channel->SetChannel( Track::LeftChannel );
-            (*iter++)->SetChannel( Track::RightChannel );
-            while (iter != after)
-               (*iter++)->SetChannel( Track::MonoChannel );
          }
          return;
       }

@@ -646,6 +646,12 @@ bool ExportMultiple::DirOk()
    return fn.Mkdir(0777, wxPATH_MKDIR_FULL);
 }
 
+/** \brief Find out how many channels this track list mixes to
+*
+* This is used in exports of the tracks to work out whether to export in
+* Mono, Stereo etc. @param selectionOnly Whether to consider the entire track
+* list or only the selected members of it
+*/
 static unsigned GetNumExportChannels( const TrackList &tracks )
 {
    /* counters for tracks panned different places */
@@ -659,17 +665,17 @@ static unsigned GetNumExportChannels( const TrackList &tracks )
          tracks.Any< const WaveTrack >() - &WaveTrack::GetMute
    ) {
       // Found a left channel
-      if (tr->GetChannel() == Track::LeftChannel) {
+      if (tr->GetChannel() == WaveTrack::LeftChannel) {
          numLeft++;
       }
 
       // Found a right channel
-      else if (tr->GetChannel() == Track::RightChannel) {
+      else if (tr->GetChannel() == WaveTrack::RightChannel) {
          numRight++;
       }
 
       // Found a mono channel, but it may be panned
-      else if (tr->GetChannel() == Track::MonoChannel) {
+      else if (tr->GetChannel() == WaveTrack::MonoChannel) {
          float pan = tr->GetPan();
 
          // Figure out what kind of channel it should be
@@ -715,7 +721,7 @@ ProgressResult ExportMultiple::ExportMultipleByLabel(bool byName,
    }
 
    // Figure out how many channels we should export.
-   auto channels = GetNumExportChannels( *mTracks );
+   auto channels = GetNumExportChannels(*mTracks);
 
    FilePaths otherNames;  // keep track of file names we will use, so we
    // don't duplicate them

@@ -640,10 +640,10 @@ void WaveTrackMenuTable::InitMenu(Menu *pMenu, void *pUserData)
 
          int itemId;
          switch (pTrack2->GetChannel()) {
-            case Track::LeftChannel:
+            case WaveTrack::LeftChannel:
                itemId = OnChannelLeftID;
                break;
-            case Track::RightChannel:
+            case WaveTrack::RightChannel:
                itemId = OnChannelRightID;
                break;
             default:
@@ -826,15 +826,15 @@ void WaveTrackMenuTable::OnChannelChange(wxCommandEvent & event)
    switch (id) {
    default:
    case OnChannelMonoID:
-      channel = Track::MonoChannel;
+      channel = WaveTrack::MonoChannel;
       channelmsg = _("Mono");
       break;
    case OnChannelLeftID:
-      channel = Track::LeftChannel;
+      channel = WaveTrack::LeftChannel;
       channelmsg = _("Left Channel");
       break;
    case OnChannelRightID:
-      channel = Track::RightChannel;
+      channel = WaveTrack::RightChannel;
       channelmsg = _("Right Channel");
       break;
    }
@@ -923,7 +923,9 @@ void WaveTrackMenuTable::SplitStereo(bool stereo)
       channel->SetName(pTrack->GetName());
       auto &view = TrackView::Get( *channel );
       if (stereo)
-         channel->SetPanFromChannelType();
+         // PRL:  note that the split loses the effects of previous stereo pan
+         // setting, leaving one mono panned hard left and the other right.
+         channel->SetPanFromChannelType( channel->GetChannelIgnoringPan() );
 
       //On Demand - have each channel add its own.
       if (ODManager::IsInstanceCreated())
@@ -1088,11 +1090,11 @@ void Status1DrawFunction
       // more appropriate strings
       s = _("Stereo, %dHz");
    else {
-      if (wt->GetChannel() == Track::MonoChannel)
+      if (wt->GetChannel() == WaveTrack::MonoChannel)
          s = _("Mono, %dHz");
-      else if (wt->GetChannel() == Track::LeftChannel)
+      else if (wt->GetChannel() == WaveTrack::LeftChannel)
          s = _("Left, %dHz");
-      else if (wt->GetChannel() == Track::RightChannel)
+      else if (wt->GetChannel() == WaveTrack::RightChannel)
          s = _("Right, %dHz");
    }
    s = wxString::Format( s, (int) (rate + 0.5) );
