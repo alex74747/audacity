@@ -309,7 +309,7 @@ void TrackArt::DrawTrackNames(TrackPanelDrawingContext &context,
 // Draws the track name on the track, if it is needed.
 void TrackArt::DrawTrackName( TrackPanelDrawingContext &context, const Track * t, const wxRect & rect )
 {
-   auto name = t->GetName();
+   const auto &name = t->GetGroupData().GetName();
    if( name.IsEmpty())
       return;
    if( !t->IsLeader())
@@ -319,7 +319,7 @@ void TrackArt::DrawTrackName( TrackPanelDrawingContext &context, const Track * t
    wxCoord x,y;
    wxFont labelFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
    dc.SetFont(labelFont);
-   dc.GetTextExtent( t->GetName(), &x, &y );
+   dc.GetTextExtent( name, &x, &y );
 
    // Logic for name background translucency (aka 'shields')
    // Tracks less than kOpaqueHeight high will have opaque shields.
@@ -359,13 +359,14 @@ void TrackArt::DrawTrackName( TrackPanelDrawingContext &context, const Track * t
    dc.DrawBitmap( bitmap, rect.x+6, rect.y);
 #endif
    dc.SetTextForeground(theTheme.Colour( clrTrackPanelText ));
-   dc.DrawText (t->GetName(), rect.x+15, rect.y+3);  // move right 15 pixels to avoid overwriting <- symbol
+   dc.DrawText (name, rect.x+15, rect.y+3);  // move right 15 pixels to avoid overwriting <- symbol
 }
 
 void TrackArt::DrawTrack(TrackPanelDrawingContext &context,
                             const Track * t,
                             const wxRect & rect)
 {
+   const auto &dc = context.dc;
    const auto artist = TrackArtist::Get( context );
 
    t->TypeSwitch(

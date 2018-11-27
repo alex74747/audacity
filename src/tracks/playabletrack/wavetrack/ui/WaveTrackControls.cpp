@@ -222,7 +222,7 @@ void WaveColorMenuTable::OnWaveColorChange(wxCommandEvent & event)
       channel->SetWaveColorIndex(newWaveColor);
 
    project->PushState(wxString::Format(_("Changed '%s' to %s"),
-      pTrack->GetName(),
+      pTrack->GetGroupData().GetName(),
       GetWaveColorStr(newWaveColor)),
       _("WaveColor Change"));
 
@@ -340,7 +340,7 @@ void FormatMenuTable::OnFormatChange(wxCommandEvent & event)
 
    /* i18n-hint: The strings name a track and a format */
    project->PushState(wxString::Format(_("Changed '%s' to %s"),
-      pTrack->GetName(),
+      pTrack->GetGroupData().GetName(),
       GetSampleFormatStr(newFormat)),
       _("Format Change"));
 
@@ -441,7 +441,7 @@ void RateMenuTable::SetRate(WaveTrack * pTrack, double rate)
    wxString rateString = wxString::Format(wxT("%.3f"), rate);
    /* i18n-hint: The string names a track */
    project->PushState(wxString::Format(_("Changed '%s' to %s Hz"),
-      pTrack->GetName(), rateString),
+      pTrack->GetGroupData().GetName(), rateString),
       _("Rate Change"));
 }
 
@@ -791,7 +791,7 @@ void WaveTrackMenuTable::OnSpectrogramSettings(wxCommandEvent &)
       // (pTrack->GetDisplay() == WaveTrack::Spectrum) ? 1 :
       0;
 
-   wxString title(pTrack->GetName() + wxT(": "));
+   wxString title(pTrack->GetGroupData().GetName() + wxT(": "));
    ViewSettingsDialog dialog(mpData->pParent, title, factories, page);
 
    if (0 != dialog.ShowModal()) {
@@ -884,7 +884,7 @@ void WaveTrackMenuTable::OnMergeStereo(wxCommandEvent &)
 
    /* i18n-hint: The string names a track */
    project->PushState(wxString::Format(_("Made '%s' a stereo track"),
-      pTrack->GetName()),
+      pTrack->GetGroupData().GetName()),
       _("Make Stereo"));
 
    using namespace RefreshCode;
@@ -902,8 +902,6 @@ void WaveTrackMenuTable::SplitStereo(bool stereo)
    int totalHeight = 0;
    int nChannels = 0;
    for (auto channel : channels) {
-      // Keep original stereo track name.
-      channel->SetName(pTrack->GetName());
       if (stereo)
          // PRL:  note that the split loses the effects of previous stereo pan
          // setting, leaving one mono panned hard left and the other right.
@@ -961,7 +959,7 @@ void WaveTrackMenuTable::OnSwapChannels(wxCommandEvent &)
 
    /* i18n-hint: The string names a track  */
    project->PushState(wxString::Format(_("Swapped Channels in '%s'"),
-      pTrack->GetName()),
+      pTrack->GetGroupData().GetName()),
       _("Swap Channels"));
 
    mpData->result = RefreshCode::RefreshAll;
@@ -975,7 +973,7 @@ void WaveTrackMenuTable::OnSplitStereo(wxCommandEvent &)
    AudacityProject *const project = ::GetActiveProject();
    /* i18n-hint: The string names a track  */
    project->PushState(wxString::Format(_("Split stereo track '%s'"),
-      pTrack->GetName()),
+      pTrack->GetGroupData().GetName()),
       _("Split"));
 
    using namespace RefreshCode;
@@ -990,7 +988,7 @@ void WaveTrackMenuTable::OnSplitStereoMono(wxCommandEvent &)
    AudacityProject *const project = ::GetActiveProject();
    /* i18n-hint: The string names a track  */
    project->PushState(wxString::Format(_("Split Stereo to Mono '%s'"),
-      pTrack->GetName()),
+      pTrack->GetGroupData().GetName()),
       _("Split to Mono"));
 
    using namespace RefreshCode;

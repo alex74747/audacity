@@ -58,7 +58,7 @@ void DoMixAndRender
       auto selectedCount = (trackRange + &Track::IsLeader).size();
       wxString firstName;
       if (selectedCount > 0)
-         firstName = (*trackRange.begin())->GetName();
+         firstName = (*trackRange.begin())->GetGroupData().GetName();
       if (!toNewTrack)  {
          // Beware iterator invalidation!
          for (auto &it = trackRange.first, &end = trackRange.second; it != end;)
@@ -73,11 +73,8 @@ void DoMixAndRender
          pNewRight = tracks.Add( uNewRight, false );
 
       // If we're just rendering (not mixing), keep the track name the same
-      if (selectedCount==1) {
-         pNewLeft->SetName(firstName);
-         if (pNewRight)
-            pNewRight->SetName(firstName);
-      }
+      if (selectedCount==1)
+         pNewLeft->GetGroupData().SetName(firstName);
 
       // Smart history/undo message
       if (selectedCount==1) {
@@ -493,10 +490,12 @@ void DoSortTracks( AudacityProject &project, int flags )
                //We sort 'b' before 'B' accordingly.  We uncharacteristically
                // use greater than for the case sensitive
                //compare because 'b' is greater than 'B' in ascii.
-               auto cmpValue = track->GetName().CmpNoCase(arrTrack.GetName());
+               const auto &trackName = track->GetGroupData().GetName();
+               const auto &arrName = arrTrack.GetGroupData().GetName();
+               auto cmpValue = trackName.CmpNoCase(arrName);
                if ( cmpValue < 0 ||
                      ( 0 == cmpValue &&
-                        track->GetName().CompareTo(arrTrack.GetName()) > 0 ) )
+                        trackName.CompareTo(arrName) > 0 ) )
                   break;
             }
             //sort by time otherwise
@@ -711,7 +710,7 @@ void DoRemoveTrack(AudacityProject &project, Track * toRemove)
       }
    }
 
-   wxString name = toRemove->GetName();
+   wxString name = toRemove->GetGroupData().GetName();
 
    auto channels = TrackList::Channels(toRemove);
    // Be careful to post-increment over positions that get erased!
@@ -779,7 +778,7 @@ void DoMoveTrack
 
    }
 
-   longDesc = longDesc.Format(target->GetName());
+   longDesc = longDesc.Format(target->GetGroupData().GetName());
 
    project.PushState(longDesc, shortDesc);
    trackPanel.Refresh(false);
