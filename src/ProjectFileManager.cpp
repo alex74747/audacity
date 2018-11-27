@@ -160,7 +160,7 @@ auto ProjectFileManager::ReadProjectFile( const FilePath &fileName )
          {
             wxLogWarning(
                wxT("Track %s had error reading clip values from project file."),
-               t->GetName());
+               t->GetGroupData().GetName());
             err = true;
          }
 
@@ -636,14 +636,15 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
 
    Exporter theExporter;
    wxFileName uniqueTrackFileName;
-   for (auto pTrack : (trackRange + &Track::IsLeader))
+   for (auto group : trackRange.ByGroups())
    {
       SelectionStateChanger changer{ SelectionState::Get( project ), tracks };
-      auto channels = TrackList::Channels(pTrack);
+      const auto &channels = group.channels;
 
       for (auto channel : channels)
          channel->SetSelected(true);
-      uniqueTrackFileName = wxFileName(strDataDirPathName, pTrack->GetName(), extension);
+      uniqueTrackFileName = wxFileName{
+         strDataDirPathName, group.data->GetName(), extension };
       FileNames::MakeNameUnique(strOtherNamesArray, uniqueTrackFileName);
       const auto startTime = channels.min( &Track::GetStartTime );
       const auto endTime = channels.max( &Track::GetEndTime );
@@ -1586,19 +1587,20 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
          .any_of( []( decltype(*results.begin()) &pTrack )
             { return pTrack->IsLeader(); } );
 
-   for (const auto &newTrack : results) {
-      if ( newTrack->IsLeader() )
-         // Count groups only
-         ++i;
+   if (!results.empty()) for ( auto group :
+      tracks.Any().StartingWith( results[0].get() ).ByGroups()
+   ) {
+      ++i;
+      group.data->SetName(
+         useSuffix
+         ? trackNameBase + wxString::Format(wxT(" %d" ), i + 1)
+         : trackNameBase
+      );
 
-      newTrack->SetSelected(true);
+      for (auto newTrack : group.channels)
+         newTrack->SetSelected(true);
 
-      if ( useSuffix )
-         newTrack->SetName(trackNameBase + wxString::Format(wxT(" %d" ), i + 1));
-      else
-         newTrack->SetName(trackNameBase);
-
-      newTrack->TypeSwitch( [&](WaveTrack *wt) {
+      group.channels.Visit( [&](WaveTrack *wt) {
          if (newRate == 0)
             newRate = wt->GetRate();
 

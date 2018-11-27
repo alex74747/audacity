@@ -1,110 +1,50 @@
 /**********************************************************************
 
-Audacity: A Digital Audio Editor
+  Audacity: A Digital Audio Editor
 
-ProjectAudioManager.cpp
+  TransportState.cpp
 
-Paul Licameli split from ProjectManager.cpp
+  Paul Licameli
+  split from ControlToolBar.cpp
 
-**********************************************************************/
+***********************************************************************/
 
 #include "Audacity.h"
-#include "ProjectAudioManager.h"
+#include "TransportState.h"
 
-#include "Experimental.h"
-
+#include <cfloat>
 #include <wx/frame.h>
-#include <wx/statusbr.h>
 
+//#include "AdornedRulerPanel.h"
 #include "AudioIO.h"
-#include "AutoRecovery.h"
 #include "CommonCommandFlags.h"
-#include "DirManager.h"
-#include "LabelTrack.h"
 #include "Menus.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
-#include "ProjectFileIO.h"
-#include "ProjectHistory.h"
 #include "ProjectSettings.h"
-#include "ProjectStatus.h"
-#include "TimeTrack.h"
-#include "TrackPanelAx.h"
+//#include "ProjectWindow.h"
+//#include "TrackPanel.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "toolbars/ToolManager.h"
 #include "prefs/TracksPrefs.h"
+//#include "toolbars/ToolManager.h"
 #include "tracks/ui/Scrubbing.h"
 #include "tracks/ui/TrackView.h"
 #include "widgets/ErrorDialog.h"
-#include "widgets/MeterPanelBase.h"
-#include "widgets/Warning.h"
+#include "widgets/Meter.h"
 
+AudacityProject *TransportState::mBusyProject = NULL;
+std::shared_ptr<TrackList> TransportState::mCutPreviewTracks;
+PlayMode TransportState::sLastPlayMode{ PlayMode::normalPlay };
 
-static AudacityProject::AttachedObjects::RegisteredFactory
-sProjectAudioManagerKey {
-   []( AudacityProject &project ) {
-      return std::make_shared< ProjectAudioManager >( project );
-   }
-};
-
-ProjectAudioManager &ProjectAudioManager::Get( AudacityProject &project )
-{
-   return project.AttachedObjects::Get< ProjectAudioManager >(
-      sProjectAudioManagerKey );
-}
-
-const ProjectAudioManager &ProjectAudioManager::Get(
-   const AudacityProject &project )
-{
-   return Get( const_cast< AudacityProject & >( project ) );
-}
-
-ProjectAudioManager::ProjectAudioManager( AudacityProject &project )
-   : mProject{ project }
-{
-   static ProjectStatus::RegisteredStatusWidthFunction
-      registerStatusWidthFunction{ StatusWidthFunction };
-}
-
-ProjectAudioManager::~ProjectAudioManager() = default;
-
-static wxString FormatRate( int rate )
-{
-   if (rate > 0) {
-      return wxString::Format(_("Actual Rate: %d"), rate);
-   }
-   else
-      // clear the status field
-      return {};
-}
-
-auto ProjectAudioManager::StatusWidthFunction(
-   const AudacityProject &project, StatusBarField field )
-   -> ProjectStatus::StatusWidthResult
-{
-   if ( field == rateStatusBarField ) {
-      auto &audioManager = ProjectAudioManager::Get( project );
-      int rate = audioManager.mDisplayedRate;
-      return {
-         { { FormatRate( rate ) } },
-         50
-      };
-   }
-   return {};
-}
-
-int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
+int TransportState::PlayPlayRegion(const SelectedRegion &selectedRegion,
                                    const AudioIOStartStreamOptions &options,
                                    PlayMode mode,
                                    bool backwards, /* = false */
                                    bool playWhiteSpace /* = false */)
 // STRONG-GUARANTEE (for state of mCutPreviewTracks)
 {
-   auto &projectAudioManager = *this;
-   bool canStop = projectAudioManager.CanStopAudioStream();
-
-   if ( !canStop )
+   if (!CanStopAudioStream())
       return -1;
 
    bool useMidi = true;
@@ -125,10 +65,29 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
    if (backwards)
       std::swap(t0, t1);
 
-   projectAudioManager.SetLooping( mode == PlayMode::loopedPlay );
-   projectAudioManager.SetCutting( mode == PlayMode::cutPreviewPlay );
+#if 0
+   {
+      PlayAppearance appearance;
+      switch( mode ) {
+         case PlayMode::cutPreviewPlay:
+            appearance = PlayAppearance::CutPreview; break;
+         case PlayMode::loopedPlay:
+            appearance = PlayAppearance::Looped; break;
+         default:
+            appearance = PlayAppearance::Straight; break;
+      }
+      SetPlay(true, appearance);
+   }
+#endif
 
    bool success = false;
+   auto cleanup = finally( [&] {
+      if (!success) {
+//         SetPlay(false);
+//         SetStop(false);
+//         SetRecord(false);
+      }
+   } );
 
    auto gAudioIO = AudioIO::Get();
    if (gAudioIO->IsBusy())
@@ -138,11 +97,11 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
    if (cutpreview && t0==t1)
       return -1; /* msmeyer: makes no sense */
 
-   AudacityProject *p = &mProject;
+   AudacityProject *p = GetActiveProject();
 
    auto &tracks = TrackList::Get( *p );
 
-   mLastPlayMode = mode;
+   sLastPlayMode = mode;
 
    bool hasaudio;
    if (useMidi)
@@ -240,6 +199,7 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
       if (token != 0) {
          success = true;
          ProjectAudioIO::Get( *p ).SetAudioIOToken(token);
+         mBusyProject = p;
 #if defined(EXPERIMENTAL_SEEK_BEHIND_CURSOR)
          //AC: If init_seek was set, now's the time to make it happen.
          gAudioIO->SeekStream(init_seek);
@@ -251,12 +211,13 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
          // Problem was that the error dialog yields to events,
          // causing recursion to this function in the scrub timer
          // handler!  Easy fix, just delay the user alert instead.
-         auto &window = GetProjectFrame( mProject );
-         window.CallAfter( [&]{
+         wxTheApp->CallAfter( []{
          // Show error message if stream could not be opened
-         ShowErrorDialog(&window, _("Error"),
-                         _("Error opening sound device.\nTry changing the audio host, playback device and the project sample rate."),
-                         wxT("Error_opening_sound_device"));
+         ShowErrorDialog(
+            &GetProjectFrame( *::GetActiveProject() ),
+            _("Error"),
+            _("Error opening sound device.\nTry changing the audio host, playback device and the project sample rate."),
+               wxT("Error_opening_sound_device"));
          });
       }
    }
@@ -264,19 +225,22 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
    if (!success)
       return -1;
 
+   StartScrollingIfPreferred();
+
+   // Let other UI update appearance
+//   if (p)
+  //    AdornedRulerPanel::Get( *p ).DrawBothOverlays();
+
    return token;
 }
 
-void ProjectAudioManager::PlayCurrentRegion(bool looped /* = false */,
+void TransportState::PlayCurrentRegion(bool looped /* = false */,
                                        bool cutpreview /* = false */)
 {
-   auto &projectAudioManager = *this;
-   bool canStop = projectAudioManager.CanStopAudioStream();
-
-   if ( !canStop )
+   if (!CanStopAudioStream())
       return;
 
-   AudacityProject *p = &mProject;
+   AudacityProject *p = GetActiveProject();
 
    {
 
@@ -296,14 +260,19 @@ void ProjectAudioManager::PlayCurrentRegion(bool looped /* = false */,
    }
 }
 
-void ProjectAudioManager::Stop(bool stopStream /* = true*/)
+bool TransportState::CanStopAudioStream()
 {
-   AudacityProject *project = &mProject;
-   auto &projectAudioManager = *this;
-   bool canStop = projectAudioManager.CanStopAudioStream();
+   auto gAudioIO = AudioIO::Get();
+   return (!gAudioIO->IsStreamActive() ||
+           gAudioIO->IsMonitoring() ||
+           gAudioIO->GetOwningProject() == GetActiveProject() );
+}
 
-   if ( !canStop )
-      return;
+void TransportState::StopPlaying(bool stopStream /* = true*/)
+{
+   StopScrolling();
+
+   AudacityProject *project = GetActiveProject();
 
    if(project) {
       // Let scrubbing code do some appearance change
@@ -311,36 +280,31 @@ void ProjectAudioManager::Stop(bool stopStream /* = true*/)
       scrubber.StopScrubbing();
    }
 
-   auto gAudioIO = AudioIO::Get();
+   if (!CanStopAudioStream())
+      return;
 
-   auto cleanup = finally( [&]{
-      projectAudioManager.SetStopping( false );
-   } );
+//   mStop->PushDown();
 
-   if (stopStream && gAudioIO->IsBusy()) {
-      // flag that we are stopping
-      projectAudioManager.SetStopping( true );
-      // Allow UI to update for that
-      while( wxTheApp->ProcessIdle() )
-         ;
-   }
-
-   if(stopStream)
+//   SetStop(false);
+   if(stopStream) {
+      auto gAudioIO = AudioIO::Get();
       gAudioIO->StopStream();
-
-   projectAudioManager.SetLooping( false );
-   projectAudioManager.SetCutting( false );
+   }
+//   SetPlay(false);
+//   SetRecord(false);
 
    #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
       gAudioIO->AILADisable();
    #endif
 
-   projectAudioManager.SetPaused( false );
+//   mPause->PopUp();
+//   mPaused=false;
    //Make sure you tell gAudioIO to unpause
-   gAudioIO->SetPaused( false );
+//   gAudioIO->SetPaused(mPaused);
 
    ClearCutPreviewTracks();
 
+   mBusyProject = NULL;
    // So that we continue monitoring after playing or recording.
    // also clean the MeterQueues
    if( project ) {
@@ -356,25 +320,24 @@ void ProjectAudioManager::Stop(bool stopStream /* = true*/)
       }
    }
 
-   const auto toolbar = ToolManager::Get( *project ).GetToolBar(ScrubbingBarID);
-   toolbar->EnableDisableButtons();
+//   const auto toolbar = ToolManager::Get( *project ).GetToolBar(ScrubbingBarID)
+   ;
+  // toolbar->EnableDisableButtons();
 }
 
-void ProjectAudioManager::Pause()
+void TransportState::Pause()
 {
-   auto &projectAudioManager = *this;
-   bool canStop = projectAudioManager.CanStopAudioStream();
-
-   if ( !canStop ) {
+   if (!CanStopAudioStream()) {
       auto gAudioIO = AudioIO::Get();
       gAudioIO->SetPaused(!gAudioIO->IsPaused());
    }
    else {
-      OnPause();
+      wxCommandEvent dummy;
+//      OnPause(dummy);
    }
 }
 
-WaveTrackArray ProjectAudioManager::ChooseExistingRecordingTracks(
+WaveTrackArray TransportState::ChooseExistingRecordingTracks(
    AudacityProject &proj, bool selectedOnly)
 {
    auto p = &proj;
@@ -446,93 +409,12 @@ WaveTrackArray ProjectAudioManager::ChooseExistingRecordingTracks(
    return {};
 }
 
-void ProjectAudioManager::OnRecord(bool altAppearance)
-// STRONG-GUARANTEE (for state of current project's tracks)
-{
-   bool bPreferNewTrack;
-   gPrefs->Read("/GUI/PreferNewTrackRecord", &bPreferNewTrack, false);
-   const bool appendRecord = (altAppearance == bPreferNewTrack);
-
-   // Code from CommandHandler start...
-   AudacityProject *p = &mProject;
-
-   if (p) {
-      const auto &selectedRegion = ViewInfo::Get( *p ).selectedRegion;
-      double t0 = selectedRegion.t0();
-      double t1 = selectedRegion.t1();
-      // When no time selection, recording duration is 'unlimited'.
-      if (t1 == t0)
-         t1 = DBL_MAX;
-
-      WaveTrackArray existingTracks;
-
-      if (appendRecord) {
-         const auto trackRange = TrackList::Get( *p ).Any< const WaveTrack >();
-
-         // Try to find wave tracks to record into.  (If any are selected,
-         // try to choose only from them; else if wave tracks exist, may record into any.)
-         existingTracks = ChooseExistingRecordingTracks(*p, true);
-         if ( !existingTracks.empty() )
-            t0 = std::max( t0,
-               ( trackRange + &Track::IsSelected ).max( &Track::GetEndTime ) );
-         else {
-            existingTracks = ChooseExistingRecordingTracks(*p, false);
-            t0 = std::max( t0, trackRange.max( &Track::GetEndTime ) );
-            // If suitable tracks still not found, will record into NEW ones,
-            // but the choice of t0 does not depend on that.
-         }
-
-         // Whether we decided on NEW tracks or not:
-         if (t1 <= selectedRegion.t0() && selectedRegion.t1() > selectedRegion.t0()) {
-            t1 = selectedRegion.t1();   // record within the selection
-         }
-         else {
-            t1 = DBL_MAX;        // record for a long, long time
-         }
-      }
-
-      TransportTracks transportTracks;
-      if (UseDuplex()) {
-         // Remove recording tracks from the list of tracks for duplex ("overdub")
-         // playback.
-         /* TODO: set up stereo tracks if that is how the user has set up
-          * their preferences, and choose sample format based on prefs */
-         transportTracks = GetAllPlaybackTracks(TrackList::Get( *p ), false, true);
-         for (const auto &wt : existingTracks) {
-            auto end = transportTracks.playbackTracks.end();
-            auto it = std::find(transportTracks.playbackTracks.begin(), end, wt);
-            if (it != end)
-               transportTracks.playbackTracks.erase(it);
-         }
-      }
-
-      transportTracks.captureTracks = existingTracks;
-      auto options = DefaultPlayOptions( *p );
-      DoRecord(*p, transportTracks, t0, t1, altAppearance, options);
-   }
-}
-
-bool ProjectAudioManager::UseDuplex()
-{
-   bool duplex;
-   gPrefs->Read(wxT("/AudioIO/Duplex"), &duplex,
-#ifdef EXPERIMENTAL_DA
-      false
-#else
-      true
-#endif
-      );
-   return duplex;
-}
-
-bool ProjectAudioManager::DoRecord(AudacityProject &project,
+bool TransportState::DoRecord(AudacityProject &project,
    const TransportTracks &tracks,
    double t0, double t1,
    bool altAppearance,
    const AudioIOStartStreamOptions &options)
 {
-   auto &projectAudioManager = *this;
-
    CommandFlag flags = AlwaysEnabledFlag; // 0 means recalc flags.
 
    // NB: The call may have the side effect of changing flags.
@@ -545,12 +427,30 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
    // ...end of code from CommandHandler.
 
    auto gAudioIO = AudioIO::Get();
-   if (gAudioIO->IsBusy())
+   if (gAudioIO->IsBusy()) {
+      if (!TransportState::CanStopAudioStream() ||
+          0 == gAudioIO->GetNumCaptureChannels())
+//         mRecord->PopUp()
+         ;
+      else
+//         mRecord->PushDown()
+         ;
       return false;
+   }
 
-   projectAudioManager.SetAppending( !altAppearance );
+//   SetRecord(true, altAppearance);
 
    bool success = false;
+   auto cleanup = finally([&] {
+      if (!success) {
+//         SetPlay(false);
+  //       SetStop(false);
+    //     SetRecord(false);
+      }
+
+      // Success or not:
+//      UpdateStatusBar( &mProject );
+   });
 
    auto transportTracks = tracks;
 
@@ -700,10 +600,16 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
                );
             }
 
+            if ((recordingChannels > 2) &&
+                !(ProjectSettings::Get(*p).GetTracksFitVerticallyZoomed())) {
+               TrackView::Get( *newTrack ).SetMinimized(true);
+            }
+
             TrackList::Get( *p ).RegisterPendingNewTrack( newTrack, c == 0 );
             transportTracks.captureTracks.push_back(newTrack);
             // Bug 1548.  New track needs the focus.
-            TrackFocus::Get( *p ).Set( newTrack.get() );
+            //TrackPanel::Get( *p ).SetFocusedTrack( newTrack.get() )
+            ;
          }
       }
       
@@ -718,66 +624,30 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
 
       if (success) {
          ProjectAudioIO::Get( *p ).SetAudioIOToken(token);
+         mBusyProject = p;
+
+         StartScrollingIfPreferred();
       }
       else {
          CancelRecording();
 
          // Show error message if stream could not be opened
          wxString msg = wxString::Format(_("Error opening recording device.\nError code: %s"), gAudioIO->LastPaErrorString());
-         ShowErrorDialog(&GetProjectFrame( mProject ),
-            _("Error"), msg, wxT("Error_opening_sound_device"));
+         auto &window = GetProjectFrame( *::GetActiveProject() );
+         ShowErrorDialog( &window, _("Error"), msg, wxT("Error_opening_sound_device") );
       }
    }
 
    return success;
 }
 
-void ProjectAudioManager::OnPause()
-{
-   auto &projectAudioManager = *this;
-   bool canStop = projectAudioManager.CanStopAudioStream();
-
-   if ( !canStop ) {
-      return;
-   }
-
-   bool paused = !projectAudioManager.Paused();
-   projectAudioManager.SetPaused( paused );
-
-   auto gAudioIO = AudioIO::Get();
-
-#ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
-
-   auto project = &mProject;
-   auto &scrubber = Scrubber::Get( *project );
-
-   // Bug 1494 - Pausing a seek or scrub should just STOP as
-   // it is confusing to be in a paused scrub state.
-   bool bStopInstead = paused &&
-      gAudioIO->IsScrubbing() && 
-      !scrubber.IsSpeedPlaying();
-
-   if (bStopInstead) {
-      Stop();
-      return;
-   }
-   
-   if (gAudioIO->IsScrubbing())
-      scrubber.Pause(paused);
-   else
-#endif
-   {
-      gAudioIO->SetPaused(paused);
-   }
-}
-
-void ProjectAudioManager::SetupCutPreviewTracks(double WXUNUSED(playStart), double cutStart,
+void TransportState::SetupCutPreviewTracks(double WXUNUSED(playStart), double cutStart,
                                            double cutEnd, double  WXUNUSED(playEnd))
 
 // STRONG-GUARANTEE (for state of mCutPreviewTracks)
 {
    ClearCutPreviewTracks();
-   AudacityProject *p = &mProject;
+   AudacityProject *p = GetActiveProject();
    {
       auto trackRange = TrackList::Get( *p ).Selected< const PlayableTrack >();
       if( !trackRange.empty() ) {
@@ -796,211 +666,114 @@ void ProjectAudioManager::SetupCutPreviewTracks(double WXUNUSED(playStart), doub
    }
 }
 
-void ProjectAudioManager::ClearCutPreviewTracks()
+void TransportState::ClearCutPreviewTracks()
 {
    if (mCutPreviewTracks)
       mCutPreviewTracks->Clear();
    mCutPreviewTracks.reset();
 }
 
-void ProjectAudioManager::CancelRecording()
+bool TransportState::IsTransportingPinned()
 {
-   const auto project = &mProject;
-   TrackList::Get( *project ).ClearPendingTracks();
+   if (!TracksPrefs::GetPinnedHeadPreference())
+      return false;
+   const auto &scrubber = Scrubber::Get( *GetActiveProject() );
+   return
+     !(scrubber.HasMark() &&
+       !scrubber.WasSpeedPlaying() &&
+       !Scrubber::ShouldScrubPinned());
 }
 
-void ProjectAudioManager::OnAudioIORate(int rate)
+void TransportState::StartScrollingIfPreferred()
 {
-   auto &project = mProject;
-
-   mDisplayedRate = rate;
-
-   wxString display = FormatRate( rate );
-
-   ProjectStatus::Get( project ).Set( display, rateStatusBarField );
+#if 0
+   if (IsTransportingPinned())
+      StartScrolling();
+#ifdef __WXMAC__
+   else if (Scrubber::Get( *GetActiveProject() ).HasMark()) {
+      // PRL:  cause many "unnecessary" refreshes.  For reasons I don't understand,
+      // doing this causes wheel rotation events (mapped from the double finger vertical
+      // swipe) to be delivered more uniformly to the application, so that speed control
+      // works better.
+      ProjectWindow::Get( *GetActiveProject() ).GetPlaybackScroller().Activate
+         (ProjectWindow::PlaybackScroller::Mode::Refresh);
+   }
+#endif
+   else
+      StopScrolling();
+#endif
 }
 
-void ProjectAudioManager::OnAudioIOStartRecording()
+void TransportState::StartScrolling()
 {
-   auto &projectFileIO = ProjectFileIO::Get( mProject );
-   // Before recording is started, auto-save the file. The file will have
-   // empty tracks at the bottom where the recording will be put into
-   projectFileIO.AutoSave();
-}
-
-// This is called after recording has stopped and all tracks have flushed.
-void ProjectAudioManager::OnAudioIOStopRecording()
-{
-   auto &project = mProject;
-   auto &dirManager = DirManager::Get( project );
-   auto &projectAudioIO = ProjectAudioIO::Get( project );
-   auto &projectFileIO = ProjectFileIO::Get( project );
-   auto &window = GetProjectFrame( project );
-
-   // Only push state if we were capturing and not monitoring
-   if (projectAudioIO.GetAudioIOToken() > 0)
-   {
-      auto &tracks = TrackList::Get( project );
+#if 0
+   using Mode = ProjectWindow::PlaybackScroller::Mode;
+   AudacityProject *project = GetActiveProject();
+   if (project) {
       auto gAudioIO = AudioIO::Get();
-      auto &intervals = gAudioIO->LostCaptureIntervals();
-      if (intervals.size()) {
-         // Make a track with labels for recording errors
-         auto uTrack = TrackFactory::Get( project ).NewLabelTrack();
-         auto pTrack = uTrack.get();
-         tracks.Add( uTrack, true );
-         /* i18n-hint:  A name given to a track, appearing as its menu button.
-          The translation should be short or else it will not display well.
-          At most, about 11 Latin characters.
-          Dropout is a loss of a short sequence of audio sample data from the
-          recording */
-         pTrack->GetGroupData().SetName(_("Dropouts"));
-         long counter = 1;
-         for (auto &interval : intervals)
-            pTrack->AddLabel(
-               SelectedRegion{ interval.first,
-                  interval.first + interval.second },
-               wxString::Format(wxT("%ld"), counter++));
-         ShowWarningDialog(&window, wxT("DropoutDetected"), _("\
-Recorded audio was lost at the labeled locations. Possible causes:\n\
-\n\
-Other applications are competing with Audacity for processor time\n\
-\n\
-You are saving directly to a slow external storage device\n\
-"
-         ),
-         false,
-         _("Turn off dropout detection"));
-      }
+      auto mode = Mode::Pinned;
 
-      auto &history = ProjectHistory::Get( project );
+#if 0
+      // Enable these lines to pin the playhead right instead of center,
+      // when recording but not overdubbing.
+      if (gAudioIO->GetNumCaptureChannels() > 0) {
+         // recording
 
-      if (IsTimerRecordCancelled()) {
-         // discard recording
-         history.RollbackState();
-         // Reset timer record
-         ResetTimerRecordCancelled();
+         // Display a fixed recording head while scrolling the waves continuously.
+         // If you overdub, you may want to anticipate some context in existing tracks,
+         // so center the head.  If not, put it rightmost to display as much wave as we can.
+         bool duplex;
+#ifdef EXPERIMENTAL_DA
+         gPrefs->Read(wxT("/AudioIO/Duplex"), &duplex, false);
+#else
+         gPrefs->Read(wxT("/AudioIO/Duplex"), &duplex, true);
+#endif
+         if (duplex) {
+            // See if there is really anything being overdubbed
+            if (gAudioIO->GetNumPlaybackChannels() == 0)
+               // No.
+               duplex = false;
+         }
+
+         if (!duplex)
+            mode = Mode::Right;
       }
-      else
-         // Add to history
-         history.PushState(_("Recorded Audio"), _("Record"));
+#endif
+
+      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate(mode);
    }
-
-   // Write all cached files to disk, if any
-   dirManager.WriteCacheToDisk();
-
-   // Now we auto-save again to get the project to a "normal" state again.
-   projectFileIO.AutoSave();
+#endif
 }
 
-void ProjectAudioManager::OnAudioIONewBlockFiles(
-   const AutoSaveFile & blockFileLog)
+void TransportState::StopScrolling()
 {
-   auto &project = mProject;
-   auto &projectFileIO = ProjectFileIO::Get( project );
-   // New blockfiles have been created, so add them to the auto-save file
-   const auto &autoSaveFileName = projectFileIO.GetAutoSaveFileName();
-   if ( !autoSaveFileName.empty() )
-   {
-      wxFFile f{ autoSaveFileName, wxT("ab") };
-      if (!f.IsOpened())
-         return; // Keep recording going, there's not much we can do here
-      blockFileLog.Append(f);
-      f.Close();
-   }
+#if 0
+   const auto project = GetActiveProject();
+   if(project) {
+      auto &window = ProjectWindow::Get( *project );
+      window.GetPlaybackScroller().Activate
+         (ProjectWindow::PlaybackScroller::Mode::Off);
+      }
+#endif
 }
 
-void ProjectAudioManager::OnCommitRecording()
+void TransportState::CommitRecording()
 {
-   const auto project = &mProject;
+   AudacityProject *project = GetActiveProject();
    TrackList::Get( *project ).ApplyPendingTracks();
 }
 
-void ProjectAudioManager::OnSoundActivationThreshold()
+void TransportState::CancelRecording()
 {
-   auto &project = mProject;
-   auto gAudioIO = AudioIO::Get();
-   if ( gAudioIO && &project == gAudioIO->GetOwningProject() ) {
-      wxTheApp->CallAfter( [this]{ Pause(); } );
-   }
-}
-
-bool ProjectAudioManager::Playing() const
-{
-   auto gAudioIO = AudioIO::Get();
-   return
-      gAudioIO->IsBusy() &&
-      CanStopAudioStream() &&
-      // ... and not merely monitoring
-      !gAudioIO->IsMonitoring() &&
-      // ... and not punch-and-roll recording
-      gAudioIO->GetNumCaptureChannels() == 0;
-}
-
-bool ProjectAudioManager::Recording() const
-{
-   auto gAudioIO = AudioIO::Get();
-   return
-      gAudioIO->IsBusy() &&
-      CanStopAudioStream() &&
-      gAudioIO->GetNumCaptureChannels() > 0;
-}
-
-bool ProjectAudioManager::CanStopAudioStream() const
-{
-   auto gAudioIO = AudioIO::Get();
-   return (!gAudioIO->IsStreamActive() ||
-           gAudioIO->IsMonitoring() ||
-           gAudioIO->GetOwningProject() == &mProject );
-}
-
-const ReservedCommandFlag
-   CanStopAudioStreamFlag{
-      [](const AudacityProject &project){
-         auto &projectAudioManager = ProjectAudioManager::Get( project );
-         bool canStop = projectAudioManager.CanStopAudioStream();
-         return canStop;
-      }
-   };
-
-AudioIOStartStreamOptions
-DefaultPlayOptions( AudacityProject &project )
-{
-   auto &projectAudioIO = ProjectAudioIO::Get( project );
-   AudioIOStartStreamOptions options { &project,
-      ProjectSettings::Get( project ).GetRate() };
-   options.captureMeter = projectAudioIO.GetCaptureMeter();
-   options.playbackMeter = projectAudioIO.GetPlaybackMeter();
-   auto timeTrack = *TrackList::Get( project ).Any<TimeTrack>().begin();
-   options.envelope = timeTrack ? timeTrack->GetEnvelope() : nullptr;
-   options.listener = ProjectAudioManager::Get( project ).shared_from_this();
-   return options;
-}
-
-AudioIOStartStreamOptions
-DefaultSpeedPlayOptions( AudacityProject &project )
-{
-   auto &projectAudioIO = ProjectAudioIO::Get( project );
-   auto gAudioIO = AudioIO::Get();
-   auto PlayAtSpeedRate = gAudioIO->GetBestRate(
-      false,     //not capturing
-      true,      //is playing
-      ProjectSettings::Get( project ).GetRate()  //suggested rate
-   );
-   AudioIOStartStreamOptions options{ &project, PlayAtSpeedRate };
-   options.captureMeter = projectAudioIO.GetCaptureMeter();
-   options.playbackMeter = projectAudioIO.GetPlaybackMeter();
-   auto timeTrack = *TrackList::Get( project ).Any<TimeTrack>().begin();
-   options.envelope = timeTrack ? timeTrack->GetEnvelope() : nullptr;
-   options.listener = ProjectAudioManager::Get( project ).shared_from_this();
-   return options;
+   AudacityProject *project = GetActiveProject();
+   TrackList::Get( *project ).ClearPendingTracks();
 }
 
 #ifdef EXPERIMENTAL_MIDI_OUT
-#include "NoteTrack.h"
+#include "../NoteTrack.h"
 #endif
 
-TransportTracks ProjectAudioManager::GetAllPlaybackTracks(
-   TrackList &trackList, bool selectedOnly, bool useMidi)
+TransportTracks GetAllPlaybackTracks(TrackList &trackList, bool selectedOnly, bool useMidi)
 {
    TransportTracks result;
    {
@@ -1024,93 +797,9 @@ TransportTracks ProjectAudioManager::GetAllPlaybackTracks(
    return result;
 }
 
-// Stop playing or recording, if paused.
-void ProjectAudioManager::StopIfPaused()
-{
-   if( AudioIOBase::Get()->IsPaused() )
-      Stop();
-}
-
-#include "widgets/AudacityMessageBox.h"
-
-bool ProjectAudioManager::DoPlayStopSelect( bool click, bool shift )
-{
-   auto &project = mProject;
-   auto &scrubber = Scrubber::Get( project );
-   auto token = ProjectAudioIO::Get( project ).GetAudioIOToken();
-   auto &viewInfo = ViewInfo::Get( project );
-   auto &selection = viewInfo.selectedRegion;
-   auto gAudioIO = AudioIOBase::Get();
-
-   //If busy, stop playing, make sure everything is unpaused.
-   if (scrubber.HasMark() ||
-       gAudioIO->IsStreamActive(token)) {
-      // change the selection
-      auto time = gAudioIO->GetStreamTime();
-      // Test WasSpeedPlaying(), not IsSpeedPlaying()
-      // as we could be stopped now.
-      if (click && scrubber.WasSpeedPlaying())
-      {
-         ;// don't change the selection.
+const ReservedCommandFlag
+   CanStopAudioStreamFlag{
+      [](const AudacityProject &project){
+         return TransportState::CanStopAudioStream();
       }
-      else if (shift && click) {
-         // Change the region selection, as if by shift-click at the play head
-         auto t0 = selection.t0(), t1 = selection.t1();
-         if (time < t0)
-            // Grow selection
-            t0 = time;
-         else if (time > t1)
-            // Grow selection
-            t1 = time;
-         else {
-            // Shrink selection, changing the nearer boundary
-            if (fabs(t0 - time) < fabs(t1 - time))
-               t0 = time;
-            else
-               t1 = time;
-         }
-         selection.setTimes(t0, t1);
-      }
-      else if (click){
-         // avoid a point at negative time.
-         time = wxMax( time, 0 );
-         // Set a point selection, as if by a click at the play head
-         selection.setTimes(time, time);
-      } else
-         // How stop and set cursor always worked
-         // -- change t0, collapsing to point only if t1 was greater
-         selection.setT0(time, false);
-
-      ProjectHistory::Get( project ).ModifyState(false);           // without bWantsAutoSave
-      return true;
-   }
-   return false;
-}
-
-// The code for "OnPlayStopSelect" is simply the code of "OnPlayStop" and
-// "OnStopSelect" merged.
-void ProjectAudioManager::DoPlayStopSelect()
-{
-   auto gAudioIO = AudioIO::Get();
-   if (DoPlayStopSelect(false, false))
-      Stop();
-   else if (!gAudioIO->IsBusy()) {
-      //Otherwise, start playing (assuming audio I/O isn't busy)
-
-      // Will automatically set mLastPlayMode
-      PlayCurrentRegion(false);
-   }
-}
-
-#include "CommonCommandFlags.h"
-
-static RegisteredMenuItemEnabler stopIfPaused{{
-   PausedFlag,
-   AudioIONotBusyFlag,
-   []( const AudacityProject &project ){
-      return MenuManager::Get( project ).mStopIfWasPaused; },
-   []( AudacityProject &project, CommandFlag ){
-      if ( MenuManager::Get( project ).mStopIfWasPaused )
-         ProjectAudioManager::Get( project ).StopIfPaused();
-   }
-}};
+   };

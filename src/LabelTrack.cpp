@@ -69,7 +69,6 @@ LabelTrack::LabelTrack(const std::shared_ptr<DirManager> &projDirManager):
    mClipLen(0.0),
    miLastLabel(-1)
 {
-   SetName(GetDefaultName());
 }
 
 LabelTrack::LabelTrack(const LabelTrack &orig) :

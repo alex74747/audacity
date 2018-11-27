@@ -187,6 +187,7 @@ template < typename TrackType > struct TrackIterRange;
 struct TrackGroupData
    : std::enable_shared_from_this< TrackGroupData >
 {
+   TrackGroupData( const Track &track );
    virtual ~TrackGroupData();
    virtual std::shared_ptr< TrackGroupData > Clone() const;
 
@@ -205,8 +206,13 @@ struct TrackGroupData
    // of the state, perhaps with wxNewId
    void Notify( int code = -1 );
 
+   const wxString &GetName() const { return mName; }
+   void SetName( const wxString &name );
+
 private:
    TrackIterRange<Track> FindChannels();
+
+   wxString       mName;
 
    friend Track;
    friend TrackList;
@@ -256,7 +262,6 @@ class AUDACITY_DLL_API Track /* not final */
    std::weak_ptr<TrackList> mList;
    TrackNodePointer mNode{};
    int            mIndex;
-   wxString       mName;
 
  private:
    bool           mSelected;
@@ -365,9 +370,6 @@ private:
    // Called when this track is merged to stereo with another, and should
    // take on some paramaters of its partner.
    virtual void Merge(const Track &orig);
-
-   wxString GetName() const { return mName; }
-   void SetName( const wxString &n );
 
    // Return a localized string containing a default name appropriate to the
    // track subtype

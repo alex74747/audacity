@@ -119,8 +119,6 @@ NoteTrack::Holder TrackFactory::NewNoteTrack()
 NoteTrack::NoteTrack(const std::shared_ptr<DirManager> &projDirManager)
    : NoteTrackBase(projDirManager)
 {
-   SetName(GetDefaultName());
-
    mSeq = NULL;
    mSerializationLength = 0;
 

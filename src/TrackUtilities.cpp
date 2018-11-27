@@ -177,7 +177,7 @@ void DoRemoveTrack(AudacityProject &project, Track * toRemove)
       }
    }
 
-   wxString name = toRemove->GetName();
+   wxString name = toRemove->GetGroupData().GetName();
 
    auto channels = TrackList::Channels(toRemove);
    // Be careful to post-increment over positions that get erased!
@@ -240,7 +240,7 @@ void DoMoveTrack
 
    }
 
-   longDesc = longDesc.Format(target->GetName());
+   longDesc = longDesc.Format(target->GetGroupData().GetName());
 
    ProjectHistory::Get( project ).PushState(longDesc, shortDesc);
 }

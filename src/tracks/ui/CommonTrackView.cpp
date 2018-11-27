@@ -87,7 +87,7 @@ static void DrawTrackName(
 {
    if( !TrackArtist::Get( context )->mbShowTrackNameInTrack )
       return;
-   auto name = t->GetName();
+   const auto &name = t->GetGroupData().GetName();
    if( name.IsEmpty())
       return;
    if( !t->IsLeader())
@@ -97,7 +97,7 @@ static void DrawTrackName(
    wxCoord x,y;
    wxFont labelFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
    dc.SetFont(labelFont);
-   dc.GetTextExtent( t->GetName(), &x, &y );
+   dc.GetTextExtent( name, &x, &y );
 
    // Logic for name background translucency (aka 'shields')
    // Tracks less than kOpaqueHeight high will have opaque shields.
@@ -140,7 +140,7 @@ static void DrawTrackName(
    dc.DrawBitmap( bitmap, rect.x+6, rect.y);
 #endif
    dc.SetTextForeground(theTheme.Colour( clrTrackPanelText ));
-   dc.DrawText (t->GetName(), rect.x+15, rect.y+3);  // move right 15 pixels to avoid overwriting <- symbol
+   dc.DrawText (name, rect.x+15, rect.y+3);  // move right 15 pixels to avoid overwriting <- symbol
 }
 
 void CommonTrackView::Draw(

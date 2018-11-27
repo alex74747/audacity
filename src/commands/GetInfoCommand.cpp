@@ -494,7 +494,7 @@ bool GetInfoCommand::SendTracks(const CommandContext & context)
       Track * fTrack = trackFocus.Get();
 
       context.StartStruct();
-      context.AddItem( trk->GetName(), "name" );
+      context.AddItem( trk->GetGroupData().GetName(), "name" );
       context.AddBool( (trk == fTrack), "focused");
       context.AddBool( trk->GetSelected(), "selected" );
       //JKC: Possibly add later...
