@@ -4019,10 +4019,9 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
             auto &groupData = pWaveTrack->GetGroupData();
 
             groupData.SetSelected( savedGroupData.GetSelected() );
+            groupData.SetMute( savedGroupData.GetMute() );
+            groupData.SetSolo( savedGroupData.GetSolo() );
          }
-
-         pWaveTrack->SetMute(pSavedWaveTrack->GetMute());
-         pWaveTrack->SetSolo(pSavedWaveTrack->GetSolo());
 
          pWaveTrack->SetGain(pSavedWaveTrack->GetGain());
          pWaveTrack->SetPan(pSavedWaveTrack->GetPan());
@@ -4040,10 +4039,9 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
          auto &groupData = pWaveTrack->GetGroupData();
 
          groupData.SetSelected(false);
+         groupData.SetMute(false);
+         groupData.SetSolo(false);
       }
-
-      pWaveTrack->SetMute(false);
-      pWaveTrack->SetSolo(false);
 
       pWaveTrack->SetGain(1.0);
       pWaveTrack->SetPan(0.0);
