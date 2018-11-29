@@ -797,11 +797,11 @@ void OnMuteAllTracks(const CommandContext &context)
    auto soloSimple = settings.IsSoloSimple();
    auto soloNone = settings.IsSoloNone();
 
-   for (auto pt : tracks.Any<PlayableTrack>())
+   for (auto group : tracks.Any<PlayableTrack>().ByGroups())
    {
-      pt->SetMute(true);
+      group.data->SetMute(true);
       if (soloSimple || soloNone)
-         pt->SetSolo(false);
+         group.data->SetSolo(false);
    }
 
    ProjectHistory::Get( project ).ModifyState(true);
@@ -817,11 +817,11 @@ void OnUnmuteAllTracks(const CommandContext &context)
    auto soloSimple = settings.IsSoloSimple();
    auto soloNone = settings.IsSoloNone();
 
-   for (auto pt : tracks.Any<PlayableTrack>())
+   for (auto group : tracks.Any<PlayableTrack>().ByGroups())
    {
-      pt->SetMute(false);
+      group.data->SetMute(false);
       if (soloSimple || soloNone)
-         pt->SetSolo(false);
+         group.data->SetSolo(false);
    }
 
    ProjectHistory::Get( project ).ModifyState(true);
