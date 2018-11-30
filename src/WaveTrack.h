@@ -87,6 +87,33 @@ private:
 
  public:
 
+   struct GroupData final : PlayableTrack::GroupData
+   {
+      GroupData( const Track &representative )
+         : PlayableTrack::GroupData( representative )
+      {}
+      ~GroupData();
+      std::shared_ptr< TrackGroupData > Clone() const override;
+
+      // Multiplicative factor.  Only converted to dB for display.
+      float GetGain() const { return mGain; }
+      void SetGain(float newGain);
+
+      // -1.0 (left) -> 1.0 (right)
+      float GetPan() const { return mPan; }
+      void SetPan(float newPan);
+
+   private:
+      float         mGain { 1.0f };
+      float         mPan  { 0.0f };
+   };
+
+   // overload inherited GetGroupData with more specific return type
+   GroupData &GetGroupData()
+      { return Track::GetGroupData< GroupData >(); }
+   const GroupData &GetGroupData() const
+      { return Track::GetGroupData< const GroupData >(); }
+
    typedef WaveTrackLocation Location;
    using Holder = std::shared_ptr<WaveTrack>;
 
@@ -105,7 +132,6 @@ private:
 
    ChannelType GetChannelIgnoringPan() const;
    ChannelType GetChannel() const;
-   void SetPanFromChannelType( ChannelType channelType );
 
    /** @brief Get the time at which the first clip in the track starts
     *
@@ -130,14 +156,6 @@ private:
 
    double GetRate() const;
    void SetRate(double newRate);
-
-   // Multiplicative factor.  Only converted to dB for display.
-   float GetGain() const;
-   void SetGain(float newGain);
-
-   // -1.0 (left) -> 1.0 (right)
-   float GetPan() const;
-   void SetPan(float newPan);
 
    // Takes gain and pan into account
    float GetChannelGain(int channel) const;
@@ -562,8 +580,6 @@ private:
 
    sampleFormat  mFormat;
    int           mRate;
-   float         mGain;
-   float         mPan;
    int           mWaveColorIndex;
    float         mOldGain[2];
 
@@ -589,6 +605,8 @@ private:
 private:
 
    TrackKind GetKind() const override { return TrackKind::Wave; }
+
+   std::shared_ptr< TrackGroupData > CreateGroupData() const override;
 
    //
    // Private variables

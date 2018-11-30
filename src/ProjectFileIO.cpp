@@ -512,8 +512,9 @@ void ProjectFileIO::WriteXML(
 
             // Don't store "rate" tag because the importer can figure that out.
             //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
-            xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
-            xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
+            auto &data = pWaveTrack->GetGroupData();
+            xmlFile.WriteAttr( wxT("gain"), (double)data.GetGain() );
+            xmlFile.WriteAttr( wxT("pan"), (double)data.GetPan() );
             xmlFile.EndTag(wxT("import"));
 
             ndx++;

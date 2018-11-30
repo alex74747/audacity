@@ -591,28 +591,23 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    }
    auto cleanup = finally( [&] {
       // Restore the saved track states and clean up.
-      auto savedTrackRange = pSavedTrackList.Any<const WaveTrack>();
-      auto ppSavedTrack = savedTrackRange.begin();
-      for (auto ppTrack = trackRange.begin();
+      auto savedGroupRange = pSavedTrackList.Any<const WaveTrack>().ByGroups();
+      auto ppSavedGroup = savedGroupRange.begin();
+      for (auto ppGroup = trackRange.ByGroups().begin();
 
-           *ppTrack && *ppSavedTrack;
+         (*ppGroup).data && (*ppSavedGroup).data;
 
-           ++ppTrack, ++ppSavedTrack)
+         ++ppGroup, ++ppSavedGroup)
       {
-         auto pWaveTrack = *ppTrack;
-         auto pSavedWaveTrack = *ppSavedTrack;
+         const auto &savedGroupData = *(*ppSavedGroup).data;
+         auto &groupData = *(*ppGroup).data;
 
-         if ( pWaveTrack->IsLeader() ) {
-            const auto &savedGroupData = pSavedWaveTrack->GetGroupData();
-            auto &groupData = pWaveTrack->GetGroupData();
+         groupData.SetSelected( savedGroupData.GetSelected() );
+         groupData.SetMute( savedGroupData.GetMute() );
+         groupData.SetSolo( savedGroupData.GetSolo() );
 
-            groupData.SetSelected( savedGroupData.GetSelected() );
-            groupData.SetMute( savedGroupData.GetMute() );
-            groupData.SetSolo( savedGroupData.GetSolo() );
-         }
-
-         pWaveTrack->SetGain(pSavedWaveTrack->GetGain());
-         pWaveTrack->SetPan(pSavedWaveTrack->GetPan());
+         groupData.SetGain( savedGroupData.GetGain() );
+         groupData.SetPan( savedGroupData.GetPan() );
       }
    } );
 
@@ -620,19 +615,16 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
       // Nothing to save compressed => success. Delete the copies and go.
       return true;
 
-   // Okay, now some bold state-faking to default values.
-   for (auto pWaveTrack : trackRange)
+   for ( auto pGroup : trackRange.ByGroups() )
    {
-      if ( pWaveTrack->IsLeader() ) {
-         auto &groupData = pWaveTrack->GetGroupData();
+      auto &groupData = *pGroup.data;
 
-         groupData.SetSelected(false);
-         groupData.SetMute(false);
-         groupData.SetSolo(false);
-      }
+      groupData.SetSelected(false);
+      groupData.SetMute(false);
+      groupData.SetSolo(false);
 
-      pWaveTrack->SetGain(1.0);
-      pWaveTrack->SetPan(0.0);
+      groupData.SetGain(1.0);
+      groupData.SetPan(0.0);
    }
 
    FilePath strDataDirPathName = strProjectPathName + wxT("_data");

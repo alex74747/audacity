@@ -676,7 +676,7 @@ static unsigned GetNumExportChannels( const TrackList &tracks )
 
       // Found a mono channel, but it may be panned
       else if (tr->GetChannel() == WaveTrack::MonoChannel) {
-         float pan = tr->GetPan();
+         float pan = tr->GetGroupData().GetPan();
 
          // Figure out what kind of channel it should be
          if (pan == -1.0) {   // panned hard left
@@ -875,7 +875,7 @@ ProgressResult ExportMultiple::ExportMultipleByTrack(bool byName,
       setting.channels = channels.size();
       if (setting.channels == 1 &&
           !(tr->GetChannel() == WaveTrack::MonoChannel &&
-                  tr->GetPan() == 0.0))
+                  tr->GetGroupData().GetPan() == 0.0))
          setting.channels = 2;
 
       // Get name and title
