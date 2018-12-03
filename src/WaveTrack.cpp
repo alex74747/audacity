@@ -2508,13 +2508,6 @@ WaveClipConstPointers WaveTrack::SortedClipArray() const
    return FillSortedClipArray<WaveClipConstPointers>(mClips);
 }
 
-///Deletes all clips' wavecaches.  Careful, This may not be threadsafe.
-void WaveTrack::ClearWaveCaches()
-{
-   for (const auto &clip : mClips)
-      clip->ClearWaveCache();
-}
-
 WaveTrackCache::~WaveTrackCache()
 {
 }
