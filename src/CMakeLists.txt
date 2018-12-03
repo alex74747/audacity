@@ -282,6 +282,7 @@ list( APPEND SOURCES
       WaveClip.h
       WaveTrack.cpp
       WaveTrack.h
+      WaveTrackLocation.cpp
       WaveTrackLocation.h
       WrappedType.cpp
       WrappedType.h
