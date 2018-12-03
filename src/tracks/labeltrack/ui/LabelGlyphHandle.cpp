@@ -59,6 +59,37 @@ void LabelTrackHit::OnLabelPermuted( LabelTrackEvent &e )
    update( mMouseOverLabelRight );
 }
 
+namespace {
+
+// Adjust label's left or right boundary, depending which is requested.
+// Return true iff the label flipped.
+bool AdjustEdge( LabelStruct &ls, int iEdge, double fNewTime)
+{
+   LabelStructDisplay::Get(ls).updated = true;
+   if( iEdge < 0 )
+      return ls.selectedRegion.setT0(fNewTime);
+   else
+      return ls.selectedRegion.setT1(fNewTime);
+}
+
+// We're moving the label.  Adjust both left and right edge.
+void MoveLabel( LabelStruct &ls, int iEdge, double fNewTime)
+{
+   double fTimeSpan = ls.getDuration();
+
+   if( iEdge < 0 )
+   {
+      ls.selectedRegion.setTimes(fNewTime, fNewTime+fTimeSpan);
+   }
+   else
+   {
+      ls.selectedRegion.setTimes(fNewTime-fTimeSpan, fNewTime);
+   }
+   LabelStructDisplay::Get(ls).updated = true;
+}
+
+}
+
 LabelGlyphHandle::LabelGlyphHandle
 (const std::shared_ptr<LabelTrack> &pLT,
  const wxRect &rect, const std::shared_ptr<LabelTrackHit> &pHit)
@@ -226,7 +257,7 @@ void LabelGlyphHandle::MayAdjustLabel
    auto labelStruct = mLabels[ iLabel ];
 
    // Adjust the requested edge.
-   bool flipped = labelStruct.AdjustEdge( iEdge, fNewTime );
+   bool flipped = AdjustEdge( labelStruct, iEdge, fNewTime );
    // If the edges did not swap, then we are done.
    if( ! flipped ) {
       pTrack->SetLabel( iLabel, labelStruct );
@@ -237,7 +268,7 @@ void LabelGlyphHandle::MayAdjustLabel
    // we didn't move.  Then we're done.
    if( !bAllowSwapping )
    {
-      labelStruct.AdjustEdge( -iEdge, fNewTime );
+      AdjustEdge( labelStruct, -iEdge, fNewTime );
       pTrack->SetLabel( iLabel, labelStruct );
       return;
    }
@@ -257,7 +288,7 @@ void LabelGlyphHandle::MayMoveLabel( int iLabel, int iEdge, double fNewTime)
    const auto pTrack = mpLT;
    const auto &mLabels = pTrack->GetLabels();
    auto labelStruct = mLabels[ iLabel ];
-   labelStruct.MoveLabel( iEdge, fNewTime );
+   MoveLabel( labelStruct, iEdge, fNewTime );
    pTrack->SetLabel( iLabel, labelStruct );
 }
 
@@ -287,14 +318,16 @@ bool LabelGlyphHandle::HandleGlyphDragRelease
       bool lupd = false, rupd = false;
       if( hit.mMouseOverLabelLeft >= 0 ) {
          auto labelStruct = mLabels[ hit.mMouseOverLabelLeft ];
-         lupd = labelStruct.updated;
-         labelStruct.updated = false;
+         auto &labelStructDisplay = LabelStructDisplay::Get(labelStruct);
+         lupd = labelStructDisplay.updated;
+         labelStructDisplay.updated = false;
          pTrack->SetLabel( hit.mMouseOverLabelLeft, labelStruct );
       }
       if( hit.mMouseOverLabelRight >= 0 ) {
          auto labelStruct = mLabels[ hit.mMouseOverLabelRight ];
-         rupd = labelStruct.updated;
-         labelStruct.updated = false;
+         auto &labelStructDisplay = LabelStructDisplay::Get(labelStruct);
+         rupd = labelStructDisplay.updated;
+         labelStructDisplay.updated = false;
          pTrack->SetLabel( hit.mMouseOverLabelRight, labelStruct );
       }
 

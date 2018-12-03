@@ -221,13 +221,14 @@ void LabelTrackView::ComputeTextPosition(const wxRect & r, int index) const
    const auto &mLabels = pTrack->GetLabels();
 
    const auto &labelStruct = mLabels[index];
+   auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
 
    // xExtra is extra space
    // between the text and the endpoints.
    const int xExtra=mIconWidth;
-   int x     = labelStruct.x;  // left endpoint
-   int x1    = labelStruct.x1; // right endpoint.
-   int width = labelStruct.width;
+   int x     = labelStructDisplay.x;  // left endpoint
+   int x1    = labelStructDisplay.x1; // right endpoint.
+   int width = labelStructDisplay.width;
 
    int xText; // This is where the text will end up.
 
@@ -356,7 +357,7 @@ void LabelTrackView::ComputeTextPosition(const wxRect & r, int index) const
    if( xText < x+xExtra )
       xText=x+xExtra;
 
-   labelStruct.xText = xText;
+   labelStructDisplay.xText = xText;
 }
 
 /// ComputeLayout determines which row each label
@@ -400,9 +401,10 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
       const int x1 = zoomInfo.TimeToPosition(labelStruct.getT1(), r.x);
       int y = r.y;
 
-      labelStruct.x=x;
-      labelStruct.x1=x1;
-      labelStruct.y=-1;// -ve indicates nothing doing.
+      auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
+      labelStructDisplay.x = x;
+      labelStructDisplay.x1 = x1;
+      labelStructDisplay.y = -1;// -ve indicates nothing doing.
       iRow=0;
       // Our first preference is a row that ends where we start.
       // (This is to encourage merging of adjacent label boundaries).
@@ -429,7 +431,7 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
             // reserve some space in first row.
             // reserve max of 200px or t1, or text box right edge.
             const int x2 = zoomInfo.TimeToPosition(0.0, r.x) + 200;
-            xUsed[iRow]=x+labelStruct.width+xExtra;
+            xUsed[iRow]=x+labelStructDisplay.width+xExtra;
             if( xUsed[iRow] < x1 ) xUsed[iRow]=x1;
             if( xUsed[iRow] < x2 ) xUsed[iRow]=x2;
             iRow=1;
@@ -440,11 +442,11 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
             nRowsUsed=iRow+1;
          // Record the position for this label
          y= r.y + iRow * yRowHeight +(yRowHeight/2)+1;
-         labelStruct.y=y;
+         labelStructDisplay.y = y;
          // On this row we have used up to max of end marker and width.
          // Plus also allow space to show the start icon and
          // some space for the text frame.
-         xUsed[iRow]=x+labelStruct.width+xExtra;
+         xUsed[iRow] = x + labelStructDisplay.width + xExtra;
          if( xUsed[iRow] < x1 ) xUsed[iRow]=x1;
          ComputeTextPosition( r, i );
       }
@@ -458,9 +460,11 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
 void LabelTrackView::DrawLines(
    wxDC & dc, const LabelStruct &ls, const wxRect & r)
 {
-   auto &x = ls.x;
-   auto &x1 = ls.x1;
-   auto &y = ls.y;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   
+   auto &x = labelStructDisplay.x;
+   auto &x1 = labelStructDisplay.x1;
+   auto &y = labelStructDisplay.y;
 
    // How far out from the centre line should the vertical lines
    // start, i.e. what is the y position of the icon?
@@ -501,7 +505,8 @@ void LabelTrackView::DrawGlyphs(
    wxDC & dc, const LabelStruct &ls, const wxRect & r,
    int GlyphLeft, int GlyphRight)
 {
-   auto &y = ls.y;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   auto &y = labelStructDisplay.y;
 
    const int xHalfWidth=mIconWidth/2;
    const int yStart=y-mIconHeight/2+(mTextHeight+3)/2;
@@ -510,8 +515,8 @@ void LabelTrackView::DrawGlyphs(
    if( y == -1 )
       return;
 
-   auto &x = ls.x;
-   auto &x1 = ls.x1;
+   auto &x = labelStructDisplay.x;
+   auto &x1 = labelStructDisplay.x1;
 
    if((x  >= r.x) && (x  <= (r.x+r.width)))
       dc.DrawBitmap(GetGlyph(GlyphLeft), x-xHalfWidth,yStart, true);
@@ -533,16 +538,17 @@ void LabelTrackView::DrawText(wxDC & dc, const LabelStruct &ls, const wxRect & r
    //text we are about to draw.
    //if it isn't, nothing to draw.
 
-   auto &y = ls.y;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   auto &y = labelStructDisplay.y;
    if( y == -1 )
       return;
 
    // Draw frame for the text...
    // We draw it half an icon width left of the text itself.
    {
-      auto &xText = ls.xText;
+      auto &xText = labelStructDisplay.xText;
       const int xStart=wxMax(r.x,xText-mIconWidth/2);
-      const int xEnd=wxMin(r.x+r.width,xText+ls.width+mIconWidth/2);
+      const int xEnd = wxMin(r.x + r.width, xText + labelStructDisplay.width + mIconWidth/2);
       const int xWidth = xEnd-xStart;
 
       if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))
@@ -562,13 +568,14 @@ void LabelTrackView::DrawTextBox(
    const int yBarHeight=3;
    const int yFrameHeight = mTextHeight+3;
    const int xBarShorten  = mIconWidth+4;
-   auto &y = ls.y;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   auto &y = labelStructDisplay.y;
    if( y == -1 )
       return;
 
    {
-      auto &x = ls.x;
-      auto &x1 = ls.x1;
+      auto &x = labelStructDisplay.x;
+      auto &x1 = labelStructDisplay.x1;
       const int xStart=wxMax(r.x,x+xBarShorten/2);
       const int xEnd=wxMin(r.x+r.width,x1-xBarShorten/2);
       const int xWidth = xEnd-xStart;
@@ -593,9 +600,9 @@ void LabelTrackView::DrawTextBox(
    // We don't quite draw from x to x1 because we allow
    // half an icon width at each end.
    {
-      auto &xText = ls.xText;
+      auto &xText = labelStructDisplay.xText;
       const int xStart=wxMax(r.x,xText-mIconWidth/2);
-      const int xEnd=wxMin(r.x+r.width,xText+ls.width+mIconWidth/2);
+      const int xEnd = wxMin(r.x + r.width, xText + labelStructDisplay.width + mIconWidth/2);
       const int xWidth = xEnd-xStart;
 
       if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))
@@ -616,7 +623,8 @@ void LabelTrackView::DrawHighlight( wxDC & dc, const LabelStruct &ls,
    curPen.SetColour(wxString(wxT("BLUE")));
    wxBrush curBrush = dc.GetBrush();
    curBrush.SetColour(wxString(wxT("BLUE")));
-   auto &y = ls.y;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   auto &y = labelStructDisplay.y;
    if (xPos1 < xPos2)
       dc.DrawRectangle(xPos1-1, y-charHeight/2, xPos2-xPos1+1, charHeight);
    else
@@ -626,7 +634,8 @@ void LabelTrackView::DrawHighlight( wxDC & dc, const LabelStruct &ls,
 namespace {
 void getXPos( const LabelStruct &ls, wxDC & dc, int * xPos1, int cursorPos)
 {
-   *xPos1 = ls.xText;
+   auto &labelStructDisplay = LabelStructDisplay::Get( ls );
+   *xPos1 = labelStructDisplay.xText;
    if( cursorPos > 0)
    {
       int partWidth;
@@ -732,7 +741,8 @@ void LabelTrackView::Draw
    // text label title changes.
    for (const auto &labelStruct : mLabels) {
       dc.GetTextExtent(labelStruct.title, &textWidth, &textHeight);
-      labelStruct.width = textWidth;
+      auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
+      labelStructDisplay.width = textWidth;
    }
 
    // TODO: And this only needs to be done once, but we
@@ -817,7 +827,8 @@ void LabelTrackView::Draw
    if( mDrawCursor && HasSelection( project ) )
    {
       const auto &labelStruct = mLabels[mSelIndex];
-      int xPos = labelStruct.xText;
+      auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
+      int xPos = labelStructDisplay.xText;
 
       if( mCurrentCursorPos > 0)
       {
@@ -831,8 +842,8 @@ void LabelTrackView::Draw
       const int CursorWidth=2;
       currentPen.SetWidth(CursorWidth);
       AColor::Line(dc,
-                   xPos-1, labelStruct.y - mFontHeight/2 + 1,
-                   xPos-1, labelStruct.y + mFontHeight/2 - 1);
+                   xPos-1, labelStructDisplay.y - mFontHeight/2 + 1,
+                   xPos-1, labelStructDisplay.y + mFontHeight/2 - 1);
       currentPen.SetWidth(1);
    }
 }
@@ -874,6 +885,7 @@ int LabelTrackView::FindCursorPosition(wxCoord xPos)
    const auto pTrack = FindLabelTrack();
    const auto &mLabels = pTrack->GetLabels();
    const auto &labelStruct = mLabels[mSelIndex];
+   auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
    const auto &title = labelStruct.title;
    const int length = title.length();
    while (!finished && (charIndex < length + 1))
@@ -884,7 +896,7 @@ int LabelTrackView::FindCursorPosition(wxCoord xPos)
 
       // Get the width of the last character
       dc.GetTextExtent(subString.Right(1), &oneWidth, NULL);
-      bound = labelStruct.xText + partWidth - oneWidth * 0.5;
+      bound = labelStructDisplay.xText + partWidth - oneWidth * 0.5;
 
       if (xPos <= bound)
       {
@@ -1118,16 +1130,17 @@ void LabelTrackView::OverGlyph(
       //over left or right selection bound
       //Check right bound first, since it is drawn after left bound,
       //so give it precedence for matching/highlighting.
-      if( abs(labelStruct.y - (y - (mTextHeight+3)/2)) < d1 &&
-               abs(labelStruct.x1 - d2 -x) < d1)
+      auto &labelStructDisplay = LabelStructDisplay::Get( labelStruct );
+      if( abs(labelStructDisplay.y - (y - (mTextHeight+3)/2)) < d1 &&
+               abs(labelStructDisplay.x1 - d2 -x) < d1)
       {
          hit.mMouseOverLabelRight = i;
-         if(abs(labelStruct.x1 - x) < d2 )
+         if(abs(labelStructDisplay.x1 - x) < d2 )
          {
             result |= 4;
             // If left and right co-incident at this resolution, then we drag both.
             // We could be a little less stringent about co-incidence here if we liked.
-            if( abs(labelStruct.x1-labelStruct.x) < 1.0 )
+            if( abs(labelStructDisplay.x1 - labelStructDisplay.x) < 1.0 )
             {
                result |=1;
                hit.mMouseOverLabelLeft = i;
@@ -1137,11 +1150,11 @@ void LabelTrackView::OverGlyph(
       }
       // Use else-if here rather than else to avoid detecting left and right
       // of the same label.
-      else if(   abs(labelStruct.y - (y - (mTextHeight+3)/2)) < d1 &&
-            abs(labelStruct.x + d2 - x) < d1 )
+      else if(   abs(labelStructDisplay.y - (y - (mTextHeight+3)/2)) < d1 &&
+            abs(labelStructDisplay.x + d2 - x) < d1 )
       {
          hit.mMouseOverLabelLeft = i;
-         if(abs(labelStruct.x - x) < d2 )
+         if(abs(labelStructDisplay.x - x) < d2 )
             result |= 4;
          result |= 1;
       }
@@ -1172,9 +1185,10 @@ int LabelTrackView::OverATextBox( const LabelTrack &track, int xx, int yy )
 // return true if the mouse is over text box, false otherwise
 bool LabelTrackView::OverTextBox(const LabelStruct *pLabel, int x, int y)
 {
-   if( (pLabel->xText-(mIconWidth/2) < x) &&
-            (x<pLabel->xText+pLabel->width+(mIconWidth/2)) &&
-            (abs(pLabel->y-y)<mIconHeight/2))
+   auto &labelStructDisplay = LabelStructDisplay::Get( *pLabel );
+   if( (labelStructDisplay.xText - (mIconWidth/2) < x) &&
+            (x < labelStructDisplay.xText + labelStructDisplay.width + (mIconWidth/2)) &&
+            (abs(labelStructDisplay.y - y) < mIconHeight/2))
    {
       return true;
    }
@@ -1708,6 +1722,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
 
       const auto pTrack = FindLabelTrack();
       const LabelStruct *ls = pTrack->GetLabel(mSelIndex);
+      auto &labelStructDisplay = LabelStructDisplay::Get( *ls );
 
       wxClientDC dc(parent);
 
@@ -1721,7 +1736,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
       wxASSERT(success);
       static_cast<void>(success); // Suppress unused variable warning if debug mode is disabled
 
-      parent->PopupMenu(&menu, x, ls->y + (mIconHeight / 2) - 1);
+      parent->PopupMenu(&menu, x, labelStructDisplay.y + (mIconHeight / 2) - 1);
    }
 }
 
@@ -2118,3 +2133,14 @@ std::shared_ptr<TrackVRulerControls> LabelTrackView::DoGetVRulerControls()
       std::make_shared<LabelTrackVRulerControls>( shared_from_this() );
 }
 
+static LabelStruct::Caches::RegisteredFactory sKey{ []( const LabelStruct& ){
+   return std::make_unique<LabelStructDisplay>();
+}};
+
+LabelStructDisplay &LabelStructDisplay::Get( const LabelStruct &labelStruct )
+{
+   // We const_cast the labelStruct, and treat all of the attached data as
+   // a mutable part of it for caching the display calculations
+   return const_cast< LabelStruct& >( labelStruct )
+      .Caches::Get<LabelStructDisplay>( sKey );
+}

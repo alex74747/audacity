@@ -12,6 +12,7 @@ Paul Licameli split from class LabelTrack
 #define __AUDACITY_LABEL_TRACK_VIEW__
 
 #include "../../ui/CommonTrackView.h"
+#include "../../../ClientData.h"
 
 class LabelGlyphHandle;
 class LabelTextHandle;
@@ -229,6 +230,22 @@ private:
    std::weak_ptr<LabelTextHandle> mTextHandle;
 
    static wxFont msFont;
+};
+
+// Data structure that the view attaches to each label
+struct LabelStructDisplay final : ClientData::Base
+{
+// Working storage for on-screen
+   int width{}; /// width of the text in pixels.
+   int x{};     /// Pixel position of left hand glyph
+   int x1{};    /// Pixel position of right hand glyph
+   int xText{}; /// Pixel position of left hand side of text box
+   int y{};     /// Pixel position of label.
+   
+   /// flag to tell if the label times were updated
+   bool updated{};
+
+   static LabelStructDisplay &Get( const LabelStruct & );
 };
 
 #endif
