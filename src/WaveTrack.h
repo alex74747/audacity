@@ -60,8 +60,11 @@ using Regions = std::vector < Region >;
 
 class Envelope;
 
-class AUDACITY_DLL_API WaveTrack final : public PlayableTrack {
+class AUDACITY_DLL_API WaveTrack final : public PlayableTrack
+   , public ClientData::Site< WaveTrack >
+{
 public:
+   using Caches = Site< WaveTrack >;
 
    //
    // Constructor / Destructor / Duplicator
@@ -112,7 +115,6 @@ private:
    const GroupData &GetGroupData() const
       { return Track::GetGroupData< const GroupData >(); }
 
-   typedef WaveTrackLocation Location;
    using Holder = std::shared_ptr<WaveTrack>;
 
    ~WaveTrack() override;
@@ -474,12 +476,6 @@ private:
    // clipidx1 and clipidx2 are indices into the clip list.
    void MergeClips(int clipidx1, int clipidx2);
 
-   // Cache special locations (e.g. cut lines) for later speedy access
-   void UpdateLocationsCache() const;
-
-   // Get cached locations
-   const std::vector<Location> &GetCachedLocations() const { return mDisplayLocationsCache; }
-
    // Expand cut line (that is, re-insert audio, then DELETE audio saved in cut line)
    void ExpandCutLine(double cutLinePosition, double* cutlineStart = NULL, double* cutlineEnd = NULL);
 
@@ -509,8 +505,6 @@ private:
    int           mWaveColorIndex;
    float         mOldGain[2];
 
-
-   mutable std::vector <Location> mDisplayLocationsCache;
 
    //
    // Protected methods
@@ -593,6 +587,22 @@ private:
    Buffer mBuffers[2];
    GrowableSampleBuffer mOverlapBuffer;
    int mNValidBuffers;
+};
+
+class WaveTrackLocationsCache final : public ClientData::Base
+{
+   using Location = WaveTrackLocation;
+   std::vector <Location> mDisplayLocationsCache;
+ 
+public:
+   static WaveTrackLocationsCache &Get( const WaveTrack &track );
+
+   // Cache special locations (e.g. cut lines) for later speedy access
+   void Update( const WaveTrack &tack );
+
+   // Get cached locations
+   const std::vector<Location> &Get() const
+   { return mDisplayLocationsCache; }
 };
 
 #endif // __AUDACITY_WAVETRACK__
