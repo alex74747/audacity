@@ -87,12 +87,12 @@ const WaveTrackViewGroupData
    return Get( const_cast< WaveTrack& >( track ) );
 }
 
-void WaveTrackViewGroupData::SetLastScaleType() const
+void WaveTrackViewGroupData::SetLastScaleType()
 {
    mLastScaleType = GetWaveformSettings().scaleType;
 }
 
-void WaveTrackViewGroupData::SetLastdBRange() const
+void WaveTrackViewGroupData::SetLastdBRange()
 {
    mLastdBRange = GetWaveformSettings().dBRange;
 }
@@ -103,7 +103,7 @@ void WaveTrackViewGroupData::GetDisplayBounds(float *min, float *max) const
    *max = mDisplayMax;
 }
 
-void WaveTrackViewGroupData::SetDisplayBounds(float min, float max) const
+void WaveTrackViewGroupData::SetDisplayBounds(float min, float max)
 {
    mDisplayMin = min;
    mDisplayMax = max;
