@@ -17,9 +17,6 @@
 #include <vector>
 #include <wx/longlong.h>
 
-#include "WaveTrackLocation.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
-
 class ProgressDialog;
 
 class TimeWarper;
@@ -587,22 +584,6 @@ private:
    Buffer mBuffers[2];
    GrowableSampleBuffer mOverlapBuffer;
    int mNValidBuffers;
-};
-
-class WaveTrackLocationsCache final : public ClientData::Base
-{
-   using Location = WaveTrackLocation;
-   std::vector <Location> mDisplayLocationsCache;
- 
-public:
-   static WaveTrackLocationsCache &Get( const WaveTrack &track );
-
-   // Cache special locations (e.g. cut lines) for later speedy access
-   void Update( const WaveTrack &tack );
-
-   // Get cached locations
-   const std::vector<Location> &Get() const
-   { return mDisplayLocationsCache; }
 };
 
 #endif // __AUDACITY_WAVETRACK__
