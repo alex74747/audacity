@@ -51,6 +51,15 @@ WaveTrackView::~WaveTrackView()
 {
 }
 
+void WaveTrackView::CopyTo( Track &track ) const
+{
+   TrackView::CopyTo( track );
+
+   if ( auto pOther =
+      dynamic_cast< WaveTrackView* >( &TrackView::Get( track ) ) ) {
+   }
+}
+
 std::vector<UIHandlePtr> WaveTrackView::DetailedHitTest
 (const TrackPanelMouseState &st,
  const AudacityProject *pProject, int currentTool, bool bMultiTool)

@@ -16,6 +16,7 @@ Paul Licameli split from class WaveTrack
 class CutlineHandle;
 class SampleHandle;
 class EnvelopeHandle;
+class WaveTrack;
 
 class WaveTrackView final : public CommonTrackView
 {
@@ -34,6 +35,9 @@ private:
    void Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override;
+
+   // Preserve some view state too for undo/redo purposes
+   void CopyTo( Track &track ) const override;
 
    std::vector<UIHandlePtr> DetailedHitTest
       (const TrackPanelMouseState &state,

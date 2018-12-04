@@ -55,6 +55,7 @@ Track classes.
 
 #include "effects/TimeWarper.h"
 #include "prefs/TracksPrefs.h"
+#include "tracks/ui/TrackView.h"
 
 #include "InconsistencyException.h"
 
