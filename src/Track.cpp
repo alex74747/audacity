@@ -144,10 +144,6 @@ void Track::EnsureVisible( bool modifyState )
       pList->EnsureVisibleEvent( SharedPointer(), modifyState );
 }
 
-void Track::Merge(const Track &orig)
-{
-}
-
 Track::Holder Track::Duplicate() const
 {
    // invoke "virtual constructor" to copy track object proper:
