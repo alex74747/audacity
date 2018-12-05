@@ -31,6 +31,7 @@ class DirManager;
 class TimeWarper;
 class ZoomInfo;
 
+class LabelTrackView;
 
 struct LabelTrackHit;
 struct TrackPanelDrawingContext;
