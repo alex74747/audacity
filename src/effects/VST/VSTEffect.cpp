@@ -3985,7 +3985,7 @@ void VSTEffect::HandleXMLContent(const wxString & content)
    }
 }
 
-XMLTagHandler *VSTEffect::HandleXMLChild(const wxChar *tag)
+XMLTagHandlerPtr VSTEffect::HandleXMLChild(const wxChar *tag)
 {
    if (wxStrcmp(tag, wxT("vstprogrampersistence")) == 0)
    {

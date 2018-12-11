@@ -1654,7 +1654,7 @@ bool ProjectFileIO::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    return true;
 }
 
-XMLTagHandler *ProjectFileIO::HandleXMLChild(const wxChar *tag)
+XMLTagHandlerPtr ProjectFileIO::HandleXMLChild(const wxChar *tag)
 {
    auto &project = mProject;
    auto fn = ProjectFileIORegistry::Lookup(tag);

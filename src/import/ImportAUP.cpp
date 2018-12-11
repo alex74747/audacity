@@ -110,31 +110,31 @@ private:
    {
       wxString parent;
       wxString tag;
-      XMLTagHandler *handler;
+      XMLTagHandlerPtr handler;
    };
    using stack = std::vector<struct node>;
 
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
    void HandleXMLEndTag(const wxChar *tag) override;
-   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
+   XMLTagHandlerPtr HandleXMLChild(const wxChar *tag) override;
 
-   bool HandleProject(XMLTagHandler *&handle);
-   bool HandleLabelTrack(XMLTagHandler *&handle);
-   bool HandleNoteTrack(XMLTagHandler *&handle);
-   bool HandleTimeTrack(XMLTagHandler *&handle);
-   bool HandleWaveTrack(XMLTagHandler *&handle);
-   bool HandleTags(XMLTagHandler *&handle);
-   bool HandleTag(XMLTagHandler *&handle);
-   bool HandleLabel(XMLTagHandler *&handle);
-   bool HandleWaveClip(XMLTagHandler *&handle);
-   bool HandleSequence(XMLTagHandler *&handle);
-   bool HandleWaveBlock(XMLTagHandler *&handle);
-   bool HandleEnvelope(XMLTagHandler *&handle);
-   bool HandleControlPoint(XMLTagHandler *&handle);
-   bool HandleSimpleBlockFile(XMLTagHandler *&handle);
-   bool HandleSilentBlockFile(XMLTagHandler *&handle);
-   bool HandlePCMAliasBlockFile(XMLTagHandler *&handle);
-   bool HandleImport(XMLTagHandler *&handle);
+   bool HandleProject(XMLTagHandlerPtr &handle);
+   bool HandleLabelTrack(XMLTagHandlerPtr &handle);
+   bool HandleNoteTrack(XMLTagHandlerPtr &handle);
+   bool HandleTimeTrack(XMLTagHandlerPtr &handle);
+   bool HandleWaveTrack(XMLTagHandlerPtr &handle);
+   bool HandleTags(XMLTagHandlerPtr &handle);
+   bool HandleTag(XMLTagHandlerPtr &handle);
+   bool HandleLabel(XMLTagHandlerPtr &handle);
+   bool HandleWaveClip(XMLTagHandlerPtr &handle);
+   bool HandleSequence(XMLTagHandlerPtr &handle);
+   bool HandleWaveBlock(XMLTagHandlerPtr &handle);
+   bool HandleEnvelope(XMLTagHandlerPtr &handle);
+   bool HandleControlPoint(XMLTagHandlerPtr &handle);
+   bool HandleSimpleBlockFile(XMLTagHandlerPtr &handle);
+   bool HandleSilentBlockFile(XMLTagHandlerPtr &handle);
+   bool HandlePCMAliasBlockFile(XMLTagHandlerPtr &handle);
+   bool HandleImport(XMLTagHandlerPtr &handle);
 
    // Called in first pass to collect information about blocks
    void AddFile(sampleCount len,
@@ -508,7 +508,7 @@ bool AUPImportFileHandle::Open()
    return false;
 }
 
-XMLTagHandler *AUPImportFileHandle::HandleXMLChild(const wxChar *tag)
+XMLTagHandlerPtr AUPImportFileHandle::HandleXMLChild(const wxChar *tag)
 {
    return this;
 }
@@ -553,7 +553,7 @@ bool AUPImportFileHandle::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    mCurrentTag = tag;
    mAttrs = attrs;
 
-   XMLTagHandler *handler = nullptr;
+   XMLTagHandlerPtr handler = nullptr;
    bool success = false;
 
    if (mCurrentTag.IsSameAs(wxT("project")) ||
@@ -636,7 +636,7 @@ bool AUPImportFileHandle::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    return true;
 }
 
-bool AUPImportFileHandle::HandleProject(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleProject(XMLTagHandlerPtr &handler)
 {
    auto &fileMan = ProjectFileManager::Get(mProject);
    auto &window = GetProjectFrame(mProject);
@@ -846,14 +846,14 @@ bool AUPImportFileHandle::HandleProject(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleLabelTrack(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleLabelTrack(XMLTagHandlerPtr &handler)
 {
    handler = TrackList::Get(mProject).Add(std::make_shared<LabelTrack>());
 
    return true;
 }
 
-bool AUPImportFileHandle::HandleNoteTrack(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleNoteTrack(XMLTagHandlerPtr &handler)
 {
 #if defined(USE_MIDI)
    handler = TrackList::Get(mProject).Add(std::make_shared<NoteTrack>());
@@ -870,7 +870,7 @@ bool AUPImportFileHandle::HandleNoteTrack(XMLTagHandler *&handler)
 #endif
 }
 
-bool AUPImportFileHandle::HandleTimeTrack(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleTimeTrack(XMLTagHandlerPtr &handler)
 {
    auto &tracks = TrackList::Get(mProject);
 
@@ -894,11 +894,10 @@ bool AUPImportFileHandle::HandleTimeTrack(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleWaveTrack(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleWaveTrack(XMLTagHandlerPtr &handler)
 {
    auto &trackFactory = WaveTrackFactory::Get(mProject);
-   handler = mWaveTrack =
-      TrackList::Get(mProject).Add(trackFactory.NewWaveTrack());
+   handler = mWaveTrack = static_cast<WaveTrack *>(handler.get());
 
    // No active clip.  In early versions of Audacity, there was a single
    // implied clip so we'll create a clip when the first "sequence" is
@@ -908,7 +907,7 @@ bool AUPImportFileHandle::HandleWaveTrack(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleTags(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleTags(XMLTagHandlerPtr &handler)
 {
    wxString n;
    wxString v;
@@ -958,7 +957,7 @@ bool AUPImportFileHandle::HandleTags(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleTag(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleTag(XMLTagHandlerPtr &handler)
 {
    if (!mParentTag.IsSameAs(wxT("tags")))
    {
@@ -1005,7 +1004,7 @@ bool AUPImportFileHandle::HandleTag(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleLabel(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleLabel(XMLTagHandlerPtr &handler)
 {
    if (!mParentTag.IsSameAs(wxT("labeltrack")))
    {
@@ -1018,31 +1017,31 @@ bool AUPImportFileHandle::HandleLabel(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleWaveClip(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleWaveClip(XMLTagHandlerPtr &handler)
 {
    struct node node = mHandlers.back();
 
    if (mParentTag.IsSameAs(wxT("wavetrack")))
    {
-      WaveTrack *wavetrack = static_cast<WaveTrack *>(node.handler);
+      WaveTrack *wavetrack = static_cast<WaveTrack *>(node.handler.get());
 
       handler = wavetrack->CreateClip();
    }
    else if (mParentTag.IsSameAs(wxT("waveclip")))
    {
       // Nested wave clips are cut lines
-      WaveClip *waveclip = static_cast<WaveClip *>(node.handler);
+      WaveClip *waveclip = static_cast<WaveClip *>(node.handler.get());
 
       handler = waveclip->HandleXMLChild(mCurrentTag);
    }
 
-   mClip = static_cast<WaveClip *>(handler);
+   mClip = static_cast<WaveClip *>(handler.get());
    mClips.push_back(mClip);
 
    return true;
 }
 
-bool AUPImportFileHandle::HandleEnvelope(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleEnvelope(XMLTagHandlerPtr &handler)
 {
    struct node node = mHandlers.back();
 
@@ -1052,7 +1051,7 @@ bool AUPImportFileHandle::HandleEnvelope(XMLTagHandler *&handler)
       // envelope as well.  (See HandleTimeTrack and HandleControlPoint)
       if (node.handler)
       {
-         TimeTrack *timetrack = static_cast<TimeTrack *>(node.handler);
+         TimeTrack *timetrack = static_cast<TimeTrack *>(node.handler.get());
 
          handler = timetrack->GetEnvelope();
       }
@@ -1066,7 +1065,7 @@ bool AUPImportFileHandle::HandleEnvelope(XMLTagHandler *&handler)
    // Nested wave clips are cut lines
    else if (mParentTag.IsSameAs(wxT("waveclip")))
    {
-      WaveClip *waveclip = static_cast<WaveClip *>(node.handler);
+      WaveClip *waveclip = static_cast<WaveClip *>(node.handler.get());
 
       handler = waveclip->GetEnvelope();
    }
@@ -1074,7 +1073,7 @@ bool AUPImportFileHandle::HandleEnvelope(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleControlPoint(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleControlPoint(XMLTagHandlerPtr &handler)
 {
    struct node node = mHandlers.back();
 
@@ -1084,7 +1083,7 @@ bool AUPImportFileHandle::HandleControlPoint(XMLTagHandler *&handler)
       // control points as well.  (See HandleTimeTrack and HandleEnvelope)
       if (node.handler)
       {
-         Envelope *envelope = static_cast<Envelope *>(node.handler);
+         Envelope *envelope = static_cast<Envelope *>(node.handler.get());
 
          handler = envelope->HandleXMLChild(mCurrentTag);
       }
@@ -1093,17 +1092,17 @@ bool AUPImportFileHandle::HandleControlPoint(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleSequence(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleSequence(XMLTagHandlerPtr &handler)
 {
    struct node node = mHandlers.back();
 
-   WaveClip *waveclip = static_cast<WaveClip *>(node.handler);
+   WaveClip *waveclip = static_cast<WaveClip *>(node.handler.get());
 
    // Earlier versions of Audacity had a single implied waveclip, so for
    // these versions, we get or create the only clip in the track.
    if (mParentTag.IsSameAs(wxT("wavetrack")))
    {
-      XMLTagHandler *dummy;
+      XMLTagHandlerPtr dummy;
       HandleWaveClip(dummy);
       waveclip = mClip;
    }
@@ -1165,7 +1164,7 @@ bool AUPImportFileHandle::HandleSequence(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleWaveBlock(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleWaveBlock(XMLTagHandlerPtr &handler)
 {
    while(*mAttrs)
    {
@@ -1195,7 +1194,7 @@ bool AUPImportFileHandle::HandleWaveBlock(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleSimpleBlockFile(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleSimpleBlockFile(XMLTagHandlerPtr &handler)
 {
    FilePath filename;
    size_t len = 0;
@@ -1247,7 +1246,7 @@ bool AUPImportFileHandle::HandleSimpleBlockFile(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleSilentBlockFile(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleSilentBlockFile(XMLTagHandlerPtr &handler)
 {
    FilePath filename;
    size_t len = 0;
@@ -1283,7 +1282,7 @@ bool AUPImportFileHandle::HandleSilentBlockFile(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandlePCMAliasBlockFile(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandlePCMAliasBlockFile(XMLTagHandlerPtr &handler)
 {
    wxString summaryFilename;
    wxFileName filename;
@@ -1371,7 +1370,7 @@ bool AUPImportFileHandle::HandlePCMAliasBlockFile(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleImport(XMLTagHandler *&handler)
+bool AUPImportFileHandle::HandleImport(XMLTagHandlerPtr &handler)
 {
    // Adapted from ImportXMLTagHandler::HandleXMLTag as in version 2.4.2
    if (!mAttrs || !(*mAttrs) || wxStrcmp(*mAttrs++, wxT("filename")))

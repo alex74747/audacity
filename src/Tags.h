@@ -96,7 +96,7 @@ class AUDACITY_DLL_API Tags final
       wxWindow *parent, const TranslatableString &title, bool force = false);
 
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
-   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
+   XMLTagHandlerPtr HandleXMLChild(const wxChar *tag) override;
    void WriteXML(XMLWriter &xmlFile) const /* not override */;
 
    void AllowEditTitle(bool editTitle);

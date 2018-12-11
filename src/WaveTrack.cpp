@@ -1694,7 +1694,7 @@ void WaveTrack::HandleXMLEndTag(const wxChar * WXUNUSED(tag))
    NewestOrNewClip()->HandleXMLEndTag(wxT("waveclip"));
 }
 
-XMLTagHandler *WaveTrack::HandleXMLChild(const wxChar *tag)
+XMLTagHandlerPtr WaveTrack::HandleXMLChild(const wxChar *tag)
 {
    //
    // This is legacy code (1.2 and previous) and is not called for NEW projects!

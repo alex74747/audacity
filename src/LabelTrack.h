@@ -109,7 +109,7 @@ private:
 
 public:
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
-   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
+   XMLTagHandlerPtr HandleXMLChild(const wxChar *tag) override;
    void WriteXML(XMLWriter &xmlFile) const override;
 
    Track::Holder Cut  (double t0, double t1) override;

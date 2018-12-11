@@ -54,7 +54,7 @@ public:
          return false;
    }
 
-   XMLTagHandler *HandleXMLChild(const wxChar * WXUNUSED(tag)) override
+   XMLTagHandlerPtr HandleXMLChild(const wxChar * WXUNUSED(tag)) override
    {
       return NULL;
    }
@@ -111,7 +111,7 @@ public:
 
    // Newfangled XML file I/O
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
-   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
+   XMLTagHandlerPtr HandleXMLChild(const wxChar *tag) override;
    void WriteXML(XMLWriter &xmlFile) const /* not override */;
 
    // Handling Cut/Copy/Paste events

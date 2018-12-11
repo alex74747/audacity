@@ -1516,7 +1516,7 @@ void CommandManager::HandleXMLEndTag(const wxChar *tag)
    */
 }
 
-XMLTagHandler *CommandManager::HandleXMLChild(const wxChar * WXUNUSED(tag))
+XMLTagHandlerPtr CommandManager::HandleXMLChild(const wxChar * WXUNUSED(tag))
 {
    return this;
 }

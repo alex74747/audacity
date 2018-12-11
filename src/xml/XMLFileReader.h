@@ -10,6 +10,7 @@
 
 
 
+#include <memory>
 #include <vector>
 struct XML_ParserStruct;
 typedef struct XML_ParserStruct *XML_Parser;
@@ -22,7 +23,7 @@ class AUDACITY_DLL_API XMLFileReader final {
    XMLFileReader();
    ~XMLFileReader();
 
-   bool Parse(XMLTagHandler *baseHandler,
+   bool Parse(XMLTagHandlerPtr baseHandler,
               const FilePath &fname);
    bool ParseString(XMLTagHandler *baseHandler,
                     const wxString &xmldata);
@@ -41,8 +42,8 @@ class AUDACITY_DLL_API XMLFileReader final {
 
  private:
    XML_Parser       mParser;
-   XMLTagHandler   *mBaseHandler;
-   using Handlers = std::vector<XMLTagHandler*>;
+   XMLTagHandlerPtr   mBaseHandler;
+   using Handlers = std::vector<XMLTagHandlerPtr>;
    Handlers mHandler;
    TranslatableString mErrorStr;
    TranslatableString mLibraryErrorStr;
