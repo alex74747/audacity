@@ -90,6 +90,12 @@ class AUDACITY_DLL_API XMLTagHandler /* not final */ {
    // tag and the attribute-value pairs (null-terminated), and
    // return true on success, and false on failure.  If you return
    // false, you will not get any calls about children.
+   // False return should happen only for bad values that can't be sensibly
+   // interpreted, or when a necessary attribute is absent.
+   // To allow forward compatibility, do NOT return false in case of
+   // unrecognized attribute names, which might have been written by future
+   // versions of Audacity.  Just ignore them if there is some consistent way
+   // for this version to interpret the attributes that it does recognize.
    virtual bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) = 0;
 
    // This method will be called when a closing tag is encountered.
