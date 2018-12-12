@@ -154,7 +154,7 @@ WaveClip::WaveClip(const WaveClip& orig,
    if ( copyCutlines )
       for (const auto &clip: orig.mCutLines)
          mCutLines.push_back
-            ( std::make_unique<WaveClip>( *clip, factory, true ) );
+            ( std::make_shared<WaveClip>( *clip, factory, true ) );
 
    mIsPlaceholder = orig.GetIsPlaceholder();
 }
@@ -198,9 +198,9 @@ WaveClip::WaveClip(const WaveClip& orig,
          if (cutlinePosition >= t0 && cutlinePosition <= t1)
          {
             auto newCutLine =
-               std::make_unique< WaveClip >( *clip, factory, true );
+               std::make_shared< WaveClip >( *clip, factory, true );
             newCutLine->SetOffset( cutlinePosition - t0 );
-            mCutLines.push_back(std::move(newCutLine));
+            mCutLines.push_back( newCutLine );
          }
       }
 }
@@ -1341,7 +1341,7 @@ XMLTagHandlerPtr WaveClip::HandleXMLChild(const wxChar *tag)
    {
       // Nested wave clips are cut lines
       mCutLines.push_back(
-         std::make_unique<WaveClip>(mSequence->GetFactory(),
+         std::make_shared<WaveClip>(mSequence->GetFactory(),
             mSequence->GetSampleFormat(), mRate, 0 /*colourindex*/));
       return mCutLines.back().get();
    }
@@ -1397,7 +1397,7 @@ void WaveClip::Paste(double t0, const WaveClip* other)
    for (const auto &cutline: pastedClip->mCutLines)
    {
       newCutlines.push_back(
-         std::make_unique<WaveClip>
+         std::make_shared<WaveClip>
             ( *cutline, mSequence->GetFactory(),
               // Recursively copy cutlines of cutlines.  They don't need
               // their offsets adjusted.
@@ -1534,7 +1534,7 @@ void WaveClip::ClearAndAddCutLine(double t0, double t1)
    const double clip_t0 = std::max( t0, GetStartTime() );
    const double clip_t1 = std::min( t1, GetEndTime() );
 
-   auto newClip = std::make_unique< WaveClip >
+   auto newClip = std::make_shared< WaveClip >
       (*this, mSequence->GetFactory(), true, clip_t0, clip_t1);
 
    newClip->SetOffset( clip_t0 - mOffset );
@@ -1575,7 +1575,7 @@ void WaveClip::ClearAndAddCutLine(double t0, double t1)
 
    MarkChanged();
 
-   mCutLines.push_back(std::move(newClip));
+   mCutLines.push_back( newClip );
 }
 
 bool WaveClip::FindCutLine(double cutLinePosition,
