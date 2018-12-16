@@ -27,7 +27,7 @@ void FinishCopy
 {
    Track::FinishCopy( n, dest.get() );
    if (dest)
-      list.Add( dest );
+      list.Add( dest, n->IsLeader());
 }
 
 // Handle text paste (into active label), if any. Return true if did paste.
@@ -719,7 +719,7 @@ void OnDuplicate(const CommandContext &context)
               selectedRegion.t1(), false);
       dest->Init(*n);
       dest->SetOffset(wxMax(selectedRegion.t0(), n->GetOffset()));
-      tracks.Add( dest );
+      tracks.Add( dest, n->IsLeader());
 
       // This break is really needed, else we loop infinitely
       if (n == last)
