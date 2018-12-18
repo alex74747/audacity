@@ -74,6 +74,7 @@ greater use in future.
 #include "../FileNames.h"
 #include "../commands/AudacityCommand.h"
 #include "../commands/CommandContext.h"
+#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 
 #if defined(__WXMAC__)
 #include <Cocoa/Cocoa.h>
@@ -2563,7 +2564,7 @@ void Effect::Preview(bool dryOnly)
 
       mixLeft->Offset(-mixLeft->GetStartTime());
       mixLeft->SetSelected(true);
-      mixLeft->SetDisplay(WaveTrack::NoDisplay);
+      mixLeft->SetDisplay(WaveTrackViewConstants::NoDisplay);
       auto pLeft = mTracks->Add( mixLeft, true );
       Track *pRight{};
       if (mixRight) {
@@ -2577,7 +2578,8 @@ void Effect::Preview(bool dryOnly)
          if (src->GetSelected() || mPreviewWithNotSelected) {
             auto dest = src->Copy(mT0, t1);
             dest->SetSelected(src->GetSelected());
-            static_cast<WaveTrack*>(dest.get())->SetDisplay(WaveTrack::NoDisplay);
+            static_cast<WaveTrack*>(dest.get())
+               ->SetDisplay(WaveTrackViewConstants::NoDisplay);
             mTracks->Add( dest, src->IsLeader() );
          }
       }
