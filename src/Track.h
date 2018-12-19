@@ -200,6 +200,11 @@ struct TrackGroupData
       >::type
          { return const_cast< TrackGroupData* >(this)->Channels< Subclass >(); }
 
+   // Send an event to listeners when state of the group changes
+   // To do: define values for the argument to distinguish different parts
+   // of the state, perhaps with wxNewId
+   void Notify( int code = -1 );
+
 private:
    TrackIterRange<Track> FindChannels();
 
@@ -1198,6 +1203,34 @@ template< typename TrackType > inline
    return { Iter{ newRange.begin() }, Iter{ newRange.end() } };
 }
 
+struct TrackListGroupEvent : public wxCommandEvent
+{
+   explicit
+   TrackListGroupEvent(
+      wxEventType commandType,
+      const std::weak_ptr<TrackGroupData> &pData = {}, int code = -1)
+   : wxCommandEvent{ commandType }
+   , mpData{ pData }
+   , mCode{ code }
+   {}
+
+   TrackListGroupEvent( const TrackListGroupEvent& ) = default;
+
+   wxEvent *Clone() const override
+      { return safenew TrackListGroupEvent(*this); }
+
+   std::weak_ptr<TrackGroupData> mpData;
+   int mCode;
+};
+
+// Posted when certain fields of track group data change.
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+   EVT_TRACKLIST_GROUP_DATA_CHANGE, TrackListGroupEvent);
+
+// Posted when track group selection state changes.
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+   EVT_TRACKLIST_GROUP_SELECTION_CHANGE, TrackListGroupEvent);
+
 struct TrackListEvent : public wxCommandEvent
 {
    explicit
@@ -1466,6 +1499,7 @@ public:
    }
 
    friend class Track;
+   friend class TrackGroupData;
 
    /// For use in sorting:  assume each iterator points into this list, no duplications
    void Permute(const std::vector<TrackNodePointer> &permutation);
@@ -1630,6 +1664,10 @@ private:
    void RecalcPositions(TrackNodePointer node);
    void SelectionEvent( const std::shared_ptr<Track> &pTrack );
    void PermutationEvent(TrackNodePointer node);
+   void GroupDataEvent(
+      const std::shared_ptr<TrackGroupData> &pTrack, int code );
+   void GroupSelectionEvent(
+      const std::shared_ptr<TrackGroupData> &pTrack );
    void DataEvent( const std::shared_ptr<Track> &pTrack, int code );
    void EnsureVisibleEvent(
       const std::shared_ptr<Track> &pTrack, bool modifyState );
