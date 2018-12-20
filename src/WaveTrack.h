@@ -92,6 +92,8 @@ private:
 
    ~WaveTrack() override;
 
+   wxString GetDefaultName() const override;
+
    double GetOffset() const override;
    void SetOffset(double o) override;
 

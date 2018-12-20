@@ -69,7 +69,6 @@ LabelTrack::LabelTrack(const std::shared_ptr<DirManager> &projDirManager):
    mClipLen(0.0),
    miLastLabel(-1)
 {
-   SetDefaultName(_("Label Track"));
    SetName(GetDefaultName());
 }
 
@@ -94,6 +93,11 @@ void LabelTrack::SetLabel( size_t iLabel, const LabelStruct &newLabel )
 
 LabelTrack::~LabelTrack()
 {
+}
+
+wxString LabelTrack::GetDefaultName() const
+{
+   return _("Label Track");
 }
 
 void LabelTrack::SetOffset(double dOffset)

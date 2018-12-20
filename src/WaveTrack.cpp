@@ -113,7 +113,6 @@ WaveTrack::WaveTrack(const std::shared_ptr<DirManager> &projDirManager, sampleFo
    mOldGain[0] = 0.0;
    mOldGain[1] = 0.0;
    mWaveColorIndex = 0;
-   SetDefaultName(TracksPrefs::GetDefaultAudioTrackNamePreference());
    SetName(GetDefaultName());
    mDisplayMin = -1.0;
    mDisplayMax = 1.0;
@@ -155,7 +154,6 @@ void WaveTrack::Init(const WaveTrack &orig)
    mPan = orig.mPan;
    mOldGain[0] = 0.0;
    mOldGain[1] = 0.0;
-   SetDefaultName(orig.GetDefaultName());
    SetName(orig.GetName());
    mDisplay = orig.mDisplay;
    mDisplayMin = orig.mDisplayMin;
@@ -207,6 +205,11 @@ void WaveTrack::Merge(const Track &orig)
 
 WaveTrack::~WaveTrack()
 {
+}
+
+wxString WaveTrack::GetDefaultName() const
+{
+   return TracksPrefs::GetDefaultAudioTrackNamePreference();
 }
 
 double WaveTrack::GetOffset() const

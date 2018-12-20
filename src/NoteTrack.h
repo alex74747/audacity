@@ -71,6 +71,8 @@ public:
    NoteTrack(const std::shared_ptr<DirManager> &projDirManager);
    virtual ~NoteTrack();
 
+   wxString GetDefaultName() const override;
+
    using Holder = std::shared_ptr<NoteTrack>;
    
 private:

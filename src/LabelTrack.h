@@ -83,6 +83,8 @@ class AUDACITY_DLL_API LabelTrack final
 
    void SetLabel( size_t iLabel, const LabelStruct &newLabel );
 
+   wxString GetDefaultName() const override;
+
    void SetOffset(double dOffset) override;
 
    double GetOffset() const override;
