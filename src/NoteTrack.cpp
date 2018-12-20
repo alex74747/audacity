@@ -112,7 +112,6 @@ NoteTrack::Holder TrackFactory::NewNoteTrack()
 NoteTrack::NoteTrack(const std::shared_ptr<DirManager> &projDirManager)
    : NoteTrackBase(projDirManager)
 {
-   SetDefaultName(_("Note Track"));
    SetName(GetDefaultName());
 
    SetHeight( TrackInfo::DefaultNoteTrackHeight() );
@@ -131,6 +130,11 @@ NoteTrack::NoteTrack(const std::shared_ptr<DirManager> &projDirManager)
 
 NoteTrack::~NoteTrack()
 {
+}
+
+wxString NoteTrack::GetDefaultName() const
+{
+   return _("Note Track");
 }
 
 Alg_seq &NoteTrack::GetSeq() const

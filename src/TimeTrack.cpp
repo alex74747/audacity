@@ -55,7 +55,6 @@ TimeTrack::TimeTrack(const std::shared_ptr<DirManager> &projDirManager, const Zo
    mEnvelope->SetTrackLen(DBL_MAX);
    mEnvelope->SetOffset(0);
 
-   SetDefaultName(_("Time Track"));
    SetName(GetDefaultName());
 
    mRuler = std::make_unique<Ruler>();
@@ -91,7 +90,6 @@ TimeTrack::TimeTrack(const TimeTrack &orig, double *pT0, double *pT1)
 void TimeTrack::Init(const TimeTrack &orig)
 {
    Track::Init(orig);
-   SetDefaultName(orig.GetDefaultName());
    SetName(orig.GetName());
    SetRangeLower(orig.GetRangeLower());
    SetRangeUpper(orig.GetRangeUpper());
@@ -100,6 +98,11 @@ void TimeTrack::Init(const TimeTrack &orig)
 
 TimeTrack::~TimeTrack()
 {
+}
+
+wxString TimeTrack::GetDefaultName() const
+{
+   return _("Time Track");
 }
 
 Track::Holder TimeTrack::Cut( double t0, double t1 )

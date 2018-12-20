@@ -97,6 +97,8 @@ private:
 
    ~WaveTrack() override;
 
+   wxString GetDefaultName() const override;
+
    std::vector<UIHandlePtr> DetailedHitTest
       (const TrackPanelMouseState &state,
        const AudacityProject *pProject, int currentTool, bool bMultiTool)
