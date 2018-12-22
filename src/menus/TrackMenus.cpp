@@ -802,7 +802,7 @@ void OnNewWaveTrack(const CommandContext &context)
    auto t = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), true );
    project.SelectNone();
 
-   t->SetSelected(true);
+   t->GetGroupData().SetSelected(true);
 
    project.PushState(_("Created new audio track"), _("New Track"));
 
@@ -825,12 +825,10 @@ void OnNewStereoTrack(const CommandContext &context)
 
    auto left =
       tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), true );
-   left->SetSelected(true);
 
    auto right =
       tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ), false );
 
-   right->SetSelected(true);
 
    project.PushState(_("Created new stereo audio track"), _("New Track"));
 
@@ -850,7 +848,7 @@ void OnNewLabelTrack(const CommandContext &context)
 
    project.SelectNone();
 
-   t->SetSelected(true);
+   t->GetGroupData().SetSelected(true);
 
    project.PushState(_("Created new label track"), _("New Track"));
 
@@ -875,7 +873,7 @@ void OnNewTimeTrack(const CommandContext &context)
 
    project.SelectNone();
 
-   t->SetSelected(true);
+   t->GetGroupData().SetSelected(true);
 
    project.PushState(_("Created new time track"), _("New Track"));
 

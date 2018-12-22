@@ -4013,7 +4013,14 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
       {
          auto pWaveTrack = *ppTrack;
          auto pSavedWaveTrack = *ppSavedTrack;
-         pWaveTrack->SetSelected(pSavedWaveTrack->GetSelected());
+         
+         if ( pWaveTrack->IsLeader() ) {
+            const auto &savedGroupData = pSavedWaveTrack->GetGroupData();
+            auto &groupData = pWaveTrack->GetGroupData();
+
+            groupData.SetSelected( savedGroupData.GetSelected() );
+         }
+
          pWaveTrack->SetMute(pSavedWaveTrack->GetMute());
          pWaveTrack->SetSolo(pSavedWaveTrack->GetSolo());
 
@@ -4029,7 +4036,12 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    // Okay, now some bold state-faking to default values.
    for (auto pWaveTrack : trackRange)
    {
-      pWaveTrack->SetSelected(false);
+      if ( pWaveTrack->IsLeader() ) {
+         auto &groupData = pWaveTrack->GetGroupData();
+
+         groupData.SetSelected(false);
+      }
+
       pWaveTrack->SetMute(false);
       pWaveTrack->SetSolo(false);
 
@@ -4055,13 +4067,13 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    for (auto group : trackRange.ByGroups())
    {
       SelectionStateChanger changer{ SelectionState::Get( project ), tracks };
+      group.data->SetSelected(true);
 
-      const auto &channels = group.channels;
-      for (auto channel : channels)
-         channel->SetSelected(true);
-      uniqueTrackFileName = wxFileNameWrapper{
+      uniqueTrackFileName = wxFileNameWrapper {
          strDataDirPathName, group.data->GetName(), extension };
       FileNames::MakeNameUnique(mStrOtherNamesArray, uniqueTrackFileName);
+
+      const auto &channels = group.channels;
       const auto startTime = channels.min( &Track::GetStartTime );
       const auto endTime = channels.max( &Track::GetEndTime );
       bSuccess =
@@ -4132,8 +4144,7 @@ AudacityProject::AddImportedTracks(const FilePath &fileName,
          : trackNameBase
       );
 
-      for (auto newTrack : group.channels)
-         newTrack->SetSelected(true);
+      group.data->SetSelected(true);
 
       group.channels.Visit( [&](WaveTrack *wt) {
          if (newRate == 0)
@@ -5498,8 +5509,9 @@ void AudacityProject::SelectNone()
    auto &project = *this;
    auto &tracks = TrackList::Get( project );
    auto &trackPanel = TrackPanel::Get( project );
-   for ( auto t : tracks )
-      t->SetSelected(false);
+
+   for (auto group : tracks.Any().ByGroups())
+      group.data->SetSelected(false);
 
    trackPanel.Refresh(false);
 }
