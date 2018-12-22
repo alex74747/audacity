@@ -88,6 +88,16 @@ void TrackGroupData::SetName( const wxString &name )
    }
 }
 
+void TrackGroupData::SetSelected( bool selected )
+{
+   if ( mSelected != selected ) {
+      mSelected = selected;
+      auto pList = mList.lock();
+      if ( pList )
+         pList->GroupSelectionEvent( shared_from_this() );
+   }
+}
+
 auto Track::CreateGroupData() const -> std::shared_ptr<TrackGroupData>
 {
    return std::make_shared<GroupData>( *this );
@@ -106,8 +116,6 @@ Track::Track(const std::shared_ptr<DirManager> &projDirManager)
 :  vrulerSize(36,0),
    mDirManager(projDirManager)
 {
-   mSelected  = false;
-
    mIndex = 0;
 
    mOffset = 0.0;
@@ -127,18 +135,6 @@ void Track::Init(const Track &orig)
    mId = orig.mId;
 
    mDirManager = orig.mDirManager;
-
-   mSelected = orig.mSelected;
-}
-
-void Track::SetSelected(bool s)
-{
-   if (mSelected != s) {
-      mSelected = s;
-      auto pList = mList.lock();
-      if (pList)
-         pList->SelectionEvent( SharedPointer() );
-   }
 }
 
 void Track::EnsureVisible( bool modifyState )
@@ -150,7 +146,6 @@ void Track::EnsureVisible( bool modifyState )
 
 void Track::Merge(const Track &orig)
 {
-   mSelected = orig.mSelected;
 }
 
 Track::Holder Track::Duplicate() const
@@ -442,7 +437,6 @@ std::pair<Track *, Track *> TrackList::FindSyncLockGroup(Track *pMember)
 wxDEFINE_EVENT(EVT_TRACKLIST_GROUP_DATA_CHANGE, TrackListGroupEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_GROUP_SELECTION_CHANGE, TrackListGroupEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_TRACK_DATA_CHANGE, TrackListEvent);
-wxDEFINE_EVENT(EVT_TRACKLIST_SELECTION_CHANGE, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_TRACK_REQUEST_VISIBLE, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_PERMUTED, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_RESIZING, TrackListEvent);
@@ -532,13 +526,6 @@ void TrackList::RecalcPositions(TrackNodePointer node)
    }
 
    UpdatePendingTracks();
-}
-
-void TrackList::SelectionEvent( const std::shared_ptr<Track> &pTrack )
-{
-   // wxWidgets will own the event object
-   QueueEvent(
-      safenew TrackListEvent{ EVT_TRACKLIST_SELECTION_CHANGE, pTrack } );
 }
 
 void TrackList::GroupDataEvent(
@@ -1256,7 +1243,11 @@ void Track::WriteCommonXMLAttributes(
       // tracks in 2.3.2 and later, but for forward compatibility we continue
       // to write it for all channels.
       xmlFile.WriteAttr(wxT("name"), GetGroupData().GetName());
-      xmlFile.WriteAttr(wxT("isSelected"), this->GetSelected());
+
+      // It would be sufficient to write and read the selection only for leader
+      // tracks in 2.3.2 and later, but for forward compatibility we continue
+      // to write it for all channels.
+      xmlFile.WriteAttr(wxT("isSelected"), this->GetGroupData().GetSelected());
    }
    if ( mpView )
       mpView->WriteXMLAttributes( xmlFile );
@@ -1281,7 +1272,8 @@ bool Track::HandleCommonXMLAttribute(const wxChar *attr, const wxChar *value)
    }
    else if (!wxStrcmp(attr, wxT("isSelected")) &&
          XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue)) {
-      this->SetSelected(nValue != 0);
+      if ( Track::IsLoadingLeader() )
+         this->GetGroupData().SetSelected(nValue != 0);
       return true;
    }
    return false;

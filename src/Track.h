@@ -209,10 +209,14 @@ struct TrackGroupData
    const wxString &GetName() const { return mName; }
    void SetName( const wxString &name );
 
+   bool GetSelected() const { return mSelected; }
+   void SetSelected(bool s);
+
 private:
    TrackIterRange<Track> FindChannels();
 
    wxString       mName;
+   bool           mSelected;
 
    friend Track;
    friend TrackList;
@@ -264,8 +268,6 @@ class AUDACITY_DLL_API Track /* not final */
    int            mIndex;
 
  private:
-   bool           mSelected;
-
    void EnsureGroupData();
    std::shared_ptr< TrackGroupData > mpGroupData;
 
@@ -375,9 +377,7 @@ private:
    // track subtype
    virtual wxString GetDefaultName() const = 0;
 
-   bool GetSelected() const { return mSelected; }
-
-   void SetSelected(bool s);
+   bool GetSelected() const { return GetGroupData().GetSelected(); }
 
    // The argument tells whether the last undo history state should be
    // updated for the appearance change
@@ -1254,10 +1254,6 @@ struct TrackListEvent : public wxCommandEvent
    int mCode;
 };
 
-// Posted when the set of selected tracks changes.
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
-                         EVT_TRACKLIST_SELECTION_CHANGE, TrackListEvent);
-
 // Posted when certain fields of a track change.
 wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
                          EVT_TRACKLIST_TRACK_DATA_CHANGE, TrackListEvent);
@@ -1664,7 +1660,6 @@ private:
    }
 
    void RecalcPositions(TrackNodePointer node);
-   void SelectionEvent( const std::shared_ptr<Track> &pTrack );
    void PermutationEvent(TrackNodePointer node);
    void GroupDataEvent(
       const std::shared_ptr<TrackGroupData> &pTrack, int code );

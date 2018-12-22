@@ -1628,13 +1628,13 @@ bool LabelTrackView::DoChar(
              wxID_CANCEL) {
             return false;
          }
-         pTrack->SetSelected(true);
+         pTrack->GetGroupData().SetSelected(true);
          pTrack->AddLabel(selectedRegion, title);
          ProjectHistory::Get( project ).PushState(_("Added label"), _("Label"));
          return false;
       }
       else {
-         pTrack->SetSelected(true);
+         pTrack->GetGroupData().SetSelected(true);
          AddLabel( selectedRegion );
          ProjectHistory::Get( project ).PushState(_("Added label"), _("Label"));
       }

@@ -441,7 +441,6 @@ void DoBoundaryMove(AudacityProject &project, int step, SeekInfo &info)
 
 namespace SelectActions {
 
-
 // Menu handler functions
 
 struct Handler
@@ -477,9 +476,10 @@ void OnSelectSyncLockSel(const CommandContext &context)
    auto &tracks = TrackList::Get( project );
 
    bool selected = false;
-   for (auto t : tracks.Any()
-         + &Track::IsSyncLockSelected - &Track::IsSelected) {
-      t->SetSelected(true);
+   for (auto group :
+      ( tracks.Any() + &Track::IsSyncLockSelected - &Track::IsSelected )
+         .ByGroups() ) {
+      group.data->SetSelected(true);
       selected = true;
    }
 

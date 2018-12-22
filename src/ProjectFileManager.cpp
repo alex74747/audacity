@@ -601,7 +601,14 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
       {
          auto pWaveTrack = *ppTrack;
          auto pSavedWaveTrack = *ppSavedTrack;
-         pWaveTrack->SetSelected(pSavedWaveTrack->GetSelected());
+
+         if ( pWaveTrack->IsLeader() ) {
+            const auto &savedGroupData = pSavedWaveTrack->GetGroupData();
+            auto &groupData = pWaveTrack->GetGroupData();
+
+            groupData.SetSelected( savedGroupData.GetSelected() );
+         }
+
          pWaveTrack->SetMute(pSavedWaveTrack->GetMute());
          pWaveTrack->SetSolo(pSavedWaveTrack->GetSolo());
 
@@ -617,7 +624,12 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    // Okay, now some bold state-faking to default values.
    for (auto pWaveTrack : trackRange)
    {
-      pWaveTrack->SetSelected(false);
+      if ( pWaveTrack->IsLeader() ) {
+         auto &groupData = pWaveTrack->GetGroupData();
+
+         groupData.SetSelected(false);
+      }
+
       pWaveTrack->SetMute(false);
       pWaveTrack->SetSolo(false);
 
@@ -641,8 +653,7 @@ bool ProjectFileManager::SaveCopyWaveTracks(const FilePath & strProjectPathName,
       SelectionStateChanger changer{ SelectionState::Get( project ), tracks };
       const auto &channels = group.channels;
 
-      for (auto channel : channels)
-         channel->SetSelected(true);
+      group.data->SetSelected( true );
       uniqueTrackFileName = wxFileName{
          strDataDirPathName, group.data->GetName(), extension };
       FileNames::MakeNameUnique(strOtherNamesArray, uniqueTrackFileName);
@@ -1597,8 +1608,7 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
          : trackNameBase
       );
 
-      for (auto newTrack : group.channels)
-         newTrack->SetSelected(true);
+      group.data->SetSelected(true);
 
       group.channels.Visit( [&](WaveTrack *wt) {
          if (newRate == 0)

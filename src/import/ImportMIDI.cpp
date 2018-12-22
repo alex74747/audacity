@@ -40,7 +40,7 @@ bool DoImportMIDI( AudacityProject &project, const FilePath &fileName )
       
       SelectUtilities::SelectNone( project );
       auto pTrack = tracks.Add( newTrack, true );
-      pTrack->SetSelected(true);
+      pTrack->GetGroupData().SetSelected(true);
       
       ProjectHistory::Get( project )
          .PushState(

@@ -58,7 +58,7 @@ int DoAddLabel(
 //      label track...typing a label will not clear the selections.
 //
 //   SelectNone();
-   lt->SetSelected(true);
+   lt->GetGroupData().SetSelected(true);
 
    int index;
    if (useDialog) {
@@ -310,7 +310,7 @@ void OnPasteNewLabel(const CommandContext &context)
             t = tracks.Add( trackFactory.NewLabelTrack(), true );
 
          // Select this track so the loop picks it up
-         t->SetSelected(true);
+         t->GetGroupData().SetSelected(true);
       }
    }
 
