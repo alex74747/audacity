@@ -280,9 +280,6 @@ class AUDACITY_DLL_API Track /* not final */
    void EnsureGroupData();
    std::shared_ptr< TrackGroupData > mpGroupData;
 
-protected:
-   bool           mMinimized;
-
  public:
 
    TrackId GetId() const { return mId; }
@@ -385,12 +382,6 @@ public:
    void SetHeight(int h);
 protected:
    virtual void DoSetHeight(int h);
-public:
-
-   bool GetMinimized() const;
-   void SetMinimized(bool isMinimized);
-protected:
-   virtual void DoSetMinimized(bool isMinimized);
 
 public:
    static void FinishCopy (const Track *n, Track *dest);

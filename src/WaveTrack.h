@@ -121,7 +121,7 @@ private:
    using Holder = std::shared_ptr<WaveTrack>;
 
    ~WaveTrack() override;
-
+   
    wxString GetDefaultName() const override;
 
    std::vector<UIHandlePtr> DetailedHitTest
@@ -176,8 +176,6 @@ private:
    // the gain.
    float GetOldChannelGain(int channel) const;
    void SetOldChannelGain(int channel, float gain);
-
-   void DoSetMinimized(bool isMinimized) override;
 
    int GetWaveColorIndex() const { return mWaveColorIndex; };
    void SetWaveColorIndex(int colorIndex);
