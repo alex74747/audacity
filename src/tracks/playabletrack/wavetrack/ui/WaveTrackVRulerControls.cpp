@@ -123,12 +123,14 @@ unsigned WaveTrackVRulerControls::HandleWheelRotation
    else if (event.CmdDown() && !event.ShiftDown()) {
       const int yy = event.m_y;
       using namespace WaveTrackViewConstants;
-      WaveTrackVZoomHandle::DoZoom(
-         pProject, wt,
+      WaveTrackViewGroupData::Get( *wt ).DoZoom(
+         wt->GetRate(),
          (steps < 0)
             ? kZoomOut
             : kZoomIn,
          evt.rect, yy, yy, true);
+      if( pProject )
+         ProjectHistory::Get( *pProject ).ModifyState(true);
    }
    else if (!event.CmdDown() && event.ShiftDown()) {
       // Scroll some fixed number of pixels, independent of zoom level or track height:

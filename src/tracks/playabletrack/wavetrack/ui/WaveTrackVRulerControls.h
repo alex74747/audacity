@@ -33,6 +33,7 @@ public:
    unsigned HandleWheelRotation
       (const TrackPanelMouseEvent &event,
        AudacityProject *pProject) override;
+
 private:
    // TrackPanelDrawable implementation
    void Draw(
