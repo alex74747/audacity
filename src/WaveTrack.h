@@ -101,9 +101,14 @@ private:
       float GetPan() const { return mPan; }
       void SetPan(float newPan);
 
+      int GetWaveColorIndex() const { return mWaveColorIndex; }
+      void SetWaveColorIndex( int colorIndex, bool setClips );
+
    private:
       float         mGain { 1.0f };
       float         mPan  { 0.0f };
+
+      int           mWaveColorIndex{ 0 };
    };
 
    // overload inherited GetGroupData with more specific return type
@@ -162,9 +167,6 @@ private:
    // the gain.
    float GetOldChannelGain(int channel) const;
    void SetOldChannelGain(int channel, float gain);
-
-   int GetWaveColorIndex() const { return mWaveColorIndex; };
-   void SetWaveColorIndex(int colorIndex);
 
    sampleFormat GetSampleFormat() const { return mFormat; }
    void ConvertToSampleFormat(sampleFormat format);
@@ -543,7 +545,6 @@ private:
 
    sampleFormat  mFormat;
    int           mRate;
-   int           mWaveColorIndex;
    float         mOldGain[2];
 
 

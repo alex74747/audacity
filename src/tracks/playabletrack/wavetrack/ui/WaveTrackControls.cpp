@@ -179,7 +179,7 @@ void WaveColorMenuTable::InitMenu(Menu *pMenu, void *pUserData)
 {
    mpData = static_cast<PlayableTrackControls::InitMenuData*>(pUserData);
    WaveTrack *const pTrack = static_cast<WaveTrack*>(mpData->pTrack);
-   auto WaveColorId = IdOfWaveColor( pTrack->GetWaveColorIndex());
+   auto WaveColorId = IdOfWaveColor(pTrack->GetGroupData().GetWaveColorIndex());
    SetMenuChecks(*pMenu, [=](int id){ return id == WaveColorId; });
 
    AudacityProject *const project = ::GetActiveProject();
@@ -222,8 +222,7 @@ void WaveColorMenuTable::OnWaveColorChange(wxCommandEvent & event)
 
    AudacityProject *const project = ::GetActiveProject();
 
-   for (auto channel : TrackList::Channels(pTrack))
-      channel->SetWaveColorIndex(newWaveColor);
+   pTrack->GetGroupData().SetWaveColorIndex( newWaveColor, true );
 
    ProjectHistory::Get( *project )
       .PushState(wxString::Format(_("Changed '%s' to %s"),
