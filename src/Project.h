@@ -60,7 +60,6 @@ class TrackList;
 
 class TrackPanel;
 class FreqWindow;
-class ContrastDialog;
 class MeterPanel;
 
 // toolbar classes
@@ -77,11 +76,7 @@ class TranscriptionToolBar;
 
 // windows and frames
 class AdornedRulerPanel;
-class HistoryWindow;
-class MacrosWindow;
 class LyricsWindow;
-class MixerBoard;
-class MixerBoardFrame;
 
 struct AudioIOStartStreamOptions;
 struct UndoState;
@@ -165,6 +160,9 @@ class AudacityProject;
 using AttachedObjects = ClientData::Site<
    AudacityProject, ClientData::Base, ClientData::SkipCopying, std::shared_ptr
 >;
+using AttachedWindows = ClientData::Site<
+   AudacityProject, wxWindow, ClientData::SkipCopying, wxWeakRef
+>;
 
 class AUDACITY_DLL_API AudacityProject final : public wxFrame,
                                      public TrackPanelListener,
@@ -174,9 +172,11 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
                                      public AudioIOListener,
                                      private PrefsListener
    , public AttachedObjects
+   , public AttachedWindows
 {
  public:
    using AttachedObjects = ::AttachedObjects;
+   using AttachedWindows = ::AttachedWindows;
 
    AudacityProject(wxWindow * parent, wxWindowID id,
                    const wxPoint & pos, const wxSize & size);
@@ -443,13 +443,6 @@ public:
    MeterPanel *GetCaptureMeter();
    void SetCaptureMeter(MeterPanel *capture);
 
-   LyricsWindow* GetLyricsWindow(bool create = false);
-   MixerBoardFrame* GetMixerBoardFrame(bool create = false);
-   HistoryWindow *GetHistoryWindow(bool create = false);
-   MacrosWindow *GetMacrosWindow(bool bExpanded, bool create = false);
-   FreqWindow *GetFreqWindow(bool create = false);
-   ContrastDialog *GetContrastDialog(bool create = false);
-
    wxStatusBar* GetStatusBar() { return mStatusBar; }
 
 private:
@@ -579,14 +572,6 @@ private:
    bool mAutoScrolling{ false };
    bool mActive{ true };
    bool mIconized;
-
-   MacrosWindow *mMacrosWindow{};
-   HistoryWindow *mHistoryWindow{};
-   LyricsWindow* mLyricsWindow{};
-   MixerBoardFrame* mMixerBoardFrame{};
-
-   Destroy_ptr<FreqWindow> mFreqWindow;
-   Destroy_ptr<ContrastDialog> mContrastDialog;
 
    // dialog for missing alias warnings
    wxDialog            *mAliasMissingWarningDialog{};
