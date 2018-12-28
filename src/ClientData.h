@@ -310,6 +310,7 @@ public:
    Subclass &Get( const RegisteredFactory &key )
    {
       auto data = GetData();
+      data.mObject.DoCopyOnWrite();
       return DoGet< Subclass >( data, key );
    }
 
@@ -330,7 +331,13 @@ public:
    Subclass *Find( const RegisteredFactory &key )
    {
       auto data = GetData();
-      return DoFind< Subclass >( data, key );
+      auto result = DoFind< Subclass >( data, key );
+      if ( data.mObject.NeedCopyOnWrite() && result ) {
+         // Return a clone
+         data.mObject.DoCopyOnWrite();
+         result = DoFind< Subclass >( data, key );
+      }
+      return result;
    }
 
    // const counterpart of the previous
@@ -352,6 +359,12 @@ public:
       auto data = GetData();
       EnsureIndex( data, index );
       auto iter = GetIterator( data, index );
+      if ( data.mObject.NeedCopyOnWrite() &&
+         Dereferenceable( *iter ) != Dereferenceable( replacement ) ) {
+         data.mObject.DoCopyOnWrite();
+         // Beware relocation!  Find iterator again:
+         iter = GetIterator( data, index );
+      }
       // Copy or move as appropriate:
       *iter = std::forward< ReplacementPointer >( replacement );
    }
@@ -365,6 +378,7 @@ protected:
    void ForEach( const Function &function )
    {
       auto data = GetData();
+      data.mObject.DoCopyOnWrite();
       for( auto &pObject : data.mObject ) {
          const auto &ptr = Dereferenceable(pObject);
          if ( ptr )
