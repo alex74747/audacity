@@ -415,7 +415,8 @@ private:
    std::unique_ptr< wxMenuBar > mTempMenuBar;
 };
 
-// Define items that populate tables that describe menu trees
+// Define classes and functions that associate parts of the user interface
+// with path names
 namespace MenuTable {
    // TODO C++17: maybe use std::variant (discriminated unions) to achieve
    // polymorphism by other means, not needing unique_ptr and dynamic_cast
@@ -428,18 +429,34 @@ namespace MenuTable {
       virtual ~BaseItem();
    };
    using BaseItemPtr = std::unique_ptr<BaseItem>;
+   using BaseItemSharedPtr = std::shared_ptr<BaseItem>;
    using BaseItemPtrs = std::vector<BaseItemPtr>;
    
 
-   // The type of functions that generate menu table descriptions.
-   // Return type is a shared_ptr to let the function decide whether to recycle
-   // the object or rebuild it on demand each time.
-   // Return value from the factory may be null.
-   using Factory = std::function<
-      std::shared_ptr< MenuTable::BaseItem >( AudacityProject & )
-   >;
+   // An item that delegates to another held in a shared pointer; this allows
+   // static tables of items to be computed once and reused
+   struct SharedItem final : BaseItem {
+      explicit SharedItem( const BaseItemSharedPtr &ptr_ )
+         : ptr{ ptr_ }
+      {}
+      ~SharedItem() override;
 
-   struct ComputedItem : BaseItem {
+      BaseItemSharedPtr ptr;
+   };
+
+   // A convenience function
+   inline std::unique_ptr<SharedItem> Shared( const BaseItemSharedPtr &ptr )
+      { return std::make_unique<SharedItem>( ptr ); }
+
+   // An item that computes some other item to substitute for it, each time
+   // the ComputedItem is visited
+   struct ComputedItem final : BaseItem {
+      // The type of functions that generate descriptions of items.
+      // Return type is a shared_ptr to let the function decide whether to
+      // recycle the object or rebuild it on demand each time.
+      // Return value from the factory may be null
+      using Factory = std::function< BaseItemSharedPtr( AudacityProject & ) >;
+
       explicit ComputedItem( const Factory &factory_ )
          : factory{ factory_ }
       {}
@@ -448,6 +465,13 @@ namespace MenuTable {
       Factory factory;
    };
 
+   // Common abstract base class for items that are not groups
+   struct SingleItem : BaseItem {
+      using BaseItem::BaseItem;
+      ~SingleItem() override = 0;
+   };
+
+   // Common abstract base class for items that group other items
    struct GroupItem : BaseItem {
       // Construction from a previously built-up vector of pointers
       GroupItem( BaseItemPtrs &&items_ );
@@ -455,7 +479,7 @@ namespace MenuTable {
       template< typename... Args >
          GroupItem( Args&&... args )
          { Append( std::forward< Args >( args )... ); }
-      ~GroupItem() override;
+      ~GroupItem() override = 0;
 
       BaseItemPtrs items;
 
@@ -483,10 +507,25 @@ namespace MenuTable {
       // (Thus, a lambda can return a unique_ptr<BaseItem> rvalue even though
       // Factory's return type is shared_ptr, and the needed conversion is
       // appled implicitly.)
-      void AppendOne( const Factory &factory )
+      void AppendOne( const ComputedItem::Factory &factory )
       { AppendOne( std::make_unique<ComputedItem>( factory ) ); }
+      // This overload lets you supply a shared pointer to an item, directly
+      template<typename Subtype>
+      void AppendOne( const std::shared_ptr<Subtype> &ptr )
+      { AppendOne( std::make_unique<SharedItem>(ptr) ); }
    };
 
+   // Concrete subclass of GroupItem that adds nothing else
+   // GroupingItem with an empty name is transparent to item path calculations
+   struct GroupingItem final : GroupItem
+   {
+      using GroupItem::GroupItem;
+      ~GroupingItem() override;
+   };
+
+// Define items that populate tables that specifically describe menu trees
+
+   // Describes a main menu in the toolbar, or a sub-menu
    struct MenuItem final : GroupItem {
       // Construction from a previously built-up vector of pointers
       MenuItem( const wxString &title_, BaseItemPtrs &&items_ );
@@ -503,6 +542,8 @@ namespace MenuTable {
       bool translated{ false };
    };
 
+   // Collects other items that are conditionally shown or hidden, but are
+   // always available to macro programming
    struct ConditionalGroupItem final : GroupItem {
       using Condition = std::function< bool() >;
 
@@ -519,7 +560,8 @@ namespace MenuTable {
       Condition condition;
    };
 
-   struct SeparatorItem final : BaseItem
+   // Describes a separator between menu items
+   struct SeparatorItem final : SingleItem
    {
       ~SeparatorItem() override;
    };
@@ -553,7 +595,8 @@ namespace MenuTable {
          { return std::forward<Value>(value); }
    };
 
-   struct CommandItem final : BaseItem {
+   // Describes one command in a menu
+   struct CommandItem final : SingleItem {
       CommandItem(const CommandID &name_,
                const wxString &label_in_, // untranslated
                CommandHandlerFinder finder_,
@@ -585,7 +628,10 @@ namespace MenuTable {
       CommandManager::Options options;
    };
 
-   struct CommandGroupItem final : BaseItem {
+   // Describes several successive commands in a menu that are closely related
+   // and dispatch to one common callback, which will be passed a number
+   // in the CommandContext identifying the command
+   struct CommandGroupItem final : SingleItem {
       CommandGroupItem(const wxString &name_,
                std::initializer_list< ComponentInterfaceSymbol > items_,
                CommandHandlerFinder finder_,
@@ -619,7 +665,7 @@ namespace MenuTable {
 
    // For manipulating the enclosing menu or sub-menu directly,
    // adding any number of items, not using the CommandManager
-   struct SpecialItem final : BaseItem
+   struct SpecialItem final : SingleItem
    {
       using Appender = std::function< void( AudacityProject&, wxMenu& ) >;
 
@@ -638,8 +684,8 @@ namespace MenuTable {
    // Null pointers are permitted, and ignored when building the menu.
    // Items are spliced into the enclosing menu
    template< typename... Args >
-   inline std::unique_ptr<GroupItem> Items( Args&&... args )
-         { return std::make_unique<GroupItem>(
+   inline std::unique_ptr<GroupingItem> Items( Args&&... args )
+         { return std::make_unique<GroupingItem>(
             std::forward<Args>(args)... ); }
 
    // Menu items can be constructed two ways, as for group items
