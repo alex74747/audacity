@@ -1037,7 +1037,6 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 #define FN(X) findCommandHandler, \
    static_cast<CommandFunctorPointer>(& TransportActions::Handler :: X)
-#define XXO(X) _(X), wxString{X}.Contains("...")
 
 MenuTable::BaseItemPtr CursorMenu( AudacityProject& );
 
@@ -1079,8 +1078,8 @@ MenuTable::BaseItemPtr TransportMenu( AudacityProject &project )
             // We supply the name for the 'other one' here.
             // It should be bound to Shift+R
             (gPrefs->ReadBool("/GUI/PreferNewTrackRecord", false)
-             ? _("&Append Record") : _("Record &New Track")),
-            false, FN(OnRecord2ndChoice), CanStopFlags,
+             ? XO("&Append Record") : XO("Record &New Track")),
+            FN(OnRecord2ndChoice), CanStopFlags,
             wxT("Shift+R")
          ),
 
@@ -1230,5 +1229,4 @@ MenuTable::BaseItemPtr ExtraPlayAtSpeedMenu( AudacityProject & )
    );
 }
 
-#undef XXO
 #undef FN

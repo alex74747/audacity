@@ -1184,9 +1184,7 @@ MenuTable::BaseItemPtr Scrubber::Menu()
 
    MenuTable::BaseItemPtrs ptrs;
    for (const auto &item : menuItems) {
-      ptrs.push_back( MenuTable::Command( item.name, wxGetTranslation(item.label),
-          // No menu items yet have dialogs
-          false,
+      ptrs.push_back( MenuTable::Command( item.name, item.label,
           findme, static_cast<CommandFunctorPointer>(item.memFn),
           item.flags,
           item.StatusTest

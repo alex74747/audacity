@@ -798,7 +798,6 @@ void CommandManager::ClearCurrentMenu()
 
 void CommandManager::AddItem(const CommandID &name,
                              const wxChar *label_in,
-                             bool hasDialog,
                              CommandHandlerFinder finder,
                              CommandFunctorPointer callback,
                              CommandFlag flags,
@@ -807,7 +806,7 @@ void CommandManager::AddItem(const CommandID &name,
    if (options.global) {
       wxASSERT( flags == AlwaysEnabledFlag );
       AddGlobalCommand(
-         name, label_in, hasDialog, finder, callback, options );
+         name, label_in, finder, callback, options );
       return;
    }
 
@@ -820,7 +819,6 @@ void CommandManager::AddItem(const CommandID &name,
    CommandListEntry *entry =
       NewIdentifier(name,
          label_in,
-         hasDialog,
          CurrentMenu(), finder, callback,
          {}, 0, 0,
          options);
@@ -863,8 +861,6 @@ void CommandManager::AddItemList(const CommandID & name,
       CommandListEntry *entry =
          NewIdentifier(name,
             stripped,
-            // No means yet to specify hasDialog !
-            false,
             CurrentMenu(),
             finder,
             callback,
@@ -893,7 +889,7 @@ void CommandManager::AddCommand(const CommandID &name,
    wxASSERT( flags != NoFlagsSpecified );
 
    NewIdentifier(
-      name, label_in, false, NULL, finder, callback, {}, 0, 0,
+      name, label_in, NULL, finder, callback, {}, 0, 0,
       options);
 
    SetCommandFlags(name, flags, flags);
@@ -901,13 +897,12 @@ void CommandManager::AddCommand(const CommandID &name,
 
 void CommandManager::AddGlobalCommand(const CommandID &name,
                                       const wxChar *label_in,
-                                      bool hasDialog,
                                       CommandHandlerFinder finder,
                                       CommandFunctorPointer callback,
                                       const Options &options)
 {
    CommandListEntry *entry =
-      NewIdentifier(name, label_in, hasDialog, NULL, finder, callback,
+      NewIdentifier(name, label_in, NULL, finder, callback,
                     {}, 0, 0, options);
 
    entry->enabled = false;
@@ -940,8 +935,7 @@ int CommandManager::NextIdentifier(int ID)
 ///If it does, a workaround may be to keep controls below wxID_LOWEST
 ///and keep menus above wxID_HIGHEST
 CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
-   const wxString & label,
-   bool hasDialog,
+   const wxString & labelIn,
    wxMenu *menu,
    CommandHandlerFinder finder,
    CommandFunctorPointer callback,
@@ -950,7 +944,9 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
    int count,
    const Options &options)
 {
-   const auto &longLabel = options.longName;
+   const auto &longLabelIn = options.longName;
+   bool hasDialog =
+      options.interactive || (!options.translated && labelIn.Contains("..."));
    const wxString & accel = options.accel;
    bool bIsEffect = options.bIsEffect;
    wxString cookedParameter;
@@ -959,6 +955,14 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
       cookedParameter = nameIn;
    else
       cookedParameter = parameter;
+
+   wxString label;
+   label = options.translated ? labelIn : ::wxGetTranslation( labelIn );
+
+   wxString longLabel;
+   if ( !longLabelIn.empty() )
+      longLabel = options.translated
+         ? longLabelIn : ::wxGetTranslation( longLabelIn );
 
    const bool multi = !nameSuffix.empty();
    auto name = nameIn;
