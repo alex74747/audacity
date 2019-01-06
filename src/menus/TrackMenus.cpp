@@ -1473,16 +1473,16 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 // Menu definitions
 
-#define FN(X) findCommandHandler, \
-   static_cast<CommandFunctorPointer>(& TrackActions::Handler :: X)
+#define FN(X) (& TrackActions::Handler :: X)
 
 MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
 {
    // Tracks Menu (formerly Project Menu)
    using namespace MenuTable;
    using Options = CommandManager::Options;
-   
-   return Menu( XO("&Tracks"),
+
+   return FinderScope( findCommandHandler ).Eval(
+   Menu( XO("&Tracks"),
       Menu( XO("Add &New"),
          Command( wxT("NewMonoTrack"), XXO("&Mono Track"), FN(OnNewWaveTrack),
             AudioIONotBusyFlag, wxT("Ctrl+Shift+N") ),
@@ -1499,6 +1499,7 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
       Separator(),
 
       Menu( XO("Mi&x"),
+         // Delayed evaluation
          // Stereo to Mono is an oddball command that is also subject to control
          // by the plug-in manager, as if an effect.  Decide whether to show or
          // hide it.
@@ -1510,7 +1511,7 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
                return Command( wxT("Stereo to Mono"),
                   XXO("Mix Stereo Down to &Mono"), FN(OnStereoToMono),
                   AudioIONotBusyFlag | StereoRequiredFlag |
-                     WaveTracksSelectedFlag );
+                     WaveTracksSelectedFlag, Options{}, findCommandHandler );
             else
                return {};
          },
@@ -1626,14 +1627,15 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
          Options{}.CheckState( gPrefs->Read(wxT("/GUI/SyncLockTracks"), 0L) ) )
 
 #endif
-   );
+   ) );
 }
 
 MenuTable::BaseItemPtr ExtraTrackMenu( AudacityProject & )
 {
    using namespace MenuTable;
 
-   return Menu( XO("&Track"),
+   return FinderScope( findCommandHandler ).Eval(
+   Menu( XO("&Track"),
       Command( wxT("TrackPan"), XXO("Change P&an on Focused Track..."),
          FN(OnTrackPan),
          TrackPanelHasFocus | TracksExistFlag, wxT("Shift+P") ),
@@ -1677,7 +1679,7 @@ MenuTable::BaseItemPtr ExtraTrackMenu( AudacityProject & )
       Command( wxT("TrackMoveBottom"), XXO("Move Focused Track to &Bottom"),
          FN(OnTrackMoveBottom),
          AudioIONotBusyFlag | TrackPanelHasFocus | TracksExistFlag )
-   );
+   ) );
 }
 
 #undef FN
