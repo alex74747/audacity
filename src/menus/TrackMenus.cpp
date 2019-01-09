@@ -1583,8 +1583,7 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
             XXO("&Move Selection with Tracks (on/off)"),
             FN(OnMoveSelectionWithTracks),
             AlwaysEnabledFlag,
-            Options{}.CheckState(
-               gPrefs->Read(wxT("/GUI/MoveSelectionWithTracks"), 0L ) ) )
+            Options{}.CheckTest( wxT("/GUI/MoveSelectionWithTracks"), false ) )
       ),
 
 #if 0
@@ -1624,7 +1623,7 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
 
       Command( wxT("SyncLock"), XXO("Sync-&Lock Tracks (on/off)"),
          FN(OnSyncLock), AlwaysEnabledFlag,
-         Options{}.CheckState( gPrefs->Read(wxT("/GUI/SyncLockTracks"), 0L) ) )
+         Options{}.CheckTest( wxT("/GUI/SyncLockTracks"), false ) )
 
 #endif
    ) );
