@@ -1039,6 +1039,7 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 MenuTable::BaseItemSharedPtr CursorMenu();
 
+// Under /MenuBar
 MenuTable::BaseItemSharedPtr TransportMenu()
 {
    using namespace MenuTable;
@@ -1053,8 +1054,8 @@ MenuTable::BaseItemSharedPtr TransportMenu()
    FinderScope( findCommandHandler ).Eval(
    /* i18n-hint: 'Transport' is the name given to the set of controls that
       play, record, pause etc. */
-   Menu( XO("Tra&nsport"),
-      Menu( XO("Pl&aying"),
+   Menu( wxT("Transport"), XO("Tra&nsport"),
+      Menu( wxT("Play"), XO("Pl&aying"),
          /* i18n-hint: (verb) Start or Stop audio playback*/
          Command( wxT("PlayStop"), XXO("Pl&ay/Stop"), FN(OnPlayStop),
             CanStopAudioStreamFlag, wxT("Space") ),
@@ -1066,7 +1067,7 @@ MenuTable::BaseItemSharedPtr TransportMenu()
             CanStopAudioStreamFlag, wxT("P") )
       ),
 
-      Menu( XO("&Recording"),
+      Menu( wxT("Record"), XO("&Recording"),
          /* i18n-hint: (verb)*/
          Command( wxT("Record1stChoice"), XXO("&Record"), FN(OnRecord),
             CanStopFlags, wxT("R") ),
@@ -1115,7 +1116,7 @@ MenuTable::BaseItemSharedPtr TransportMenu()
 
       //////////////////////////////////////////////////////////////////////////
 
-      Menu( XO("Pla&y Region"),
+      Menu( wxT("PlayRegion"), XO("Pla&y Region"),
          Command( wxT("LockPlayRegion"), XXO("&Lock"), FN(OnLockPlayRegion),
             PlayRegionNotLockedFlag ),
          Command( wxT("UnlockPlayRegion"), XXO("&Unlock"),
@@ -1127,7 +1128,7 @@ MenuTable::BaseItemSharedPtr TransportMenu()
       Command( wxT("RescanDevices"), XXO("R&escan Audio Devices"),
          FN(OnRescanDevices), AudioIONotBusyFlag | CanStopAudioStreamFlag ),
 
-      Menu( XO("Transport &Options"),
+      Menu( wxT("Options"), XO("Transport &Options"),
          // Sound Activated recording options
          Command( wxT("SoundActivationLevel"),
             XXO("Sound Activation Le&vel..."), FN(OnSoundActivated),
@@ -1164,12 +1165,13 @@ MenuTable::BaseItemSharedPtr TransportMenu()
    return menu;
 }
 
+// Under /MenuBar/Optional/Extra
 MenuTable::BaseItemSharedPtr ExtraTransportMenu()
 {
    using namespace MenuTable;
    static BaseItemSharedPtr menu{
    FinderScope( findCommandHandler ).Eval(
-   Menu( XO("T&ransport"),
+   Menu( wxT("Transport"), XO("T&ransport"),
       // PlayStop is already in the menus.
       /* i18n-hint: (verb) Start playing audio*/
       Command( wxT("Play"), XXO("Pl&ay"), FN(OnPlayStop),
@@ -1209,12 +1211,13 @@ MenuTable::BaseItemSharedPtr ExtraTransportMenu()
    return menu;
 }
 
+// Under /MenuBar/Optional/Extra
 MenuTable::BaseItemSharedPtr ExtraPlayAtSpeedMenu()
 {
    using namespace MenuTable;
    static BaseItemSharedPtr menu{
    FinderScope( findCommandHandler ).Eval(
-   Menu( XO("&Play-at-Speed"),
+   Menu( wxT("PlayAtSpeed"), XO("&Play-at-Speed"),
       /* i18n-hint: 'Normal Play-at-Speed' doesn't loop or cut preview. */
       Command( wxT("PlayAtSpeed"), XXO("Normal Pl&ay-at-Speed"),
          FN(OnPlayAtSpeed), CaptureNotBusyFlag ),

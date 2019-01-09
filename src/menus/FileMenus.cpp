@@ -572,12 +572,13 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 #define FN(X) (& FileActions::Handler :: X)
 
+// under /MenuBar
 MenuTable::BaseItemSharedPtr FileMenu()
 {
    using namespace MenuTable;
    static BaseItemSharedPtr menu{
    FinderScope( findCommandHandler ).Eval(
-   Menu( XO("&File"),
+   Menu( wxT("File"), XO("&File"),
       /*i18n-hint: "New" is an action (verb) to create a NEW project*/
       Command( wxT("New"), XXO("&New"), FN(OnNew),
          AudioIONotBusyFlag, wxT("Ctrl+N") ),
@@ -597,7 +598,7 @@ MenuTable::BaseItemSharedPtr FileMenu()
 
 /////////////////////////////////////////////////////////////////////////////
 
-      Menu(
+      Menu( wxT("Recent"),
 #ifdef __WXMAC__
          /* i18n-hint: This is the name of the menu item on Mac OS X only */
          XO("Open Recent")
@@ -606,7 +607,8 @@ MenuTable::BaseItemSharedPtr FileMenu()
          XO("Recent &Files")
 #endif
          ,
-         Special( [](AudacityProject &, wxMenu &theMenu){
+         Special( wxT("PopulateRecentFilesStep"),
+         [](AudacityProject &, wxMenu &theMenu){
             // Recent Files and Recent Projects menus
             wxGetApp().GetRecentFiles()->UseMenu( &theMenu );
             wxGetApp().GetRecentFiles()->AddFilesToMenu( &theMenu );
@@ -634,7 +636,7 @@ MenuTable::BaseItemSharedPtr FileMenu()
 
       Separator(),
 
-      Menu( XO("&Save Project"),
+      Menu( wxT("Save"), XO("&Save Project"),
          Command( wxT("Save"), XXO("&Save Project"), FN(OnSave),
             AudioIONotBusyFlag | UnsavedChangesFlag, wxT("Ctrl+S") ),
          Command( wxT("SaveAs"), XXO("Save Project &As..."), FN(OnSaveAs),
@@ -652,7 +654,7 @@ MenuTable::BaseItemSharedPtr FileMenu()
 
       Separator(),
 
-      Menu( XO("&Export"),
+      Menu( wxT("Export"), XO("&Export"),
          // Enable Export audio commands only when there are audio tracks.
          Command( wxT("ExportMp3"), XXO("Export as MP&3"), FN(OnExportMp3),
             AudioIONotBusyFlag | WaveTracksExistFlag ),
@@ -685,7 +687,7 @@ MenuTable::BaseItemSharedPtr FileMenu()
 #endif
       ),
 
-      Menu( XO("&Import"),
+      Menu( wxT("Import"), XO("&Import"),
          Command( wxT("ImportAudio"), XXO("&Audio..."), FN(OnImport),
             AudioIONotBusyFlag, wxT("Ctrl+Shift+I") ),
          Command( wxT("ImportLabels"), XXO("&Labels..."), FN(OnImportLabels),
