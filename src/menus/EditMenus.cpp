@@ -1092,9 +1092,9 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 #define FN(X) (& EditActions::Handler :: X)
 
-MenuTable::BaseItemPtr LabelEditMenus( AudacityProject &project );
+MenuTable::BaseItemSharedPtr LabelEditMenus();
 
-MenuTable::BaseItemPtr EditMenu( AudacityProject & )
+MenuTable::BaseItemSharedPtr EditMenu()
 {
    using namespace MenuTable;
    using Options = CommandManager::Options;
@@ -1121,7 +1121,8 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 #endif
    ;
 
-   return FinderScope( findCommandHandler ).Eval(
+   static BaseItemSharedPtr menu{
+   FinderScope( findCommandHandler ).Eval(
    Menu( XO("&Edit"),
       Command( wxT("Undo"), XXO("&Undo"), FN(OnUndo),
          AudioIONotBusyFlag | UndoAvailableFlag, wxT("Ctrl+Z") ),
@@ -1201,7 +1202,7 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 
       //////////////////////////////////////////////////////////////////////////
 
-      LabelEditMenus,
+      LabelEditMenus(),
 
       Command( wxT("EditMetaData"), XXO("&Metadata..."), FN(OnEditMetadata),
          AudioIONotBusyFlag ),
@@ -1214,17 +1215,18 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 
       Command( wxT("Preferences"), XXO("Pre&ferences..."), FN(OnPreferences),
          AudioIONotBusyFlag, prefKey )
-   ) );
+   ) ) };
+   return menu;
 }
 
-MenuTable::BaseItemPtr ExtraEditMenu( AudacityProject & )
+MenuTable::BaseItemSharedPtr ExtraEditMenu()
 {
    using namespace MenuTable;
    using Options = CommandManager::Options;
    constexpr auto flags =
       AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag;
-
-   return FinderScope( findCommandHandler ).Eval(
+   static BaseItemSharedPtr menu{
+   FinderScope( findCommandHandler ).Eval(
    Menu( XO("&Edit"),
       Command( wxT("DeleteKey"), XXO("&Delete Key"), FN(OnDelete),
          (flags | NoAutoSelect),
@@ -1232,7 +1234,8 @@ MenuTable::BaseItemPtr ExtraEditMenu( AudacityProject & )
       Command( wxT("DeleteKey2"), XXO("Delete Key&2"), FN(OnDelete),
          (flags | NoAutoSelect),
          Options{ wxT("Delete") }.Mask( flags ) )
-   ) );
+   ) ) };
+   return menu;
 }
 
 #undef FN

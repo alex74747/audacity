@@ -1475,13 +1475,14 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 #define FN(X) (& TrackActions::Handler :: X)
 
-MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
+MenuTable::BaseItemSharedPtr TracksMenu()
 {
    // Tracks Menu (formerly Project Menu)
    using namespace MenuTable;
    using Options = CommandManager::Options;
-
-   return FinderScope( findCommandHandler ).Eval(
+   
+   static BaseItemSharedPtr menu{
+   FinderScope( findCommandHandler ).Eval(
    Menu( XO("&Tracks"),
       Menu( XO("Add &New"),
          Command( wxT("NewMonoTrack"), XXO("&Mono Track"), FN(OnNewWaveTrack),
@@ -1572,7 +1573,7 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
 
          Separator(),
 
-            // Alignment commands using selection or zero
+         // Alignment commands using selection or zero
          CommandGroup(wxT("Align"),
             alignLabels,
             FN(OnAlign), AudioIONotBusyFlag | TracksSelectedFlag),
@@ -1626,14 +1627,15 @@ MenuTable::BaseItemPtr TracksMenu( AudacityProject & )
          Options{}.CheckTest( wxT("/GUI/SyncLockTracks"), false ) )
 
 #endif
-   ) );
+   ) ) };
+   return menu;
 }
 
-MenuTable::BaseItemPtr ExtraTrackMenu( AudacityProject & )
+MenuTable::BaseItemSharedPtr ExtraTrackMenu()
 {
    using namespace MenuTable;
-
-   return FinderScope( findCommandHandler ).Eval(
+   static BaseItemSharedPtr menu{
+   FinderScope( findCommandHandler ).Eval(
    Menu( XO("&Track"),
       Command( wxT("TrackPan"), XXO("Change P&an on Focused Track..."),
          FN(OnTrackPan),
@@ -1678,7 +1680,8 @@ MenuTable::BaseItemPtr ExtraTrackMenu( AudacityProject & )
       Command( wxT("TrackMoveBottom"), XXO("Move Focused Track to &Bottom"),
          FN(OnTrackMoveBottom),
          AudioIONotBusyFlag | TrackPanelHasFocus | TracksExistFlag )
-   ) );
+   ) ) };
+   return menu;
 }
 
 #undef FN
