@@ -1122,7 +1122,7 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 #endif
    ;
 
-   return Menu( _("&Edit"),
+   return Menu( XO("&Edit"),
       Command( wxT("Undo"), XXO("&Undo"), FN(OnUndo),
          AudioIONotBusyFlag | UndoAvailableFlag, wxT("Ctrl+Z") ),
 
@@ -1158,7 +1158,7 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 
       Separator(),
 
-      Menu( _("R&emove Special"),
+      Menu( XO("R&emove Special"),
          /* i18n-hint: (verb) Do a special kind of cut*/
          Command( wxT("SplitCut"), XXO("Spl&it Cut"), FN(OnSplitCut),
             NotBusyTimeAndTracksFlags, wxT("Ctrl+Alt+X") ),
@@ -1182,7 +1182,7 @@ MenuTable::BaseItemPtr EditMenu( AudacityProject & )
 
       //////////////////////////////////////////////////////////////////////////
 
-      Menu( _("Clip B&oundaries"),
+      Menu( XO("Clip B&oundaries"),
          /* i18n-hint: (verb) It's an item on a menu. */
          Command( wxT("Split"), XXO("Sp&lit"), FN(OnSplit),
             AudioIONotBusyFlag | WaveTracksSelectedFlag, wxT("Ctrl+I") ),
@@ -1223,7 +1223,7 @@ MenuTable::BaseItemPtr ExtraEditMenu( AudacityProject & )
    using Options = CommandManager::Options;
    constexpr auto flags =
       AudioIONotBusyFlag | TracksSelectedFlag | TimeSelectedFlag;
-   return Menu( _("&Edit"),
+   return Menu( XO("&Edit"),
       Command( wxT("DeleteKey"), XXO("&Delete Key"), FN(OnDelete),
          (flags | NoAutoSelect),
          Options{ wxT("Backspace") }.Mask( flags ) ),

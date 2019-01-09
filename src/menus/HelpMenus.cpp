@@ -220,7 +220,7 @@ MenuTable::BaseItemPtr HelpMenu( AudacityProject & )
 
    using namespace MenuTable;
 
-   return Menu( _("&Help"),
+   return Menu( XO("&Help"),
       // QuickFix menu item not in Audacity 2.3.1 whilst we discuss further.
 #ifdef EXPERIMENTAL_DA
       // DA: Has QuickFix menu item.
@@ -239,7 +239,7 @@ MenuTable::BaseItemPtr HelpMenu( AudacityProject & )
 
       Separator(),
 
-      Menu( _("&Diagnostics"),
+      Menu( XO("&Diagnostics"),
          Command( wxT("DeviceInfo"), XXO("Au&dio Device Info..."),
             FN(OnAudioDeviceInfo),
             AudioIONotBusyFlag ),
