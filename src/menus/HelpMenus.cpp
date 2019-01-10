@@ -209,19 +209,14 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 // Menu definitions
 
-#define FN(X) findCommandHandler, \
-   static_cast<CommandFunctorPointer>(& HelpActions::Handler :: X)
-#define XXO(X) _(X), wxString{X}.Contains("...")
+#define FN(X) (& HelpActions::Handler :: X)
 
-MenuTable::BaseItemPtr HelpMenu( AudacityProject & )
+MenuTable::BaseItemSharedPtr HelpMenu()
 {
-#ifdef __WXMAC__
-      wxGetApp().s_macHelpMenuTitleName = _("&Help");
-#endif
-
    using namespace MenuTable;
-
-   return Menu( _("&Help"),
+   static BaseItemSharedPtr menu{
+   FinderScope( findCommandHandler ).Eval(
+   Menu( XO("&Help"),
       // QuickFix menu item not in Audacity 2.3.1 whilst we discuss further.
 #ifdef EXPERIMENTAL_DA
       // DA: Has QuickFix menu item.
@@ -240,7 +235,7 @@ MenuTable::BaseItemPtr HelpMenu( AudacityProject & )
 
       Separator(),
 
-      Menu( _("&Diagnostics"),
+      Menu( XO("&Diagnostics"),
          Command( wxT("DeviceInfo"), XXO("Au&dio Device Info..."),
             FN(OnAudioDeviceInfo),
             AudioIONotBusyFlag ),
@@ -272,8 +267,8 @@ MenuTable::BaseItemPtr HelpMenu( AudacityProject & )
 #endif
       Command( wxT("About"), XXO("&About Audacity..."), FN(OnAbout),
          AlwaysEnabledFlag )
-   );
+   ) ) };
+   return menu;
 }
 
-#undef XXO
 #undef FN
