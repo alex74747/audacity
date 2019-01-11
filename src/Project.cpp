@@ -151,8 +151,6 @@ scroll information.  It also has some status flags.
 #include "toolbars/ToolManager.h"
 #include "toolbars/ControlToolBar.h"
 #include "toolbars/DeviceToolBar.h"
-#include "toolbars/EditToolBar.h"
-#include "toolbars/MeterToolBar.h"
 #include "toolbars/MixerToolBar.h"
 #include "toolbars/ScrubbingToolBar.h"
 #include "toolbars/SelectionBar.h"
@@ -4808,11 +4806,6 @@ ControlToolBar *AudacityProject::GetControlToolBar()
 DeviceToolBar *AudacityProject::GetDeviceToolBar()
 {
    return DoGetToolBar< DeviceToolBar >( *this, DeviceBarID );
-}
-
-EditToolBar *AudacityProject::GetEditToolBar()
-{
-   return DoGetToolBar< EditToolBar >( *this, EditBarID );
 }
 
 MixerToolBar *AudacityProject::GetMixerToolBar()
