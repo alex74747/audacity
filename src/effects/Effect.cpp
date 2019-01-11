@@ -3495,7 +3495,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
    if (mPlaying)
    {
       mPlayPos = gAudioIO->GetStreamTime();
-      mProject->GetControlToolBar()->StopPlaying();
+      TransportState::StopPlaying();
    }
    else
    {
@@ -3519,7 +3519,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
          mPlayPos = mRegion.t1();
       }
 
-      mProject->GetControlToolBar()->PlayPlayRegion(
+      TransportState::PlayPlayRegion(
          SelectedRegion(mPlayPos, mRegion.t1()),
          AudioIOStartStreamOptions::PlayDefaults( *mProject ),
          PlayMode::normalPlay );

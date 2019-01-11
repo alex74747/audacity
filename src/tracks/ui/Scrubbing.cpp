@@ -310,7 +310,7 @@ void Scrubber::MarkScrubStart(
    // Stop any play in progress
    // Bug 1492: mCancelled to stop us collapsing the selected region.
    mCancelled = true;
-   ctb->StopPlaying();
+   TransportState::StopPlaying();
    mCancelled = false;
 
    // Usually the timer handler of TrackPanel does this, but we do this now,
@@ -356,7 +356,6 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
       if (abs(mScrubStartPosition - position) >= SCRUBBING_PIXEL_TOLERANCE) {
          auto &viewInfo = ViewInfo::Get( *mProject );
          auto &trackPanel = TrackPanel::Get( *mProject );
-         ControlToolBar * const ctb = mProject->GetControlToolBar();
          double maxTime = TrackList::Get( *mProject ).GetEndTime();
          const int leftOffset = trackPanel.GetLeftOffset();
          double time0 = std::min(maxTime,
@@ -368,7 +367,7 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
          if (time1 != time0) {
             if (busy) {
                position = mScrubStartPosition;
-               ctb->StopPlaying();
+               TransportState::StopPlaying();
                mScrubStartPosition = position;
             }
 
@@ -436,8 +435,8 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
             });
 
             mScrubToken =
-               ctb->PlayPlayRegion(SelectedRegion(time0, time1), options,
-                                   PlayMode::normalPlay, backwards);
+               TransportState::PlayPlayRegion(SelectedRegion(time0, time1),
+                  options, PlayMode::normalPlay, backwards);
             if (mScrubToken <= 0) {
                // Bug1627 (part of it):
                // infinite error spew when trying to start scrub:
@@ -476,9 +475,8 @@ bool Scrubber::StartSpeedPlay(double speed, double time0, double time1)
       return false;
    }
 
-   ControlToolBar * const ctb = mProject->GetControlToolBar();
    if (busy) {
-      ctb->StopPlaying();
+      TransportState::StopPlaying();
    }
    mScrubStartPosition = 0;
    mSpeedPlaying = true;
@@ -523,8 +521,8 @@ bool Scrubber::StartSpeedPlay(double speed, double time0, double time1)
    double stopTolerance = 20.0 / options.rate;
    mScrubToken =
       // Reduce time by 'stopTolerance' fudge factor, so that the Play will stop.
-      ctb->PlayPlayRegion(SelectedRegion(time0, time1-stopTolerance), options,
-         PlayMode::normalPlay, backwards);
+      TransportState::PlayPlayRegion(SelectedRegion(time0, time1-stopTolerance),
+         options, PlayMode::normalPlay, backwards);
 
    if (mScrubToken >= 0) {
       mLastScrubPosition = 0;
@@ -1054,7 +1052,7 @@ void Scrubber::DoScrub(bool seek)
       // just switching mode
    }
    else
-      mProject->GetControlToolBar()->StopPlaying();
+      TransportState::StopPlaying();
 }
 
 void Scrubber::OnScrubOrSeek(bool seek)
