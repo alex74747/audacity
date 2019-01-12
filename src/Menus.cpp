@@ -97,7 +97,7 @@ void MenuManager::UpdatePrefs()
 }
 
 /// Namespace for structures that go into building a menu
-namespace MenuTable {
+namespace Registry {
 
 BaseItem::~BaseItem() {}
 
@@ -118,6 +118,7 @@ void GroupItem::AppendOne( BaseItemPtr&& ptr )
 GroupItem::~GroupItem() {}
 
 GroupingItem::~GroupingItem() {}
+
 }
 
 namespace MenuTable {
