@@ -572,10 +572,11 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 #define FN(X) (& FileActions::Handler :: X)
 
-// under /MenuBar
-MenuTable::BaseItemSharedPtr FileMenu()
+namespace {
+using namespace MenuTable;
+
+BaseItemSharedPtr FileMenu()
 {
-   using namespace MenuTable;
    static BaseItemSharedPtr menu{
    FinderScope( findCommandHandler ).Eval(
    Menu( wxT("File"), XO("&File"),
@@ -720,6 +721,12 @@ MenuTable::BaseItemSharedPtr FileMenu()
          AlwaysEnabledFlag, wxT("Ctrl+Q") )
    ) ) };
    return menu;
+}
+
+AttachedItem sAttachment1{
+   wxT(""),
+   Shared( FileMenu() )
+};
 }
 
 #undef FN

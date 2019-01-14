@@ -1095,8 +1095,9 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 MenuTable::BaseItemSharedPtr LabelEditMenus();
 
-// Under /MenuBar
-MenuTable::BaseItemSharedPtr EditMenu()
+namespace {
+using namespace MenuTable;
+BaseItemSharedPtr EditMenu()
 {
    using namespace MenuTable;
    using Options = CommandManager::Options;
@@ -1220,6 +1221,12 @@ MenuTable::BaseItemSharedPtr EditMenu()
          AudioIONotBusyFlag, prefKey )
    ) ) };
    return menu;
+}
+
+AttachedItem sAttachment1{
+   wxT(""),
+   Shared( EditMenu() )
+};
 }
 
 // Under /MenuBar/Optional/Extra
