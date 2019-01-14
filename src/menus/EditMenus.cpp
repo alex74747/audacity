@@ -1227,10 +1227,8 @@ AttachedItem sAttachment1{
    wxT(""),
    Shared( EditMenu() )
 };
-}
 
-// Under /MenuBar/Optional/Extra
-MenuTable::BaseItemSharedPtr ExtraEditMenu()
+BaseItemSharedPtr ExtraEditMenu()
 {
    using namespace MenuTable;
    using Options = CommandManager::Options;
@@ -1249,4 +1247,10 @@ MenuTable::BaseItemSharedPtr ExtraEditMenu()
    return menu;
 }
 
+AttachedItem sAttachment2{
+   wxT("Optional/Extra/Part1"),
+   Shared( ExtraEditMenu() )
+};
+
+}
 #undef FN
