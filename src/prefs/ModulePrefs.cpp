@@ -182,9 +182,18 @@ void ModulePrefs::SetModuleStatus(const FilePath &fname, int iStatus){
    gPrefs->Flush();
 }
 
-PrefsPanel::Factory
-ModulePrefsFactory = [](wxWindow *parent, wxWindowID winid)
-{
-   wxASSERT(parent); // to justify safenew
-   return safenew ModulePrefs(parent, winid);
+#ifdef EXPERIMENTAL_MODULE_PREFS
+namespace{
+PrefsPanel::Registration sAttachment{ "Module",
+   [](wxWindow *parent, wxWindowID winid)
+   {
+      wxASSERT(parent); // to justify safenew
+      return safenew ModulePrefs(parent, winid);
+   },
+   false,
+   // Register with an explicit ordering hint because this one is
+   // only conditionally compiled
+   { "", { Registry::OrderingHint::After, "Mouse" } }
 };
+}
+#endif

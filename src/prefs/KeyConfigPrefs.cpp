@@ -698,3 +698,8 @@ KeyConfigPrefsFactory( const CommandID &name )
       return result;
    };
 }
+namespace{
+PrefsPanel::Registration sAttachment{ "KeyConfig",
+   KeyConfigPrefsFactory()
+};
+}

@@ -128,9 +128,12 @@ bool ImportExportPrefs::Commit()
    return true;
 }
 
-PrefsPanel::Factory
-ImportExportPrefsFactory = [](wxWindow *parent, wxWindowID winid)
-{
-   wxASSERT(parent); // to justify safenew
-   return safenew ImportExportPrefs(parent, winid);
+namespace{
+PrefsPanel::Registration sAttachment{ "ImportExport",
+   [](wxWindow *parent, wxWindowID winid)
+   {
+      wxASSERT(parent); // to justify safenew
+      return safenew ImportExportPrefs(parent, winid);
+   }
 };
+}

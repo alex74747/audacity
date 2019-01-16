@@ -420,10 +420,12 @@ bool DevicePrefs::Commit()
    return true;
 }
 
-PrefsPanel::Factory
-DevicePrefsFactory = [](wxWindow *parent, wxWindowID winid)
-
-{
-   wxASSERT(parent); // to justify safenew
-   return safenew DevicePrefs(parent, winid);
+namespace{
+PrefsPanel::Registration sAttachment{ "Device",
+   [](wxWindow *parent, wxWindowID winid)
+   {
+      wxASSERT(parent); // to justify safenew
+      return safenew DevicePrefs(parent, winid);
+   }
 };
+}

@@ -305,9 +305,12 @@ void RecordingPrefs::OnToggleCustomName(wxCommandEvent & /* Evt */)
    mToggleCustomName->Enable(mUseCustomTrackName);
 }
 
-PrefsPanel::Factory
-RecordingPrefsFactory = [](wxWindow *parent, wxWindowID winid)
-{
-   wxASSERT(parent); // to justify safenew
-   return safenew RecordingPrefs(parent, winid);
+namespace{
+PrefsPanel::Registration sAttachment{ "Recording",
+   [](wxWindow *parent, wxWindowID winid)
+   {
+      wxASSERT(parent); // to justify safenew
+      return safenew RecordingPrefs(parent, winid);
+   }
 };
+}

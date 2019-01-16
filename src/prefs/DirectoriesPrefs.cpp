@@ -295,3 +295,9 @@ DirectoriesPrefsFactory() {
       return safenew DirectoriesPrefs(parent, winid);
    };
 }
+
+namespace{
+PrefsPanel::Registration sAttachment{ "Directories",
+   DirectoriesPrefsFactory() };
+};
+

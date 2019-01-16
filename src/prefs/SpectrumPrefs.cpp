@@ -581,3 +581,12 @@ SpectrumPrefsFactory( WaveTrack *wt )
       return safenew SpectrumPrefs(parent, winid, wt);
    };
 }
+
+namespace{
+PrefsPanel::Registration sAttachment{ "Spectrum",
+   SpectrumPrefsFactory( nullptr ),
+   false,
+   // Place it at a lower tree level
+   { "Tracks" }
+};
+}

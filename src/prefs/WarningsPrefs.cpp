@@ -106,9 +106,12 @@ bool WarningsPrefs::Commit()
    return true;
 }
 
-PrefsPanel::Factory
-WarningsPrefsFactory = [](wxWindow *parent, wxWindowID winid)
-{
-   wxASSERT(parent); // to justify safenew
-   return safenew WarningsPrefs(parent, winid);
+namespace{
+PrefsPanel::Registration sAttachment{ "Warnings",
+   [](wxWindow *parent, wxWindowID winid)
+   {
+      wxASSERT(parent); // to justify safenew
+      return safenew WarningsPrefs(parent, winid);
+   }
 };
+}

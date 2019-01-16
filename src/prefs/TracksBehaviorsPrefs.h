@@ -43,6 +43,4 @@ class TracksBehaviorsPrefs final : public PrefsPanel
    wxArrayStringEx mSoloChoices;
 };
 
-/// A PrefsPanel::Factory that creates one TracksBehaviorsPrefs panel.
-extern PrefsPanel::Factory TracksBehaviorsPrefsFactory;
 #endif
