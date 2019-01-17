@@ -20,11 +20,10 @@ class wxStaticText;
 class EffectCompressorPanel;
 class ShuttleGui;
 
-#define COMPRESSOR_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Compressor") }
-
 class EffectCompressor final : public EffectTwoPassSimpleMono
 {
 public:
+   static const ComponentInterfaceSymbol Symbol;
 
    EffectCompressor();
    virtual ~EffectCompressor();
