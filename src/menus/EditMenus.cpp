@@ -16,8 +16,6 @@
 #include "../commands/CommandManager.h"
 #include "../commands/ScreenshotCommand.h"
 #include "../prefs/PrefsDialog.h"
-#include "../prefs/SpectrogramSettings.h"
-#include "../prefs/WaveformSettings.h"
 #include "../widgets/ErrorDialog.h"
 #include "../tracks/labeltrack/ui/LabelTrackView.h"
 
@@ -166,12 +164,10 @@ namespace EditActions {
 
 // exported helper functions
 
+// PRL:  Move this function elsewhere?  Menus don't use it.
 void DoReloadPreferences( AudacityProject &project )
 {
    {
-      SpectrogramSettings::defaults().LoadPrefs();
-      WaveformSettings::defaults().LoadPrefs();
-
       GlobalPrefsDialog dialog(&ProjectWindow::Get( project ) /* parent */ );
       wxCommandEvent Evt;
       //dialog.Show();
