@@ -18,29 +18,33 @@ modelled on BuiltinEffectsModule
 #include "AudacityCommand.h"
 #include "ModuleManager.h"
 
+#include "CommandManager.h"
 #include "../Prefs.h"
 
 namespace {
 bool sInitialized = false;
+const auto PathStart = "Commands";
+static Registry::GroupItem &sRegistry()
+{
+   static Registry::TransparentGroupItem<> registry{ PathStart };
+   return registry;
+}
 }
 
-struct BuiltinCommandsModule::Entry {
-   ComponentInterfaceSymbol name;
+struct BuiltinCommandsModule::Entry : Registry::SingleItem {
+   TranslatableString visibleName;
    Factory factory;
-
-   using Entries = std::vector< Entry >;
-   static Entries &Registry()
-   {
-      static Entries result;
-      return result;
-   }
+   Entry( const ComponentInterfaceSymbol &name, Factory factory_)
+      : SingleItem( name.Internal() )
+      , visibleName{ name.Msgid() }, factory( factory_ ) {}
 };
 
 void BuiltinCommandsModule::DoRegistration(
    const ComponentInterfaceSymbol &name, const Factory &factory )
 {
    wxASSERT( !sInitialized );
-   Entry::Registry().emplace_back( Entry{ name, factory } );
+   Registry::RegisterItem( sRegistry(), { "" },
+      std::make_unique< Entry >( name, factory ) );
 }
 
 // ============================================================================
@@ -114,11 +118,18 @@ TranslatableString BuiltinCommandsModule::GetDescription()
 
 bool BuiltinCommandsModule::Initialize()
 {
-   for ( const auto &entry : Entry::Registry() ) {
-      auto path = wxString(BUILTIN_GENERIC_COMMAND_PREFIX)
-         + entry.name.Internal();
-      mCommands[ path ] = &entry;
-   }
+   struct Visitor : Registry::Visitor{
+      CommandHash *pCommands;
+      void Visit( Registry::SingleItem& item, const Path& ) override
+      {
+         auto pEntry = static_cast< Entry* >( &item );
+         auto path = wxString(BUILTIN_GENERIC_COMMAND_PREFIX) + pEntry->name.GET();
+         (*pCommands)[ path ] = pEntry;
+      }
+   } visitor;
+   visitor.pCommands = &mCommands;
+   Registry::TransparentGroupItem<> top{ PathStart };
+   Registry::Visit( visitor, &top, &sRegistry() );
    sInitialized = true;
    return true;
 }
@@ -147,7 +158,7 @@ bool BuiltinCommandsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
    for (const auto &pair : mCommands)
    {
       const auto &path = pair.first;
-      if (!pm.IsPluginRegistered(path, &pair.second->name.Msgid()))
+      if (!pm.IsPluginRegistered(path, &pair.second->visibleName))
       {
          // No checking of error ?
          // Uses Generic Registration, not Default.
