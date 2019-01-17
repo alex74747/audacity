@@ -78,6 +78,7 @@ private:
    std::unique_ptr<Effect> Instantiate(const PluginPath & path);
 
 private:
+
    static void DoRegistration(
       const ComponentInterfaceSymbol &name, const Factory &factory,
       bool excluded );

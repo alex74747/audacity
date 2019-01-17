@@ -18,27 +18,40 @@
 
 #include "Effect.h"
 #include "ModuleManager.h"
+#include "../commands/CommandManager.h"
 
-static bool sInitialized = false;
+namespace {
 
-struct BuiltinEffectsModule::Entry {
-   ComponentInterfaceSymbol name;
-   BuiltinEffectsModule::Factory factory;
+const auto PathStart = "Effects";
+
+bool sInitialized = false;
+
+static Registry::GroupItem &sRegistry()
+{
+   static Registry::TransparentGroupItem<> registry{ PathStart };
+   return registry;
+}
+
+}
+
+struct BuiltinEffectsModule::Entry : Registry::SingleItem {
+   TranslatableString visibleName;
+   Factory factory;
    bool excluded;
-
-   using Entries = std::vector< Entry >;
-   static Entries &Registry()
-   {
-      static Entries result;
-      return result;
-   }
+   Entry( const ComponentInterfaceSymbol &name,
+      BuiltinEffectsModule::Factory factory_, bool excluded_ )
+      : SingleItem( name.Internal() )
+      , visibleName{ name.Msgid() }
+      , factory( factory_ ), excluded( excluded_ )
+   {}
 };
 
 void BuiltinEffectsModule::DoRegistration(
    const ComponentInterfaceSymbol &name, const Factory &factory, bool excluded )
 {
    wxASSERT( !sInitialized );
-   Entry::Registry().emplace_back( Entry{ name, factory, excluded } );
+   Registry::RegisterItem( sRegistry(), { "" },
+      std::make_unique< Entry >( name, factory, excluded ) );
 }
 
 // ============================================================================
@@ -112,10 +125,18 @@ TranslatableString BuiltinEffectsModule::GetDescription()
 
 bool BuiltinEffectsModule::Initialize()
 {
-   for ( const auto &entry : Entry::Registry() ) {
-      auto path = wxString(BUILTIN_EFFECT_PREFIX) + entry.name.Internal();
-      mEffects[ path ] = &entry;
-   }
+   struct Visitor : Registry::Visitor{
+      EffectHash *pCommands;
+      void Visit( Registry::SingleItem& item, const Path& ) override
+      {
+         auto pEntry = static_cast< Entry* >( &item );
+         auto path = wxString(BUILTIN_EFFECT_PREFIX) + pEntry->name.GET();
+         (*pCommands)[ path ] = pEntry;
+      }
+   } visitor;
+   visitor.pCommands = &mEffects;
+   Registry::TransparentGroupItem<> top{ PathStart };
+   Registry::Visit( visitor, &top, &sRegistry() );
    sInitialized = true;
    return true;
 }
@@ -145,7 +166,7 @@ bool BuiltinEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
    for (const auto &pair : mEffects)
    {
       const auto &path = pair.first;
-      if (!pm.IsPluginRegistered(path, &pair.second->name.Msgid()))
+      if (!pm.IsPluginRegistered(path, &pair.second->visibleName))
       {
          if ( pair.second->excluded )
             continue;
