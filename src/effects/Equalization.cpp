@@ -201,12 +201,14 @@ namespace{ BuiltinEffectsModule::Registration< EffectEqualization > reg; }
 const ComponentInterfaceSymbol EffectEqualizationCurve::Symbol
 { wxT("FilterCurve"), XO("Filter Curve") };
 
-namespace{ BuiltinEffectsModule::Registration< EffectEqualizationCurve > reg2; }
+// This effect, not yet
+// namespace{ BuiltinEffectsModule::Registration< EffectEqualizationCurve > reg2; }
 
 const ComponentInterfaceSymbol EffectEqualizationGraphic::Symbol
 { wxT("GraphicEQ"), XO("Graphic EQ") };
 
-namespace{ BuiltinEffectsModule::Registration< EffectEqualizationGraphic > reg3; }
+// This effect, not yet
+// namespace{ BuiltinEffectsModule::Registration< EffectEqualizationGraphic > reg3; }
 
 BEGIN_EVENT_TABLE(EffectEqualization, wxEvtHandler)
    EVT_SIZE( EffectEqualization::OnSize )
