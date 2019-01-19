@@ -3519,10 +3519,10 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
          mPlayPos = mRegion.t1();
       }
 
-      mProject->GetControlToolBar()->PlayPlayRegion
-         (SelectedRegion(mPlayPos, mRegion.t1()),
-          AudioIOStartStreamOptions::PlayDefaults( *mProject ),
-          PlayMode::normalPlay);
+      mProject->GetControlToolBar()->PlayPlayRegion(
+         SelectedRegion(mPlayPos, mRegion.t1()),
+         AudioIOStartStreamOptions::PlayDefaults( *mProject ),
+         PlayMode::normalPlay );
    }
 }
 

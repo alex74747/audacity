@@ -56,6 +56,7 @@
 #endif
 
 #include "commands/CommandManager.h"
+#include "toolbars/ControlToolBar.h"
 
 // class MixerTrackSlider
 
@@ -1355,7 +1356,7 @@ void MixerBoard::OnTimer(wxCommandEvent &event)
    if (mProject->IsAudioActive())
    {
       UpdateMeters(gAudioIO->GetStreamTime(),
-                   (mProject->mLastPlayMode == PlayMode::loopedPlay));
+         (ControlToolBar::sLastPlayMode == PlayMode::loopedPlay));
    }
 
    // Let other listeners get the notification

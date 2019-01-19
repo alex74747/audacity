@@ -119,7 +119,7 @@ void DoPlayStop(const CommandContext &context)
          //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
          toolbar->SetStop(false);
 
-         // Will automatically set mLastPlayMode
+         // Will automatically set sLastPlayMode
          toolbar->PlayCurrentRegion(false);
       }
    }
@@ -128,7 +128,7 @@ void DoPlayStop(const CommandContext &context)
       //toolbar->SetPlay(true); // Not needed as done in PlayPlayRegion.
       toolbar->SetStop(false);
 
-      // Will automatically set mLastPlayMode
+         // Will automatically set sLastPlayMode
       toolbar->PlayCurrentRegion(false);
    }
 }
@@ -267,7 +267,7 @@ void DoPlayStopSelect(AudacityProject &project)
       //toolbar->SetPlay(true); // Not needed as set in PlayPlayRegion()
       toolbar->SetStop(false);
 
-      // Will automatically set mLastPlayMode
+      // Will automatically set sLastPlayMode
       toolbar->PlayCurrentRegion(false);
    }
 }
@@ -365,7 +365,7 @@ void OnPlayLooped(const CommandContext &context)
       return;
 
    // Now play in a loop
-   // Will automatically set mLastPlayMode
+   // Will automatically set sLastPlayMode
    auto controlToolBar = project.GetControlToolBar();
    controlToolBar->PlayCurrentRegion(true);
 }
@@ -701,9 +701,9 @@ void OnPlayOneSecond(const CommandContext &context)
    auto options = AudioIOStartStreamOptions::PlayDefaults( project );
 
    double pos = trackPanel.GetMostRecentXPos();
-   controlToolBar->PlayPlayRegion
-      (SelectedRegion(pos - 0.5, pos + 0.5), options,
-       PlayMode::oneSecondPlay);
+   controlToolBar->PlayPlayRegion(
+      SelectedRegion(pos - 0.5, pos + 0.5), options,
+      PlayMode::oneSecondPlay);
 }
 
 /// The idea for this function (and first implementation)
@@ -748,13 +748,13 @@ void OnPlayToSelection(const CommandContext &context)
 
    // An alternative, commented out below, is to disable autoscroll
    // only when playing a short region, less than or equal to a second.
-//   mLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
+//   sLastPlayMode = ((t1-t0) > 1.0) ? normalPlay : oneSecondPlay;
 
    auto controlToolBar = project.GetControlToolBar();
    auto playOptions = AudioIOStartStreamOptions::PlayDefaults( project );
 
-   controlToolBar->PlayPlayRegion
-      (SelectedRegion(t0, t1), playOptions, PlayMode::oneSecondPlay);
+   controlToolBar->PlayPlayRegion(
+      SelectedRegion(t0, t1), playOptions, PlayMode::oneSecondPlay);
 }
 
 // The next 4 functions provide a limited version of the
