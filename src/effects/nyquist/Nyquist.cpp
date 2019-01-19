@@ -540,7 +540,7 @@ bool NyquistEffect::Init()
       bool bAllowSpectralEditing = true;
 
       for ( auto t :
-               project->GetTracks()->Selected< const WaveTrack >() ) {
+               TrackList::Get( *project ).Selected< const WaveTrack >() ) {
          if (t->GetDisplay() != WaveTrack::Spectrum ||
              !(t->GetSpectrogramSettings().SpectralSelectionEnabled())) {
             bAllowSpectralEditing = false;
@@ -716,7 +716,7 @@ bool NyquistEffect::Process()
       wxString waveTrackList;   // track positions of selected audio tracks.
 
       {
-         auto countRange = project->GetTracks()->Leaders();
+         auto countRange = TrackList::Get( *project ).Leaders();
          for (auto t : countRange) {
             t->TypeSwitch( [&](const WaveTrack *) {
                numWave++;
@@ -1645,7 +1645,7 @@ double NyquistEffect::GetCtrlValue(const wxString &s)
    AudacityProject *project = GetActiveProject();
    if (project && s.IsSameAs(wxT("half-srate"), false)) {
       auto rate =
-         project->GetTracks()->Selected< const WaveTrack >()
+         TrackList::Get( *project )->Selected< const WaveTrack >()
             .min( &WaveTrack::GetRate );
       return (rate / 2.0);
    }

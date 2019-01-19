@@ -1980,7 +1980,7 @@ bool LabelTrack::OnKeyDown(SelectedRegion &newSel, wxKeyEvent & event)
 
       case WXK_ESCAPE:
          if (mRestoreFocus >= 0) {
-            auto track = *GetActiveProject()->GetTracks()->Any()
+            auto track = *TrackList::Get( *GetActiveProject() ).Any()
                .begin().advance(mRestoreFocus);
             if (track)
                GetActiveProject()->GetTrackPanel()->SetFocusedTrack(track);
@@ -3076,12 +3076,12 @@ void LabelTrack::DoEditLabels
 {
    auto format = project.GetSelectionFormat(),
       freqFormat = project.GetFrequencySelectionFormatName();
-   auto tracks = project.GetTracks();
+   auto &tracks = TrackList::Get( project );
    auto trackFactory = project.GetTrackFactory();
    auto rate = project.GetRate();
    auto &viewInfo = project.GetViewInfo();
 
-   LabelDialog dlg(&project, *trackFactory, tracks,
+   LabelDialog dlg(&project, *trackFactory, &tracks,
                    lt, index,
                    viewInfo, rate,
                    format, freqFormat);
