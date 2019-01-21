@@ -190,8 +190,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    virtual void ApplyUpdatedTheme();
 
-   UndoManager *GetUndoManager() { return mUndoManager.get(); }
-
    sampleFormat GetDefaultFormat() { return mDefaultFormat; }
 
    double GetRate() const { return mRate; }
@@ -580,8 +578,6 @@ public:
    static ODLock &AllProjectDeleteMutex();
 
 private:
-   // History/Undo manager
-   std::unique_ptr<UndoManager> mUndoManager;
    bool mDirty{ false };
 
    // Commands
