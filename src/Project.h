@@ -199,7 +199,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    void SetPlayRegionLocked(bool value) { mLockPlayRegion = value; }
 
    wxString GetName();
-   const std::shared_ptr<DirManager> &GetDirManager();
    TrackFactory *GetTrackFactory();
    AdornedRulerPanel *GetRulerPanel();
    const Tags *GetTags();
@@ -544,7 +543,6 @@ public:
    // The project's name and file info
    FilePath mFileName; // Note: extension-less
    bool mbLoadedFromAup;
-   std::shared_ptr<DirManager> mDirManager; // MM: DirManager now created dynamically
 
    static int mProjectCounter;// global counter.
    int mProjectNo; // count when this project was created.

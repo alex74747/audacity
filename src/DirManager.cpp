@@ -369,6 +369,32 @@ int DirManager::numDirManagers = 0;
 bool DirManager::dontDeleteTempFiles = false;
 
 
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+   [](AudacityProject&) { return std::make_shared<DirManager>(); }
+};
+
+DirManager &DirManager::Get( AudacityProject &project )
+{
+   return project.AttachedObjects::Get< DirManager >( key );
+}
+
+const DirManager &DirManager::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
+}
+
+DirManager &DirManager::Reset( AudacityProject &project )
+{
+   auto dirManager = std::make_shared<DirManager>();
+   project.AttachedObjects::Assign( key, dirManager );
+   return *dirManager;
+}
+
+void DirManager::Destroy( AudacityProject &project )
+{
+   project.AttachedObjects::Assign( key, nullptr );
+}
+
 DirManager::DirManager()
 {
    wxLogDebug(wxT("DirManager: Created new instance."));
