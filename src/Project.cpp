@@ -1115,7 +1115,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
 #ifdef EXPERIMENTAL_SCRUBBING_BASIC
    mScrubOverlay = std::make_shared<ScrubbingOverlay>(this);
-   mScrubber = std::make_unique<Scrubber>(this);
 #endif
 
    mPlaybackScroller = std::make_unique<PlaybackScroller>(this);
@@ -1718,11 +1717,12 @@ void AudacityProject::OnScrollRightButton(wxScrollEvent & /*event*/)
 bool AudacityProject::MayScrollBeyondZero() const
 {
    auto &project = *this;
+   auto &scrubber = Scrubber::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    if (viewInfo.bScrollBeyondZero)
       return true;
 
-   if (GetScrubber().HasMark() ||
+   if (scrubber.HasMark() ||
        IsAudioActive()) {
       if (mPlaybackScroller) {
          auto mode = mPlaybackScroller->GetMode();

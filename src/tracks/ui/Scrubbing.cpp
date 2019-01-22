@@ -203,6 +203,21 @@ void Scrubber::ScrubPoller::Notify()
    mScrubber.ContinueScrubbingUI();
 }
 
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+  []( AudacityProject &parent ){
+     return std::make_shared< Scrubber >( &parent ); }
+};
+
+Scrubber &Scrubber::Get( AudacityProject &project )
+{
+   return project.AttachedObjects::Get< Scrubber >( key );
+}
+
+const Scrubber &Scrubber::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
+}
+
 Scrubber::Scrubber(AudacityProject *project)
    : mScrubToken(-1)
    , mPaused(true)
@@ -1019,12 +1034,12 @@ void ScrubbingOverlay::OnTimer(wxCommandEvent &event)
 
 const Scrubber &ScrubbingOverlay::GetScrubber() const
 {
-   return mProject->GetScrubber();
+   return Scrubber::Get( *mProject );
 }
 
 Scrubber &ScrubbingOverlay::GetScrubber()
 {
-   return mProject->GetScrubber();
+   return Scrubber::Get( *mProject );
 }
 
 void Scrubber::DoScrub(bool seek)
@@ -1162,7 +1177,7 @@ bool Scrubber::CanScrub() const
 
 // To supply the "finder" argument
 static CommandHandlerObject &findme(AudacityProject &project)
-{ return project.GetScrubber(); }
+{ return Scrubber::Get( project ); }
 
 MenuTable::BaseItemPtr Scrubber::Menu()
 {

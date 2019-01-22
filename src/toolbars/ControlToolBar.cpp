@@ -832,7 +832,8 @@ void ControlToolBar::StopPlaying(bool stopStream /* = true*/)
 
    if(project) {
       // Let scrubbing code do some appearance change
-      project->GetScrubber().StopScrubbing();
+      auto &scrubber = Scrubber::Get( *project );
+      scrubber.StopScrubbing();
    }
 
    if (!CanStopAudioStream())
@@ -1280,11 +1281,14 @@ void ControlToolBar::OnPause(wxCommandEvent & WXUNUSED(evt))
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
 
+   auto project = GetActiveProject();
+   auto &scrubber = Scrubber::Get( *project );
+
    // Bug 1494 - Pausing a seek or scrub should just STOP as
    // it is confusing to be in a paused scrub state.
    bool bStopInstead = mPaused && 
       gAudioIO->IsScrubbing() && 
-      !GetActiveProject()->GetScrubber().IsSpeedPlaying();
+      !scrubber.IsSpeedPlaying();
 
    if (bStopInstead) {
       wxCommandEvent dummy;
@@ -1293,7 +1297,7 @@ void ControlToolBar::OnPause(wxCommandEvent & WXUNUSED(evt))
    }
    
    if (gAudioIO->IsScrubbing())
-      GetActiveProject()->GetScrubber().Pause(mPaused);
+      scrubber.Pause(mPaused);
    else
 #endif
    {
@@ -1391,8 +1395,9 @@ wxString ControlToolBar::StateForStatusBar()
    wxString state;
 
    auto pProject = GetActiveProject();
-   auto scrubState =
-      pProject ? pProject->GetScrubber().GetUntranslatedStateString() : wxString();
+   auto scrubState = pProject
+      ? Scrubber::Get( *pProject ).GetUntranslatedStateString()
+      : wxString();
    if (!scrubState.empty())
       state = wxGetTranslation(scrubState);
    else if (mPlay->IsDown())
@@ -1422,7 +1427,7 @@ bool ControlToolBar::IsTransportingPinned()
 {
    if (!TracksPrefs::GetPinnedHeadPreference())
       return false;
-   const auto &scrubber = ::GetActiveProject()->GetScrubber();
+   const auto &scrubber = Scrubber::Get( *::GetActiveProject() );
    return
      !(scrubber.HasMark() &&
        !scrubber.WasSpeedPlaying() &&
@@ -1434,7 +1439,7 @@ void ControlToolBar::StartScrollingIfPreferred()
    if (IsTransportingPinned())
       StartScrolling();
 #ifdef __WXMAC__
-   else if (::GetActiveProject()->GetScrubber().HasMark()) {
+   else if (Scrubber::Get( *::GetActiveProject() ).HasMark()) {
       // PRL:  cause many "unnecessary" refreshes.  For reasons I don't understand,
       // doing this causes wheel rotation events (mapped from the double finger vertical
       // swipe) to be delivered more uniformly to the application, so that speed control
