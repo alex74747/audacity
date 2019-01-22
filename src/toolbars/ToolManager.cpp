@@ -326,6 +326,21 @@ BEGIN_EVENT_TABLE( ToolManager, wxEvtHandler )
    EVT_TIMER( wxID_ANY, ToolManager::OnTimer )
 END_EVENT_TABLE()
 
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+  []( AudacityProject &parent ){
+     return std::make_shared< ToolManager >( &parent, parent.GetTopPanel() ); }
+};
+
+ToolManager &ToolManager::Get( AudacityProject &project )
+{
+   return project.AttachedObjects::Get< ToolManager >( key );
+}
+
+const ToolManager &ToolManager::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
+}
+
 //
 // Constructor
 //
@@ -442,19 +457,34 @@ ToolManager::ToolManager( AudacityProject *parent, wxWindow *topDockParent )
 //
 // Destructer
 //
+
+void ToolManager::Destroy()
+{
+   if ( mTopDock || mBotDock ) { // destroy at most once
+      wxEvtHandler::RemoveFilter(this);
+
+      // Save the toolbar states
+      WriteConfig();
+
+      // This function causes the toolbars to be destroyed, so
+      // clear the configuration of the ToolDocks which refer to
+      // these toolbars. This change was needed to stop Audacity
+      // crashing when running with Jaws on Windows 10 1703.
+      mTopDock->GetConfiguration().Clear();
+      mBotDock->GetConfiguration().Clear();
+
+      mTopDock = mBotDock = nullptr; // indicate that it has been destroyed
+
+      for ( size_t ii = 0; ii < ToolBarCount; ++ii )
+         mBars[ii].reset();
+
+      mIndicator.reset();
+   }
+}
+
 ToolManager::~ToolManager()
 {
-   wxEvtHandler::RemoveFilter(this);
-
-   // Save the toolbar states
-   WriteConfig();
-
-   // This function causes the toolbars to be destroyed, so
-   // clear the configuration of the ToolDocks which refer to
-   // these toolbars. This change was needed to stop Audacity
-   // crashing when running with Jaws on Windows 10 1703.
-   mTopDock->GetConfiguration().Clear();
-   mBotDock->GetConfiguration().Clear();
+   Destroy();
 }
 
 // This table describes the default configuration of the toolbars as
@@ -1033,7 +1063,7 @@ bool ToolManager::IsVisible( int type )
 {
    ToolBar *t = mBars[ type ].get();
 
-   return t->IsVisible();
+   return t && t->IsVisible();
 
 #if 0
    // If toolbar is floating
