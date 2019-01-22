@@ -271,8 +271,8 @@ public:
          }
 
          // Capture handler didn't want it, so ask the Command Manager.
-         CommandManager *manager = project->GetCommandManager();
-         if (manager && manager->FilterKeyEvent(project, key))
+         auto &manager = CommandManager::Get( *project );
+         if (manager.FilterKeyEvent(project, key))
          {
             return Event_Processed;
          }
@@ -455,6 +455,23 @@ private:
 #endif
 
 }monitor;
+
+///
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+   [](AudacityProject&) {
+      return std::make_unique<CommandManager>();
+   }
+};
+
+CommandManager &CommandManager::Get( AudacityProject &project )
+{
+   return project.AttachedObjects::Get< CommandManager >( key );
+}
+
+const CommandManager &CommandManager::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
+}
 
 ///
 ///  Standard Constructor

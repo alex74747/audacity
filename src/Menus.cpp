@@ -162,7 +162,7 @@ void VisitItem( AudacityProject &project, MenuTable::BaseItem *pItem )
    if (!pItem)
       return;
 
-   auto &manager = *project.GetCommandManager();
+   auto &manager = CommandManager::Get( project );
 
    using namespace MenuTable;
    if (const auto pComputed =
@@ -280,13 +280,13 @@ static const auto menuTree = MenuTable::Items(
 
 void MenuCreator::CreateMenusAndCommands(AudacityProject &project)
 {
-   CommandManager *c = project.GetCommandManager();
+   auto &commandManager = CommandManager::Get( project );
 
    // The list of defaults to exclude depends on
    // preference wxT("/GUI/Shortcuts/FullDefaults"), which may have changed.
-   c->SetMaxList();
+   commandManager.SetMaxList();
 
-   auto menubar = c->AddMenuBar(wxT("appmenu"));
+   auto menubar = commandManager.AddMenuBar(wxT("appmenu"));
    wxASSERT(menubar);
 
    VisitItem( project, menuTree.get() );
@@ -305,7 +305,7 @@ void MenuManager::ModifyUndoMenuItems(AudacityProject &project)
 {
    wxString desc;
    auto &undoManager = UndoManager::Get( project );
-   auto &commandManager = *project.GetCommandManager();
+   auto &commandManager = CommandManager::Get( project );
    int cur = undoManager.GetCurrentState();
 
    if (undoManager.UndoAvailable()) {
@@ -355,7 +355,7 @@ void MenuCreator::RebuildMenuBar(AudacityProject &project)
       // menuBar gets deleted here
    }
 
-   project.GetCommandManager()->PurgeData();
+   CommandManager::Get( project ).PurgeData();
 
    CreateMenusAndCommands(project);
 
@@ -577,7 +577,7 @@ void MenuManager::ModifyToolbarMenus(AudacityProject &project)
       return;
    }
 
-   auto &commandManager = *project.GetCommandManager();
+   auto &commandManager = CommandManager::Get( project );
 
    commandManager.Check(wxT("ShowScrubbingTB"),
                          toolManager->IsVisible(ScrubbingBarID));
@@ -684,7 +684,7 @@ void MenuManager::UpdateMenus(AudacityProject &project, bool checkActive)
       return;
    mLastFlags = flags;
 
-   auto &commandManager = *project.GetCommandManager();
+   auto &commandManager = CommandManager::Get( project );
 
    commandManager.EnableUsingFlags(flags2 , NoFlagsSpecified);
 
@@ -753,9 +753,8 @@ bool MenuManager::ReportIfActionNotAllowed
    bool bAllowed = TryToMakeActionAllowed( project, flags, flagsRqd, mask );
    if( bAllowed )
       return true;
-   CommandManager* cm = project.GetCommandManager();
-      if (!cm) return false;
-   cm->TellUserWhyDisallowed( Name, flags & mask, flagsRqd & mask);
+   auto &cm = CommandManager::Get( project );
+   cm.TellUserWhyDisallowed( Name, flags & mask, flagsRqd & mask);
    return false;
 }
 
