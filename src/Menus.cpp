@@ -53,15 +53,27 @@
 
 #include <wx/menu.h>
 
-MenuManager &GetMenuManager(AudacityProject &project)
-{ return *project.mMenuManager; }
-
 MenuCreator::MenuCreator()
 {
 }
 
 MenuCreator::~MenuCreator()
 {
+}
+
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+  []( AudacityProject&){
+     return std::make_shared< MenuManager >(); }
+};
+
+MenuManager &MenuManager::Get( AudacityProject &project )
+{
+   return project.AttachedObjects::Get< MenuManager >( key );
+}
+
+const MenuManager &MenuManager::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
 }
 
 MenuManager::MenuManager()
@@ -564,7 +576,7 @@ void MenuManager::ModifyAllProjectToolbarMenus()
    AProjectArray::iterator i;
    for (i = gAudacityProjects.begin(); i != gAudacityProjects.end(); ++i) {
       auto &project = **i;
-      GetMenuManager(project).ModifyToolbarMenus(project);
+      MenuManager::Get(project).ModifyToolbarMenus(project);
    }
 }
 
@@ -648,7 +660,7 @@ void MenuManager::UpdateMenus(AudacityProject &project, bool checkActive)
    if (&project != GetActiveProject())
       return;
 
-   auto flags = GetMenuManager(project).GetUpdateFlags(project, checkActive);
+   auto flags = MenuManager::Get(project).GetUpdateFlags(project, checkActive);
    auto flags2 = flags;
 
    // We can enable some extra items if we have select-all-on-none.
@@ -731,7 +743,7 @@ void MenuCreator::RebuildAllMenuBars()
    for( size_t i = 0; i < gAudacityProjects.size(); i++ ) {
       AudacityProject *p = gAudacityProjects[i].get();
 
-      GetMenuManager(*p).RebuildMenuBar(*p);
+      MenuManager::Get(*p).RebuildMenuBar(*p);
 #if defined(__WXGTK__)
       // Workaround for:
       //
@@ -768,7 +780,7 @@ bool MenuManager::TryToMakeActionAllowed
    bool bAllowed;
 
    if( !flags )
-      flags = GetMenuManager(project).GetUpdateFlags(project);
+      flags = MenuManager::Get(project).GetUpdateFlags(project);
 
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    if( bAllowed )
@@ -781,7 +793,7 @@ bool MenuManager::TryToMakeActionAllowed
    if( mStopIfWasPaused && (MissingFlags & AudioIONotBusyFlag ) ){
       project.StopIfPaused();
       // Hope this will now reflect stopped audio.
-      flags = GetMenuManager(project).GetUpdateFlags(project);
+      flags = MenuManager::Get(project).GetUpdateFlags(project);
       bAllowed = ((flags & mask) == (flagsRqd & mask));
       if( bAllowed )
          return true;
@@ -813,7 +825,7 @@ bool MenuManager::TryToMakeActionAllowed
    // When autoselect triggers, it might not select all audio in all tracks.
    // So changed to DoSelectAllAudio.
    SelectActions::DoSelectAllAudio(project);
-   flags = GetMenuManager(project).GetUpdateFlags(project);
+   flags = MenuManager::Get(project).GetUpdateFlags(project);
    bAllowed = ((flags & mask) == (flagsRqd & mask));
    return bAllowed;
 }
