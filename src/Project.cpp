@@ -1228,10 +1228,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 #endif
    mIconized = false;
 
-   auto &dirManager = DirManager::Get( project );
-   mTrackFactory.reset(
-      safenew TrackFactory{ dirManager.shared_from_this(), &viewInfo });
-
    int widths[] = {0, GetControlToolBar()->WidthForStatusBar(mStatusBar), -1, 150};
    mStatusBar->SetStatusWidths(4, widths);
    wxString msg = wxString::Format(_("Welcome to Audacity version %s"),
@@ -1360,11 +1356,6 @@ void AudacityProject::OnCapture(wxCommandEvent& evt)
       mIsCapturing = false;
 }
 
-
-TrackFactory *AudacityProject::GetTrackFactory()
-{
-   return mTrackFactory.get();
-}
 
 AdornedRulerPanel *AudacityProject::GetRulerPanel()
 {
@@ -2547,7 +2538,7 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
 
    DestroyChildren();
 
-   mTrackFactory.reset();
+   TrackFactory::Destroy( project );
 
    mTags.reset();
 
@@ -3523,6 +3514,7 @@ XMLTagHandler *AudacityProject::HandleXMLChild(const wxChar *tag)
 {
    auto &project = *this;
    auto &tracks = TrackList::Get( project );
+   auto &trackFactory = TrackFactory::Get( project ) ;
 
    if (!wxStrcmp(tag, wxT("tags"))) {
       return mTags.get();
@@ -3533,21 +3525,21 @@ XMLTagHandler *AudacityProject::HandleXMLChild(const wxChar *tag)
    // had
 
    if (!wxStrcmp(tag, wxT("wavetrack"))) {
-      return tracks.Add(mTrackFactory->NewWaveTrack());
+      return tracks.Add( trackFactory.NewWaveTrack() );
    }
 
    #ifdef USE_MIDI
    if (!wxStrcmp(tag, wxT("notetrack"))) {
-      return tracks.Add(mTrackFactory->NewNoteTrack());
+      return tracks.Add( trackFactory.NewNoteTrack() );
    }
    #endif // USE_MIDI
 
    if (!wxStrcmp(tag, wxT("labeltrack"))) {
-      return tracks.Add(mTrackFactory->NewLabelTrack());
+      return tracks.Add( trackFactory.NewLabelTrack() );
    }
 
    if (!wxStrcmp(tag, wxT("timetrack"))) {
-      return tracks.Add(mTrackFactory->NewTimeTrack());
+      return tracks.Add( trackFactory.NewTimeTrack() );
    }
 
    if (!wxStrcmp(tag, wxT("recordingrecovery"))) {
@@ -3992,6 +3984,7 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
 {
    auto &project = *this;
    auto &tracks = TrackList::Get( project );
+   auto &trackFactory = TrackFactory::Get( project );
 
    wxString extension, fileFormat;
 #ifdef USE_LIBVORBIS
@@ -4019,7 +4012,7 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
    for (auto pWaveTrack : trackRange)
    {
       numWaveTracks++;
-      pSavedTrackList.Add(mTrackFactory->DuplicateWaveTrack(*pWaveTrack));
+      pSavedTrackList.Add( trackFactory.DuplicateWaveTrack( *pWaveTrack ) );
    }
    auto cleanup = finally( [&] {
       // Restore the saved track states and clean up.
@@ -4229,7 +4222,7 @@ bool AudacityProject::Import(const FilePath &fileName, WaveTrackArray* pTrackArr
                                    mTags ? mTags->Duplicate() : decltype(mTags){} );
 
       bool success = Importer::Get().Import(fileName,
-                                            GetTrackFactory(),
+                                            &TrackFactory::Get( project ),
                                             newTracks,
                                             mTags.get(),
                                             errorMessage);
@@ -5182,7 +5175,7 @@ void AudacityProject::OnAudioIOStopRecording()
       auto &intervals = gAudioIO->LostCaptureIntervals();
       if (intervals.size()) {
          // Make a track with labels for recording errors
-         auto uTrack = GetTrackFactory()->NewLabelTrack();
+         auto uTrack = TrackFactory::Get( project ).NewLabelTrack();
          auto pTrack = uTrack.get();
          tracks.Add( uTrack );
          /* i18n-hint:  A name given to a track, appearing as its menu button.
@@ -5351,9 +5344,8 @@ void AudacityProject::ResetProjectToEmpty() {
    SelectActions::DoSelectAll(*this);
    TrackActions::DoRemoveTracks(*this);
    // A new DirManager.
-   auto &dirManager = DirManager::Reset( project );
-   mTrackFactory.reset(
-      safenew TrackFactory{ dirManager.shared_from_this(), &viewInfo });
+   DirManager::Reset( project );
+   TrackFactory::Reset( project );
 
    // mLastSavedTrack code copied from OnCloseWindow.
    // Lock all blocks in all tracks of the last saved version, so that

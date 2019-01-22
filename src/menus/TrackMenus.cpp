@@ -39,7 +39,7 @@ void DoMixAndRender
 (AudacityProject &project, bool toNewTrack)
 {
    auto &tracks = TrackList::Get( project );
-   auto trackFactory = project.GetTrackFactory();
+   auto &trackFactory = TrackFactory::Get( project );
    auto rate = project.GetRate();
    auto defaultFormat = project.GetDefaultFormat();
    auto trackPanel = project.GetTrackPanel();
@@ -48,7 +48,7 @@ void DoMixAndRender
 
    WaveTrack::Holder uNewLeft, uNewRight;
    ::MixAndRender(
-      &tracks, trackFactory, rate, defaultFormat, 0.0, 0.0, uNewLeft, uNewRight);
+      &tracks, &trackFactory, rate, defaultFormat, 0.0, 0.0, uNewLeft, uNewRight);
 
    if (uNewLeft) {
       // Remove originals, get stats on what tracks were mixed
@@ -792,12 +792,12 @@ void OnNewWaveTrack(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackFactory = project.GetTrackFactory();
+   auto &trackFactory = TrackFactory::Get( project );
    auto trackPanel = project.GetTrackPanel();
    auto defaultFormat = project.GetDefaultFormat();
    auto rate = project.GetRate();
 
-   auto t = tracks.Add(trackFactory->NewWaveTrack(defaultFormat, rate));
+   auto t = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
    project.SelectNone();
 
    t->SetSelected(true);
@@ -812,17 +812,17 @@ void OnNewStereoTrack(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackFactory = project.GetTrackFactory();
+   auto &trackFactory = TrackFactory::Get( project );
    auto trackPanel = project.GetTrackPanel();
    auto defaultFormat = project.GetDefaultFormat();
    auto rate = project.GetRate();
 
    project.SelectNone();
 
-   auto left = tracks.Add(trackFactory->NewWaveTrack(defaultFormat, rate));
+   auto left = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
    left->SetSelected(true);
 
-   auto right = tracks.Add(trackFactory->NewWaveTrack(defaultFormat, rate));
+   auto right = tracks.Add( trackFactory.NewWaveTrack( defaultFormat, rate ) );
    right->SetSelected(true);
 
    tracks.GroupChannels(*left, 2);
@@ -837,10 +837,10 @@ void OnNewLabelTrack(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackFactory = project.GetTrackFactory();
+   auto &trackFactory = TrackFactory::Get( project );
    auto trackPanel = project.GetTrackPanel();
 
-   auto t = tracks.Add(trackFactory->NewLabelTrack());
+   auto t = tracks.Add( trackFactory.NewLabelTrack() );
 
    project.SelectNone();
 
@@ -856,7 +856,7 @@ void OnNewTimeTrack(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackFactory = project.GetTrackFactory();
+   auto &trackFactory = TrackFactory::Get( project );
    auto trackPanel = project.GetTrackPanel();
 
    if (tracks.GetTimeTrack()) {
@@ -864,7 +864,7 @@ void OnNewTimeTrack(const CommandContext &context)
       return;
    }
 
-   auto t = tracks.AddToHead(trackFactory->NewTimeTrack());
+   auto t = tracks.AddToHead( trackFactory.NewTimeTrack() );
 
    project.SelectNone();
 

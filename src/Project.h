@@ -198,7 +198,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    void SetPlayRegionLocked(bool value) { mLockPlayRegion = value; }
 
    wxString GetName();
-   TrackFactory *GetTrackFactory();
    AdornedRulerPanel *GetRulerPanel();
    const Tags *GetTags();
    void SetTags( const std::shared_ptr<Tags> &tags );
@@ -584,7 +583,6 @@ private:
    wxPanel *mTopPanel{};
    TrackPanel *mTrackPanel{};
    SelectionState mSelectionState{};
-   std::unique_ptr<TrackFactory> mTrackFactory{};
    wxPanel * mMainPanel;
    wxScrollBar *mHsbar;
    wxScrollBar *mVsbar;
