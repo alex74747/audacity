@@ -983,8 +983,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
    mLastSavedTracks.reset();
 
-   AttachedObjects::BuildAll();
-
    //
    // Initialize view info (shared with TrackPanel)
    //
@@ -1269,6 +1267,8 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 #ifdef EXPERIMENTAL_DA2
    ClearBackground();// For wxGTK.
 #endif
+
+   AttachedObjects::BuildAll();
 }
 
 AudacityProject::~AudacityProject()
