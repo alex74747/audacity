@@ -193,7 +193,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
    void SetPlayRegionLocked(bool value) { mLockPlayRegion = value; }
 
    wxString GetName();
-   AdornedRulerPanel *GetRulerPanel();
    int GetAudioIOToken() const;
    bool IsAudioActive() const;
    void SetAudioIOToken(int token);
@@ -556,7 +555,6 @@ private:
 
    wxStatusBar *mStatusBar;
 
-   AdornedRulerPanel *mRuler{};
    wxPanel *mTopPanel{};
    wxPanel * mMainPanel;
    wxScrollBar *mHsbar;

@@ -723,13 +723,13 @@ void Scrubber::StopScrubbing()
       ctb->SetPlay(false, ControlToolBar::PlayAppearance::Straight);
    }
 
-   mProject->GetRulerPanel()->DrawBothOverlays();
+   AdornedRulerPanel::Get( *mProject ).DrawBothOverlays();
    CheckMenuItems();
 }
 
 bool Scrubber::ShowsBar() const
 {
-   return mProject->GetRulerPanel()->ShowingScrubRuler();
+   return AdornedRulerPanel::Get( *mProject ).ShowingScrubRuler();
 }
 
 bool Scrubber::IsScrubbing() const
@@ -764,9 +764,8 @@ bool Scrubber::MayDragToSeek() const
    const auto &state = ::wxGetMouseState();
    const auto &position = state.GetPosition();
 
-   auto ruler = mProject->GetRulerPanel();
-   if (ruler &&
-       ruler->GetScreenRect().Contains(position))
+   auto &ruler = AdornedRulerPanel::Get( *mProject );
+   if (ruler.GetScreenRect().Contains(position))
       return true;
 
    /*
@@ -955,7 +954,7 @@ void ScrubbingOverlay::OnTimer(wxCommandEvent &event)
 
    Scrubber &scrubber = GetScrubber();
    const auto isScrubbing = scrubber.IsScrubbing();
-   const auto ruler = mProject->GetRulerPanel();
+   auto &ruler = AdornedRulerPanel::Get( *mProject );
    auto position = ::wxGetMousePosition();
 
    if (scrubber.IsSpeedPlaying())
@@ -963,8 +962,8 @@ void ScrubbingOverlay::OnTimer(wxCommandEvent &event)
 
    {
       if(scrubber.HasMark()) {
-         auto xx = ruler->ScreenToClient(position).x;
-         ruler->UpdateQuickPlayPos( xx, false );
+         auto xx = ruler.ScreenToClient(position).x;
+         ruler.UpdateQuickPlayPos( xx, false );
 
          if (!isScrubbing)
             // Really start scrub if motion is far enough
@@ -976,7 +975,7 @@ void ScrubbingOverlay::OnTimer(wxCommandEvent &event)
          return;
       }
       else
-         ruler->DrawBothOverlays();
+         ruler.DrawBothOverlays();
    }
 
    if (!scrubber.ShouldDrawScrubSpeed()) {
@@ -1080,10 +1079,9 @@ void Scrubber::OnScrubOrSeek(bool seek)
    mSeeking = seek;
    CheckMenuItems();
 
-   auto ruler = mProject->GetRulerPanel();
-   if (ruler)
-      // Update button images
-      ruler->UpdateButtonStates();
+   auto &ruler = AdornedRulerPanel::Get( *mProject );
+   // Update button images
+   ruler.UpdateButtonStates();
 
    auto scrubbingToolBar = mProject->GetScrubbingToolBar();
    scrubbingToolBar->EnableDisableButtons();
@@ -1104,7 +1102,8 @@ void Scrubber::OnSeek(const CommandContext&)
 
 void Scrubber::OnToggleScrubRuler(const CommandContext&)
 {
-   mProject->GetRulerPanel()->OnToggleScrubRuler();
+   auto &ruler = AdornedRulerPanel::Get( *mProject );
+   ruler.OnToggleScrubRuler();
    const auto toolbar =
       ToolManager::Get( *mProject ).GetToolBar( ScrubbingBarID );
    toolbar->EnableDisableButtons();
