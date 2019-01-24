@@ -35,7 +35,7 @@ void FinishCopy
 bool DoPasteText(AudacityProject &project)
 {
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    for (auto pLabelTrack : tracks.Any<LabelTrack>())
@@ -52,7 +52,7 @@ bool DoPasteText(AudacityProject &project)
             // Make sure caret is in view
             int x;
             if (pLabelTrack->CalcCursorX(&x)) {
-               trackPanel->ScrollIntoView(x);
+               trackPanel.ScrollIntoView(x);
             }
 
             // Redraw everyting (is that necessary???) and bail
@@ -71,7 +71,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
 {
    auto &tracks = TrackList::Get( project );
    auto &trackFactory = TrackFactory::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    // First check whether anything's selected.
@@ -149,7 +149,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
       project.RedrawProject();
 
       if (pFirstNewTrack)
-         trackPanel->EnsureVisible(pFirstNewTrack);
+         trackPanel.EnsureVisible(pFirstNewTrack);
 
       return true;
    }
@@ -225,7 +225,7 @@ bool DoEditMetadata
 
 void DoUndo(AudacityProject &project)
 {
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &undoManager = UndoManager::Get( project );
 
    if (!project.UndoAvailable()) {
@@ -234,14 +234,14 @@ void DoUndo(AudacityProject &project)
    }
 
    // can't undo while dragging
-   if (trackPanel->IsMouseCaptured()) {
+   if (trackPanel.IsMouseCaptured()) {
       return;
    }
 
    undoManager.Undo(
       [&]( const UndoState &state ){ project.PopState( state ); } );
 
-   trackPanel->EnsureVisible(trackPanel->GetFirstSelectedTrack());
+   trackPanel.EnsureVisible(trackPanel.GetFirstSelectedTrack());
 
    project.RedrawProject();
 
@@ -260,7 +260,7 @@ void OnUndo(const CommandContext &context)
 void OnRedo(const CommandContext &context)
 {
    auto &project = context.project;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &undoManager = UndoManager::Get( project );
 
    if (!project.RedoAvailable()) {
@@ -268,14 +268,14 @@ void OnRedo(const CommandContext &context)
       return;
    }
    // Can't redo whilst dragging
-   if (trackPanel->IsMouseCaptured()) {
+   if (trackPanel.IsMouseCaptured()) {
       return;
    }
 
    undoManager.Redo(
       [&]( const UndoState &state ){ project.PopState( state ); } );
 
-   trackPanel->EnsureVisible(trackPanel->GetFirstSelectedTrack());
+   trackPanel.EnsureVisible(trackPanel.GetFirstSelectedTrack());
 
    project.RedrawProject();
 
@@ -286,7 +286,7 @@ void OnCut(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto ruler = project.GetRulerPanel();
 
@@ -296,7 +296,7 @@ void OnCut(const CommandContext &context)
 
    for (auto lt : tracks.Selected< LabelTrack >()) {
       if (lt->CutSelectedText()) {
-         trackPanel->Refresh(false);
+         trackPanel.Refresh(false);
          return;
       }
    }
@@ -396,12 +396,12 @@ void OnCopy(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    for (auto lt : tracks.Selected< LabelTrack >()) {
       if (lt->CopySelectedText()) {
-         //trackPanel->Refresh(false);
+         //trackPanel.Refresh(false);
          return;
       }
    }
@@ -426,14 +426,14 @@ void OnCopy(const CommandContext &context)
    AudacityProject::msClipProject = &project;
 
    //Make sure the menus/toolbar states get updated
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 void OnPaste(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &trackFactory = TrackFactory::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto isSyncLocked = project.IsSyncLocked();
@@ -692,7 +692,7 @@ void OnPaste(const CommandContext &context)
       project.RedrawProject();
 
       if (ff)
-         trackPanel->EnsureVisible(ff);
+         trackPanel.EnsureVisible(ff);
    }
 }
 
@@ -797,7 +797,7 @@ void OnSilence(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    for ( auto n : tracks.Selected< AudioTrack >() )
@@ -809,7 +809,7 @@ void OnSilence(const CommandContext &context)
          selectedRegion.t0()),
       _("Silence"));
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 void OnTrim(const CommandContext &context)
@@ -848,7 +848,7 @@ void OnSplit(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    double sel0 = selectedRegion.t0();
@@ -858,7 +858,7 @@ void OnSplit(const CommandContext &context)
       wt->Split( sel0, sel1 );
 
    project.PushState(_("Split"), _("Split"));
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 #if 0
 //ANSWER-ME: Do we need to keep this commented out OnSplit() code?
 // This whole section no longer used...
@@ -905,7 +905,7 @@ void OnSplit(const CommandContext &context)
    PushState(_("Split"), _("Split"));
 
    FixScrollbars();
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
    */
 #endif
 }

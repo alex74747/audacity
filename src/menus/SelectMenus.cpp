@@ -25,7 +25,7 @@ void DoSelectTimeAndTracks
 (AudacityProject &project, bool bAllTime, bool bAllTracks)
 {
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    if( bAllTime )
@@ -37,7 +37,7 @@ void DoSelectTimeAndTracks
          t->SetSelected(true);
 
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 }
 
@@ -47,7 +47,7 @@ void DoSelectTimeAndAudioTracks
 (AudacityProject &project, bool bAllTime, bool bAllTracks)
 {
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    if( bAllTime )
@@ -62,7 +62,7 @@ void DoSelectTimeAndAudioTracks
          t->SetSelected(true);
 
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 }
 
@@ -70,7 +70,7 @@ void DoNextPeakFrequency(AudacityProject &project, bool up)
 {
    auto &tracks = TrackList::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    // Find the first selected wave track that is in a spectrogram view.
    const WaveTrack *pTrack {};
@@ -85,7 +85,7 @@ void DoNextPeakFrequency(AudacityProject &project, bool up)
    if (pTrack) {
       SpectrumAnalyst analyst;
       SelectHandle::SnapCenterOnce(analyst, viewInfo, pTrack, up);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
       project.ModifyState(false);
    }
 }
@@ -268,7 +268,7 @@ void MoveWhenAudioInactive
 (AudacityProject &project, double seekStep, TimeUnit timeUnit)
 {
    auto &viewInfo = ViewInfo::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &tracks = TrackList::Get( project );
    auto ruler = project.GetRulerPanel();
 
@@ -277,7 +277,7 @@ void MoveWhenAudioInactive
    const double t0 = viewInfo.selectedRegion.t0();
    const double end = std::max( 
       tracks.GetEndTime(),
-      trackPanel->GetScreenEndTime());
+      trackPanel.GetScreenEndTime());
 
    // Move the cursor
    // Already in cursor mode?
@@ -295,7 +295,7 @@ void MoveWhenAudioInactive
       viewInfo.selectedRegion.collapseToT0();
 
       // Move the visual cursor, avoiding an unnecessary complete redraw
-      trackPanel->DrawOverlays(false);
+      trackPanel.DrawOverlays(false);
       ruler->DrawOverlays(false);
 
       // This updates the selection shown on the selection bar, and the play
@@ -308,11 +308,11 @@ void MoveWhenAudioInactive
          viewInfo.selectedRegion.collapseToT0();
       else
          viewInfo.selectedRegion.collapseToT1();
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 
    // Make sure NEW position is in view
-   trackPanel->ScrollIntoView(viewInfo.selectedRegion.t1());
+   trackPanel.ScrollIntoView(viewInfo.selectedRegion.t1());
    return;
 }
 
@@ -321,7 +321,7 @@ void SeekWhenAudioInactive
 SelectionOperation operation)
 {
    auto &viewInfo = ViewInfo::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &tracks = TrackList::Get( project );
 
    if( operation == CURSOR_MOVE )
@@ -335,7 +335,7 @@ SelectionOperation operation)
    const double t1 = viewInfo.selectedRegion.t1();
    const double end = std::max( 
       tracks.GetEndTime(),
-      trackPanel->GetScreenEndTime());
+      trackPanel.GetScreenEndTime());
 
    // Is it t0 or t1 moving?
    bool bMoveT0 = (operation == SELECTION_CONTRACT && seekStep > 0) ||
@@ -357,8 +357,8 @@ SelectionOperation operation)
       viewInfo.selectedRegion.setT1( newT );
 
    // Ensure it is visible, and refresh.
-   trackPanel->ScrollIntoView(newT);
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(newT);
+   trackPanel.Refresh(false);
 }
 
 // Handle small cursor and play head movements
@@ -419,7 +419,7 @@ void DoCursorMove(
 void DoBoundaryMove(AudacityProject &project, int step, SeekInfo &info)
 {
    auto &viewInfo = ViewInfo::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &tracks = TrackList::Get( project );
 
    // step is negative, then is moving left.  step positive, moving right.
@@ -448,7 +448,7 @@ void DoBoundaryMove(AudacityProject &project, int step, SeekInfo &info)
          viewInfo.selectedRegion.setT1(indicator);
 
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
       return;
    }
 
@@ -456,7 +456,7 @@ void DoBoundaryMove(AudacityProject &project, int step, SeekInfo &info)
    const double t1 = viewInfo.selectedRegion.t1();
    const double end = std::max( 
       tracks.GetEndTime(),
-      trackPanel->GetScreenEndTime());
+      trackPanel.GetScreenEndTime());
 
    double newT = viewInfo.OffsetTimeByPixels( bMoveT0 ? t0 : t1, pixels);
    // constrain to be in the track/screen limits.
@@ -473,8 +473,8 @@ void DoBoundaryMove(AudacityProject &project, int step, SeekInfo &info)
       viewInfo.selectedRegion.setT1( newT );
 
    // Ensure it is visible, and refresh.
-   trackPanel->ScrollIntoView(newT);
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(newT);
+   trackPanel.Refresh(false);
 
    project.ModifyState(false);
 }
@@ -489,7 +489,7 @@ void DoListSelection
 (AudacityProject &project, Track *t, bool shift, bool ctrl, bool modifyState)
 {
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectionState = SelectionState::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    auto isSyncLocked = project.IsSyncLocked();
@@ -499,7 +499,7 @@ void DoListSelection
         shift, ctrl, isSyncLocked );
 
    if (! ctrl )
-      trackPanel->SetFocusedTrack(t);
+      trackPanel.SetFocusedTrack(t);
    project.Refresh(false);
    if (modifyState)
       project.ModifyState(true);
@@ -565,7 +565,7 @@ void OnSelectSyncLockSel(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    bool selected = false;
    for (auto t : tracks.Any()
@@ -577,7 +577,7 @@ void OnSelectSyncLockSel(const CommandContext &context)
    if (selected)
       project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 //this pops up a dialog which allows the left selection to be set.
@@ -588,7 +588,7 @@ void OnSetLeftSelection(const CommandContext &context)
    auto &project = context.project;
    auto token = project.GetAudioIOToken();
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    bool bSelChanged = false;
    if ((token > 0) && gAudioIO->IsStreamActive(token))
@@ -617,7 +617,7 @@ void OnSetLeftSelection(const CommandContext &context)
    if (bSelChanged)
    {
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 }
 
@@ -626,7 +626,7 @@ void OnSetRightSelection(const CommandContext &context)
    auto &project = context.project;
    auto token = project.GetAudioIOToken();
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    bool bSelChanged = false;
    if ((token > 0) && gAudioIO->IsStreamActive(token))
@@ -655,7 +655,7 @@ void OnSetRightSelection(const CommandContext &context)
    if (bSelChanged)
    {
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 }
 
@@ -663,7 +663,7 @@ void OnSelectStartCursor(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    double kWayOverToRight = std::numeric_limits<double>::max();
@@ -682,14 +682,14 @@ void OnSelectStartCursor(const CommandContext &context)
 
    project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 void OnSelectCursorEnd(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    double kWayOverToLeft = std::numeric_limits<double>::lowest();
@@ -708,7 +708,7 @@ void OnSelectCursorEnd(const CommandContext &context)
 
    project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 void OnSelectTrackStartToEnd(const CommandContext &context)
@@ -716,7 +716,7 @@ void OnSelectTrackStartToEnd(const CommandContext &context)
    auto &project = context.project;
    auto &viewInfo = ViewInfo::Get( project );
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    auto range = tracks.Selected();
    double maxEndOffset = range.max( &Track::GetEndTime );
@@ -728,7 +728,7 @@ void OnSelectTrackStartToEnd(const CommandContext &context)
    viewInfo.selectedRegion.setTimes( minOffset, maxEndOffset );
    project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 // Handler state:
@@ -746,7 +746,7 @@ void OnSelectionRestore(const CommandContext &context)
 {
    auto &project = context.project;
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    if ((mRegionSave.t0() == 0.0) &&
        (mRegionSave.t1() == 0.0))
@@ -756,7 +756,7 @@ void OnSelectionRestore(const CommandContext &context)
 
    project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
@@ -768,7 +768,7 @@ double mLastF1{ SelectedRegion::UndefinedFrequency };
 void OnToggleSpectralSelection(const CommandContext &context)
 {
    auto &project = context.project;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    const double f0 = selectedRegion.f0();
@@ -786,7 +786,7 @@ void OnToggleSpectralSelection(const CommandContext &context)
    else
       selectedRegion.setFrequencies(mLastF0, mLastF1);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
    project.ModifyState(false);
 }
 
@@ -810,7 +810,7 @@ double mCursorPositionStored{ 0.0 };
 void OnSelectCursorStoredCursor(const CommandContext &context)
 {
    auto &project = context.project;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto isAudioActive = project.IsAudioActive();
 
@@ -823,7 +823,7 @@ void OnSelectCursorStoredCursor(const CommandContext &context)
          std::max(cursorPositionCurrent, mCursorPositionStored));
 
       project.ModifyState(false);
-      trackPanel->Refresh(false);
+      trackPanel.Refresh(false);
    }
 }
 
@@ -842,7 +842,7 @@ void OnZeroCrossing(const CommandContext &context)
 {
    auto &project = context.project;
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
 
    const double t0 = NearestZeroCrossing(project, selectedRegion.t0());
    if (selectedRegion.isPoint())
@@ -856,7 +856,7 @@ void OnZeroCrossing(const CommandContext &context)
 
    project.ModifyState(false);
 
-   trackPanel->Refresh(false);
+   trackPanel.Refresh(false);
 }
 
 void OnSnapToOff(const CommandContext &context)
@@ -935,32 +935,32 @@ void OnSelContractRight(const CommandContext &context)
 void OnCursorSelStart(const CommandContext &context)
 {
    auto &project = context.project;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    selectedRegion.collapseToT0();
    project.ModifyState(false);
-   trackPanel->ScrollIntoView(selectedRegion.t0());
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(selectedRegion.t0());
+   trackPanel.Refresh(false);
 }
 
 void OnCursorSelEnd(const CommandContext &context)
 {
    auto &project = context.project;
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    selectedRegion.collapseToT1();
    project.ModifyState(false);
-   trackPanel->ScrollIntoView(selectedRegion.t1());
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(selectedRegion.t1());
+   trackPanel.Refresh(false);
 }
 
 void OnCursorTrackStart(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    double kWayOverToRight = std::numeric_limits<double>::max();
@@ -979,15 +979,15 @@ void OnCursorTrackStart(const CommandContext &context)
 
    selectedRegion.setTimes(minOffset, minOffset);
    project.ModifyState(false);
-   trackPanel->ScrollIntoView(selectedRegion.t0());
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(selectedRegion.t0());
+   trackPanel.Refresh(false);
 }
 
 void OnCursorTrackEnd(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto trackPanel = project.GetTrackPanel();
+   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    double kWayOverToLeft = std::numeric_limits<double>::lowest();
@@ -1006,8 +1006,8 @@ void OnCursorTrackEnd(const CommandContext &context)
 
    selectedRegion.setTimes(maxEndOffset, maxEndOffset);
    project.ModifyState(false);
-   trackPanel->ScrollIntoView(selectedRegion.t1());
-   trackPanel->Refresh(false);
+   trackPanel.ScrollIntoView(selectedRegion.t1());
+   trackPanel.Refresh(false);
 }
 
 void OnSkipStart(const CommandContext &context)
