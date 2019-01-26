@@ -195,10 +195,6 @@ class AUDACITY_DLL_API AudacityProject final : public wxFrame,
 
    double GetRate() const { return mRate; }
 
-   void GetPlayRegion(double* playRegionStart, double *playRegionEnd);
-   bool IsPlayRegionLocked() { return mLockPlayRegion; }
-   void SetPlayRegionLocked(bool value) { mLockPlayRegion = value; }
-
    wxString GetName();
    int GetAudioIOToken() const;
    bool IsAudioActive() const;
@@ -614,8 +610,6 @@ public:
 private:
 
    bool mIsSyncLocked;
-
-   bool mLockPlayRegion;
 
    std::unique_ptr<ImportXMLTagHandler> mImportXMLTagHandler;
 

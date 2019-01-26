@@ -741,9 +741,8 @@ void ControlToolBar::PlayCurrentRegion(bool looped /* = false */,
 
    if (p)
    {
-
-      double playRegionStart, playRegionEnd;
-      p->GetPlayRegion(&playRegionStart, &playRegionEnd);
+      const auto &viewInfo = ViewInfo::Get( *p );
+      const auto &playRegion = viewInfo.playRegion;
 
       auto options = AudioIOStartStreamOptions::PlayDefaults( *p );
       options.playLooped = looped;
@@ -753,7 +752,7 @@ void ControlToolBar::PlayCurrentRegion(bool looped /* = false */,
         cutpreview ? ControlToolBar::PlayAppearance::CutPreview
            : looped ? ControlToolBar::PlayAppearance::Looped
            : ControlToolBar::PlayAppearance::Straight;
-      PlayPlayRegion(SelectedRegion(playRegionStart, playRegionEnd),
+      PlayPlayRegion(SelectedRegion(playRegion.GetStart(), playRegion.GetEnd()),
                      options,
                      (looped ? PlayMode::loopedPlay : PlayMode::normalPlay),
                      appearance);

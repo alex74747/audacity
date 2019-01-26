@@ -56,7 +56,6 @@ public:
 
    void SetPlayRegion(double playRegionStart, double playRegionEnd);
    void ClearPlayRegion();
-   void GetPlayRegion(double* playRegionStart, double* playRegionEnd);
 
    void GetMaxSize(wxCoord *width, wxCoord *height);
 
@@ -135,8 +134,6 @@ private:
    bool mIsSnapped;
 
    bool   mPlayRegionLock;
-   double mPlayRegionStart;
-   double mPlayRegionEnd;
    double mOldPlayRegionStart;
    double mOldPlayRegionEnd;
 

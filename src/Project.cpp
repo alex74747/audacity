@@ -978,8 +978,6 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 
    UpdatePrefs();
 
-   mLockPlayRegion = false;
-
    // Make sure valgrind sees mIsSyncLocked is initialized, even
    // though we're about to set it from prefs.
    mIsSyncLocked = false;
@@ -4945,26 +4943,25 @@ void AudacityProject::TP_DisplaySelection()
    auto &ruler = AdornedRulerPanel::Get(project);
    auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
+   auto &playRegion = viewInfo.playRegion;
    double audioTime;
 
-   if (!gAudioIO->IsBusy() && !mLockPlayRegion)
-      ruler.SetPlayRegion( selectedRegion.t0(), selectedRegion.t1() );
+   if (!gAudioIO->IsBusy() && !playRegion.Locked())
+      playRegion.SetTimes(selectedRegion.t0(), selectedRegion.t1());
    else
       // Cause ruler redraw anyway, because we may be zooming or scrolling
       ruler.Refresh();
 
    if (gAudioIO->IsBusy())
       audioTime = gAudioIO->GetStreamTime();
-   else {
-      double playEnd;
-      GetPlayRegion(&audioTime, &playEnd);
-   }
+   else
+      audioTime = playRegion.GetStart();
 
-   GetSelectionBar()->SetTimes(viewInfo.selectedRegion.t0(),
-                               viewInfo.selectedRegion.t1(), audioTime);
+   GetSelectionBar()->SetTimes(selectedRegion.t0(),
+                               selectedRegion.t1(), audioTime);
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
    GetSpectralSelectionBar()->SetFrequencies
-      (viewInfo.selectedRegion.f0(), viewInfo.selectedRegion.f1());
+      (selectedRegion.f0(), selectedRegion.f1());
 #endif
 
 }
@@ -4991,14 +4988,6 @@ void AudacityProject::TP_RedrawScrollbars()
 void AudacityProject::TP_HandleResize()
 {
    HandleResize();
-}
-
-void AudacityProject::GetPlayRegion(double* playRegionStart,
-                                    double *playRegionEnd)
-{
-   auto &project = *this;
-   AdornedRulerPanel::Get( project ).GetPlayRegion(
-      playRegionStart, playRegionEnd);
 }
 
 void AudacityProject::AutoSave()
