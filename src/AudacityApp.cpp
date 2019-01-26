@@ -307,11 +307,11 @@ void QuitAudacity(bool bForce)
          // of deletion from gAudacityProjects
          if (bForce)
          {
-            gAudacityProjects[0]->Close(true);
+            ProjectWindow::Get( *gAudacityProjects[0] ).Close(true);
          }
          else
          {
-            if (!gAudacityProjects[0]->Close())
+            if (!ProjectWindow::Get( *gAudacityProjects[0] ).Close())
             {
                gIsQuitting = false;
                return;
@@ -355,14 +355,15 @@ void SaveWindowSize()
       return;
    }
    bool validWindowForSaveWindowSize = FALSE;
-   AudacityProject * validProject = NULL;
+   ProjectWindow * validProject = nullptr;
    bool foundIconizedProject = FALSE;
    size_t numProjects = gAudacityProjects.size();
    for (size_t i = 0; i < numProjects; i++)
    {
-      if (!gAudacityProjects[i]->IsIconized()) {
+      auto &window = ProjectWindow::Get( *gAudacityProjects[i] );
+      if (!window.IsIconized()) {
          validWindowForSaveWindowSize = TRUE;
-         validProject = gAudacityProjects[i].get();
+         validProject = &window;
          i = numProjects;
       }
       else
@@ -388,7 +389,7 @@ void SaveWindowSize()
    else
    {
       if (foundIconizedProject) {
-         validProject = gAudacityProjects[0].get();
+         validProject = &ProjectWindow::Get( *gAudacityProjects[0].get() );
          bool wndMaximized = validProject->IsMaximized();
          wxRect normalRect = validProject->GetNormalizedWindowState();
          // store only the normal rectangle because the itemized rectangle
@@ -866,9 +867,10 @@ void AudacityApp::OnTimer(wxTimerEvent& WXUNUSED(event))
                // Get the users attention
                AudacityProject *project = GetActiveProject();
                if (project) {
-                  project->Maximize();
-                  project->Raise();
-                  project->RequestUserAttention();
+                  auto &window = ProjectWindow::Get( *project );
+                  window.Maximize();
+                  window.Raise();
+                  window.RequestUserAttention();
                }
                continue;
             }
@@ -904,8 +906,9 @@ void AudacityApp::OnTimer(wxTimerEvent& WXUNUSED(event))
 
       // if there are no projects open, don't show the warning (user has closed it)
       if (offendingProject) {
-         offendingProject->Iconize(false);
-         offendingProject->Raise();
+         auto &window = ProjectWindow::Get( *offendingProject );
+         window.Iconize(false);
+         window.Raise();
 
          wxString errorMessage = wxString::Format(_(
 "One or more external audio files could not be found.\n\
@@ -1129,7 +1132,7 @@ bool AudacityApp::OnExceptionInMainLoop()
             // Forget pending changes in the TrackList
             TrackList::Get( *pProject ).ClearPendingTracks();
 
-            pProject->RedrawProject();
+            ProjectWindow::Get( *pProject ).RedrawProject();
          }
 
          // Give the user an alert
@@ -1621,8 +1624,9 @@ bool AudacityApp::OnInit()
       wxWindow * pWnd = MakeHijackPanel();
       if (pWnd)
       {
-         project->Show(false);
-         pWnd->SetParent(project);
+         auto &window = ProjectWindow::Get( *project );
+         window.Show(false);
+         pWnd->SetParent( &window );
          SetTopWindow(pWnd);
          pWnd->Show(true);
       }
@@ -2179,10 +2183,11 @@ void AudacityApp::OnEndSession(wxCloseEvent & event)
       while (gAudacityProjects.size()) {
          // Closing the project has side-effect of
          // deletion from gAudacityProjects
+         auto &window = ProjectWindow::Get( *gAudacityProjects[0] );
          if (force) {
-            gAudacityProjects[0]->Close(true);
+            window.Close(true);
          }
-         else if (!gAudacityProjects[0]->Close()) {
+         else if (!window.Close()) {
             gIsQuitting = false;
             event.Veto();
             break;

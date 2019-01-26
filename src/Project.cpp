@@ -316,7 +316,7 @@ AUDACITY_DLL_API AudacityProject *GetActiveProject()
 void SetActiveProject(AudacityProject * project)
 {
    gActiveProject = project;
-   wxTheApp->SetTopWindow(project);
+   wxTheApp->SetTopWindow( ProjectWindow::Find( project) );
 }
 
 #if wxUSE_DRAG_AND_DROP
@@ -465,7 +465,7 @@ public:
          ODManager::Pauser pauser;
 
          auto cleanup = finally( [&] {
-            mProject->HandleResize(); // Adjust scrollers for NEW track sizes.
+            ProjectWindow::Get( *mProject ).HandleResize(); // Adjust scrollers for NEW track sizes.
          } );
 
          for (const auto &name : sortednames) {
@@ -569,16 +569,18 @@ AudacityProject *CreateNewAudacityProject()
    } );
    const auto p = gAudacityProjects.back().get();
 
+   auto &window = ProjectWindow::Get( *p );
+
    // wxGTK3 seems to need to require creating the window using default position
    // and then manually positioning it.
-   p->SetPosition(wndRect.GetPosition());
+   window.SetPosition(wndRect.GetPosition());
 
    if(bMaximized) {
-      p->Maximize(true);
+      window.Maximize(true);
    }
    else if (bIconized) {
       // if the user close down and iconized state we could start back up and iconized state
-      // p->Iconize(TRUE);
+      // window.Iconize(TRUE);
    }
 
    //Initialise the Listener
@@ -593,7 +595,7 @@ AudacityProject *CreateNewAudacityProject()
 
    ModuleManager::Get().Dispatch(ProjectInitialized);
 
-   p->Show(true);
+   window.Show(true);
 
    return p;
 }
@@ -602,21 +604,21 @@ void RedrawAllProjects()
 {
    size_t len = gAudacityProjects.size();
    for (size_t i = 0; i < len; i++)
-      gAudacityProjects[i]->RedrawProject();
+      ProjectWindow::Get( *gAudacityProjects[i] ).RedrawProject();
 }
 
 void RefreshCursorForAllProjects()
 {
    size_t len = gAudacityProjects.size();
    for (size_t i = 0; i < len; i++)
-      gAudacityProjects[i]->RefreshCursor();
+      ProjectWindow::Get( *gAudacityProjects[i] ).RefreshCursor();
 }
 
 AUDACITY_DLL_API void CloseAllProjects()
 {
    size_t len = gAudacityProjects.size();
    for (size_t i = 0; i < len; i++)
-      gAudacityProjects[i]->Close();
+      ProjectWindow::Get( *gAudacityProjects[i] ).Close();
 
    //Set the Offset and Position increments to 0
    gAudacityOffsetInc = 0;
@@ -806,16 +808,16 @@ void GetNextWindowPlacement(wxRect *nextRect, bool *pMaximized, bool *pIconized)
    AudacityProject * validProject = NULL;
    size_t numProjects = gAudacityProjects.size();
    for (int i = numProjects; i > 0 ; i--) {
-      if (!gAudacityProjects[i-1]->IsIconized()) {
+      if (!ProjectWindow::Get( *gAudacityProjects[i-1] ).IsIconized()) {
             validWindowSize = true;
             validProject = gAudacityProjects[i-1].get();
             break;
       }
    }
    if (validWindowSize) {
-      *nextRect = validProject->GetRect();
-      *pMaximized = validProject->IsMaximized();
-      *pIconized = validProject->IsIconized();
+      *nextRect = ProjectWindow::Get( *validProject).GetRect();
+      *pMaximized = ProjectWindow::Get( *validProject).IsMaximized();
+      *pIconized = ProjectWindow::Get( *validProject).IsIconized();
       // Do not straddle screens.
       if (ScreenContaining( wxRect(*nextRect).Deflate( 32, 32 ) )<0) {
          *nextRect = defaultRect;
@@ -1253,8 +1255,9 @@ void AudacityProject::ApplyUpdatedTheme()
 {
    auto &project = *this;
    auto &trackPanel = TrackPanel::Get( project );
-   SetBackgroundColour(theTheme.Colour( clrMedium ));
-   ClearBackground();// For wxGTK.
+   auto &window = ProjectWindow::Get( project );
+   window.SetBackgroundColour(theTheme.Colour( clrMedium ));
+   window.ClearBackground();// For wxGTK.
    trackPanel.ApplyUpdatedTheme();
 }
 
@@ -1400,8 +1403,10 @@ void AudacityProject::SetProjectTitle( int number)
       name += _("(Recovered)");
    }
 
-   SetTitle( name );
-   SetName(name);       // to make the nvda screen reader read the correct title
+   auto &project = *this;
+   auto &window = ProjectWindow::Get( project );
+   window.SetTitle( name );
+   window.SetName(name);       // to make the nvda screen reader read the correct title
 }
 
 bool AudacityProject::SnapSelection()
@@ -1426,7 +1431,8 @@ bool AudacityProject::SnapSelection()
 
       if (t0 != oldt0 || t1 != oldt1) {
          selectedRegion.setTimes(t0, t1);
-         TP_DisplaySelection();
+         auto &window = ProjectWindow::Get( project );
+         window.TP_DisplaySelection();
          return true;
       }
    }
@@ -1462,7 +1468,9 @@ void AudacityProject::AS_SetSnapTo(int snap)
 
    SnapSelection();
 
-   RedrawProject();
+   auto &project = *this;
+   auto &window = ProjectWindow::Get( project );
+   window.RedrawProject();
 }
 
 const NumericFormatSymbol & AudacityProject::AS_GetSelectionFormat()

@@ -595,6 +595,7 @@ void DependencyDialog::SaveFutureActionChoice()
 bool ShowDependencyDialogIfNeeded(AudacityProject *project,
                                   bool isSaving)
 {
+   auto pWindow = ProjectWindow::Find( project );
    AliasedFileArray aliasedFiles;
    FindDependencies(project, aliasedFiles);
 
@@ -609,7 +610,7 @@ you may lose data.");
          AudacityMessageBox(msg,
                       _("Dependency Check"),
                       wxOK | wxICON_INFORMATION,
-                      project);
+                      pWindow);
       }
       return true; // Nothing to do.
    }
@@ -631,7 +632,7 @@ you may lose data.");
          return true;
    }
 
-   DependencyDialog dlog(project, -1, project, aliasedFiles, isSaving);
+   DependencyDialog dlog(pWindow, -1, project, aliasedFiles, isSaving);
    int returnCode = dlog.ShowModal();
    if (returnCode == wxID_CANCEL)
       return false;

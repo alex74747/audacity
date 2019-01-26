@@ -244,7 +244,7 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
                        AdornedRulerPanel * ruler)
    : CellularPanel(parent, id, pos, size, viewInfo,
                    wxWANTS_CHARS | wxNO_BORDER),
-     mListener(project),
+     mListener( &ProjectWindow::Get( *project ) ),
      mTracks(tracks),
      mRuler(ruler),
      mTrackArtist(nullptr),
@@ -282,7 +282,8 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    mTimeCount = 0;
    mTimer.parent = this;
    // Timer is started after the window is visible
-   GetProject()->Bind(wxEVT_IDLE, &TrackPanel::OnIdle, this);
+   ProjectWindow::Get( *GetProject() ).Bind(wxEVT_IDLE,
+      &TrackPanel::OnIdle, this);
 
    // Register for tracklist updates
    mTracks->Bind(EVT_TRACKLIST_RESIZING,
@@ -397,9 +398,9 @@ AudacityProject * TrackPanel::GetProject() const
 #endif
    pWind = pWind->GetParent(); //MainPanel
    wxASSERT( pWind );
-   pWind = pWind->GetParent(); //Project
+   pWind = pWind->GetParent(); //ProjectWindow
    wxASSERT( pWind );
-   return (AudacityProject*)pWind;
+   return &static_cast<ProjectWindow*>( pWind )->GetProject();
 }
 
 void TrackPanel::OnIdle(wxIdleEvent& event)
@@ -410,7 +411,8 @@ void TrackPanel::OnIdle(wxIdleEvent& event)
       mTimer.Start(kTimerInterval, FALSE);
 
       // Timer is started, we don't need the event anymore
-      GetProject()->Unbind(wxEVT_IDLE, &TrackPanel::OnIdle, this);
+      ProjectWindow::Get( *GetProject() ).Unbind(wxEVT_IDLE,
+         &TrackPanel::OnIdle, this);
    }
    else
    {
@@ -430,14 +432,16 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    // us a deactivate event for the application.
    {
       auto project = GetProject();
-      if (project->IsIconized())
-         project->MacShowUndockedToolbars(false);
+      auto &window = ProjectWindow::Get( *project );
+      if (window.IsIconized())
+         window.MacShowUndockedToolbars(false);
    }
 #endif
 
    mTimeCount++;
 
    AudacityProject *const p = GetProject();
+   auto &window = ProjectWindow::Get( *p );
 
    // Check whether we were playing or recording, but the stream has stopped.
    if (p->GetAudioIOToken()>0 && !IsAudioActive())
@@ -452,9 +456,9 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    if (p->GetAudioIOToken()>0 &&
          !gAudioIO->IsAudioTokenActive(p->GetAudioIOToken()))
    {
-      p->FixScrollbars();
+      window.FixScrollbars();
       p->SetAudioIOToken(0);
-      p->RedrawProject();
+      window.RedrawProject();
 
       mRedrawAfterStop = false;
 
@@ -468,7 +472,7 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    // Notify listeners for timer ticks
    {
       wxCommandEvent e(EVT_TRACK_PANEL_TIMER);
-      p->GetEventHandler()->ProcessEvent(e);
+      window.GetEventHandler()->ProcessEvent(e);
    }
 
    DrawOverlays(false);
@@ -2702,7 +2706,8 @@ LWSlider * TrackInfo::GainSlider
    gGainCaptured->Set(gain);
 
    auto slider = (captured ? gGainCaptured : gGain).get();
-   slider->SetParent( pParent ? pParent : ::GetActiveProject() );
+   slider->SetParent( pParent ? pParent :
+      &ProjectWindow::Get( *::GetActiveProject() ) );
    return slider;
 }
 
@@ -2718,7 +2723,8 @@ LWSlider * TrackInfo::PanSlider
    gPanCaptured->Set(pan);
 
    auto slider = (captured ? gPanCaptured : gPan).get();
-   slider->SetParent( pParent ? pParent : ::GetActiveProject() );
+   slider->SetParent( pParent ? pParent :
+      &ProjectWindow::Get( *::GetActiveProject() ) );
    return slider;
 }
 
@@ -2735,7 +2741,8 @@ LWSlider * TrackInfo::VelocitySlider
    gVelocityCaptured->Set(velocity);
 
    auto slider = (captured ? gVelocityCaptured : gVelocity).get();
-   slider->SetParent( pParent ? pParent : ::GetActiveProject() );
+   slider->SetParent( pParent ? pParent :
+      &ProjectWindow::Get( *::GetActiveProject() ) );
    return slider;
 }
 #endif

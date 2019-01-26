@@ -37,6 +37,7 @@ bool DoPasteText(AudacityProject &project)
    auto &tracks = TrackList::Get( project );
    auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    for (auto pLabelTrack : tracks.Any<LabelTrack>())
    {
@@ -56,7 +57,7 @@ bool DoPasteText(AudacityProject &project)
             }
 
             // Redraw everyting (is that necessary???) and bail
-            project.RedrawProject();
+            window.RedrawProject();
             return true;
          }
       }
@@ -73,6 +74,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
    auto &trackFactory = TrackFactory::Get( project );
    auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    // First check whether anything's selected.
    if (tracks.Selected())
@@ -146,7 +148,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
 
       project.PushState(_("Pasted from the clipboard"), _("Paste"));
 
-      project.RedrawProject();
+      window.RedrawProject();
 
       if (pFirstNewTrack)
          trackPanel.EnsureVisible(pFirstNewTrack);
@@ -167,7 +169,7 @@ void DoReloadPreferences( AudacityProject &project )
       SpectrogramSettings::defaults().LoadPrefs();
       WaveformSettings::defaults().LoadPrefs();
 
-      GlobalPrefsDialog dialog(&project /* parent */ );
+      GlobalPrefsDialog dialog(&ProjectWindow::Get( project ) /* parent */ );
       wxCommandEvent Evt;
       //dialog.Show();
       dialog.OnOK(Evt);
@@ -208,7 +210,7 @@ bool DoEditMetadata
    // BEFORE doing any editing of it!
    auto newTags = tags.Duplicate();
 
-   if (newTags->ShowEditDialog(&project, title, force)) {
+   if (newTags->ShowEditDialog(&ProjectWindow::Get( project ), title, force)) {
       if (tags != *newTags) {
          // Commit the change to project state only now.
          Tags::Set( project, newTags );
@@ -227,6 +229,7 @@ void DoUndo(AudacityProject &project)
 {
    auto &trackPanel = TrackPanel::Get( project );
    auto &undoManager = UndoManager::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    if (!project.UndoAvailable()) {
       AudacityMessageBox(_("Nothing to undo"));
@@ -243,7 +246,7 @@ void DoUndo(AudacityProject &project)
 
    trackPanel.EnsureVisible(trackPanel.GetFirstSelectedTrack());
 
-   project.RedrawProject();
+   window.RedrawProject();
 
    MenuManager::ModifyUndoMenuItems(project);
 }
@@ -262,6 +265,7 @@ void OnRedo(const CommandContext &context)
    auto &project = context.project;
    auto &trackPanel = TrackPanel::Get( project );
    auto &undoManager = UndoManager::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    if (!project.RedoAvailable()) {
       AudacityMessageBox(_("Nothing to redo"));
@@ -277,7 +281,7 @@ void OnRedo(const CommandContext &context)
 
    trackPanel.EnsureVisible(trackPanel.GetFirstSelectedTrack());
 
-   project.RedrawProject();
+   window.RedrawProject();
 
    MenuManager::ModifyUndoMenuItems(project);
 }
@@ -289,6 +293,7 @@ void OnCut(const CommandContext &context)
    auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto &ruler = AdornedRulerPanel::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    // This doesn't handle cutting labels, it handles
    // cutting the _text_ inside of labels, i.e. if you're
@@ -364,7 +369,7 @@ void OnCut(const CommandContext &context)
    //mRuler->ClearPlayRegion();
    ruler.DrawOverlays( true );
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnDelete(const CommandContext &context)
@@ -372,6 +377,7 @@ void OnDelete(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    for (auto n : tracks.Any()) {
       if (n->GetSelected() || n->IsSyncLockSelected()) {
@@ -388,7 +394,7 @@ void OnDelete(const CommandContext &context)
                               selectedRegion.t0()),
              _("Delete"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 
@@ -437,6 +443,7 @@ void OnPaste(const CommandContext &context)
    auto &trackFactory = TrackFactory::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto isSyncLocked = project.IsSyncLocked();
+   auto &window = ProjectWindow::Get( project );
 
    // Handle text paste (into active label) first.
    if (DoPasteText(project))
@@ -689,7 +696,7 @@ void OnPaste(const CommandContext &context)
 
       project.PushState(_("Pasted from the clipboard"), _("Paste"));
 
-      project.RedrawProject();
+      window.RedrawProject();
 
       if (ff)
          trackPanel.EnsureVisible(ff);
@@ -701,6 +708,7 @@ void OnDuplicate(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    // This iteration is unusual because we add to the list inside the loop
    auto range = tracks.Selected();
@@ -720,7 +728,7 @@ void OnDuplicate(const CommandContext &context)
 
    project.PushState(_("Duplicated"), _("Duplicate"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnSplitCut(const CommandContext &context)
@@ -728,6 +736,7 @@ void OnSplitCut(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    AudacityProject::ClearClipboard();
 
@@ -764,7 +773,7 @@ void OnSplitCut(const CommandContext &context)
 
    project.PushState(_("Split-cut to the clipboard"), _("Split Cut"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnSplitDelete(const CommandContext &context)
@@ -772,6 +781,7 @@ void OnSplitDelete(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    tracks.Selected().Visit(
       [&](WaveTrack *wt) {
@@ -790,7 +800,7 @@ void OnSplitDelete(const CommandContext &context)
          selectedRegion.t0()),
       _("Split Delete"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnSilence(const CommandContext &context)
@@ -817,6 +827,7 @@ void OnTrim(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    if (selectedRegion.isPoint())
       return;
@@ -841,7 +852,7 @@ void OnTrim(const CommandContext &context)
          selectedRegion.t0(), selectedRegion.t1()),
          _("Trim Audio"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnSplit(const CommandContext &context)
@@ -915,6 +926,7 @@ void OnSplitNew(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    Track::Holder dest;
 
@@ -958,7 +970,7 @@ void OnSplitNew(const CommandContext &context)
 
    project.PushState(_("Split to new track"), _("Split New"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnJoin(const CommandContext &context)
@@ -966,6 +978,7 @@ void OnJoin(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    for (auto wt : tracks.Selected< WaveTrack >())
       wt->Join(selectedRegion.t0(),
@@ -977,7 +990,7 @@ void OnJoin(const CommandContext &context)
          selectedRegion.t0()),
       _("Join"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnDisjoin(const CommandContext &context)
@@ -985,6 +998,7 @@ void OnDisjoin(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &window = ProjectWindow::Get( project );
 
    for (auto wt : tracks.Selected< WaveTrack >())
       wt->Disjoin(selectedRegion.t0(),
@@ -996,7 +1010,7 @@ void OnDisjoin(const CommandContext &context)
          selectedRegion.t0()),
       _("Detach"));
 
-   project.RedrawProject();
+   window.RedrawProject();
 }
 
 void OnEditMetadata(const CommandContext &context)
@@ -1010,7 +1024,7 @@ void OnPreferences(const CommandContext &context)
 {
    auto &project = context.project;
 
-   GlobalPrefsDialog dialog(&project /* parent */ );
+   GlobalPrefsDialog dialog(&ProjectWindow::Get( project ) /* parent */ );
 
    if( ScreenshotCommand::MayCapture( &dialog ) )
       return;

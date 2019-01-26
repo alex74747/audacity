@@ -29,7 +29,8 @@ void ShowDiagnostics(
    AudacityProject &project, const wxString &info,
    const wxString &description, const wxString &defaultPath)
 {
-   wxDialogWrapper dlg(&project, wxID_ANY, description);
+   auto &window = ProjectWindow::Get( project );
+   wxDialogWrapper dlg( &window, wxID_ANY, description);
    dlg.SetName(dlg.GetTitle());
    ShuttleGui S(&dlg, eIsCreating);
 
@@ -56,7 +57,7 @@ void ShowDiagnostics(
          wxT("txt"),
          wxT("*.txt"),
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-         &project);
+         &window);
       if (!fName.empty())
       {
          if (!text->SaveFile(fName))
@@ -85,7 +86,7 @@ void DoShowLog( AudacityProject & )
 
 void DoHelpWelcome( AudacityProject &project )
 {
-   SplashDialog::Show2( &project );
+   SplashDialog::Show2( &ProjectWindow::Get( project ) );
 }
 
 // Menu handler functions
@@ -95,7 +96,7 @@ struct Handler : CommandHandlerObject {
 void OnQuickFix(const CommandContext &context)
 {
    auto &project = context.project;
-   QuickFixDialog dlg( &project );
+   QuickFixDialog dlg( &ProjectWindow::Get( project ) );
    dlg.ShowModal();
 }
 
@@ -103,7 +104,7 @@ void OnQuickHelp(const CommandContext &context)
 {
    auto &project = context.project;
    HelpSystem::ShowHelp(
-      &project,
+      &ProjectWindow::Get( project ),
       wxT("Quick_Help"));
 }
 
@@ -111,7 +112,7 @@ void OnManual(const CommandContext &context)
 {
    auto &project = context.project;
    HelpSystem::ShowHelp(
-      &project,
+      &ProjectWindow::Get( project ),
       wxT("Main_Page"));
 }
 

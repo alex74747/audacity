@@ -118,7 +118,7 @@ AudacityProject *DoImportMIDI(
    if ( !pProject )
       pProject = pNewProject = CreateNewAudacityProject();
    auto cleanup = finally( [&]
-      { if ( pNewProject ) pNewProject->Close(true); } );
+      { if ( pNewProject ) ProjectWindow::Get( *pNewProject ).Close(true); } );
 
    auto newTrack = TrackFactory::Get( *pProject ).NewNoteTrack();
 
@@ -174,8 +174,9 @@ void OnProjectReset(const CommandContext &context)
 void OnClose(const CommandContext &context )
 {
    auto &project = context.project;
+   auto &window = ProjectWindow::Get( project );
    project.SetMenuClose(true);
-   project.Close();
+   window.Close();
 }
 
 void OnSave(const CommandContext &context )
@@ -244,6 +245,7 @@ void OnExportLabels(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    /* i18n-hint: filename containing exported text from label tracks */
    wxString fName = _("labels.txt");
@@ -264,7 +266,7 @@ void OnExportLabels(const CommandContext &context)
                         wxT("txt"),
                         wxT("*.txt"),
                         wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-                        &project);
+                        &window);
 
    if (fName.empty())
       return;
@@ -315,6 +317,7 @@ void OnExportMIDI(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    // Make sure that there is
    // exactly one NoteTrack selected.
@@ -349,7 +352,7 @@ void OnExportMIDI(const CommandContext &context)
          wxT(".mid|.gro"),
          _("MIDI file (*.mid)|*.mid|Allegro file (*.gro)|*.gro"),
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-         &project);
+         &window);
 
       if (fName.empty())
          return;
@@ -396,6 +399,7 @@ void OnExportMIDI(const CommandContext &context)
 void OnImport(const CommandContext &context)
 {
    auto &project = context.project;
+   auto &window = ProjectWindow::Get( project );
 
    // An import trigger for the alias missing dialog might not be intuitive, but
    // this serves to track the file if the users zooms in and such.
@@ -423,7 +427,7 @@ void OnImport(const CommandContext &context)
 
       gPrefs->Flush();
 
-      project.HandleResize(); // Adjust scrollers for NEW track sizes.
+      window.HandleResize(); // Adjust scrollers for NEW track sizes.
    } );
 
    for (size_t ff = 0; ff < selectedFiles.size(); ff++) {
@@ -442,6 +446,7 @@ void OnImportLabels(const CommandContext &context)
    auto &project = context.project;
    auto &trackFactory = TrackFactory::Get( project );
    auto &tracks = TrackList::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    wxString fileName =
        FileNames::SelectFile(FileNames::Operation::Open,
@@ -451,7 +456,7 @@ void OnImportLabels(const CommandContext &context)
                     wxT(".txt"),   // Extension
                     _("Text files (*.txt)|*.txt|All files|*"),
                     wxRESIZE_BORDER,        // Flags
-                    &project);    // Parent
+                    &window);    // Parent
 
    if (!fileName.empty()) {
       wxTextFile f;
@@ -485,6 +490,7 @@ void OnImportLabels(const CommandContext &context)
 void OnImportMIDI(const CommandContext &context)
 {
    auto &project = context.project;
+   auto &window = ProjectWindow::Get( project );
 
    wxString fileName = FileNames::SelectFile(FileNames::Operation::Open,
       _("Select a MIDI file"),
@@ -493,7 +499,7 @@ void OnImportMIDI(const CommandContext &context)
       wxT(""),       // Extension
       _("MIDI and Allegro files (*.mid;*.midi;*.gro)|*.mid;*.midi;*.gro|MIDI files (*.mid;*.midi)|*.mid;*.midi|Allegro files (*.gro)|*.gro|All files|*"),
       wxRESIZE_BORDER,        // Flags
-      &project);    // Parent
+      &window);    // Parent
 
    if (!fileName.empty())
       DoImportMIDI(&project, fileName);
@@ -504,6 +510,7 @@ void OnImportRaw(const CommandContext &context)
 {
    auto &project = context.project;
    auto &trackFactory = TrackFactory::Get( project );
+   auto &window = ProjectWindow::Get( project );
 
    wxString fileName =
        FileNames::SelectFile(FileNames::Operation::Open,
@@ -513,26 +520,27 @@ void OnImportRaw(const CommandContext &context)
                     wxT(""),       // Extension
                     _("All files|*"),
                     wxRESIZE_BORDER,        // Flags
-                    &project);    // Parent
+                    &window);    // Parent
 
    if (fileName.empty())
       return;
 
    TrackHolders newTracks;
 
-   ::ImportRaw(&project, fileName, &trackFactory, newTracks);
+   ::ImportRaw(&window, fileName, &trackFactory, newTracks);
 
    if (newTracks.size() <= 0)
       return;
 
    project.AddImportedTracks(fileName, std::move(newTracks));
-   project.HandleResize(); // Adjust scrollers for NEW track sizes.
+   window.HandleResize(); // Adjust scrollers for NEW track sizes.
 }
 
 void OnPageSetup(const CommandContext &context)
 {
    auto &project = context.project;
-   HandlePageSetup(&project);
+   auto &window = ProjectWindow::Get( project );
+   HandlePageSetup(&window);
 }
 
 void OnPrint(const CommandContext &context)
@@ -540,7 +548,8 @@ void OnPrint(const CommandContext &context)
    auto &project = context.project;
    auto name = project.GetName();
    auto &tracks = TrackList::Get( project );
-   HandlePrint(&project, name, &tracks, TrackPanel::Get( project ));
+   auto &window = ProjectWindow::Get( project );
+   HandlePrint(&window, name, &tracks, TrackPanel::Get( project ));
 }
 
 void OnExit(const CommandContext &WXUNUSED(context) )

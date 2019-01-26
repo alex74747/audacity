@@ -794,7 +794,8 @@ void ControlToolBar::OnPlay(wxCommandEvent & WXUNUSED(evt))
 
    StopPlaying();
 
-   if (p) p->TP_DisplaySelection();
+   if (p)
+      ProjectWindow::Get( *p ).TP_DisplaySelection();
 
    auto cleanup = finally( [&]{ UpdateStatusBar(p); } );
    PlayDefault();
@@ -1315,7 +1316,7 @@ void ControlToolBar::OnRewind(wxCommandEvent & WXUNUSED(evt))
    AudacityProject *p = GetActiveProject();
    if (p) {
       p->StopIfPaused();
-      p->Rewind(mRewind->WasShiftDown());
+      ProjectWindow::Get( *p ).Rewind(mRewind->WasShiftDown());
    }
 }
 
@@ -1328,7 +1329,7 @@ void ControlToolBar::OnFF(wxCommandEvent & WXUNUSED(evt))
 
    if (p) {
       p->StopIfPaused();
-      p->SkipEnd(mFF->WasShiftDown());
+      ProjectWindow::Get( *p ).SkipEnd(mFF->WasShiftDown());
    }
 }
 
@@ -1420,7 +1421,8 @@ wxString ControlToolBar::StateForStatusBar()
 
 void ControlToolBar::UpdateStatusBar(AudacityProject *pProject)
 {
-   pProject->GetStatusBar()->SetStatusText(StateForStatusBar(), stateStatusBarField);
+   ProjectWindow::Get( *pProject )
+      .GetStatusBar()->SetStatusText(StateForStatusBar(), stateStatusBarField);
 }
 
 bool ControlToolBar::IsTransportingPinned()
@@ -1444,8 +1446,8 @@ void ControlToolBar::StartScrollingIfPreferred()
       // doing this causes wheel rotation events (mapped from the double finger vertical
       // swipe) to be delivered more uniformly to the application, so that speed control
       // works better.
-      ::GetActiveProject()->GetPlaybackScroller().Activate
-         (AudacityProject::PlaybackScroller::Mode::Refresh);
+      ProjectWindow::Get( *::GetActiveProject() ).GetPlaybackScroller().Activate
+         (ProjectWindow::PlaybackScroller::Mode::Refresh);
    }
 #endif
    else
@@ -1454,7 +1456,7 @@ void ControlToolBar::StartScrollingIfPreferred()
 
 void ControlToolBar::StartScrolling()
 {
-   using Mode = AudacityProject::PlaybackScroller::Mode;
+   using Mode = ProjectWindow::PlaybackScroller::Mode;
    const auto project = GetActiveProject();
    if (project) {
       auto mode = Mode::Pinned;
@@ -1486,7 +1488,7 @@ void ControlToolBar::StartScrolling()
       }
 #endif
 
-      project->GetPlaybackScroller().Activate(mode);
+      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate(mode);
    }
 }
 
@@ -1494,8 +1496,8 @@ void ControlToolBar::StopScrolling()
 {
    const auto project = GetActiveProject();
    if(project)
-      project->GetPlaybackScroller().Activate
-         (AudacityProject::PlaybackScroller::Mode::Off);
+      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate
+         (ProjectWindow::PlaybackScroller::Mode::Off);
 }
 
 void ControlToolBar::CommitRecording()
