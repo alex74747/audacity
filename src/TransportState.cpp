@@ -215,7 +215,7 @@ int TransportState::PlayPlayRegion(const SelectedRegion &selectedRegion,
          // handler!  Easy fix, just delay the user alert instead.
          wxTheApp->CallAfter( []{
          // Show error message if stream could not be opened
-         ShowErrorDialog(::GetActiveProject(), _("Error"),
+         ShowErrorDialog( &ProjectWindow::Get( *::GetActiveProject() ), _("Error"),
                          _("Error opening sound device.\nTry changing the audio host, playback device and the project sample rate."),
                          wxT("Error_opening_sound_device"));
          });
@@ -605,7 +605,7 @@ bool TransportState::DoRecord(AudacityProject &project,
 
          // Show error message if stream could not be opened
          wxString msg = wxString::Format(_("Error opening recording device.\nError code: %s"), gAudioIO->LastPaErrorString());
-         ShowErrorDialog(::GetActiveProject(), _("Error"), msg, wxT("Error_opening_sound_device"));
+         ShowErrorDialog( &ProjectWindow::Get( *::GetActiveProject() ), _("Error"), msg, wxT("Error_opening_sound_device"));
       }
    }
 
@@ -665,8 +665,9 @@ void TransportState::StartScrollingIfPreferred()
       // doing this causes wheel rotation events (mapped from the double finger vertical
       // swipe) to be delivered more uniformly to the application, so that speed control
       // works better.
-      ::GetActiveProject()->GetPlaybackScroller().Activate
-         (AudacityProject::PlaybackScroller::Mode::Refresh);
+      ProjectWindow::Get( *::GetActiveProject() )
+         .GetPlaybackScroller().Activate(
+            ProjectWindow::PlaybackScroller::Mode::Refresh);
    }
 #endif
    else
@@ -675,7 +676,7 @@ void TransportState::StartScrollingIfPreferred()
 
 void TransportState::StartScrolling()
 {
-   using Mode = AudacityProject::PlaybackScroller::Mode;
+   using Mode = ProjectWindow::PlaybackScroller::Mode;
    const auto project = GetActiveProject();
    if (project) {
       auto mode = Mode::Pinned;
@@ -707,7 +708,7 @@ void TransportState::StartScrolling()
       }
 #endif
 
-      project->GetPlaybackScroller().Activate(mode);
+      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate(mode);
    }
 }
 
@@ -715,8 +716,8 @@ void TransportState::StopScrolling()
 {
    const auto project = GetActiveProject();
    if(project)
-      project->GetPlaybackScroller().Activate
-         (AudacityProject::PlaybackScroller::Mode::Off);
+      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate
+         (ProjectWindow::PlaybackScroller::Mode::Off);
 }
 
 void TransportState::CommitRecording()
