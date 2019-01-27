@@ -44,6 +44,8 @@ class AudacityApp final : public wxApp {
    void OnFatalException() override;
    bool OnExceptionInMainLoop() override;
 
+   void OnIdle( wxIdleEvent & );
+
    // These are currently only used on Mac OS, where it's
    // possible to have a menu bar but no windows open.  It doesn't
    // hurt any other platforms, though.
