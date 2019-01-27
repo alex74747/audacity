@@ -163,6 +163,8 @@ list( APPEND SOURCES
       InconsistencyException.h
       InterpolateAudio.cpp
       InterpolateAudio.h
+      Journal.cpp
+      Journal.h
       KeyboardCapture.cpp
       KeyboardCapture.h
       LabelDialog.cpp
