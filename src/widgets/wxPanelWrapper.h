@@ -222,7 +222,9 @@ public:
          const wxPoint& pos = wxDefaultPosition)
    : wxTabTraversalWrapper< wxMessageDialog>
       ( parent, message.Translation(), caption.Translation(), style, pos )
-   {}
+   {
+      SetName(_("Message"));
+   }
 };
 
 #endif

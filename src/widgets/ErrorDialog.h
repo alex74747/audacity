@@ -69,6 +69,7 @@ void ShowModelessErrorDialog(wxWindow *parent,
                      bool Close = true,
                      const wxString &log = {});
 
+
 #include <wx/textdlg.h> // to inherit
 
 /**************************************************************************//**
@@ -89,7 +90,9 @@ public:
    : wxTabTraversalWrapper< wxTextEntryDialog>(
       parent,
       message.Translation(), caption.Translation(), value, style, pos )
-   {}
+   {
+      SetName(_("Input"));
+   }
    
    void SetInsertionPointEnd();
    bool Show(bool show = true) override;
