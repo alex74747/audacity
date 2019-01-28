@@ -1,0 +1,20 @@
+#Journal recorded by Paul Licameli on Wednesday, 30 January 2019 at 14:42:12
+# A test that exercises some modal and non-modal dialogs, and syncs on numerical results
+# This assumes a clean pluginsettings.cfg (at least for Tone)
+Version,1
+CM,Tone...
+ModalDialog,Tone
+1
+CM,ContrastAnalyser
+CM,SelectNone
+Contrast,FG
+ModalDialog,Message
+5100
+undefined
+CM,SelectAll
+Contrast,BG
+-4.95
+Contrast,Close
+CM,Exit
+ModalDialog,Message
+5104

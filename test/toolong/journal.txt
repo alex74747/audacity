@@ -1,0 +1,4 @@
+# A test that should fail because of unconsumed commands after exit
+Version,1
+CM,Exit
+CM,Exit
