@@ -144,8 +144,10 @@ void FileDialog::Create(
     const wxString& defaultDir, const wxString& defaultFileName, const wxString& wildCard,
     long style, const wxPoint& pos, const wxSize& sz, const wxString& name)
 {
-
     FileDialogBase::Create(parent, message, defaultDir, defaultFileName, wildCard, style, pos, sz, name);
+
+    // wxWidgets ignores the name in FileDialogBase::Create, so we set it here
+    SetName( name );
 }
 
 FileDialog::~FileDialog()
@@ -408,7 +410,7 @@ void FileDialog::SetupExtraControls(WXWindow nativeWindow)
             horizontalSizer->Add( m_filterChoice, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
             verticalSizer->Add( horizontalSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
         }
-            
+       
         if ( HasUserPaneCreator() )
         {
             wxPanel *userpane = new wxPanel( m_filterPanel, wxID_ANY );
@@ -443,7 +445,7 @@ int FileDialog::ShowModal()
     wxCFEventLoopPauseIdleEvents pause;
 
     wxMacAutoreleasePool autoreleasepool;
-    
+   
     wxCFStringRef cf( m_message );
 
     wxCFStringRef dir( m_dir );
@@ -469,7 +471,7 @@ int FileDialog::ShowModal()
     if( HasFlag(wxFD_OPEN) )
     {
         if ( !(wxSystemOptions::HasOption( wxOSX_FILEDIALOG_ALWAYS_SHOW_TYPES ) && (wxSystemOptions::GetOptionInt( wxOSX_FILEDIALOG_ALWAYS_SHOW_TYPES ) == 1)) )
-            m_useFileTypeFilter = false;            
+            m_useFileTypeFilter = false;
     }
 #endif
 
@@ -493,7 +495,7 @@ int FileDialog::ShowModal()
                 m_firstFileTypeFilter = i;
                 break;
             }
-            
+           
             for ( size_t j = 0; j < m_currentExtensions.GetCount(); ++j )
             {
                 if ( m_fileName.EndsWith(m_currentExtensions[j]) )
@@ -595,9 +597,9 @@ int FileDialog::ShowModal()
     else
     {
         NSOpenPanel* oPanel = [NSOpenPanel openPanel];
-        
+       
         SetupExtraControls(oPanel);
-                
+       
         [oPanel setTreatsFilePackagesAsDirectories:NO];
         [oPanel setCanChooseDirectories:NO];
         [oPanel setResolvesAliases:YES];
@@ -618,7 +620,7 @@ int FileDialog::ShowModal()
             [oPanel setAllowedFileTypes: (m_delegate == nil ? types : nil)];
         }
         if ( !m_dir.IsEmpty() )
-            [oPanel setDirectoryURL:[NSURL fileURLWithPath:dir.AsNSString() 
+            [oPanel setDirectoryURL:[NSURL fileURLWithPath:dir.AsNSString()
                                                isDirectory:YES]];
 
         {
@@ -626,7 +628,7 @@ int FileDialog::ShowModal()
         }
 
         returnCode = [oPanel runModal];
-            
+       
         ModalFinishedCallback(oPanel, returnCode);
     }
 
@@ -694,16 +696,16 @@ void FileDialog::ModalFinishedCallback(void* panel, int returnCode)
     if ( m_delegate )
     {
         [[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
-         
+       
         [m_delegate release];
         m_delegate = nil;
     }
 
     SetReturnCode(result);
-    
+   
     if (GetModality() == wxDIALOG_MODALITY_WINDOW_MODAL)
         SendWindowModalDialogEvent ( wxEVT_WINDOW_MODAL_DIALOG_CLOSED  );
-    
+   
     // workaround for sandboxed app, see above
     if ( m_isNativeWindowWrapper )
         UnsubclassWin();

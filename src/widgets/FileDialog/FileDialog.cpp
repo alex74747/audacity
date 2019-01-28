@@ -15,6 +15,7 @@ custom controls.
 *//*******************************************************************/
 
 #include "FileDialog.h"
+#include "../../src/widgets/wxPanelWrapper.h" // This include is bad
 
 FileDialogBase::FileDialogBase()
 {
@@ -84,8 +85,8 @@ wxString FileSelector(const wxString& title,
     else if ( !filter.empty() )
         filter2 = filter;
 
-    FileDialog fileDialog(parent, title, defaultDir,
-                            defaultFileName, filter2,
+    FileDialogWrapper fileDialog(parent, Verbatim(title), defaultDir,
+                            defaultFileName, {} /*fixme*/,
                             flags, wxPoint(x, y));
 
     // if filter is of form "All files (*)|*|..." set correct filter index
@@ -117,38 +118,3 @@ wxString FileSelector(const wxString& title,
 
     return filename;
 }
-
-//----------------------------------------------------------------------------
-// FileSelectorEx
-//----------------------------------------------------------------------------
-
-wxString FileSelectorEx(const wxString& title,
-                        const wxString& defaultDir,
-                        const wxString& defaultFileName,
-                        int*            defaultFilterIndex,
-                        const wxString& filter,
-                        int             flags,
-                        wxWindow*       parent,
-                        int             x,
-                        int             y)
-
-{
-    FileDialog fileDialog(parent,
-                            title,
-                            defaultDir,
-                            defaultFileName,
-                            filter,
-                            flags, wxPoint(x, y));
-
-    wxString filename;
-    if ( fileDialog.ShowModal() == wxID_OK )
-    {
-        if ( defaultFilterIndex )
-            *defaultFilterIndex = fileDialog.GetFilterIndex();
-
-        filename = fileDialog.GetPath();
-    }
-
-    return filename;
-}
-
