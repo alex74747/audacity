@@ -4,6 +4,7 @@
 #include "../BatchProcessDialog.h"
 #include "../Benchmark.h"
 #include "../CommonCommandFlags.h"
+#include "../Journal.h"
 #include "../Menus.h"
 #include "../PluginManager.h"
 #include "../Prefs.h"
@@ -23,6 +24,7 @@
 #include "../effects/RealtimeEffectManager.h"
 #include "../prefs/EffectsPrefs.h"
 #include "../prefs/PrefsDialog.h"
+#include "../widgets/AudacityMessageBox.h"
 
 // private helper classes and functions
 namespace {
@@ -585,6 +587,16 @@ void OnDetectUpstreamDropouts(const CommandContext &context)
    setting = !setting;
 }
 
+void OnWriteJournal(const CommandContext &)
+{
+   if ( Journal::ToggleRecordEnabled() )
+      AudacityMessageBox(
+         XO("A journal will be recorded after Audacity restarts.") );
+   else
+      AudacityMessageBox(
+         XO("No journal will be recorded after Audacity restarts.") );
+}
+
 void OnApplyMacroDirectly(const CommandContext &context )
 {
    const MacroID& Name = context.parameter.GET();
@@ -1121,7 +1133,13 @@ BaseItemSharedPtr ToolsMenu()
             AudioIONotBusyFlag(),
             Options{}.CheckTest(
                [](AudacityProject&){
-                  return AudioIO::Get()->mDetectUpstreamDropouts; } ) )
+                  return AudioIO::Get()->mDetectUpstreamDropouts; } ) ),
+         Command( wxT("WriteJournal"),
+            XXO("Write Journal"),
+            FN(OnWriteJournal),
+            AlwaysEnabledFlag,
+            Options{}.CheckTest( [](AudacityProject&){
+               return Journal::RecordEnabled(); } ) )
       )
 #endif
    ) ) };
