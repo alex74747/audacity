@@ -51,6 +51,18 @@ void wxDialogWrapper::SetName()
    wxDialog::SetName( wxDialog::GetTitle() );
 }
 
+namespace {
+
+struct Entry{
+   wxWeakRef< wxDialog > pDialog;
+
+   operator wxDialog* () const { return pDialog; }
+};
+std::vector< Entry > sDialogStack;
+
+}
+
+
 namespace DialogHooks {
 
 void wxTabTraversalWrapperCharHook(wxKeyEvent &event)
@@ -83,6 +95,21 @@ void wxTabTraversalWrapperCharHook(wxKeyEvent &event)
 #endif
 
    event.Skip();
+}
+
+void BeginDialog( wxDialog &dialog )
+{
+   sDialogStack.push_back( { &dialog } );
+}
+
+void EndDialog( wxDialog &dialog )
+{
+   // Not always LIFO because some dialogs are modeless
+   auto end = sDialogStack.end();
+   sDialogStack.erase(
+      std::remove( sDialogStack.begin(), end, &dialog ),
+      end
+   );
 }
 
 CallbacksBase::~CallbacksBase() {}

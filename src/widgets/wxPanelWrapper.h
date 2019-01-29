@@ -22,6 +22,10 @@ namespace DialogHooks {
 
 AUDACITY_DLL_API void wxTabTraversalWrapperCharHook(wxKeyEvent &event);
 
+// Functions to track dialogs
+void BeginDialog( wxDialog &dialog );
+void EndDialog( wxDialog &dialog );
+
 // Subclass responsibilities for modal dialogs that record and play back
 // with parameters
 struct CallbacksBase
@@ -123,13 +127,13 @@ public:
    template< typename ...Args >
    JournallingDialog( Args &&...args )
       : Base( std::forward< Args >( args )... )
-   { }
+   { DialogHooks::BeginDialog( *this ); }
 
    JournallingDialog( const JournallingDialog& ) = delete;
    JournallingDialog &operator =( const JournallingDialog& ) = delete;
 
    ~JournallingDialog()
-   { }
+   { DialogHooks::EndDialog( *this ); }
 
    // Further derived classes should not override ShowModal, but instead
    // override Callbacks::DoShowModal
