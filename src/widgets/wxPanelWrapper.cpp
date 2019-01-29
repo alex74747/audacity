@@ -9,7 +9,9 @@
 
 #include "wxPanelWrapper.h"
 
+#include <wx/filename.h>
 #include <wx/grid.h>
+#include "../Journal.h"
 
 void wxPanelWrapper::SetLabel(const TranslatableString & label)
 {
@@ -59,6 +61,19 @@ struct Entry{
    operator wxDialog* () const { return pDialog; }
 };
 std::vector< Entry > sDialogStack;
+
+bool IsOutermost( wxDialog &dialog )
+{
+   for ( const auto &entry : sDialogStack ) {
+      if ( entry.pDialog == &dialog )
+         return true;
+      else if ( entry.pDialog && entry.pDialog->IsModal() )
+         return false;
+   }
+   // Should have found dialog before reaching the end
+   wxASSERT( false );
+   return false;
+}
 
 }
 
@@ -113,11 +128,103 @@ void EndDialog( wxDialog &dialog )
 }
 
 CallbacksBase::~CallbacksBase() {}
+// Default no-op implementations
+wxArrayString CallbacksBase::GetJournalData() const { return {}; }
+void CallbacksBase::SetJournalData( const wxArrayString & ) {}
 
 int ShowModal( wxDialog &dialog, CallbacksBase &callbacks )
 {
-      auto result = callbacks.DoShowModal( dialog );
+   constexpr auto ModalDialogToken = wxT("ModalDialog");
+
+   auto name = dialog.GetName();
+   if ( Journal::IsReplaying() ) {
+      Journal::Sync( { ModalDialogToken, name } );
+
+      // Intercepted ShowModal call takes data from the journal, doesn't call
+      // through to DoShowModal()
+      auto data = Journal::GetTokens();
+      if ( data.size() < 1 )
+         throw Journal::SyncException{};
+
+      auto strResult = data.back();
+      long result;
+      strResult.ToLong( &result );
+
+      // callback may examine data and throw SyncException
+      data.pop_back();
+      callbacks.SetJournalData( data );
+
+      if ( Journal::IsRecording() ) {
+         data.push_back( strResult );
+         Journal::Output( data );
+      }
+
       return result;
+   }
+   else {
+      bool record = Journal::IsRecording() && IsOutermost( dialog );
+      if ( record )
+         Journal::Output( { ModalDialogToken, name } );
+      auto result = callbacks.DoShowModal( dialog );
+      if ( record ) {
+         auto data = callbacks.GetJournalData();
+         data.push_back( wxString::Format( "%d", result ) );
+         Journal::Output( data );
+      }
+      return result;
+   }
 }
 
+}
+
+namespace{
+   wxString PathToJournal( const wxString &path )
+   {
+      auto home = wxFileName::GetHomeDir();
+      wxFileName fname{ path };
+      fname.MakeRelativeTo( home );
+      return fname.GetFullPath();
+   }
+
+   wxString PathFromJournal( const wxString &path )
+   {
+      auto home = wxFileName::GetHomeDir();
+      wxFileName fname{ path };
+      fname.MakeAbsolute( home );
+      return fname.GetFullPath();
+   }
+}
+
+wxArrayString wxDirDialogWrapper::GetJournalData() const
+{
+   wxArrayString results;
+   results.push_back( PathToJournal( GetPath() ) );
+   return results;
+}
+
+void wxDirDialogWrapper::SetJournalData( const wxArrayString &data )
+{
+   if ( data.size() != 1 )
+      throw Journal::SyncException{};
+   SetPath( PathFromJournal( data[0] ) );
+}
+
+wxArrayString FileDialogWrapper::GetJournalData() const
+{
+   wxArrayString results;
+#if 0
+   for ( const auto &path : m_paths )
+      results.push_back( PathToJournal( path ) );
+#endif
+   return results;
+}
+
+void FileDialogWrapper::SetJournalData( const wxArrayString &data )
+{
+#if 0
+   m_paths.clear();
+   for ( const auto &path : data )
+      m_paths.push_back( PathFromJournal( path ) );
+   SetPath( m_paths.empty() ? wxString{} : m_paths[0] );
+#endif
 }

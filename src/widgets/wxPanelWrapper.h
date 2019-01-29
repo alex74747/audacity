@@ -18,6 +18,8 @@
 
 #include "Identifier.h"
 
+class wxArrayString;
+
 namespace DialogHooks {
 
 AUDACITY_DLL_API void wxTabTraversalWrapperCharHook(wxKeyEvent &event);
@@ -31,6 +33,14 @@ void EndDialog( wxDialog &dialog );
 struct CallbacksBase
 {
    virtual ~CallbacksBase();
+
+   // Get data to write to the journal; should not contain newlines
+   // This is invoked when not replaying, after DoShowModal
+   virtual wxArrayString GetJournalData() const;
+
+   // Accept data reread from the journal; may throw Journal::SyncException
+   // if some mismatch is found
+   virtual void SetJournalData( const wxArrayString &data );
 
    // This is supplied by the template below but may be further overriden to
    // add behavior
@@ -138,6 +148,7 @@ public:
    // Further derived classes should not override ShowModal, but instead
    // override Callbacks::DoShowModal
 
+   // This will not call through to DoShowModal if the journal is replaying
    int ShowModal() final override
    {
       static_assert(std::is_base_of< wxDialog, Ancestor >::value,
@@ -236,6 +247,10 @@ public:
          parent, message.Translation(), defaultPath, style, pos, size,
          name.Translation() );
    }
+
+   // Callbacks implementation
+   wxArrayString GetJournalData() const override;
+   void SetJournalData( const wxArrayString &data ) override;
 };
 
 #include "FileDialog/FileDialog.h"
@@ -291,6 +306,10 @@ public:
          style, pos, sz, name.Translation()
       );
    }
+
+   // Callbacks implementation
+   wxArrayString GetJournalData() const override;
+   void SetJournalData( const wxArrayString &data ) override;
 };
 
 #include <wx/msgdlg.h>
