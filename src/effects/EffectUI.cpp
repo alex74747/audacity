@@ -827,7 +827,7 @@ bool EffectUIHost::TransferDataFromWindow()
 // wxDialog implementation
 // ============================================================================
 
-int EffectUIHost::ShowModal()
+int EffectUIHost::DoShowModal( wxDialog &self )
 {
 #if defined(__WXMSW__)
    // Swap the Close and Apply buttons
@@ -849,7 +849,7 @@ int EffectUIHost::ShowModal()
    
    Layout();
    
-   return wxDialogWrapper::ShowModal();
+   return Callbacks::DoShowModal( self );
 }
 
 // ============================================================================

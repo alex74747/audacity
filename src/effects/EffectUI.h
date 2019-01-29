@@ -132,7 +132,7 @@ public:
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 
-   int ShowModal() override;
+   int DoShowModal( wxDialog &self ) override;
 
    bool Initialize();
 

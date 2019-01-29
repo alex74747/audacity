@@ -41,7 +41,7 @@ class AUDACITY_DLL_API PrefsDialog /* not final */ : public wxDialogWrapper
    virtual ~PrefsDialog();
 
    // Defined this so a protected virtual can be invoked after the constructor
-   int ShowModal() override;
+   int DoShowModal( wxDialog &self ) override;
    void ShuttleAll( ShuttleGui & S);
 
    void OnCategoryChange(wxCommandEvent & e);

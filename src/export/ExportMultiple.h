@@ -34,9 +34,9 @@ class AUDACITY_DLL_API ExportMultipleDialog final : public wxDialogWrapper
 public:
 
    ExportMultipleDialog(AudacityProject *parent);
-   virtual ~ExportMultipleDialog();
+   ~ExportMultipleDialog() override;
 
-   int ShowModal();
+   int DoShowModal( wxDialog &self ) override;
 
 private:
 

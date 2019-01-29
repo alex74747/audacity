@@ -177,7 +177,7 @@ void ExportMultipleDialog::CountTracksAndLabels()
    mNumLabels = mLabels ? mLabels->GetNumLabels() : 0;
 }
 
-int ExportMultipleDialog::ShowModal()
+int ExportMultipleDialog::DoShowModal( wxDialog &self )
 {
    // Cannot export if all audio tracks are muted.
    if (mNumWaveTracks == 0)
@@ -217,7 +217,7 @@ int ExportMultipleDialog::ShowModal()
 
    EnableControls();
 
-   return wxDialogWrapper::ShowModal();
+   return Callbacks::DoShowModal( self );
 }
 
 void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)

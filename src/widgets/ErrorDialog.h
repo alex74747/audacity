@@ -77,8 +77,9 @@ void ShowModelessErrorDialog(wxWindow *parent,
 \brief Wrap wxTextEntryDialog so that caption IS translatable.
 ********************************************************************************/
 class AUDACITY_DLL_API AudacityTextEntryDialog
-   : public wxTabTraversalWrapper< wxTextEntryDialog >
+   : public JournallingDialog< wxTextEntryDialog >
 {
+   using Base = JournallingDialog< wxTextEntryDialog >;
 public:
     AudacityTextEntryDialog(
          wxWindow *parent,
@@ -87,13 +88,13 @@ public:
          const wxString& value = {},
          long style = wxTextEntryDialogStyle,
          const wxPoint& pos = wxDefaultPosition)
-   : wxTabTraversalWrapper< wxTextEntryDialog>(
+   : Base(
       parent,
       message.Translation(), caption.Translation(), value, style, pos )
    {
       SetName(_("Input"));
    }
-   
+
    void SetInsertionPointEnd();
    bool Show(bool show = true) override;
 

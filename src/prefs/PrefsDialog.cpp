@@ -592,7 +592,7 @@ PrefsDialog::~PrefsDialog()
 {
 }
 
-int PrefsDialog::ShowModal()
+int PrefsDialog::DoShowModal( wxDialog &self )
 {
    if (mCategories) {
       /* long is signed, size_t is unsigned. On some platforms they are different
@@ -612,7 +612,7 @@ int PrefsDialog::ShowModal()
       SetName(Temp);
    }
 
-   return wxDialogWrapper::ShowModal();
+   return Callbacks::DoShowModal( self );
 }
 
 void PrefsDialog::OnCancel(wxCommandEvent & WXUNUSED(event))

@@ -11,38 +11,6 @@
 
 #include <wx/grid.h>
 
-void wxTabTraversalWrapperCharHook(wxKeyEvent &event)
-{
-//#ifdef __WXMAC__
-#if defined(__WXMAC__) || defined(__WXGTK__)
-   // Compensate for the regressions in TAB key navigation
-   // due to the switch to wxWidgets 3.0.2
-   if (event.GetKeyCode() == WXK_TAB) {
-      auto focus = wxWindow::FindFocus();
-      if (dynamic_cast<wxGrid*>(focus)
-         || (focus &&
-             focus->GetParent() &&
-             dynamic_cast<wxGrid*>(focus->GetParent()->GetParent()))) {
-         // Let wxGrid do its own TAB key handling
-         event.Skip();
-         return;
-      }
-      // Apparently, on wxGTK, FindFocus can return NULL
-      if (focus)
-      {
-         focus->Navigate(
-            event.ShiftDown()
-            ? wxNavigationKeyEvent::IsBackward
-            :  wxNavigationKeyEvent::IsForward
-         );
-         return;
-      }
-   }
-#endif
-
-   event.Skip();
-}
-
 void wxPanelWrapper::SetLabel(const TranslatableString & label)
 {
    wxPanel::SetLabel( label.Translation() );
@@ -81,4 +49,48 @@ void wxDialogWrapper::SetName(const TranslatableString & name)
 void wxDialogWrapper::SetName()
 {
    wxDialog::SetName( wxDialog::GetTitle() );
+}
+
+namespace DialogHooks {
+
+void wxTabTraversalWrapperCharHook(wxKeyEvent &event)
+{
+//#ifdef __WXMAC__
+#if defined(__WXMAC__) || defined(__WXGTK__)
+   // Compensate for the regressions in TAB key navigation
+   // due to the switch to wxWidgets 3.0.2
+   if (event.GetKeyCode() == WXK_TAB) {
+      auto focus = wxWindow::FindFocus();
+      if (dynamic_cast<wxGrid*>(focus)
+         || (focus &&
+             focus->GetParent() &&
+             dynamic_cast<wxGrid*>(focus->GetParent()->GetParent()))) {
+         // Let wxGrid do its own TAB key handling
+         event.Skip();
+         return;
+      }
+      // Apparently, on wxGTK, FindFocus can return NULL
+      if (focus)
+      {
+         focus->Navigate(
+            event.ShiftDown()
+            ? wxNavigationKeyEvent::IsBackward
+            :  wxNavigationKeyEvent::IsForward
+         );
+         return;
+      }
+   }
+#endif
+
+   event.Skip();
+}
+
+CallbacksBase::~CallbacksBase() {}
+
+int ShowModal( wxDialog &dialog, CallbacksBase &callbacks )
+{
+      auto result = callbacks.DoShowModal( dialog );
+      return result;
+}
+
 }
