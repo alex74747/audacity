@@ -51,6 +51,10 @@ public:
    double mStartTimeB;
    double mEndTimeB;
 
+   void DoGetForeground();
+   void DoGetBackground();
+   void DoClose();
+
 private:
    // handlers
    void OnChar(wxKeyEvent &event);

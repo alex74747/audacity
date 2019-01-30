@@ -13,6 +13,7 @@
 #include "Contrast.h"
 
 #include "../CommonCommandFlags.h"
+#include "../Journal.h"
 #include "../WaveTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
@@ -29,6 +30,7 @@
 
 #include <cmath>
 #include <limits>
+#include <unordered_map>
 
 #if defined(__WXMSW__) && !defined(__CYGWIN__)
 #include <float.h>
@@ -46,6 +48,32 @@
 #define DB_MAX_LIMIT 0.0   // Audio is massively distorted.
 #define WCAG2_PASS 20.0    // dB difference required to pass WCAG2 test.
 
+
+namespace {
+
+// Identifiers used in the journal
+constexpr auto JournalCode = wxT("Contrast");
+constexpr auto ForegroundCode = wxT("FG");
+constexpr auto BackgroundCode = wxT("BG");
+constexpr auto CloseCode = wxT("Close");
+
+// Dispatch table for input journal commands
+using PFM = void (ContrastDialog::*)();
+static std::unordered_map< wxString, PFM > table{
+   { ForegroundCode, &ContrastDialog::DoGetForeground },
+   { BackgroundCode, &ContrastDialog::DoGetBackground },
+   { CloseCode, &ContrastDialog::DoClose },
+};
+
+void WriteJournal( bool defined, float value )
+{
+   auto strValue = defined
+      ? wxString::Format(wxT("%.2f"), value)
+      : wxT("undefined");
+   Journal::Sync( strValue );
+}
+
+}
 
 bool ContrastDialog::GetDB(float &dB)
 {
@@ -366,6 +394,13 @@ void ContrastDialog::OnGetURL(wxCommandEvent & WXUNUSED(event))
 
 void ContrastDialog::OnClose(wxCommandEvent & WXUNUSED(event))
 {
+   DoClose();
+}
+
+void ContrastDialog::DoClose()
+{
+   Journal::Output({ JournalCode, CloseCode });
+
    wxCommandEvent dummyEvent;
    OnReset(dummyEvent);
 
@@ -374,6 +409,13 @@ void ContrastDialog::OnClose(wxCommandEvent & WXUNUSED(event))
 
 void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
 {
+   DoGetForeground();
+}
+
+void ContrastDialog::DoGetForeground()
+{
+   Journal::Output({ JournalCode, ForegroundCode });
+
    auto p = FindProjectFromWindow( this );
    auto &selectedRegion = ViewInfo::Get( *p ).selectedRegion;
 
@@ -386,10 +428,18 @@ void ContrastDialog::OnGetForeground(wxCommandEvent & /*event*/)
    mForegroundIsDefined = GetDB(foregrounddB);
    m_pButton_UseCurrentF->SetFocus();
    results();
+   WriteJournal( mForegroundIsDefined, foregrounddB );
 }
 
 void ContrastDialog::OnGetBackground(wxCommandEvent & /*event*/)
 {
+   DoGetBackground();
+}
+
+void ContrastDialog::DoGetBackground()
+{
+   Journal::Output({ JournalCode, BackgroundCode });
+
    auto p = FindProjectFromWindow( this );
    auto &selectedRegion = ViewInfo::Get( *p ).selectedRegion;
 
@@ -402,6 +452,7 @@ void ContrastDialog::OnGetBackground(wxCommandEvent & /*event*/)
    mBackgroundIsDefined = GetDB(backgrounddB);
    m_pButton_UseCurrentB->SetFocus();
    results();
+   WriteJournal( mBackgroundIsDefined, backgrounddB );
 }
 
 namespace {
@@ -700,5 +751,22 @@ AttachedItem sAttachment{ wxT("Analyze/Analyzers/Windows"),
          AudioIONotBusyFlag() | WaveTracksSelectedFlag() | TimeSelectedFlag(),
          wxT("Ctrl+Shift+T") ) )
 };
+
+Journal::RegisteredCommand sCommand{ JournalCode,
+[]( const wxArrayString &fields ){
+   if ( fields.size() == 2 ) {
+      auto pProject = GetActiveProject();
+      auto pDialog =
+         pProject->AttachedWindows::Find< ContrastDialog >( sContrastDialogKey );
+      if ( pDialog ) {
+         auto iter = table.find( fields[1] );
+         if ( iter != table.end() ) {
+            ( pDialog ->* (iter->second) )();
+            return true;
+         }
+      }
+   }
+   return false;
+} };
 
 }
