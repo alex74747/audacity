@@ -1,0 +1,21 @@
+#Journal recorded by Paul Licameli on Wednesday, 30 January 2019 at 16:11:30
+# Prevent regression of fix for bug2059 at 0941eaa
+# Revert that, and this journal fails at an orphan blocks dialog
+Version,2.3.1.0
+CM,Tone...
+ModalDialog,Tone
+1
+CM,Save
+ModalDialog,Warning
+5103
+ModalDialog,File Dialog
+Untitled,5100
+CM,SaveAs
+ModalDialog,Warning
+5103
+ModalDialog,File Dialog
+Untitled2,5100
+CM,Open
+ModalDialog,File Dialog
+Untitled.aup,5100
+CM,Exit
