@@ -40,6 +40,10 @@ public:
 
 private:
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    // Export
    void CanExport();
    void CountTracksAndLabels();
@@ -175,6 +179,10 @@ public:
    void OnKeyDown(wxListEvent& event); // dismisses dialog when <enter> is pressed with list control having focus
    void OnItemActivated(wxListEvent& event); // dismisses dialog when <enter> is pressed with list item having focus
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    DECLARE_EVENT_TABLE()
 };
 

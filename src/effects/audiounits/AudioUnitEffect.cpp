@@ -505,6 +505,7 @@ OSType AudioUnitEffectsModule::ToOSType(const wxString & type)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+namespace {
 class AudioUnitEffectOptionsDialog final : public wxDialogWrapper
 {
 public:
@@ -516,6 +517,10 @@ public:
    void OnOk(wxCommandEvent & evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    EffectHostInterface *mHost;
 
    bool mUseLatency;
@@ -523,6 +528,16 @@ private:
 
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString AudioUnitEffectOptionsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AudioUnitEffectOptionsDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 BEGIN_EVENT_TABLE(AudioUnitEffectOptionsDialog, wxDialogWrapper)
    EVT_BUTTON(wxID_OK, AudioUnitEffectOptionsDialog::OnOk)
@@ -653,6 +668,10 @@ public:
    void OnOk(wxCommandEvent & evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    wxWindow *mParent;
    AudioUnitEffect *mEffect;
 
@@ -660,6 +679,15 @@ private:
 
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString AudioUnitEffectImportDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AudioUnitEffectImportDialog::SetJournalData( const wxArrayString & )
+{
+}
 
 BEGIN_EVENT_TABLE(AudioUnitEffectImportDialog, wxDialogWrapper)
    EVT_BUTTON(wxID_OK, AudioUnitEffectImportDialog::OnOk)

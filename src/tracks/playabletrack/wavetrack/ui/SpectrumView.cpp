@@ -706,32 +706,45 @@ struct SpectrogramSettingsHandler : PopupMenuHandler {
    }
 };
 
+class ViewSettingsDialog final : public PrefsDialog
+{
+public:
+   ViewSettingsDialog(wxWindow *parent, AudacityProject &project,
+      const TranslatableString &title, PrefsPanel::Factories &factories,
+      int page)
+      : PrefsDialog(parent, &project, title, factories)
+      , mPage(page)
+   {
+   }
+
+   long GetPreferredPage() override
+   {
+      return mPage;
+   }
+
+   void SavePreferredPage() override
+   {
+   }
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
+   const int mPage;
+};
+
+wxArrayString ViewSettingsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ViewSettingsDialog::SetJournalData( const wxArrayString & )
+{
+}
+
 void SpectrogramSettingsHandler::OnSpectrogramSettings(wxCommandEvent &)
 {
-   class ViewSettingsDialog final : public PrefsDialog
-   {
-   public:
-      ViewSettingsDialog(wxWindow *parent, AudacityProject &project,
-         const TranslatableString &title, PrefsPanel::Factories &factories,
-         int page)
-         : PrefsDialog(parent, &project, title, factories)
-         , mPage(page)
-      {
-      }
-
-      long GetPreferredPage() override
-      {
-         return mPage;
-      }
-
-      void SavePreferredPage() override
-      {
-      }
-
-   private:
-      const int mPage;
-   };
-
    auto gAudioIO = AudioIOBase::Get();
    if (gAudioIO->IsBusy()){
       AudacityMessageBox(

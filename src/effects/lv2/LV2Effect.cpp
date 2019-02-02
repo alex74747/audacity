@@ -204,6 +204,10 @@ public:
    void OnOk(wxCommandEvent &evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    LV2Effect *mEffect;
    int mBufferSize;
    bool mUseLatency;
@@ -329,6 +333,15 @@ void LV2EffectSettingsDialog::OnOk(wxCommandEvent &WXUNUSED(evt))
    mEffect->mHost->SetSharedConfig(wxT("Settings"), wxT("UseGUI"), mUseGUI);
 
    EndModal(wxID_OK);
+}
+
+wxArrayString LV2EffectSettingsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LV2EffectSettingsDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 ///////////////////////////////////////////////////////////////////////////////

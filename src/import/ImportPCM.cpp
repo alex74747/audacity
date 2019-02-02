@@ -276,6 +276,137 @@ auto PCMImportFileHandle::GetFileUncompressedBytes() -> ByteCount
    return mInfo.frames * mInfo.channels * SAMPLE_SIZE(mFormat);
 }
 
+#ifdef EXPERIMENTAL_OD_DATA
+namespace {
+class AskCopyOrEditDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString AskCopyOrEditDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AskCopyOrEditDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
+// returns "copy" or "edit" (aliased) as the user selects.
+// if the cancel button is hit then "cancel" is returned.
+static wxString AskCopyOrEdit()
+{
+
+   auto oldCopyPref = FileFormatsCopyOrEditSetting.Read();
+
+   bool firstTimeAsk    = gPrefs->Read(wxT("/Warnings/CopyOrEditUncompressedDataFirstAsk"), true)?true:false;
+   bool oldAskPref      = gPrefs->Read(wxT("/Warnings/CopyOrEditUncompressedDataAsk"), true)?true:false;
+
+   // The first time the user is asked we force it to 'copy'.
+   // This effectively does a one-time change to the preferences.
+   if (firstTimeAsk) {
+      if (oldCopyPref != wxT("copy")) {
+         FileFormatsCopyOrEditSetting.Write( wxT("copy") );
+         oldCopyPref = wxT("copy");
+      }
+      gPrefs->Write(wxT("/Warnings/CopyOrEditUncompressedDataFirstAsk"), (long) false);
+      gPrefs->Flush();
+   }
+
+   // check the current preferences for whether or not we should ask the user about this.
+   if (oldAskPref) {
+      wxString newCopyPref = wxT("copy");
+      AskCopyOrEditDialog dialog(nullptr, -1, XO("Warning"));
+      dialog.SetName();
+
+      auto clause1 = XO(
+"When importing uncompressed audio files you can either copy them into the project,"
+" or read them directly from their current location (without copying).\n\n"
+      );
+
+      auto clause2 = (oldCopyPref == wxT("copy"))
+         ? XO("Your current preference is set to copy in.\n\n")
+         : XO("Your current preference is set to read directly.\n\n")
+      ;
+
+      auto clause3 = XO(
+"Reading the files directly allows you to play or edit them almost immediately. "
+"This is less safe than copying in, because you must retain the files with their "
+"original names in their original locations.\n"
+"Help > Diagnostics > Check Dependencies will show the original names and locations of any files "
+"that you are reading directly.\n\n"
+"How do you want to import the current file(s)?"
+      );
+
+      ShuttleGui S{ &dialog, eIsCreating };
+      S.SetBorder(10);
+      S
+         .Position( wxALL | wxEXPAND )
+         .AddUnits( clause1 + clause2 + clause3, 500);
+
+      wxRadioButton *aliasRadio;
+      wxRadioButton *copyRadio;
+      wxCheckBox *dontAskNextTimeBox;
+
+      S.StartStatic(XO("Choose an import method"));
+      {
+         S.SetBorder(0);
+
+         copyRadio = S.AddRadioButton(
+            XXO("Make a &copy of the files before editing (safer)") );
+
+         aliasRadio = S.AddRadioButtonToGroup(
+            XXO("Read the files &directly from the original (faster)") );
+
+         dontAskNextTimeBox = S.AddCheckBox(
+            XXO("Don't &warn again and always use my choice above"),
+            false);
+      }
+      S.EndStatic();
+
+      dontAskNextTimeBox->SetName(wxStripMenuCodes(dontAskNextTimeBox->GetLabel()));
+
+
+      wxRadioButton *prefsRadio = oldCopyPref == wxT("copy") ? copyRadio : aliasRadio;
+      prefsRadio->SetValue(true);
+
+      S.SetBorder( 10 );
+      S.AddStandardButtons( eOkButton | eCancelButton );
+
+      dialog.SetSize(dialog.GetBestSize());
+      dialog.Layout();
+      dialog.Center();
+
+      if (dialog.ShowModal() == wxID_OK) {
+         if (aliasRadio->GetValue()) {
+            newCopyPref = wxT("edit");
+         }
+         if (dontAskNextTimeBox->IsChecked()) {
+            gPrefs->Write(wxT("/Warnings/CopyOrEditUncompressedDataAsk"), (long) false);
+            gPrefs->Flush();
+         }
+      } else {
+         return wxT("cancel");
+      }
+
+      // if the preference changed, save it.
+      if (newCopyPref != oldCopyPref) {
+         FileFormatsCopyOrEditSetting.Write( newCopyPref );
+         gPrefs->Flush();
+      }
+      oldCopyPref = newCopyPref;
+   }
+   return oldCopyPref;
+}
+#endif
+
 #ifdef USE_LIBID3TAG
 struct id3_tag_deleter {
    void operator () (id3_tag *p) const { if (p) id3_tag_delete(p); }

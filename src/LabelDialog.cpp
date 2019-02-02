@@ -953,3 +953,12 @@ void LabelDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
 
    return;
 }
+
+wxArrayString LabelDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LabelDialog::SetJournalData( const wxArrayString & )
+{
+}

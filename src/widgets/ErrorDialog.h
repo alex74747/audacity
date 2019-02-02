@@ -34,6 +34,11 @@ public:
 
    virtual ~ErrorDialog(){}
 
+protected:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
 private:
    wxString dhelpPage;
    bool dClose;
@@ -76,7 +81,7 @@ void ShowModelessErrorDialog(wxWindow *parent,
 \class AudacityTextEntryDialog
 \brief Wrap wxTextEntryDialog so that caption IS translatable.
 ********************************************************************************/
-class AUDACITY_DLL_API AudacityTextEntryDialog
+class AUDACITY_DLL_API AudacityTextEntryDialog final
    : public JournallingDialog< wxTextEntryDialog >
 {
    using Base = JournallingDialog< wxTextEntryDialog >;
@@ -99,6 +104,10 @@ public:
    bool Show(bool show = true) override;
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    bool mSetInsertionPointEnd{};
 };
 

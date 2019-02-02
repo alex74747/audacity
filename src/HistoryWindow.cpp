@@ -486,3 +486,12 @@ AttachedItem sAttachment{ wxT("View/Windows"),
 };
 
 }
+
+wxArrayString HistoryDialog::GetJournalData() const
+{
+   return {};
+}
+
+void HistoryDialog::SetJournalData( const wxArrayString & )
+{
+}

@@ -1364,6 +1364,15 @@ public:
    {
       HelpSystem::ShowHelp(this, wxT("File_Menu:_Compact_Project"), true);
    }
+
+   wxArrayString GetJournalData() const override
+   {
+      return {};
+   }
+
+   void SetJournalData( const wxArrayString & ) override
+   {
+   }
 };
 }
 

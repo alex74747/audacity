@@ -13,6 +13,7 @@
 #include "../ProjectManager.h"
 #include "../ProjectWindow.h"
 #include "../SelectUtilities.h"
+#include "../ShuttleGui.h"
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "../ViewInfo.h"
@@ -26,6 +27,7 @@
 #include "../import/ImportRaw.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/FileHistory.h"
+#include "../widgets/HelpSystem.h"
 #include "../widgets/wxPanelWrapper.h"
 #include "../widgets/MenuHandle.h"
 
@@ -158,6 +160,60 @@ void DoImport(const CommandContext &context, bool isRaw)
    }
 }
 
+}
+
+// Compact dialog
+class CompactDialog : public wxDialogWrapper
+{
+public:
+   CompactDialog(TranslatableString text)
+   :  wxDialogWrapper(nullptr, wxID_ANY, XO("Compact Project"))
+   {
+      ShuttleGui S(this, eIsCreating);
+
+      S.StartVerticalLay(true);
+      {
+         S.AddFixedText(text, false, 500);
+
+         S.AddStandardButtons(eYesButton | eNoButton | eHelpButton);
+      }
+      S.EndVerticalLay();
+
+      FindWindowById(wxID_YES, this)->Bind(wxEVT_BUTTON, &CompactDialog::OnYes, this);
+      FindWindowById(wxID_NO, this)->Bind(wxEVT_BUTTON, &CompactDialog::OnNo, this);
+      FindWindowById(wxID_HELP, this)->Bind(wxEVT_BUTTON, &CompactDialog::OnGetURL, this);
+
+      Layout();
+      Fit();
+      Center();
+   }
+
+   void OnYes(wxCommandEvent &WXUNUSED(evt))
+   {
+      EndModal(wxYES);
+   }
+
+   void OnNo(wxCommandEvent &WXUNUSED(evt))
+   {
+      EndModal(wxNO);
+   }
+
+   void OnGetURL(wxCommandEvent &WXUNUSED(evt))
+   {
+      HelpSystem::ShowHelp(this, wxT("File_Menu:_Compact_Project"), true);
+   }
+
+   wxArrayString GetJournalData() const override;
+   void SetJournalData( const wxArrayString & ) override;
+};
+
+wxArrayString CompactDialog::GetJournalData() const
+{
+   return {};
+}
+
+void CompactDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 // Menu handler functions

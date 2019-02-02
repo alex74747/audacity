@@ -45,6 +45,10 @@ class AUDACITY_DLL_API AboutDialog final : public wxDialogWrapper {
    DECLARE_EVENT_TABLE()
 
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    enum Role {
       roleTeamMember,
       roleEmeritusTeam,

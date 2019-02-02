@@ -27,6 +27,10 @@ public:
    ~SoundActivatedRecordDialog();
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnOK(wxCommandEvent& event);
 
    void PopulateOrExchange(ShuttleGui& S);

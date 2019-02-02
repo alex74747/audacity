@@ -43,6 +43,11 @@ public:
 
 private:
    void PopulateOrExchange(ShuttleGui &S);
+
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void PopulateList();
    bool HaveChecked();
 
@@ -231,6 +236,15 @@ bool AutoRecoveryDialog::HaveChecked()
 void AutoRecoveryDialog::OnQuitAudacity(wxCommandEvent &WXUNUSED(evt))
 {
    EndModal(ID_QUIT_AUDACITY);
+}
+
+wxArrayString AutoRecoveryDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AutoRecoveryDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 void AutoRecoveryDialog::OnDiscardSelected(wxCommandEvent &WXUNUSED(evt))
@@ -506,3 +520,4 @@ bool ShowAutoRecoveryDialogIfNeeded(AudacityProject *&pproj, bool *didRecoverAny
    
    return success;
 }
+

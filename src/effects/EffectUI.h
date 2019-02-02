@@ -139,6 +139,10 @@ public:
 private:
    wxPanel *BuildButtonBar( wxWindow *parent );
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnInitDialog(wxInitDialogEvent & evt);
    void OnErase(wxEraseEvent & evt);
    void OnPaint(wxPaintEvent & evt);

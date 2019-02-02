@@ -1202,3 +1202,21 @@ void MouseEvtHandler::OnMouse(wxMouseEvent& event)
 {
    event.Skip(false);
 }
+
+wxArrayString ExportMultipleDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ExportMultipleDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+wxArrayString SuccessDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SuccessDialog::SetJournalData( const wxArrayString & )
+{
+}

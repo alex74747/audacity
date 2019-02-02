@@ -179,3 +179,12 @@ void SplashDialog::Show2( wxWindow * pParent )
    pSelf->mpHtml->SetPage(HelpText( wxT("welcome") ));
    pSelf->Show( true );
 }
+
+wxArrayString SplashDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SplashDialog::SetJournalData( const wxArrayString & )
+{
+}

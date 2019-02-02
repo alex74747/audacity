@@ -701,6 +701,28 @@ void DeviceToolBar::ShowChannelsDialog()
    ShowComboDialog(mInputChannels, XO("Select Recording Channels"));
 }
 
+namespace {
+class DeviceToolBarDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString DeviceToolBarDialog::GetJournalData() const
+{
+   return {};
+}
+
+void DeviceToolBarDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void DeviceToolBar::ShowComboDialog(wxChoice *combo, const TranslatableString &title)
 {
    if (!combo || combo->GetCount() == 0) {
@@ -711,7 +733,7 @@ void DeviceToolBar::ShowComboDialog(wxChoice *combo, const TranslatableString &t
 #if USE_PORTMIXER
    wxArrayStringEx inputSources = combo->GetStrings();
 
-   wxDialogWrapper dlg(nullptr, wxID_ANY, title);
+   DeviceToolBarDialog dlg(nullptr, wxID_ANY, title);
    dlg.SetName();
    ShuttleGui S(&dlg, eIsCreating);
    wxChoice *c;

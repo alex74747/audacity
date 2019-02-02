@@ -64,6 +64,10 @@ public:
    int RunWaitDialog();
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnDatePicker_Start(wxDateEvent& event);
    void OnTimeText_Start(wxCommandEvent& event);
 

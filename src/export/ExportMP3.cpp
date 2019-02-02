@@ -579,6 +579,7 @@ void ExportMP3Options::LoadNames(const TranslatableStrings &names)
 #define ID_BROWSE 5000
 #define ID_DLOAD  5001
 
+namespace {
 class FindDialog final : public wxDialogWrapper
 {
 public:
@@ -601,6 +602,15 @@ public:
       mLibPath.Assign(mPath, mName);
 
       PopulateOrExchange(S);
+   }
+
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override
+   {
+      return {};
+   }
+   virtual void SetJournalData( const wxArrayString &data ) override
+   {
    }
 
    void PopulateOrExchange(ShuttleGui & S)
@@ -705,6 +715,8 @@ BEGIN_EVENT_TABLE(FindDialog, wxDialogWrapper)
    EVT_BUTTON(ID_DLOAD,  FindDialog::OnDownload)
 END_EVENT_TABLE()
 #endif // DISABLE_DYNAMIC_LOADING_LAME
+
+}
 
 //----------------------------------------------------------------------------
 // MP3Exporter
@@ -2040,9 +2052,30 @@ void ExportMP3::OptionsCreate(ShuttleGui &S, int format)
    S.AddWindow( safenew ExportMP3Options{ S.GetParent(), format } );
 }
 
+namespace {
+class AskResampleDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString AskResampleDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AskResampleDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 int ExportMP3::AskResample(int bitrate, int rate, int lowrate, int highrate)
 {
-   wxDialogWrapper d(nullptr, wxID_ANY, XO("Invalid sample rate"));
+   AskResampleDialog d(nullptr, wxID_ANY, XO("Invalid sample rate"));
    d.SetName();
    wxChoice *choice;
    ShuttleGui S(&d, eIsCreating);

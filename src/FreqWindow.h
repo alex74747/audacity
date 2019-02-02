@@ -67,6 +67,10 @@ public:
 private:
    void Populate();
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void GetAudio();
 
    void PlotMouseEvent(wxMouseEvent & event);

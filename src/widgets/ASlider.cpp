@@ -2012,5 +2012,14 @@ wxAccStatus ASliderAx::GetValue(int childId, wxString* strValue)
 
    return wxACC_NOT_SUPPORTED;
 }
-
 #endif
+
+wxArrayString SliderDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SliderDialog::SetJournalData( const wxArrayString & )
+{
+}
+

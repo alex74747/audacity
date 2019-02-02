@@ -29,6 +29,13 @@ the ability to not see similar warnings again for this session.
 #include <wx/stattext.h>
 #include "wxPanelWrapper.h"
 
+const TranslatableString &DefaultWarningFooter()
+{
+   static auto result = XXO("Don't show this warning again");
+   return result;
+}
+
+namespace {
 class WarningDialog final : public wxDialogWrapper
 {
  public:
@@ -39,6 +46,10 @@ class WarningDialog final : public wxDialogWrapper
                  bool showCancelButton);
 
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnOK(wxCommandEvent& event);
 
    wxCheckBox *mCheckBox;
@@ -49,12 +60,6 @@ class WarningDialog final : public wxDialogWrapper
 BEGIN_EVENT_TABLE(WarningDialog, wxDialogWrapper)
    EVT_BUTTON(wxID_OK, WarningDialog::OnOK)
 END_EVENT_TABLE()
-
-const TranslatableString &DefaultWarningFooter()
-{
-   static auto result = XXO("Don't show this warning again");
-   return result;
-}
 
 WarningDialog::WarningDialog(wxWindow *parent, const TranslatableString &message,
                              const TranslatableString &footer,
@@ -87,6 +92,17 @@ WarningDialog::WarningDialog(wxWindow *parent, const TranslatableString &message
 void WarningDialog::OnOK(wxCommandEvent& WXUNUSED(event))
 {
    EndModal(mCheckBox->GetValue() ? wxID_NO : wxID_YES); // return YES, if message should be shown again
+}
+
+
+wxArrayString WarningDialog::GetJournalData() const
+{
+   return {};
+}
+
+void WarningDialog::SetJournalData( const wxArrayString & )
+{
+}
 }
 
 int ShowWarningDialog(wxWindow *parent,

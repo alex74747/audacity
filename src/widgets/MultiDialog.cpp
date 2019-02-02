@@ -42,6 +42,7 @@ for each problem encountered, since there can be many orphans.
 #include "../AllThemeResources.h"
 #include "../widgets/HelpSystem.h"
 
+namespace {
 class MultiDialog final : public wxDialogWrapper
 {
 public:
@@ -54,6 +55,10 @@ public:
    ~MultiDialog() {};
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnOK( wxCommandEvent &event );
    void OnShowLog(wxCommandEvent& event);
    void OnHelp(wxCommandEvent& event);
@@ -179,6 +184,17 @@ void MultiDialog::OnHelp(wxCommandEvent & WXUNUSED(event))
 {
    HelpSystem::ShowHelp(FindWindow(wxID_HELP), mHelpPage, true);
 }
+
+wxArrayString MultiDialog::GetJournalData() const
+{
+   return {};
+}
+
+void MultiDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 
 int ShowMultiDialog(const TranslatableString &message,
    const TranslatableString &title,

@@ -722,6 +722,23 @@ void OnMixAndRenderToNewTrack(const CommandContext &context)
 
 void OnResample(const CommandContext &context)
 {
+   class ResampleDialog final : public wxDialogWrapper
+   {
+   public:
+      using wxDialogWrapper::wxDialogWrapper;
+
+   private:
+      // Callbacks implementation
+      wxArrayString GetJournalData() const override
+      {
+         return {};
+      }
+
+      void SetJournalData( const wxArrayString & ) override
+      {
+      }
+   };
+
    auto &project = context.project;
    const auto &settings = ProjectSettings::Get( project );
    auto projectRate = settings.GetRate();
@@ -733,7 +750,7 @@ void OnResample(const CommandContext &context)
 
    while (true)
    {
-      wxDialogWrapper dlg(&window, wxID_ANY, XO("Resample"));
+      ResampleDialog dlg(&window, wxID_ANY, XO("Resample"));
       ShuttleGui S(&dlg, eIsCreating);
       wxString rate;
       wxComboBox *cb;

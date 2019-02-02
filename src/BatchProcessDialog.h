@@ -26,7 +26,7 @@ class wxTextCtrl;
 class AudacityProject;
 class ShuttleGui;
 
-class ApplyMacroDialog : public wxDialogWrapper {
+class ApplyMacroDialog /* not final */ : public wxDialogWrapper {
  public:
    // constructors and destructors
    ApplyMacroDialog(
@@ -66,6 +66,10 @@ protected:
    AudacityProject &mProject;
    const MacroCommandsCatalog mCatalog;
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    DECLARE_EVENT_TABLE()
 };
 
@@ -80,6 +84,10 @@ public:
 
 private:
    TranslatableString WindowTitle() const;
+
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    void Populate();
    void PopulateOrExchange(ShuttleGui &S);

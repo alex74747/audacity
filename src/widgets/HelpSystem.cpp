@@ -81,7 +81,40 @@ public:
       // the back.  So, make sure that doesn't happen.
       GetParent()->Raise();
    }
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 };
+
+wxArrayString HtmlTextHelpDialog::GetJournalData() const
+{
+   return {};
+}
+
+void HtmlTextHelpDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+class HelpInfoDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString HelpInfoDialog::GetJournalData() const
+{
+   return {};
+}
+
+void HelpInfoDialog::SetJournalData( const wxArrayString & )
+{
+}
 
 }
 
@@ -94,7 +127,7 @@ void HelpSystem::ShowInfoDialog( wxWindow *parent,
                      const wxString &message,
                      const int xSize, const int ySize)
 {
-   wxDialogWrapper dlog(parent, wxID_ANY,
+   HelpInfoDialog dlog(parent, wxID_ANY,
                 dlogTitle,
                 wxDefaultPosition, wxDefaultSize,
                 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMAXIMIZE_BOX /*| wxDEFAULT_FRAME_STYLE */);
@@ -512,6 +545,15 @@ void BrowserDialog::UpdateButtons()
    {
       pWnd->Enable(mpHtml->HistoryCanForward());
    }
+}
+
+wxArrayString BrowserDialog::GetJournalData() const
+{
+   return {};
+}
+
+void BrowserDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 void OpenInDefaultBrowser(const wxHtmlLinkInfo& link)

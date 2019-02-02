@@ -1225,6 +1225,15 @@ void EffectUIHost::DoCancel()
    }
 }
 
+wxArrayString EffectUIHost::GetJournalData() const
+{
+   return {};
+}
+
+void EffectUIHost::SetJournalData( const wxArrayString & )
+{
+}
+
 void EffectUIHost::OnCancel(wxCommandEvent & WXUNUSED(evt))
 {
    DoCancel();
@@ -1564,11 +1573,31 @@ void EffectUIHost::OnDeletePreset(wxCommandEvent & evt)
    return;
 }
 
+namespace {
+class SavePresetDialog final : public wxDialogWrapper
+{
+   using wxDialogWrapper::wxDialogWrapper;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString SavePresetDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SavePresetDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void EffectUIHost::OnSaveAs(wxCommandEvent & WXUNUSED(evt))
 {
    wxTextCtrl *text;
    wxString name;
-   wxDialogWrapper dlg(this, wxID_ANY, XO("Save Preset"));
+   SavePresetDialog dlg(this, wxID_ANY, XO("Save Preset"));
    
    ShuttleGui S(&dlg, eIsCreating);
    

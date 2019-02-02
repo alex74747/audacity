@@ -1189,12 +1189,12 @@ Journal::RegisteredCommand sCommand{ JournalCode,
    if ( fields.size() == 2 ) {
       auto project = GetActiveProject();
       if (project) {
-         auto pManager = &CommandManager::Get( *project );
+         auto &manager = CommandManager::Get( *project );
          auto flags = MenuManager::Get( *project ).GetUpdateFlags();
          const CommandContext context( *project );
          auto &command = fields[1];
          handled =
-            pManager->HandleTextualCommand( command, context, flags, false );
+            manager.HandleTextualCommand( command, context, flags, false );
       }
    }
    return handled;

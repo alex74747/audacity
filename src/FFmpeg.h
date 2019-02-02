@@ -190,6 +190,9 @@ public:
    void OnOk(wxCommandEvent & WXUNUSED(event));
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    wxCheckBox *mDontShow;
 

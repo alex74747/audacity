@@ -354,6 +354,27 @@ ExportCL::ExportCL()
    SetDescription(XO("(external program)"),0);
 }
 
+namespace {
+class CommandOutputDialog final : public wxDialogWrapper
+{
+   using wxDialogWrapper::wxDialogWrapper;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+
+wxArrayString CommandOutputDialog::GetJournalData() const
+{
+   return {};
+}
+
+void CommandOutputDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 ProgressResult ExportCL::Export(AudacityProject *project,
                                 std::unique_ptr<ProgressDialog> &pDialog,
                                 unsigned channels,
@@ -578,7 +599,7 @@ ProgressResult ExportCL::Export(AudacityProject *project,
    // Display output on error or if the user wants to see it
    if (process.GetStatus() != 0 || mShow) {
       // TODO use ShowInfoDialog() instead.
-      wxDialogWrapper dlg(nullptr,
+      CommandOutputDialog dlg(nullptr,
                    wxID_ANY,
                    XO("Command Output"),
                    wxDefaultPosition,

@@ -1128,6 +1128,29 @@ void TagsEditorDialog::OnChange(wxGridEvent & event)
    return;
 }
 
+namespace {
+class TagsEditorInnerDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+
+wxArrayString TagsEditorInnerDialog::GetJournalData() const
+{
+   return {};
+}
+
+void TagsEditorInnerDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
 {
    if (mGrid->IsCellEditControlShown()) {
@@ -1135,7 +1158,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
       mGrid->HideCellEditControl();
    }
 
-   wxDialogWrapper dlg(this, wxID_ANY, XO("Edit Genres"),
+   TagsEditorInnerDialog dlg(this, wxID_ANY, XO("Edit Genres"),
                 wxDefaultPosition, wxDefaultSize,
                 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
    dlg.SetName();
@@ -1532,4 +1555,13 @@ bool TagsEditorDialog::IsWindowRectValid(const wxRect *windowRect) const
    }
 
    return true;
+}
+
+wxArrayString TagsEditorDialog::GetJournalData() const
+{
+   return {};
+}
+
+void TagsEditorDialog::SetJournalData( const wxArrayString & )
+{
 }

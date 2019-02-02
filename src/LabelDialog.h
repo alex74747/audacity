@@ -57,6 +57,10 @@ class LabelDialog final : public wxDialogWrapper
 
  private:
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void Populate();
    void PopulateOrExchange( ShuttleGui & S );
    void PopulateLabels();

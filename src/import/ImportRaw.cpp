@@ -57,6 +57,7 @@ and sample size to help you importing data of an unknown format.
 
 #include "sndfile.h"
 
+namespace {
 class ImportRawDialog final : public wxDialogWrapper {
 
   public:
@@ -78,6 +79,9 @@ class ImportRawDialog final : public wxDialogWrapper {
    double mPercent;
 
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    wxButton   *mOK;
    wxChoice   *mEncodingChoice;
@@ -92,6 +96,16 @@ class ImportRawDialog final : public wxDialogWrapper {
 
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString ImportRawDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ImportRawDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 // This function leaves outTracks empty as an indication of error,
 // but may also throw FileException to make use of the application's

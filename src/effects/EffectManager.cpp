@@ -366,6 +366,10 @@ public:
    void SetSelected(const wxString & parms);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void SetPrefix(const TranslatableString & type, const wxString & prefix);
    void UpdateUI();
 
@@ -383,6 +387,15 @@ private:
 
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString EffectPresetsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void EffectPresetsDialog::SetJournalData( const wxArrayString & )
+{
+}
 
 enum
 {

@@ -302,7 +302,8 @@ BriefCommandOutputTargets::~BriefCommandOutputTargets()
 
 
 
-class AUDACITY_DLL_API LongMessageDialog /* not final */ : public wxDialogWrapper
+namespace {
+class LongMessageDialog final : public wxDialogWrapper
 {
 public:
    // constructors and destructors
@@ -324,6 +325,10 @@ public:
    wxString mText;
    static LongMessageDialog * pDlg;
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    int mType;
    int mAdditionalButtons;
 
@@ -411,6 +416,16 @@ void LongMessageDialog::Flush()
          pDlg->mTextCtrl->ShowPosition( pDlg->mTextCtrl->GetLastPosition() );
       }
    }
+}
+
+wxArrayString LongMessageDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LongMessageDialog::SetJournalData( const wxArrayString & )
+{
+}
 }
 
 

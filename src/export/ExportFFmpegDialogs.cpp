@@ -2565,5 +2565,13 @@ void ExportFFmpegOptions::OnGetURL(wxCommandEvent & WXUNUSED(event))
    HelpSystem::ShowHelp(this, wxT("Custom_FFmpeg_Export_Options"));
 }
 
+wxArrayString ExportFFmpegOptions::GetJournalData() const
+{
+   return {};
+}
+
+void ExportFFmpegOptions::SetJournalData( const wxArrayString & )
+{
+}
 
 #endif

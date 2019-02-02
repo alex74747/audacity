@@ -52,6 +52,8 @@ of sample block storage.
 #define SampleType short
 #define SampleFormat int16Sample
 
+namespace {
+
 class BenchmarkDialog final : public wxDialogWrapper
 {
 public:
@@ -61,6 +63,10 @@ public:
    void MakeBenchmarkDialog();
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    // WDR: handler declarations
    void OnRun( wxCommandEvent &event );
    void OnSave( wxCommandEvent &event );
@@ -87,9 +93,18 @@ private:
 
    wxTextCtrl  *mText;
 
-private:
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString BenchmarkDialog::GetJournalData() const
+{
+   return {};
+}
+
+void BenchmarkDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 void RunBenchmark( wxWindow *parent, AudacityProject &project )
 {

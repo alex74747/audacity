@@ -37,6 +37,10 @@ class HistoryDialog final : public wxDialogWrapper,
  private:
    void Populate(ShuttleGui & S);
 
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnAudioIO(wxCommandEvent & evt);
    void DoUpdate();
    void UpdateLevels();

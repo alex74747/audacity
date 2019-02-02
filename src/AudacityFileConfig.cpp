@@ -50,9 +50,29 @@ std::unique_ptr<AudacityFileConfig> AudacityFileConfig::Create(
    return result;
 }
 
+namespace {
+class WarningDialog final : public wxDialogWrapper
+{
+   using wxDialogWrapper::wxDialogWrapper;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString WarningDialog::GetJournalData() const
+{
+   return {};
+}
+
+void WarningDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void AudacityFileConfig::Warn()
 {
-   wxDialogWrapper dlg(nullptr, wxID_ANY, XO("Audacity Configuration Error"));
+   WarningDialog dlg(nullptr, wxID_ANY, XO("Audacity Configuration Error"));
 
    ShuttleGui S(&dlg, eIsCreating);
 

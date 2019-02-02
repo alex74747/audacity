@@ -325,6 +325,26 @@ void ApplyMacroDialog::ApplyMacroToProject( int iMacro, bool bHasGui )
    Raise();
 }
 
+namespace {
+class ActivityWin final : public wxDialogWrapper
+{
+   using wxDialogWrapper::wxDialogWrapper;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString ActivityWin::GetJournalData() const
+{
+   return {};
+}
+
+void ActivityWin::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
 {
    long item = mMacros->GetNextItem(-1,
@@ -374,7 +394,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
 
    files.Sort();
 
-   wxDialogWrapper activityWin(this, wxID_ANY, Verbatim( GetTitle() ),
+   ActivityWin activityWin(this, wxID_ANY, Verbatim( GetTitle() ),
       wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
       );
    activityWin.SetName();
@@ -1375,4 +1395,23 @@ TranslatableString MacrosWindow::WindowTitle() const
 void MacrosWindow::UpdatePrefs()
 {
    UpdateDisplay(mbExpanded);
+}
+
+wxArrayString ApplyMacroDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ApplyMacroDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+wxArrayString MacrosWindow::GetJournalData() const
+{
+   return ApplyMacroDialog::GetJournalData();
+}
+
+void MacrosWindow::SetJournalData( const wxArrayString &data )
+{
+   ApplyMacroDialog::SetJournalData( data );
 }

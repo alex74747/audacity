@@ -1241,6 +1241,14 @@ AttachedItem sAttachment{ wxT("Analyze/Analyzers/Windows"),
          &Handler::OnPlotSpectrum,
          AudioIONotBusyFlag() | WaveTracksSelectedFlag() | TimeSelectedFlag() ) )
 };
+}
 
+wxArrayString FrequencyPlotDialog::GetJournalData() const
+{
+   return {};
+}
+
+void FrequencyPlotDialog::SetJournalData( const wxArrayString & )
+{
 }
 

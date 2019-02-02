@@ -3495,3 +3495,13 @@ static void RegisterFunctions()
       xlbindfunctions( functions, WXSIZEOF( functions ) );
    }
 }
+
+
+wxArrayString NyquistOutputDialog::GetJournalData() const
+{
+   return {};
+}
+
+void NyquistOutputDialog::SetJournalData( const wxArrayString & )
+{
+}

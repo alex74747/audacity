@@ -56,6 +56,10 @@ public:
    void DoClose();
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    // handlers
    void OnChar(wxKeyEvent &event);
    void OnGetURL(wxCommandEvent &event);

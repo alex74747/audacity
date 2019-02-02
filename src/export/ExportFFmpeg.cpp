@@ -1115,6 +1115,28 @@ void ExportFFmpeg::SetMetadata(const Tags *tags, const char *name, const wxChar 
 // AskResample dialog
 //----------------------------------------------------------------------------
 
+namespace {
+class InvalidRateDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString InvalidRateDialog::GetJournalData() const
+{
+   return {};
+}
+
+void InvalidRateDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 int ExportFFmpeg::AskResample(int bitrate, int rate, int lowrate, int highrate, const int *sampRates)
 {
 #if defined(FFMPEG_AUTO_RESAMPLE)
@@ -1139,7 +1161,7 @@ int ExportFFmpeg::AskResample(int bitrate, int rate, int lowrate, int highrate, 
 
    return bestRate;
 #else
-   wxDialogWrapper d(nullptr, wxID_ANY, XO("Invalid sample rate"));
+   InvalidRateDialog d(nullptr, wxID_ANY, wxString(_("Invalid sample rate")));
    d.SetName();
    wxChoice *choice;
    ShuttleGui S(&d, eIsCreating);

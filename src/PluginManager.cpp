@@ -422,6 +422,10 @@ public:
    PluginRegistrationDialog(wxWindow *parent, EffectType type);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void Populate();
    void PopulateOrExchange(ShuttleGui & S);
    void RegenerateEffectsList(int iShowWhat);
@@ -1073,6 +1077,16 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
 void PluginRegistrationDialog::OnCancel(wxCommandEvent & WXUNUSED(evt))
 {
    EndModal(wxID_CANCEL);
+}
+
+
+wxArrayString PluginRegistrationDialog::GetJournalData() const
+{
+   return {};
+}
+
+void PluginRegistrationDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 

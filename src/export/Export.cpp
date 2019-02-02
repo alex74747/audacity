@@ -1497,7 +1497,6 @@ void ExportMixerDialog::OnMixerPanelHelp(wxCommandEvent & WXUNUSED(event))
    HelpSystem::ShowHelp(this, wxT("Advanced_Mixing_Options"), true);
 }
 
-
 TranslatableString AudacityExportCaptionStr()
 {
    return XO("Warning");
@@ -1535,4 +1534,11 @@ void ShowDiskFullExportErrorDialog(const wxFileNameWrapper &fileName)
    );
 }
 
+wxArrayString ExportMixerDialog::GetJournalData() const
+{
+   return {};
+}
 
+void ExportMixerDialog::SetJournalData( const wxArrayString & )
+{
+}

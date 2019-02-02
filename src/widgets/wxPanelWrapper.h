@@ -36,11 +36,11 @@ struct CallbacksBase
 
    // Get data to write to the journal; should not contain newlines
    // This is invoked when not replaying, after DoShowModal
-   virtual wxArrayString GetJournalData() const;
+   virtual wxArrayString GetJournalData() const = 0;
 
    // Accept data reread from the journal; may throw Journal::SyncException
    // if some mismatch is found
-   virtual void SetJournalData( const wxArrayString &data );
+   virtual void SetJournalData( const wxArrayString &data ) = 0;
 
    // This is supplied by the template below but may be further overriden to
    // add behavior
@@ -209,7 +209,7 @@ public:
 
 // Add keystroke handling and journalling to wxDirDialog, and also make a default
 // window name that is localized.
-class AUDACITY_DLL_API wxDirDialogWrapper
+class AUDACITY_DLL_API wxDirDialogWrapper final
    : public JournallingDialog<wxDirDialog>
 {
    using Base = JournallingDialog<wxDirDialog>;
@@ -258,7 +258,7 @@ public:
 
 // Add keystroke handling and journalling to FileDialog, and also make a default
 // window name that is localized.
-class AUDACITY_DLL_API FileDialogWrapper
+class AUDACITY_DLL_API FileDialogWrapper final
    : public JournallingDialog<FileDialog>
 {
    using Base = JournallingDialog<FileDialog>;
@@ -318,7 +318,7 @@ public:
 
 \brief Wrap wxMessageDialog so that caption IS translatable.
 ********************************************************************************/
-class AudacityMessageDialog
+class AudacityMessageDialog final
    : public JournallingDialog< wxMessageDialog >
 {
    using Base = JournallingDialog< wxMessageDialog >;
@@ -335,6 +335,10 @@ public:
       SetName(_("Message"));
    }
 
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 };
 
 #endif

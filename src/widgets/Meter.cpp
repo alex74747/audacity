@@ -1986,6 +1986,29 @@ void MeterPanel::OnMonitor(wxCommandEvent & WXUNUSED(event))
    StartMonitoring();
 }
 
+namespace {
+class MeterPanelDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+
+wxArrayString MeterPanelDialog::GetJournalData() const
+{
+   return {};
+}
+
+void MeterPanelDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void MeterPanel::OnPreferences(wxCommandEvent & WXUNUSED(event))
 {
    wxTextCtrl *rate;
@@ -2003,7 +2026,8 @@ void MeterPanel::OnPreferences(wxCommandEvent & WXUNUSED(event))
    // Dialog is a child of the project, rather than of the toolbar.
    // This determines where it pops up.
 
-   wxDialogWrapper dlg( FindProjectFrame( mProject ), wxID_ANY, title);
+   MeterPanelDialog dlg( FindProjectFrame( mProject),
+      wxID_ANY, title );
    dlg.SetName();
    ShuttleGui S(&dlg, eIsCreating);
    S.StartVerticalLay();

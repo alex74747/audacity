@@ -124,3 +124,12 @@ void TimeDialog::OnUpdate(wxCommandEvent &event)
 
    event.Skip(false);
 }
+
+wxArrayString TimeDialog::GetJournalData() const
+{
+   return {};
+}
+
+void TimeDialog::SetJournalData( const wxArrayString & )
+{
+}

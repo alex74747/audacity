@@ -241,6 +241,7 @@ static void RemoveDependencies(AudacityProject *project,
 // DependencyDialog
 //
 
+namespace {
 class DependencyDialog final : public wxDialogWrapper
 {
 public:
@@ -251,6 +252,10 @@ public:
                     bool isSaving);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void PopulateList();
    void PopulateOrExchange(ShuttleGui & S);
 
@@ -594,6 +599,16 @@ void DependencyDialog::SaveFutureActionChoice()
       FileFormatsSaveWithDependenciesSetting.Write( savePref );
       gPrefs->Flush();
    }
+}
+
+wxArrayString DependencyDialog::GetJournalData() const
+{
+   return {};
+}
+
+void DependencyDialog::SetJournalData( const wxArrayString & )
+{
+}
 }
 
 // Checks for alias block files, modifies the project if the

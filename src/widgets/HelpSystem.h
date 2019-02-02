@@ -152,6 +152,12 @@ public:
 
    HtmlWindow * mpHtml;
    bool mDismissed{};
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    DECLARE_EVENT_TABLE()
 };
 

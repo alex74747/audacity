@@ -87,6 +87,10 @@ public:
    virtual ~GlobalPrefsDialog();
    long GetPreferredPage() override;
    void SavePreferredPage() override;
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 };
 
 class AudacityProject;

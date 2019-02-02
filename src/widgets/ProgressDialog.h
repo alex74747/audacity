@@ -105,6 +105,10 @@ public:
    void SetMessage(const TranslatableString & message);
 
 protected:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    wxWindowRef mHadFocus;
 
    wxStaticText *mElapsed;
@@ -166,7 +170,11 @@ public:
    // Choose another name then...
    ProgressResult UpdateProgress();
 
-protected:
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    wxLongLong_t mDuration;
 
    // Disallow direct use of the inherited overloads of Update because it

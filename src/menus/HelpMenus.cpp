@@ -33,8 +33,26 @@ void ShowDiagnostics(
    const TranslatableString &description, const wxString &defaultPath,
    bool fixedWidth = false)
 {
+   class DiagnosticInfoDialog final : public wxDialogWrapper
+   {
+   public:
+      using wxDialogWrapper::wxDialogWrapper;
+
+   private:
+      // Callbacks implementation
+      wxArrayString GetJournalData() const override
+      {
+         return {};
+      }
+
+      void SetJournalData( const wxArrayString & ) override
+      {
+      }
+   };
+
    auto &window = GetProjectFrame( project );
-   wxDialogWrapper dlg( &window, wxID_ANY, description);
+   DiagnosticInfoDialog dlg(&window, wxID_ANY, description);
+
    dlg.SetName();
    ShuttleGui S(&dlg, eIsCreating);
 
@@ -90,7 +108,7 @@ void ShowDiagnostics(
  * It is a band-aid, and we should do more towards a full and proper solution
  * where there are fewer special modes, and they don't persist.
  */
-class QuickFixDialog : public wxDialogWrapper
+class QuickFixDialog final : public wxDialogWrapper
 {
 public:
    using PrefSetter = std::function< void() > ;
@@ -113,6 +131,12 @@ public:
    bool mbSyncLocked;
    bool mbInSnapTo;
    bool mbSoundActivated;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    DECLARE_EVENT_TABLE()
 };
 
@@ -285,6 +309,15 @@ void QuickFixDialog::OnFix(const PrefSetter &setter, wxWindowID id)
    wxButton * pWin = (wxButton*)FindWindowById( wxID_CANCEL );
    if( pWin )
       pWin->SetFocus( );
+}
+
+wxArrayString QuickFixDialog::GetJournalData() const
+{
+   return {};
+}
+
+void QuickFixDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 }

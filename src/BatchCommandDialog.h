@@ -33,6 +33,10 @@ class MacroCommandDialog final : public wxDialogWrapper {
    CommandID   mSelectedCommand;
    wxString   mSelectedParameters;
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void Populate();
    void PopulateOrExchange(ShuttleGui &S);
    void OnEditParams(wxCommandEvent &event);

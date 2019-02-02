@@ -399,6 +399,7 @@ FilePaths LadspaEffectsModule::GetSearchPaths()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+namespace {
 class LadspaEffectOptionsDialog final : public wxDialogWrapper
 {
 public:
@@ -410,6 +411,10 @@ public:
    void OnOk(wxCommandEvent & evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    EffectHostInterface *mHost;
    bool mUseLatency;
 
@@ -494,6 +499,16 @@ enum
    ID_Sliders = 22000,
    ID_Texts = 23000,
 };
+
+wxArrayString LadspaEffectOptionsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LadspaEffectOptionsDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

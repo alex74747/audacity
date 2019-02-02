@@ -387,6 +387,29 @@ void RateMenuTable::OnRateChange(wxCommandEvent & event)
    mpData->result = RefreshAll | FixScrollbars;
 }
 
+namespace {
+class SetRateDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+
+wxArrayString SetRateDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SetRateDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void RateMenuTable::OnRateOther(wxCommandEvent &)
 {
    const auto pTrack = static_cast<WaveTrack*>(mpData->pTrack);
@@ -397,7 +420,7 @@ void RateMenuTable::OnRateOther(wxCommandEvent &)
    /// \todo Make a real dialog box out of this!!
    while (true)
    {
-      wxDialogWrapper dlg(mpData->pParent, wxID_ANY, XO("Set Rate"));
+      SetRateDialog dlg(mpData->pParent, wxID_ANY, XO("Set Rate"));
       dlg.SetName();
       ShuttleGui S(&dlg, eIsCreating);
       wxString rate;

@@ -36,17 +36,61 @@
 #include "../ShuttleGui.h"
 #include "../HelpText.h"
 #include "../Prefs.h"
+#include "../Project.h"
 #include "HelpSystem.h"
 
 #ifdef HAS_SENTRY_REPORTING
 #   include "ErrorReportDialog.h"
 #endif
 
+namespace {
+   using wxDialogRef = wxWeakRef< wxDialog >;
+   std::vector< wxDialogRef > sDialogs;
+}
+
 BEGIN_EVENT_TABLE(ErrorDialog, wxDialogWrapper)
    EVT_COLLAPSIBLEPANE_CHANGED( wxID_ANY, ErrorDialog::OnPane )
    EVT_BUTTON( wxID_OK, ErrorDialog::OnOk)
    EVT_BUTTON( wxID_HELP, ErrorDialog::OnHelp)
 END_EVENT_TABLE()
+
+namespace {
+// special case for alias missing dialog because we keep track of if it exists.
+class MissingAliasFileDialog final : public ErrorDialog
+{
+public:
+   MissingAliasFileDialog(AudacityProject *parent,
+      const wxString & dlogTitle,
+      const wxString & message,
+      const wxString & helpURL,
+      const bool Close = true, const bool modal = true);
+   virtual ~MissingAliasFileDialog();
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+MissingAliasFileDialog::~MissingAliasFileDialog()
+{
+   auto begin = sDialogs.begin(), end = sDialogs.end(),
+      newEnd = std::remove_if( begin, end,
+         [&]( const wxDialogRef &ref ){
+            return ref == this; } );
+   sDialogs.erase( newEnd, end );
+}
+
+wxArrayString MissingAliasFileDialog::GetJournalData() const
+{
+   return ErrorDialog::GetJournalData();
+}
+
+void MissingAliasFileDialog::SetJournalData( const wxArrayString &data )
+{
+   ErrorDialog::SetJournalData( data );
+}
+}
 
 ErrorDialog::ErrorDialog(
    wxWindow *parent,
@@ -210,4 +254,32 @@ bool AudacityTextEntryDialog::Show(bool show)
    }
 
    return ret;
+}
+
+
+wxArrayString ErrorDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ErrorDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+wxArrayString AudacityTextEntryDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AudacityTextEntryDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+wxArrayString AudacityMessageDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AudacityMessageDialog::SetJournalData( const wxArrayString & )
+{
 }

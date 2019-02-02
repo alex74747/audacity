@@ -758,6 +758,7 @@ void VSTEffectsModule::Check(const wxChar *path)
 // VST effect.
 //
 ///////////////////////////////////////////////////////////////////////////////
+namespace {
 class VSTEffectOptionsDialog final : public wxDialogWrapper
 {
 public:
@@ -769,6 +770,10 @@ public:
    void OnOk(wxCommandEvent & evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    EffectHostInterface *mHost;
    int mBufferSize;
    bool mUseLatency;
@@ -886,6 +891,18 @@ void VSTEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
    mHost->SetSharedConfig(wxT("Options"), wxT("UseGUI"), mUseGUI);
 
    EndModal(wxID_OK);
+}
+
+
+wxArrayString VSTEffectOptionsDialog::GetJournalData() const
+{
+   return {};
+}
+
+void VSTEffectOptionsDialog::SetJournalData( const wxArrayString & )
+{
+}
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

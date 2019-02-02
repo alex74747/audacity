@@ -1213,3 +1213,12 @@ void AboutDialog::OnOK(wxCommandEvent & WXUNUSED(event))
    EndModal(wxID_OK);
 #endif
 }
+
+wxArrayString AboutDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AboutDialog::SetJournalData( const wxArrayString & )
+{
+}

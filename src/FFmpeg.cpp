@@ -448,6 +448,7 @@ class FFmpegNotFoundDialog;
 #define ID_FFMPEG_BROWSE 5000
 #define ID_FFMPEG_DLOAD  5001
 
+namespace {
 /// Allows user to locate libav* libraries
 class FindFFmpegDialog final : public wxDialogWrapper
 {
@@ -547,6 +548,9 @@ public:
    }
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    wxFileName mLibPath;
 
@@ -563,6 +567,16 @@ BEGIN_EVENT_TABLE(FindFFmpegDialog, wxDialogWrapper)
    EVT_BUTTON(ID_FFMPEG_BROWSE, FindFFmpegDialog::OnBrowse)
    EVT_BUTTON(ID_FFMPEG_DLOAD,  FindFFmpegDialog::OnDownload)
 END_EVENT_TABLE()
+
+wxArrayString FindFFmpegDialog::GetJournalData() const
+{
+   return {};
+}
+
+void FindFFmpegDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 
 //----------------------------------------------------------------------------
@@ -1020,6 +1034,15 @@ void FFmpegLibs::FreeLibs()
    avutil.reset();
    mLibsLoaded = false;
    return;
+}
+
+wxArrayString FFmpegNotFoundDialog::GetJournalData() const
+{
+   return {};
+}
+
+void FFmpegNotFoundDialog::SetJournalData( const wxArrayString & )
+{
 }
 
 #endif //USE_FFMPEG

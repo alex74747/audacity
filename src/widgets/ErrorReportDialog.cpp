@@ -209,6 +209,15 @@ void ErrorReportDialog::OnHelp(wxCommandEvent& event)
    HelpSystem::ShowHelp(this, mHelpUrl, false);
 }
 
+wxArrayString ErrorReportDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ErrorReportDialog::SetJournalData( const wxArrayString & )
+{
+}
+
 void ShowErrorReportDialog(
    wxWindow* parent, const TranslatableString& dlogTitle,
    const TranslatableString& message, const wxString& helpPage,

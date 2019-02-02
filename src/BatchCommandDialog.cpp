@@ -265,3 +265,12 @@ void MacroCommandDialog::SetCommandAndParams(const CommandID &Command, const wxS
       mUsePreset->Enable(em.HasPresets(ID));
    }
 }
+
+wxArrayString MacroCommandDialog::GetJournalData() const
+{
+   return {};
+}
+
+void MacroCommandDialog::SetJournalData( const wxArrayString & )
+{
+}

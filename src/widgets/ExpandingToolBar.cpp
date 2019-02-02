@@ -1283,3 +1283,12 @@ void ToolBarArea::SetCapturedChild(ExpandingToolBar *child)
 {
    mCapturedChild = child;
 }
+
+wxArrayString ToolBarDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ToolBarDialog::SetJournalData( const wxArrayString & )
+{
+}

@@ -139,7 +139,7 @@ private:
 
 
 // Base dialog for command dialog.
-class AUDACITY_DLL_API AudacityCommandDialog /* not final */ : public wxDialogWrapper
+class AUDACITY_DLL_API AudacityCommandDialog final : public wxDialogWrapper
 {
 public:
    // constructors and destructors
@@ -162,6 +162,10 @@ public:
    virtual void OnHelp(wxCommandEvent & evt);
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    int mType;
    int mAdditionalButtons;
    AudacityCommand * mpCommand;

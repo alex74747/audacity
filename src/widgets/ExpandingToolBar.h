@@ -161,6 +161,10 @@ class ToolBarDialog final : public wxDialogWrapper
    void SetChild(ExpandingToolBar *child);
 
  protected:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    ExpandingToolBar *mChild;
 
    DECLARE_EVENT_TABLE()

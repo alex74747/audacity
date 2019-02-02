@@ -32,6 +32,9 @@ public:
    DECLARE_EVENT_TABLE()
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    void OnChar(wxMouseEvent &event);
    void Populate( ShuttleGui & S );

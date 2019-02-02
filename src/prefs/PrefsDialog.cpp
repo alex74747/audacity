@@ -869,3 +869,13 @@ void DoReloadPreferences( AudacityProject &project )
 #endif
    }
 }
+
+wxArrayString GlobalPrefsDialog::GetJournalData() const
+{
+   return PrefsDialog::GetJournalData();
+}
+
+void GlobalPrefsDialog::SetJournalData( const wxArrayString &data )
+{
+  PrefsDialog::SetJournalData( data );
+}

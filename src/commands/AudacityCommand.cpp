@@ -347,4 +347,12 @@ void AudacityCommandDialog::OnHelp(wxCommandEvent & WXUNUSED(event))
    }
 }
 
+wxArrayString AudacityCommandDialog::GetJournalData() const
+{
+   return {};
+}
+
+void AudacityCommandDialog::SetJournalData( const wxArrayString & )
+{
+}
 

@@ -1777,3 +1777,22 @@ ProgressResult TimerProgressDialog::UpdateProgress()
    }
    return iReturn;
 }
+
+wxArrayString ProgressDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ProgressDialog::SetJournalData( const wxArrayString & )
+{
+}
+
+wxArrayString TimerProgressDialog::GetJournalData() const
+{
+   return ProgressDialog::GetJournalData();
+}
+
+void TimerProgressDialog::SetJournalData( const wxArrayString &data )
+{
+   ProgressDialog::SetJournalData( data );
+}

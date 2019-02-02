@@ -204,6 +204,10 @@ private:
    wxListBox *StreamList;
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnOk( wxCommandEvent &event );
    void OnCancel( wxCommandEvent &event );
 

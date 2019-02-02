@@ -74,3 +74,11 @@ void SoundActivatedRecordDialog::OnOK(wxCommandEvent & WXUNUSED(event))
    EndModal(0);
 }
 
+wxArrayString SoundActivatedRecordDialog::GetJournalData() const
+{
+   return {};
+}
+
+void SoundActivatedRecordDialog::SetJournalData( const wxArrayString & )
+{
+}

@@ -1084,3 +1084,12 @@ ProgressResult TimerRecordDialog::PreActionDelay(int iActionIndex, TimerRecordCo
    }
    return iUpdateResult;
 }
+
+wxArrayString TimerRecordDialog::GetJournalData() const
+{
+   return {};
+}
+
+void TimerRecordDialog::SetJournalData( const wxArrayString & )
+{
+}

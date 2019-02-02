@@ -770,3 +770,12 @@ Journal::RegisteredCommand sCommand{ JournalCode,
 } };
 
 }
+
+wxArrayString ContrastDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ContrastDialog::SetJournalData( const wxArrayString & )
+{
+}

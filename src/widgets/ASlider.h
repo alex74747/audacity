@@ -347,6 +347,10 @@ class SliderDialog final : public wxDialogWrapper
    float Get();
 
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 

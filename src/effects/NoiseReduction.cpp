@@ -378,6 +378,10 @@ public:
    { return mTempSettings; }
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void DisableControlsIfIsolating();
 
 #ifdef ADVANCED_SETTINGS
@@ -424,6 +428,15 @@ const ComponentInterfaceSymbol EffectNoiseReduction::Symbol
 { XO("Noise Reduction") };
 
 namespace{ BuiltinEffectsModule::Registration< EffectNoiseReduction > reg; }
+
+wxArrayString EffectNoiseReduction::Dialog::GetJournalData() const
+{
+   return {};
+}
+
+void EffectNoiseReduction::Dialog::SetJournalData( const wxArrayString & )
+{
+}
 
 EffectNoiseReduction::EffectNoiseReduction()
 : mSettings(std::make_unique<EffectNoiseReduction::Settings>())

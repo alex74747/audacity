@@ -893,3 +893,13 @@ void ImportStreamDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
 {
    EndModal( wxID_CANCEL );
 }
+
+wxArrayString ImportStreamDialog::GetJournalData() const
+{
+   return {};
+}
+
+void ImportStreamDialog::SetJournalData( const wxArrayString & )
+{
+}
+

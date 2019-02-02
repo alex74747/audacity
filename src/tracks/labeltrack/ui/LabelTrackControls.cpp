@@ -77,6 +77,28 @@ BEGIN_POPUP_MENU(LabelTrackMenuTable)
    EndSection();
 END_POPUP_MENU()
 
+namespace {
+class LabelTrackFontDialog final : public wxDialogWrapper
+{
+public:
+   using wxDialogWrapper::wxDialogWrapper;
+
+private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+};
+
+wxArrayString LabelTrackFontDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LabelTrackFontDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
+
 void LabelTrackMenuTable::OnSetFont(wxCommandEvent &)
 {
    // Small helper class to enumerate all fonts in the system
@@ -113,7 +135,7 @@ void LabelTrackMenuTable::OnSetFont(wxCommandEvent &)
                                 LabelTrackView::DefaultFontSize);
 
    /* i18n-hint: (noun) This is the font for the label track.*/
-   wxDialogWrapper dlg(mpData->pParent, wxID_ANY, XO("Label Track Font"));
+   LabelTrackFontDialog dlg(mpData->pParent, wxID_ANY, XO("Label Track Font"));
    dlg.SetName();
    ShuttleGui S(&dlg, eIsCreating);
    wxListBox *lb;

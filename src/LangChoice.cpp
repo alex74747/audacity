@@ -30,6 +30,7 @@ of languages for Audacity.
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/wxPanelWrapper.h"
 
+namespace {
 class LangChoiceDialog final : public wxDialogWrapper {
 public:
    LangChoiceDialog(wxWindow * parent,
@@ -39,6 +40,10 @@ public:
    wxString GetLang() { return mLang; }
 
 private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
+
    void OnOk(wxCommandEvent & event);
 
    wxChoice *mChoice;
@@ -50,6 +55,16 @@ private:
 
    DECLARE_EVENT_TABLE()
 };
+
+wxArrayString LangChoiceDialog::GetJournalData() const
+{
+   return {};
+}
+
+void LangChoiceDialog::SetJournalData( const wxArrayString & )
+{
+}
+}
 
 wxString ChooseLanguage(wxWindow *parent)
 {

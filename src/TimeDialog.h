@@ -37,6 +37,9 @@ class AUDACITY_DLL_API TimeDialog final : public wxDialogWrapper
    const double GetTimeValue();
 
  private:
+   // Callbacks implementation
+   virtual wxArrayString GetJournalData() const override;
+   virtual void SetJournalData( const wxArrayString &data ) override;
 
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataToWindow() override;

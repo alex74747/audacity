@@ -3888,3 +3888,11 @@ void EditCurvesDialog::OnListSelectionChange( wxListEvent & )
       FindWindowById(id, this)->Enable(enable);
 }
 
+wxArrayString EditCurvesDialog::GetJournalData() const
+{
+   return {};
+}
+
+void EditCurvesDialog::SetJournalData( const wxArrayString & )
+{
+}

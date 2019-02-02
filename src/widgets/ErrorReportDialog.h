@@ -43,6 +43,9 @@ public:
    ~ErrorReportDialog();
 
 private:
+   void SetJournalData( const wxArrayString & ) override;
+   wxArrayString GetJournalData() const override;
+
    void OnSend(wxCommandEvent& event);
    void OnDontSend(wxCommandEvent& event);
 
