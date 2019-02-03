@@ -42,11 +42,13 @@ void ShowDiagnostics(
       // Callbacks implementation
       wxArrayString GetJournalData() const override
       {
+         // nothing needed
          return {};
       }
 
       void SetJournalData( const wxArrayString & ) override
       {
+         // nothing needed
       }
    };
 

@@ -1216,9 +1216,11 @@ void AboutDialog::OnOK(wxCommandEvent & WXUNUSED(event))
 
 wxArrayString AboutDialog::GetJournalData() const
 {
+   // nothing needed
    return {};
 }
 
 void AboutDialog::SetJournalData( const wxArrayString & )
 {
+   // nothing needed
 }
