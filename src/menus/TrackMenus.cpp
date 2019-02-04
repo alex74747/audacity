@@ -14,6 +14,7 @@
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
 #include "../widgets/ASlider.h"
+#include "../widgets/valnum.h"
 
 #include <wx/combobox.h>
 
@@ -882,6 +883,56 @@ void OnMixAndRenderToNewTrack(const CommandContext &context)
 
 void OnResample(const CommandContext &context)
 {
+   class ResampleDialog final : public wxDialogWrapper
+   {
+   public:
+      ResampleDialog( AudacityProject &project, double projectRate )
+         : wxDialogWrapper(&project, wxID_ANY, wxString(_("Resample")))
+         , mRate( lrint(projectRate) )
+      {
+         wxArrayString rates;
+         for ( int rate : {
+            8000,  11025, 16000,  22050,  32000,  44100, 48000,
+            88200, 96000, 176400, 192000, 352800, 384000
+         } )
+            rates.push_back( wxString::Format( wxT("%d"), rate ) );
+
+         using Range = ValidatorRange< int >;
+
+         SetName(GetTitle());
+         ShuttleGui S(this, eIsCreating);
+         S.StartVerticalLay(true);
+         {
+            S.AddSpace(-1, 15);
+            S.StartHorizontalLay(wxCENTER, false);
+            {
+               S
+                  .Validator< IntegerValidator< int > >(
+                     &mRate,
+                     Range{ 1, 1000000 },
+                     NumValidatorStyle::DEFAULT
+                  )
+                  .AddCombo(_("New sample rate (Hz):"),
+                               wxString{},
+                               &rates);
+            }
+            S.EndHorizontalLay();
+            S.AddSpace(-1, 15);
+            S.AddStandardButtons();
+         }
+         S.EndVerticalLay();
+
+         Layout();
+         Fit();
+         Center();
+      }
+
+      int GetRate() const { return mRate; }
+
+   private:
+      int mRate;
+   };
+
    auto &project = context.project;
    auto projectRate = project.GetRate();
    auto tracks = project.GetTracks();
@@ -889,68 +940,14 @@ void OnResample(const CommandContext &context)
 
    int newRate;
 
-   while (true)
+   ResampleDialog dlg( project, projectRate );
+
+   if (dlg.ShowModal() != wxID_OK)
    {
-      wxDialogWrapper dlg(&project, wxID_ANY, wxString(_("Resample")));
-      dlg.SetName(dlg.GetTitle());
-      ShuttleGui S(&dlg, eIsCreating);
-      wxString rate;
-      wxArrayString rates;
-      wxComboBox *cb;
-
-      rate.Printf(wxT("%ld"), lrint(projectRate));
-
-      rates.Add(wxT("8000"));
-      rates.Add(wxT("11025"));
-      rates.Add(wxT("16000"));
-      rates.Add(wxT("22050"));
-      rates.Add(wxT("32000"));
-      rates.Add(wxT("44100"));
-      rates.Add(wxT("48000"));
-      rates.Add(wxT("88200"));
-      rates.Add(wxT("96000"));
-      rates.Add(wxT("176400"));
-      rates.Add(wxT("192000"));
-      rates.Add(wxT("352800"));
-      rates.Add(wxT("384000"));
-
-      S.StartVerticalLay(true);
-      {
-         S.AddSpace(-1, 15);
-
-         S.StartHorizontalLay(wxCENTER, false);
-         {
-            cb = S.AddCombo(_("New sample rate (Hz):"),
-                            rate,
-                            &rates);
-         }
-         S.EndHorizontalLay();
-
-         S.AddSpace(-1, 15);
-
-         S.AddStandardButtons();
-      }
-      S.EndVerticalLay();
-
-      dlg.Layout();
-      dlg.Fit();
-      dlg.Center();
-
-      if (dlg.ShowModal() != wxID_OK)
-      {
-         return;  // user cancelled dialog
-      }
-
-      long lrate;
-      if (cb->GetValue().ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
-      {
-         newRate = (int)lrate;
-         break;
-      }
-
-      AudacityMessageBox(_("The entered value is invalid"), _("Error"),
-                   wxICON_ERROR, &project);
+      return;  // user cancelled dialog
    }
+
+   newRate = dlg.GetRate();
 
    int ndx = 0;
    auto flags = UndoPush::AUTOSAVE;
