@@ -20,6 +20,7 @@
 #include <wx/validate.h>
 
 #include <limits>
+#include <utility>
 
 #define wxTextEntry wxTextCtrl
 
@@ -156,6 +157,14 @@ class NumValidator /* final */ : public B
 public:
     typedef B BaseValidator;
     typedef T ValueType;
+
+    struct Range : std::pair< T, T >
+    {
+       Range( T lower = std::numeric_limits<T>::lowest(),
+          T higher = std::numeric_limits<T>::max() )
+          : std::pair< T, T >{ lower, higher }
+       {}
+    };
 
     typedef typename BaseValidator::LongestValueType LongestValueType;
 
@@ -344,18 +353,27 @@ public:
     typedef
         Private::NumValidator<IntegerValidatorBase, T> Base;
 
-    // Ctor for an integer validator.
+    // Ctor for an integer validator can take an explicit range of values.
+    IntegerValidator(
+         ValueType *value = nullptr,
+         typename Base::Range range = {},
+         NumValidatorStyle style = NumValidatorStyle::DEFAULT)
+      : Base(value, style)
+    {
+       this->SetRange(range.first, range.second);
+    }
+
+    // Ctor for an integer validator with given style and default range.
     //
     // Sets the range appropriately for the type, including setting 0 as the
     // minimal value for the unsigned types.
-    IntegerValidator(
-         ValueType *value = NULL,
-         NumValidatorStyle style = NumValidatorStyle::DEFAULT,
-         ValueType min = std::numeric_limits<ValueType>::min(),
-         ValueType max = std::numeric_limits<ValueType>::max())
-      : Base(value, style)
+    IntegerValidator( ValueType *value, NumValidatorStyle style )
+      : IntegerValidator(
+            value,
+            typename Base::Range{},
+            style
+      )
     {
-       this->SetRange(min, max);
     }
 
     // Clone is required by wxwidgets; implemented via copy constructor
@@ -448,7 +466,7 @@ public:
     typedef Private::NumValidator<FloatingPointValidatorBase, T> Base;
 
     // Ctor using implicit (maximal) precision for this type.
-    FloatingPointValidator(ValueType *value = NULL,
+    FloatingPointValidator(ValueType *value = nullptr,
                              NumValidatorStyle style = NumValidatorStyle::DEFAULT)
         : Base(value, style)
     {
@@ -459,15 +477,23 @@ public:
 
     // Ctor specifying an explicit precision.
     FloatingPointValidator(int precision,
-                      ValueType *value = NULL,
-                      NumValidatorStyle style = NumValidatorStyle::DEFAULT,
-                      ValueType min = std::numeric_limits<ValueType>::lowest(),
-                      ValueType max =  std::numeric_limits<ValueType>::max())
+                      ValueType *value = nullptr,
+                      typename Base::Range range = {},
+                      NumValidatorStyle style = NumValidatorStyle::DEFAULT)
         : Base(value, style)
     {
-        this->SetRange( min, max );
+        this->SetRange( range.first, range.second );
 
         this->SetPrecision(precision);
+    }
+
+    // Ctor specifying an explicit precision and style,
+    // and defaulting the range.
+    FloatingPointValidator(int precision,
+                      ValueType *value,
+                      NumValidatorStyle style)
+        : FloatingPointValidator( precision, value, {}, style )
+    {
     }
 
     // Clone is required by wxwidgets; implemented via copy constructor
