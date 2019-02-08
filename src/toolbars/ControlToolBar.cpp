@@ -363,6 +363,7 @@ void ControlToolBar::ArrangeButtons()
       std::unique_ptr < wxSizer > {mSizer}; // DELETE it
    }
 
+//
    Add((mSizer = safenew wxBoxSizer(wxHORIZONTAL)), 1, wxEXPAND);
 
    // Start with a little extra space

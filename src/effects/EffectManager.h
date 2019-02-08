@@ -13,6 +13,12 @@
 #define __AUDACITY_EFFECTMANAGER__
 
 #include <memory>
+
+#if defined(EXPERIMENTAL_EFFECTS_RACK)
+#include <type_traits>
+#include <wx/weakref.h>
+#endif
+
 #include <vector>
 
 #include <unordered_map>

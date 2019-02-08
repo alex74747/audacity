@@ -139,6 +139,7 @@ void SpectralSelectionBar::Populate(ShuttleGui &S)
       ? mListener->SSBL_GetBandwidthSelectionFormatName()
       : NumericFormatSymbol{};
 
+   //
    wxFlexGridSizer *mainSizer = safenew wxFlexGridSizer(1, 1, 1);
    Add(mainSizer, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
 

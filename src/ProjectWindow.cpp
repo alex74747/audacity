@@ -623,6 +623,7 @@ ProjectWindow::ProjectWindow(wxWindow * parent, wxWindowID id,
       wxDefaultPosition,
       wxDefaultSize,
       wxNO_BORDER);
+   //
    mMainPanel->SetSizer( safenew wxBoxSizer(wxVERTICAL) );
    mMainPanel->SetLabel("Main Panel");// Not localised.
    pPage = mMainPanel;

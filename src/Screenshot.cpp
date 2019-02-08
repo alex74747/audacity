@@ -125,7 +125,7 @@ class ScreenshotBigDialog final : public wxFrame,
 // Formerly it was parentless, therefore this was a Destroy_ptr<ScreenshotBigDialog>
 // But now the window is owned, so just use a bare pointer, and null it when
 // the unique window is destroyed.
-using ScreenshotBigDialogPtr = ScreenshotBigDialog*;
+using ScreenshotBigDialogPtr = wxWeakRef< ScreenshotBigDialog >;
 ScreenshotBigDialogPtr mFrame;
 
 ////////////////////////////////////////////////////////////////////////////////

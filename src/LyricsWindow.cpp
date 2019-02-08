@@ -121,6 +121,7 @@ LyricsWindow::LyricsWindow(AudacityProject *parent)
    //
    //pToolBar->Realize();
 
+//
    mLyricsPanel = safenew LyricsPanel(this, -1, parent, panelPos, panelSize);
    RTL_WORKAROUND(mLyricsPanel);
 

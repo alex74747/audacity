@@ -1011,6 +1011,7 @@ bool EffectUIHost::Initialize()
    {
       S.StartHorizontalLay( wxEXPAND );
       {
+         //
          Destroy_ptr<EffectPanel> uw{ safenew EffectPanel( S.GetParent() ) };
          RTL_WORKAROUND(uw.get());
 

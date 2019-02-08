@@ -164,6 +164,7 @@ auStaticText * SelectionBar::AddTitle(
 }
 
 
+//
 NumericTextCtrl * SelectionBar::AddTime(
    const TranslatableString &Name, int id, wxSizer * pSizer ){
    auto formatName = mListener ? mListener->AS_GetSelectionFormat()

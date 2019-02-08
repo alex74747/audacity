@@ -883,6 +883,7 @@ MixerBoard::MixerBoard(AudacityProject* pProject,
    mProject = pProject;
 
    wxASSERT(pProject); // to justify safenew
+   //
    mScrolledWindow =
       safenew MixerBoardScrolledWindow(
          pProject, // AudacityProject* project,

@@ -194,6 +194,7 @@ ScoreAlignDialog::ScoreAlignDialog(ScoreAlignParams &params)
    S.EndMultiColumn();
    S.EndStatic();
 
+//
    mDefaultButton = safenew wxButton(this, ID_DEFAULT, _("Use Defaults"));
    mDefaultButton->SetName(_("Restore Defaults"));
 

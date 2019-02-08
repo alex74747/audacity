@@ -192,6 +192,7 @@ AButton * ToolsToolBar::MakeTool(
 
 void ToolsToolBar::Populate(ShuttleGui &S)
 {
+//
    SetBackgroundColour( theTheme.Colour( clrMedium  ) );
    MakeButtonBackgroundsSmall();
    Add(mToolSizer = safenew wxGridSizer(2, 3, 1, 1));
