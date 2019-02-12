@@ -681,7 +681,7 @@ void MeterPanel::OnPaint(wxPaintEvent & WXUNUSED(event))
    {
       destDC.SetFont( GetFont() );
 
-      wxArrayStringEx texts{
+      StringArray texts{
          _("Click to Start Monitoring") ,
          _("Click for Monitoring") ,
          _("Click to Start") ,
@@ -2082,7 +2082,7 @@ void MeterPanel::OnPreferences(wxCommandEvent & WXUNUSED(event))
 
    if (dlg.ShowModal() == wxID_OK)
    {
-      wxArrayStringEx style{
+      StringArray style{
          L"AutomaticStereo" ,
          L"HorizontalStereo" ,
          L"VerticalStereo" ,

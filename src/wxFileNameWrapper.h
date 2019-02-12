@@ -15,6 +15,7 @@ Paul Licameli
 
 #include <wx/filename.h> // to inherit
 #include "Identifier.h"
+#include "wxArrayStringEx.h"
 
 // The wxFileName does not have a move constructor.
 // So add one to it, so that it passes around by value more quickly.
@@ -90,7 +91,7 @@ public:
             };
 
             wxString        m_volume;
-            wxArrayString   m_dirs;
+            StringArray     m_dirs;
             wxString        m_name, m_ext;
             bool            m_relative;
             bool            m_hasExt;

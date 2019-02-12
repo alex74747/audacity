@@ -552,7 +552,7 @@ void ScreenshotCommand::CaptureScriptables(
 
 
 void ScreenshotCommand::CaptureCommands( 
-   const CommandContext & context, const wxArrayStringEx & Commands ){
+   const CommandContext & context, const StringArray & Commands ){
    AudacityProject * pProject = &context.project;
    CommandManager &manager = CommandManager::Get( *pProject );
    wxString Str;

@@ -1130,7 +1130,7 @@ END_EVENT_TABLE()
 
 ExportMixerPanel::ExportMixerPanel( wxWindow *parent, wxWindowID id,
       MixerSpec *mixerSpec,
-      wxArrayString trackNames,
+      StringArray trackNames,
       const wxPoint& pos, const wxSize& size):
    wxPanelWrapper(parent, id, pos, size)
    , mMixerSpec{mixerSpec}

@@ -77,7 +77,8 @@ public:
     * @return Array of file paths which the user selected to open (multiple
     * selections allowed).
     */
-   static wxArrayString ShowOpenDialog(FileNames::Operation op,
+   static StringArray ShowOpenDialog(
+      FileNames::Operation op,
       const FileNames::FileType &extraType = {});
 
    static bool IsAlreadyOpen(const FilePath &projPathName);

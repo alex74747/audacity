@@ -200,7 +200,7 @@ void GetLanguages( DirectoryPaths pathList,
    };
 
    TranslatableStrings tempNames;
-   wxArrayString tempCodes;
+   StringArray tempCodes;
    ReverseLangHash reverseHash;
    LangHash tempHash;
 

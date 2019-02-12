@@ -27,7 +27,6 @@
 
 class ChoiceSetting;
 
-class wxArrayStringEx;
 class Identifier;
 using IdentifierVector = std::vector< Identifier >;
 
@@ -743,7 +742,7 @@ public:
    // Calculate width of a choice control adequate for the items, maybe after
    // the dialog is created but the items change.
    static void SetMinSize( wxWindow *window, const TranslatableStrings & items );
-   static void SetMinSize( wxWindow *window, const wxArrayStringEx & items );
+   static void SetMinSize( wxWindow *window, const StringArray & items );
   // static void SetMinSize( wxWindow *window, const std::vector<int> & items );
 
    teShuttleMode GetMode() { return  mShuttleMode; };

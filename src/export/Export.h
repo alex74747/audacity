@@ -22,7 +22,6 @@
 #include "../Registry.h"
 #include "../wxFileNameWrapper.h"
 
-class wxArrayString;
 class FileDialogWrapper;
 class wxFileCtrlEvent;
 class wxMemoryDC;
@@ -265,7 +264,7 @@ class ExportMixerPanel final : public wxPanelWrapper
 {
 public:
    ExportMixerPanel( wxWindow *parent, wxWindowID id,
-         MixerSpec *mixerSpec, wxArrayString trackNames,
+         MixerSpec *mixerSpec, StringArray trackNames,
          const wxPoint& pos = wxDefaultPosition,
          const wxSize& size = wxDefaultSize);
    virtual ~ExportMixerPanel();
@@ -282,7 +281,7 @@ private:
    ArrayOf<wxRect> mChannelRects;
    ArrayOf<wxRect> mTrackRects;
    int mSelectedTrack, mSelectedChannel;
-   wxArrayString mTrackNames;
+   StringArray mTrackNames;
    int mBoxWidth, mChannelHeight, mTrackHeight;
 
    void SetFont( wxMemoryDC &memDC, const wxString &text, int width, int height );
@@ -311,7 +310,7 @@ public:
 private:
    wxStaticText *mChannelsText;
    std::unique_ptr<MixerSpec> mMixerSpec;
-   wxArrayString mTrackNames;
+   StringArray mTrackNames;
 
 private:
    void OnOk( wxCommandEvent &event );

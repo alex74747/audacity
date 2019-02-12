@@ -69,8 +69,7 @@ with changes in the SelectionBar.
 
 IMPLEMENT_CLASS(SelectionBar, ToolBar);
 
-const static wxChar *numbers[] =
-{
+const static StringArray numbers{
    L"0", L"1", L"2", L"3", L"4",
    L"5", L"6", L"7", L"8", L"9"
 };
@@ -236,7 +235,7 @@ void SelectionBar::Populate()
    mRateBox->SetName(_("Project Rate (Hz)"));
    //mRateBox->SetForegroundColour( clrText2 );
    wxTextValidator vld(wxFILTER_INCLUDE_CHAR_LIST);
-   vld.SetIncludes(wxArrayString(10, numbers));
+   vld.SetIncludes( numbers );
    mRateBox->SetValidator(vld);
    mRateBox->SetValue(wxString::Format(L"%d", (int)mRate));
    UpdateRates(); // Must be done _after_ setting value on mRateBox!

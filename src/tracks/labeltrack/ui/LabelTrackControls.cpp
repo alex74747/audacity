@@ -85,7 +85,7 @@ void LabelTrackMenuTable::OnSetFont(wxCommandEvent &)
    class FontEnumerator : public wxFontEnumerator
    {
    public:
-      explicit FontEnumerator(wxArrayString* fontNames) :
+      explicit FontEnumerator(StringArray* fontNames) :
          mFontNames(fontNames) {}
 
       bool OnFacename(const wxString& font) override
@@ -95,10 +95,10 @@ void LabelTrackMenuTable::OnSetFont(wxCommandEvent &)
       }
 
    private:
-      wxArrayString* mFontNames;
+      StringArray* mFontNames;
    };
 
-   wxArrayString facenames;
+   StringArray facenames;
    FontEnumerator fontEnumerator(&facenames);
    fontEnumerator.EnumerateFacenames(wxFONTENCODING_SYSTEM, false);
 

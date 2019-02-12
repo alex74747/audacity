@@ -629,7 +629,7 @@ bool Tags::ShowEditDialog(wxWindow *parent, const TranslatableString &title, boo
 class ComboEditor final : public wxGridCellChoiceEditor
 {
 public:
-   ComboEditor(const wxArrayString& choices, bool allowOthers = false)
+   ComboEditor(const StringArray& choices, bool allowOthers = false)
    :  wxGridCellChoiceEditor(choices, allowOthers)
    ,  m_choices{ choices }
    ,  m_allowOthers{ allowOthers }
@@ -723,7 +723,7 @@ public:
    }
 
 private:
-   wxArrayString   m_choices;
+   StringArray   m_choices;
    bool            m_allowOthers;
 };
 
@@ -893,11 +893,11 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
 
          mGrid->RegisterDataType(L"Combo",
             (mStringRenderer = safenew wxGridCellStringRenderer),
-            (mComboEditor = safenew ComboEditor(wxArrayString(), true)));
+            (mComboEditor = safenew ComboEditor(StringArray(), true)));
 
          mGrid->SetColLabelSize(mGrid->GetDefaultRowSize());
 
-         auto  cs = transform_container<wxArrayStringEx>(
+         auto  cs = transform_container<StringArray>(
             names, std::mem_fn( &TranslatableString::Translation ) );
 
          // Build the initial (empty) grid
@@ -1152,7 +1152,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
 
    S.AddStandardButtons();
 
-   wxArrayString g;
+   StringArray g;
    int cnt = mLocal.GetNumUserGenres();
    for (int i = 0; i < cnt; i++) {
       g.push_back(mLocal.GetUserGenre(i));
@@ -1499,7 +1499,7 @@ void TagsEditorDialog::PopulateGenres()
    int cnt = mLocal.GetNumUserGenres();
    int i;
    wxString parm;
-   wxArrayString g;
+   StringArray g;
 
    for (i = 0; i < cnt; i++) {
       g.push_back(mLocal.GetUserGenre(i));

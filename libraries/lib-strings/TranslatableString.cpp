@@ -179,4 +179,3 @@ wxString TranslatableString::TranslateArgument(
 {
    return arg.DoFormat( debug );
 }
-

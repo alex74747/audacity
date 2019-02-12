@@ -16,7 +16,6 @@
 
 #include "nyx.h"
 
-class wxArrayString;
 class wxFileName;
 class wxCheckBox;
 class wxTextCtrl;
@@ -176,7 +175,7 @@ private:
       bool q { false };
       int paren{ 0 };
       wxString tok;
-      wxArrayStringEx tokens;
+      StringArray tokens;
 
       bool Tokenize(
          const wxString &line, bool eof,
@@ -282,7 +281,7 @@ private:
 
    WaveTrack        *mOutputTrack[2];
 
-   wxArrayString     mCategories;
+   StringArray     mCategories;
 
    wxString          mProps;
    wxString          mPerTrackProps;

@@ -23,8 +23,6 @@ used throughout Audacity into this one place.
 
 #include "FileNames.h"
 
-
-
 #include <wx/app.h>
 #include <wx/defs.h>
 #include <wx/filename.h>

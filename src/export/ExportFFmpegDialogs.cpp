@@ -2148,7 +2148,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, const wxString 
    mFormatList->Clear();
    AVOutputFormat *ofmt = NULL;
    ofmt = NULL;
-   wxArrayString FromList;
+   StringArray FromList;
    // Find all formats compatible to this codec in compatibility list
    for (int i = 0; CompatibilityList[i].fmt != NULL; i++)
    {

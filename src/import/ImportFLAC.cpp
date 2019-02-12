@@ -107,7 +107,7 @@ class MyFLACFile final : public FLAC::Decoder::File
    friend class FLACImportFileHandle;
    FLACImportFileHandle *mFile;
    bool                  mWasError;
-   wxArrayString         mComments;
+   StringArray         mComments;
  protected:
    FLAC__StreamDecoderWriteStatus write_callback(const FLAC__Frame *frame,
                                                          const FLAC__int32 * const buffer[]) override;

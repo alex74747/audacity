@@ -128,7 +128,8 @@ void DoImport(const CommandContext &context, bool isRaw)
    // AudacityProject::Import ?
    gPrefs->Write(L"/NewImportingSession", true);
 
-   selectedFiles.Sort(FileNames::CompareNoCase);
+   std::sort(
+      selectedFiles.begin(), selectedFiles.end(), FileNames::CompareNoCase);
 
    auto cleanup = finally( [&] {
 

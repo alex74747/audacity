@@ -22,7 +22,6 @@
 
 #include "Prefs.h"
 
-class wxArrayString;
 class wxBitmapButton;
 class wxImage;
 class wxMemoryDC;
@@ -155,7 +154,7 @@ public:
    virtual ~MusicalInstrument();
 
    std::unique_ptr<wxBitmap> mBitmap;
-   wxArrayString  mKeywords;
+   StringArray  mKeywords;
 };
 
 using MusicalInstrumentArray = std::vector<std::unique_ptr<MusicalInstrument>>;

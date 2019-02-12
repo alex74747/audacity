@@ -244,8 +244,8 @@ void DevicePrefs::OnHost(wxCommandEvent & e)
    const std::vector<DeviceSourceMap> &inMaps  = DeviceManager::Instance()->GetInputDeviceMaps();
    const std::vector<DeviceSourceMap> &outMaps = DeviceManager::Instance()->GetOutputDeviceMaps();
 
-   wxArrayString playnames;
-   wxArrayString recordnames;
+   StringArray playnames;
+   StringArray recordnames;
    size_t i;
    int devindex;  /* temp variable to hold the numeric ID of each device in turn */
    wxString device;
@@ -354,7 +354,7 @@ void DevicePrefs::OnDevice(wxCommandEvent & WXUNUSED(event))
       cnt = 256;
    }
 
-   wxArrayStringEx channelnames;
+   StringArray channelnames;
 
    // Channel counts, mono, stereo etc...
    for (int i = 0; i < cnt; i++) {

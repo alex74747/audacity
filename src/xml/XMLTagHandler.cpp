@@ -190,7 +190,7 @@ bool XMLValueChecker::IsValidSampleFormat(const int nValue)
 
 bool XMLTagHandler::ReadXMLTag(const char *tag, const char **attrs)
 {
-   wxArrayString tmp_attrs;
+   StringArray tmp_attrs;
 
    while (*attrs) {
       const char *s = *attrs++;

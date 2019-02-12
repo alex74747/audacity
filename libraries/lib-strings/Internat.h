@@ -16,9 +16,7 @@
 #include <wx/longlong.h>
 
 #include "TranslatableString.h"
-
-class wxArrayString;
-class wxArrayStringEx;
+#include "wxArrayStringEx.h"
 
 extern STRINGS_API const wxString& GetCustomTranslation(const wxString& str1 );
 extern STRINGS_API const wxString& GetCustomSubstitution(const wxString& str1 );
@@ -425,13 +423,13 @@ public:
     */
    static bool SanitiseFilename(wxString &name, const wxString &sub);
 
-   static const wxArrayString &GetExcludedCharacters()
+   static const StringArray &GetExcludedCharacters()
    { return exclude; }
 
 private:
    static wxChar mDecimalSeparator;
 
-   static wxArrayString exclude;
+   static StringArray exclude;
 };
 
 // Convert C strings to wxString

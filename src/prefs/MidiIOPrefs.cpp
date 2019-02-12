@@ -207,8 +207,8 @@ void MidiIOPrefs::OnHost(wxCommandEvent & WXUNUSED(e))
    mRecord->Clear();
 #endif
 
-   wxArrayStringEx playnames;
-   wxArrayStringEx recordnames;
+   StringArray playnames;
+   StringArray recordnames;
 
    for (int i = 0; i < nDevices; i++) {
       const PmDeviceInfo *info = Pm_GetDeviceInfo(i);

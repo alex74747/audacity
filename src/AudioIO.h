@@ -42,7 +42,6 @@ using NoteTrackConstArray = std::vector < std::shared_ptr< const NoteTrack > >;
 
 #include "SampleFormat.h"
 
-class wxArrayString;
 class AudioIOBase;
 class AudioIO;
 class RingBuffer;
@@ -677,7 +676,7 @@ public:
     *
     * Returns an array of strings giving the names of the inputs to the
     * soundcard mixer (driven by PortMixer) */
-   wxArrayString GetInputSourceNames();
+   StringArray GetInputSourceNames();
 
    sampleFormat GetCaptureFormat() { return mCaptureFormat; }
    unsigned GetNumPlaybackChannels() const { return mNumPlaybackChannels; }

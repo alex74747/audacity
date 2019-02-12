@@ -42,7 +42,6 @@
 #include <unordered_map>
 #include "Identifier.h"
 
-class wxArrayString;
 class wxComboBox;
 class wxGridCellChoiceEditor;
 class wxGridCellStringRenderer;
@@ -137,7 +136,7 @@ class AUDACITY_DLL_API Tags final
    // Second map from that to value:
    TagValueMap mMap;
 
-   wxArrayString mGenres;
+   StringArray mGenres;
 
    bool mEditTitle;
    bool mEditTrackNumber;

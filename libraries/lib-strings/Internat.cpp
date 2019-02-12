@@ -35,7 +35,7 @@ and on Mac OS X for the filesystem.
 
 wxChar Internat::mDecimalSeparator = L'.'; // default
 // exclude is used by SanitiseFilename.
-wxArrayString Internat::exclude;
+StringArray Internat::exclude;
 
 // DA: Use tweaked translation mechanism to replace 'Audacity' by 'DarkAudacity'.
 #ifdef EXPERIMENTAL_DA

@@ -18,12 +18,10 @@
 #include "commands/CommandFlag.h"
 #include "audacity/ComponentInterface.h" // for ComponentInterfaceSymbol
 
-class wxArrayString;
 class Effect;
 class CommandContext;
 class CommandManager;
 class AudacityProject;
-class wxArrayStringEx;
 
 // MacroName is a distinct string-wrapper type, which is permissible to be
 // shown to the user.  The name is either that of a file the user made, or
@@ -124,7 +122,7 @@ private:
    AudacityProject &mProject;
 
    CommandIDs mCommandMacro;
-   wxArrayString mParamsMacro;
+   StringArray mParamsMacro;
    bool mAbort;
    TranslatableString mMessage;
 

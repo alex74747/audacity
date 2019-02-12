@@ -21,7 +21,6 @@
 class GridAx;
 #endif
 
-class wxArrayString;
 class wxChoice;
 class NumericTextCtrl;
 
@@ -124,7 +123,7 @@ public:
    ChoiceEditor(size_t count = 0,
                 const wxString choices[] = NULL);
 
-   ChoiceEditor(const wxArrayString &choices);
+   ChoiceEditor(const StringArray &choices);
 
    ~ChoiceEditor();
 
@@ -142,7 +141,7 @@ public:
 
    wxGridCellEditor *Clone() const override;
 
-   void SetChoices(const wxArrayString &choices);
+   void SetChoices(const StringArray &choices);
    wxString GetValue() const override;
 
  protected:
@@ -171,7 +170,7 @@ public:
       };
    } mHandler;
 
-   wxArrayString mChoices;
+   StringArray mChoices;
    wxString mOld;
    wxString mValueAsString;
 };

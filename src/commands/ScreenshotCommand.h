@@ -121,7 +121,7 @@ private:
 
    bool CaptureToolbar(const CommandContext & Context, ToolManager *man, int type, const wxString &name);
    bool CaptureDock(const CommandContext & Context, wxWindow *win, const wxString &fileName);
-   void CaptureCommands(const CommandContext & Context, const wxArrayStringEx &Commands  );
+   void CaptureCommands(const CommandContext & Context, const StringArray &Commands  );
    void CaptureEffects(const CommandContext & Context, AudacityProject * pProject, const wxString &fileName );
    void CaptureScriptables(const CommandContext & Context, AudacityProject * pProject, const wxString &fileName );
    void CapturePreferences(const CommandContext & Context, AudacityProject * pProject, const wxString &fileName );

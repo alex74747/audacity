@@ -19,7 +19,6 @@
 #include "Identifier.h"
 #include "Internat.h"
 
-class wxArrayString;
 class wxDynamicLibrary;
 class ComponentInterface;
 class ModuleInterface;

@@ -863,7 +863,8 @@ void ProjectManager::OpenFiles(AudacityProject *proj)
    }
 
    //first sort selectedFiles.
-   selectedFiles.Sort(FileNames::CompareNoCase);
+   std::sort(
+      selectedFiles.begin(), selectedFiles.end(),  FileNames::CompareNoCase );
 
    auto cleanup = finally( [] {
       Importer::SetLastOpenType({});

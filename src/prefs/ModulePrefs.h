@@ -18,7 +18,6 @@
 #include "PrefsPanel.h"
 
 
-class wxArrayString;
 class ShuttleGui;
 
 #define MODULE_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Module") }
@@ -38,7 +37,7 @@ class ModulePrefs final : public PrefsPanel
  private:
    void GetAllModuleStatuses();
    void Populate();
-   wxArrayString mModules;
+   StringArray mModules;
    std::vector<int> mStatuses;
    FilePaths mPaths;
 };

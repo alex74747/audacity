@@ -13,8 +13,6 @@
 
 #if USE_LV2
 
-class wxArrayString;
-
 #include <vector>
 
 #include <wx/event.h> // to inherit
@@ -231,7 +229,7 @@ public:
 
    // ScalePoints
    std::vector<double> mScaleValues;
-   wxArrayString mScaleLabels;
+   StringArray mScaleLabels;
 
    // UI
    wxTextCtrl *mText;
@@ -476,7 +474,7 @@ private:
    unsigned mCVOut;
 
    std::unordered_map<wxString, std::vector<int>> mGroupMap;
-   wxArrayString mGroups;
+   StringArray mGroups;
 
    bool mWantsOptionsInterface;
    bool mWantsStateInterface;
@@ -560,7 +558,7 @@ private:
 
    bool mFactoryPresetsLoaded;
    RegistryPaths mFactoryPresetNames;
-   wxArrayString mFactoryPresetUris;
+   StringArray mFactoryPresetUris;
 
    DECLARE_EVENT_TABLE()
 

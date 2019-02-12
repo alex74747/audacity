@@ -20,7 +20,8 @@
 #include <wx/defs.h>
 #include <wx/window.h> // to inherit
 
-class wxArrayString;
+#include "wxArrayStringEx.h"
+
 class wxBitmap;
 class wxColour;
 class wxFont;
@@ -151,11 +152,11 @@ protected:
    // wxImage, wxBitmap copy cheaply using reference counting
    std::vector<wxImage> mImages;
    std::vector<wxBitmap> mBitmaps;
-   wxArrayString mBitmapNames;
+   StringArray mBitmapNames;
    std::vector<int> mBitmapFlags;
 
    std::vector<wxColour> mColours;
-   wxArrayString mColourNames;
+   StringArray mColourNames;
    FlowPacker mFlow;
 };
 

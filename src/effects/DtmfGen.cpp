@@ -54,8 +54,7 @@ Param( Amplitude, double,     L"Amplitude",  0.8,                  0.001,   1.0,
 
 static const double kFadeInOut = 250.0; // used for fadein/out needed to remove clicking noise
 
-const static wxChar *kSymbols[] =
-{
+const static StringArray kSymbols{
    L"0", L"1", L"2", L"3",
    L"4", L"5", L"6", L"7",
    L"8", L"9", L"*", L"#",
@@ -340,7 +339,7 @@ void EffectDtmf::PopulateOrExchange(ShuttleGui & S)
       mDtmfSequenceT = S.Id(ID_Sequence)
          .Validator([this]{
             wxTextValidator vldDtmf(wxFILTER_INCLUDE_CHAR_LIST, &dtmfSequence);
-            vldDtmf.SetIncludes(wxArrayString(WXSIZEOF(kSymbols), kSymbols));
+            vldDtmf.SetIncludes(kSymbols);
             return vldDtmf;
          })
          .AddTextBox(XXO("DTMF &sequence:"), L"", 10);

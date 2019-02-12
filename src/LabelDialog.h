@@ -17,7 +17,6 @@
 #include "widgets/wxPanelWrapper.h" // to inherit
 #include "audacity/ComponentInterface.h" // member variable
 
-class wxArrayString;
 class wxGridEvent;
 class AudacityProject;
 class ChoiceEditor;
@@ -106,7 +105,7 @@ class LabelDialog final : public wxDialogWrapper
    LabelTrack *mSelectedTrack {};
    int mIndex { -1 };
    ViewInfo *mViewInfo;
-   wxArrayString mTrackNames;
+   StringArray mTrackNames;
    double mRate;
    NumericFormatSymbol mFormat, mFreqFormat;
 

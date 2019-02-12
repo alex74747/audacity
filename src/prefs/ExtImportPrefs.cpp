@@ -523,7 +523,7 @@ void ExtImportPrefs::OnRuleTableEdit (wxGridEvent& event)
    wxString val = RuleTable->GetCellValue (row, col);
    int fixSpaces = wxNO;
    bool askedAboutSpaces = false;
-   wxArrayString vals;
+   StringArray vals;
    wxString delims(L":");
    Importer::Get().StringToList (val, delims, vals);
    switch (col)

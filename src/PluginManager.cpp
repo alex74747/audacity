@@ -446,7 +446,7 @@ private:
    EffectType mType;
    int mFilter;
 
-   wxArrayString mStates;
+   StringArray mStates;
    ItemDataMap mItems;
 
    int mSortColumn;
@@ -1970,7 +1970,7 @@ void PluginManager::Load()
       long groupIndex;
       wxString group = GetPluginTypeString(PluginTypeEffect);
       wxString cfgPath = REGROOT + wxCONFIG_PATH_SEPARATOR + group;
-      wxArrayString groupsToDelete;
+      StringArray groupsToDelete;
 
       registry.SetPath(cfgPath);
       for (bool cont = registry.GetFirstGroup(groupName, groupIndex);
@@ -2413,7 +2413,7 @@ void PluginManager::CheckForUpdates(bool bFast)
    // Get ModuleManager reference
    ModuleManager & mm = ModuleManager::Get();
 
-   wxArrayString pathIndex;
+   StringArray pathIndex;
    for (PluginMap::iterator iter = mPlugins.begin(); iter != mPlugins.end(); ++iter)
    {
       PluginDescriptor & plug = iter->second;

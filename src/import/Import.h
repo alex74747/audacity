@@ -21,7 +21,6 @@
 
 #include "../Registry.h"
 
-class wxArrayString;
 class wxListBox;
 class AudacityProject;
 class Tags;
@@ -49,7 +48,7 @@ class ExtImportItem
    * Unknown IDs will be presented and saved as-is.
    * Unused filters will not be used for matching files, unless forced.
    */
-  wxArrayString filters;
+  StringArray filters;
 
   /**
    * The index of first unused filter in @filters array
@@ -69,13 +68,13 @@ class ExtImportItem
    * File extensions. Each one is a string with simple wildcards,
    * i.e. "*.wav".
    */
-  wxArrayString extensions;
+  StringArray extensions;
 
   /**
    * Mime-types. Each one is a string in form of "foo/bar-baz" or
    * something like that.
    */
-  wxArrayString mime_types;
+  StringArray mime_types;
 };
 
 class AUDACITY_DLL_API Importer {
@@ -154,7 +153,7 @@ public:
     * @str string and appends string-tokens to a list @list.
     * @mod defines tokenizer's behaviour.
     */
-   void StringToList(wxString &str, wxString &delims, wxArrayString &list, wxStringTokenizerMode mod = wxTOKEN_RET_EMPTY_ALL);
+   void StringToList(wxString &str, wxString &delims, StringArray &list, wxStringTokenizerMode mod = wxTOKEN_RET_EMPTY_ALL);
 
    /**
     * Returns a pointer to internal items array.

@@ -70,4 +70,17 @@ public:
    }
 };
 
+class StringArray : public std::vector< wxString >
+{
+public:
+   using vector::vector;
+   StringArray() = default;
+   StringArray( const wxArrayString & );
+   operator wxArrayString() const;
+   int Index( const wxString &, bool bCase = true ) const;
+   void RemoveAt( size_t );
+   void Remove( const wxString & );
+   void Insert( const wxString&, size_t );
+};
+
 #endif

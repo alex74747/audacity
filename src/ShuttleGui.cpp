@@ -404,7 +404,7 @@ wxChoice * ShuttleGuiBase::AddChoice( const TranslatableString &Prompt,
       miId,
       wxDefaultPosition,
       wxDefaultSize,
-      transform_container<wxArrayString>(
+      transform_container<StringArray>(
          choices, std::mem_fn( &TranslatableString::StrippedTranslation ) ),
       GetStyle( 0 ) );
 
@@ -2440,11 +2440,11 @@ wxSizerItem * ShuttleGui::AddSpace( int width, int height, int prop )
 void ShuttleGui::SetMinSize( wxWindow *window, const TranslatableStrings & items )
 {
    SetMinSize( window,
-      transform_container<wxArrayStringEx>(
+      transform_container<StringArray>(
          items, std::mem_fn( &TranslatableString::StrippedTranslation ) ) );
 }
 
-void ShuttleGui::SetMinSize( wxWindow *window, const wxArrayStringEx & items )
+void ShuttleGui::SetMinSize( wxWindow *window, const StringArray & items )
 {
    int maxw = 0;
 
@@ -2478,7 +2478,7 @@ void ShuttleGui::SetMinSize( wxWindow *window, const wxArrayStringEx & items )
 /*
 void ShuttleGui::SetMinSize( wxWindow *window, const std::vector<int> & items )
 {
-   wxArrayStringEx strs;
+   StringArray strs;
 
    for( size_t i = 0; i < items.size(); i++ )
    {

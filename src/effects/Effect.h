@@ -34,7 +34,6 @@ class wxWindow;
 
 #include "../widgets/wxPanelWrapper.h" // to inherit
 
-class wxArrayString;
 class ShuttleGui;
 class AudacityCommand;
 
@@ -246,7 +245,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    virtual bool IsBatchProcessing();
    virtual void SetBatchProcessing(bool start);
 
-   /* not virtual */ void SetPresetParameters( const wxArrayString * Names, const wxArrayString * Values ) {
+   /* not virtual */ void SetPresetParameters( const StringArray * Names, const StringArray * Values ) {
       if( Names ) mPresetNames = *Names;
       if( Values ) mPresetValues = *Values;
    }
@@ -467,8 +466,8 @@ protected:
    double         mF0;
    double         mF1;
 #endif
-   wxArrayString  mPresetNames;
-   wxArrayString  mPresetValues;
+   StringArray  mPresetNames;
+   StringArray  mPresetValues;
    int            mPass;
 
    // UI

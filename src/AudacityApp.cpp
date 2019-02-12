@@ -639,7 +639,7 @@ GnomeShutdown GnomeShutdownInstance;
 
 // Where drag/drop or "Open With" filenames get stored until
 // the timer routine gets around to picking them up.
-static wxArrayString ofqueue;
+static StringArray ofqueue;
 
 //
 // DDE support for opening multiple files with one instance

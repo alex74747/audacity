@@ -61,7 +61,7 @@ class AUDACITY_DLL_API XMLWriter /* not final */ {
 
    bool mInTag;
    int mDepth;
-   wxArrayString mTagstack;
+   StringArray mTagstack;
    std::vector<int> mHasKids;
 
 };

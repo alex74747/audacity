@@ -21,7 +21,7 @@ class EnumValueSymbols;
 struct FFTParam;
 class NumberScale;
 class SpectrumPrefs;
-class wxArrayStringEx;
+class StringArray;
 
 class AUDACITY_DLL_API SpectrogramSettings : public PrefsListener
 {

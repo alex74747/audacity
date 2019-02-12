@@ -378,7 +378,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    }
    Raise();
    
-   wxArrayString files;
+   wxArrayStringEx files;
    dlog.GetPaths(files);
 
    files.Sort();

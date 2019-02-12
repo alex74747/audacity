@@ -45,6 +45,7 @@
 #include "Identifier.h"
 #include "audacity/ConfigInterface.h"
 #include "audacity/ComponentInterface.h"
+class StringArray;
 
 // ============================================================================
 //
@@ -137,7 +138,7 @@ public:
    virtual TranslatableString GetFileDescription() = 0;
 
    // Return stream descriptions list
-   virtual void GetStreamInfo(wxArrayString & streamInfo) = 0;
+   virtual void GetStreamInfo(StringArray & streamInfo) = 0;
 
    // Set stream "import/don't import" flag
    virtual void SetStreamUsage(int streamID, bool use) = 0;

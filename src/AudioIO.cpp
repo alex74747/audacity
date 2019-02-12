@@ -1180,11 +1180,11 @@ bool AudioIO::OutputMixerEmulated()
    return mEmulateMixerOutputVol;
 }
 
-wxArrayString AudioIO::GetInputSourceNames()
+StringArray AudioIO::GetInputSourceNames()
 {
 #if defined(USE_PORTMIXER)
 
-   wxArrayString deviceNames;
+   StringArray deviceNames;
 
    if( mPortMixer )
    {
@@ -1201,7 +1201,7 @@ wxArrayString AudioIO::GetInputSourceNames()
 
 #else
 
-   wxArrayString blank;
+   StringArray blank;
 
    return blank;
 

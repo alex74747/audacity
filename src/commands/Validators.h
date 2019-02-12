@@ -43,8 +43,6 @@ a certain criterion. This is a base validator which allows anything.
 #ifndef __VALIDATORS__
 #define __VALIDATORS__
 
-class wxArrayString;
-
 #include "MemoryX.h"
 
 #include <wx/variant.h> // member variable
@@ -97,14 +95,14 @@ public:
 class OptionValidator final : public Validator
 {
 private:
-   wxArrayString mOptions;
+   StringArray mOptions;
 
 public:
    void AddOption(const wxString &option)
    {
       mOptions.push_back(option);
    }
-   void AddOptions(const wxArrayString &options)
+   void AddOptions(const StringArray &options)
    {
       mOptions.insert(mOptions.begin(), options.begin(), options.end());
    }

@@ -900,7 +900,7 @@ teThemeType ThemeBase::GetFallbackThemeType(){
 
 teThemeType ThemeBase::ThemeTypeOfTypeName( const wxString & Name )
 {
-   static const wxArrayStringEx aThemes{
+   static const StringArray aThemes{
       "classic" ,
       "dark" ,
       "light" ,

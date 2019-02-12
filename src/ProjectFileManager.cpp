@@ -799,7 +799,7 @@ void ProjectFileManager::CloseProject()
 }
 
 // static method, can be called outside of a project
-wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
+StringArray ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
    const FileNames::FileType &extraType )
 {
    // Construct the filter

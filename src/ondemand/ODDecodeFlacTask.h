@@ -34,7 +34,6 @@ robust enough to allow all the user changes such as copy/paste, DELETE, and so o
 
 #include "FLAC++/decoder.h"
 
-class wxArrayString;
 class ODDecodeBlockFile;
 class WaveTrack;
 class ODFileDecoder;
@@ -81,7 +80,7 @@ class ODFLACFile final : public FLAC::Decoder::File
    friend class ODFlacDecoder;
    ODFlacDecoder *mDecoder;
    bool                  mWasError;
-   wxArrayString         mComments;
+   StringArray         mComments;
 
  protected:
    FLAC__StreamDecoderWriteStatus write_callback(const FLAC__Frame *frame,

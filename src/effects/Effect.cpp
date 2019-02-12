@@ -1283,7 +1283,7 @@ bool Effect::DoEffect(double projectRate,
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
    mF0 = selectedRegion.f0();
    mF1 = selectedRegion.f1();
-   wxArrayString Names;
+   StringArray Names;
    if( mF0 != SelectedRegion::UndefinedFrequency )
       Names.push_back(L"control-f0");
    if( mF1 != SelectedRegion::UndefinedFrequency )

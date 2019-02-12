@@ -3548,7 +3548,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
    int curve = 0;
 
    // Setup list of characters that aren't allowed
-   wxArrayStringEx exclude{
+   StringArray exclude{
       L"<" ,
       L">" ,
       L"'" ,

@@ -258,7 +258,7 @@ size_t Importer::SelectDefaultOpenType( const FileNames::FileTypes &fileTypes )
    return (index == fileTypes.size()) ? 0 : index;
 }
 
-void Importer::StringToList(wxString &str, wxString &delims, wxArrayString &list, wxStringTokenizerMode mod)
+void Importer::StringToList(wxString &str, wxString &delims, StringArray &list, wxStringTokenizerMode mod)
 {
    wxStringTokenizer toker;
 

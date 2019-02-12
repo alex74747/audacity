@@ -23,9 +23,8 @@ LRN
 #include <unordered_map>
 #include "Identifier.h"
 
-class wxArrayStringEx;
+class StringArray;
 
-class wxArrayString;
 class wxCheckBox;
 class wxStaticText;
 class wxTextCtrl;
@@ -236,13 +235,13 @@ public:
 private:
 
    LocalizedStringVector mShownFormatNames;
-   wxArrayString mShownFormatLongNames;
+   StringArray mShownFormatLongNames;
    LocalizedStringVector mShownCodecNames;
-   wxArrayString mShownCodecLongNames;
+   StringArray mShownCodecLongNames;
    LocalizedStringVector mFormatNames;
-   wxArrayString mFormatLongNames;
+   StringArray mFormatLongNames;
    LocalizedStringVector mCodecNames;
-   wxArrayString mCodecLongNames;
+   StringArray mCodecLongNames;
 
    wxListBox *mFormatList;
    wxListBox *mCodecList;
@@ -308,7 +307,7 @@ public:
    ~FFmpegPreset();
 
    VerbatimString mPresetName;
-   wxArrayString mControlState;
+   StringArray mControlState;
 
 };
 

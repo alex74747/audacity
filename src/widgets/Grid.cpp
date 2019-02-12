@@ -354,7 +354,7 @@ ChoiceEditor::ChoiceEditor(size_t count, const wxString choices[])
    }
 }
 
-ChoiceEditor::ChoiceEditor(const wxArrayString &choices)
+ChoiceEditor::ChoiceEditor(const StringArray &choices)
 {
    mChoices = choices;
 }
@@ -451,7 +451,7 @@ void ChoiceEditor::Reset()
    Choice()->SetSelection( make_iterator_range( mChoices ).index( mOld ) );
 }
 
-void ChoiceEditor::SetChoices(const wxArrayString &choices)
+void ChoiceEditor::SetChoices(const StringArray &choices)
 {
    mChoices = choices;
 }
