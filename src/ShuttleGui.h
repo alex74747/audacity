@@ -33,7 +33,6 @@ class ChoiceSetting;
 
 class wxArrayStringEx;
 
-
 const int nMaxNestedSizers = 20;
 
 enum teShuttleMode
@@ -127,6 +126,8 @@ namespace DialogDefinition {
 
 struct Item {
    Item() = default;
+
+   using ActionType = std::function< void() >;
 
    // Factory is a class that returns a value of some subclass of wxValidator
    // We must wrap it in another lambda to allow the return type of f to
@@ -230,6 +231,32 @@ struct Item {
       return std::move( *this );
    }
 
+   // Supply an event handler for a control; this is an alternative to using
+   // the event table macros, and removes the need to specify an id for the
+   // control.
+   // If the control has a validator, the function body can assume the value was
+   // validated and transferred from the control successfully
+   // After the body, call the dialog's TransferDataToWindow()
+   // The event type and id to bind are inferred from the control
+   Item &&Action( const ActionType &action  ) &&
+   {
+      return std::move( *this ).Action( action,
+         wxEventTypeTag<wxCommandEvent>(0)  );
+   }
+
+   // An overload for cases that there is more than one useful event type
+   // But it must specify some type whose event class is wxCommandEvent
+   Item &&Action( const ActionType &action,
+      wxEventTypeTag<wxCommandEvent> type ) &&
+   {
+      mEventType = type;
+      mAction = action;
+      return std::move( *this );
+   }
+
+   mutable wxEventTypeTag<wxCommandEvent> mEventType{ 0 };
+   ActionType mAction{};
+
    std::function< void(wxWindow*) > mValidatorSetter;
    TranslatableString mToolTip;
    TranslatableString mName;
@@ -250,7 +277,6 @@ struct Item {
 
    bool mFocused { false };
    bool mDisabled { false };
-
 };
 
 }
@@ -574,6 +600,10 @@ public:
 
    wxSizer * GetSizer() {return mpState -> mpSizer;}
 
+   static void CheckEventType(
+      const DialogDefinition::Item &item,
+      std::initializer_list<wxEventType> types );
+
    static void ApplyItem( int step, const DialogDefinition::Item &item,
       wxWindow *pWind, wxWindow *pDlg );
 
@@ -805,6 +835,28 @@ public:
    ShuttleGui & Size( wxSize size )
    {
       std::move( mItem ).Size( size );
+      return *this;
+   }
+
+   // Supply an event handler for a control; this is an alternative to using
+   // the event table macros, and removes the need to specify an id for the
+   // control.
+   // If the control has a validator, the function body can assume the value was
+   // validated and transferred from the control successfully
+   // After the body, call the dialog's TransferDataToWindow()
+   // The event type and id to bind are inferred from the control
+   ShuttleGui &Action( const DialogDefinition::Item::ActionType &action )
+   {
+      std::move( mItem ).Action( action );
+      return *this;
+   }
+
+   // An overload for cases that there is more than one useful event type
+   // But it must specify some type whose event class is wxCommandEvent
+   ShuttleGui &Action( const DialogDefinition::Item::ActionType &action,
+      wxEventTypeTag<wxCommandEvent> type )
+   {
+      std::move( mItem ).Action( action, type );
       return *this;
    }
 

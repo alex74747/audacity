@@ -312,6 +312,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBox( const TranslatableString &Prompt, bool
    miProp=0;
    mpWind = pCheckBox = safenew wxCheckBox(GetParent(), miId, realPrompt, wxDefaultPosition, wxDefaultSize,
       GetStyle( 0 ));
+   CheckEventType( mItem, {wxEVT_CHECKBOX} );
    pCheckBox->SetValue(Selected);
    if (realPrompt.empty()) {
       // NVDA 2018.3 does not read controls which are buttons, check boxes or radio buttons which have
@@ -358,6 +359,7 @@ wxButton * ShuttleGuiBase::AddButton(
       translated, wxDefaultPosition, wxDefaultSize,
       GetStyle( 0 ) );
    mpWind->SetName(wxStripMenuCodes(translated));
+   CheckEventType( mItem, {wxEVT_BUTTON} );
    miProp=0;
    UpdateSizersCore(false, PositionFlags | wxALL);
    if (setDefault)
@@ -403,6 +405,7 @@ wxChoice * ShuttleGuiBase::AddChoice( const TranslatableString &Prompt,
       transform_container<wxArrayString>(
          choices, std::mem_fn( &TranslatableString::StrippedTranslation ) ),
       GetStyle( 0 ) );
+   CheckEventType( mItem, {wxEVT_CHOICE} );
 
    pChoice->SetMinSize( { 180, -1 } );// Use -1 for 'default size' - Platform specific.
 #ifdef __WXMAC__
@@ -591,6 +594,7 @@ wxSlider * ShuttleGuiBase::AddSlider(
       ( ( mItem.mWindowSize == wxSize{} ) ? wxDefaultSize : mItem.mWindowSize ),
       GetStyle( wxSL_HORIZONTAL | wxSL_LABELS | wxSL_AUTOTICKS )
       );
+   CheckEventType( mItem, {wxEVT_SLIDER} );
 #if wxUSE_ACCESSIBILITY
    // so that name can be set on a standard control
    mpWind->SetAccessible(safenew WindowAccessible(mpWind));
@@ -650,6 +654,7 @@ wxTextCtrl * ShuttleGuiBase::AddTextBox(
 
    mpWind = pTextCtrl = safenew wxTextCtrlWrapper(GetParent(), miId, Value,
       wxDefaultPosition, Size, GetStyle( flags ));
+   CheckEventType( mItem, {wxEVT_TEXT} );
 #if wxUSE_ACCESSIBILITY
    // so that name can be set on a standard control
    mpWind->SetAccessible(safenew WindowAccessible(mpWind));
@@ -748,6 +753,7 @@ wxListBox * ShuttleGuiBase::AddListBox(const wxArrayStringEx &choices)
    mpWind = pListBox = safenew wxListBox(GetParent(), miId,
       wxDefaultPosition, wxDefaultSize, choices, GetStyle(0));
    pListBox->SetMinSize( wxSize( 120,150 ));
+   CheckEventType( mItem, {wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK} );
    UpdateSizers();
    return pListBox;
 }
@@ -2098,6 +2104,31 @@ void ShuttleGuiBase::SetProportions( int Default )
 }
 
 
+void ShuttleGuiBase::CheckEventType(
+   const DialogDefinition::Item &item,
+   std::initializer_list<wxEventType> types )
+{
+   if ( item.mAction || item.mValidatorSetter ) {
+      if ( item.mEventType ) {
+         // Require the explicitly given event type to be one of the preferred
+         // kinds
+         auto begin = types.begin(), end = types.end(),
+            iter = std::find( begin, end, item.mEventType );
+         if ( iter == end ) {
+            wxASSERT( false );
+            item.mEventType = 0;
+            //item.mAction = nullptr;
+            //item.mpSink = nullptr;
+         }
+      }
+      else if ( types.size() > 0 )
+         // Supply the preferred event type
+         item.mEventType = *types.begin();
+      else
+         wxASSERT( false );
+   }
+}
+
 void ShuttleGuiBase::ApplyItem( int step, const DialogDefinition::Item &item,
    wxWindow *pWind, wxWindow *pDlg )
 {  
@@ -2113,6 +2144,17 @@ void ShuttleGuiBase::ApplyItem( int step, const DialogDefinition::Item &item,
    }
    else if ( step == 1) {
       // Apply certain other optional window attributes here
+
+      if ( item.mAction ) {
+         auto action = item.mAction;
+         pDlg->Bind(
+            item.mEventType,
+            [action]( wxCommandEvent& ){
+               if ( action )
+                  action();
+            },
+            pWind->GetId() );
+      }
 
       if ( item.mValidatorSetter )
          item.mValidatorSetter( pWind );

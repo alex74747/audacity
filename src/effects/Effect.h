@@ -281,6 +281,7 @@ protected:
    virtual void Preview(bool dryOnly);
 
    virtual void PopulateOrExchange(ShuttleGui & S);
+
    virtual bool TransferDataToWindow() /* not override */;
    virtual bool TransferDataFromWindow() /* not override */;
 
