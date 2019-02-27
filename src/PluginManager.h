@@ -58,8 +58,8 @@ public:
    // All plugins
 
    // These return untranslated strings
-   const wxString & GetID() const;
-   const wxString & GetProviderID() const;
+   const PluginID & GetID() const;
+   const PluginID & GetProviderID() const;
    const PluginPath & GetPath() const;
    const ComponentInterfaceSymbol & GetSymbol() const;
 
@@ -132,12 +132,12 @@ private:
 
    PluginType mPluginType;
 
-   wxString mID;
+   PluginID mID;
    PluginPath mPath;
    ComponentInterfaceSymbol mSymbol;
    wxString mVersion;
    wxString mVendor;
-   wxString mProviderID;
+   PluginID mProviderID;
    bool mEnabled;
    bool mValid;
 
@@ -165,7 +165,7 @@ private:
 
 typedef std::map<PluginID, PluginDescriptor> PluginMap;
 
-typedef wxArrayString PluginIDs;
+using PluginIDs = std::vector<PluginID>;
 
 class PluginRegistrationDialog;
 
@@ -305,7 +305,7 @@ private:
 
    // The PluginID must be kept unique.  Since the wxFileConfig class does not preserve
    // case, we use base64 encoding.
-   wxString ConvertID(const PluginID & ID);
+   PluginID ConvertID(const PluginID & ID);
    wxString b64encode(const void *in, int len);
    int b64decode(const wxString &in, void *out);
 

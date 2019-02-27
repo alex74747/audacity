@@ -1027,7 +1027,9 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
                {
                   for (size_t k = 0, cntk = item.plugs.size(); k < cntk; k++)
                   {
-                     pm.mPlugins.erase(item.plugs[k]->GetProviderID() + L"_" + path);
+                     pm.mPlugins.erase( PluginID{
+                        { item.plugs[k]->GetProviderID(), path }, L'_'
+                     } );
                   }
                   // Bug 1893.  We've found a provider that works.
                   // Error messages from any that failed are no longer useful.
@@ -1390,7 +1392,7 @@ const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
    ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
    if( pCInterface )
       return PluginManager::Get().RegisterPlugin(provider, pCInterface);
-   static wxString empty;
+   static PluginID empty;
    return empty;
 }
 
@@ -1400,7 +1402,7 @@ const PluginID &PluginManagerInterface::AudacityCommandRegistrationCallback(
    ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
    if( pCInterface )
       return PluginManager::Get().RegisterPlugin(provider, pCInterface);
-   static wxString empty;
+   static PluginID empty;
    return empty;
 }
 
@@ -2072,14 +2074,14 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
       wxConfigPathChanger changer{ pRegistry,
          groupName + wxCONFIG_PATH_SEPARATOR };
 
-      groupName = ConvertID(groupName);
+      auto newGroupName = ConvertID(groupName);
 
       // Bypass group if the ID is already in use
-      if (mPlugins.find(groupName) != mPlugins.end())
+      if (mPlugins.find(newGroupName) != mPlugins.end())
          continue;
 
       // Set the ID and type
-      plug.SetID(groupName);
+      plug.SetID(newGroupName);
       plug.SetPluginType(type);
 
       // Get the provider ID and bypass group if not found
@@ -2272,7 +2274,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
       }
 
       // Everything checked out...accept the plugin
-      mPlugins[groupName] = plug;
+      mPlugins[newGroupName] = plug;
    }
 
    return;
@@ -2321,7 +2323,12 @@ void PluginManager::SaveGroup(FileConfig *pRegistry, PluginType type)
          continue;
       }
 
-      pRegistry->SetPath(REGROOT + wxCONFIG_PATH_SEPARATOR + group + wxCONFIG_PATH_SEPARATOR + ConvertID(plug.GetID()));
+      RegistryPath regPath{
+         { REGROOT, group , ConvertID(plug.GetID()) },
+         wxCONFIG_PATH_SEPARATOR
+      };
+      // using GET to retrieve a config path
+      pRegistry->SetPath( regPath.GET() );
 
       pRegistry->Write(KEY_PATH, plug.GetPath());
 
@@ -2459,7 +2466,7 @@ void PluginManager::CheckForUpdates(bool bFast)
                wxString path = paths[i].BeforeFirst(L';');;
                if ( ! make_iterator_range( pathIndex ).contains( path ) )
                {
-                  PluginID ID = plugID + L"_" + path;
+                  PluginID ID{ { plugID, path }, L'_' };
                   PluginDescriptor & plug2 = mPlugins[ID];  // This will create a NEW descriptor
                   plug2.SetPluginType(PluginTypeStub);
                   plug2.SetID(ID);
@@ -2697,42 +2704,58 @@ ComponentInterface *PluginManager::GetInstance(const PluginID & ID)
 
 PluginID PluginManager::GetID(ModuleInterface *module)
 {
-   return wxString::Format(L"%s_%s_%s_%s_%s",
-                           GetPluginTypeString(PluginTypeModule),
-                           wxEmptyString,
-                           module->GetVendor().Internal(),
-                           module->GetSymbol().Internal(),
-                           module->GetPath());
+   return PluginID{
+      {
+         GetPluginTypeString(PluginTypeModule),
+         wxEmptyString,
+         module->GetVendor().Internal(),
+         module->GetSymbol().Internal(),
+         module->GetPath()
+      },
+      L'_'
+   };
 }
 
 PluginID PluginManager::GetID(ComponentInterface *command)
 {
-   return wxString::Format(L"%s_%s_%s_%s_%s",
-                           GetPluginTypeString(PluginTypeAudacityCommand),
-                           wxEmptyString,
-                           command->GetVendor().Internal(),
-                           command->GetSymbol().Internal(),
-                           command->GetPath());
+   return PluginID{
+      {
+         GetPluginTypeString(PluginTypeAudacityCommand),
+         wxEmptyString,
+         command->GetVendor().Internal(),
+         command->GetSymbol().Internal(),
+         command->GetPath()
+      },
+      L'_'
+   };
 }
 
 PluginID PluginManager::GetID(EffectDefinitionInterface *effect)
 {
-   return wxString::Format(L"%s_%s_%s_%s_%s",
-                           GetPluginTypeString(PluginTypeEffect),
-                           effect->GetFamily().Internal(),
-                           effect->GetVendor().Internal(),
-                           effect->GetSymbol().Internal(),
-                           effect->GetPath());
+   return PluginID{
+      {
+         GetPluginTypeString(PluginTypeEffect),
+         effect->GetFamily().Internal(),
+         effect->GetVendor().Internal(),
+         effect->GetSymbol().Internal(),
+         effect->GetPath()
+      },
+      L'_'
+   };
 }
 
 PluginID PluginManager::GetID(ImporterInterface *importer)
 {
-   return wxString::Format(L"%s_%s_%s_%s_%s",
-                           GetPluginTypeString(PluginTypeImporter),
-                           wxEmptyString,
-                           importer->GetVendor().Internal(),
-                           importer->GetSymbol().Internal(),
-                           importer->GetPath());
+   return PluginID{
+      {
+         GetPluginTypeString(PluginTypeImporter),
+         wxEmptyString,
+         importer->GetVendor().Internal(),
+         importer->GetSymbol().Internal(),
+         importer->GetPath()
+      },
+      L'_'
+   };
 }
 
 // This string persists in configuration files
@@ -3034,13 +3057,15 @@ RegistryPath PluginManager::SettingsPath(const PluginID & ID, bool shared)
 
    const PluginDescriptor & plug = mPlugins[ID];
    
-   wxString id = GetPluginTypeString(plug.GetPluginType()) +
-                 L"_" +
-                 plug.GetEffectFamily() + // is empty for non-Effects
-                 L"_" +
-                 plug.GetVendor() +
-                 L"_" +
-                 (shared ? L"" : plug.GetSymbol().Internal());
+   PluginID id {
+      {
+         GetPluginTypeString(plug.GetPluginType()),
+         plug.GetEffectFamily(), // is empty for non-Effects
+         plug.GetVendor(),
+         (shared ? L"" : plug.GetSymbol().Internal())
+      },
+      L'_'
+   };
 
    return RegistryPath{
       {
@@ -3100,11 +3125,13 @@ RegistryPath PluginManager::PrivateKey(const PluginID & ID, const RegistryPath &
 
 // Sanitize the ID...not the best solution, but will suffice until this
 // is converted to XML.  We use base64 encoding to preserve case.
-wxString PluginManager::ConvertID(const PluginID & ID)
+PluginID PluginManager::ConvertID(const PluginID & inId)
 {
+   // using GET for intermediate result computing one identifier from another
+   auto ID = wxString{inId.GET()};
    if (ID.StartsWith(L"base64:"))
    {
-      wxString id = ID.Mid(7);
+      auto id = ID.Mid(7);
       ArrayOf<char> buf{ id.length() / 4 * 3 };
       id =  wxString::FromUTF8(buf.get(), b64decode(id, buf.get()));
       return id;

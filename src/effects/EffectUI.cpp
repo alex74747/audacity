@@ -181,7 +181,7 @@ EffectRack::~EffectRack()
          gPrefs->Write(wxString::Format(L"/EffectsRack/Slot%02d", i),
                        wxString::Format(L"%d,%s",
                                         mPowerState[i],
-                                        effect->GetID()));
+                                        effect->GetID().GET()));
       }
    }
 }

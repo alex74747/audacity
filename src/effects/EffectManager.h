@@ -28,11 +28,10 @@ class Effect;
 class TrackList;
 class SelectedRegion;
 class wxString;
-typedef wxString PluginID;
 
-using EffectMap = std::unordered_map<wxString, Effect *>;
-using AudacityCommandMap = std::unordered_map<wxString, AudacityCommand *>;
-using EffectOwnerMap = std::unordered_map< wxString, std::shared_ptr<Effect> >;
+using EffectMap = std::unordered_map< PluginID, Effect * >;
+using AudacityCommandMap = std::unordered_map< PluginID, AudacityCommand * >;
+using EffectOwnerMap = std::unordered_map< PluginID, std::shared_ptr<Effect> >;
 
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
 class EffectRack;

@@ -12,13 +12,12 @@
 
 #include "Identifier.h"
 
-#include <wx/string.h> // member variable
 #include "Prefs.h"
 #include "ClientData.h"
 #include "commands/CommandFlag.h"
 
-class wxArrayString;
 class wxCommandEvent;
+class wxString;
 class AudacityProject;
 class CommandContext;
 class CommandManager;
@@ -29,9 +28,7 @@ class ViewInfo;
 
 enum EffectType : int;
 
-typedef wxString PluginID;
-typedef wxString MacroID;
-typedef wxArrayString PluginIDs;
+using MacroID = wxString;
 
 namespace Registry{ class Visitor; }
 

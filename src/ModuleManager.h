@@ -16,8 +16,8 @@
 #include <map>
 #include <vector>
 
-#include "audacity/Types.h"
 #include "Identifier.h"
+#include "Internat.h"
 
 class wxArrayString;
 class wxDynamicLibrary;
@@ -63,9 +63,9 @@ using ModuleInterfaceHandle = std::unique_ptr<
    ModuleInterface, ModuleInterfaceDeleter
 >;
 
-typedef std::map<wxString, ModuleInterfaceHandle> ModuleMap;
+typedef std::map<PluginID, ModuleInterfaceHandle> ModuleMap;
 typedef std::map<ModuleInterface *, std::unique_ptr<wxDynamicLibrary>> LibraryMap;
-using PluginIDs = wxArrayString;
+using PluginIDs = std::vector< PluginID >;
 
 class AUDACITY_DLL_API ModuleManager final
 {

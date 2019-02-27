@@ -505,7 +505,7 @@ void OnRepeatLastTool(const CommandContext& context)
            menuManager.mLastToolRegisteredId);
         break;
      case MenuCreator::repeattypeapplymacro:
-        OnApplyMacroDirectlyByName(context, menuManager.mLastTool);
+        OnApplyMacroDirectlyByName(context, menuManager.mLastTool.GET());
         break;
    }
 }
@@ -734,7 +734,7 @@ void AddEffectMenuItemGroup(
                   CommandManager::Options{}
                      .IsEffect()
                      .AllowInMacros()
-                     .Parameter( plugs[i] ) ) );
+                     .Parameter( plugs[i].GET() ) ) );
 
             i++;
          }
@@ -759,7 +759,7 @@ void AddEffectMenuItemGroup(
                CommandManager::Options{}
                   .IsEffect()
                   .AllowInMacros()
-                  .Parameter( plugs[i] ) ) );
+                  .Parameter( plugs[i].GET() ) ) );
       }
 
       if (max > 0)

@@ -238,5 +238,8 @@ struct CommandIdTag;
 using CommandID = TaggedIdentifier< CommandIdTag, false >;
 using CommandIDs = std::vector<CommandID>;
 
+struct PluginIdTag {};
+using PluginID = TaggedIdentifier<PluginIdTag>;
+
 #endif
 
