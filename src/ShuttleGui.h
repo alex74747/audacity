@@ -550,7 +550,8 @@ protected:
    wxWindow * mpWind;
 
 private:
-   void DoDataShuttle( const wxString &Name, WrappedType & WrappedRef );
+   void DoDataShuttle(
+      const RegistryPath &Name, WrappedType & WrappedRef );
    wxCheckBox * DoTieCheckBoxOnRight( const TranslatableString & Prompt, WrappedType & WrappedRef );
    wxTextCtrl * DoTieTextBox(
       const TranslatableString &Prompt,
@@ -565,7 +566,7 @@ private:
       WrappedType & WrappedRef, const int max, const int min = 0 );
 
    std::vector<EnumValueSymbol> mRadioSymbols;
-   wxString mRadioSettingName; /// The setting controlled by a group.
+   RegistryPath mRadioSettingName; /// The setting controlled by a group.
    Optional<WrappedType> mRadioValue;  /// The wrapped value associated with the active radio button.
    int mRadioCount;       /// The index of this radio item.  -1 for none.
    wxString mRadioValueString; /// Unwrapped string value.

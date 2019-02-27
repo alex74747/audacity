@@ -220,7 +220,8 @@ using PluginPath = wxString;
 using PluginPaths = std::vector< PluginPath >;
 
 // A key to be passed to wxConfigBase
-using RegistryPath = wxString;
+struct RegistryPathTag;
+using RegistryPath = TaggedIdentifier< RegistryPathTag >;
 using RegistryPaths = std::vector< RegistryPath >;
 
 class wxArrayStringEx;

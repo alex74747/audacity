@@ -62,13 +62,12 @@ extern ByColumns_t ByColumns;
 class AUDACITY_DLL_API SettingBase
 {
 public:
-   SettingBase( const char *path ) : mPath{ path } {}
-   SettingBase( const wxChar *path ) : mPath{ path } {}
-   SettingBase( const wxString &path ) : mPath{ path } {}
+   SettingBase( const RegistryPath &path ) : mPath{ path } {}
+   SettingBase( const wchar_t *path ) : mPath{ path } {}
 
    wxConfigBase *GetConfig() const;
 
-   const wxString &GetPath() const { return mPath; }
+   const RegistryPath &GetPath() const { return mPath; }
 
    //! Delete the key if present, and return true iff it was.
    bool Delete();
@@ -105,12 +104,16 @@ public:
       : CachingSettingBase< T >{ path }
       , mDefaultValue{ defaultValue }
    {}
+   Setting( const wchar_t *path, const T &defaultValue )
+      : Setting( RegistryPath{path}, defaultValue ) {}
 
    //! This overload causes recomputation of the default each time it is needed
    Setting( const SettingBase &path, DefaultValueFunction function )
       : CachingSettingBase< T >{ path }
       , mFunction{ function }
    {}
+   Setting( const wchar_t *path, DefaultValueFunction function )
+      : Setting( RegistryPath{path}, function ) {}
    
 
    const T& GetDefault() const
@@ -137,7 +140,8 @@ public:
       }
       const auto config = this->GetConfig();
       if ( pVar && config ) {
-         if ((this->mValid = config->Read( this->mPath, &this->mCurrentValue )))
+         if ((this->mValid =
+              config->Read( this->mPath.GET(), &this->mCurrentValue )))
             *pVar = this->mCurrentValue;
          return this->mValid;
       }
@@ -160,7 +164,7 @@ public:
       const auto config = this->GetConfig();
       return config
          ? ( this->mValid = true, this->mCurrentValue =
-               config->ReadObject( this->mPath, defaultValue ) )
+               config->ReadObject( this->mPath.GET(), defaultValue ) )
          : T{};
    }
 
@@ -187,8 +191,9 @@ protected:
    bool DoWrite( )
    {
       const auto config = this->GetConfig();
-      return this->mValid =
-         config ? config->Write( this->mPath, this->mCurrentValue ) : false;
+      return this->mValid = config
+         ? config->Write( this->mPath.GET(), this->mCurrentValue )
+         : false;
    }
 
    mutable T mDefaultValue{};
@@ -274,7 +279,7 @@ public:
       wxASSERT( defaultSymbol < (long)mSymbols.size() );
    }
 
-   const wxString &Key() const { return mKey; }
+   const RegistryPath &Key() const { return mKey; }
    const EnumValueSymbol &Default() const;
    const EnumValueSymbols &GetSymbols() const { return mSymbols; }
 
@@ -293,7 +298,7 @@ protected:
    size_t Find( const wxString &value ) const;
    virtual void Migrate( wxString& );
 
-   const wxString mKey;
+   const RegistryPath mKey;
 
    const EnumValueSymbols mSymbols;
 

@@ -855,9 +855,7 @@ RegistryPath Effect::GetUserPresetsGroup(const RegistryPath & name)
 {
    RegistryPath group = L"UserPresets";
    if (!name.empty())
-   {
-      group += wxCONFIG_PATH_SEPARATOR + name;
-   }
+      group = RegistryPath{{ group, name }, wxCONFIG_PATH_SEPARATOR };
 
    return group;
 }
@@ -2483,4 +2481,5 @@ int Effect::MessageBox( const TranslatableString& message,
       : XO("%s: %s").Format( GetName(), titleStr );
    return AudacityMessageBox( message, title, style, mUIParent );
 }
+
 

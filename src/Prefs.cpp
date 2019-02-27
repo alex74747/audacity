@@ -244,7 +244,7 @@ wxString ChoiceSetting::Read() const
 wxString ChoiceSetting::ReadWithDefault( const wxString &defaultValue ) const
 {
    wxString value;
-   if ( !gPrefs->Read(mKey, &value, defaultValue) )
+   if ( !gPrefs->Read(mKey.GET(), &value, defaultValue) )
       if (!mMigrated) {
          const_cast<ChoiceSetting*>(this)->Migrate( value );
          mMigrated = true;
@@ -277,7 +277,7 @@ bool ChoiceSetting::Write( const wxString &value )
    if (index >= mSymbols.size())
       return false;
 
-   auto result = gPrefs->Write( mKey, value );
+   auto result = gPrefs->Write( mKey.GET(), value );
    mMigrated = true;
    return result;
 }
@@ -410,7 +410,7 @@ wxConfigBase *SettingBase::GetConfig() const
 bool SettingBase::Delete()
 {
    auto config = GetConfig();
-   return config && config->DeleteEntry( GetPath() );
+   return config && config->DeleteEntry( GetPath().GET() );
 }
 
 bool BoolSetting::Toggle()

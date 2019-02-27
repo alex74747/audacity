@@ -32,63 +32,63 @@
 #include "WrappedType.h"
 #include "Prefs.h"
 
-bool ShuttlePrefs::TransferBool( const wxString & Name, bool & bValue, const bool & bDefault )
+bool ShuttlePrefs::TransferBool( const RegistryPath & Name, bool & bValue, const bool & bDefault )
 {
    if( mbStoreInClient )
    {
       bValue = bDefault;
-      gPrefs->Read( Name, &bValue );
+      gPrefs->Read( Name.GET(), &bValue );
    }
    else
    {
-      return gPrefs->Write( Name, bValue );
+      return gPrefs->Write( Name.GET(), bValue );
    }
    return true;
 }
 
-bool ShuttlePrefs::TransferDouble( const wxString & Name, double & dValue, const double &dDefault )
+bool ShuttlePrefs::TransferDouble( const RegistryPath & Name, double & dValue, const double &dDefault )
 {
    if( mbStoreInClient )
    {
       dValue = dDefault;
-      gPrefs->Read( Name, &dValue );
+      gPrefs->Read( Name.GET(), &dValue );
    }
    else
    {
-      return gPrefs->Write( Name, dValue );
+      return gPrefs->Write( Name.GET(), dValue );
    }
    return true;
 }
 
-bool ShuttlePrefs::TransferInt( const wxString & Name, int & iValue, const int &iDefault )
+bool ShuttlePrefs::TransferInt( const RegistryPath & Name, int & iValue, const int &iDefault )
 {
    if( mbStoreInClient )
    {
       iValue = iDefault;
-      gPrefs->Read( Name, &iValue );
+      gPrefs->Read( Name.GET(), &iValue );
    }
    else
    {
-      return gPrefs->Write( Name, iValue );
+      return gPrefs->Write( Name.GET(), iValue );
    }
    return true;
 }
 
-bool ShuttlePrefs::TransferString( const wxString & Name, wxString & strValue, const wxString &strDefault )
+bool ShuttlePrefs::TransferString( const RegistryPath & Name, wxString & strValue, const wxString &strDefault )
 {
    if( mbStoreInClient )
    {
       strValue = strDefault;
-      gPrefs->Read( Name, &strValue );
+      gPrefs->Read( Name.GET(), &strValue );
    }
    else
    {
-      return gPrefs->Write( Name, strValue );
+      return gPrefs->Write( Name.GET(), strValue );
    }
    return true;
 }
 
-bool ShuttlePrefs::TransferWrappedType( const wxString & Name, WrappedType & W )
+bool ShuttlePrefs::TransferWrappedType( const RegistryPath & Name, WrappedType & W )
 {
    switch( W.eWrappedType )
    {
@@ -114,7 +114,7 @@ bool ShuttlePrefs::TransferWrappedType( const wxString & Name, WrappedType & W )
    return false;
 }
 
-bool ShuttlePrefs::ExchangeWithMaster(const wxString & WXUNUSED(Name))
+bool ShuttlePrefs::ExchangeWithMaster(const RegistryPath & WXUNUSED(Name))
 {
    // ShuttlePrefs is unusual in that it overloads ALL the Transfer functions
    // which it supports.  It doesn't do any string conversion, because wxConv will

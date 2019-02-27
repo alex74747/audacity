@@ -1218,7 +1218,8 @@ void ShuttleGuiBase::EndMultiColumn()
 
 /// When we're exchanging with the configured shuttle rather than with the GUI
 /// We use this function.
-void ShuttleGuiBase::DoDataShuttle( const wxString &Name, WrappedType & WrappedRef )
+void ShuttleGuiBase::DoDataShuttle(
+   const RegistryPath &Name, WrappedType & WrappedRef )
 {
     wxASSERT( mpShuttle );
     mpShuttle->TransferWrappedType( Name, WrappedRef );
@@ -1821,9 +1822,9 @@ wxCheckBox * ShuttleGuiBase::TieCheckBox(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pCheck = DoTieCheckBox( Prompt, WrappedRef );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
 
    return pCheck;
 }
@@ -1838,9 +1839,9 @@ wxCheckBox * ShuttleGuiBase::TieCheckBoxOnRight(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pCheck = DoTieCheckBoxOnRight( Prompt, WrappedRef );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
 
    return pCheck;
 }
@@ -1857,9 +1858,9 @@ wxSlider * ShuttleGuiBase::TieSlider(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pSlider = DoTieSlider( Prompt, WrappedRef, max, min );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
 
    return pSlider;
 }
@@ -1876,9 +1877,9 @@ wxSpinCtrl * ShuttleGuiBase::TieSpinCtrl(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pSpinCtrl = DoTieSpinCtrl( Prompt, WrappedRef, max, min );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
 
    return pSpinCtrl;
 }
@@ -1894,9 +1895,9 @@ wxTextCtrl * ShuttleGuiBase::TieTextBox(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pText = DoTieTextBox( Prompt, WrappedRef, nChars );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    return pText;
 }
 
@@ -1912,9 +1913,9 @@ wxTextCtrl * ShuttleGuiBase::TieIntegerTextBox(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pText = DoTieNumericTextBox( Prompt, WrappedRef, nChars );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    return pText;
 }
 
@@ -1930,9 +1931,9 @@ wxTextCtrl * ShuttleGuiBase::TieNumericTextBox(
 
    auto Value = Setting.GetDefault();
    WrappedType WrappedRef( Value );
-   if( DoStep(1) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(1) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    if( DoStep(2) ) pText = DoTieNumericTextBox( Prompt, WrappedRef, nChars );
-   if( DoStep(3) ) DoDataShuttle( Setting.GetPath(), WrappedRef );
+   if( DoStep(3) ) DoDataShuttle( Setting.GetPath().GET(), WrappedRef );
    return pText;
 }
 

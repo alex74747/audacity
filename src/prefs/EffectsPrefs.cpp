@@ -130,7 +130,7 @@ const std::map< wxString, TranslatableString > SuggestedPrompts{
 // Collect needed prompts and settings paths, at most once, on demand
 struct Entry {
    TranslatableString prompt;
-   wxString setting;
+   RegistryPath setting;
 };
 static const std::vector< Entry > &GetModuleData()
 {

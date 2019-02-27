@@ -263,7 +263,7 @@ wxCheckBox * ShuttleGuiGetDefinition::TieCheckBox(
    const BoolSetting &Setting)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "bool", "type" );
    AddBool( Setting.GetDefault(), "default"  );
@@ -276,7 +276,7 @@ wxCheckBox * ShuttleGuiGetDefinition::TieCheckBoxOnRight(
    const BoolSetting &Setting)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "bool", "type" );
    AddBool( Setting.GetDefault(), "default"  );
@@ -289,7 +289,7 @@ wxChoice * ShuttleGuiGetDefinition::TieChoice(
    const ChoiceSetting &choiceSetting  )
 {
    StartStruct();
-   AddItem( choiceSetting.Key(), "id" );
+   AddItem( choiceSetting.Key().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "enum", "type" );
    AddItem( choiceSetting.Default().Internal(), "default"  );
@@ -313,7 +313,7 @@ wxChoice * ShuttleGuiGetDefinition::TieNumberAsChoice(
    //  numbers, with an associated control that allows arbitrary entry of an
    // "Other..."
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "number", "type" ); // not "enum" !
    AddItem( Setting.GetDefault(), "default"  );
@@ -328,7 +328,7 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieTextBox(
    const int nChars)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "string", "type" );
    AddItem( Setting.GetDefault(), "default"  );
@@ -342,7 +342,7 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieIntegerTextBox(
    const int nChars)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "number", "type" );
    AddItem( Setting.GetDefault(), "default"  );
@@ -356,7 +356,7 @@ wxTextCtrl * ShuttleGuiGetDefinition::TieNumericTextBox(
    const int nChars)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "number", "type" );
    AddItem( Setting.GetDefault(), "default"  );
@@ -371,7 +371,7 @@ wxSlider * ShuttleGuiGetDefinition::TieSlider(
    const int min) 
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "number", "type" );
    AddItem( Setting.GetDefault(), "default"  );
@@ -386,7 +386,7 @@ wxSpinCtrl * ShuttleGuiGetDefinition::TieSpinCtrl(
    const int min) 
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
+   AddItem( Setting.GetPath().GET(), "id" );
    AddItem( Prompt.Translation(), "prompt" );
    AddItem( "number", "type" );
    AddItem( Setting.GetDefault(), "default"  );

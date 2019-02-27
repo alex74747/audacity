@@ -500,7 +500,8 @@ wxFileNameWrapper FileNames::DefaultToDocumentsFolder(const wxString &preference
    return result;
 }
 
-wxString FileNames::PreferenceKey(FileNames::Operation op, FileNames::PathType type)
+RegistryPath FileNames::PreferenceKey(
+   FileNames::Operation op, FileNames::PathType type)
 {
    wxString key;
    switch (op) {
@@ -544,14 +545,14 @@ FilePath FileNames::FindDefaultPath(Operation op)
       return wxString{};
 
    // If the user specified a default path, then use that
-   FilePath path = gPrefs->Read(key, L"");
+   FilePath path = gPrefs->Read(key.GET(), L"");
    if (!path.empty()) {
       return path;
    }
 
    // Maybe the last used path is available
    key = PreferenceKey(op, PathType::LastUsed);
-   path = gPrefs->Read(key, L"");
+   path = gPrefs->Read(key.GET(), L"");
    if (!path.empty()) {
       return path;
    }
@@ -564,7 +565,7 @@ void FileNames::UpdateDefaultPath(Operation op, const FilePath &path)
 {
    if (path.empty())
       return;
-   wxString key;
+   RegistryPath key;
    if (op == Operation::Temp) {
       key = PreferenceKey(op, PathType::_None);
    }
@@ -572,7 +573,7 @@ void FileNames::UpdateDefaultPath(Operation op, const FilePath &path)
       key = PreferenceKey(op, PathType::LastUsed);
    }
    if (!key.empty()) {
-      gPrefs->Write(key, path);
+      gPrefs->Write(key.GET(), path);
       gPrefs->Flush();
    }
 }

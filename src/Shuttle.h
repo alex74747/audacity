@@ -27,19 +27,19 @@ class Shuttle /* not final */ {
    wxString mValueString;
    // Even though virtual, mostly the transfer functions won't change
    // for special kinds of archive.
-   virtual bool TransferBool( const wxString & Name, bool & bValue, const bool & bDefault );
-   virtual bool TransferFloat( const wxString & Name, float & fValue, const float &fDefault );
-   virtual bool TransferDouble( const wxString & Name, double & dValue, const double &dDefault );
-   virtual bool TransferInt( const wxString & Name, int & iValue, const int &iDefault );
-   virtual bool TransferInt( const wxString & Name, wxLongLong_t & iValue, const wxLongLong_t &iDefault );
-   virtual bool TransferLongLong( const wxString & Name, wxLongLong_t & iValue, const wxLongLong_t &iDefault );
-   virtual bool TransferString( const wxString & Name, wxString & strValue, const wxString &strDefault );
-   virtual bool TransferEnum( const wxString & Name, int & iValue,
+   virtual bool TransferBool( const RegistryPath & Name, bool & bValue, const bool & bDefault );
+   virtual bool TransferFloat( const RegistryPath & Name, float & fValue, const float &fDefault );
+   virtual bool TransferDouble( const RegistryPath & Name, double & dValue, const double &dDefault );
+   virtual bool TransferInt( const RegistryPath & Name, int & iValue, const int &iDefault );
+   virtual bool TransferInt( const RegistryPath & Name, wxLongLong_t & iValue, const wxLongLong_t &iDefault );
+   virtual bool TransferLongLong( const RegistryPath & Name, wxLongLong_t & iValue, const wxLongLong_t &iDefault );
+   virtual bool TransferString( const RegistryPath & Name, wxString & strValue, const wxString &strDefault );
+   virtual bool TransferEnum( const RegistryPath & Name, int & iValue,
       const int nChoices, const wxString * pFirstStr);
-   virtual bool TransferWrappedType( const wxString & Name, WrappedType & W );
+   virtual bool TransferWrappedType( const RegistryPath & Name, WrappedType & W );
    // We expect the ExchangeWithMaster function to change from one type of
    // archive to another.
-   virtual bool ExchangeWithMaster(const wxString & Name);
+   virtual bool ExchangeWithMaster(const RegistryPath & Name);
 };
 
 class ShuttleCli final : public Shuttle
@@ -48,7 +48,7 @@ public:
    wxString mParams;
    ShuttleCli() {}
    virtual ~ShuttleCli() {}
-   bool ExchangeWithMaster(const wxString & Name) override;
+   bool ExchangeWithMaster(const RegistryPath & Name) override;
 };
 
 class CommandParameters;

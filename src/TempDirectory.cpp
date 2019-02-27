@@ -29,7 +29,7 @@ wxString TempDirectory::TempDir()
    if (gPrefs && path.empty())
       path =
          gPrefs->Read(PreferenceKey(FileNames::Operation::Temp,
-            FileNames::PathType::_None), L"");
+            FileNames::PathType::_None).GET(), L"");
 
    if (FileNames::IsOnFATFileSystem(path))
    {

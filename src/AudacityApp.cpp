@@ -1309,7 +1309,7 @@ bool AudacityApp::InitPart2()
    {
       auto key =
          PreferenceKey(FileNames::Operation::Temp, FileNames::PathType::_None);
-      auto temp = gPrefs->Read(key);
+      auto temp = gPrefs->Read(key.GET());
       if (temp.empty() || !CreateSingleInstanceChecker(temp)) {
          FinishPreferences();
          return false;

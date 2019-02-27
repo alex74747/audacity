@@ -485,8 +485,9 @@ void EffectPresetsDialog::SetPrefix(
    if (type == XO("User Presets"))
    {
       mPresets->Clear();
-      for (const auto &preset : mUserPresets)
-         mPresets->Append(preset);
+      for ( const auto &preset : mUserPresets )
+         // Bad use of GET()!
+         mPresets->Append( preset.GET() );
       mPresets->Enable(true);
       mPresets->SetStringSelection(prefix);
       if (mPresets->GetSelection() == wxNOT_FOUND)
@@ -505,7 +506,8 @@ void EffectPresetsDialog::SetPrefix(
          {
             label = _("None");
          }
-         mPresets->Append(label);
+         // Bad use of GET()!
+         mPresets->Append( label.GET() );
       }
       mPresets->Enable(true);
       mPresets->SetStringSelection(prefix);
@@ -549,7 +551,8 @@ void EffectPresetsDialog::UpdateUI()
 
       mPresets->Clear();
       for (const auto &preset : mUserPresets)
-         mPresets->Append(preset);
+         // Bad use of GET()!
+         mPresets->Append( preset.GET() );
       mPresets->Enable(true);
       mPresets->SetSelection(selected);
       mSelection = Effect::kUserPresetIdent + mPresets->GetString(selected);
@@ -570,7 +573,8 @@ void EffectPresetsDialog::UpdateUI()
          {
             label = _("None");
          }
-         mPresets->Append(label);
+         // Bad use of GET()!
+         mPresets->Append( label.GET() );
       }
       mPresets->Enable(true);
       mPresets->SetSelection(selected);

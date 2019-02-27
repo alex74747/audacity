@@ -1626,7 +1626,8 @@ bool PluginManager::SetSharedConfig(const PluginID & ID, const RegistryPath & gr
 
 bool PluginManager::RemoveSharedConfigSubgroup(const PluginID & ID, const RegistryPath & group)
 {
-   bool result = GetSettings()->DeleteGroup(SharedGroup(ID, group));
+   // using GET to interpret identifier as a config path
+   bool result = GetSettings()->DeleteGroup(SharedGroup(ID, group).GET());
    if (result)
    {
       GetSettings()->Flush();
@@ -1637,7 +1638,8 @@ bool PluginManager::RemoveSharedConfigSubgroup(const PluginID & ID, const Regist
 
 bool PluginManager::RemoveSharedConfig(const PluginID & ID, const RegistryPath & group, const RegistryPath & key)
 {
-   bool result = GetSettings()->DeleteEntry(SharedKey(ID, group, key));
+   // using GET to interpret identifier as a config path
+   bool result = GetSettings()->DeleteEntry(SharedKey(ID, group, key).GET());
    if (result)
    {
       GetSettings()->Flush();
@@ -1708,7 +1710,8 @@ bool PluginManager::SetPrivateConfig(const PluginID & ID, const RegistryPath & g
 
 bool PluginManager::RemovePrivateConfigSubgroup(const PluginID & ID, const RegistryPath & group)
 {
-   bool result = GetSettings()->DeleteGroup(PrivateGroup(ID, group));
+   // using GET to interpret identifier as a config path
+   bool result = GetSettings()->DeleteGroup(PrivateGroup(ID, group).GET());
    if (result)
    {
       GetSettings()->Flush();
@@ -1719,7 +1722,8 @@ bool PluginManager::RemovePrivateConfigSubgroup(const PluginID & ID, const Regis
 
 bool PluginManager::RemovePrivateConfig(const PluginID & ID, const RegistryPath & group, const RegistryPath & key)
 {
-   bool result = GetSettings()->DeleteEntry(PrivateKey(ID, group, key));
+   // using GET to interpret identifier as a config path
+   bool result = GetSettings()->DeleteEntry(PrivateKey(ID, group, key).GET());
    if (result)
    {
       GetSettings()->Flush();
@@ -2562,7 +2566,7 @@ const PluginDescriptor *PluginManager::GetFirstPlugin(int type)
             auto setting = GetPluginEnabledSetting( plug );
             familyEnabled = setting.empty()
                ? true
-               : gPrefs->Read( setting, true );
+               : gPrefs->Read( setting.GET(), true );
          }
          if (familyEnabled)
             return &mPluginsIter->second;
@@ -2586,7 +2590,7 @@ const PluginDescriptor *PluginManager::GetNextPlugin(int type)
             auto setting = GetPluginEnabledSetting( plug );
             familyEnabled = setting.empty()
                ? true
-               : gPrefs->Read( setting, true );
+               : gPrefs->Read( setting.GET(), true );
          }
          if (familyEnabled)
             return &mPluginsIter->second;
@@ -2607,7 +2611,7 @@ const PluginDescriptor *PluginManager::GetFirstPluginForEffectType(EffectType ty
       auto setting = GetPluginEnabledSetting( plug );
       familyEnabled = setting.empty()
          ? true
-         : gPrefs->Read( setting, true );
+         : gPrefs->Read( setting.GET(), true );
       if (plug.IsValid() && plug.IsEnabled() && plug.GetEffectType() == type && familyEnabled)
       {
          return &plug;
@@ -2627,7 +2631,7 @@ const PluginDescriptor *PluginManager::GetNextPluginForEffectType(EffectType typ
       auto setting = GetPluginEnabledSetting( plug );
       familyEnabled = setting.empty()
          ? true
-         : gPrefs->Read( setting, true );
+         : gPrefs->Read( setting.GET(), true );
       if (plug.IsValid() && plug.IsEnabled() && plug.GetEffectType() == type && familyEnabled)
       {
          return &plug;
@@ -2819,11 +2823,13 @@ bool PluginManager::HasGroup(const RegistryPath & group)
 {
    auto settings = GetSettings();
 
-   bool res = settings->HasGroup(group);
+   // using GET to interpret identifier as a config path
+   auto path = group.GET();
+   bool res = settings->HasGroup( path );
    if (res)
    {
       // The group exists, but empty groups aren't considered valid
-      wxConfigPathChanger changer{ settings, group + wxCONFIG_PATH_SEPARATOR };
+      wxConfigPathChanger changer{ settings, path + wxCONFIG_PATH_SEPARATOR };
       res = settings->GetNumberOfEntries() || settings->GetNumberOfGroups();
    }
 
@@ -2837,8 +2843,9 @@ bool PluginManager::GetSubgroups(const RegistryPath & group, RegistryPaths & sub
       return false;
    }
 
+   // using GET to interpret identifier as a config path
    wxConfigPathChanger changer{ GetSettings(),
-      group + wxCONFIG_PATH_SEPARATOR };
+      group.GET() + wxCONFIG_PATH_SEPARATOR };
 
    wxString name;
    long index = 0;
@@ -2859,7 +2866,8 @@ bool PluginManager::GetConfig(const RegistryPath & key, int & value, int defval)
 
    if (!key.empty())
    {
-      result = GetSettings()->Read(key, &value, defval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Read(key.GET(), &value, defval);
    }
 
    return result;
@@ -2873,7 +2881,8 @@ bool PluginManager::GetConfig(const RegistryPath & key, wxString & value, const 
    {
       wxString wxval;
 
-      result = GetSettings()->Read(key, &wxval, defval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Read(key.GET(), &wxval, defval);
 
       value = wxval;
    }
@@ -2887,7 +2896,8 @@ bool PluginManager::GetConfig(const RegistryPath & key, bool & value, bool defva
 
    if (!key.empty())
    {
-      result = GetSettings()->Read(key, &value, defval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Read(key.GET(), &value, defval);
    }
 
    return result;
@@ -2901,7 +2911,8 @@ bool PluginManager::GetConfig(const RegistryPath & key, float & value, float def
    {
       double dval = 0.0;
 
-      result = GetSettings()->Read(key, &dval, (double) defval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Read(key.GET(), &dval, (double) defval);
 
       value = (float) dval;
    }
@@ -2915,7 +2926,8 @@ bool PluginManager::GetConfig(const RegistryPath & key, double & value, double d
 
    if (!key.empty())
    {
-      result = GetSettings()->Read(key, &value, defval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Read(key.GET(), &value, defval);
    }
 
    return result;
@@ -2928,7 +2940,8 @@ bool PluginManager::SetConfig(const RegistryPath & key, const wxString & value)
    if (!key.empty())
    {
       wxString wxval = value;
-      result = GetSettings()->Write(key, wxval);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Write(key.GET(), wxval);
       if (result)
       {
          result = GetSettings()->Flush();
@@ -2944,7 +2957,8 @@ bool PluginManager::SetConfig(const RegistryPath & key, const int & value)
 
    if (!key.empty())
    {
-      result = GetSettings()->Write(key, value);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Write(key.GET(), value);
       if (result)
       {
          result = GetSettings()->Flush();
@@ -2960,7 +2974,8 @@ bool PluginManager::SetConfig(const RegistryPath & key, const bool & value)
 
    if (!key.empty())
    {
-      result = GetSettings()->Write(key, value);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Write(key.GET(), value);
       if (result)
       {
          result = GetSettings()->Flush();
@@ -2976,7 +2991,8 @@ bool PluginManager::SetConfig(const RegistryPath & key, const float & value)
 
    if (!key.empty())
    {
-      result = GetSettings()->Write(key, value);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Write(key.GET(), value);
       if (result)
       {
          result = GetSettings()->Flush();
@@ -2992,7 +3008,8 @@ bool PluginManager::SetConfig(const RegistryPath & key, const double & value)
 
    if (!key.empty())
    {
-      result = GetSettings()->Write(key, value);
+      // using GET to interpret identifier as a config path
+      result = GetSettings()->Write(key.GET(), value);
       if (result)
       {
          result = GetSettings()->Flush();
@@ -3025,21 +3042,23 @@ RegistryPath PluginManager::SettingsPath(const PluginID & ID, bool shared)
                  L"_" +
                  (shared ? L"" : plug.GetSymbol().Internal());
 
-   return SETROOT + wxCONFIG_PATH_SEPARATOR +
-          ConvertID(id) + wxCONFIG_PATH_SEPARATOR +
-          (shared ? L"shared" : L"private");
+   return RegistryPath{
+      {
+         SETROOT,
+         ConvertID(id),
+         (shared ? L"shared" : L"private")
+      },
+      wxCONFIG_PATH_SEPARATOR
+   };
 }
 
 /* Return value is a key for lookup in a config file */
 RegistryPath PluginManager::SharedGroup(const PluginID & ID, const RegistryPath & group)
 {
-   wxString path = SettingsPath(ID, true);
+   auto path = SettingsPath(ID, true);
 
-   wxFileName ff(group);
-   if (!ff.GetName().empty())
-   {
-      path += wxCONFIG_PATH_SEPARATOR + ff.GetFullPath(wxPATH_UNIX);
-   }
+   if (!group.empty())
+      path = RegistryPath{ { path, group }, wxCONFIG_PATH_SEPARATOR };
 
    return path;
 }
@@ -3053,7 +3072,7 @@ RegistryPath PluginManager::SharedKey(const PluginID & ID, const RegistryPath & 
       return path;
    }
 
-   return path + wxCONFIG_PATH_SEPARATOR + key;
+   return RegistryPath{ { path, key }, wxCONFIG_PATH_SEPARATOR };
 }
 
 /* Return value is a key for lookup in a config file */
@@ -3061,11 +3080,8 @@ RegistryPath PluginManager::PrivateGroup(const PluginID & ID, const RegistryPath
 {
    auto path = SettingsPath(ID, false);
 
-   wxFileName ff(group);
-   if (!ff.GetName().empty())
-   {
-      path += wxCONFIG_PATH_SEPARATOR + ff.GetFullPath(wxPATH_UNIX);
-   }
+   if (!group.empty())
+      path = RegistryPath{ { path, group }, wxCONFIG_PATH_SEPARATOR };
 
    return path;
 }
@@ -3079,7 +3095,7 @@ RegistryPath PluginManager::PrivateKey(const PluginID & ID, const RegistryPath &
       return path;
    }
 
-   return path + wxCONFIG_PATH_SEPARATOR + key;
+   return RegistryPath{ { path, key }, wxCONFIG_PATH_SEPARATOR };
 }
 
 // Sanitize the ID...not the best solution, but will suffice until this

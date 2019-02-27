@@ -177,7 +177,8 @@ namespace FileNames
       LastUsed
    };
 
-   AUDACITY_DLL_API wxString PreferenceKey(FileNames::Operation op, FileNames::PathType type);
+   AUDACITY_DLL_API RegistryPath PreferenceKey(
+      FileNames::Operation op, FileNames::PathType type);
 
    AUDACITY_DLL_API FilePath FindDefaultPath(Operation op);
    AUDACITY_DLL_API void UpdateDefaultPath(Operation op, const FilePath &path);
@@ -187,7 +188,7 @@ namespace FileNames
    FilePath WithDefaultPath
    (Operation op, const FilePath &defaultPath, F function)
    {
-      auto path = gPrefs->Read(PreferenceKey(op, PathType::User), defaultPath);
+      auto path = gPrefs->Read(PreferenceKey(op, PathType::User).GET(), defaultPath);
       if (path.empty())
          path = FileNames::FindDefaultPath(op);
       auto result = function(path);

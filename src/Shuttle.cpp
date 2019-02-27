@@ -75,7 +75,7 @@ Shuttle::Shuttle()
 {
 }
 
-bool Shuttle::TransferBool( const wxString & Name, bool & bValue, const bool & bDefault )
+bool Shuttle::TransferBool( const RegistryPath & Name, bool & bValue, const bool & bDefault )
 {
    if( mbStoreInClient )
    {
@@ -94,7 +94,7 @@ bool Shuttle::TransferBool( const wxString & Name, bool & bValue, const bool & b
    return true;
 }
 
-bool Shuttle::TransferFloat( const wxString & Name, float & fValue, const float &fDefault )
+bool Shuttle::TransferFloat( const RegistryPath & Name, float & fValue, const float &fDefault )
 {
    if( mbStoreInClient )
    {
@@ -113,7 +113,7 @@ bool Shuttle::TransferFloat( const wxString & Name, float & fValue, const float 
    return true;
 }
 
-bool Shuttle::TransferDouble( const wxString & Name, double & dValue, const double &dDefault )
+bool Shuttle::TransferDouble( const RegistryPath & Name, double & dValue, const double &dDefault )
 {
    if( mbStoreInClient )
    {
@@ -133,7 +133,7 @@ bool Shuttle::TransferDouble( const wxString & Name, double & dValue, const doub
    return true;
 }
 
-bool Shuttle::TransferInt( const wxString & Name, int & iValue, const int & iDefault )
+bool Shuttle::TransferInt( const RegistryPath & Name, int & iValue, const int & iDefault )
 {
    if( mbStoreInClient )
    {
@@ -152,12 +152,12 @@ bool Shuttle::TransferInt( const wxString & Name, int & iValue, const int & iDef
 }
 
 
-bool Shuttle::TransferInt( const wxString & Name, wxLongLong_t & iValue, const wxLongLong_t & iDefault )
+bool Shuttle::TransferInt( const RegistryPath & Name, wxLongLong_t & iValue, const wxLongLong_t & iDefault )
 {
    return TransferLongLong(Name, iValue, iDefault);
 }
 
-bool Shuttle::TransferLongLong( const wxString & Name, wxLongLong_t & iValue, const wxLongLong_t & iDefault )
+bool Shuttle::TransferLongLong( const RegistryPath & Name, wxLongLong_t & iValue, const wxLongLong_t & iDefault )
 {
    if( mbStoreInClient )
    {
@@ -177,7 +177,7 @@ bool Shuttle::TransferLongLong( const wxString & Name, wxLongLong_t & iValue, co
 }
 
 
-bool Shuttle::TransferEnum( const wxString & Name, int & iValue,
+bool Shuttle::TransferEnum( const RegistryPath & Name, int & iValue,
       const int nChoices, const wxString * pFirstStr)
 {
    if( mbStoreInClient )
@@ -218,7 +218,7 @@ bool Shuttle::TransferEnum( const wxString & Name, int & iValue,
    return true;
 }
 
-bool Shuttle::TransferString( const wxString & Name, wxString & strValue, const wxString & WXUNUSED(strDefault) )
+bool Shuttle::TransferString( const RegistryPath & Name, wxString & strValue, const wxString & WXUNUSED(strDefault) )
 {
    if( mbStoreInClient )
    {
@@ -237,7 +237,7 @@ bool Shuttle::TransferString( const wxString & Name, wxString & strValue, const 
    return true;
 }
 
-bool Shuttle::TransferWrappedType( const wxString & Name, WrappedType & W )
+bool Shuttle::TransferWrappedType( const RegistryPath & Name, WrappedType & W )
 {
    if( mbStoreInClient )
    {
@@ -255,7 +255,7 @@ bool Shuttle::TransferWrappedType( const wxString & Name, WrappedType & W )
 }
 
 
-bool Shuttle::ExchangeWithMaster(const wxString & WXUNUSED(Name))
+bool Shuttle::ExchangeWithMaster(const RegistryPath & WXUNUSED(Name))
 {
    // ExchangeWithMaster() will usually be over-ridden
    // in derived classes.  We could have made it an
@@ -266,20 +266,20 @@ bool Shuttle::ExchangeWithMaster(const wxString & WXUNUSED(Name))
 
 // This variant uses values of the form
 // param1=value1 param2=value2
-bool ShuttleCli::ExchangeWithMaster(const wxString & Name)
+bool ShuttleCli::ExchangeWithMaster(const RegistryPath & Name)
 {
    if( !mbStoreInClient )
    {
       mParams += L" ";
-      mParams +=Name;
+      mParams += Name.GET();
       mParams += L"=";
-      mParams +=mValueString;
+      mParams += mValueString;
    }
    else
    {
       int i;
-      mParams = L" "+mParams;
-      i=mParams.Find( L" "+Name+L"=" );
+      mParams = L" " + mParams;
+      i=mParams.Find( L" " + Name.GET() + L"=" );
       if( i>=0 )
       {
          int j=i+2+Name.length();

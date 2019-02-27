@@ -159,7 +159,7 @@ class AUDACITY_DLL_API CommandManager final
 
    private:
       static CheckFn
-         MakeCheckFn( const wxString key, bool defaultValue );
+         MakeCheckFn( const RegistryPath &key, bool defaultValue );
       static CheckFn
          MakeCheckFn( const BoolSetting &setting );
    };

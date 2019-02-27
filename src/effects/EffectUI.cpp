@@ -1270,7 +1270,8 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       auto sub = std::make_unique<wxMenuWrapper>();
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub->Append(kUserPresetsID + i, Verbatim( mUserPresets[i] ) );
+         // Bad use of GET()!
+         sub->Append(kUserPresetsID + i, Verbatim( mUserPresets[i].GET() ) );
       }
       menu.Append(0, XO("User Presets"), sub.release());
    }
@@ -1286,7 +1287,8 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       auto sub = std::make_unique<wxMenuWrapper>();
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub->Append(kDeletePresetID + i, Verbatim( mUserPresets[i] ) );
+         // Bad use of GET()!
+         sub->Append(kDeletePresetID + i, Verbatim( mUserPresets[i].GET() ));
       }
       menu.Append(0, XO("Delete Preset"), sub.release());
    }
@@ -1303,7 +1305,8 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
          sub->AppendSeparator();
          for (size_t i = 0, cnt = factory.size(); i < cnt; i++)
          {
-            auto label = Verbatim( factory[i] );
+            // Bad use of GET()!
+            auto label = Verbatim( factory[i].GET() );
             if (label.empty())
             {
                label = XO("None");
@@ -1547,9 +1550,10 @@ void EffectUIHost::OnDeletePreset(wxCommandEvent & evt)
    auto preset = mUserPresets[evt.GetId() - kDeletePresetID];
    
    int res = AudacityMessageBox(
-                                XO("Are you sure you want to delete \"%s\"?").Format( preset ),
-                                XO("Delete Preset"),
-                                wxICON_QUESTION | wxYES_NO);
+      // Bad use of GET()!
+      XO("Are you sure you want to delete \"%s\"?").Format( preset.GET() ),
+      XO("Delete Preset"),
+      wxICON_QUESTION | wxYES_NO);
    if (res == wxYES)
    {
       mEffect->RemovePrivateConfigSubgroup(mEffect->GetUserPresetsGroup(preset));

@@ -64,9 +64,9 @@ void PlaybackPrefs::Populate()
 }
 
 namespace {
-   const char *UnpinnedScrubbingPreferenceKey()
+   RegistryPath UnpinnedScrubbingPreferenceKey()
    {
-      return "/AudioIO/UnpinnedScrubbing";
+      return L"/AudioIO/UnpinnedScrubbing";
    }
    bool UnpinnedScrubbingPreferenceDefault()
    {
@@ -146,8 +146,8 @@ void PlaybackPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       S.StartVerticalLay();
       {
-         S.TieCheckBox(XXO("&Vari-Speed Play"), {"/AudioIO/VariSpeedPlay", true});
-         S.TieCheckBox(XXO("&Micro-fades"), {"/AudioIO/Microfades", false});
+         S.TieCheckBox(XXO("&Vari-Speed Play"), {L"/AudioIO/VariSpeedPlay", true});
+         S.TieCheckBox(XXO("&Micro-fades"), {L"/AudioIO/Microfades", false});
          S.TieCheckBox(XXO("Always scrub un&pinned"),
             {UnpinnedScrubbingPreferenceKey(),
              UnpinnedScrubbingPreferenceDefault()});
@@ -166,7 +166,7 @@ bool PlaybackPrefs::GetUnpinnedScrubbingPreference()
    if ( iPreferenceUnpinned >= 0 )
       return iPreferenceUnpinned == 1;
    bool bResult = gPrefs->ReadBool(
-      UnpinnedScrubbingPreferenceKey(),
+      UnpinnedScrubbingPreferenceKey().GET(),
       UnpinnedScrubbingPreferenceDefault());
    iPreferenceUnpinned = bResult ? 1: 0;
    return bResult;

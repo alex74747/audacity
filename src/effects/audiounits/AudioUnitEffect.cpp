@@ -784,7 +784,7 @@ TranslatableString AudioUnitEffectImportDialog::Import(
    }
 
    // And write it to the config
-   wxString group = mEffect->mHost->GetUserPresetsGroup(name);
+   auto group = mEffect->mHost->GetUserPresetsGroup(name);
    if (!mEffect->mHost->SetPrivateConfig(group, PRESET_KEY, parms))
    {
       return XO("Unable to store preset in config file");
@@ -2000,7 +2000,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    size_t bufLen = buf.GetDataLen();
    if (!bufLen)
    {
-      wxLogError(L"Failed to decode \"%s\" preset", group);
+      wxLogError(L"Failed to decode \"%s\" preset", group.GET());
       return false;
    }
    const uint8_t *bufPtr = (uint8_t *) buf.GetData();
@@ -2015,7 +2015,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    };
    if (!data)
    {
-      wxLogError(L"Failed to convert \"%s\" preset to internal format", group);
+      wxLogError(L"Failed to convert \"%s\" preset to internal format", group.GET());
       return false;
    }
 
@@ -2030,7 +2030,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    };
    if (!content)
    {
-      wxLogError(L"Failed to create property list for \"%s\" preset", group);
+      wxLogError(L"Failed to create property list for \"%s\" preset", group.GET());
       return false;
    }
    CFunique_ptr<char /* CFPropertyList */> ucontent { (char *) content };
@@ -2051,7 +2051,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
                                  sizeof(content));
    if (result != noErr)
    {
-      wxLogError(L"Failed to set class info for \"%s\" preset", group);
+      wxLogError(L"Failed to set class info for \"%s\" preset", group.GET());
       return false;
    }
 
@@ -2064,7 +2064,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
 bool AudioUnitEffect::SavePreset(const RegistryPath & group)
 {
    // First set the name of the preset
-   wxCFStringRef cfname(wxFileNameFromPath(group));
+   wxCFStringRef cfname(wxFileNameFromPath(group.GET()));
 
    // Define the preset property
    AUPreset preset;

@@ -579,9 +579,10 @@ void CommandManager::AddItem(AudacityProject &project,
 }
 
 auto CommandManager::Options::MakeCheckFn(
-   const wxString key, bool defaultValue ) -> CheckFn
+   const RegistryPath &key, bool defaultValue ) -> CheckFn
 {
-   return [=](AudacityProject&){ return gPrefs->ReadBool( key, defaultValue ); };
+   return [=](AudacityProject&){
+      return gPrefs->ReadBool( key.GET(), defaultValue ); };
 }
 
 auto CommandManager::Options::MakeCheckFn(
