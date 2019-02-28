@@ -50,6 +50,7 @@
 #include <wx/debug.h> // for wxASSERT
 #include <wx/string.h> // type used in inline function and member variable
 
+#include "Identifier.h"
 #include "Internat.h"
 
 // ----------------------------------------------------------------------------
@@ -251,13 +252,14 @@ typedef enum
 // some frequently needed forward declarations
 // ----------------------------------------------------------------------------
 
-class ComponentInterfaceSymbol;
+template< typename IdentifierType > class IdentInterfaceSymbol;
 
-using EnumValueSymbol = ComponentInterfaceSymbol;
+struct EnumValueTag;
+using EnumValueSymbol = IdentInterfaceSymbol< TaggedIdentifier< EnumValueTag > >;
 using NumericFormatSymbol = EnumValueSymbol;
 
-using VendorSymbol = ComponentInterfaceSymbol;
+using VendorSymbol = IdentInterfaceSymbol< VendorID >;
 
-using EffectFamilySymbol = ComponentInterfaceSymbol;
+using EffectFamilySymbol = IdentInterfaceSymbol< EffectFamilyID >;
 
 #endif // __AUDACITY_TYPES_H__

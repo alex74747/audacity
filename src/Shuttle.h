@@ -13,7 +13,6 @@
 
 #include "../include/audacity/ComponentInterface.h"
 
-class ComponentInterfaceSymbol;
 class WrappedType;
 
 class Shuttle /* not final */ {

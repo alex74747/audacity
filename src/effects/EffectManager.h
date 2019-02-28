@@ -23,7 +23,6 @@ class AudacityCommand;
 class AudacityProject;
 class CommandContext;
 class CommandMessageTarget;
-class ComponentInterfaceSymbol;
 class Effect;
 class TrackList;
 class SelectedRegion;

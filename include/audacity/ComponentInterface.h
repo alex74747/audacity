@@ -50,41 +50,45 @@ extern AUDACITY_DLL_API const wxString& GetCustomTranslation(const wxString& str
 
 /**************************************************************************//**
 
-\brief ComponentInterfaceSymbol pairs a persistent string identifier used internally
-with an optional, different string as msgid for lookup in a translation catalog.
+\brief IdentInterfaceSymbol pairs a persistent identifier (its type given
+by the template parameter), which is used internally, with an optional,
+different string as msgid for lookup in a translation catalog.
 \details  If there is need to change a msgid in a later version of the
 program, change the constructor call to supply a second argument but leave the
 first the same, so that compatibility of older configuration files containing
 that internal string is not broken.
 ********************************************************************************/
-class ComponentInterfaceSymbol
+template< typename IdentifierType >
+class IdentInterfaceSymbol
 {
 public:
-   ComponentInterfaceSymbol() = default;
+   using Identifier = IdentifierType;
+
+   IdentInterfaceSymbol() = default;
    
    // Allows implicit construction from an internal string re-used as a msgid
-   ComponentInterfaceSymbol( const Identifier &internal )
+   IdentInterfaceSymbol( const Identifier &internal )
       : mInternal{ internal }, mMsgid{ internal.GET(), {} }
    {}
 
    // Allows implicit construction from a msgid re-used as an internal string
-   ComponentInterfaceSymbol( const TranslatableString &internal )
+   IdentInterfaceSymbol( const TranslatableString &internal )
       : mInternal{ internal.MSGID().GET(), }, mMsgid{ internal }
    {}
 
    // Allows implicit construction from an internal string re-used as a msgid
-   ComponentInterfaceSymbol( const wxString &internal )
+   IdentInterfaceSymbol( const wxString &internal )
       : mInternal{ internal }, mMsgid{ internal, {} }
    {}
 
    // Allows implicit construction from an internal string re-used as a msgid
-   ComponentInterfaceSymbol( const wxChar *msgid )
+   IdentInterfaceSymbol( const wxChar *msgid )
       : mInternal{ msgid }, mMsgid{ msgid, {} }
    {}
 
    // Two-argument version distinguishes internal from translatable string
    // such as when the first squeezes spaces out
-   ComponentInterfaceSymbol( const Identifier &internal,
+   IdentInterfaceSymbol( const Identifier &internal,
                          const TranslatableString &msgid )
       : mInternal{ internal.GET() }
       // Do not permit non-empty msgid with empty internal
@@ -101,11 +105,11 @@ public:
    bool empty() const { return mInternal.empty(); }
 
    friend inline bool operator == (
-      const ComponentInterfaceSymbol &a, const ComponentInterfaceSymbol &b )
+      const IdentInterfaceSymbol &a, const IdentInterfaceSymbol &b )
    { return a.mInternal == b.mInternal; }
 
    friend inline bool operator != (
-      const ComponentInterfaceSymbol &a, const ComponentInterfaceSymbol &b )
+      const IdentInterfaceSymbol &a, const IdentInterfaceSymbol &b )
    { return !( a == b ); }
 
 private:
@@ -113,6 +117,7 @@ private:
    TranslatableString mMsgid;
 };
 
+using ComponentInterfaceSymbol = IdentInterfaceSymbol< CommandID >;
 
 class ShuttleParams;
 

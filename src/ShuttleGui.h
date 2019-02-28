@@ -750,8 +750,6 @@ public:
    teShuttleMode GetMode() { return  mShuttleMode; };
 };
 
-class ComponentInterfaceSymbol;
-
 //! Convenience function often useful when adding choice controls
 AUDACITY_DLL_API TranslatableStrings Msgids(
    const EnumValueSymbol strings[], size_t nStrings);
