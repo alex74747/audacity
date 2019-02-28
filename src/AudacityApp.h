@@ -28,6 +28,7 @@ class wxSingleInstanceChecker;
 class wxSocketEvent;
 class wxSocketServer;
 
+class Identifier;
 class IPCServ;
 class Importer;
 class CommandHandler;

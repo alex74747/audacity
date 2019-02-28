@@ -34,22 +34,22 @@ void GetLanguages( DirectoryPaths pathList,
  @param pathList paths to search for .mo files, grouped into subdirectories for the different languages
  */
 STRINGS_API
-wxString GetSystemLanguageCode(const DirectoryPaths &pathList);
+Identifier GetSystemLanguageCode(const DirectoryPaths &pathList);
 
 /*!
  @param audacityPathList paths to search for .mo files, grouped into subdirectories for the different languages
  @param lang a language code; or if empty or "System", then default to system language.
  @return the language code actually used which is not lang if lang cannot be found. */
-STRINGS_API
-wxString SetLang( const DirectoryPaths &audacityPathList, const wxString & lang );
+STRINGS_API Identifier SetLang(
+   const DirectoryPaths &audacityPathList, const Identifier & lang );
 
 /*! @return the last language code that was set */
 STRINGS_API
-wxString GetLang();
+Identifier GetLang();
 
 /*! @return the last language code that was set (minus country code) */
 STRINGS_API
-wxString GetLangShort();
+Identifier GetLangShort();
 
 /*! @return a string as from setlocale() */
 STRINGS_API

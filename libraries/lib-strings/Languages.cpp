@@ -81,7 +81,7 @@ static bool TranslationExists(const DirectoryPaths &pathList, wxString code)
 
 namespace Languages {
 
-wxString GetSystemLanguageCode(const DirectoryPaths &pathList)
+Identifier GetSystemLanguageCode(const DirectoryPaths &pathList)
 {
    Identifiers langCodes;
    TranslatableStrings langNames;
@@ -116,11 +116,11 @@ wxString GetSystemLanguageCode(const DirectoryPaths &pathList)
    }
 
    if (info) {
-      wxString fullCode = info->CanonicalName;
+      auto fullCode = info->CanonicalName;
       if (fullCode.length() < 2)
          return L"en";
 
-      wxString code = fullCode.Left(2);
+      auto code = fullCode.Left(2);
       unsigned int i;
 
       for(i=0; i<langCodes.size(); i++) {
@@ -322,9 +322,9 @@ void GetLanguages( DirectoryPaths pathList,
 static std::unique_ptr<wxLocale> sLocale;
 static wxString sLocaleName;
 
-wxString SetLang( const DirectoryPaths &pathList, const wxString & lang )
+Identifier SetLang( const DirectoryPaths &pathList, const Identifier & lang )
 {
-   wxString result = lang;
+   auto result = lang;
 
    sLocale.reset();
 
@@ -342,13 +342,13 @@ wxString SetLang( const DirectoryPaths &pathList, const wxString & lang )
    const wxLanguageInfo *info = NULL;
    if (!lang.empty() && lang != wxT("System")) {
       // Try to find the given language
-      info = wxLocale::FindLanguageInfo(lang);
+      info = wxLocale::FindLanguageInfo(lang.GET());
    }
    if (!info)
    {
       // Not given a language or can't find it; substitute the system language
       result = Languages::GetSystemLanguageCode(pathList);
-      info = wxLocale::FindLanguageInfo(result);
+      info = wxLocale::FindLanguageInfo(result.GET());
       if (!info)
          // Return the substituted system language, but we can't complete setup
          // Should we try to do something better?
@@ -393,7 +393,7 @@ wxString GetLocaleName()
    return sLocaleName;
 }
 
-wxString GetLang()
+Identifier GetLang()
 {
    if (sLocale)
       return sLocale->GetSysName();
@@ -401,7 +401,7 @@ wxString GetLang()
       return {};
 }
 
-wxString GetLangShort()
+Identifier GetLangShort()
 {
    if (sLocale)
       return sLocale->GetName();

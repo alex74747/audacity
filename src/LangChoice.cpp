@@ -36,13 +36,13 @@ public:
                     wxWindowID id,
                     const TranslatableString & title);
 
-   wxString GetLang() { return mLang; }
+   Identifier GetLang() { return mLang; }
 
 private:
    void OnOk(wxCommandEvent & event);
 
    wxChoice *mChoice;
-   wxString mLang;
+   Identifier mLang;
 
    int mNumLangs;
    IdentifierVector mLangCodes;
@@ -51,18 +51,14 @@ private:
    DECLARE_EVENT_TABLE()
 };
 
-wxString ChooseLanguage(wxWindow *parent)
+Identifier ChooseLanguage(wxWindow *parent)
 {
-   wxString returnVal;
-
    /* i18n-hint: Title on a dialog indicating that this is the first
     * time Audacity has been run. */
    LangChoiceDialog dlog(parent, -1, XO("Audacity First Run"));
    dlog.CentreOnParent();
    dlog.ShowModal();
-   returnVal = dlog.GetLang();
-
-   return returnVal;
+   return dlog.GetLang();
 }
 
 BEGIN_EVENT_TABLE(LangChoiceDialog, wxDialogWrapper)
@@ -112,7 +108,7 @@ void LangChoiceDialog::OnOk(wxCommandEvent & WXUNUSED(event))
    wxString sname;
 
    if (sndx == wxNOT_FOUND) {
-      const wxLanguageInfo *sinfo = wxLocale::FindLanguageInfo(slang);
+      const wxLanguageInfo *sinfo = wxLocale::FindLanguageInfo(slang.GET());
       if (sinfo) {
          sname = sinfo->Description;
       }
@@ -121,14 +117,14 @@ void LangChoiceDialog::OnOk(wxCommandEvent & WXUNUSED(event))
       sname = mLangNames[sndx].Translation();
    }
 
-   if (mLang.Left(2) != slang.Left(2)) {
+   if (wxString{mLang.GET()}.Left(2) != wxString{slang.GET()}.Left(2)) {
       /* i18n-hint: The %s's are replaced by translated and untranslated
        * versions of language names. */
       auto msg = XO("The language you have chosen, %s (%s), is not the same as the system language, %s (%s).")
          .Format(mLangNames[ndx],
-                 mLang,
+                 mLang.GET(),
                  sname,
-                 slang);
+                 slang.GET());
       if ( wxNO == AudacityMessageBox( msg, XO("Confirm"), wxYES_NO ) ) {
          return;
       }
