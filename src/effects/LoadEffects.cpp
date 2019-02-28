@@ -172,7 +172,7 @@ unsigned BuiltinEffectsModule::DiscoverPluginsAtPath(
    const RegistrationCallback &callback)
 {
    errMsg = {};
-   auto effect = Instantiate(path);
+   auto effect = Instantiate(path.GET());
    if (effect)
    {
       if (callback)
@@ -212,7 +212,7 @@ void BuiltinEffectsModule::DeleteInstance(ComponentInterface *instance)
 
 std::unique_ptr<Effect> BuiltinEffectsModule::Instantiate(const PluginPath & path)
 {
-   wxASSERT(path.StartsWith(BUILTIN_EFFECT_PREFIX));
+   wxASSERT(wxString{path.GET()}.StartsWith(BUILTIN_EFFECT_PREFIX));
    auto iter = mEffects.find( path );
    if ( iter != mEffects.end() )
       return iter->second->factory();

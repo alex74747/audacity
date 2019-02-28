@@ -126,7 +126,6 @@ public:
    // These should return an untranslated value
    virtual PluginPath GetPath() = 0;
 
-   // The internal string persists in configuration files
    // So config compatibility will break if it is changed across Audacity versions
    virtual ComponentInterfaceSymbol GetSymbol() = 0;
 

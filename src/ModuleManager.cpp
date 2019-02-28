@@ -565,7 +565,8 @@ bool ModuleManager::IsProviderValid(const PluginID & WXUNUSED(providerID),
       return true;  
    }
 
-   wxFileName lib(path);
+   // ??? Assuming PluginPath is a file name ???
+   wxFileName lib(path.GET());
    if (lib.FileExists() || lib.DirExists())
    {
       return true;

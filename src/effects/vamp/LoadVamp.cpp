@@ -211,10 +211,10 @@ unsigned VampEffectsModule::DiscoverPluginsAtPath(
    int output;
    bool hasParameters;
 
-   auto vp = FindPlugin(path, output, hasParameters);
+   auto vp = FindPlugin(path.GET(), output, hasParameters);
    if (vp)
    {
-      VampEffect effect(std::move(vp), path, output, hasParameters);
+      VampEffect effect(std::move(vp), path.GET(), output, hasParameters);
       if (callback)
          callback( this, &effect );
 
@@ -232,7 +232,7 @@ bool VampEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
    if( bFast )
       return true;
 
-   auto vp = FindPlugin(path, output, hasParameters);
+   auto vp = FindPlugin(path.GET(), output, hasParameters);
    return bool(vp);
 }
 
@@ -265,7 +265,8 @@ std::unique_ptr<Vamp::Plugin> VampEffectsModule::FindPlugin(const PluginPath & p
                                       int & output,
                                       bool & hasParameters)
 {
-   PluginLoader::PluginKey key = path.BeforeLast(L'/').ToUTF8().data();
+   // Interpret plugin path
+   PluginLoader::PluginKey key = wxString{path.GET()}.BeforeLast(L'/').ToUTF8().data();
 
    std::unique_ptr<Plugin> vp{ PluginLoader::getInstance()->loadPlugin(key, 48000) }; // rate doesn't matter here
    if (!vp)

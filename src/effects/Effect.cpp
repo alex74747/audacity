@@ -1256,7 +1256,8 @@ bool Effect::DoEffect(double projectRate,
 
    // We don't yet know the effect type for code in the Nyquist Prompt, so
    // assume it requires a track and handle errors when the effect runs.
-   if ((GetType() == EffectTypeGenerate || GetPath() == NYQUIST_PROMPT_ID) && (mNumTracks == 0)) {
+   if ((GetType() == EffectTypeGenerate ||
+        GetPath() == PluginPath{ NYQUIST_PROMPT_ID }) && (mNumTracks == 0)) {
       newTrack = mTracks->Add(mFactory->NewWaveTrack());
       newTrack->SetSelected(true);
    }

@@ -243,7 +243,7 @@ unsigned NyquistEffectsModule::DiscoverPluginsAtPath(
    const RegistrationCallback &callback)
 {
    errMsg = {};
-   NyquistEffect effect(path);
+   NyquistEffect effect(path.GET());
    if (effect.IsOk())
    {
       if (callback)
@@ -263,13 +263,13 @@ bool NyquistEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
    if(path == NYQUIST_PROMPT_ID)
       return true;
 
-   return wxFileName::FileExists(path);
+   return wxFileName::FileExists(path.GET());
 }
 
 ComponentInterface *NyquistEffectsModule::CreateInstance(const PluginPath & path)
 {
    // Acquires a resource for the application.
-   auto effect = std::make_unique<NyquistEffect>(path);
+   auto effect = std::make_unique<NyquistEffect>(path.GET());
    if (effect->IsOk())
    {
       // Safety of this depends on complementary calls to DeleteInstance on the module manager side.

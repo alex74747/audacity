@@ -379,6 +379,7 @@ enum
    STATE_COUNT
 };
 
+// Collects Effect and Stub plugins with a common path
 struct ItemData
 {
    std::vector<PluginDescriptor*> plugs;
@@ -653,7 +654,7 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
       // by then.
       else if (plugType == PluginTypeStub)
       {
-         wxFileName fname { path };
+         wxFileName fname { path.GET() };
          item.name = fname.GetName().Trim(false).Trim(true);
          if (!item.valid)
          {
@@ -665,7 +666,7 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
       mEffects->GetTextExtent(item.name, &x, NULL);
       colWidths[COL_Name] = wxMax(colWidths[COL_Name], x);
 
-      mEffects->GetTextExtent(item.path, &x, NULL);
+      mEffects->GetTextExtent(item.path.GET(), &x, NULL);
       if (x > colWidths[COL_Path])
       {
          mLongestPath = item.path;
@@ -754,7 +755,7 @@ void PluginRegistrationDialog::RegenerateEffectsList(int filter)
       {
          mEffects->InsertItem(i, item.name);
          mEffects->SetItem(i, COL_State, mStates[item.state]);
-         mEffects->SetItem(i, COL_Path, item.path);
+         mEffects->SetItem(i, COL_Path, item.path.GET());
          mEffects->SetItemPtrData(i, (wxUIntPtr) &item);
 
          ++i;
@@ -835,28 +836,27 @@ int PluginRegistrationDialog::SortCompare(ItemData *item1, ItemData *item2)
 {
    // This function is a three-valued comparator
 
-   wxString *str1;
-   wxString *str2;
+   wxString str1, str2;
 
    switch (mSortColumn)
    {
    case COL_Name:
-      str1 = &item1->name;
-      str2 = &item2->name;
+      str1 = item1->name;
+      str2 = item2->name;
       break;
    case COL_State:
-      str1 = &mStates[item1->state];
-      str2 = &mStates[item2->state];
+      str1 = mStates[item1->state];
+      str2 = mStates[item2->state];
       break;
    case COL_Path:
-      str1 = &item1->path;
-      str2 = &item2->path;
+      str1 = item1->path.GET();
+      str2 = item2->path.GET();
       break;
    default:
       return 0;
    }
 
-   return str2->CmpNoCase(*str1) * mSortDirection;
+   return str2.Cmp(str1) * mSortDirection;
 }
 
 void PluginRegistrationDialog::OnChangedVisibility(wxCommandEvent & evt)
@@ -978,7 +978,6 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
    for (ItemDataMap::iterator iter = mItems.begin(); iter != mItems.end(); ++iter)
    {
       ItemData & item = iter->second;
-      wxString path = item.path;
 
       if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
       {
@@ -986,9 +985,10 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
       }
    }
 
-   wxString last3 = mLongestPath + L"\n" +
-                    mLongestPath + L"\n" +
-                    mLongestPath + L"\n";
+   // A list of three paths
+   wxString last3 = mLongestPath.GET() + L"\n" +
+                    mLongestPath.GET() + L"\n" +
+                    mLongestPath.GET() + L"\n";
 
    auto msg = XO("Enabling effects or commands:\n\n%s").Format( last3 );
 
@@ -1004,11 +1004,12 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
       for (ItemDataMap::iterator iter = mItems.begin(); iter != mItems.end(); ++iter)
       {
          ItemData & item = iter->second;
-         wxString path = item.path;
+         const auto &path = item.path;
 
          if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
          {
-            last3 = last3.AfterFirst(L'\n') + item.path + L"\n";
+            // Shift list of three paths
+            last3 = last3.AfterFirst(L'\n') + item.path.GET() + L"\n";
             auto status = progress.Update(++i, enableCount,
                XO("Enabling effect or command:\n\n%s").Format( last3 ));
             if (status == ProgressResult::Cancelled)
@@ -1047,7 +1048,7 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
             if (!errMsgs.empty())
                AudacityMessageBox(
                   XO("Effect or Command at %s failed to register:\n%s")
-                     .Format( path, errMsgs ) );
+                     .Format( path.GET(), errMsgs ) );
          }
          else if (item.state == STATE_New)
          {
@@ -2105,7 +2106,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
          // but don't remove it from the file.  Maybe you really want to
          // switch back to the other version of Audacity and lose nothing.
          continue;
-      plug.SetPath(strVal);
+      plug.SetPath( strVal );
 
       /*
        // PRL: Ignore names  written in configs before 2.3.0!
@@ -2423,7 +2424,7 @@ void PluginManager::CheckForUpdates(bool bFast)
          continue;
       }
 
-      pathIndex.push_back(plug.GetPath().BeforeFirst(L';'));
+      pathIndex.push_back(wxString{plug.GetPath().GET()}.BeforeFirst(L';'));
    }
 
    // Check all known plugins to ensure they are still valid and scan for NEW ones.
@@ -2441,7 +2442,7 @@ void PluginManager::CheckForUpdates(bool bFast)
    {
       PluginDescriptor & plug = iter->second;
       const PluginID & plugID = plug.GetID();
-      const wxString & plugPath = plug.GetPath();
+      const auto & plugPath = plug.GetPath();
       PluginType plugType = plug.GetPluginType();
 
       // Bypass 2.1.0 placeholders...remove this after a few releases past 2.1.0
@@ -2467,7 +2468,7 @@ void PluginManager::CheckForUpdates(bool bFast)
             auto paths = mm.FindPluginsForProvider(plugID, plugPath);
             for (size_t i = 0, cnt = paths.size(); i < cnt; i++)
             {
-               wxString path = paths[i].BeforeFirst(L';');;
+               wxString path = wxString{paths[i].GET()}.BeforeFirst(L';');
                if ( ! make_iterator_range( pathIndex ).contains( path ) )
                {
                   PluginID ID{ { plugID, path }, L'_' };
@@ -2475,7 +2476,7 @@ void PluginManager::CheckForUpdates(bool bFast)
                   plug2.SetPluginType(PluginTypeStub);
                   plug2.SetID(ID);
                   plug2.SetProviderID(plugID);
-                  plug2.SetPath(path);
+                  plug2.SetPath( path );
                   plug2.SetEnabled(false);
                   plug2.SetValid(false);
                }

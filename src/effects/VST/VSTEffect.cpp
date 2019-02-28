@@ -524,7 +524,7 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
       wxString effectID = effectTzr.GetNextToken();
 
       wxString cmd;
-      cmd.Printf(L"\"%s\" %s \"%s;%s\"", cmdpath, VSTCMDKEY, path, effectID);
+      cmd.Printf(L"\"%s\" %s \"%s;%s\"", cmdpath, VSTCMDKEY, path.GET(), effectID);
 
       VSTSubProcess proc;
       try
@@ -537,7 +537,7 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
       }
       catch (...)
       {
-         wxLogMessage(L"VST plugin registration failed for %s\n", path);
+         wxLogMessage(L"VST plugin registration failed for %s\n", path.GET());
          error = true;
       }
 
@@ -682,7 +682,7 @@ bool VSTEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
 {
    if( bFast )
       return true;
-   wxString realPath = path.BeforeFirst(L';');
+   wxString realPath = wxString{path.GET()}.BeforeFirst(L';');
    return wxFileName::FileExists(realPath) || wxFileName::DirExists(realPath);
 }
 
@@ -734,7 +734,7 @@ void VSTEffectsModule::Check(const wxChar *path)
       else
       {
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyBegin, wxEmptyString);
-         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyPath, effect.GetPath());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyPath, effect.GetPath().GET());
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyName, effect.GetSymbol().Internal());
          out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyVendor,
                                  effect.GetVendor().Internal());
@@ -1469,7 +1469,7 @@ bool VSTEffect::RealtimeInitialize()
 
 bool VSTEffect::RealtimeAddProcessor(unsigned numChannels, float sampleRate)
 {
-   mSlaves.push_back(std::make_unique<VSTEffect>(mPath, this));
+   mSlaves.push_back(std::make_unique<VSTEffect>(mPath.GET(), this));
    VSTEffect *const slave = mSlaves.back().get();
 
    slave->SetBlockSize(mBlockSize);
@@ -2008,8 +2008,8 @@ bool VSTEffect::Load()
    bool success = false;
 
    long effectID = 0;
-   wxString realPath = mPath.BeforeFirst(L';');
-   mPath.AfterFirst(L';').ToLong(&effectID);
+   wxString realPath = wxString{mPath.GET()}.BeforeFirst(L';');
+   wxString{mPath.GET()}.AfterFirst(L';').ToLong(&effectID);
    mCurrentEffectID = (intptr_t) effectID;
 
    mModule = NULL;

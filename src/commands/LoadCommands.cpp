@@ -215,7 +215,7 @@ void BuiltinCommandsModule::DeleteInstance(ComponentInterface *instance)
 
 std::unique_ptr<AudacityCommand> BuiltinCommandsModule::Instantiate(const PluginPath & path)
 {
-   wxASSERT(path.StartsWith(BUILTIN_GENERIC_COMMAND_PREFIX));
+   wxASSERT(wxString{path.GET()}.StartsWith(BUILTIN_GENERIC_COMMAND_PREFIX));
    auto iter = mCommands.find( path );
    if ( iter != mCommands.end() )
       return iter->second->factory();

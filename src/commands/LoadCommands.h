@@ -83,7 +83,7 @@ private:
    static void DoRegistration(
       const ComponentInterfaceSymbol &name, const Factory &factory );
 
-   using CommandHash = std::unordered_map< wxString, const Entry* > ;
+   using CommandHash = std::unordered_map< PluginPath, const Entry* > ;
    CommandHash mCommands;
 };
 

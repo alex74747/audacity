@@ -350,7 +350,7 @@ unsigned AudioUnitEffectsModule::DiscoverPluginsAtPath(
       return 0;
    }
 
-   AudioUnitEffect effect(path, name, component);
+   AudioUnitEffect effect(path.GET(), name, component);
    if (!effect.SetHost(NULL))
    {
       // TODO:  Is it worth it to discriminate all the ways SetHost might
@@ -461,9 +461,11 @@ void AudioUnitEffectsModule::LoadAudioUnitsOfType(OSType inAUType,
    }
 }
 
-AudioComponent AudioUnitEffectsModule::FindAudioUnit(const PluginPath & path,
+AudioComponent AudioUnitEffectsModule::FindAudioUnit(const PluginPath & p,
                                                      wxString & name)
 {
+   // Interpret plugin path
+   const auto &path = p.GET();
    wxStringTokenizer tokens(path, L"/");
 
    AudioComponentDescription desc;
@@ -884,7 +886,7 @@ AudioUnitEffect::~AudioUnitEffect()
 
 PluginPath AudioUnitEffect::GetPath()
 {
-   return mPath;
+   return mPath  ;
 }
 
 ComponentInterfaceSymbol AudioUnitEffect::GetSymbol()

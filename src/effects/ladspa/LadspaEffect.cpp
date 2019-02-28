@@ -253,7 +253,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    errMsg = {};
    // Since we now have builtin VST support, ignore the VST bridge as it
    // causes duplicate menu entries to appear.
-   wxFileName ff(path);
+   wxFileName ff(path.GET());
    if (ff.GetName().CmpNoCase(L"vst-bridge") == 0) {
       errMsg = XO("Audacity no longer uses vst-bridge");
       return 0;
@@ -273,12 +273,12 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    LADSPA_Descriptor_Function mainFn = NULL;
 #if defined(__WXMSW__)
    wxDynamicLibrary lib;
-   if (lib.Load(path, wxDL_NOW)) {
+   if (lib.Load(path.GET(), wxDL_NOW)) {
       wxLogNull logNo;
 
       mainFn = (LADSPA_Descriptor_Function) lib.GetSymbol(L"ladspa_descriptor");
 #else
-   void *lib = dlopen((const char *)path.ToUTF8(), RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
+   void *lib = dlopen((const char *)wxString{path.GET()}.ToUTF8(), RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
    if (lib) {
       mainFn = (LADSPA_Descriptor_Function) dlsym(lib, "ladspa_descriptor");
 #endif
@@ -287,7 +287,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
          const LADSPA_Descriptor *data;
 
          for (data = mainFn(index); data; data = mainFn(++index)) {
-            LadspaEffect effect(path, index);
+            LadspaEffect effect(path.GET(), index);
             if (effect.SetHost(NULL)) {
                ++nLoaded;
                if (callback)
@@ -326,7 +326,7 @@ bool LadspaEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
 {
    if( bFast )
       return true;
-   wxString realPath = path.BeforeFirst(L';');
+   wxString realPath = wxString{path.GET()}.BeforeFirst(L';');
    return wxFileName::FileExists(realPath);
 }
 
@@ -337,8 +337,9 @@ ComponentInterface *LadspaEffectsModule::CreateInstance(const PluginPath & path)
    // 1)  The library's path
    // 2)  The LADSPA descriptor index
    long index;
-   wxString realPath = path.BeforeFirst(L';');
-   path.AfterFirst(L';').ToLong(&index);
+   // Interpret plugin path as file path + number
+   wxString realPath = wxString{path.GET()}.BeforeFirst(L';');
+   wxString{path.GET()}.AfterFirst(L';').ToLong(&index);
 
    // Safety of this depends on complementary calls to DeleteInstance on the module manager side.
    return safenew LadspaEffect(realPath, (int)index);

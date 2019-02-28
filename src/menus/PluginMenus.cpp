@@ -46,8 +46,8 @@ void DoManagePluginsMenu(AudacityProject &project, EffectType type)
 bool CompareEffectsByName(const PluginDescriptor *a, const PluginDescriptor *b)
 {
    return
-      std::make_pair( a->GetSymbol().Translation(), a->GetPath() ) <
-      std::make_pair( b->GetSymbol().Translation(), b->GetPath() );
+      std::make_pair( a->GetSymbol().Translation(), a->GetPath().GET() ) <
+      std::make_pair( b->GetSymbol().Translation(), b->GetPath().GET() );
 }
 
 bool CompareEffectsByPublisher(
@@ -65,9 +65,9 @@ bool CompareEffectsByPublisher(
 
    return
       std::make_tuple(
-         akey.Translation(), a->GetSymbol().Translation(), a->GetPath() ) <
+         akey.Translation(), a->GetSymbol().Translation(), a->GetPath().GET() ) <
       std::make_tuple(
-         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath() );
+         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath().GET() );
 }
 
 bool CompareEffectsByPublisherAndName(
@@ -84,9 +84,9 @@ bool CompareEffectsByPublisherAndName(
 
    return
       std::make_tuple(
-         akey.Translation(), a->GetSymbol().Translation(), a->GetPath() ) <
+         akey.Translation(), a->GetSymbol().Translation(), a->GetPath().GET() ) <
       std::make_tuple(
-         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath() );
+         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath().GET() );
 }
 
 bool CompareEffectsByTypeAndName(
@@ -108,9 +108,9 @@ bool CompareEffectsByTypeAndName(
 
    return
       std::make_tuple(
-         akey.Translation(), a->GetSymbol().Translation(), a->GetPath() ) <
+         akey.Translation(), a->GetSymbol().Translation(), a->GetPath().GET() ) <
       std::make_tuple(
-         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath() );
+         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath().GET() );
 }
 
 bool CompareEffectsByType(const PluginDescriptor *a, const PluginDescriptor *b)
@@ -126,9 +126,9 @@ bool CompareEffectsByType(const PluginDescriptor *a, const PluginDescriptor *b)
 
    return
       std::make_tuple(
-         akey.Translation(), a->GetSymbol().Translation(), a->GetPath() ) <
+         akey.Translation(), a->GetSymbol().Translation(), a->GetPath().GET() ) <
       std::make_tuple(
-         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath() );
+         bkey.Translation(), b->GetSymbol().Translation(), b->GetPath().GET() );
 }
 
 // Forward-declared function has its definition below with OnEffect in view
@@ -725,7 +725,7 @@ void AddEffectMenuItemGroup(
          {
             const PluginDescriptor *plug =
                PluginManager::Get().GetPlugin(plugs[i]);
-            wxString item = plug->GetPath();
+            auto item = plug->GetPath().GET();
             if( plug->GetPluginType() == PluginTypeEffect )
                temp2.push_back( Command( item,
                   Verbatim( item ),

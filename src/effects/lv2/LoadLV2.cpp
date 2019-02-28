@@ -279,8 +279,14 @@ unsigned LV2EffectsModule::DiscoverPluginsAtPath(
    const RegistrationCallback &callback)
 {
    errMsg = {};
-   const LilvPlugin *plug = GetPlugin(path);
-   if (plug)
+   const LilvPlugin *plug = GetPlugin(path.GET());
+   if (!plug)
+   {
+      return false;
+   }
+
+   LV2Effect effect(plug);
+   if (effect.SetHost(NULL))
    {
       LV2Effect effect(plug);
       if (effect.SetHost(NULL))
@@ -299,7 +305,7 @@ bool LV2EffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
 {
    if( bFast )
       return true;
-   return GetPlugin(path) != NULL;
+   return GetPlugin(path.GET()) != NULL;
 }
 
 ComponentInterface *LV2EffectsModule::CreateInstance(const PluginPath & path)
@@ -328,7 +334,8 @@ void LV2EffectsModule::DeleteInstance(ComponentInterface *instance)
 
 const LilvPlugin *LV2EffectsModule::GetPlugin(const PluginPath & path)
 {
-   LilvNode *uri = lilv_new_uri(gWorld, path.ToUTF8());
+   // Interpret plugin path
+   LilvNode *uri = lilv_new_uri(gWorld, wxString{path.GET()}.ToUTF8());
    if (!uri)
    {
       return NULL;

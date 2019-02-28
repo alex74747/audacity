@@ -218,7 +218,8 @@ namespace std
 defining its own interpretation of the strings, which may or may not be as a
 file system path
 ********************************************************************************/
-using PluginPath = wxString;
+struct PluginPathTag;
+using PluginPath = TaggedIdentifier< PluginPathTag >;
 using PluginPaths = std::vector< PluginPath >;
 
 // A key to be passed to wxConfigBase

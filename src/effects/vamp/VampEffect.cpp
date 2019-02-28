@@ -75,8 +75,9 @@ VampEffect::VampEffect(std::unique_ptr<Vamp::Plugin> &&plugin,
    mHasParameters(hasParameters),
    mRate(0)
 {
-   mKey = mPath.BeforeLast(L'/').ToUTF8();
-   mName = mPath.AfterLast(L'/');
+   // Interpret plugin path
+   mKey = wxString{mPath.GET()}.BeforeLast(L'/').ToUTF8();
+   mName = wxString{mPath.GET()}.AfterLast(L'/');
 }
 
 VampEffect::~VampEffect()

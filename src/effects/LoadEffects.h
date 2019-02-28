@@ -83,7 +83,7 @@ private:
       bool excluded );
 
    struct Entry;
-   using EffectHash = std::unordered_map< wxString, const Entry* > ;
+   using EffectHash = std::unordered_map< PluginPath, const Entry* > ;
    EffectHash mEffects;
 };
 
