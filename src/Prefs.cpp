@@ -304,9 +304,8 @@ void InitPreferences()
 
       // "Order" must be adjusted since we're inserting two NEW toolbars
       if (dock > 0) {
-         wxString oldPath = gPrefs->GetPath();
-         gPrefs->SetPath(wxT("/GUI/ToolBars"));
-
+         wxConfigPathChanger changer{ gPrefs, wxT("/GUI/ToolBars/") };
+         
          wxString bar;
          long ndx = 0;
          bool cont = gPrefs->GetFirstGroup(bar, ndx);
@@ -317,7 +316,6 @@ void InitPreferences()
             }
             cont = gPrefs->GetNextGroup(bar, ndx);
          }
-         gPrefs->SetPath(oldPath);
 
          // And override the height
          h = 27;
