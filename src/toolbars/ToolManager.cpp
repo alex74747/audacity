@@ -720,7 +720,6 @@ int ToolManager::FilterEvent(wxEvent &event)
 //
 void ToolManager::ReadConfig()
 {
-   wxString oldpath = gPrefs->GetPath();
    std::vector<int> unordered[ DockCount ];
    std::vector<ToolBar*> dockedAndHidden;
    bool show[ ToolBarCount ];
@@ -735,8 +734,9 @@ void ToolManager::ReadConfig()
    wxSystemOptions::SetOption( wxMAC_WINDOW_PLAIN_TRANSITION, 1 );
 #endif
 
+   {
    // Change to the bar root
-   gPrefs->SetPath( L"/GUI/ToolBars" );
+   wxConfigPathChanger changer{ gPrefs, L"/GUI/ToolBars/" };
 
    ToolBarConfiguration::Legacy topLegacy, botLegacy;
 
@@ -762,7 +762,8 @@ void ToolManager::ReadConfig()
       //   wxSystemSettings::GetMetric( wxSYS_SCREEN_Y ) /2 );
 
       // Change to the bar subkey
-      gPrefs->SetPath( bar->GetSection() );
+      wxConfigPathChanger changer2{ gPrefs,
+         bar->GetSection() + wxCONFIG_PATH_SEPARATOR };
 
       bool bShownByDefault = true;
       int defaultDock = TopDockID;
@@ -910,12 +911,6 @@ void ToolManager::ReadConfig()
          // Show or hide it
          Expose( ndx, show[ ndx ] );
       }
-
-      // Change back to the bar root
-      //gPrefs->SetPath( L".." );  <-- Causes a warning...
-      // May or may not have gone into a subdirectory,
-      // so use an absolute path.
-      gPrefs->SetPath( L"/GUI/ToolBars" );
    }
 
    mTopDock->GetConfiguration().PostRead(topLegacy);
@@ -948,8 +943,7 @@ void ToolManager::ReadConfig()
       bar->Expose(false);
    }
 
-   // Restore original config path
-   gPrefs->SetPath( oldpath );
+   }
 
 #if defined(__WXMAC__)
    // Reinstate original transition
@@ -970,11 +964,11 @@ void ToolManager::WriteConfig()
       return;
    }
 
-   wxString oldpath = gPrefs->GetPath();
    int ndx;
 
+   {
    // Change to the bar root
-   gPrefs->SetPath( L"/GUI/ToolBars" );
+   wxConfigPathChanger changer{ gPrefs, L"/GUI/ToolBars/" };
 
    // Save state of each bar
    for( ndx = 0; ndx < ToolBarCount; ndx++ )
@@ -982,7 +976,8 @@ void ToolManager::WriteConfig()
       ToolBar *bar = mBars[ ndx ].get();
 
       // Change to the bar subkey
-      gPrefs->SetPath( bar->GetSection() );
+      wxConfigPathChanger changer2{ gPrefs,
+         bar->GetSection() + wxCONFIG_PATH_SEPARATOR };
 
       // Search both docks for toolbar order
       bool to = mTopDock->GetConfiguration().Contains( bar );
@@ -1012,13 +1007,9 @@ void ToolManager::WriteConfig()
       gPrefs->Write( L"Y", pos.y );
       gPrefs->Write( L"W", sz.x );
       gPrefs->Write( L"H", sz.y );
-
-      // Change back to the bar root
-      gPrefs->SetPath( L".." );
    }
 
-   // Restore original config path
-   gPrefs->SetPath( oldpath );
+   }
    gPrefs->Flush();
 }
 

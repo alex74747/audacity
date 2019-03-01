@@ -302,8 +302,7 @@ void Tags::LoadDefaults()
    bool cont;
 
    // Set the parent group
-   path = gPrefs->GetPath();
-   gPrefs->SetPath(L"/Tags");
+   wxConfigPathChanger changer{ gPrefs, L"/Tags/" };
 
    // Process all entries in the group
    cont = gPrefs->GetFirstEntry(name, ndx);
@@ -319,9 +318,6 @@ void Tags::LoadDefaults()
 
       cont = gPrefs->GetNextEntry(name, ndx);
    }
-
-   // Restore original group
-   gPrefs->SetPath(path);
 }
 
 bool Tags::IsEmpty()
