@@ -66,7 +66,8 @@ bool ImportCommand::Apply(const CommandContext & context)
 
 
 bool ExportCommand::DefineParams( ShuttleParams & S ){
-   wxFileName fn = FileNames::FindDefaultPath(FileNames::Operation::Export);
+   wxFileNameWrapper fn =
+      FileNames::FindDefaultPath(FileNames::Operation::Export);
    fn.SetName("exported.wav");
    S.Define(mFileName, L"Filename", fn.GetFullPath());
    S.Define( mnChannels, L"NumChannels",  1 );

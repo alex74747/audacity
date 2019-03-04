@@ -391,7 +391,7 @@ void HelpSystem::ShowHelp(wxWindow *parent,
       // Concatenate file name with file extension and anchor.
       releasePageName = releasePageName + HelpSystem::ReleaseSuffix + anchor;
       // Other than index and quick_help, all local pages are in subdirectory 'LocalHelpManDir'.
-      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir() + LocalHelpManDir, releasePageName }.GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir().GET() + LocalHelpManDir, releasePageName }.GetFullPath();
       // Other than index and quick_help, all on-line pages are in subdirectory 'HelpServerManDir'.
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerManDir;
    }
@@ -540,7 +540,8 @@ void LinkingHtmlWindow::OnLinkClicked(const wxHtmlLinkInfo& link)
    else if( href.StartsWith(L"innerlink:") )
    {
       wxString FileName =
-         wxFileName{ FileNames::HtmlHelpDir(), href.Mid( 10 ) + L".htm" }.GetFullPath();
+         wxFileNameWrapper{ FileNames::HtmlHelpDir(),
+            href.Mid( 10 ) + L".htm" }.GetFullPath();
       if( wxFileExists( FileName ) )
       {
          HelpSystem::ShowHelp(this, FileName, wxEmptyString, false);

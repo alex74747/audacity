@@ -92,7 +92,7 @@ ExportCLOptions::ExportCLOptions(wxWindow *parent, int WXUNUSED(format))
       mHistory.Append(L"lame - \"%f\"");
    }
 
-   mHistory.Append(gPrefs->Read(L"/FileFormats/ExternalProgramExportCommand",
+   mHistory.Append(gPrefs->ReadObject(L"/FileFormats/ExternalProgramExportCommand",
                                           mHistory[ 0 ]));
 
    ShuttleGui S(this, eIsCreatingFromPrefs);
@@ -112,7 +112,9 @@ ExportCLOptions::~ExportCLOptions()
 ///
 void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
 {
-   wxArrayStringEx cmds( mHistory.begin(), mHistory.end() );
+   wxArrayStringEx cmds;
+   for ( const auto &file : mHistory )
+      cmds.push_back( file.GET() );
    auto cmd = cmds[0];
 
    S.StartVerticalLay();
@@ -194,7 +196,7 @@ void ExportCLOptions::OnBrowse(wxCommandEvent& WXUNUSED(event))
       ext,
       { type },
       wxFD_OPEN | wxRESIZE_BORDER,
-      this);
+      this).GET();
    if (path.empty()) {
       return;
    }

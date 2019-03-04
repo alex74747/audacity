@@ -53,6 +53,8 @@ public:
       return *this;
    }
 
+   void clear() { value.clear(); }
+
    // Implements moves
    void swap( Identifier &id ) { value.swap( id.value ); }
 
@@ -226,9 +228,6 @@ using RegistryPaths = std::vector< RegistryPath >;
 
 class wxArrayStringEx;
 
-using FilePath = wxString;
-using FilePaths = wxArrayStringEx;
-
 struct CommandIdTag;
 //! Identifies a menu command or macro. Case-insensitive comparison
 using CommandID = TaggedIdentifier< CommandIdTag, false >;
@@ -272,4 +271,52 @@ struct wxArgNormalizerNative<FileExtension>
    wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
 };
 
+struct FilePathTag;
+using FilePath = TaggedIdentifier<
+   FilePathTag,
+
+   // Case sensitivity as for wxFileName::IsCaseSensitive in filename.cpp;
+   // we can't call that function but need a compile-time constant boolean as
+   // the template parameter;
+   // it depends on whether wxFileName::GetFormat( wxPATH_NATIVE )
+   // returns wxPATH_UNIX;
+   // this preprocessor logic is like what is in that function
+#if defined(__WINDOWS__) || defined(__WXMAC__)
+   false // case insensitive
+#else
+   true // case sensitive
+#endif
+
+>;
+using FilePaths = std::vector< FilePath >;
+
+
+// This makes FilePath work as an argument in wxString::Format() without calling
+// GET().
+// File paths are often reported to the user in dialogs, so we permit this
+// for this subclass of Identifier.
+template<>
+struct wxArgNormalizerNative<const FilePath&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const FilePath& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+template<>
+struct wxArgNormalizerNative<FilePath>
+: public wxArgNormalizerNative<const FilePath&>
+{
+   wxArgNormalizerNative(const FilePath& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const FilePath&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+ 
 #endif

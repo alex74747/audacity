@@ -286,7 +286,7 @@ std::unique_ptr<ImportFileHandle> FLACImportPlugin::Open(
 
    int cnt;
    wxFile binaryFile;
-   if (!binaryFile.Open(filename)) {
+   if (!binaryFile.Open(filename.GET())) {
       return nullptr; // File not found
    }
 
@@ -350,7 +350,7 @@ bool FLACImportFileHandle::Init()
       return false;
    }
 #else
-   if (!mHandle.Open(mFilename, L"rb")) {
+   if (!mHandle.Open(mFilename.GET(), L"rb")) {
       return false;
    }
 

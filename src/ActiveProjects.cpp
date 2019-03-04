@@ -32,7 +32,7 @@ FilePaths ActiveProjects::GetAll()
    {
       wxFileName path = gPrefs->Read(key, L"");
 
-      files.Add(path.GetFullPath());
+      files.push_back(path.GetFullPath());
 
       more = gPrefs->GetNextEntry(key, ndx);
    }
@@ -82,7 +82,7 @@ wxString ActiveProjects::Find(const FilePath &path)
    bool more = gPrefs->GetFirstEntry(key, ndx);
    while (more)
    {
-      if (gPrefs->Read(key, L"").IsSameAs(path))
+      if (gPrefs->Read(key, L"").IsSameAs(path.GET()))
       {
          found = true;
          break;

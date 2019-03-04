@@ -55,7 +55,7 @@ void FileConfig::Init()
    while (true)
    {
       mConfig = std::make_unique<wxFileConfig>
-         (mAppName, mVendorName, mLocalFilename, mGlobalFilename, mStyle, mConv);
+         (mAppName, mVendorName, mLocalFilename.GET(), mGlobalFilename, mStyle, mConv);
 
       // Prevent wxFileConfig from attempting a Flush() during object deletion. This happens
       // because we don't use the wxFileConfig::Flush() method and so the wxFileConfig dirty
@@ -67,7 +67,7 @@ void FileConfig::Init()
       bool canWrite = false;
       int fd;
 
-      fd = wxOpen(mLocalFilename, O_RDONLY, S_IREAD);
+      fd = wxOpen(mLocalFilename.GET(), O_RDONLY, S_IREAD);
       if (fd != -1 || errno == ENOENT)
       {
          canRead = true;
@@ -77,7 +77,7 @@ void FileConfig::Init()
          }
       }
 
-      fd = wxOpen(mLocalFilename, O_WRONLY | O_CREAT, S_IWRITE);
+      fd = wxOpen(mLocalFilename.GET(), O_WRONLY | O_CREAT, S_IWRITE);
       if (fd != -1)
       {
          canWrite = true;
@@ -157,13 +157,13 @@ bool FileConfig::Flush(bool WXUNUSED(bCurrentOnly))
 
    while (true)
    {
-      FilePath backup = mLocalFilename + ".bkp";
+      FilePath backup = mLocalFilename.GET() + ".bkp";
 
-      if (!wxFileExists(backup) || (wxRemove(backup) == 0))
+      if (!wxFileExists(backup.GET()) || (wxRemove(backup.GET()) == 0))
       {
-         if (!wxFileExists(mLocalFilename) || (wxRename(mLocalFilename, backup) == 0))
+         if (!wxFileExists(mLocalFilename.GET()) || (wxRename(mLocalFilename.GET(), backup.GET()) == 0))
          {
-            wxFileOutputStream stream(mLocalFilename);
+            wxFileOutputStream stream(mLocalFilename.GET());
             if (stream.IsOk())
             {
                if (mConfig->Save(stream))
@@ -171,7 +171,7 @@ bool FileConfig::Flush(bool WXUNUSED(bCurrentOnly))
                   stream.Sync();
                   if (stream.IsOk() && stream.Close())
                   {
-                     if (!wxFileExists(backup) || (wxRemove(backup) == 0))
+                     if (!wxFileExists(backup.GET()) || (wxRemove(backup.GET()) == 0))
                      {
                         mDirty = false;
                         return true;
@@ -180,10 +180,10 @@ bool FileConfig::Flush(bool WXUNUSED(bCurrentOnly))
                }
             }
 
-            if (wxFileExists(backup))
+            if (wxFileExists(backup.GET()))
             {
-               wxRemove(mLocalFilename);
-               wxRename(backup, mLocalFilename);
+               wxRemove(mLocalFilename.GET());
+               wxRename(backup.GET(), mLocalFilename.GET());
             }
          }
       }

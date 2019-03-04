@@ -205,7 +205,7 @@ private:
    wxString mCurrentTag;
    const wxChar **mAttrs;
 
-   wxFileName mProjDir;
+   wxFileNameWrapper mProjDir;
    using BlockFileMap =
       std::map<wxString, std::pair<FilePath, std::shared_ptr<SampleBlock>>>;
    BlockFileMap mFileMap;
@@ -472,7 +472,7 @@ void AUPImportFileHandle::SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUS
 
 bool AUPImportFileHandle::Open()
 {
-   wxFFile ff(mFilename, L"rb");
+   wxFFile ff(mFilename.GET(), L"rb");
    if (ff.IsOpened())
    {
       char buf[256];
@@ -1494,7 +1494,7 @@ bool AUPImportFileHandle::AddSamples(const FilePath &blockFilename,
                                      int channel /* = 0 */)
 {
    auto pClip = mClip ? mClip : mWaveTrack->RightmostOrNewClip();
-   auto &pBlock = mFileMap[wxFileNameFromPath(blockFilename)].second;
+   auto &pBlock = mFileMap[wxFileNameFromPath(wxString{blockFilename.GET()})].second;
    if (pBlock) {
       // Replicate the sharing of blocks
       pClip->AppendSharedBlock( pBlock );
@@ -1533,7 +1533,7 @@ bool AUPImportFileHandle::AddSamples(const FilePath &blockFilename,
       }
    });
 
-   if (!f.Open(audioFilename))
+   if (!f.Open(audioFilename.GET()))
    {
       SetWarning(XO("Failed to open %s").Format(audioFilename));
 

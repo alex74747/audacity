@@ -142,6 +142,8 @@ private:
 
    static wxString NyquistToWxString(const char *nyqString);
    wxString EscapeString(const wxString & inStr);
+   wxString EscapeString(const FilePath & inStr)
+      { return EscapeString(wxString{inStr.GET()}); }
    static std::vector<EnumValueSymbol> ParseChoice(const wxString & text);
 
    FileExtensions ParseFileExtensions(const wxString & text);

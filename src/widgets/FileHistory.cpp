@@ -19,6 +19,7 @@
 #include <wx/defs.h>
 
 #include "Internat.h"
+#include "MemoryX.h"
 #include "../Prefs.h"
 #include "wxMenuWrapper.h"
 
@@ -56,11 +57,7 @@ void FileHistory::AddFileToHistory(const FilePath & file, bool update)
       return;
    }
 
-#if defined(__WXMSW__)
-   int i = mHistory.Index(file, false);
-#else
-   int i = mHistory.Index(file, true);
-#endif
+   int i = make_iterator_range( mHistory ).index( file );
 
    if (i != wxNOT_FOUND) {
       mHistory.erase( mHistory.begin() + i );
@@ -167,7 +164,7 @@ void FileHistory::NotifyMenu(wxMenuWrapper *menu)
       menu->Destroy(*iter++);
 
    for (size_t i = 0; i < mHistory.size(); i++) {
-      wxString item =  mHistory[i];
+      wxString item =  mHistory[i].GET();
       item.Replace( "&", "&&" );
       menu->Append(mIDBase + 1 + i, Verbatim( item ) );
    }

@@ -103,7 +103,7 @@ class AudacityApp final : public wxApp {
    void InitCommandHandler();
 
    bool InitTempDir();
-   bool CreateSingleInstanceChecker(const wxString &dir);
+   bool CreateSingleInstanceChecker(const FilePath &dir);
 
    std::unique_ptr<wxCmdLineParser> ParseCommandLine();
 

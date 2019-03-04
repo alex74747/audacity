@@ -579,7 +579,8 @@ int SourceOutputStream::OpenFile(const FilePath & Filename)
 {
    nBytes = 0;
    bool bOk;
-   bOk = File.Open( Filename, wxFile::write );
+   // using GET to pass file path to wxWidgets
+   bOk = File.Open( Filename.GET(), wxFile::write );
    if( bOk )
    {
 // DA: Naming of output sourcery
@@ -751,7 +752,7 @@ void ThemeBase::CreateImageCache( bool bBinarySave )
          ImageCache.GetHeight()*4,
          wxIMAGE_QUALITY_NEAREST );
 #endif
-      if( !ImageCache.SaveFile( FileName, wxBITMAP_TYPE_PNG ))
+      if( !ImageCache.SaveFile( FileName.GET(), wxBITMAP_TYPE_PNG ))
       {
          AudacityMessageBox(
             XO("Audacity could not write file:\n  %s.")
@@ -803,7 +804,7 @@ void ThemeBase::WriteImageMap( )
    mFlow.Init( ImageCacheWidth );
    mFlow.mBorderWidth = 1;
 
-   wxFFile File( FileNames::ThemeCacheHtm(), L"wb" );// I'll put in NEW lines explicitly.
+   wxFFile File( FileNames::ThemeCacheHtm().GET(), L"wb" );// I'll put in NEW lines explicitly.
    if( !File.IsOpened() )
       return;
 
@@ -853,7 +854,7 @@ void ThemeBase::WriteImageDefs( )
    wxBusyCursor busy;
 
    int i;
-   wxFFile File( FileNames::ThemeImageDefsAsCee(), L"wb" );
+   wxFFile File( FileNames::ThemeImageDefsAsCee().GET(), L"wb" );
    if( !File.IsOpened() )
       return;
    teResourceFlags PrevFlags = (teResourceFlags)-1;
@@ -945,7 +946,7 @@ bool ThemeBase::ReadImageCache( teThemeType type, bool bOkIfNotFound)
                .Format( FileName ));
          return false;
       }
-      if( !ImageCache.LoadFile( FileName, wxBITMAP_TYPE_PNG ))
+      if( !ImageCache.LoadFile( FileName.GET(), wxBITMAP_TYPE_PNG ))
       {
          AudacityMessageBox(
             /* i18n-hint: Do not translate png.  It is the name of a file format.*/
@@ -1069,7 +1070,7 @@ void ThemeBase::LoadComponents( bool bOkIfNotFound )
          FileName = FileNames::ThemeComponent( mBitmapNames[i] );
          if( wxFileExists( FileName ))
          {
-            if( !mImages[i].LoadFile( FileName, wxBITMAP_TYPE_PNG ))
+            if( !mImages[i].LoadFile( FileName.GET(), wxBITMAP_TYPE_PNG ))
             {
                AudacityMessageBox(
                   XO(
@@ -1114,9 +1115,9 @@ void ThemeBase::SaveComponents()
       /// \bug 2 in wxWidgets documentation; wxMkDir has only one argument
       /// under MSW
 #ifdef __WXMSW__
-      wxMkDir( FileNames::ThemeComponentsDir().fn_str() );
+      wxMkDir( wxString{FileNames::ThemeComponentsDir().GET()}.fn_str() );
 #else
-      wxMkDir( FileNames::ThemeComponentsDir().fn_str(), 0700 );
+      wxMkDir( wxString{FileNames::ThemeComponentsDir().GET()}.fn_str(), 0700 );
 #endif
       if( !wxDirExists( FileNames::ThemeComponentsDir() ))
       {
@@ -1162,7 +1163,7 @@ void ThemeBase::SaveComponents()
       if( (mBitmapFlags[i] & resFlagInternal)==0)
       {
          FileName = FileNames::ThemeComponent( mBitmapNames[i] );
-         if( !mImages[i].SaveFile( FileName, wxBITMAP_TYPE_PNG ))
+         if( !mImages[i].SaveFile( FileName.GET(), wxBITMAP_TYPE_PNG ))
          {
             AudacityMessageBox(
                XO("Audacity could not save file:\n  %s")

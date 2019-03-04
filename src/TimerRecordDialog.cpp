@@ -309,7 +309,7 @@ void TimerRecordDialog::OnAutoSavePathButton_Click(wxCommandEvent& WXUNUSED(even
       L"aup3",
       { FileNames::AudacityProjects },
       wxFD_SAVE | wxRESIZE_BORDER,
-      this);
+      this).GET();
 
    if (fName.empty())
       return;
@@ -847,7 +847,7 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
                TranslatableString sInitialValue;
                auto sSaveValue = ProjectFileIO::Get(mProject).GetFileName();
                if (!sSaveValue.empty()) {
-                  m_fnAutoSaveFile.Assign(sSaveValue);
+                  m_fnAutoSaveFile = { sSaveValue };
                   sInitialValue = XO("Current Project");
                }
                S.AddPrompt(XXO("Save Project As:"));

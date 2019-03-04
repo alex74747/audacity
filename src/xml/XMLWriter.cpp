@@ -33,6 +33,8 @@ the general functionality for creating XML in UTF8 encoding.
 
 #include <string.h>
 
+#include "../FileNames.h"
+
 #include "wxFileNameWrapper.h"
 
 //table for xml encoding compatibility with expat decoding
@@ -301,7 +303,7 @@ XMLFileWriter::XMLFileWriter(
    , mKeepBackup{ keepBackup }
 // may throw
 {
-   auto tempPath = wxFileName::CreateTempFileName( outputPath );
+   auto tempPath = wxFileName::CreateTempFileName( outputPath.GET() );
    if (!wxFFile::Open(tempPath, L"wb") || !IsOpened())
       ThrowException( outputPath, mCaption );
 
@@ -321,7 +323,7 @@ XMLFileWriter::XMLFileWriter(
 
       // Open the backup file to be sure we can write it and reserve it
       // until committing
-      if (! mBackupFile.Open( mBackupName, "wb" ) || ! mBackupFile.IsOpened() )
+      if (! mBackupFile.Open( mBackupName.GET(), "wb" ) || ! mBackupFile.IsOpened() )
          ThrowException( mBackupName, mCaption );
    }
 }
@@ -367,7 +369,7 @@ void XMLFileWriter::PostCommit()
          ThrowException( mBackupName, mCaption );
    }
    else {
-      if ( wxFileName::FileExists( mOutputPath ) &&
+      if ( wxFileName::FileExists( mOutputPath.GET() ) &&
            ! wxRemoveFile( mOutputPath ) )
          ThrowException( mOutputPath, mCaption );
    }

@@ -65,7 +65,7 @@ Module::~Module()
 
 void Module::ShowLoadFailureError(const wxString &Error)
 {
-   auto ShortName = wxFileName(mName).GetName();
+   auto ShortName = wxFileNameWrapper{ mName }.GetName();
    AudacityMessageBox(XO("Unable to load the \"%s\" module.\n\nError: %s").Format(ShortName, Error),
                       XO("Module Unsuitable"));
    wxLogMessage(L"Unable to load the module \"%s\". Error: %s", mName, Error);
@@ -84,9 +84,9 @@ bool Module::Load(wxString &deferredErrorMessage)
       return false;
    }
 
-   auto ShortName = wxFileName(mName).GetName();
+   auto ShortName = wxFileName(mName.GET()).GetName();
 
-   if (!mLib->Load(mName, wxDL_NOW | wxDL_QUIET | wxDL_GLOBAL)) {
+   if (!mLib->Load(mName.GET(), wxDL_NOW | wxDL_QUIET | wxDL_GLOBAL)) {
       // For this failure path, only, there is a possiblity of retrial
       // after some other dependency of this module is loaded.  So the
       // error is not immediately reported.
@@ -231,7 +231,7 @@ void ModuleManager::FindModules(FilePaths &files)
       FileNames::AddMultiPathsToPathList(pathVar, pathList);
 
    for (const auto &path : audacityPathList) {
-      wxString prefix = path + wxFILE_SEP_PATH;
+      wxString prefix = path.GET() + wxFILE_SEP_PATH;
       FileNames::AddUniquePathToPathList(prefix + L"modules",
                                          pathList);
       if (files.size()) {
@@ -262,12 +262,12 @@ void ModuleManager::TryLoadModules(
       // Only process the first module encountered in the
       // defined search sequence.
       wxString ShortName = wxFileNameWrapper{ file }.GetName();
-      if( checked.Index( ShortName, false ) != wxNOT_FOUND )
+      if (make_iterator_range(checked).contains(ShortName))
          continue;
-      checked.Add( ShortName );
+      checked.push_back( ShortName );
 
       // Skip if a previous pass through this function decided it already
-      if( decided.Index( ShortName, false ) != wxNOT_FOUND )
+      if (make_iterator_range(decided).contains(ShortName))
          continue;
 
 #ifdef EXPERIMENTAL_MODULE_PREFS
@@ -309,7 +309,7 @@ void ModuleManager::TryLoadModules(
          }
 #endif
          if(action == 1){   // "No"
-            decided.Add( ShortName );
+            decided.push_back( ShortName );
             continue;
          }
       }
@@ -323,12 +323,12 @@ void ModuleManager::TryLoadModules(
       auto umodule = std::make_unique<Module>(file);
          if (umodule->Load(Error))   // it will get rejected if there are version problems
       {
-         decided.Add( ShortName );
+         decided.push_back( ShortName );
          auto module = umodule.get();
 
          if (!module->HasDispatch())
          {
-            auto ShortName = wxFileName(file).GetName();
+            auto ShortName = wxFileNameWrapper{ file }.GetName();
             AudacityMessageBox(
                XO("The module \"%s\" does not provide any of the required functions.\n\nIt will not be loaded.").Format(ShortName),
                XO("Module Unsuitable"));
@@ -441,7 +441,7 @@ bool ModuleManager::DiscoverProviders()
 
    for (int i = 0, cnt = provList.size(); i < cnt; i++)
    {
-      ModuleInterface *module = LoadModule(provList[i]);
+      ModuleInterface *module = LoadModule(provList[i].GET());
       if (module)
       {
          // Register the provider

@@ -68,8 +68,10 @@ bool XMLValueChecker::IsGoodFileName(const FilePath & strFileName, const FilePat
    return (fileName.IsOk() && fileName.FileExists());
 }
 
-bool XMLValueChecker::IsGoodFileString(const FilePath &str)
+bool XMLValueChecker::IsGoodFileString(const FilePath &fstr)
 {
+   // using GET to validate the underlying string of a FilePath read from XML
+   auto str = wxString{fstr.GET()};
    return (IsGoodString(str) &&
             !str.empty() &&
 
@@ -103,8 +105,10 @@ bool XMLValueChecker::IsGoodPathName(const FilePath & strPathName)
    return XMLValueChecker::IsGoodFileName(fileName.GetFullName(), fileName.GetPath(wxPATH_GET_VOLUME));
 }
 
-bool XMLValueChecker::IsGoodPathString(const FilePath &str)
+bool XMLValueChecker::IsGoodPathString(const FilePath &fstr)
 {
+   // using GET to validate the underlying string of a FilePath read from XML
+   auto str = fstr.GET();
    return (IsGoodString(str) &&
             !str.empty() &&
             (str.length() <= PLATFORM_MAX_PATH));

@@ -39,7 +39,7 @@ int ModuleSettings::GetModuleStatus(const FilePath &fname)
    wxString DateTimePref = wxString( L"/ModuleDateTime/" ) + ShortName;
 
    wxString ModulePath = gPrefs->Read( PathPref, wxEmptyString );
-   if( ModulePath.IsSameAs( fname ) )
+   if( ModulePath.IsSameAs( fname.GET() ) )
    {
       gPrefs->Read( StatusPref, &iStatus, kModuleNew );
 

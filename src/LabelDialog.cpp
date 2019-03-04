@@ -638,7 +638,7 @@ void LabelDialog::OnImport(wxCommandEvent & WXUNUSED(event))
          L"txt",   // Extension
          { FileNames::TextFiles, FileNames::AllFiles },
          wxRESIZE_BORDER, // Flags
-         this);    // Parent
+         this).GET();    // Parent
 
    // They gave us one...
    if (!fileName.empty()) {
@@ -687,7 +687,7 @@ void LabelDialog::OnExport(wxCommandEvent & WXUNUSED(event))
       L"txt",
       { FileNames::TextFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-      this);
+      this).GET();
 
    if (fName.empty())
       return;

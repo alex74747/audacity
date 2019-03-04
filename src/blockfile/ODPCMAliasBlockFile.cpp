@@ -410,7 +410,7 @@ void ODPCMAliasBlockFile::WriteSummary()
 
       throw FileException{
          FileException::Cause::Open,
-         wxFileNameWrapper{ fileNameChar.get() }
+         wxFileNameWrapper{ FilePath{ fileNameChar.get() } }
       };
    }
 

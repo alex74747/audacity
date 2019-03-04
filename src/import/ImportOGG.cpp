@@ -173,7 +173,7 @@ std::unique_ptr<ImportFileHandle> OggImportPlugin::Open(
    wxUnusedVar(OV_CALLBACKS_STREAMONLY_NOCLOSE);
 
    auto vorbisFile = std::make_unique<OggVorbis_File>();
-   auto file = std::make_unique<wxFFile>(filename, L"rb");
+   auto file = std::make_unique<wxFFile>(filename.GET(), L"rb");
 
    if (!file->IsOpened()) {
       // No need for a message box, it's done automatically (but how?)

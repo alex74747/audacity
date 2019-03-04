@@ -464,7 +464,7 @@ bool Importer::Import( AudacityProject &project,
    AudacityProject *pProj = &project;
    auto cleanup = valueRestorer( pProj->mbBusyImporting, true );
 
-   const FileExtension extension{ fName.AfterLast(L'.') };
+   const FileExtension extension{ wxString{fName.GET()}.AfterLast(L'.') };
 
    // Always refuse to import MIDI, even though the FFmpeg plugin pretends to know how (but makes very bad renderings)
 #ifdef USE_MIDI
@@ -478,7 +478,7 @@ bool Importer::Import( AudacityProject &project,
 #endif
 
    // Bug #2647: Peter has a Word 2000 .doc file that is recognized and imported by FFmpeg.
-   if (wxFileName(fName).GetExt() == L"doc") {
+   if (wxFileNameWrapper(fName).GetExt() == L"doc") {
       errorMessage =
          XO("\"%s\" \nis a not an audio file. \nAudacity cannot open this type of file.")
          .Format( fName );
@@ -531,7 +531,7 @@ bool Importer::Import( AudacityProject &project,
       for (size_t j = 0; j < item->extensions.size(); j++)
       {
          wxLogDebug(L"%s", item->extensions[j].Lower());
-         if (wxMatchWild (item->extensions[j].Lower(),fName.Lower(), false))
+         if (wxMatchWild (item->extensions[j].Lower(),wxString{fName.GET()}.Lower(), false))
          {
             wxLogDebug(L"Match!");
             matches_ext = true;

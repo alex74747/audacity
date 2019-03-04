@@ -70,7 +70,7 @@ void ShowDiagnostics(
          L"txt",
          { FileNames::TextFiles },
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-         &window);
+         &window).GET();
       if (!fName.empty())
       {
          if (!text->SaveFile(fName))

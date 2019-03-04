@@ -184,7 +184,7 @@ void PopulatePreferences()
    wxString langCode = gPrefs->Read(L"/Locale/Language", wxEmptyString);
    bool writeLang = false;
 
-   const wxFileName fn(
+   const wxFileNameWrapper fn(
       FileNames::ResourcesDir(), 
       L"FirstTime.ini");
    if (fn.FileExists())   // it will exist if the (win) installer put it there
@@ -440,7 +440,7 @@ static void QuitAudacity(bool bForce)
    auto logger = AudacityLogger::Get();
    if (logger)
    {
-      wxFileName logFile(FileNames::DataDir(), L"lastlog.txt");
+      wxFileNameWrapper logFile(FileNames::DataDir(), FilePath(L"lastlog.txt"));
       logger->SaveLog(logFile.GetFullPath());
    }
 
@@ -811,7 +811,7 @@ bool AudacityApp::MRUOpen(const FilePath &fullPathStr) {
    if (!fullPathStr.empty())
    {
       // verify that the file exists
-      if (wxFile::Exists(fullPathStr))
+      if (wxFile::Exists(fullPathStr.GET()))
       {
          FileNames::UpdateDefaultPath(FileNames::Operation::Open, ::wxPathOnly(fullPathStr));
 
@@ -1607,7 +1607,7 @@ void AudacityApp::OnKeyDown(wxKeyEvent &event)
 
 // Ensures directory is created and puts the name into result.
 // result is unchanged if unsuccessful.
-void SetToExtantDirectory( wxString & result, const wxString & dir ){
+void SetToExtantDirectory( FilePath & result, const FilePath & dir ){
    // don't allow path of "".
    if( dir.empty() )
       return;
@@ -1616,7 +1616,7 @@ void SetToExtantDirectory( wxString & result, const wxString & dir ){
       return;
    }
    // Use '/' so that this works on Mac and Windows alike.
-   wxFileName name( dir + "/junkname.cfg" );
+   wxFileNameWrapper name( FilePath{ { dir, "junkname.cfg"}, '/' } );
    if( name.Mkdir( wxS_DIR_DEFAULT , wxPATH_MKDIR_FULL ) )
       result = dir;
 }
@@ -1627,7 +1627,7 @@ bool AudacityApp::InitTempDir()
    auto tempFromPrefs = TempDirectory::TempDir();
    auto tempDefaultLoc = TempDirectory::DefaultTempDir();
 
-   wxString temp;
+   FilePath temp;
 
    #ifdef __WXGTK__
    if (tempFromPrefs.length() > 0 && tempFromPrefs[0] != L'/')
@@ -1650,7 +1650,7 @@ bool AudacityApp::InitTempDir()
    // Check temp directory ownership on *nix systems only
    #ifdef __UNIX__
    struct stat tempStatBuf;
-   if ( lstat(temp.mb_str(), &tempStatBuf) != 0 ) {
+   if ( lstat(wxString{temp.GET()}.mb_str(), &tempStatBuf) != 0 ) {
       temp.clear();
    }
    else {
@@ -1684,7 +1684,7 @@ bool AudacityApp::InitTempDir()
    // The permissions don't always seem to be set on
    // some platforms.  Hopefully this fixes it...
    #ifdef __UNIX__
-   chmod(OSFILENAME(temp), 0700);
+   chmod(OSFILENAME(wxString{temp.GET()}), 0700);
    #endif
 
    TempDirectory::ResetTempDir();
@@ -1698,7 +1698,7 @@ bool AudacityApp::InitTempDir()
 // Return true if there are no other instances of Audacity running,
 // false otherwise.
 
-bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
+bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
 {
    wxString name = wxString::Format(L"audacity-lock-%s", wxGetUserId());
    mChecker.reset();
@@ -1768,7 +1768,7 @@ bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
             {
                for (size_t i = 0, cnt = filenames.size(); i < cnt; i++)
                {
-                  ok = conn->Execute(filenames[i]);
+                  ok = conn->Execute(filenames[i].GET());
                }
             }
             else
@@ -1813,7 +1813,7 @@ bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
 // Return true if there are no other instances of Audacity running,
 // false otherwise.
 
-bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
+bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
 {
    mIPCServ.reset();
 
@@ -1824,10 +1824,10 @@ bool AudacityApp::CreateSingleInstanceChecker(const wxString &dir)
    struct sembuf op = {};
 
    // Generate the IPC key we'll use for both shared memory and semaphores.
-   wxString datadir = FileNames::DataDir();
-   key_t memkey = ftok(datadir.c_str(), 0);
-   key_t servkey = ftok(datadir.c_str(), 1);
-   key_t lockkey = ftok(datadir.c_str(), 2);
+   auto datadir = FileNames::DataDir();
+   key_t memkey = ftok(wxString{datadir.GET()}.c_str(), 0);
+   key_t servkey = ftok(wxString{datadir.GET()}.c_str(), 1);
+   key_t lockkey = ftok(wxString{datadir.GET()}.c_str(), 2);
 
    // Create and map the shared memory segment where the port number
    // will be stored.

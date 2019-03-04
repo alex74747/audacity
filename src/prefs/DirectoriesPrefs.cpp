@@ -35,6 +35,7 @@
 #include "../Prefs.h"
 #include "../ShuttleGui.h"
 #include "../TempDirectory.h"
+#include "../wxFileNameWrapper.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ReadOnlyText.h"
 #include "../widgets/wxTextCtrlWrapper.h"
@@ -270,7 +271,8 @@ void DirectoriesPrefs::PopulateOrExchange(ShuttleGui &S)
 void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
 {
    wxString oldTemp = gPrefs->Read(
-      PreferenceKey(Operation::Open, PathType::_None).GET(), DefaultTempDir());
+      PreferenceKey(Operation::Open, PathType::_None).GET(),
+      DefaultTempDir().GET());
 
    // Because we went through InitTemp() during initialisation,
    // the old temp directory name in prefs should already be OK.  Just in case there is 
@@ -278,7 +280,7 @@ void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
    // we avoid prompting with it in that case and use the suggested default instead.
    if (!IsTempDirectoryNameOK(oldTemp))
    {
-      oldTemp = DefaultTempDir();
+      oldTemp = DefaultTempDir().GET();
    }
 
    wxDirDialogWrapper dlog(this,
@@ -313,7 +315,7 @@ void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
       // If the default temp dir or user's pref dir don't end in '/' they cause
       // wxFileName's == operator to construct a wxFileName representing a file
       // (that doesn't exist) -- hence the constructor calls
-      if (tmpDirPath != wxFileName(DefaultTempDir(), L"") &&
+      if (tmpDirPath != wxFileNameWrapper(DefaultTempDir(), L"") &&
             tmpDirPath != wxFileName(mTempText->GetValue(), L"") &&
             (dirsInPath.size() == 0 ||
              dirsInPath[dirsInPath.size()-1] != newDirName))
@@ -335,7 +337,7 @@ void DirectoriesPrefs::OnTempText(wxCommandEvent & WXUNUSED(evt))
       FilePath path = mTempText->GetValue();
 
       wxLongLong space;
-      wxGetDiskSpace(path, NULL, &space);
+      wxGetDiskSpace(path.GET(), NULL, &space);
 
       label = wxDirExists(path)
          ? Internat::FormatSize(space)
@@ -423,7 +425,7 @@ bool DirectoriesPrefs::Validate()
    }
 
    wxFileName oldDir;
-   oldDir.SetPath(TempDir());
+   oldDir.SetPath(TempDir().GET());
    if (Temp != oldDir) {
       AudacityMessageBox(
          XO(

@@ -273,7 +273,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
          {
             mDir = S.Id(DirID)
                .AddTextBox(XXO("Folder:"),
-                           DefaultPath,
+                           DefaultPath.GET(),
                            64);
             S.Id(ChooseID).AddButton(XXO("Choose..."));
             S.Id(CreateID).AddButton(XXO("Create"));
@@ -632,7 +632,7 @@ void ExportMultipleDialog::OnExport(wxCommandEvent& WXUNUSED(event))
 
       wxString FileList;
       for (size_t i = 0; i < mExported.size(); i++) {
-         FileList += mExported[i];
+         FileList += mExported[i].GET();
          FileList += '\n';
       }
 

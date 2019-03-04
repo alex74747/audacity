@@ -712,7 +712,7 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    fn.Normalize();
    
    // Get all presets in the local domain for this effect
-   wxDir::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
+   wxDirWrapper::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
 
    // Generate the user domain path
    path.Printf(L"%s/%s/%s",
@@ -723,9 +723,9 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    fn.Normalize();
 
    // Get all presets in the user domain for this effect
-   wxDir::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
+   wxDirWrapper::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
    
-   presets.Sort();
+   std::sort( presets.begin(), presets.end() );
 
    for (size_t i = 0, cnt = presets.size(); i < cnt; i++)
    {
@@ -784,7 +784,7 @@ TranslatableString AudioUnitEffectImportDialog::Import(
    }
 
    // And write it to the config
-   auto group = mEffect->mHost->GetUserPresetsGroup(name);
+   auto group = mEffect->mHost->GetUserPresetsGroup(name).GET();
    if (!mEffect->mHost->SetPrivateConfig(group, PRESET_KEY, parms))
    {
       return XO("Unable to store preset in config file");
@@ -1892,7 +1892,7 @@ void AudioUnitEffect::ExportPresets()
       return;
    }
 
-   auto msg = Export(path);
+   auto msg = Export(path.GET());
    if (!msg.empty())
    {
       AudacityMessageBox(
@@ -1934,7 +1934,7 @@ void AudioUnitEffect::ImportPresets()
       return;
    }
 
-   auto msg = Import(path);
+   auto msg = Import(path.GET());
    if (!msg.empty())
    {
       AudacityMessageBox(
@@ -2064,7 +2064,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
 bool AudioUnitEffect::SavePreset(const RegistryPath & group)
 {
    // First set the name of the preset
-   wxCFStringRef cfname(wxFileNameFromPath(group.GET()));
+   wxCFStringRef cfname(wxFileNameFromPath(wxString{group.GET()}));
 
    // Define the preset property
    AUPreset preset;

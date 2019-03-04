@@ -357,8 +357,8 @@ bool ProjectFileIO::OpenConnection(FilePath fileName /* = {}  */)
    {
       // If this project resides in the temporary directory, then we'll mark it
       // as temporary.
-      wxFileName temp(TempDirectory::TempDir(), L"");
-      wxFileName file(fileName);
+      wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+      wxFileNameWrapper file(fileName);
       file.SetFullName(L"");
       if (file == temp)
       {
@@ -369,7 +369,7 @@ bool ProjectFileIO::OpenConnection(FilePath fileName /* = {}  */)
    // Pass weak_ptr to project into DBConnection constructor
    curConn = std::make_unique<DBConnection>(
       mProject.shared_from_this(), mpErrors, [this]{ OnCheckpointFailure(); } );
-   auto rc = curConn->Open(fileName);
+   auto rc = curConn->Open(wxString{fileName.GET()});
    if (rc != SQLITE_OK)
    {
       // Must use SetError() here since we do not have an active DB
@@ -445,8 +445,8 @@ void ProjectFileIO::DiscardConnection()
       if (mPrevTemporary)
       {
          // This is just a safety check.
-         wxFileName temp(TempDirectory::TempDir(), L"");
-         wxFileName file(mPrevFileName);
+         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper file(mPrevFileName);
          file.SetFullName(L"");
          if (file == temp)
          {
@@ -890,9 +890,9 @@ bool ProjectFileIO::CopyTo(const FilePath &destpath,
       }
    });
 
-   // Attach the destination database 
+   // Attach the destination database
    wxString sql;
-   wxString dbName = destpath;
+   wxString dbName = destpath.GET();
    // Bug 2793: Quotes in name need escaping for sqlite3.
    dbName.Replace( "'", "''");
    sql.Printf("ATTACH DATABASE '%s' AS outbound;", dbName.ToUTF8());
@@ -1154,7 +1154,7 @@ FilePath ProjectFileIO::SafetyFileName(const FilePath &src)
       result = fn.GetFullPath();
    }
    while( std::any_of(suffixes.begin(), suffixes.end(), [&](auto &suffix){
-      return wxFileExists(result + suffix);
+      return wxFileExists(result.GET() + suffix);
    }) );
 
    return result;
@@ -1229,9 +1229,9 @@ bool ProjectFileIO::MoveProject(const FilePath &src, const FilePath &dst)
    });
 
    for (const auto &suffix : AuxiliaryFileSuffixes()) {
-      auto srcName = src + suffix;
+      auto srcName = src.GET() + suffix;
       if (wxFileExists(srcName)) {
-         auto dstName = dst + suffix;
+         auto dstName = dst.GET() + suffix;
          if (!RenameOrWarn(srcName, dstName))
             return false;
          pairs.push_back({ srcName, dstName });
@@ -1249,7 +1249,7 @@ bool ProjectFileIO::RemoveProject(const FilePath &filename)
    bool success = wxRemoveFile(filename);
    auto &suffixes = AuxiliaryFileSuffixes();
    for (const auto &suffix : suffixes) {
-      auto file = filename + suffix;
+      auto file = filename.GET() + suffix;
       if (wxFileExists(file))
          success = wxRemoveFile(file) && success;
    }
@@ -1284,10 +1284,10 @@ ProjectFileIO::BackupProject::~BackupProject()
          auto suffixes = AuxiliaryFileSuffixes();
          suffixes.push_back({});
          for (const auto &suffix : suffixes) {
-            auto path = mPath + suffix;
+            auto path = mPath.GET() + suffix;
             if (wxFileExists(path))
                wxRemoveFile(path);
-            wxRenameFile(mSafety + suffix, mPath + suffix);
+            wxRenameFile(mSafety.GET() + suffix, mPath.GET() + suffix);
          }
       }
    }
@@ -1327,7 +1327,7 @@ void ProjectFileIO::Compact(
       }
    }
 
-   wxString origName = mFileName;
+   wxString origName = mFileName.GET();
    wxString backName = origName + "_compact_back";
    wxString tempName = origName + "_compact_temp";
 
@@ -1514,7 +1514,7 @@ void ProjectFileIO::SetFileName(const FilePath &fileName)
    }
    else
    {
-      project.SetProjectName(wxFileName(mFileName).GetName());
+      project.SetProjectName(wxFileName(mFileName.GET()).GetName());
    }
 
    SetProjectTitle();
@@ -2094,7 +2094,7 @@ bool ProjectFileIO::SaveProject(
          bool success = true;
          auto thread = std::thread([&]
          {
-            auto rc =  newConn->Open(fileName);
+            auto rc =  newConn->Open(wxString{fileName.GET()});
             if (rc != SQLITE_OK)
             {
                // Capture the error string
@@ -2236,7 +2236,7 @@ bool ProjectFileIO::CloseProject()
    }
 
    // Save the filename since CloseConnection() will clear it
-   wxString filename = mFileName;
+   wxString filename = mFileName.GET();
 
    // Not much we can do if this fails.  The user will simply get
    // the recovery dialog upon next restart.
@@ -2247,7 +2247,7 @@ bool ProjectFileIO::CloseProject()
       if (IsTemporary())
       {
          // This is just a safety check.
-         wxFileName temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
          wxFileName file(filename);
          file.SetFullName(L"");
          if (file == temp)
@@ -2287,7 +2287,7 @@ bool ProjectFileIO::IsRecovered() const
 wxLongLong ProjectFileIO::GetFreeDiskSpace() const
 {
    wxLongLong freeSpace;
-   if (wxGetDiskSpace(wxPathOnly(mFileName), NULL, &freeSpace))
+   if (wxGetDiskSpace(wxPathOnly(wxString{mFileName.GET()}), NULL, &freeSpace))
    {
       if (FileNames::IsOnFATFileSystem(mFileName)) {
          // 4 GiB per-file maximum
@@ -2296,7 +2296,7 @@ wxLongLong ProjectFileIO::GetFreeDiskSpace() const
          // Opening a file only to find its length looks wasteful but
          // seems to be necessary at least on Windows with FAT filesystems.
          // I don't know if that is only a wxWidgets bug.
-         auto length = wxFile{mFileName}.Length();
+         auto length = wxFile{mFileName.GET()}.Length();
          // auto length = wxFileName::GetSize(mFileName);
 
          if (length == wxInvalidSize)

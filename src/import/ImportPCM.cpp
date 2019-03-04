@@ -127,7 +127,7 @@ std::unique_ptr<ImportFileHandle> PCMImportPlugin::Open(
 
 
 #ifdef __WXGTK__
-   if (filename.Lower().EndsWith(L"mp3")) {
+   if (filename.GET().Lower().EndsWith(L"mp3")) {
       // There is a bug in libsndfile where mp3s with duplicated metadata tags
       // will crash libsndfile and thus audacity.
       // We have patched the lib-src version of libsndfile, but
@@ -143,7 +143,7 @@ std::unique_ptr<ImportFileHandle> PCMImportPlugin::Open(
 #endif
 
 
-   if (f.Open(filename)) {
+   if (f.Open(filename.GET())) {
       // Even though there is an sf_open() that takes a filename, use the one that
       // takes a file descriptor since wxWidgets can open a file with a Unicode name and
       // libsndfile can't (under Windows).
@@ -441,7 +441,7 @@ ProgressResult PCMImportFileHandle::Import(WaveTrackFactory *trackFactory,
 #if defined(USE_LIBID3TAG)
    if (((mInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_AIFF) ||
        ((mInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_WAV)) {
-      wxFFile f(mFilename, L"rb");
+      wxFFile f(mFilename.GET(), L"rb");
       if (f.IsOpened()) {
          char id[5];
          wxUint32 len;

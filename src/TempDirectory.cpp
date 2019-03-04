@@ -12,10 +12,11 @@
 
 #include "FileNames.h"
 #include "widgets/ErrorDialog.h"
+#include "wxFileNameWrapper.h"
 
-static wxString &TempDirPath()
+static FilePath &TempDirPath()
 {
-   static wxString path;
+   static FilePath path;
    return path;
 }
 
@@ -23,7 +24,7 @@ static wxString &TempDirPath()
 /// \todo put a counter in here to see if it gets used a lot.
 /// if it does, then maybe we should cache the path name
 /// each time.
-wxString TempDirectory::TempDir()
+FilePath TempDirectory::TempDir()
 {
    auto &path = TempDirPath();
    if (gPrefs && path.empty())
@@ -84,10 +85,10 @@ bool TempDirectory::IsTempDirectoryNameOK( const FilePath & Name )
    // It is less permissive than we could be as it stops a path
    // with this string ANYWHERE within it rather than excluding just
    // the paths that the earlier Audacities used to create.
-   if( Name.Contains( "/tmp/") )
+   if( wxString{Name.GET()}.Contains( "/tmp/") )
       return false;
    BadPath = BadPath.BeforeLast( '/' ) + "/";
-   wxFileName cmpFile( Name );
+   wxFileNameWrapper cmpFile( Name );
    wxString NameCanonical = cmpFile.GetLongPath( ) + "/";
 #else
    BadPath = BadPath.BeforeLast( '\\' ) + "\\";
@@ -107,7 +108,7 @@ bool TempDirectory::IsTempDirectoryNameOK( const FilePath & Name )
 
 wxString TempDirectory::UnsavedProjectFileName()
 {
-   wxFileName fn(TempDir(),
+   wxFileNameWrapper fn(TempDir(),
                  FileNames::CreateUniqueName(L"New Project", FileNames::UnsavedProjectExtension()));
 
    return fn.GetFullPath();

@@ -143,7 +143,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
          return wxEmptyString;
       }
 
-      wxFileName check(fn);
+      wxFileNameWrapper check(fn);
       check.SetPath(name.GetPath());
       if (check.FileExists())
       {
@@ -156,7 +156,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
          }
       }
 
-      name.Assign(fn);
+      name.Assign(fn.GET());
    }
 
    // Set the file name
@@ -204,7 +204,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
 wxString MacroCommands::WriteMacro(const wxString & macro, wxWindow *parent)
 {
    // Build the default filename
-   wxFileName name(FileNames::MacroDir(), macro, L"txt");
+   wxFileNameWrapper name(FileNames::MacroDir(), macro, L"txt");
 
    // But, ask the user for the real name if we're exporting
    if (parent) {
@@ -222,7 +222,7 @@ wxString MacroCommands::WriteMacro(const wxString & macro, wxWindow *parent)
          return wxEmptyString;
       }
 
-      name.Assign(fn);
+      name.Assign(fn.GET());
    }
 
    // Set the file name
@@ -898,7 +898,8 @@ void MacroCommands::MigrateLegacyChains()
 
       const auto oldDir = FileNames::LegacyChainDir();
       FilePaths files;
-      wxDir::GetAllFiles(oldDir, &files, L"*.txt", wxDIR_FILES);
+      wxDirWrapper::GetAllFiles(oldDir,
+         &files, L"*.txt", wxDIR_FILES);
 
       // add a dummy path component to be overwritten by SetFullName
       wxFileNameWrapper newDir{ FileNames::MacroDir(), L"x" };
@@ -921,7 +922,8 @@ wxArrayString MacroCommands::GetNames()
 
    wxArrayString names;
    FilePaths files;
-   wxDir::GetAllFiles(FileNames::MacroDir(), &files, L"*.txt", wxDIR_FILES);
+   wxDirWrapper::GetAllFiles(FileNames::MacroDir(),
+      &files, L"*.txt", wxDIR_FILES);
    size_t i;
 
    wxFileNameWrapper ff;

@@ -17,7 +17,6 @@
 #include <wx/string.h> // function return value
 #include "Identifier.h"
 #include "Prefs.h"
-#include <memory>
 
 // Please try to support unlimited path length instead of using PLATFORM_MAX_PATH!
 // Define one constant for maximum path value, so we don't have to do
@@ -92,7 +91,7 @@ namespace FileNames
    AUDACITY_DLL_API
    bool HardLinkFile( const FilePath& file1, const FilePath& file2);
 
-   AUDACITY_DLL_API wxString MkDir(const wxString &Str);
+   AUDACITY_DLL_API FilePath MkDir(const FilePath &Str);
 
    AUDACITY_DLL_API bool IsMidi(const FilePath &fName);
 
@@ -188,9 +187,10 @@ namespace FileNames
    FilePath WithDefaultPath
    (Operation op, const FilePath &defaultPath, F function)
    {
-      auto path = gPrefs->Read(PreferenceKey(op, PathType::User).GET(), defaultPath);
+      auto path = gPrefs->Read(
+         PreferenceKey(op, PathType::User).GET(), defaultPath.GET());
       if (path.empty())
-         path = FileNames::FindDefaultPath(op);
+         path = FileNames::FindDefaultPath(op).GET();
       auto result = function(path);
       FileNames::UpdateDefaultPath(op, ::wxPathOnly(result));
       return result;
@@ -237,7 +237,7 @@ namespace FileNames
 
    AUDACITY_DLL_API
    //! Give enough of the path to identify the device.  (On Windows, drive letter plus ':')
-   wxString AbbreviatePath(const wxFileName &fileName);
+   wxString AbbreviatePath(const wxFileNameWrapper &fileName);
 };
 
 // Use this macro to wrap all filenames and pathnames that get
@@ -257,5 +257,30 @@ namespace FileNames
 #define OSINPUT(X) OSFILENAME(X)
 #define OSOUTPUT(X) OSFILENAME(X)
 #endif
+
+// overload some wxWidgets functions in the global scope so that many
+// existing calls continue to work without invoking FilePath::GET
+inline bool wxRmdir(const FilePath& dir, int flags = 0)
+   { return wxRmdir( wxString{dir.GET()}, flags ); }
+inline bool wxRemoveFile(const FilePath& file)
+   { return wxRemoveFile( wxString{file.GET()} ); }
+inline FilePath wxFileNameFromPath(const FilePath& path)
+   { return wxFileNameFromPath( wxString{path.GET()} ) ; }
+inline FilePath wxPathOnly(const FilePath& path)
+   { return wxPathOnly( wxString{path.GET()} ); }
+inline bool wxFileExists(const FilePath& filename)
+   { return wxFileExists( wxString{filename.GET()} ); }
+inline bool wxDirExists(const FilePath& pathName)
+   { return wxDirExists( wxString{pathName.GET()} ); }
+inline bool wxRenameFile(
+   const FilePath& file1, const FilePath& file2, bool overwrite = true)
+   { return wxRenameFile( wxString{file1.GET()}, wxString{file2.GET()}, overwrite ); }
+inline bool wxSetWorkingDirectory(const FilePath& d)
+   { return wxSetWorkingDirectory( wxString{d.GET()} ); }
+inline bool wxCopyFile(const FilePath& file1,
+   const FilePath& file2, bool overwrite = true)
+   { return wxCopyFile( wxString{file1.GET()}, wxString{file2.GET()}, overwrite ); }
+inline int wxRemove(const FilePath& path)
+    { return wxRemove( wxString{path.GET()} ); }
 
 #endif

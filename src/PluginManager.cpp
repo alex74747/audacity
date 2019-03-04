@@ -1550,17 +1550,18 @@ void PluginManager::FindFilesInPathList(const wxString & pattern,
    {
       ff = filePath;
       const wxString path{ ff.GetFullPath() };
-      if (paths.Index(path, wxFileName::IsCaseSensitive()) == wxNOT_FOUND)
-      {
+      if ( !make_iterator_range( paths ).contains( path ) )
          paths.push_back(path);
-      }
    }
 
    // Find all matching files in each path
    for (size_t i = 0, cnt = paths.size(); i < cnt; i++)
    {
-      ff = paths[i] + wxFILE_SEP_PATH + pattern;
-      wxDir::GetAllFiles(ff.GetPath(), &files, ff.GetFullName(), directories ? wxDIR_DEFAULT : wxDIR_FILES);
+      ff = FilePath{ { paths[i], pattern }, wxFILE_SEP_PATH };
+      FilePaths strings;
+      wxDirWrapper::GetAllFiles(ff.GetPath(), &strings,
+         ff.GetFullName(), directories ? wxDIR_DEFAULT : wxDIR_FILES);
+      files = { strings.begin(), strings.end() };
    }
 
    return;
@@ -1852,7 +1853,7 @@ bool PluginManager::DropFile(const wxString &fileName)
             // actions should not be tried.
 
             // Find path to copy it
-            wxFileNameWrapper dst{ ff + wxFILE_SEP_PATH };
+            wxFileNameWrapper dst{ FilePath{ { ff, "" },  wxFILE_SEP_PATH } };
             dst.SetFullName( src.GetFullName() );
             if ( dst.Exists() ) {
                // Query whether to overwrite
@@ -1940,7 +1941,7 @@ void PluginManager::Load()
 {
    // Create/Open the registry
    auto pRegistry = AudacityFileConfig::Create(
-      {}, {}, FileNames::PluginRegistry());
+      {}, {}, FileNames::PluginRegistry().GET());
    auto &registry = *pRegistry;
 
    // If this group doesn't exist then we have something that's not a registry.
@@ -2284,7 +2285,7 @@ void PluginManager::Save()
 {
    // Create/Open the registry
    auto pRegistry = AudacityFileConfig::Create(
-      {}, {}, FileNames::PluginRegistry());
+      {}, {}, FileNames::PluginRegistry().GET());
    auto &registry = *pRegistry;
 
    // Clear it out
@@ -2817,7 +2818,7 @@ FileConfig *PluginManager::GetSettings()
    if (!mSettings)
    {
       mSettings =
-         AudacityFileConfig::Create({}, {}, FileNames::PluginSettings());
+         AudacityFileConfig::Create({}, {}, FileNames::PluginSettings().GET());
 
       // Check for a settings version that we can understand
       if (mSettings->HasEntry(SETVERKEY))

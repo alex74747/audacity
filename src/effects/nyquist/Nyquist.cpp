@@ -710,24 +710,22 @@ bool NyquistEffect::Process()
 
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'BASE)\n", EscapeString(FileNames::BaseDir()));
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'DATA)\n", EscapeString(FileNames::DataDir()));
-      mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'HELP)\n", EscapeString(FileNames::HtmlHelpDir().RemoveLast()));
+      mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'HELP)\n", EscapeString(wxString{FileNames::HtmlHelpDir().GET()}.RemoveLast()));
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'TEMP)\n", EscapeString(TempDirectory::TempDir()));
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'SYS-TEMP)\n", EscapeString(wxStandardPaths::Get().GetTempDir()));
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'DOCUMENTS)\n", EscapeString(wxStandardPaths::Get().GetDocumentsDir()));
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'HOME)\n", EscapeString(wxGetHomeDir()));
 
-      auto paths = NyquistEffect::GetNyquistSearchPath();
       wxString list;
-      for (size_t i = 0, cnt = paths.size(); i < cnt; i++)
-      {
-         list += L"\"" + EscapeString(paths[i]) + L"\" ";
-      }
+      for (const auto &path : NyquistEffect::GetNyquistSearchPath())
+         // using GET to pass a file path as a string to Lisp
+         list += L"\"" + EscapeString(wxString{path.GET()}) + L"\" ";
       list = list.RemoveLast();
 
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* (list %s) 'PLUGIN)\n", list);
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* (list %s) 'PLUG-IN)\n", list);
       mProps += wxString::Format(L"(putprop '*SYSTEM-DIR* \"%s\" 'USER-PLUG-IN)\n",
-                                 EscapeString(FileNames::PlugInDir()));
+                                 EscapeString(wxString{FileNames::PlugInDir().GET()}));
 
       // Date and time:
       wxDateTime now = wxDateTime::Now();
@@ -2569,13 +2567,11 @@ FilePaths NyquistEffect::GetNyquistSearchPath()
    const auto &audacityPathList = FileNames::AudacityPathList();
    FilePaths pathList;
 
-   for (size_t i = 0; i < audacityPathList.size(); i++)
-   {
-      wxString prefix = audacityPathList[i] + wxFILE_SEP_PATH;
-      FileNames::AddUniquePathToPathList(prefix + L"nyquist", pathList);
-      FileNames::AddUniquePathToPathList(prefix + L"plugins", pathList);
-      FileNames::AddUniquePathToPathList(prefix + L"plug-ins", pathList);
-   }
+   for (const auto &path : audacityPathList)
+      for (const auto &component :
+      { L"nyquist", L"plugins", L"plugins" })
+         FileNames::AddUniquePathToPathList(
+            FilePath{ { path, component }, wxFILE_SEP_PATH }, pathList );
    pathList.push_back(FileNames::PlugInDir());
 
    return pathList;
@@ -3235,11 +3231,11 @@ void NyquistEffect::resolveFilePath(wxString& path, FileExtension extension /* e
       if (pathKeys.find(path) != pathKeys.end())
       {
          // Keyword found, so assume this is the intended directory.
-         path = pathKeys[path] + wxFileName::GetPathSeparator();
+         path = pathKeys[path].GET() + wxFileName::GetPathSeparator();
       }
       else  // Just a file name
       {
-         path = pathKeys["*default*"] + wxFileName::GetPathSeparator() + path;
+         path = pathKeys["*default*"].GET() + wxFileName::GetPathSeparator() + path;
       }
    }
    else  // path + file name
@@ -3249,7 +3245,7 @@ void NyquistEffect::resolveFilePath(wxString& path, FileExtension extension /* e
 
       if (pathKeys.find(firstDir) != pathKeys.end())
       {
-         path = pathKeys[firstDir] + rest;
+         path = pathKeys[firstDir].GET() + rest;
       }
    }
 

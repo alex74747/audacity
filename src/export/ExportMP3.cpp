@@ -665,7 +665,7 @@ public:
             L"",
             mTypes,
             wxFD_OPEN | wxRESIZE_BORDER,
-            this);
+            this).GET();
       if (!path.empty()) {
          mLibPath = path;
          mPathText->SetValue(path);

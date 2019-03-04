@@ -42,4 +42,3 @@ const FilePath &PlatformCompatibility::GetExecutablePath()
 
    return path;
 }
-

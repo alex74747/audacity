@@ -237,7 +237,7 @@ int ufile_fopen(AVIOContext **s, const FilePath & name, int flags)
       mode = wxFile::read;
    }
 
-   if (!f->Open(name, mode)) {
+   if (!f->Open(name.GET(), mode)) {
       return -ENOENT;
    }
 
@@ -531,7 +531,7 @@ public:
          L"",
          mTypes,
          wxFD_OPEN | wxRESIZE_BORDER,
-         this);
+         this).GET();
       if (!path.empty()) {
          mLibPath = path;
          mPathText->SetValue(path);

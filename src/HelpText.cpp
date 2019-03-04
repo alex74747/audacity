@@ -67,14 +67,8 @@ static wxString WikiLink( const wxString &Key, const wxString& Text )
 
 static wxString FileLink( const wxString &Key, const wxString& Text )
 {
-   return wxString(L"") +
-      L"<a href='" +
-      L"file:" +
-      FileNames::HtmlHelpDir() +
-      Key +
-      L"'>" +
-      Text +
-      L"</a>";
+   return wxString::Format( L"<a href='file:%s%s'>%s</a>",
+      FileNames::HtmlHelpDir(), Key, Text );
 }
 
 static wxString TypedLink( const wxString &Key, const wxString& Text )

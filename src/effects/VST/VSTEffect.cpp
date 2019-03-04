@@ -420,7 +420,7 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
    for (size_t i = 0; i < files.size(); i++)
    {
       files[i] = wxPathOnly(wxPathOnly(files[i]));
-      if (!files[i].EndsWith(L".vst"))
+      if (!wxString{files[i].GET()}.EndsWith(L".vst"))
       {
          files.erase( files.begin() + i-- );
       }
@@ -495,7 +495,8 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 #endif
 
-   return { files.begin(), files.end() };
+   return transform_container<PluginPaths>(
+      files, std::mem_fn( &FilePath::GET ) );
 }
 
 unsigned VSTEffectsModule::DiscoverPluginsAtPath(
@@ -1870,7 +1871,7 @@ void VSTEffect::ExportPresets()
         { XO("Audacity VST preset file"), { L"xml" }, true },
       },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-      NULL);
+      NULL).GET();
 
    // User canceled...
    if (path.empty())
@@ -1927,7 +1928,7 @@ void VSTEffect::ImportPresets()
          true
       } },
       wxFD_OPEN | wxRESIZE_BORDER,
-      mParent);
+      mParent).GET();
 
    // User canceled...
    if (path.empty())

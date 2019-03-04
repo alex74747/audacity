@@ -20,6 +20,7 @@
 #include "../FileNames.h" // for FileTypes
 
 #include "../Registry.h"
+#include "../wxFileNameWrapper.h"
 
 class wxArrayString;
 class FileDialogWrapper;
@@ -193,7 +194,7 @@ public:
    bool Process(bool selectedOnly,
                 double t0, double t1);
    bool Process(unsigned numChannels,
-                const FileExtension &type, const wxString & filename,
+                const FileExtension &type, const FilePath & filename,
                 bool selectedOnly, double t0, double t1);
 
    void DisplayOptions(int index);
@@ -205,7 +206,7 @@ public:
    bool ProcessFromTimerRecording(bool selectedOnly,
                                   double t0,
                                   double t1,
-                                  wxFileName fnFile,
+                                  wxFileNameWrapper fnFile,
                                   int iFormat,
                                   int iSubFormat,
                                   int iFilterIndex);
@@ -213,7 +214,7 @@ public:
    int GetAutoExportFormat();
    int GetAutoExportSubFormat();
    int GetAutoExportFilterIndex();
-   wxFileName GetAutoExportFileName();
+   wxFileNameWrapper GetAutoExportFileName();
    void OnExtensionChanged(wxCommandEvent &evt);
    void OnHelp(wxCommandEvent &evt);
 
@@ -237,8 +238,8 @@ private:
 
    ExportPluginArray mPlugins;
 
-   wxFileName mFilename;
-   wxFileName mActualName;
+   wxFileNameWrapper mFilename;
+   wxFileNameWrapper mActualName;
 
    double mT0;
    double mT1;

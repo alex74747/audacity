@@ -292,7 +292,7 @@ void AudacityLogger::OnSave(wxCommandEvent & WXUNUSED(e))
       L"txt",
       { FileNames::TextFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-      mFrame.get());
+      mFrame.get()).GET();
 
    if (fName.empty()) {
       return;

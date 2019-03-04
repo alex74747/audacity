@@ -55,8 +55,8 @@ void Generate(wxDebugReport::Context ctx)
       {
          wxFileNameWrapper fn{ FileNames::DataDir(), L"audacity.cfg" };
          rpt.AddFile(fn.GetFullPath(), _TS("Audacity Configuration"));
-         rpt.AddFile(FileNames::PluginRegistry(), L"Plugin Registry");
-         rpt.AddFile(FileNames::PluginSettings(), L"Plugin Settings");
+         rpt.AddFile(FileNames::PluginRegistry().GET(), L"Plugin Registry");
+         rpt.AddFile(FileNames::PluginSettings().GET(), L"Plugin Settings");
    
          if (ctx == wxDebugReport::Context_Current)
          {

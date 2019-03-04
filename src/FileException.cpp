@@ -58,7 +58,7 @@ wxString FileException::ErrorHelpUrl() const
 }
 
 TranslatableString
-FileException::WriteFailureMessage(const wxFileName &fileName)
+FileException::WriteFailureMessage(const wxFileNameWrapper &fileName)
 {
    return XO("Audacity failed to write to a file.\n"
      "Perhaps %s is not writable or the disk is full.\n"

@@ -83,7 +83,7 @@ protected:
 private:
    const wxString mAppName;
    const wxString mVendorName;
-   const wxString mLocalFilename;
+   const FilePath mLocalFilename;
    const wxString mGlobalFilename;
    const long mStyle;
    const wxMBConv & mConv;

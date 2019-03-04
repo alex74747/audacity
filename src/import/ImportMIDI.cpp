@@ -69,7 +69,7 @@ bool DoImportMIDI( AudacityProject &project, const FilePath &fileName )
       // If the project was clean and temporary (not permanently saved), then set
       // the filename to the just imported path.
       if (initiallyEmpty && projectFileIO.IsTemporary()) {
-         wxFileName fn(fileName);
+         wxFileNameWrapper fn(fileName);
          project.SetProjectName(fn.GetName());
          project.SetInitialImportPath(fn.GetPath());
          projectFileIO.SetProjectTitle();
@@ -80,8 +80,9 @@ bool DoImportMIDI( AudacityProject &project, const FilePath &fileName )
       return false;
 }
 
-bool ImportMIDI(const FilePath &fName, NoteTrack * dest)
+bool ImportMIDI(const FilePath &fPath, NoteTrack * dest)
 {
+   const auto &fName = wxString{fPath.GET()};
    if (fName.length() <= 4){
       AudacityMessageBox(
          XO("Could not open file %s: Filename too short.").Format( fName ) );

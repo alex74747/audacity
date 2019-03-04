@@ -492,7 +492,7 @@ void KeyConfigPrefs::OnImport(wxCommandEvent & WXUNUSED(event))
       L"",
       { FileNames::XMLFiles, FileNames::AllFiles },
       wxRESIZE_BORDER,
-      this);
+      this).GET();
 
    if (!file) {
       return;
@@ -571,7 +571,7 @@ void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
       L"xml",
       { FileNames::XMLFiles, FileNames::AllFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-      this);
+      this).GET();
 
    if (!file) {
       return;

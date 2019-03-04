@@ -179,7 +179,7 @@ public:
       // Important:  default window name localizes!
       const TranslatableString& name = XO("File Dialog"))
    : wxTabTraversalWrapper<FileDialog>(
-      parent, message.Translation(), defaultDir, defaultFile,
+      parent, message.Translation(), defaultDir.GET(), defaultFile.GET(),
       FileNames::FormatWildcard( fileTypes ),
       style, pos, sz, name.Translation() )
    {}
@@ -198,7 +198,7 @@ public:
       const TranslatableString& name = XO("File Dialog"))
    {
       wxTabTraversalWrapper<FileDialog>::Create(
-         parent, message.Translation(), defaultDir, defaultFile,
+         parent, message.Translation(), defaultDir.GET(), defaultFile.GET(),
          FileNames::FormatWildcard( fileTypes ),
          style, pos, sz, name.Translation()
       );

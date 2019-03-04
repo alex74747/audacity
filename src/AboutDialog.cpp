@@ -628,7 +628,7 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
 
    // Location of settings
    AddBuildinfoRow(&informationStr, XO("Settings folder:"), \
-      FileNames::DataDir());
+      FileNames::DataDir().GET().data());
 
    informationStr << L"</table>\n"; // end of build info table
 

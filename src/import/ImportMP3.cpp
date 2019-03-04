@@ -196,7 +196,7 @@ TranslatableString MP3ImportPlugin::GetPluginFormatDescription()
 std::unique_ptr<ImportFileHandle> MP3ImportPlugin::Open(
    const FilePath &Filename, AudacityProject *)
 {
-   auto handle = std::make_unique<MP3ImportFileHandle>(Filename);
+   auto handle = std::make_unique<MP3ImportFileHandle>(Filename.GET());
 
    if (!handle->Open())
    {
@@ -327,7 +327,7 @@ bool MP3ImportFileHandle::Open()
    mHaveID3 = false;
 
    // Open the file
-   if (!mFile.Open(mFilename))
+   if (!mFile.Open(mFilename.GET()))
    {
       return false;
    }

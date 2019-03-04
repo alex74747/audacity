@@ -10,6 +10,7 @@ Paul Licameli -- split from ProjectFileIO.cpp
 **********************************************************************/
 
 #include "DBConnection.h"
+#include "CodeConversions.h"
 
 #include "sqlite3.h"
 
@@ -159,10 +160,11 @@ int DBConnection::Open(const FilePath fileName)
 
 int DBConnection::OpenStepByStep(const FilePath fileName)
 {
-   const char *name = fileName.ToUTF8();
+   using namespace audacity;
+   auto name = ToUTF8( ToWXString( fileName.GET() ) );
 
    bool success = false;
-   int rc = sqlite3_open(name, &mDB);
+   int rc = sqlite3_open(name.data(), &mDB);
    if (rc != SQLITE_OK) 
    {
       ADD_EXCEPTION_CONTEXT("sqlite3.rc", std::to_string(rc));
@@ -184,7 +186,7 @@ int DBConnection::OpenStepByStep(const FilePath fileName)
       return rc;
    }
 
-   rc = sqlite3_open(name, &mCheckpointDB);
+   rc = sqlite3_open(name.data(), &mCheckpointDB);
    if (rc != SQLITE_OK)
    {
       ADD_EXCEPTION_CONTEXT("sqlite3.rc", std::to_string(rc));

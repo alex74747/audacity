@@ -25,13 +25,12 @@ used throughout Audacity into this one place.
 
 
 
-#include <memory>
-
 #include <wx/app.h>
 #include <wx/defs.h>
 #include <wx/filename.h>
 #include <wx/intl.h>
 #include <wx/stdpaths.h>
+#include "MemoryX.h"
 #include "Prefs.h"
 #include "Internat.h"
 #include "PlatformCompatibility.h"
@@ -47,7 +46,7 @@ used throughout Audacity into this one place.
 #include <windows.h>
 #endif
 
-static wxString gDataDir;
+static FilePath gDataDir;
 
 const FileNames::FileType
      FileNames::AllFiles{ XO("All files"), { L"" } }
@@ -164,7 +163,7 @@ bool FileNames::DoCopyFile(
 
    bool existed = wxFileExists(file2);
    bool result = wxCopyFile(file1, file2, overwrite) &&
-      wxFile{ file1 }.Length() == wxFile{ file2 }.Length();
+      wxFile{ file1.GET() }.Length() == wxFile{ file2.GET() }.Length();
    if (!result && !existed)
       wxRemoveFile(file2);
    return result;
@@ -178,21 +177,21 @@ bool FileNames::HardLinkFile( const FilePath& file1, const FilePath& file2 )
 
    // Fix forced ASCII conversions and wrong argument order - MJB - 29/01/2019
    //return ::CreateHardLinkA( file1.c_str(), file2.c_str(), NULL );  
-   return ( 0 != ::CreateHardLink( file2, file1, NULL ) );
+   return ( 0 != ::CreateHardLink( file2.GET(), file1.GET(), NULL ) );
 
 #else
 
-   return 0 == ::link( file1.c_str(), file2.c_str() );
+   return 0 == ::link( wxString{file1.GET()}.c_str(), wxString{file2.GET()}.c_str() );
 
 #endif
 }
 
-wxString FileNames::MkDir(const wxString &Str)
+FilePath FileNames::MkDir(const FilePath &Str)
 {
    // Behaviour of wxFileName::DirExists() and wxFileName::MkDir() has
    // changed between wx2.6 and wx2.8, so we use static functions instead.
-   if (!wxFileName::DirExists(Str))
-      wxFileName::Mkdir(Str, 511, wxPATH_MKDIR_FULL);
+   if (!wxFileName::DirExists(Str.GET()))
+      wxFileName::Mkdir(Str.GET(), 511, wxPATH_MKDIR_FULL);
 
    return Str;
 }
@@ -201,13 +200,15 @@ wxString FileNames::MkDir(const wxString &Str)
 void FileNames::MakeNameUnique(FilePaths &otherNames,
    wxFileNameWrapper &newName)
 {
-   if (otherNames.Index(newName.GetFullName(), false) >= 0) {
+   if ( make_iterator_range( otherNames ).index( newName.GetFullName() ) >= 0) {
       int i=2;
       wxString orig = newName.GetName();
       do {
          newName.SetName(wxString::Format(L"%s-%d", orig, i));
          i++;
-      } while (otherNames.Index(newName.GetFullName(), false) >= 0);
+      } while (
+         make_iterator_range( otherNames ).index( newName.GetFullName() ) >= 0
+      );
    }
    otherNames.push_back(newName.GetFullName());
 }
@@ -452,7 +453,7 @@ FilePath FileNames::PathFromAddr(void *addr)
 
 
 bool FileNames::IsPathAvailable( const FilePath & Path){
-   if( Path.IsEmpty() )
+   if( Path.empty() )
       return false;
 #ifndef __WIN32__
    return true;
@@ -594,7 +595,7 @@ FileNames::SelectFile(Operation op,
       if ( !default_extension.empty() )
          filter = L"*." + default_extension.GET();
       return FileSelector(
-            message.Translation(), path, default_filename, filter,
+            message.Translation(), path.GET(), default_filename.GET(), filter,
             FormatWildcard( fileTypes ),
             flags, parent, wxDefaultCoord, wxDefaultCoord);
    });
@@ -627,14 +628,13 @@ void FileNames::AddUniquePathToPathList(const FilePath &pathArg,
 {
    wxFileNameWrapper pathNorm { pathArg };
    pathNorm.Normalize();
-   const wxString newpath{ pathNorm.GetFullPath() };
 
    for(const auto &path : pathList) {
       if (pathNorm == wxFileNameWrapper{ path })
          return;
    }
 
-   pathList.push_back(newpath);
+   pathList.push_back(pathNorm.GetFullPath());
 }
 
 // static
@@ -665,10 +665,14 @@ void FileNames::FindFilesInPathList(const wxString & pattern,
 
    wxFileNameWrapper ff;
 
+   wxArrayString arrResults;
    for(size_t i = 0; i < pathList.size(); i++) {
-      ff = pathList[i] + wxFILE_SEP_PATH + pattern;
-      wxDir::GetAllFiles(ff.GetPath(), &results, ff.GetFullName(), flags);
+      ff = FilePath{ { pathList[i], pattern }, wxFILE_SEP_PATH };
+      wxDir::GetAllFiles(ff.GetPath(), &arrResults, ff.GetFullName(), flags);
    }
+   results =
+      transform_container<FilePaths>(arrResults,
+         [](const wxString &str ){ return FilePath{ str }; });
 }
 
 #if defined(__WXMSW__)
@@ -751,7 +755,7 @@ wxString FileNames::UnsavedProjectExtension()
 bool FileNames::IsOnFATFileSystem(const FilePath &path)
 {
    struct statfs fs;
-   if (statfs(wxPathOnly(path).c_str(), &fs))
+   if (statfs(wxPathOnly(wxString{path.GET()}).c_str(), &fs))
       // Error from statfs
       return false;
    return 0 == strcmp(fs.f_fstypename, "msdos");
@@ -762,7 +766,7 @@ bool FileNames::IsOnFATFileSystem(const FilePath &path)
 bool FileNames::IsOnFATFileSystem(const FilePath &path)
 {
    struct statfs fs;
-   if (statfs(wxPathOnly(path).c_str(), &fs))
+   if (statfs(wxPathOnly(path.GET()).c_str(), &fs))
       // Error from statfs
       return false;
    return fs.f_type == MSDOS_SUPER_MAGIC;
@@ -795,7 +799,7 @@ bool FileNames::IsOnFATFileSystem(const FilePath &path)
 }
 #endif
 
-wxString FileNames::AbbreviatePath( const wxFileName &fileName )
+wxString FileNames::AbbreviatePath( const wxFileNameWrapper &fileName )
 {
    wxString target;
 #ifdef __WXMSW__

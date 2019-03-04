@@ -693,7 +693,7 @@ void Effect::ExportPresets()
    }
 
    // Create/Open the file
-   wxFFile f(path, L"wb");
+   wxFFile f(path.GET(), L"wb");
    if (!f.IsOpened())
    {
       AudacityMessageBox(
@@ -737,7 +737,7 @@ void Effect::ImportPresets()
       return;
    }
 
-   wxFFile f(path);
+   wxFFile f(path.GET());
    if (f.IsOpened()) {
       if (f.ReadAll(&params)) {
          wxString ident = params.BeforeFirst(':');

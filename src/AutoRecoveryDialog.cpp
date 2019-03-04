@@ -16,6 +16,7 @@ Paul Licameli split from AutoRecovery.cpp
 #include "ProjectFileManager.h"
 #include "ShuttleGui.h"
 #include "TempDirectory.h"
+#include "wxFileNameWrapper.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/wxPanelWrapper.h"
 
@@ -146,21 +147,21 @@ void AutoRecoveryDialog::PopulateOrExchange(ShuttleGui &S)
 
 void AutoRecoveryDialog::PopulateList()
 {
-   wxString tempdir = TempDirectory::TempDir();
+   auto tempdir = TempDirectory::TempDir();
    wxString pattern = L"*." + FileNames::UnsavedProjectExtension();
    FilePaths files;
 
-   wxDir::GetAllFiles(tempdir, &files, pattern, wxDIR_FILES);
+   wxDirWrapper::GetAllFiles(tempdir, &files, pattern, wxDIR_FILES);
 
    FilePaths active = ActiveProjects::GetAll();
 
    for (auto file : active)
    {
-      wxFileName fn = file;
+      wxFileNameWrapper fn = file;
       if (fn.FileExists())
       {
          FilePath fullPath = fn.GetFullPath();
-         if (files.Index(fullPath) == wxNOT_FOUND)
+         if (!make_iterator_range(files).contains(fullPath))
          {
             files.push_back(fullPath);
          }
@@ -184,8 +185,8 @@ void AutoRecoveryDialog::PopulateList()
 
    for (auto file : files)
    {
-      wxFileName fn = file;
-      if (fn != activeFile)
+      wxFileNameWrapper fn = file;
+      if (fn != activeFile.GET())
       {
          mFiles.push_back(fn.GetFullPath());
          mFileList->InsertItem(item, L"");
@@ -250,7 +251,7 @@ void AutoRecoveryDialog::OnDiscardSelected(wxCommandEvent &WXUNUSED(evt))
       if (!mFileList->IsItemChecked(item))
          continue;
       FilePath fileName = mFiles[item];
-      wxFileName file(fileName);
+      wxFileName file(fileName.GET());
       if (file.GetExt().IsSameAs(FileNames::UnsavedProjectExtension()))
          selectedTemporary = true;
    }
@@ -286,12 +287,12 @@ void AutoRecoveryDialog::OnDiscardSelected(wxCommandEvent &WXUNUSED(evt))
       FilePath fileName = mFiles[item];
 
       // Only remove it from disk if it appears to be a temporary file.
-      wxFileName file(fileName);
+      wxFileNameWrapper file(fileName);
       if (file.GetExt().IsSameAs(FileNames::UnsavedProjectExtension()))
       {
          file.SetFullName(L"");
 
-         wxFileName temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
          if (file == temp)
             ProjectFileIO::RemoveProject(fileName);
       }

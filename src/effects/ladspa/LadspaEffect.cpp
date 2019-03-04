@@ -207,10 +207,10 @@ bool LadspaEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
       pm.FindFilesInPathList(kShippedEffects[i], pathList, files);
       for (size_t j = 0, cnt = files.size(); j < cnt; j++)
       {
-         if (!pm.IsPluginRegistered(files[j]))
+         if (!pm.IsPluginRegistered(files[j].GET()))
          {
             // No checking for error ?
-            DiscoverPluginsAtPath(files[j], ignoredErrMsg,
+            DiscoverPluginsAtPath(files[j].GET(), ignoredErrMsg,
                PluginManagerInterface::DefaultRegistrationCallback);
          }
       }
@@ -242,7 +242,8 @@ PluginPaths LadspaEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 #endif
 
-   return { files.begin(), files.end() };
+   return transform_container<PluginPaths>(
+      files, std::mem_fn( &FilePath::GET ) );
 }
 
 unsigned LadspaEffectsModule::DiscoverPluginsAtPath(

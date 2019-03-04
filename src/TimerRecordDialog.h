@@ -139,7 +139,7 @@ private:
    bool m_bAutoSaveEnabled;
    wxFileNameWrapper m_fnAutoSaveFile;
    bool m_bAutoExportEnabled;
-   wxFileName m_fnAutoExportFile;
+   wxFileNameWrapper m_fnAutoExportFile;
    int m_iAutoExportFormat;
    int m_iAutoExportSubFormat;
    int m_iAutoExportFilterIndex;

@@ -208,10 +208,10 @@ bool NyquistEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
           .ny files to access their $name lines so that this argument could
           be supplied.
           */
-         if (!pm.IsPluginRegistered(files[j]))
+         if (!pm.IsPluginRegistered(files[j].GET()))
          {
             // No checking of error ?
-            DiscoverPluginsAtPath(files[j], ignoredErrMsg,
+            DiscoverPluginsAtPath(files[j].GET(), ignoredErrMsg,
                PluginManagerInterface::DefaultRegistrationCallback);
          }
       }
@@ -234,7 +234,8 @@ PluginPaths NyquistEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
    // LLL:  Works for all platform with NEW plugin support (dups are removed)
    pm.FindFilesInPathList(L"*.NY", pathList, files); // Ed's fix for bug 179
 
-   return { files.begin(), files.end() };
+   return transform_container<PluginPaths>(
+      files, std::mem_fn( &FilePath::GET ) );
 }
 
 unsigned NyquistEffectsModule::DiscoverPluginsAtPath(

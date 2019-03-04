@@ -11,9 +11,10 @@ Paul Licameli
 #ifndef __AUDACITY_WXFILENAMEWRAPPER__
 #define __AUDACITY_WXFILENAMEWRAPPER__
 
-class wxArrayString;
+#include <wx/dir.h> // to inherit
 
 #include <wx/filename.h> // to inherit
+#include "Identifier.h"
 
 // The wxFileName does not have a move constructor.
 // So add one to it, so that it passes around by value more quickly.
@@ -24,7 +25,27 @@ public:
 
      explicit
       wxFileNameWrapper(const wxFileName &that)
-      : wxFileName(that)
+      : wxFileName{ that }
+   {}
+
+   wxFileNameWrapper(const wxString &path)
+      : wxFileName{ path }
+   {}
+
+   wxFileNameWrapper(const FilePath &path)
+      // using GET to pass a file path to wxWidgets
+      : wxFileName{ path.GET() }
+   {}
+
+   wxFileNameWrapper(const FilePath &path, const FilePath &name)
+      // using GET to pass a file path to wxWidgets
+      : wxFileName{ path.GET(), name.GET() }
+   {}
+
+   wxFileNameWrapper(const FilePath &path, const FilePath &name,
+      const FileExtension &ext)
+      // using GET to pass a file path to wxWidgets
+      : wxFileName{ path.GET(), name.GET(), ext.GET() }
    {}
 
    wxFileNameWrapper() = default;
@@ -85,6 +106,32 @@ public:
          swap(that);
       }
       return *this;
+   }
+};
+
+class wxDirWrapper : public wxDir
+{
+public:
+   using wxDir::wxDir;
+   wxDirWrapper( const FilePath &path ) : wxDir{ path.GET() } {}
+
+    // simplest version of Traverse(): get the names of all files under this
+    // directory into filenames array, return the number of files
+    static inline size_t GetAllFiles(const FilePath& dirname,
+                              FilePaths *files,
+                              const wxString& filespec = wxEmptyString,
+                              int flags = wxDIR_DEFAULT)
+   {
+      wxArrayString intermediate;
+      auto result = wxDir::GetAllFiles(
+         dirname.GET(),
+         files ? &intermediate : nullptr,
+         filespec,
+         flags
+      );
+      if ( files )
+         *files = { intermediate.begin(), intermediate.end() };
+      return result;
    }
 };
 

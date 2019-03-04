@@ -71,7 +71,7 @@ void DoExport(AudacityProject &project, const FileExtension &format)
                            wxPathOnly(projectFileIO.GetFileName()) :
                            project.GetInitialImportPath();
 */
-      wxFileName fileName(pathName, projectName, wxString{format.GET()}.Lower());
+      wxFileNameWrapper fileName{pathName, projectName, wxString{format.GET()}.Lower()};
 
       // Append the "macro-output" directory to the path
       const wxString macroDir( "macro-output" );
@@ -87,7 +87,7 @@ void DoExport(AudacityProject &project, const FileExtension &format)
          AudacityMessageBox(
             XO("Cannot create directory '%s'. \n"
                "File already exists that is not a directory"),
-            Verbatim(fullPath));
+            Verbatim(fullPath.GET()));
          return;
       }
       fileName.Mkdir(0777, wxPATH_MKDIR_FULL); // make sure it exists
@@ -282,7 +282,7 @@ void OnExportLabels(const CommandContext &context)
       L"txt",
       { FileNames::TextFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-      &window);
+      &window).GET();
 
    if (fName.empty())
       return;
@@ -370,7 +370,7 @@ void OnExportMIDI(const CommandContext &context)
             { XO("Allegro file"), { L"gro" }, true },
          },
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
-         &window);
+         &window).GET();
 
       if (fName.empty())
          return;
@@ -435,7 +435,7 @@ void OnImportLabels(const CommandContext &context)
          L"txt",   // Extension
          { FileNames::TextFiles, FileNames::AllFiles },
          wxRESIZE_BORDER,        // Flags
-         &window);    // Parent
+         &window).GET();    // Parent
 
    if (!fileName.empty()) {
       wxTextFile f;
@@ -487,7 +487,7 @@ void OnImportMIDI(const CommandContext &context)
          FileNames::AllFiles
       },
       wxRESIZE_BORDER,        // Flags
-      &window);    // Parent
+      &window).GET();    // Parent
 
    if (!fileName.empty())
       DoImportMIDI(project, fileName);

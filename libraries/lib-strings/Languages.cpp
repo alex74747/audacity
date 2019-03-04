@@ -55,10 +55,12 @@ static void FindFilesInPathList(const wxString & pattern,
    const FilePaths & pathList, FilePaths & results)
 {
    wxFileName ff;
+   wxArrayStringEx strings;
    for (const auto &path : pathList) {
-      ff = path + wxFILE_SEP_PATH + pattern;
-      wxDir::GetAllFiles(ff.GetPath(), &results, ff.GetFullName(), wxDIR_FILES);
+      ff = path.GET() + wxFILE_SEP_PATH + pattern;
+      wxDir::GetAllFiles(ff.GetPath(), &strings, ff.GetFullName(), wxDIR_FILES);
    }
+   results = FilePaths{ strings.begin(), strings.end() };
 }
 
 static bool TranslationExists(const FilePaths &pathList, wxString code)
@@ -355,7 +357,7 @@ wxString SetLang( const FilePaths &pathList, const wxString & lang )
    sLocale = std::make_unique<wxLocale>(info->Language);
 
    for( const auto &path : pathList )
-      sLocale->AddCatalogLookupPathPrefix( path );
+      sLocale->AddCatalogLookupPathPrefix( path.GET() );
 
    // LL:  Must add the wxWidgets catalog manually since the search
    //      paths were not set up when mLocale was created.  The

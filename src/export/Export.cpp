@@ -478,7 +478,7 @@ bool Exporter::Process(bool selectedOnly, double t0, double t1)
 }
 
 bool Exporter::Process(unsigned numChannels,
-                       const FileExtension &type, const wxString & filename,
+                       const FileExtension &type, const FilePath & filename,
                        bool selectedOnly, double t0, double t1)
 {
    // Save parms
@@ -638,7 +638,7 @@ bool Exporter::GetFilename()
    auto defext = mPlugins[mFormat]->GetExtension(mSubFormat);
 
    //Bug 1304: Set a default path if none was given.  For Export.
-   mFilename.SetPath(FileNames::FindDefaultPath(FileNames::Operation::Export));
+   mFilename.SetPath(FileNames::FindDefaultPath(FileNames::Operation::Export).GET());
    mFilename.SetName(mProject->GetProjectName());
    if (mFilename.GetName().empty())
       mFilename.SetName(_("untitled"));
@@ -1044,7 +1044,7 @@ void Exporter::OnFilterChanged(wxFileCtrlEvent & evt)
 bool Exporter::ProcessFromTimerRecording(bool selectedOnly,
                                          double t0,
                                          double t1,
-                                         wxFileName fnFile,
+                                         wxFileNameWrapper fnFile,
                                          int iFormat,
                                          int iSubFormat,
                                          int iFilterIndex)
@@ -1096,7 +1096,7 @@ int Exporter::GetAutoExportFilterIndex() {
    return mFormat;
 }
 
-wxFileName Exporter::GetAutoExportFileName() {
+wxFileNameWrapper Exporter::GetAutoExportFileName() {
    return mFilename;
 }
 

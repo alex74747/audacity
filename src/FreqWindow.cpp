@@ -1062,7 +1062,7 @@ void FrequencyPlotDialog::OnExport(wxCommandEvent & WXUNUSED(event))
       L"txt",
       { FileNames::TextFiles, FileNames::AllFiles },
       wxFD_SAVE | wxRESIZE_BORDER,
-      this);
+      this).GET();
 
    if (fName.empty())
       return;

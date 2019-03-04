@@ -182,7 +182,7 @@ std::unique_ptr<ImportFileHandle> LOFImportPlugin::Open(
    // Check if it is a binary file
    {
       wxFile binaryFile;
-      if (!binaryFile.Open(filename))
+      if (!binaryFile.Open(filename.GET()))
          return nullptr; // File not found
 
       char buf[BINARY_FILE_CHECK_BUFFER_SIZE];
@@ -202,7 +202,7 @@ std::unique_ptr<ImportFileHandle> LOFImportPlugin::Open(
    }
 
    // Now open the file again as text file
-   auto file = std::make_unique<wxTextFile>(filename);
+   auto file = std::make_unique<wxTextFile>(filename.GET());
    file->Open();
 
    if (!file->IsOpened())

@@ -291,7 +291,8 @@ bool ProjectFileManager::DoSave(const FilePath & fileName, const bool fromSaveAs
          }
       }
 
-      wxULongLong fileSize = wxFileName::GetSize(projectFileIO.GetFileName());
+      wxULongLong fileSize =
+         wxFileName::GetSize(projectFileIO.GetFileName().GET());
 
       wxDiskspaceSize_t freeSpace;
       if (wxGetDiskSpace(FileNames::AbbreviatePath(fileName), NULL, &freeSpace))
@@ -323,7 +324,7 @@ bool ProjectFileManager::DoSave(const FilePath & fileName, const bool fromSaveAs
 
    if (FileNames::IsOnFATFileSystem(fileName))
    {
-      if (wxFileName::GetSize(projectFileIO.GetFileName()) > UINT32_MAX)
+      if (wxFileName::GetSize(projectFileIO.GetFileName().GET()) > UINT32_MAX)
       {
          ShowErrorDialog(
             &window,
@@ -350,7 +351,7 @@ bool ProjectFileManager::DoSave(const FilePath & fileName, const bool fromSaveAs
       return false;
    }
 
-   proj.SetProjectName(wxFileName(fileName).GetName());
+   proj.SetProjectName(wxFileName(fileName.GET()).GetName());
    projectFileIO.SetProjectTitle();
 
    UndoManager::Get(proj).StateSaved();
@@ -413,11 +414,11 @@ bool ProjectFileManager::SaveAs(bool allowOverwrite /* = false */)
    auto &projectFileIO = ProjectFileIO::Get( project );
    auto &window = GetProjectFrame( project );
    TitleRestorer Restorer( window, project ); // RAII
-   wxFileName filename;
+   wxFileNameWrapper filename;
    FilePath defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
 
    if (projectFileIO.IsTemporary()) {
-      filename.SetPath(defaultSavePath);
+      filename.SetPath(defaultSavePath.GET());
       filename.SetName(project.GetProjectName());
    }
    else {
@@ -426,7 +427,7 @@ bool ProjectFileManager::SaveAs(bool allowOverwrite /* = false */)
 
    // Bug 1304: Set a default file path if none was given.  For Save/SaveAs/SaveCopy
    if( !FileNames::IsPathAvailable( filename.GetPath( wxPATH_GET_VOLUME| wxPATH_GET_SEPARATOR) ) ){
-      filename.SetPath(defaultSavePath);
+      filename.SetPath(defaultSavePath.GET());
    }
 
    TranslatableString title = XO("%sSave Project \"%s\" As...")
@@ -490,8 +491,8 @@ For an audio file that will open in other apps, use 'Export'.\n");
          // open in another window.
          int mayOverwrite = ( projectFileIO.GetFileName() == fName ) ? 2 : 1;
          for ( auto p : AllProjects{} ) {
-            const wxFileName openProjectName{ ProjectFileIO::Get(*p).GetFileName() };
-            if (openProjectName.SameAs(fName)) {
+            const wxFileNameWrapper openProjectName{ ProjectFileIO::Get(*p).GetFileName() };
+            if (openProjectName.SameAs(wxString{fName.GET()})) {
                mayOverwrite -= 1;
                if (mayOverwrite == 0)
                   break;
@@ -550,14 +551,14 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = L"" */)
    auto &projectFileIO = ProjectFileIO::Get(project);
    auto &window = GetProjectFrame(project);
    TitleRestorer Restorer(window, project); // RAII
-   wxFileName filename = fileName;
+   wxFileNameWrapper filename = fileName;
    FilePath defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
 
    if (fileName.empty())
    {
       if (projectFileIO.IsTemporary())
       {
-         filename.SetPath(defaultSavePath);
+         filename.SetPath(defaultSavePath.GET());
       }
       else
       {
@@ -568,7 +569,7 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = L"" */)
    // Bug 1304: Set a default file path if none was given.  For Save/SaveAs/SaveCopy
    if (!FileNames::IsPathAvailable(filename.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR)))
    {
-      filename.SetPath(defaultSavePath);
+      filename.SetPath(defaultSavePath.GET());
    }
 
    TranslatableString title =
@@ -633,7 +634,7 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = L"" */)
          continue;
       }
 
-      wxULongLong fileSize = wxFileName::GetSize(projectFileIO.GetFileName());
+      wxULongLong fileSize = wxFileName::GetSize(projectFileIO.GetFileName().GET());
 
       wxDiskspaceSize_t freeSpace;
       if (wxGetDiskSpace(FileNames::AbbreviatePath(filename.GetFullPath()), NULL, &freeSpace))
@@ -883,7 +884,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
    // Data loss may occur if users mistakenly try to open ".aup3.bak" files
    // left over from an unsuccessful save or by previous versions of Audacity.
    // So we always refuse to open such files.
-   if (fileName.Lower().EndsWith(L".aup3.bak"))
+   if (wxString{fileName.GET()}.Lower().EndsWith(L".aup3.bak"))
    {
       AudacityMessageBox(
          XO(
@@ -905,7 +906,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
 
    // Following block covers cases other than a project file:
    {
-      wxFFile ff(fileName, L"rb");
+      wxFFile ff(fileName.GET(), L"rb");
 
       auto cleanup = finally([&]
       {
@@ -962,7 +963,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
          if (Get(project).Import(fileName)) {
             // Undo history is incremented inside this:
             // Bug 2743: Don't zoom with lof.
-            if (!fileName.AfterLast('.').IsSameAs(L"lof", false))
+            if (FileExtension{wxFileNameWrapper{fileName}.GetExt()} != L"lof")
                ProjectWindow::Get(project).ZoomAfterImport(nullptr);
             return &project;
          }
@@ -1078,7 +1079,7 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
 
    SelectUtilities::SelectNone( project );
 
-   wxFileName fn(fileName);
+   wxFileNameWrapper fn(fileName);
 
    bool initiallyEmpty = tracks.empty();
    double newRate = 0;
@@ -1209,14 +1210,15 @@ bool ProjectFileManager::Import(
 
 #ifdef EXPERIMENTAL_IMPORT_AUP3
    // Handle AUP3 ("project") files directly
-   if (fileName.AfterLast('.').IsSameAs(L"aup3", false)) {
+   if (wxString{fileName.GET()}.AfterLast('.').IsSameAs(L"aup3", false)) {
+
       if (ImportProject(project, fileName)) {
          auto &history = ProjectHistory::Get(project);
 
          // If the project was clean and temporary (not permanently saved), then set
          // the filename to the just imported path.
          if (initiallyEmpty && projectFileIO.IsTemporary()) {
-            wxFileName fn(fileName);
+            wxFileNameWrapper fn(fileName);
             project.SetProjectName(fn.GetName());
             project.SetInitialImportPath(fn.GetPath());
             projectFileIO.SetProjectTitle();
@@ -1255,7 +1257,7 @@ bool ProjectFileManager::Import(
 
 #ifndef EXPERIMENTAL_IMPORT_AUP3
       // Handle AUP3 ("project") files specially
-      if (fileName.AfterLast('.').IsSameAs(L"aup3", false)) {
+      if (wxString{fileName.GET()}.AfterLast('.').IsSameAs(L"aup3", false)) {
          ShowErrorDialog(&GetProjectFrame( project ), XO("Error Importing"),
             XO( "Cannot import AUP3 format.  Use File > Open instead"),
             L"File_Menu");
@@ -1286,7 +1288,7 @@ bool ProjectFileManager::Import(
 
    // for LOF ("list of files") files, do not import the file as if it
    // were an audio file itself
-   if (fileName.AfterLast('.').IsSameAs(L"lof", false)) {
+   if (wxString{fileName.GET()}.AfterLast('.').IsSameAs(L"lof", false)) {
       // PRL: don't redundantly do the steps below, because we already
       // did it in case of LOF, because of some weird recursion back to this
       // same function.  I think this should be untangled.
@@ -1296,11 +1298,11 @@ bool ProjectFileManager::Import(
    }
 
    // Handle AUP ("legacy project") files directly
-   if (fileName.AfterLast('.').IsSameAs(L"aup", false)) {
+   if (wxString{fileName.GET()}.AfterLast('.').IsSameAs(L"aup", false)) {
       // If the project was clean and temporary (not permanently saved), then set
       // the filename to the just imported path.
       if (initiallyEmpty && projectFileIO.IsTemporary()) {
-         wxFileName fn(fileName);
+         wxFileNameWrapper fn(fileName);
          project.SetProjectName(fn.GetName());
          project.SetInitialImportPath(fn.GetPath());
          projectFileIO.SetProjectTitle();
@@ -1400,7 +1402,7 @@ void ProjectFileManager::Compact()
    int64_t total = projectFileIO.GetTotalUsage();
    int64_t used = projectFileIO.GetCurrentUsage(trackLists);
 
-   auto before = wxFileName::GetSize(projectFileIO.GetFileName());
+   auto before = wxFileName::GetSize(projectFileIO.GetFileName().GET());
 
    CompactDialog dlg(
          XO("Compacting this project will free up disk space by removing unused bytes within the file.\n\n"
@@ -1431,11 +1433,11 @@ void ProjectFileManager::Compact()
 
       // Refresh the before space usage since it may have changed due to the
       // above actions.
-      auto before = wxFileName::GetSize(projectFileIO.GetFileName());
+      auto before = wxFileName::GetSize(projectFileIO.GetFileName().GET());
 
       projectFileIO.Compact(trackLists, true);
 
-      auto after = wxFileName::GetSize(projectFileIO.GetFileName());
+      auto after = wxFileName::GetSize(projectFileIO.GetFileName().GET());
 
       if (!isBatch)
       {

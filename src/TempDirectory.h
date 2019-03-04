@@ -18,7 +18,7 @@ class wxWindow;
 
 namespace TempDirectory
 {
-   AUDACITY_DLL_API wxString TempDir();
+   AUDACITY_DLL_API FilePath TempDir();
    AUDACITY_DLL_API void ResetTempDir();
 
    AUDACITY_DLL_API const FilePath &DefaultTempDir();

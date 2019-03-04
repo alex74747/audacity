@@ -41,7 +41,8 @@ XMLFileReader::~XMLFileReader()
 bool XMLFileReader::Parse(XMLTagHandler *baseHandler,
                           const FilePath &fname)
 {
-   wxFFile theXMLFile(fname, L"rb");
+   // using GET to pass a file name to wxWidgets
+   wxFFile theXMLFile(fname.GET(), L"rb");
    if (!theXMLFile.IsOpened()) {
       mErrorStr = XO("Could not open file: \"%s\"").Format( fname );
       return false;
