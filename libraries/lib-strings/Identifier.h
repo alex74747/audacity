@@ -237,6 +237,7 @@ using CommandIDs = std::vector<CommandID>;
 struct PluginIdTag {};
 using PluginID = TaggedIdentifier<PluginIdTag>;
 
+// File extensions, not including any leading dot
 struct FileExtensionTag;
 using FileExtension = TaggedIdentifier<
    FileExtensionTag, false /* case-insensitive */

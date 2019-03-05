@@ -602,11 +602,11 @@ FileNames::SelectFile(Operation op,
 
 bool FileNames::IsMidi(const FilePath &fName)
 {
-   const auto extension = fName.AfterLast(L'.');
+   const FileExtension extension{ wxFileNameWrapper{ fName }.GetExt() };
    return
-      extension.IsSameAs(L"gro", false) ||
-      extension.IsSameAs(L"midi", false) ||
-      extension.IsSameAs(L"mid", false);
+      extension == L"gro" ||
+      extension == L"midi" ||
+      extension == L"mid";
 }
 
 static FilePaths sAudacityPathList;
