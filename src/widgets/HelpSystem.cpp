@@ -341,7 +341,7 @@ void HelpSystem::ShowHelp(wxWindow *parent,
    if (releasePageName == L"Main_Page")
    {
       releasePageName = L"index" + HelpSystem::ReleaseSuffix + anchor;
-      localHelpPage = wxFileName(FileNames::HtmlHelpDir(), releasePageName).GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), releasePageName }.GetFullPath();
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerHomeDir;
    }
    else if (releasePageName == L"Quick_Help")
@@ -349,11 +349,11 @@ void HelpSystem::ShowHelp(wxWindow *parent,
 // DA: No bundled help, by default, and different quick-help URL.
 #ifdef EXPERIMENTAL_DA
       releasePageName = L"video" + HelpSystem::ReleaseSuffix + anchor;
-      localHelpPage = wxFileName(FileNames::HtmlHelpDir(), releasePageName).GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), releasePageName }.GetFullPath();
       webHelpPath = L"http://www.darkaudacity.com/";
 #else
       releasePageName = L"quick_help" + HelpSystem::ReleaseSuffix + anchor;
-      localHelpPage = wxFileName(FileNames::HtmlHelpDir(), releasePageName).GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), releasePageName }.GetFullPath();
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerHomeDir;
 #endif
    }
@@ -391,7 +391,7 @@ void HelpSystem::ShowHelp(wxWindow *parent,
       // Concatenate file name with file extension and anchor.
       releasePageName = releasePageName + HelpSystem::ReleaseSuffix + anchor;
       // Other than index and quick_help, all local pages are in subdirectory 'LocalHelpManDir'.
-      localHelpPage = wxFileName(FileNames::HtmlHelpDir() + LocalHelpManDir, releasePageName).GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir() + LocalHelpManDir, releasePageName }.GetFullPath();
       // Other than index and quick_help, all on-line pages are in subdirectory 'HelpServerManDir'.
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerManDir;
    }
@@ -540,7 +540,7 @@ void LinkingHtmlWindow::OnLinkClicked(const wxHtmlLinkInfo& link)
    else if( href.StartsWith(L"innerlink:") )
    {
       wxString FileName =
-         wxFileName( FileNames::HtmlHelpDir(), href.Mid( 10 ) + L".htm" ).GetFullPath();
+         wxFileName{ FileNames::HtmlHelpDir(), href.Mid( 10 ) + L".htm" }.GetFullPath();
       if( wxFileExists( FileName ) )
       {
          HelpSystem::ShowHelp(this, FileName, wxEmptyString, false);

@@ -125,7 +125,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
    ResetMacro();
 
    // Build the filename
-   wxFileName name(FileNames::MacroDir(), macro, L"txt");
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
 
    // But, ask the user for the real name if we're importing
    if (parent) {
@@ -263,7 +263,7 @@ wxString MacroCommands::WriteMacro(const wxString & macro, wxWindow *parent)
 bool MacroCommands::AddMacro(const wxString & macro)
 {
    // Build the filename
-   wxFileName name(FileNames::MacroDir(), macro, L"txt");
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
 
    // Set the file name
    wxTextFile tf(name.GetFullPath());
@@ -275,13 +275,13 @@ bool MacroCommands::AddMacro(const wxString & macro)
 bool MacroCommands::DeleteMacro(const wxString & macro)
 {
    // Build the filename
-   wxFileName name(FileNames::MacroDir(), macro, L"txt");
+   wxFileNameWrapper name{ FileNames::MacroDir(), macro, L"txt" };
 
    // Delete it...wxRemoveFile will display errors
    auto result = wxRemoveFile(name.GetFullPath());
 
    // Delete any legacy chain that it shadowed
-   auto oldPath = wxFileName{ FileNames::LegacyChainDir(), macro, L"txt" };
+   auto oldPath = wxFileNameWrapper{ FileNames::LegacyChainDir(), macro, L"txt" };
    wxRemoveFile(oldPath.GetFullPath()); // Don't care about this return value
 
    return result;
@@ -290,8 +290,8 @@ bool MacroCommands::DeleteMacro(const wxString & macro)
 bool MacroCommands::RenameMacro(const wxString & oldmacro, const wxString & newmacro)
 {
    // Build the filenames
-   wxFileName oname(FileNames::MacroDir(), oldmacro, L"txt");
-   wxFileName nname(FileNames::MacroDir(), newmacro, L"txt");
+   wxFileNameWrapper oname{ FileNames::MacroDir(), oldmacro, L"txt" };
+   wxFileNameWrapper nname{ FileNames::MacroDir(), newmacro, L"txt" };
 
    // Rename it...wxRenameFile will display errors
    return wxRenameFile(oname.GetFullPath(), nname.GetFullPath());
@@ -901,10 +901,10 @@ void MacroCommands::MigrateLegacyChains()
       wxDir::GetAllFiles(oldDir, &files, L"*.txt", wxDIR_FILES);
 
       // add a dummy path component to be overwritten by SetFullName
-      wxFileName newDir{ FileNames::MacroDir(), L"x" };
+      wxFileNameWrapper newDir{ FileNames::MacroDir(), L"x" };
 
       for (const auto &file : files) {
-         auto name = wxFileName{file}.GetFullName();
+         auto name = wxFileNameWrapper{ file }.GetFullName();
          newDir.SetFullName(name);
          const auto newPath = newDir.GetFullPath();
          if (!wxFileExists(newPath))
@@ -924,9 +924,9 @@ wxArrayString MacroCommands::GetNames()
    wxDir::GetAllFiles(FileNames::MacroDir(), &files, L"*.txt", wxDIR_FILES);
    size_t i;
 
-   wxFileName ff;
-   for (i = 0; i < files.size(); i++) {
-      ff = (files[i]);
+   wxFileNameWrapper ff;
+   for ( const auto &file : files ) {
+      ff = file;
       names.push_back(ff.GetName());
    }
 

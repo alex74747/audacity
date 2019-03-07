@@ -44,6 +44,7 @@
 
 #include "../../ShuttleGui.h"
 #include "../../widgets/AudacityMessageBox.h"
+#include "../../wxFileNameWrapper.h"
 #include "../../widgets/valnum.h"
 #include "../../widgets/wxPanelWrapper.h"
 
@@ -700,7 +701,6 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    S.AddStandardButtons();
 
    FilePaths presets;
-   wxFileName fn;
 
    // Generate the local domain path
    wxString path;
@@ -708,7 +708,7 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
                PRESET_LOCAL_PATH,
                mEffect->mVendor,
                mEffect->mName);
-   fn = path;
+   wxFileNameWrapper fn{ path };
    fn.Normalize();
    
    // Get all presets in the local domain for this effect

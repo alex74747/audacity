@@ -842,7 +842,7 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
 // static method, can be called outside of a project
 bool ProjectFileManager::IsAlreadyOpen(const FilePath &projPathName)
 {
-   const wxFileName newProjPathName(projPathName);
+   const wxFileNameWrapper newProjPathName{ projPathName };
    auto start = AllProjects{}.begin(), finish = AllProjects{}.end(),
    iter = std::find_if( start, finish,
       [&]( const AllProjects::value_type &ptr ){

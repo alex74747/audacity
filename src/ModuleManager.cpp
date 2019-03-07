@@ -44,6 +44,8 @@ i.e. an alternative to the usual interface, for Audacity.
 
 #include "widgets/AudacityMessageBox.h"
 
+#include "wxFileNameWrapper.h"
+
 #define initFnName      "ExtensionModuleInit"
 #define versionFnName   "GetVersionString"
 
@@ -95,6 +97,7 @@ bool Module::Load(wxString &deferredErrorMessage)
    // Check version string matches.  (For now, they must match exactly)
    tVersionFn versionFn = (tVersionFn)(mLib->GetSymbol((L"" versionFnName)));
    if (versionFn == NULL){
+      wxString ShortName = wxFileNameWrapper( mName ).GetName();
       AudacityMessageBox(
          XO("The module \"%s\" does not provide a version string.\n\nIt will not be loaded.")
             .Format( ShortName),
@@ -106,6 +109,7 @@ bool Module::Load(wxString &deferredErrorMessage)
 
    wxString moduleVersion = versionFn();
    if( moduleVersion != AUDACITY_VERSION_STRING) {
+      wxString ShortName = wxFileNameWrapper( mName ).GetName();
       AudacityMessageBox(
          XO("The module \"%s\" is matched with Audacity version \"%s\".\n\nIt will not be loaded.")
             .Format(ShortName, moduleVersion),
@@ -257,7 +261,7 @@ void ModuleManager::TryLoadModules(
 
       // Only process the first module encountered in the
       // defined search sequence.
-      wxString ShortName = wxFileName( file ).GetName();
+      wxString ShortName = wxFileNameWrapper{ file }.GetName();
       if( checked.Index( ShortName, false ) != wxNOT_FOUND )
          continue;
       checked.Add( ShortName );

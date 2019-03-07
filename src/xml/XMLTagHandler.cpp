@@ -64,7 +64,7 @@ bool XMLValueChecker::IsGoodFileName(const FilePath & strFileName, const FilePat
       return false;
 
    // Test the corresponding wxFileName.
-   wxFileName fileName(strDirName, strFileName);
+   wxFileNameWrapper fileName(strDirName, strFileName);
    return (fileName.IsOk() && fileName.FileExists());
 }
 
@@ -92,14 +92,14 @@ bool XMLValueChecker::IsGoodSubdirName(const FilePath & strSubdirName, const Fil
       return false;
 
    // Test the corresponding wxFileName.
-   wxFileName fileName(strDirName, strSubdirName);
+   wxFileNameWrapper fileName{ strDirName, strSubdirName };
    return (fileName.IsOk() && fileName.DirExists());
 }
 
 bool XMLValueChecker::IsGoodPathName(const FilePath & strPathName)
 {
    // Test the corresponding wxFileName.
-   wxFileName fileName(strPathName);
+   wxFileNameWrapper fileName{ strPathName };
    return XMLValueChecker::IsGoodFileName(fileName.GetFullName(), fileName.GetPath(wxPATH_GET_VOLUME));
 }
 

@@ -13,6 +13,7 @@
 #include "AudacityException.h"
 #include <wx/filename.h> // wxFileName member variable
 
+#include "wxFileNameWrapper.h"
 //! Thrown for failure of file or database operations in deeply nested places
 class AUDACITY_DLL_API FileException /* not final */
    : public MessageBoxException
@@ -60,8 +61,8 @@ protected:
 
 public:
    Cause cause;
-   wxFileName fileName;
-   wxFileName renameTarget;
+   wxFileNameWrapper fileName;
+   wxFileNameWrapper renameTarget;
 };
 
 #endif

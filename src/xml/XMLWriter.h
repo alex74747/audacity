@@ -111,7 +111,7 @@ class AUDACITY_DLL_API XMLFileWriter final : private wxFFile, public XMLWriter {
  private:
 
    void ThrowException(
-      const wxFileName &fileName, const TranslatableString &caption)
+      const wxFileNameWrapper &fileName, const TranslatableString &caption)
    {
       throw FileException{ FileException::Cause::Write, fileName, caption };
    }

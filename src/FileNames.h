@@ -109,7 +109,7 @@ namespace FileNames
 
    // originally an ExportMultipleDialog method. Append suffix if newName appears in otherNames.
    AUDACITY_DLL_API void MakeNameUnique(
-      FilePaths &otherNames, wxFileName &newName);
+      FilePaths &otherNames, wxFileNameWrapper &newName);
 
    AUDACITY_DLL_API wxString LowerCaseAppNameInPath( const wxString & dirIn);
    /** \brief Audacity user data directory

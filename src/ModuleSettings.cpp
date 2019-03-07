@@ -14,6 +14,7 @@
 
 #include <unordered_set>
 #include <wx/filename.h>
+#include "wxFileNameWrapper.h"
 
 static const std::unordered_set<wxString> &autoEnabledModules()
 {
@@ -30,7 +31,7 @@ int ModuleSettings::GetModuleStatus(const FilePath &fname)
    // Default status is NEW module, and we will ask once.
    int iStatus = kModuleNew;
 
-   wxFileName FileName( fname );
+   wxFileNameWrapper FileName{ fname };
    wxString ShortName = FileName.GetName().Lower();
 
    wxString PathPref = wxString( L"/ModulePath/" ) + ShortName;
@@ -74,7 +75,7 @@ int ModuleSettings::GetModuleStatus(const FilePath &fname)
 
 void ModuleSettings::SetModuleStatus(const FilePath &fname, int iStatus)
 {
-   wxFileName FileName( fname );
+   wxFileNameWrapper FileName{ fname };
    wxDateTime DateTime = FileName.GetModificationTime();
    wxString ShortName = FileName.GetName().Lower();
 

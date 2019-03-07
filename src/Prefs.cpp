@@ -63,6 +63,8 @@
 #include "MemoryX.h"
 #include <memory>
 
+#include "wxFileNameWrapper.h"
+
 std::unique_ptr<FileConfig> ugPrefs {};
 
 FileConfig *gPrefs = nullptr;

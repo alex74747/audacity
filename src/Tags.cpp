@@ -69,6 +69,8 @@
 #include <wx/combobox.h>
 #include <wx/display.h>
 
+#include "wxFileNameWrapper.h"
+
 static const wxChar *DefaultGenres[] =
 {
    L"Blues",
@@ -399,7 +401,7 @@ void Tags::LoadDefaultGenres()
 
 void Tags::LoadGenres()
 {
-   wxFileName fn(FileNames::DataDir(), L"genres.txt");
+   wxFileNameWrapper fn{ FileNames::DataDir(), L"genres.txt" };
    wxTextFile tf(fn.GetFullPath());
 
    if (!tf.Exists() || !tf.Open()) {
@@ -1167,7 +1169,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
       return;
    }
 
-   wxFileName fn(FileNames::DataDir(), L"genres.txt");
+   wxFileNameWrapper fn{ FileNames::DataDir(), L"genres.txt" };
    wxFile f(fn.GetFullPath(), wxFile::write);
    if (!f.IsOpened() || !f.Write(tc->GetValue())) {
       AudacityMessageBox(
@@ -1193,7 +1195,7 @@ void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
    }
    mLocal.LoadDefaultGenres();
 
-   wxFileName fn(FileNames::DataDir(), L"genres.txt");
+   wxFileNameWrapper fn{ FileNames::DataDir(), L"genres.txt" };
    wxTextFile tf(fn.GetFullPath());
 
    bool open = (tf.Exists() && tf.Open()) ||

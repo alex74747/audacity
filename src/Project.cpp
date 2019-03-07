@@ -14,7 +14,8 @@
 
 #include "KeyboardCapture.h"
 #include "TempDirectory.h"
-#include "./widgets/ErrorDialog.h"
+#include "widgets/ErrorDialog.h"
+#include "wxFileNameWrapper.h"
 
 #include <wx/display.h>
 #include <wx/filename.h>

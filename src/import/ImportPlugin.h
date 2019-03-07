@@ -53,6 +53,8 @@ but little else.
 #include "Internat.h"
 #include "wxArrayStringEx.h"
 
+#include "../wxFileNameWrapper.h"
+
 class AudacityProject;
 class ProgressDialog;
 enum class ProgressResult : unsigned;

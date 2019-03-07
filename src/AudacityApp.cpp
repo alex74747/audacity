@@ -1252,7 +1252,7 @@ bool AudacityApp::OnInit()
 
    // Initialize preferences and language
    {
-      wxFileName configFileName(FileNames::DataDir(), L"audacity.cfg");
+      wxFileNameWrapper configFileName(FileNames::DataDir(), L"audacity.cfg");
       auto appName = wxTheApp->GetAppName();
       InitPreferences( AudacityFileConfig::Create(
          appName, wxEmptyString,

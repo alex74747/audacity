@@ -44,7 +44,7 @@ ImportFileHandle::~ImportFileHandle()
 
 void ImportFileHandle::CreateProgress()
 {
-   wxFileName ff( mFilename );
+   wxFileNameWrapper ff{ mFilename };
 
    auto title = XO("Importing %s").Format( GetFileDescription() );
    mProgress = std::make_unique< ProgressDialog >(

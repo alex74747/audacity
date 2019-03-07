@@ -43,6 +43,8 @@ class EnvelopeEditor;
 class EqualizationPanel;
 class RulerPanel;
 
+class wxFileNameWrapper;
+
 //
 // One point in a curve
 //
@@ -164,7 +166,7 @@ private:
    void setCurve(int currentCurve);
    void setCurve(const wxString &curveName);
    void setCurve(void);
-   bool GetDefaultFileName(wxFileName &fileName);
+   bool GetDefaultFileName(wxFileNameWrapper &fileName);
    
    // XMLTagHandler callback methods for loading and saving
    bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
