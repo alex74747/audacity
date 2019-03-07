@@ -67,6 +67,8 @@
 #include "widgets/ErrorDialog.h"
 #include "Internat.h"
 
+#include "wxFileNameWrapper.h"
+
 std::unique_ptr<AudacityPrefs> ugPrefs {};
 
 AudacityPrefs *gPrefs = NULL;
@@ -169,7 +171,7 @@ void InitPreferences()
 {
    wxString appName = wxTheApp->GetAppName();
 
-   wxFileName configFileName(FileNames::DataDir(), wxT("audacity.cfg"));
+   wxFileNameWrapper configFileName{ FileNames::DataDir(), wxT("audacity.cfg") };
 
    ugPrefs = std::make_unique<AudacityPrefs>
       (appName, wxEmptyString,
@@ -183,9 +185,10 @@ void InitPreferences()
    wxString langCode = gPrefs->Read(wxT("/Locale/Language"), wxEmptyString);
    bool writeLang = false;
 
-   const wxFileName fn(
+   const wxFileNameWrapper fn{
       FileNames::ResourcesDir(), 
-      wxT("FirstTime.ini"));
+      wxT("FirstTime.ini")
+   };
    if (fn.FileExists())   // it will exist if the (win) installer put it there
    {
       const wxString fullPath{fn.GetFullPath()};

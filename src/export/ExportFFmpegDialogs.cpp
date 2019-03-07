@@ -491,7 +491,7 @@ FFmpegPresets::FFmpegPresets()
    mAbortImport = false;
 
    XMLFileReader xmlfile;
-   wxFileName xmlFileName(FileNames::DataDir(), wxT("ffmpeg_presets.xml"));
+   wxFileNameWrapper xmlFileName{ FileNames::DataDir(), wxT("ffmpeg_presets.xml") };
    xmlfile.Parse(this,xmlFileName.GetFullPath());
 }
 
@@ -499,7 +499,8 @@ FFmpegPresets::~FFmpegPresets()
 {
    // We're in a destructor!  Don't let exceptions out!
    GuardedCall( [&] {
-      wxFileName xmlFileName{ FileNames::DataDir(), wxT("ffmpeg_presets.xml") };
+      wxFileNameWrapper xmlFileName{
+         FileNames::DataDir(), wxT("ffmpeg_presets.xml") };
       XMLFileWriter writer{
          xmlFileName.GetFullPath(), _("Error Saving FFmpeg Presets") };
       WriteXMLHeader(writer);

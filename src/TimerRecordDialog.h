@@ -18,6 +18,7 @@
 
 #include <wx/textctrl.h> // to inherit
 #include <wx/timer.h> // member variable
+#include "wxFileNameWrapper.h" // member variable
 #include "export/Export.h"
 
 class wxCheckBox;
@@ -138,7 +139,7 @@ private:
 
    // Variables for the Auto Save/Export
    bool m_bAutoSaveEnabled;
-   wxFileName m_fnAutoSaveFile;
+   wxFileNameWrapper m_fnAutoSaveFile;
    bool m_bAutoExportEnabled;
    wxFileName m_fnAutoExportFile;
    int m_iAutoExportFormat;

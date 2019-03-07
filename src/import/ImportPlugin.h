@@ -63,6 +63,8 @@ but little else.
 
 #include "ImportRaw.h" // defines TrackHolders
 
+#include "../wxFileNameWrapper.h"
+
 class wxArrayString;
 class ProgressDialog;
 enum class ProgressResult : unsigned;
