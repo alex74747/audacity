@@ -1840,7 +1840,7 @@ bool PluginManager::DropFile(const wxString &fileName)
       const auto &ff = module->InstallPath();
       const auto &extensions = module->GetFileExtensions();
       if ( !ff.empty() &&
-          extensions.Index(src.GetExt(), false) != wxNOT_FOUND ) {
+         make_iterator_range( extensions ).contains( src.GetExt() ) ) {
          TranslatableString errMsg;
          // Do dry-run test of the file format
          unsigned nPlugIns =
@@ -2385,7 +2385,8 @@ void PluginManager::SaveGroup(FileConfig *pRegistry, PluginType type)
             wxString strExt;
             for (size_t i = 0, cnt = extensions.size(); i < cnt; i++)
             {
-               strExt += extensions[i] + L":";
+               // using GET to write identifiers to config file
+               strExt += extensions[i].GET() + L":";
             }
             strExt.RemoveLast(1);
             pRegistry->Write(KEY_IMPORTEREXTENSIONS, strExt);

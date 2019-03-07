@@ -86,13 +86,14 @@ wxString FileNames::FormatWildcard( const FileTypes &fileTypes )
    // Another exception:  if an extension contains a dot, it is interpreted as
    // not really an extension, but a literal filename
 
-   const wxString dot{ '.' };
+   constexpr auto dot = L'.';
    const auto makeGlobs = [&dot]( const FileExtensions &extensions ){
       wxString globs;
-      for ( const auto &extension: extensions ) {
+      for ( const auto &ext : extensions ) {
          if ( !globs.empty() )
             globs += ';';
-         if ( extension.Contains( dot ) )
+         const auto &extension = ext.GET();
+         if ( extension.find_first_of( dot ) != std::wstring::npos )
             globs += extension;
          else {
             globs += '*';
@@ -107,10 +108,10 @@ wxString FileNames::FormatWildcard( const FileTypes &fileTypes )
 
    const auto defaultDescription = []( const FileExtensions &extensions ){
       // Assume extensions is not empty
-      wxString exts = extensions[0];
+      auto exts = extensions[0].GET();
       for (size_t ii = 1, size = extensions.size(); ii < size; ++ii ) {
          exts += XO(", ").Translation();
-         exts += extensions[ii];
+         exts += extensions[ii].GET();
       }
       /* i18n-hint a type or types such as "txt" or "txt, xml" will be
          substituted for %s */
@@ -591,7 +592,7 @@ FileNames::SelectFile(Operation op,
    return WithDefaultPath(op, default_path, [&](const FilePath &path) {
       wxString filter;
       if ( !default_extension.empty() )
-         filter = L"*." + default_extension;
+         filter = L"*." + default_extension.GET();
       return FileSelector(
             message.Translation(), path, default_filename, filter,
             FormatWildcard( fileTypes ),

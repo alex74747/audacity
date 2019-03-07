@@ -767,7 +767,9 @@ ProgressResult ExportMultipleDialog::ExportMultipleByLabel(bool byName,
    // don't duplicate them
    ExportKit setting;   // the current batch of settings
    setting.destfile.SetPath(mDir->GetValue());
-   setting.destfile.SetExt(mPlugins[mPluginIndex]->GetExtension(mSubFormatIndex));
+   setting.destfile.SetExt(
+      // using GET to build a wxFileName
+      mPlugins[mPluginIndex]->GetExtension(mSubFormatIndex).GET());
    wxLogDebug(L"Plug-in index = %d, Sub-format = %d", mPluginIndex, mSubFormatIndex);
    wxLogDebug(L"File extension is %s", setting.destfile.GetExt());
    wxString name;    // used to hold file name whilst we mess with it
@@ -911,7 +913,9 @@ ProgressResult ExportMultipleDialog::ExportMultipleByTrack(bool byName,
    exportSettings.reserve(mNumWaveTracks);   // Allocate some guessed space to use.
    ExportKit setting;   // the current batch of settings
    setting.destfile.SetPath(mDir->GetValue());
-   setting.destfile.SetExt(mPlugins[mPluginIndex]->GetExtension(mSubFormatIndex));
+   setting.destfile.SetExt(
+      // using GET to build a wxFileName
+      mPlugins[mPluginIndex]->GetExtension(mSubFormatIndex).GET());
 
    wxString name;    // used to hold file name whilst we mess with it
    wxString title;   // un-messed-with title of file for tagging with

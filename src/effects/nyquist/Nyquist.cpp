@@ -3261,7 +3261,7 @@ void NyquistEffect::resolveFilePath(wxString& path, FileExtension extension /* e
    {
       path = fname.GetPathWithSep() + _("untitled");
       if (!extension.empty())
-         path = path + '.' + extension;
+         path = path + '.' + extension.GET();
    }
 }
 

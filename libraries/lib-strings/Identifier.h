@@ -226,10 +226,6 @@ using RegistryPaths = std::vector< RegistryPath >;
 
 class wxArrayStringEx;
 
-//! File extension, not including any leading dot
-using FileExtension = wxString;
-using FileExtensions = wxArrayStringEx;
-
 using FilePath = wxString;
 using FilePaths = wxArrayStringEx;
 
@@ -241,5 +237,38 @@ using CommandIDs = std::vector<CommandID>;
 struct PluginIdTag {};
 using PluginID = TaggedIdentifier<PluginIdTag>;
 
-#endif
+struct FileExtensionTag;
+using FileExtension = TaggedIdentifier<
+   FileExtensionTag, false /* case-insensitive */
+>;
+using FileExtensions = std::vector< FileExtension >;
 
+// This makes FileExtension work as an argument in wxString::Format() without
+// calling GET().
+// File extensions are often reported to the user in dialogs, so we permit this
+// for this subclass of Identifier.
+template<>
+struct wxArgNormalizerNative<const FileExtension&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const FileExtension& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+ 
+template<>
+struct wxArgNormalizerNative<FileExtension>
+: public wxArgNormalizerNative<const FileExtension&>
+{
+   wxArgNormalizerNative(const FileExtension& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const FileExtension&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+#endif

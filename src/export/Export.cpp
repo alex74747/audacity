@@ -193,8 +193,8 @@ bool ExportPlugin::IsExtension(const FileExtension & ext, int index)
    {
       const auto &defext = GetExtension(i);
       const auto &defexts = GetExtensions(i);
-      int indofext = defexts.Index(ext, false);
-      if (defext.empty() || (indofext != wxNOT_FOUND))
+      if (defext.empty() ||
+         make_iterator_range( defexts ).contains( ext ))
          isext = true;
    }
    return isext;
@@ -494,7 +494,7 @@ bool Exporter::Process(unsigned numChannels,
       ++i;
       for (int j = 0; j < pPlugin->GetFormatCount(); j++)
       {
-         if (pPlugin->GetFormat(j).IsSameAs(type, false))
+         if (pPlugin->GetFormat(j).IsSameAs(type.GET(), false))
          {
             mFormat = i;
             mSubFormat = j;
@@ -635,7 +635,7 @@ bool Exporter::GetFilename()
       mFilterIndex = 0;
       mSubFormat = 0;
    }
-   wxString defext = mPlugins[mFormat]->GetExtension(mSubFormat).Lower();
+   auto defext = mPlugins[mFormat]->GetExtension(mSubFormat);
 
    //Bug 1304: Set a default path if none was given.  For Export.
    mFilename.SetPath(FileNames::FindDefaultPath(FileNames::Operation::Export));
@@ -649,7 +649,8 @@ bool Exporter::GetFilename()
       {
          auto useFileName = mFilename;
          if (!useFileName.HasExt())
-            useFileName.SetExt(defext);
+            // using GET to build a wxFileName
+            useFileName.SetExt(wxString{defext.GET()}.Lower());
          FileDialogWrapper fd( ProjectWindow::Find( mProject ),
                        mFileDialogTitle,
                        mFilename.GetPath(),
@@ -698,7 +699,7 @@ bool Exporter::GetFilename()
       }
 
       const auto ext = mFilename.GetExt();
-      defext = mPlugins[mFormat]->GetExtension(mSubFormat).Lower();
+      defext = mPlugins[mFormat]->GetExtension(mSubFormat);
 
       //
       // Check the extension - add the default if it's not there,
@@ -723,14 +724,16 @@ bool Exporter::GetFilename()
             }
          }
 
-         mFilename.SetExt(defext);
+         // using GET to build a wxFileName
+         mFilename.SetExt(wxString{defext.GET()}.Lower());
       }
 
       if (!mPlugins[mFormat]->CheckFileName(mFilename, mSubFormat))
       {
          continue;
       }
-      else if (!ext.empty() && !mPlugins[mFormat]->IsExtension(ext,mSubFormat) && ext.CmpNoCase(defext)) {
+      else if (!ext.empty() && !mPlugins[mFormat]->IsExtension(ext,mSubFormat) &&
+         ext != defext ) {
          auto prompt = XO("You are about to export a %s file with the name \"%s\".\n\nNormally these files end in \".%s\", and some programs will not open files with nonstandard extensions.\n\nAre you sure you want to export the file under this name?")
                .Format(mPlugins[mFormat]->GetFormat(mSubFormat),
                        mFilename.GetFullName(),

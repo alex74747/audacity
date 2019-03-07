@@ -47,10 +47,10 @@ but little else.
 
 
 
-#include <memory>
 #include "audacity/Types.h"
 #include "Identifier.h"
 #include "Internat.h"
+#include "MemoryX.h"
 #include "wxArrayStringEx.h"
 
 #include "../wxFileNameWrapper.h"
@@ -177,7 +177,7 @@ public:
 
    bool SupportsExtension(const FileExtension &extension)
    {
-      return mExtensions.Index(extension, false) != wxNOT_FOUND;
+      return make_iterator_range( mExtensions ).contains(extension);
    }
 
 private:

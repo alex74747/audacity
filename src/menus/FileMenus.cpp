@@ -71,7 +71,7 @@ void DoExport(AudacityProject &project, const FileExtension &format)
                            wxPathOnly(projectFileIO.GetFileName()) :
                            project.GetInitialImportPath();
 */
-      wxFileName fileName(pathName, projectName, format.Lower());
+      wxFileName fileName(pathName, projectName, wxString{format.GET()}.Lower());
 
       // Append the "macro-output" directory to the path
       const wxString macroDir( "macro-output" );
