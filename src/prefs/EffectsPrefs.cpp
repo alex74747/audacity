@@ -97,7 +97,7 @@ namespace {
 
 // It is not required that each module be found here, nor that each module
 // mentioned here be found.
-const std::map< wxString, TranslatableString > SuggestedPrompts{
+const std::map< EffectFamilyID, TranslatableString > SuggestedPrompts{
 
 /* i18n-hint: Audio Unit is the name of an Apple audio software protocol */
    { L"AudioUnit", XXO("Audio Unit") },

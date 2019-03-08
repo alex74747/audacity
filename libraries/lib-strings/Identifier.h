@@ -367,4 +367,11 @@ struct wxArgNormalizerNative<DirectoryPath>
    wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
 };
 
+struct VendorIDTag;
+using VendorID = TaggedIdentifier< VendorIDTag >;
+
+// EffectFamilyID is also used as a path in a config file
+struct EffectFamilyIDTag;
+using EffectFamilyID = TaggedIdentifier< EffectFamilyIDTag >;
+
 #endif

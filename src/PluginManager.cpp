@@ -1179,7 +1179,7 @@ wxString PluginDescriptor::GetUntranslatedVersion() const
    return mVersion;
 }
 
-wxString PluginDescriptor::GetVendor() const
+VendorID PluginDescriptor::GetVendor() const
 {
    return mVendor;
 }
@@ -1224,7 +1224,7 @@ void PluginDescriptor::SetVersion(const wxString & version)
    mVersion = version;
 }
 
-void PluginDescriptor::SetVendor(const wxString & vendor)
+void PluginDescriptor::SetVendor(const VendorID & vendor)
 {
    mVendor = vendor;
 }
@@ -1241,7 +1241,7 @@ void PluginDescriptor::SetValid(bool valid)
 
 // Effects
 
-wxString PluginDescriptor::GetEffectFamily() const
+EffectFamilyID PluginDescriptor::GetEffectFamily() const
 {
    return mEffectFamily;
 }
@@ -1276,7 +1276,7 @@ bool PluginDescriptor::IsEffectAutomatable() const
    return mEffectAutomatable;
 }
 
-void PluginDescriptor::SetEffectFamily(const wxString & family)
+void PluginDescriptor::SetEffectFamily(const EffectFamilyID & family)
 {
    mEffectFamily = family;
 }
@@ -1421,7 +1421,9 @@ RegistryPath PluginManager::GetPluginEnabledSetting(
       case PluginTypeModule: {
          // Retrieve optional family symbol that was recorded in
          // RegisterPlugin() for the module
-         auto family = desc.GetEffectFamily();
+         // using GET to interpret effect family ID as a registry path
+         // prefix
+         auto family = desc.GetEffectFamily().GET();
          if ( family.empty() ) // as for built-in effect and command modules
             return {};
          else

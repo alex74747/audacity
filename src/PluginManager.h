@@ -66,7 +66,7 @@ public:
    wxString GetUntranslatedVersion() const;
    // There is no translated version
 
-   wxString GetVendor() const;
+   VendorID GetVendor() const;
 
    bool IsEnabled() const;
    bool IsValid() const;
@@ -80,7 +80,7 @@ public:
    // These should be passed an untranslated value wrapped in XO() so
    // the value will still be extracted for translation
    void SetVersion(const wxString & version);
-   void SetVendor(const wxString & vendor);
+   void SetVendor(const VendorID & vendor);
 
    void SetEnabled(bool enable);
    void SetValid(bool valid);
@@ -91,7 +91,7 @@ public:
    // (Use Effect::GetFamilyName instead)
    // This string persists in configuration files
    // So config compatibility will break if it is changed across Audacity versions
-   wxString GetEffectFamily() const;
+   EffectFamilyID GetEffectFamily() const;
 
    EffectType GetEffectType() const;
    bool IsEffectDefault() const;
@@ -101,7 +101,7 @@ public:
    bool IsEffectAutomatable() const;
 
    // "family" should be an untranslated string wrapped in (L"" )
-   void SetEffectFamily(const wxString & family);
+   void SetEffectFamily(const EffectFamilyID & family);
    void SetEffectType(EffectType type);
    void SetEffectDefault(bool dflt);
    void SetEffectInteractive(bool interactive);
@@ -136,14 +136,14 @@ private:
    PluginPath mPath;
    ComponentInterfaceSymbol mSymbol;
    wxString mVersion;
-   wxString mVendor;
+   VendorID mVendor;
    PluginID mProviderID;
    bool mEnabled;
    bool mValid;
 
    // Effects
 
-   wxString mEffectFamily;
+   EffectFamilyID mEffectFamily;
    EffectType mEffectType;
    bool mEffectInteractive;
    bool mEffectDefault;
