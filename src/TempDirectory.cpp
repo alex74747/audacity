@@ -14,9 +14,9 @@
 #include "widgets/ErrorDialog.h"
 #include "wxFileNameWrapper.h"
 
-static FilePath &TempDirPath()
+static DirectoryPath &TempDirPath()
 {
-   static FilePath path;
+   static DirectoryPath path;
    return path;
 }
 
@@ -24,7 +24,7 @@ static FilePath &TempDirPath()
 /// \todo put a counter in here to see if it gets used a lot.
 /// if it does, then maybe we should cache the path name
 /// each time.
-FilePath TempDirectory::TempDir()
+DirectoryPath TempDirectory::TempDir()
 {
    auto &path = TempDirPath();
    if (gPrefs && path.empty())
@@ -32,7 +32,7 @@ FilePath TempDirectory::TempDir()
          gPrefs->Read(PreferenceKey(FileNames::Operation::Temp,
             FileNames::PathType::_None).GET(), L"");
 
-   if (FileNames::IsOnFATFileSystem(path))
+   if (FileNames::IsOnFATFileSystem(path.GET()))
    {
       ShowErrorDialog(
          nullptr,
@@ -55,21 +55,21 @@ void TempDirectory::ResetTempDir()
 }
 
 /** \brief Default temp directory */
-static FilePath sDefaultTempDir;
+static DirectoryPath sDefaultTempDir;
 
-const FilePath &TempDirectory::DefaultTempDir()
+const DirectoryPath &TempDirectory::DefaultTempDir()
 {
    return sDefaultTempDir;
 }
 
-void TempDirectory::SetDefaultTempDir( const FilePath &tempDir )
+void TempDirectory::SetDefaultTempDir( const DirectoryPath &tempDir )
 {
    sDefaultTempDir = tempDir;
 }
 
 // We now disallow temp directory name that puts it where cleaner apps will
 // try to clean out the files.
-bool TempDirectory::IsTempDirectoryNameOK( const FilePath & Name )
+bool TempDirectory::IsTempDirectoryNameOK( const DirectoryPath & Name )
 {
    if( Name.empty() )
       return false;
@@ -92,7 +92,7 @@ bool TempDirectory::IsTempDirectoryNameOK( const FilePath & Name )
    wxString NameCanonical = cmpFile.GetLongPath( ) + "/";
 #else
    BadPath = BadPath.BeforeLast( '\\' ) + "\\";
-   wxFileName cmpFile( Name );
+   wxFileNameWrapper cmpFile( Name );
    wxString NameCanonical = cmpFile.GetLongPath( ) + "\\";
 #endif
 

@@ -53,7 +53,8 @@ void Generate(wxDebugReport::Context ctx)
       std::atomic_bool done = {false};
       auto thread = std::thread([&]
       {
-         wxFileNameWrapper fn{ FileNames::DataDir(), L"audacity.cfg" };
+         wxFileNameWrapper fn{
+            FileNames::DataDir(), FilePath{L"audacity.cfg"} };
          rpt.AddFile(fn.GetFullPath(), _TS("Audacity Configuration"));
          rpt.AddFile(FileNames::PluginRegistry().GET(), L"Plugin Registry");
          rpt.AddFile(FileNames::PluginSettings().GET(), L"Plugin Settings");

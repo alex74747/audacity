@@ -1631,7 +1631,7 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
       // or update all factory preset curves.
       if (needUpdate)
          UpdateDefaultCurves( UPDATE_ALL != 0 );
-      fn = wxFileNameWrapper{ FileNames::DataDir(), L"EQCurves.xml" };
+      fn = wxFileNameWrapper{ FileNames::DataDir(), FilePath{ L"EQCurves.xml" } };
    }
    else
       fn = fileName; // user is loading a specific set of curves
@@ -1713,7 +1713,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
    EQCurveArray userCurves = mCurves;
    mCurves.clear();
    // We only wamt to look for the shipped EQDefaultCurves.xml
-   wxFileName fn = wxFileNameWrapper{ FileNames::ResourcesDir(), L"EQDefaultCurves.xml" };
+   wxFileName fn = wxFileNameWrapper{ FileNames::ResourcesDir(), FilePath{ L"EQDefaultCurves.xml" } };
    wxLogDebug(L"Attempting to load EQDefaultCurves.xml from %s",fn.GetFullPath());
    XMLFileReader reader;
 
@@ -1819,11 +1819,11 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
 bool EffectEqualization::GetDefaultFileName(wxFileNameWrapper &fileName)
 {
    // look in data dir first, in case the user has their own defaults (maybe downloaded ones)
-   fileName = wxFileNameWrapper{ FileNames::DataDir(), L"EQDefaultCurves.xml" };
+   fileName = wxFileNameWrapper{ FileNames::DataDir(), FilePath{ L"EQDefaultCurves.xml" } };
    if( !fileName.FileExists() )
    {  // Default file not found in the data dir.  Fall back to Resources dir.
       // See http://docs.wxwidgets.org/trunk/classwx_standard_paths.html#5514bf6288ee9f5a0acaf065762ad95d
-      fileName = wxFileNameWrapper{ FileNames::ResourcesDir(), L"EQDefaultCurves.xml" };
+      fileName = wxFileNameWrapper{ FileNames::ResourcesDir(), FilePath{ L"EQDefaultCurves.xml" } };
    }
    if( !fileName.FileExists() )
    {
@@ -1834,7 +1834,7 @@ bool EffectEqualization::GetDefaultFileName(wxFileNameWrapper &fileName)
       //   errorMessage, L"http://wiki.audacityteam.org/wiki/EQCurvesDownload", false);
 
       // Have another go at finding EQCurves.xml in the data dir, in case 'help' helped
-      fileName = wxFileNameWrapper{ FileNames::DataDir(), L"EQDefaultCurves.xml" };
+      fileName = wxFileNameWrapper{ FileNames::DataDir(), FilePath{ L"EQDefaultCurves.xml" } };
    }
    return (fileName.FileExists());
 }
@@ -1854,7 +1854,7 @@ void EffectEqualization::SaveCurves(const wxString &fileName)
       //       between wxStandardPaths and wxConfig under Linux.  The latter
       //       creates a normal file as "$HOME/.audacity", while the former
       //       expects the ".audacity" portion to be a directory.
-      fn = wxFileNameWrapper{ FileNames::DataDir(), L"EQCurves.xml" };
+      fn = wxFileNameWrapper{ FileNames::DataDir(), FilePath{ L"EQCurves.xml" } };
 
       // If the directory doesn't exist...
       if( !fn.DirExists() )
@@ -3850,7 +3850,7 @@ void EditCurvesDialog::OnDefaults( wxCommandEvent & WXUNUSED(event))
 void EditCurvesDialog::OnOK(wxCommandEvent & WXUNUSED(event))
 {
    // Make a backup of the current curves
-   wxString backupPlace = wxFileNameWrapper{ FileNames::DataDir(), L"EQBackup.xml" }
+   wxString backupPlace = wxFileNameWrapper{ FileNames::DataDir(), FilePath{ L"EQBackup.xml" } }
       .GetFullPath();
    mEffect->SaveCurves(backupPlace);
    // Load back into the main dialog

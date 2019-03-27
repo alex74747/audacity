@@ -37,12 +37,22 @@ public:
       : wxFileName{ path.GET() }
    {}
 
-   wxFileNameWrapper(const FilePath &path, const FilePath &name)
+   wxFileNameWrapper(const DirectoryPath &path)
+      // using GET to pass a file path to wxWidgets
+      : wxFileName{}
+   { AssignDir( path.GET() ); }
+
+   wxFileNameWrapper(const DirectoryPath &path, const FilePath &name)
       // using GET to pass a file path to wxWidgets
       : wxFileName{ path.GET(), name.GET() }
    {}
 
-   wxFileNameWrapper(const FilePath &path, const FilePath &name,
+   wxFileNameWrapper(const DirectoryPath &path, const DirectoryPath &name)
+      // using GET to pass a file path to wxWidgets
+      : wxFileName{ path.GET(), name.GET() }
+   {}
+
+   wxFileNameWrapper(const DirectoryPath &path, const FilePath &name,
       const FileExtension &ext)
       // using GET to pass a file path to wxWidgets
       : wxFileName{ path.GET(), name.GET(), ext.GET() }
@@ -113,11 +123,11 @@ class wxDirWrapper : public wxDir
 {
 public:
    using wxDir::wxDir;
-   wxDirWrapper( const FilePath &path ) : wxDir{ path.GET() } {}
+   wxDirWrapper( const DirectoryPath &path ) : wxDir{ path.GET() } {}
 
     // simplest version of Traverse(): get the names of all files under this
     // directory into filenames array, return the number of files
-    static inline size_t GetAllFiles(const FilePath& dirname,
+    static inline size_t GetAllFiles(const DirectoryPath& dirname,
                               FilePaths *files,
                               const wxString& filespec = wxEmptyString,
                               int flags = wxDIR_DEFAULT)

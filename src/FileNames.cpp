@@ -46,7 +46,7 @@ used throughout Audacity into this one place.
 #include <windows.h>
 #endif
 
-static FilePath gDataDir;
+static DirectoryPath gDataDir;
 
 const FileNames::FileType
      FileNames::AllFiles{ XO("All files"), { L"" } }
@@ -186,7 +186,7 @@ bool FileNames::HardLinkFile( const FilePath& file1, const FilePath& file2 )
 #endif
 }
 
-FilePath FileNames::MkDir(const FilePath &Str)
+DirectoryPath FileNames::MkDir(const DirectoryPath &Str)
 {
    // Behaviour of wxFileName::DirExists() and wxFileName::MkDir() has
    // changed between wx2.6 and wx2.8, so we use static functions instead.
@@ -228,7 +228,7 @@ wxString FileNames::LowerCaseAppNameInPath( const wxString & dirIn){
    return dir;
 }
 
-FilePath FileNames::DataDir()
+DirectoryPath FileNames::DataDir()
 {
    // LLL:  Wouldn't you know that as of WX 2.6.2, there is a conflict
    //       between wxStandardPaths and wxConfig under Linux.  The latter
@@ -266,12 +266,12 @@ FilePath FileNames::DataDir()
    return gDataDir;
 }
 
-FilePath FileNames::ResourcesDir(){
+DirectoryPath FileNames::ResourcesDir(){
    wxString resourcesDir( LowerCaseAppNameInPath( wxStandardPaths::Get().GetResourcesDir() ));
    return resourcesDir;
 }
 
-FilePath FileNames::HtmlHelpDir()
+DirectoryPath FileNames::HtmlHelpDir()
 {
 #if defined(__WXMAC__)
    wxFileNameWrapper exePath{ PlatformCompatibility::GetExecutablePath() };
@@ -291,43 +291,43 @@ FilePath FileNames::HtmlHelpDir()
 #endif
 }
 
-FilePath FileNames::LegacyChainDir()
+DirectoryPath FileNames::LegacyChainDir()
 {
    // Don't force creation of it
-   return wxFileNameWrapper{ DataDir(), L"Chains" }.GetFullPath();
+   return wxFileNameWrapper{ DataDir(), FilePath{ L"Chains" } }.GetFullPath();
 }
 
-FilePath FileNames::MacroDir()
+DirectoryPath FileNames::MacroDir()
 {
-   return FileNames::MkDir( wxFileNameWrapper( DataDir(), L"Macros" ).GetFullPath() );
+   return FileNames::MkDir( wxFileNameWrapper( DataDir(), FilePath{ L"Macros" } ).GetFullPath() );
 }
 
-FilePath FileNames::NRPDir()
+DirectoryPath FileNames::NRPDir()
 {
-   return FileNames::MkDir( wxFileNameWrapper( DataDir(), L"NRP" ).GetFullPath() );
+   return FileNames::MkDir( wxFileNameWrapper( DataDir(), FilePath{ L"NRP" } ).GetFullPath() );
 }
 
 FilePath FileNames::NRPFile()
 {
-   return wxFileNameWrapper( NRPDir(), L"noisegate.nrp" ).GetFullPath();
+   return wxFileNameWrapper( NRPDir(), FilePath{ L"noisegate.nrp" } ).GetFullPath();
 }
 
-FilePath FileNames::PlugInDir()
+DirectoryPath FileNames::PlugInDir()
 {
-   return FileNames::MkDir( wxFileNameWrapper( DataDir(), L"Plug-Ins" ).GetFullPath() );
+   return FileNames::MkDir( wxFileNameWrapper( DataDir(), FilePath{ L"Plug-Ins" } ).GetFullPath() );
 }
 
 FilePath FileNames::PluginRegistry()
 {
-   return wxFileNameWrapper( DataDir(), L"pluginregistry.cfg" ).GetFullPath();
+   return wxFileNameWrapper( DataDir(), FilePath{ L"pluginregistry.cfg" } ).GetFullPath();
 }
 
 FilePath FileNames::PluginSettings()
 {
-   return wxFileNameWrapper( DataDir(), L"pluginsettings.cfg" ).GetFullPath();
+   return wxFileNameWrapper( DataDir(), FilePath{ L"pluginsettings.cfg" } ).GetFullPath();
 }
 
-FilePath FileNames::BaseDir()
+DirectoryPath FileNames::BaseDir()
 {
    wxFileNameWrapper baseDir;
 
@@ -351,53 +351,53 @@ FilePath FileNames::BaseDir()
    return baseDir.GetPath();
 }
 
-FilePath FileNames::ModulesDir()
+DirectoryPath FileNames::ModulesDir()
 {
-   wxFileNameWrapper modulesDir{ BaseDir(), wxEmptyString };
+   wxFileNameWrapper modulesDir{ BaseDir(), FilePath{} };
 
    modulesDir.AppendDir(L"modules");
 
    return modulesDir.GetFullPath();
 }
 
-FilePath FileNames::ThemeDir()
+DirectoryPath FileNames::ThemeDir()
 {
-   return FileNames::MkDir( wxFileNameWrapper{ DataDir(), L"Theme" }.GetFullPath() );
+   return FileNames::MkDir( wxFileNameWrapper{ DataDir(), FilePath{ L"Theme" } }.GetFullPath() );
 }
 
-FilePath FileNames::ThemeComponentsDir()
+DirectoryPath FileNames::ThemeComponentsDir()
 {
-   return FileNames::MkDir( wxFileNameWrapper{ ThemeDir(), L"Components" }.GetFullPath() );
+   return FileNames::MkDir( wxFileNameWrapper{ ThemeDir(), FilePath{ L"Components" } }.GetFullPath() );
 }
 
 FilePath FileNames::ThemeCachePng()
 {
-   return wxFileNameWrapper{ ThemeDir(), L"ImageCache.png" }.GetFullPath();
+   return wxFileNameWrapper{ ThemeDir(), FilePath{ L"ImageCache.png" } }.GetFullPath();
 }
 
 FilePath FileNames::ThemeCacheHtm()
 {
-   return wxFileNameWrapper{ ThemeDir(), L"ImageCache.htm" }.GetFullPath();
+   return wxFileNameWrapper{ ThemeDir(), FilePath{ L"ImageCache.htm" } }.GetFullPath();
 }
 
 FilePath FileNames::ThemeImageDefsAsCee()
 {
-   return wxFileNameWrapper{ ThemeDir(), L"ThemeImageDefsAsCee.h" }.GetFullPath();
+   return wxFileNameWrapper{ ThemeDir(), FilePath{ L"ThemeImageDefsAsCee.h" } }.GetFullPath();
 }
 
 FilePath FileNames::ThemeCacheAsCee( )
 {
 // DA: Theme sourcery file name.
 #ifndef EXPERIMENTAL_DA
-   return wxFileNameWrapper{ ThemeDir(), L"ThemeAsCeeCode.h" }.GetFullPath();
+   return wxFileNameWrapper{ ThemeDir(), FilePath{ L"ThemeAsCeeCode.h" } }.GetFullPath();
 #else
-   return wxFileName( ThemeDir(), L"DarkThemeAsCeeCode.h" ).GetFullPath();
+   return wxFileName( ThemeDir(), FilePath{ L"DarkThemeAsCeeCode.h" } ).GetFullPath();
 #endif
 }
 
 FilePath FileNames::ThemeComponent(const wxString &Str)
 {
-   return wxFileNameWrapper{ ThemeComponentsDir(), Str, L"png" }.GetFullPath();
+   return wxFileNameWrapper{ ThemeComponentsDir(), FilePath{ Str }, L"png" }.GetFullPath();
 }
 
 //
@@ -539,7 +539,7 @@ RegistryPath FileNames::PreferenceKey(
    return key;
 }
 
-FilePath FileNames::FindDefaultPath(Operation op)
+DirectoryPath FileNames::FindDefaultPath(Operation op)
 {
    auto key = PreferenceKey(op, PathType::User);
 
@@ -547,7 +547,7 @@ FilePath FileNames::FindDefaultPath(Operation op)
       return wxString{};
 
    // If the user specified a default path, then use that
-   FilePath path = gPrefs->Read(key.GET(), L"");
+   DirectoryPath path = gPrefs->Read(key.GET(), L"");
    if (!path.empty()) {
       return path;
    }
@@ -563,7 +563,7 @@ FilePath FileNames::FindDefaultPath(Operation op)
    return DefaultToDocumentsFolder("").GetPath();
 }
 
-void FileNames::UpdateDefaultPath(Operation op, const FilePath &path)
+void FileNames::UpdateDefaultPath(Operation op, const DirectoryPath &path)
 {
    if (path.empty())
       return;
@@ -583,14 +583,14 @@ void FileNames::UpdateDefaultPath(Operation op, const FilePath &path)
 FilePath
 FileNames::SelectFile(Operation op,
    const TranslatableString& message,
-   const FilePath& default_path,
+   const DirectoryPath& default_path,
    const FilePath& default_filename,
    const FileExtension& default_extension,
    const FileTypes& fileTypes,
    int flags,
    wxWindow *parent)
 {
-   return WithDefaultPath(op, default_path, [&](const FilePath &path) {
+   return WithDefaultPath(op, default_path.GET(), [&](const DirectoryPath &path) {
       wxString filter;
       if ( !default_extension.empty() )
          filter = L"*." + default_extension.GET();
@@ -610,21 +610,21 @@ bool FileNames::IsMidi(const FilePath &fName)
       extension == L"mid";
 }
 
-static FilePaths sAudacityPathList;
+static DirectoryPaths sAudacityPathList;
 
-const FilePaths &FileNames::AudacityPathList()
+const DirectoryPaths &FileNames::AudacityPathList()
 {
    return sAudacityPathList;
 }
 
-void FileNames::SetAudacityPathList( FilePaths list )
+void FileNames::SetAudacityPathList( DirectoryPaths list )
 {
    sAudacityPathList = std::move( list );
 }
 
 // static
-void FileNames::AddUniquePathToPathList(const FilePath &pathArg,
-                                          FilePaths &pathList)
+void FileNames::AddUniquePathToPathList(const DirectoryPath &pathArg,
+                                          DirectoryPaths &pathList)
 {
    wxFileNameWrapper pathNorm { pathArg };
    pathNorm.Normalize();
@@ -639,7 +639,7 @@ void FileNames::AddUniquePathToPathList(const FilePath &pathArg,
 
 // static
 void FileNames::AddMultiPathsToPathList(const wxString &multiPathStringArg,
-                                          FilePaths &pathList)
+                                          DirectoryPaths &pathList)
 {
    wxString multiPathString(multiPathStringArg);
    while (!multiPathString.empty()) {
@@ -653,7 +653,7 @@ void FileNames::AddMultiPathsToPathList(const wxString &multiPathStringArg,
 
 // static
 void FileNames::FindFilesInPathList(const wxString & pattern,
-                                      const FilePaths & pathList,
+                                      const DirectoryPaths & pathList,
                                       FilePaths & results,
                                       int flags)
 {
@@ -731,7 +731,7 @@ int FileNames::CompareNoCase(const wxString& first, const wxString& second)
 }
 
 // Create a unique filename using the passed prefix and suffix
-wxString FileNames::CreateUniqueName(const wxString &prefix,
+FilePath FileNames::CreateUniqueName(const wxString &prefix,
                                      const wxString &suffix /* = wxEmptyString */)
 {
    static int count = 0;

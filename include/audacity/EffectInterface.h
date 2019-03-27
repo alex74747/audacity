@@ -261,7 +261,7 @@ public:
    virtual ~EffectManagerInterface() {};
 
    virtual void FindFilesInPathList(const wxString & pattern,
-                                    const FilePaths & pathList,
+                                    const DirectoryPath & pathList,
                                     FilePaths & files,
                                     int searchFlags) = 0;
 };

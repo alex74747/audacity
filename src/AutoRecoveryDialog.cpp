@@ -292,7 +292,7 @@ void AutoRecoveryDialog::OnDiscardSelected(wxCommandEvent &WXUNUSED(evt))
       {
          file.SetFullName(L"");
 
-         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper temp(TempDirectory::TempDir(), FilePath{});
          if (file == temp)
             ProjectFileIO::RemoveProject(fileName);
       }

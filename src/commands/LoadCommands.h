@@ -58,7 +58,7 @@ public:
    EffectFamilySymbol GetOptionalFamilySymbol() override;
 
    const FileExtensions &GetFileExtensions() override;
-   FilePath InstallPath() override { return {}; }
+   DirectoryPath InstallPath() override { return {}; }
 
    bool AutoRegisterPlugins(PluginManagerInterface & pm) override;
    PluginPaths FindPluginPaths(PluginManagerInterface & pm) override;

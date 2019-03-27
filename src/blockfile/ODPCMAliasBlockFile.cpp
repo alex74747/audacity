@@ -302,7 +302,7 @@ BlockFilePtr ODPCMAliasBlockFile::BuildFromXML(DirManager &dm, const wxChar **at
             aliasFileName.Assign(strValue);
          else if (XMLValueChecker::IsGoodFileName(strValue, dm.GetProjectDataDir()))
             // Allow fallback of looking for the file name, located in the data directory.
-            aliasFileName = { dm.GetProjectDataDir(), strValue };
+            aliasFileName = { dm.GetProjectDataDir(), FilePath{ strValue } };
          else if (XMLValueChecker::IsGoodPathString(strValue))
             // If the aliased file is missing, we failed XMLValueChecker::IsGoodPathName()
             // and XMLValueChecker::IsGoodFileName, because both do existence tests,

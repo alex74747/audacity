@@ -357,7 +357,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    auto path = FileNames::FindDefaultPath(FileNames::Operation::Open);
    FileDialogWrapper dlog(this,
       prompt,
-      path,
+      path.GET(),
       L"",
       fileTypes,
       wxFD_OPEN | wxFD_MULTIPLE | wxRESIZE_BORDER);

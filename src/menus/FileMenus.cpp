@@ -61,13 +61,13 @@ void DoExport(AudacityProject &project, const FileExtension &format)
    else {
       // We either use a configured output path,
       // or we use the default documents folder - just as for exports.
-      FilePath pathName = FileNames::FindDefaultPath(FileNames::Operation::MacrosOut);
+      auto pathName = FileNames::FindDefaultPath(FileNames::Operation::MacrosOut);
 /*
       // If we've gotten to this point, we are in batch mode, have a file format,
       // and the project has either been saved or a file has been imported. So, we
       // want to use the project's path if it has been saved, otherwise use the
       // initial import path.
-      FilePath pathName = !projectFileIO.IsTemporary() ?
+      auto pathName = !projectFileIO.IsTemporary() ?
                            wxPathOnly(projectFileIO.GetFileName()) :
                            project.GetInitialImportPath();
 */

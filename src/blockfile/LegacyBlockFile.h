@@ -59,7 +59,7 @@ class LegacyBlockFile final : public BlockFile {
    DiskByteCount GetSpaceUsage() const override;
    void Recover() override;
 
-   static BlockFilePtr BuildFromXML(const FilePath &dir, const wxChar **attrs,
+   static BlockFilePtr BuildFromXML(const DirectoryPath &dir, const wxChar **attrs,
                                   size_t len,
                                   sampleFormat format);
 

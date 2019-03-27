@@ -187,7 +187,7 @@ public:
    const PluginID & RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer) override;
 
    void FindFilesInPathList(const wxString & pattern,
-                                    const FilePaths & pathList,
+                                    const DirectoryPaths & pathList,
                                     FilePaths & files,
                                     bool directories = false) override;
 

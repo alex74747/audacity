@@ -140,8 +140,8 @@ class AUDACITY_DLL_API AudacityProject final
 
    // Used exclusively in batch mode, this allows commands to remember
    // and use the initial import path
-   FilePath GetInitialImportPath() const;
-   void SetInitialImportPath(const FilePath &path);
+   DirectoryPath GetInitialImportPath() const;
+   void SetInitialImportPath(const DirectoryPath &path);
 
 private:
 
@@ -151,7 +151,7 @@ private:
    static int mProjectCounter;// global counter.
    int mProjectNo; // count when this project was created.
 
-   FilePath mInitialImportPath;
+   DirectoryPath mInitialImportPath;
 
  public:
    bool mbBusyImporting{ false }; // used to fix bug 584

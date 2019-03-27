@@ -184,9 +184,10 @@ void PopulatePreferences()
    wxString langCode = gPrefs->Read(L"/Locale/Language", wxEmptyString);
    bool writeLang = false;
 
-   const wxFileNameWrapper fn(
+   const wxFileNameWrapper fn{
       FileNames::ResourcesDir(), 
-      L"FirstTime.ini");
+      FilePath{ L"FirstTime.ini" }
+   };
    if (fn.FileExists())   // it will exist if the (win) installer put it there
    {
       const wxString fullPath{fn.GetFullPath()};
@@ -813,7 +814,7 @@ bool AudacityApp::MRUOpen(const FilePath &fullPathStr) {
       // verify that the file exists
       if (wxFile::Exists(fullPathStr.GET()))
       {
-         FileNames::UpdateDefaultPath(FileNames::Operation::Open, ::wxPathOnly(fullPathStr));
+         FileNames::UpdateDefaultPath(FileNames::Operation::Open, ::wxPathOnly(wxString{fullPathStr.GET()}));
 
          // Make sure it isn't already open.
          // Test here even though AudacityProject::OpenFile() also now checks, because
@@ -1103,7 +1104,7 @@ bool AudacityApp::OnInit()
    //
    // Paths: set search path and temp dir path
    //
-   FilePaths audacityPathList;
+   DirectoryPaths audacityPathList;
 
 #ifdef __WXGTK__
    // Make sure install prefix is set so wxStandardPath resolves paths properly
@@ -1189,7 +1190,7 @@ bool AudacityApp::OnInit()
 #else
    wxFileName tmpFile;
    tmpFile.AssignTempFileName(L"nn");
-   wxString tmpDirLoc = tmpFile.GetPath(wxPATH_GET_VOLUME);
+   wxString tmpDirLoc = tmpFile.GetPath(wxPATH_GET_VOLUME).GET();
    ::wxRemoveFile(tmpFile.GetFullPath());
 #endif
 
@@ -1250,7 +1251,8 @@ bool AudacityApp::OnInit()
 
    // Initialize preferences and language
    {
-      wxFileNameWrapper configFileName(FileNames::DataDir(), L"audacity.cfg");
+      wxFileNameWrapper configFileName(
+         FileNames::DataDir(), FilePath{ L"audacity.cfg" } );
       auto appName = wxTheApp->GetAppName();
       InitPreferences( AudacityFileConfig::Create(
          appName, wxEmptyString,
@@ -1607,7 +1609,7 @@ void AudacityApp::OnKeyDown(wxKeyEvent &event)
 
 // Ensures directory is created and puts the name into result.
 // result is unchanged if unsuccessful.
-void SetToExtantDirectory( FilePath & result, const FilePath & dir ){
+void SetToExtantDirectory( DirectoryPath & result, const DirectoryPath & dir ){
    // don't allow path of "".
    if( dir.empty() )
       return;
@@ -1627,11 +1629,11 @@ bool AudacityApp::InitTempDir()
    auto tempFromPrefs = TempDirectory::TempDir();
    auto tempDefaultLoc = TempDirectory::DefaultTempDir();
 
-   FilePath temp;
+   DirectoryPath temp;
 
    #ifdef __WXGTK__
-   if (tempFromPrefs.length() > 0 && tempFromPrefs[0] != L'/')
-      tempFromPrefs = L"";
+   if (tempFromPrefs.length() > 0 && tempFromPrefs.GET()[0] != L'/')
+      tempFromPrefs = {};
    #endif
 
    // Stop wxWidgets from printing its own error messages
@@ -1698,7 +1700,7 @@ bool AudacityApp::InitTempDir()
 // Return true if there are no other instances of Audacity running,
 // false otherwise.
 
-bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
+bool AudacityApp::CreateSingleInstanceChecker(const DirectoryPath &dir)
 {
    wxString name = wxString::Format(L"audacity-lock-%s", wxGetUserId());
    mChecker.reset();
@@ -1706,7 +1708,7 @@ bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
 
    auto runningTwoCopiesStr = XO("Running two copies of Audacity simultaneously may cause\ndata loss or cause your system to crash.\n\n");
 
-   if (!checker->Create(name, dir))
+   if (!checker->Create(name, dir.GET()))
    {
       // Error initializing the wxSingleInstanceChecker.  We don't know
       // whether there is another instance running or not.
@@ -1813,7 +1815,7 @@ bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
 // Return true if there are no other instances of Audacity running,
 // false otherwise.
 
-bool AudacityApp::CreateSingleInstanceChecker(const FilePath &dir)
+bool AudacityApp::CreateSingleInstanceChecker(const DirectoryPath &dir)
 {
    mIPCServ.reset();
 

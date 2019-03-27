@@ -84,7 +84,7 @@ void LegacyAliasBlockFile::SaveXML(XMLWriter &xmlFile)
 // BuildFromXML methods should always return a BlockFile, not NULL,
 // even if the result is flawed (e.g., refers to nonexistent file),
 // as testing will be done in ProjectFSCK().
-BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const FilePath &projDir, const wxChar **attrs)
+BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const DirectoryPath &projDir, const wxChar **attrs)
 {
    wxFileNameWrapper summaryFileName;
    wxFileNameWrapper aliasFileName;
@@ -113,7 +113,7 @@ BlockFilePtr LegacyAliasBlockFile::BuildFromXML(const FilePath &projDir, const w
             aliasFileName.Assign(strValue);
          else if (XMLValueChecker::IsGoodFileName(strValue, projDir))
             // Allow fallback of looking for the file name, located in the data directory.
-            aliasFileName = wxFileNameWrapper{ projDir, strValue };
+            aliasFileName = wxFileNameWrapper{ projDir, FilePath{ strValue } };
          else if (XMLValueChecker::IsGoodPathString(strValue))
             // If the aliased file is missing, we failed XMLValueChecker::IsGoodPathName()
             // and XMLValueChecker::IsGoodFileName, because both do existence tests,

@@ -91,7 +91,7 @@ namespace FileNames
    AUDACITY_DLL_API
    bool HardLinkFile( const FilePath& file1, const FilePath& file2);
 
-   AUDACITY_DLL_API FilePath MkDir(const FilePath &Str);
+   AUDACITY_DLL_API DirectoryPath MkDir(const DirectoryPath &Str);
 
    AUDACITY_DLL_API bool IsMidi(const FilePath &fName);
 
@@ -103,8 +103,8 @@ namespace FileNames
     * directories can be specified using the AUDACITY_PATH environment
     * variable.  On Windows or Mac OS, this will include the directory
     * which contains the Audacity program. */
-   AUDACITY_DLL_API const FilePaths &AudacityPathList();
-   AUDACITY_DLL_API void SetAudacityPathList( FilePaths list );
+   AUDACITY_DLL_API const DirectoryPaths &AudacityPathList();
+   AUDACITY_DLL_API void SetAudacityPathList( DirectoryPaths list );
 
    // originally an ExportMultipleDialog method. Append suffix if newName appears in otherNames.
    AUDACITY_DLL_API void MakeNameUnique(
@@ -116,28 +116,28 @@ namespace FileNames
     * Where audacity keeps its settings and other user data squirreled away,
     * by default ~/.audacity-data/ on Unix, Application Data/Audacity on
     * windows system */
-   AUDACITY_DLL_API FilePath DataDir();
-   AUDACITY_DLL_API FilePath ResourcesDir();
-   AUDACITY_DLL_API FilePath HtmlHelpDir();
+   AUDACITY_DLL_API DirectoryPath DataDir();
+   AUDACITY_DLL_API DirectoryPath ResourcesDir();
+   AUDACITY_DLL_API DirectoryPath HtmlHelpDir();
    AUDACITY_DLL_API FilePath HtmlHelpIndexFile(bool quick);
-   AUDACITY_DLL_API FilePath LegacyChainDir();
-   AUDACITY_DLL_API FilePath MacroDir();
-   AUDACITY_DLL_API FilePath NRPDir();
+   AUDACITY_DLL_API DirectoryPath LegacyChainDir();
+   AUDACITY_DLL_API DirectoryPath MacroDir();
+   AUDACITY_DLL_API DirectoryPath NRPDir();
    AUDACITY_DLL_API FilePath NRPFile();
    AUDACITY_DLL_API FilePath PluginRegistry();
    AUDACITY_DLL_API FilePath PluginSettings();
 
-   AUDACITY_DLL_API FilePath BaseDir();
-   AUDACITY_DLL_API FilePath ModulesDir();
+   AUDACITY_DLL_API DirectoryPath BaseDir();
+   AUDACITY_DLL_API DirectoryPath ModulesDir();
 
    /** \brief The user plug-in directory (not a system one)
     *
     * This returns the string path to where the user may have put plug-ins
     * if they don't have system admin rights. Under default settings, it's
     * <DataDir>/Plug-Ins/ */
-   AUDACITY_DLL_API FilePath PlugInDir();
-   AUDACITY_DLL_API FilePath ThemeDir();
-   AUDACITY_DLL_API FilePath ThemeComponentsDir();
+   AUDACITY_DLL_API DirectoryPath PlugInDir();
+   AUDACITY_DLL_API DirectoryPath ThemeDir();
+   AUDACITY_DLL_API DirectoryPath ThemeComponentsDir();
    AUDACITY_DLL_API FilePath ThemeCachePng();
    AUDACITY_DLL_API FilePath ThemeCacheAsCee();
    AUDACITY_DLL_API FilePath ThemeComponent(const wxString &Str);
@@ -179,8 +179,8 @@ namespace FileNames
    AUDACITY_DLL_API RegistryPath PreferenceKey(
       FileNames::Operation op, FileNames::PathType type);
 
-   AUDACITY_DLL_API FilePath FindDefaultPath(Operation op);
-   AUDACITY_DLL_API void UpdateDefaultPath(Operation op, const FilePath &path);
+   DirectoryPath FindDefaultPath(Operation op);
+   AUDACITY_DLL_API void UpdateDefaultPath(Operation op, const DirectoryPath &path);
 
    // F is a function taking a wxString, returning wxString
    template<typename F>
@@ -199,7 +199,7 @@ namespace FileNames
    AUDACITY_DLL_API FilePath
    SelectFile(Operation op,   // op matters only when default_path is empty
       const TranslatableString& message,
-      const FilePath& default_path,
+      const DirectoryPath& default_path,
       const FilePath& default_filename,
       const FileExtension& default_extension,
       const FileTypes& fileTypes,
@@ -207,12 +207,12 @@ namespace FileNames
       wxWindow *parent);
 
    // Useful functions for working with search paths
-   AUDACITY_DLL_API void AddUniquePathToPathList(const FilePath &path,
-                                       FilePaths &pathList);
+   AUDACITY_DLL_API void AddUniquePathToPathList(const DirectoryPath &path,
+                                       DirectoryPaths &pathList);
    AUDACITY_DLL_API void AddMultiPathsToPathList(const wxString &multiPathString,
-                                       FilePaths &pathList);
+                                       DirectoryPaths &pathList);
    AUDACITY_DLL_API void FindFilesInPathList(const wxString & pattern,
-                                   const FilePaths & pathList,
+                                   const DirectoryPaths & pathList,
                                    FilePaths &results,
                                    int flags = wxDIR_FILES);
 
@@ -226,7 +226,7 @@ namespace FileNames
    AUDACITY_DLL_API int CompareNoCase(const wxString& first, const wxString& second);
 
    // Create a unique filename using the passed prefix and suffix
-   AUDACITY_DLL_API wxString CreateUniqueName(const wxString &prefix,
+   AUDACITY_DLL_API FilePath CreateUniqueName(const wxString &prefix,
                              const wxString &suffix = wxEmptyString);
 
    // File extension used for unsaved/temporary project files
@@ -260,22 +260,22 @@ namespace FileNames
 
 // overload some wxWidgets functions in the global scope so that many
 // existing calls continue to work without invoking FilePath::GET
-inline bool wxRmdir(const FilePath& dir, int flags = 0)
+inline bool wxRmdir(const DirectoryPath& dir, int flags = 0)
    { return wxRmdir( wxString{dir.GET()}, flags ); }
 inline bool wxRemoveFile(const FilePath& file)
    { return wxRemoveFile( wxString{file.GET()} ); }
 inline FilePath wxFileNameFromPath(const FilePath& path)
    { return wxFileNameFromPath( wxString{path.GET()} ) ; }
-inline FilePath wxPathOnly(const FilePath& path)
+inline DirectoryPath wxPathOnly(const FilePath& path)
    { return wxPathOnly( wxString{path.GET()} ); }
 inline bool wxFileExists(const FilePath& filename)
    { return wxFileExists( wxString{filename.GET()} ); }
-inline bool wxDirExists(const FilePath& pathName)
+inline bool wxDirExists(const DirectoryPath& pathName)
    { return wxDirExists( wxString{pathName.GET()} ); }
 inline bool wxRenameFile(
    const FilePath& file1, const FilePath& file2, bool overwrite = true)
    { return wxRenameFile( wxString{file1.GET()}, wxString{file2.GET()}, overwrite ); }
-inline bool wxSetWorkingDirectory(const FilePath& d)
+inline bool wxSetWorkingDirectory(const DirectoryPath& d)
    { return wxSetWorkingDirectory( wxString{d.GET()} ); }
 inline bool wxCopyFile(const FilePath& file1,
    const FilePath& file2, bool overwrite = true)

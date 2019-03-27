@@ -2562,16 +2562,16 @@ void NyquistEffect::OSCallback()
 #endif
 }
 
-FilePaths NyquistEffect::GetNyquistSearchPath()
+DirectoryPaths NyquistEffect::GetNyquistSearchPath()
 {
    const auto &audacityPathList = FileNames::AudacityPathList();
-   FilePaths pathList;
+   DirectoryPaths pathList;
 
    for (const auto &path : audacityPathList)
       for (const auto &component :
       { L"nyquist", L"plugins", L"plugins" })
          FileNames::AddUniquePathToPathList(
-            FilePath{ { path, component }, wxFILE_SEP_PATH }, pathList );
+            DirectoryPath{ { path, component }, wxFILE_SEP_PATH }, pathList );
    pathList.push_back(FileNames::PlugInDir());
 
    return pathList;
@@ -3212,7 +3212,7 @@ void NyquistEffect::resolveFilePath(wxString& path, FileExtension extension /* e
 
    path.Trim(true).Trim(false);
 
-   typedef std::unordered_map<wxString, FilePath> map;
+   typedef std::unordered_map<wxString, DirectoryPath> map;
    map pathKeys = {
       {"*home*", wxGetHomeDir()},
       {"~", wxGetHomeDir()},

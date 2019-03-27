@@ -130,7 +130,7 @@ bool NyquistEffectsModule::Initialize()
 
    for (const auto &path : audacityPathList)
    {
-      wxFileNameWrapper name{ path, L"" };
+      wxFileNameWrapper name{ path, FilePath{} };
       name.AppendDir(L"nyquist");
       name.SetFullName(L"nyquist.lsp");
       if (name.FileExists())
@@ -168,7 +168,7 @@ const FileExtensions &NyquistEffectsModule::GetFileExtensions()
    return result;
 }
 
-FilePath NyquistEffectsModule::InstallPath()
+DirectoryPath NyquistEffectsModule::InstallPath()
 {
    return FileNames::PlugInDir();
 }

@@ -75,7 +75,7 @@ public:
    virtual const PluginID & RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer) = 0;
 
    virtual void FindFilesInPathList(const wxString & pattern,
-                                    const FilePaths & pathList,
+                                    const DirectoryPaths & pathList,
                                     FilePaths & files,
                                     bool directories = false) = 0;
 

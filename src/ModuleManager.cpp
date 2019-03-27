@@ -222,7 +222,7 @@ ModuleManager::~ModuleManager()
 void ModuleManager::FindModules(FilePaths &files)
 {
    const auto &audacityPathList = FileNames::AudacityPathList();
-   FilePaths pathList;
+   DirectoryPaths pathList;
    wxString pathVar;
 
    // Code from LoadLadspa that might be useful in load modules.
@@ -415,7 +415,7 @@ bool ModuleManager::DiscoverProviders()
 // none of our modules is a 'provider' of effects, so this code commented out. 
 #if 0
    FilePaths provList;
-   FilePaths pathList;
+   DirectoryPaths pathList;
 
    // Code from LoadLadspa that might be useful in load modules.
    wxString pathVar = wxString::FromUTF8(getenv("AUDACITY_MODULES_PATH"));

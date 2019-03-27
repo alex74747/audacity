@@ -73,10 +73,12 @@ int ProjectFSCK(
    }
 #if 0
    FilePaths filePathArray; // *all* files in the project directory/subdirectories
+   DirectoryPaths dirPathArray;
    auto dirPath = ( dm.GetDataFilesDir() );
    DirManager::RecursivelyEnumerateWithProgress(
       dirPath,
       filePathArray,          // output: all files in project directory tree
+      dirPathArray,
       wxEmptyString,          // All dirs
       wxEmptyString,          // All files
       true, false,

@@ -56,7 +56,7 @@ bool XMLValueChecker::IsGoodLongString(const wxString & str)
 
 
 // "Good" means the name is well-formed and names an existing file or folder.
-bool XMLValueChecker::IsGoodFileName(const FilePath & strFileName, const FilePath & strDirName /* = "{} */)
+bool XMLValueChecker::IsGoodFileName(const FilePath & strFileName, const DirectoryPath & strDirName /* = "{} */)
 {
    // Test strFileName.
    if (!IsGoodFileString(strFileName) ||
@@ -82,13 +82,13 @@ bool XMLValueChecker::IsGoodFileString(const FilePath &fstr)
             (str.Find(wxFileName::GetPathSeparator()) == -1)); // No path separator characters.
 }
 
-bool XMLValueChecker::IsGoodSubdirName(const FilePath & strSubdirName, const FilePath & strDirName /* = {} */)
+bool XMLValueChecker::IsGoodSubdirName(const DirectoryPath & strSubdirName, const DirectoryPath & strDirName /* = {} */)
 {
    // Test strSubdirName.
    // Note this prevents path separators, and relative path to parents (strDirName),
    // so fixes vulnerability #3 in the NGS report for UmixIt,
    // where an attacker could craft an AUP file with relative pathnames to get to system files, for example.
-   if (!IsGoodFileString(strSubdirName) ||
+   if (!IsGoodFileString(strSubdirName.CONVERT<FilePath>()) ||
          (strSubdirName == L".") || (strSubdirName == L"..") ||
          (strDirName.length() + 1 + strSubdirName.length() > PLATFORM_MAX_PATH))
       return false;

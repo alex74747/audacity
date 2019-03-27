@@ -2181,10 +2181,10 @@ bool LV2Effect::BuildFancy()
 #if defined(__WXMSW__)
    // Plugins may have dependencies that need to be loaded from the same path
    // as the main DLL, so add this plugin's path to the DLL search order.
-   char *libPath = lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL);
-   wxString path = wxPathOnly(libPath);
-   SetDllDirectory(path.c_str());
-   lilv_free(libPath);
+   char *libPath = FilePath{
+      lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL) };
+   const auto path = wxPathOnly( libPath );
+   SetDllDirectory(path.GET().c_str());
 #endif
 
    char *bundlePath = lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_bundle_uri(ui)), NULL);
@@ -3335,9 +3335,9 @@ LilvInstance *LV2Wrapper::Instantiate(const LilvPlugin *plugin,
    // as the main DLL, so add this plugin's path to the DLL search order.
    const LilvNode *const libNode = lilv_plugin_get_library_uri(plugin);
    const char *const libUri = lilv_node_as_uri(libNode);
-   char *libPath = lilv_file_uri_parse(libUri, NULL);
-   wxString path = wxPathOnly(libPath);
-   SetDllDirectory(path.c_str());
+   const auto libPath = FilePath{ lilv_file_uri_parse(libUri, NULL) };
+   const auto path = wxPathOnly( libPath );
+   SetDllDirectory(path.GET().c_str());
    lilv_free(libPath);
 #endif
 

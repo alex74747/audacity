@@ -357,7 +357,7 @@ bool ProjectFileIO::OpenConnection(FilePath fileName /* = {}  */)
    {
       // If this project resides in the temporary directory, then we'll mark it
       // as temporary.
-      wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+      wxFileNameWrapper temp(TempDirectory::TempDir(), FilePath{});
       wxFileNameWrapper file(fileName);
       file.SetFullName(L"");
       if (file == temp)
@@ -445,7 +445,7 @@ void ProjectFileIO::DiscardConnection()
       if (mPrevTemporary)
       {
          // This is just a safety check.
-         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper temp(TempDirectory::TempDir(), FilePath{});
          wxFileNameWrapper file(mPrevFileName);
          file.SetFullName(L"");
          if (file == temp)
@@ -2247,7 +2247,7 @@ bool ProjectFileIO::CloseProject()
       if (IsTemporary())
       {
          // This is just a safety check.
-         wxFileNameWrapper temp(TempDirectory::TempDir(), L"");
+         wxFileNameWrapper temp(TempDirectory::TempDir(), FilePath{});
          wxFileName file(filename);
          file.SetFullName(L"");
          if (file == temp)

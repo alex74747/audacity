@@ -220,7 +220,7 @@ void LegacyBlockFile::SaveXML(XMLWriter &xmlFile)
 // even if the result is flawed (e.g., refers to nonexistent file),
 // as testing will be done in ProjectFSCK().
 /// static
-BlockFilePtr LegacyBlockFile::BuildFromXML(const FilePath &projDir, const wxChar **attrs,
+BlockFilePtr LegacyBlockFile::BuildFromXML(const DirectoryPath &projDir, const wxChar **attrs,
                                          size_t len, sampleFormat format)
 {
    wxFileNameWrapper fileName;
@@ -240,7 +240,7 @@ BlockFilePtr LegacyBlockFile::BuildFromXML(const FilePath &projDir, const wxChar
          //v Should this be
          //    dm.AssignFile(fileName, strValue, false);
          // as in PCMAliasBlockFile::BuildFromXML? Test with an old project.
-         fileName = wxFileNameWrapper{ projDir, strValue };
+         fileName = wxFileNameWrapper{ projDir, FilePath{ strValue } };
       else if (XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue))
       {  // integer parameters
          if (!wxStrcmp(attr, L"len") && (nValue >= 0))

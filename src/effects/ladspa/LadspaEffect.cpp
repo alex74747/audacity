@@ -187,7 +187,7 @@ const FileExtensions &LadspaEffectsModule::GetFileExtensions()
    return result;
 }
 
-FilePath LadspaEffectsModule::InstallPath()
+DirectoryPath LadspaEffectsModule::InstallPath()
 {
    // To do: better choice
    return FileNames::PlugInDir();
@@ -351,9 +351,9 @@ void LadspaEffectsModule::DeleteInstance(ComponentInterface *instance)
    };
 }
 
-FilePaths LadspaEffectsModule::GetSearchPaths()
+DirectoryPaths LadspaEffectsModule::GetSearchPaths()
 {
-   FilePaths pathList;
+   DirectoryPaths pathList;
    wxString pathVar;
 
    // Check for the LADSPA_PATH environment variable

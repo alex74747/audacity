@@ -902,7 +902,7 @@ void MacroCommands::MigrateLegacyChains()
          &files, L"*.txt", wxDIR_FILES);
 
       // add a dummy path component to be overwritten by SetFullName
-      wxFileNameWrapper newDir{ FileNames::MacroDir(), L"x" };
+      wxFileNameWrapper newDir{ FileNames::MacroDir(), FilePath{ L"x" } };
 
       for (const auto &file : files) {
          auto name = wxFileNameWrapper{ file }.GetFullName();

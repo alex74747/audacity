@@ -94,7 +94,7 @@ public:
    // Returns empty, or else, where to copy a plug-in file or bundle.
    // Drag-and-drop is supported only if GetFileExtensions() returns nonempty and
    // this function returns nonempty.
-   virtual FilePath InstallPath() = 0;
+   virtual DirectoryPath InstallPath() = 0;
 
    // Modules providing a single or static set of plugins may use
    // AutoRegisterPlugins() to register those plugins.

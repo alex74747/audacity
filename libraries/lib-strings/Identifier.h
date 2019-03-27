@@ -319,4 +319,52 @@ struct wxArgNormalizerNative<FilePath>
    wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
 };
  
+struct DirectoryPathTag;
+using DirectoryPath = TaggedIdentifier<
+   DirectoryPathTag,
+
+   // Case sensitivity as for wxFileName::IsCaseSensitive in filename.cpp;
+   // we can't call that function but need a compile-time constant boolean as
+   // the template parameter;
+   // it depends on whether wxFileName::GetFormat( wxPATH_NATIVE )
+   // returns wxPATH_UNIX;
+   // this preprocessor logic is like what is in that function
+#if defined(__WINDOWS__) || defined(__WXMAC__)
+   false // case insensitive
+#else
+   true // case sensitive
+#endif
+
+>;
+
+using DirectoryPaths = std::vector< DirectoryPath >;
+
+// This makes FileExtension work as an argument in wxString::Format() without
+// calling GET().
+// File extensions are often reported to the user in dialogs, so we permit this
+// for this subclass of Identifier.
+template<>
+struct wxArgNormalizerNative<const DirectoryPath&>
+: public wxArgNormalizerNative<const wxString&>
+{
+   wxArgNormalizerNative(const DirectoryPath& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const wxString&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
+template<>
+struct wxArgNormalizerNative<DirectoryPath>
+: public wxArgNormalizerNative<const DirectoryPath&>
+{
+   wxArgNormalizerNative(const DirectoryPath& s,
+                         const wxFormatString *fmt,
+                         unsigned index)
+   : wxArgNormalizerNative<const DirectoryPath&>( s.GET(), fmt, index ) {}
+   wxArgNormalizerNative( const wxArgNormalizerNative & ) = delete;
+   wxArgNormalizerNative &operator=( const wxArgNormalizerNative & ) = delete;
+};
+
 #endif

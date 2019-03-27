@@ -172,12 +172,12 @@ void AudacityProject::SetProjectName(const wxString &name)
    mName = name;
 }
 
-FilePath AudacityProject::GetInitialImportPath() const
+DirectoryPath AudacityProject::GetInitialImportPath() const
 {
    return mInitialImportPath;
 }
 
-void AudacityProject::SetInitialImportPath(const FilePath &path)
+void AudacityProject::SetInitialImportPath(const DirectoryPath &path)
 {
    if (mInitialImportPath.empty())
    {

@@ -341,7 +341,7 @@ void HelpSystem::ShowHelp(wxWindow *parent,
    if (releasePageName == L"Main_Page")
    {
       releasePageName = L"index" + HelpSystem::ReleaseSuffix + anchor;
-      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), releasePageName }.GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), FilePath{ releasePageName } }.GetFullPath();
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerHomeDir;
    }
    else if (releasePageName == L"Quick_Help")
@@ -353,7 +353,7 @@ void HelpSystem::ShowHelp(wxWindow *parent,
       webHelpPath = L"http://www.darkaudacity.com/";
 #else
       releasePageName = L"quick_help" + HelpSystem::ReleaseSuffix + anchor;
-      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), releasePageName }.GetFullPath();
+      localHelpPage = wxFileNameWrapper{ FileNames::HtmlHelpDir(), FilePath{ releasePageName } }.GetFullPath();
       webHelpPath = L"https://"+HelpSystem::HelpHostname+HelpSystem::HelpServerHomeDir;
 #endif
    }
@@ -541,7 +541,7 @@ void LinkingHtmlWindow::OnLinkClicked(const wxHtmlLinkInfo& link)
    {
       wxString FileName =
          wxFileNameWrapper{ FileNames::HtmlHelpDir(),
-            href.Mid( 10 ) + L".htm" }.GetFullPath();
+            FilePath{ href.Mid( 10 ) + L".htm" } }.GetFullPath();
       if( wxFileExists( FileName ) )
       {
          HelpSystem::ShowHelp(this, FileName, wxEmptyString, false);

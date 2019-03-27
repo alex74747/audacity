@@ -18,12 +18,12 @@ class wxWindow;
 
 namespace TempDirectory
 {
-   AUDACITY_DLL_API FilePath TempDir();
+   AUDACITY_DLL_API DirectoryPath TempDir();
    AUDACITY_DLL_API void ResetTempDir();
 
-   AUDACITY_DLL_API const FilePath &DefaultTempDir();
-   AUDACITY_DLL_API void SetDefaultTempDir( const FilePath &tempDir );
-   AUDACITY_DLL_API bool IsTempDirectoryNameOK( const FilePath & Name );
+   AUDACITY_DLL_API const DirectoryPath &DefaultTempDir();
+   AUDACITY_DLL_API void SetDefaultTempDir( const DirectoryPath &tempDir );
+   AUDACITY_DLL_API bool IsTempDirectoryNameOK( const DirectoryPath & Name );
 
    // Create a filename for an unsaved/temporary project file
    AUDACITY_DLL_API wxString UnsavedProjectFileName();

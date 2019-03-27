@@ -27,21 +27,21 @@ namespace Languages {
  @param[out] langNames corresponding autonyms of those languages (like "Português")
  */
 STRINGS_API
-void GetLanguages( FilePaths pathList,
+void GetLanguages( DirectoryPaths pathList,
    wxArrayString &langCodes, TranslatableStrings &langNames);
 
 /*!
  @param pathList paths to search for .mo files, grouped into subdirectories for the different languages
  */
 STRINGS_API
-wxString GetSystemLanguageCode(const FilePaths &pathList);
+wxString GetSystemLanguageCode(const DirectoryPaths &pathList);
 
 /*!
  @param audacityPathList paths to search for .mo files, grouped into subdirectories for the different languages
  @param lang a language code; or if empty or "System", then default to system language.
  @return the language code actually used which is not lang if lang cannot be found. */
 STRINGS_API
-wxString SetLang( const FilePaths &audacityPathList, const wxString & lang );
+wxString SetLang( const DirectoryPaths &audacityPathList, const wxString & lang );
 
 /*! @return the last language code that was set */
 STRINGS_API

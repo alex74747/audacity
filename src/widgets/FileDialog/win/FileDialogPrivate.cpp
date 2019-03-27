@@ -1155,7 +1155,7 @@ int FileDialog::ShowModal()
       m_path = fileNameBuffer;
       m_fileName = wxFileNameFromPath(fileNameBuffer);
       m_fileNames.Add(m_fileName);
-      m_dir = wxPathOnly(fileNameBuffer);
+      m_dir = wxPathOnly( FilePath{ fileNameBuffer } ).GET();
    }
    
    return wxID_OK;

@@ -375,7 +375,7 @@ const FileExtensions &VSTEffectsModule::GetFileExtensions()
    return result;
 }
 
-FilePath VSTEffectsModule::InstallPath()
+DirectoryPath VSTEffectsModule::InstallPath()
 {
    // Not yet ready for VST drag-and-drop...
    // return FileNames::PlugInDir();
@@ -391,7 +391,7 @@ bool VSTEffectsModule::AutoRegisterPlugins(PluginManagerInterface & WXUNUSED(pm)
 
 PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 {
-   FilePaths pathList;
+   DirectoryPaths pathList;
    FilePaths files;
 
    // Check for the VST_PATH environment variable
@@ -419,7 +419,8 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
    // Remove the 'Contents/Info.plist' portion of the names
    for (size_t i = 0; i < files.size(); i++)
    {
-      files[i] = wxPathOnly(wxPathOnly(files[i]));
+      files[i] = wxPathOnly( files[i] ).CONVERT<FilePath>();
+      files[i] = wxPathOnly( files[i] ).CONVERT<FilePath>();
       if (!wxString{files[i].GET()}.EndsWith(L".vst"))
       {
          files.erase( files.begin() + i-- );

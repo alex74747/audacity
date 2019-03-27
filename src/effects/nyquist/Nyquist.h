@@ -138,11 +138,13 @@ private:
    bool IsOk();
    const TranslatableString &InitializationError() const { return mInitError; }
 
-   static FilePaths GetNyquistSearchPath();
+   static DirectoryPaths GetNyquistSearchPath();
 
    static wxString NyquistToWxString(const char *nyqString);
    wxString EscapeString(const wxString & inStr);
    wxString EscapeString(const FilePath & inStr)
+      { return EscapeString(wxString{inStr.GET()}); }
+   wxString EscapeString(const DirectoryPath & inStr)
       { return EscapeString(wxString{inStr.GET()}); }
    static std::vector<EnumValueSymbol> ParseChoice(const wxString & text);
 
@@ -241,7 +243,7 @@ private:
    TranslatableString mReleaseVersion;
    TranslatableString mCopyright;
    wxString          mManPage;   // ONLY use if a help page exists in the manual.
-   wxString          mHelpFile;
+   FilePath          mHelpFile;
    bool              mHelpFileExists;
    EffectType        mType;
    EffectType        mPromptType; // If a prompt, need to remember original type.

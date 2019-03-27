@@ -170,7 +170,7 @@ public:
    FileDialogWrapper(
       wxWindow *parent,
       const TranslatableString& message,
-      const FilePath& defaultDir,
+      const DirectoryPath& defaultDir,
       const FilePath& defaultFile,
       const FileNames::FileTypes& fileTypes,
       long style = wxFD_DEFAULT_STYLE,
@@ -188,7 +188,7 @@ public:
    void Create(
       wxWindow *parent,
       const TranslatableString& message,
-      const FilePath& defaultDir,
+      const DirectoryPath& defaultDir,
       const FilePath& defaultFile,
       const FileNames::FileTypes& fileTypes,
       long style = wxFD_DEFAULT_STYLE,

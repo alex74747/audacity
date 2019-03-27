@@ -52,7 +52,7 @@ using LangHash = std::unordered_map<wxString, TranslatableString>;
 using ReverseLangHash = std::unordered_map<TranslatableString, wxString>;
 
 static void FindFilesInPathList(const wxString & pattern,
-   const FilePaths & pathList, FilePaths & results)
+   const DirectoryPaths & pathList, FilePaths & results)
 {
    wxFileName ff;
    wxArrayStringEx strings;
@@ -63,7 +63,7 @@ static void FindFilesInPathList(const wxString & pattern,
    results = FilePaths{ strings.begin(), strings.end() };
 }
 
-static bool TranslationExists(const FilePaths &pathList, wxString code)
+static bool TranslationExists(const DirectoryPaths &pathList, wxString code)
 {
    FilePaths results;
    FindFilesInPathList(code + L"/audacity.mo", pathList, results);
@@ -81,7 +81,7 @@ static bool TranslationExists(const FilePaths &pathList, wxString code)
 
 namespace Languages {
 
-wxString GetSystemLanguageCode(const FilePaths &pathList)
+wxString GetSystemLanguageCode(const DirectoryPaths &pathList)
 {
    wxArrayString langCodes;
    TranslatableStrings langNames;
@@ -135,7 +135,7 @@ wxString GetSystemLanguageCode(const FilePaths &pathList)
    return L"en";
 }
 
-void GetLanguages( FilePaths pathList,
+void GetLanguages( DirectoryPaths pathList,
    wxArrayString &langCodes, TranslatableStrings &langNames)
 {
    static const char *const utf8Names[] = {
@@ -322,7 +322,7 @@ void GetLanguages( FilePaths pathList,
 static std::unique_ptr<wxLocale> sLocale;
 static wxString sLocaleName;
 
-wxString SetLang( const FilePaths &pathList, const wxString & lang )
+wxString SetLang( const DirectoryPaths &pathList, const wxString & lang )
 {
    wxString result = lang;
 

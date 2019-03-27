@@ -35,9 +35,9 @@ public:
    // Labels are allowed to be very long.  At some future date we will format long labels nicely.
    static bool IsGoodLongString(const wxString & str);
 
-   static bool IsGoodFileName(const FilePath & strFileName, const FilePath & strDirName = {});
+   static bool IsGoodFileName(const FilePath & strFileName, const DirectoryPath & strDirName = {});
    static bool IsGoodFileString(const FilePath &str);
-   static bool IsGoodSubdirName(const FilePath & strSubdirName, const FilePath & strDirName = {});
+   static bool IsGoodSubdirName(const DirectoryPath & strSubdirName, const DirectoryPath & strDirName = {});
    static bool IsGoodPathName(const FilePath & strPathName);
    static bool IsGoodPathString(const FilePath &str);
 

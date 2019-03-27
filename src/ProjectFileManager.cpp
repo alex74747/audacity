@@ -415,7 +415,7 @@ bool ProjectFileManager::SaveAs(bool allowOverwrite /* = false */)
    auto &window = GetProjectFrame( project );
    TitleRestorer Restorer( window, project ); // RAII
    wxFileNameWrapper filename;
-   FilePath defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
+   auto defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
 
    if (projectFileIO.IsTemporary()) {
       filename.SetPath(defaultSavePath.GET());
@@ -552,7 +552,7 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = L"" */)
    auto &window = GetProjectFrame(project);
    TitleRestorer Restorer(window, project); // RAII
    wxFileNameWrapper filename = fileName;
-   FilePath defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
+   auto defaultSavePath = FileNames::FindDefaultPath(FileNames::Operation::Save);
 
    if (fileName.empty())
    {
@@ -813,7 +813,7 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
 
    FileDialogWrapper dlog(nullptr,
       XO("Select one or more files"),
-      path,
+      path.GET(),
       L"",
       fileTypes,
       wxFD_OPEN | wxFD_MULTIPLE | wxRESIZE_BORDER);

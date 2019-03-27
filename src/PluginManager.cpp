@@ -1510,7 +1510,7 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Import
 }
 
 void PluginManager::FindFilesInPathList(const wxString & pattern,
-                                        const FilePaths & pathList,
+                                        const DirectoryPaths & pathList,
                                         FilePaths & files,
                                         bool directories)
 {

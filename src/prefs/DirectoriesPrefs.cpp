@@ -315,7 +315,7 @@ void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
       // If the default temp dir or user's pref dir don't end in '/' they cause
       // wxFileName's == operator to construct a wxFileName representing a file
       // (that doesn't exist) -- hence the constructor calls
-      if (tmpDirPath != wxFileNameWrapper(DefaultTempDir(), L"") &&
+      if (tmpDirPath != wxFileNameWrapper(DefaultTempDir(), FilePath{}) &&
             tmpDirPath != wxFileName(mTempText->GetValue(), L"") &&
             (dirsInPath.size() == 0 ||
              dirsInPath[dirsInPath.size()-1] != newDirName))
@@ -339,7 +339,7 @@ void DirectoriesPrefs::OnTempText(wxCommandEvent & WXUNUSED(evt))
       wxLongLong space;
       wxGetDiskSpace(path.GET(), NULL, &space);
 
-      label = wxDirExists(path)
+      label = wxDirExists(wxString{path.GET()})
          ? Internat::FormatSize(space)
          : XO("unavailable - above location doesn't exist");
 
@@ -424,7 +424,7 @@ bool DirectoriesPrefs::Validate()
       Temp.RemoveLastDir();
    }
 
-   wxFileName oldDir;
+   wxFileNameWrapper oldDir;
    oldDir.SetPath(TempDir().GET());
    if (Temp != oldDir) {
       AudacityMessageBox(
