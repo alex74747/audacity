@@ -11,6 +11,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../Audacity.h" // for USE_* macros
 #include "NoteTrackView.h"
 
+#include <wx/dc.h>
+
 #ifdef USE_MIDI
 #include "../../../../Experimental.h"
 

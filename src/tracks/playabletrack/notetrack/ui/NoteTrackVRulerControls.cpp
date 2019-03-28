@@ -15,6 +15,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackView.h"
 #include "NoteTrackVRulerControls.h"
 
+#include <wx/dc.h>
+
 #include "NoteTrackVZoomHandle.h"
 
 #include "../../../../HitTestResult.h"

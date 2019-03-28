@@ -13,6 +13,8 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../Experimental.h"
 
+#include <wx/dc.h>
+
 #include "TimeTrackVRulerControls.h"
 #include "../../../AColor.h"
 #include "../../../AllThemeResources.h"
