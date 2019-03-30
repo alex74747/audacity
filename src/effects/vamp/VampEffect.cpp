@@ -33,7 +33,7 @@
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
 #include <wx/scrolwin.h>
-#include <wx/version.h>
+//#include <wx/version.h>
 
 
 #include "../../ShuttleGui.h"

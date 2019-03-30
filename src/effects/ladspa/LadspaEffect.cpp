@@ -51,7 +51,7 @@ effects from this one class.
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
 #include <wx/scrolwin.h>
-#include <wx/version.h>
+//#include <wx/version.h>
 
 #include "../../FileNames.h"
 #include "../../ShuttleGui.h"
