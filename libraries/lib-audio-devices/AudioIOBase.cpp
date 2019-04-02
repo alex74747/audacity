@@ -960,6 +960,8 @@ DoubleSetting AudioIOCutPreviewBeforeLen{
    L"/AudioIO/CutPreviewBeforeLen",              2.0 };
 DoubleSetting AudioIOEffectsPreviewLen{
    L"/AudioIO/EffectsPreviewLen",                6.0 };
+StringSetting AudioIOPlaybackSource{
+   L"/AudioIO/PlaybackSource" };
 DoubleSetting AudioIOSeekLongPeriod{
    L"/AudioIO/SeekLongPeriod",                   15.0 };
 DoubleSetting AudioIOSeekShortPeriod{
