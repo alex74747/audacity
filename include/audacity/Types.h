@@ -784,6 +784,17 @@ using VendorSymbol = ComponentInterfaceSymbol;
 
 using EffectFamilySymbol = ComponentInterfaceSymbol;
 
+// ----------------------------------------------------------------------------
+// forward declarations for Settings stored in configuration files
+// ----------------------------------------------------------------------------
+
+class SettingBase;
+template< typename T > class Setting;
+class BoolSetting;
+class IntSetting;
+class DoubleSetting;
+class StringSetting;
+
 // LLL FIXME: Until a complete API is devised, we have to use
 //            AUDACITY_DLL_API when defining API classes.  This
 //            it ugly, but a part of the game.  Remove it when

@@ -31,6 +31,8 @@
 
 #include "Audacity.h"
 
+#include <functional>
+
 #include "../include/audacity/ComponentInterface.h"
 #include "MemoryX.h" // for wxArrayStringEx
 #include "widgets/FileConfig.h"
@@ -49,6 +51,161 @@ extern int gMenusDirty;
 
 struct ByColumns_t{};
 extern ByColumns_t ByColumns;
+
+class AUDACITY_DLL_API SettingBase
+{
+public:
+   SettingBase( const char *path ) : mPath{ path } {}
+   SettingBase( const wxChar *path ) : mPath{ path } {}
+   SettingBase( const wxString &path ) : mPath{ path } {}
+   SettingBase( const SettingBase& ) = default;
+
+   wxConfigBase *GetConfig() const;
+
+   const wxString &GetPath() const { return mPath; }
+
+   // Delete the key if present, and return true iff it was.
+   bool Delete();
+
+protected:
+   const RegistryPath mPath;
+};
+
+template< typename T >
+class CachingSettingBase : public SettingBase
+{
+public:
+   using SettingBase::SettingBase;
+   CachingSettingBase( const SettingBase &path ) : SettingBase{ path } {}
+protected:
+   mutable T mCurrentValue{};
+   mutable bool mValid{false};
+};
+
+template< typename T >
+class Setting : public CachingSettingBase< T >
+{
+public:
+   using CachingSettingBase< T >::CachingSettingBase;
+
+   using DefaultValueFunction = std::function< T() >;
+
+   // Usual overload supplies a default value
+   Setting( SettingBase path, const T &defaultValue )
+      : CachingSettingBase< T >{ path }
+      , mDefaultValue{ defaultValue }
+   {}
+
+   // This overload causes recomputation of the default each time it is
+   // needed
+   Setting( SettingBase path, DefaultValueFunction function )
+      : CachingSettingBase< T >{ path }
+      , mFunction{ function }
+   {}
+   
+
+   const T& GetDefault() const
+   {
+      if ( mFunction )
+         mDefaultValue = mFunction();
+      return mDefaultValue;
+   }
+
+   // overload of Read returning a success flag, leaving the
+   // given variable unchanged if that is false
+   bool Read( T *pVar ) const
+   {
+      if (this->mValid) {
+         *pVar = this->mCurrentValue;
+         return true;
+      }
+      const auto config = this->GetConfig();
+      if ( pVar && config ) {
+         auto result = config->Read( this->mPath, &this->mCurrentValue );
+         if (result)
+            this->mValid = true, *pVar = this->mCurrentValue;
+         return result;
+      }
+      return false;
+   }
+
+   // overload of Read, always returning a value, which is the default stored in
+   // this in case the key is known to be absent from the config; but it returns
+   // type T's default value if there was failure to read the config
+   T Read() const
+   {
+      return ReadWithDefault( GetDefault() );
+   }
+
+   // new direct use is discouraged but it may be needed in legacy code:
+   // use a default in case the preference is not defined, which may not be
+   // the default-default stored in this object.
+   T ReadWithDefault( const T &defaultValue ) const
+   {
+      const auto config = this->GetConfig();
+      return config
+         ? ( this->mValid = true, this->mCurrentValue =
+               config->ReadObject( this->mPath, defaultValue ) )
+         : T{};
+   }
+
+   // Write value to config and return true if successful
+   bool Write( const T &value )
+   {
+      const auto config = this->GetConfig();
+      if ( config ) {
+         this->mCurrentValue = value;
+         return Flush();
+      }
+      return false;
+   }
+
+   // Reset to the default value
+   bool Reset()
+   {
+      return Write( GetDefault() );
+   }
+
+protected:
+   // Write cached value to config and return true if successful
+   bool Flush( )
+   {
+      const auto config = this->GetConfig();
+      return this->mValid =
+         config ? config->Write( this->mPath, this->mCurrentValue ) : false;
+   }
+
+   mutable T mDefaultValue{};
+   const DefaultValueFunction mFunction;
+};
+
+class BoolSetting : public Setting< bool >
+{
+public:
+   using Setting::Setting;
+
+   // Write the negation of the previous value, and then return the current
+   // value.
+   bool Toggle();
+};
+
+class IntSetting : public Setting< int >
+{
+public:
+   using Setting::Setting;
+};
+
+class DoubleSetting : public Setting< double >
+{
+public:
+   using Setting::Setting;
+};
+
+class StringSetting : public Setting< wxString >
+{
+public:
+   using Setting::Setting;
+};
 
 /// A table of EnumValueSymbol that you can access by "row" with
 /// operator [] but also allowing access to the "columns" of internal or
@@ -85,11 +242,11 @@ class ChoiceSetting
 {
 public:
    ChoiceSetting(
-      const wxString &key,
+      const SettingBase &key,
       EnumValueSymbols symbols,
       long defaultSymbol = -1
    )
-      : mKey{ key }
+      : mKey{ key.GetPath() }
 
       , mSymbols{ std::move( symbols ) }
 
@@ -135,7 +292,7 @@ class EnumSettingBase : public ChoiceSetting
 {
 public:
    EnumSettingBase(
-      const wxString &key,
+      const SettingBase &key,
       EnumValueSymbols symbols,
       long defaultSymbol,
 
@@ -170,7 +327,7 @@ class EnumSetting : public EnumSettingBase
 public:
 
    EnumSetting(
-      const wxString &key,
+      const SettingBase &key,
       EnumValueSymbols symbols,
       long defaultSymbol,
 
