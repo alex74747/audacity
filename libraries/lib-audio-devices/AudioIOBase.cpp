@@ -966,6 +966,7 @@ DoubleSetting AudioIOSeekLongPeriod{
    L"/AudioIO/SeekLongPeriod",                   15.0 };
 DoubleSetting AudioIOSeekShortPeriod{
    L"/AudioIO/SeekShortPeriod",                  1.0 };
+
 BoolSetting AudioIOUnpinnedScrubbing{
    L"/AudioIO/UnpinnedScrubbing",                true };
 BoolSetting AudioIOVariSpeedPlay{

@@ -238,7 +238,7 @@ void AudioIO::Init()
    Get()->mThread->Run();
 
    // Make sure device prefs are initialized
-   if (gPrefs->Read(L"AudioIO/RecordingDevice", L"").empty()) {
+   if (AudioIORecordingDevice.Read().empty()) {
       int i = getRecordDevIndex();
       const PaDeviceInfo *info = Pa_GetDeviceInfo(i);
       if (info) {
@@ -247,7 +247,7 @@ void AudioIO::Init()
       }
    }
 
-   if (gPrefs->Read(L"AudioIO/PlaybackDevice", L"").empty()) {
+   if (AudioIOPlaybackDevice.Read().empty()) {
       int i = getPlayDevIndex();
       const PaDeviceInfo *info = Pa_GetDeviceInfo(i);
       if (info) {

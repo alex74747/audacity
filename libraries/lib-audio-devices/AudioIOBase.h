@@ -335,6 +335,14 @@ extern AUDIO_DEVICES_API DoubleSetting AudioIOSeekShortPeriod; // seconds
 extern AUDIO_DEVICES_API BoolSetting AudioIOUnpinnedScrubbing;
 extern AUDIO_DEVICES_API BoolSetting AudioIOVariSpeedPlay;
 
+
+extern AUDIO_DEVICES_API StringSetting AudioIOPlaybackDevice;
+//extern AUDIO_DEVICES_API BoolSetting AudioIOPlaythrough;
+extern AUDIO_DEVICES_API IntSetting AudioIORecordChannels;
+extern AUDIO_DEVICES_API StringSetting AudioIORecordingDevice;
+extern AUDIO_DEVICES_API StringSetting AudioIORecordingSource;
+extern AUDIO_DEVICES_API IntSetting AudioIORecordingSourceIndex;
+
 extern AUDIO_DEVICES_API StringSetting AudioIOHost;
 extern AUDIO_DEVICES_API DoubleSetting AudioIOLatencyCorrection;
 extern AUDIO_DEVICES_API DoubleSetting AudioIOLatencyDuration;
