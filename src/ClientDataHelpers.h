@@ -32,6 +32,7 @@ enum CopyingPolicy {
    SkipCopying,     // copy ignores the argument and constructs empty
    ShallowCopying,  // just copy smart pointers; won't compile for unique_ptr
    DeepCopying,     // requires ClientData to define a Clone() member;
+                    // reparent the clones if they are back-pointing;
                     //    won't compile for weak_ptr (and wouldn't work)
 };
 
@@ -40,6 +41,46 @@ struct Base;
 template<
    template<typename> class Owner
 > struct Cloneable;
+template<
+   typename Host
+> struct BackPointing;
+template<
+   typename Host,
+   template<typename> class Owner
+> struct BackPointingCloneable;
+
+// A metafunction to choose the best ClientData parameter for Site
+template< CopyingPolicy copyingPolicy, bool BackPointing >
+struct ChooseClientData;
+template< CopyingPolicy copyingPolicy >
+struct ChooseClientData< copyingPolicy, false >
+{
+   // Covers most cases of non-back-pointing
+   template< typename Host, template<typename> class Pointer >
+   using type = Base;
+};
+template< CopyingPolicy copyingPolicy >
+struct ChooseClientData< copyingPolicy, true >
+{
+   // Covers most cases of back-pointing
+   template< typename Host, template<typename> class Pointer >
+   using type = BackPointing< Host >;
+};
+template<>
+struct ChooseClientData< ShallowCopying, true >
+{
+   // Intentionally not defined for this case
+};
+template<> struct ChooseClientData< DeepCopying, false >
+{
+   template< typename Host, template<typename> class Pointer >
+   using type = Cloneable< Pointer >;
+};
+template<> struct ChooseClientData< DeepCopying, true >
+{
+   template< typename Host, template<typename> class Pointer >
+   using type = BackPointingCloneable< Host, Pointer >;
+};
 
 // A conversion so we can use operator * in all the likely cases for the
 // template parameter Pointer.  (Return value should be bound only to const
@@ -50,6 +91,20 @@ template< typename Ptr > static inline
 template< typename Obj > static inline
    std::shared_ptr<Obj> Dereferenceable( std::weak_ptr<Obj> &p )
       { return p.lock(); } // overload returns a prvalue
+
+// Declared but undefined helper function for defining trait class HasReparent
+auto HasReparentHelper(...) -> std::false_type;
+template< typename Child, typename Parent > auto HasReparentHelper(
+   Child *pChild, Parent *pParent,
+   decltype( (void)pChild->Reparent(pParent), nullptr ) // use SFINAE
+)  -> std::true_type;
+
+// A trait class detecting whether class Child has a member function Reparent
+// taking a pointer to Parent
+template< typename Child, typename Parent>
+struct HasReparent
+   : decltype( HasReparentHelper((Child*)nullptr, (Parent*)nullptr, nullptr) )
+{};
 
 // Decorator template to implement locking policies
 template< typename Object, LockingPolicy > struct Lockable;
