@@ -45,6 +45,44 @@ template<
    virtual PointerType Clone() const = 0;
 };
 
+// A base class that maintains back-pointers to the parent Host object
+template<
+   typename Host
+> struct BackPointing
+{
+   using Base = BackPointing;
+   explicit BackPointing( Host *pParent ) { Reparent( pParent ); }
+   virtual ~BackPointing() {}
+
+   void Reparent( Host *pParent )
+   {
+      mParent = pParent;
+   }
+
+   // Return a pointer, not a reference -- the object might be an orphan
+   Host *GetParent() { return mParent; }
+   const Host *GetParent() const { return mParent; }
+
+private:
+   Host *mParent;
+};
+
+// The combination of the services of BackPointing and Cloneable
+template<
+   typename Host,
+   template<typename> class Owner = UniquePtr
+> struct BackPointingCloneable
+   : BackPointing< Host >
+{
+   using Base = BackPointingCloneable;
+   using PointerType = Owner< Base >;
+
+   // inherited constructor
+   using BackPointing< Host >::BackPointing;
+
+   virtual PointerType Clone() const = 0;
+};
+
 /*
    \brief ClientData::Site class template enables decoupling of the
    implementation of core data structures, inheriting it, from compilation and
@@ -160,6 +198,16 @@ template<
    early building of all ClientData when host is constructed, as in the example
    above.
 
+   Back pointers:  ClientData objects may maintain back pointers to their
+   hosts. If ClientData defines a method Reparent() that takes a pointer to the
+   Host, and the Host uses the DeepCopying policy, then Reparent() is invoked
+   on the fresh ClientData clones when Host is copied.  The same happens on
+   move of Host with DeepCopying or SkipCopying. (None of this happens for
+   ShallowCopying, because the possibly shared ownership makes it unclear how
+   to define a correct single back-pointer.) Class templates BackPointing and
+   BackPointingCloneable can be convenient bases for ClientData that define
+   Reparent().
+
    About unusual registration sequences:  if registration of a factory
    happens after some host objects are already in existence, their associated
    client data fail to be created if you rely only on BuildAll in the Host
@@ -208,14 +256,14 @@ public:
    }
    Site( const Site &other )
       : mData( other.mData )
-      { }
+      { ReparentAllForCopy(); }
    Site& operator =( const Site & other )
-      { mData = other.mData; return *this; }
+      { mData = other.mData; ReparentAllForCopy(); return *this; }
    Site( Site && other )
       : mData( std::move(other.mData) )
-      { }
+      { ReparentAllForMove(); }
    Site& operator =( Site && other )
-      { mData = std::move(other.mData); return *this; }
+      { mData = std::move(other.mData); ReparentAllForMove(); return *this; }
 
    /// \brief a type meant to be stored by client code in a static variable,
    /// and used as a retrieval key to get the manufactured client object back
@@ -339,6 +387,13 @@ protected:
       }
    }
 
+   // ClientData need not define Reparent() if the following is never called
+   void ReparentAll()
+   {
+      const auto pHost = static_cast< Host* >( this );
+      ForEach( [=]( DataType &data ){ data.Reparent( pHost ); } );
+   }
+
    // \brief For each registered factory, if the corresponding object in this
    // is absent, then invoke the factory and store the result.
    void BuildAll()
@@ -362,6 +417,24 @@ protected:
    }
 
 private:
+   // Simplify this compile-time switching with C++17 if constexpr ?
+   void ReparentAllIf( std::false_type ) {}
+   void ReparentAllIf( std::true_type ) { ReparentAll(); }
+   void ReparentAllForMove()
+   {
+      ReparentAllIf( std::integral_constant< bool,
+         ObjectCopyingPolicy != ShallowCopying &&
+         HasReparent< DataType, Host >::value
+      >{});
+   }
+   void ReparentAllForCopy()
+   {
+      ReparentAllIf( std::integral_constant< bool,
+         ObjectCopyingPolicy == DeepCopying &&
+         HasReparent< DataType, Host >::value
+      >{});
+   }
+
    using DataFactories =
       Lockable< std::vector< DataFactory >, RegistryLockingPolicy >;
    using DataContainer =
@@ -459,6 +532,53 @@ private:
    // derived class.
    DataContainer mData;
 };
+
+// Helper template, not meant for direct usage:
+template<
+   typename Host, bool BackPointing, CopyingPolicy ObjectCopyingPolicy,
+   template<typename> class Pointer,
+   LockingPolicy ObjectLockingPolicy, LockingPolicy RegistryLockingPolicy
+>
+using SiteWithDefaultedDataType = Site<
+   Host,
+   typename ChooseClientData< ObjectCopyingPolicy, BackPointing >
+      ::template type< Host, Pointer >,
+   ObjectCopyingPolicy, Pointer, ObjectLockingPolicy, RegistryLockingPolicy
+>;
+
+// useful alias templates to supply parameters to Site, with appropriately
+// defaulted typename Site::DataType :
+
+// Attaches extra data to be treated as inherent to the Host object
+template<
+   typename Host,
+   bool BackPointing = false,
+
+   // less often varied arguments
+   template<typename> class Pointer = UniquePtr,
+   LockingPolicy ObjectLockingPolicy = NoLocking,
+   LockingPolicy RegistryLockingPolicy = NoLocking
+>
+using Extensions = SiteWithDefaultedDataType<
+   Host, BackPointing, DeepCopying, Pointer,
+   ObjectLockingPolicy, RegistryLockingPolicy
+>;
+
+
+// Attaches extra uncopied data, typically to hold memos only
+template<
+   typename Host,
+   bool BackPointing = false,
+
+   // less often varied arguments
+   template<typename> class Pointer = UniquePtr,
+   LockingPolicy ObjectLockingPolicy = NoLocking,
+   LockingPolicy RegistryLockingPolicy = NoLocking
+>
+using Caches = SiteWithDefaultedDataType<
+   Host, BackPointing, SkipCopying, Pointer,
+   ObjectLockingPolicy, RegistryLockingPolicy
+>;
 
 }
 
