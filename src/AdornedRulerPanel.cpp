@@ -766,9 +766,9 @@ private:
          auto &scrubber = Scrubber::Get( *pProject );
          scrubber.Cancel();
          
-         auto ctb = pProject->GetControlToolBar();
+         auto &ctb = ControlToolBar::Get( *pProject );
          wxCommandEvent evt;
-         ctb->OnStop(evt);
+         ctb.OnStop(evt);
       }
 
       return result;

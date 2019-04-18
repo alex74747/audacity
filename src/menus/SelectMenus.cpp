@@ -1024,8 +1024,8 @@ void OnSkipStart(const CommandContext &context)
    auto &project = context.project;
    wxCommandEvent evt;
 
-   auto controlToolBar = project.GetControlToolBar();
-   controlToolBar->OnRewind(evt);
+   auto &controlToolBar = ControlToolBar::Get( project );
+   controlToolBar.OnRewind(evt);
    project.ModifyState(false);
 }
 
@@ -1034,8 +1034,8 @@ void OnSkipEnd(const CommandContext &context)
    auto &project = context.project;
    wxCommandEvent evt;
 
-   auto controlToolBar = project.GetControlToolBar();
-   controlToolBar->OnFF(evt);
+   auto &controlToolBar = ControlToolBar::Get( project );
+   controlToolBar.OnFF(evt);
    project.ModifyState(false);
 }
 

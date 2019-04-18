@@ -150,13 +150,9 @@ scroll information.  It also has some status flags.
 
 #include "toolbars/ToolManager.h"
 #include "toolbars/ControlToolBar.h"
-#include "toolbars/DeviceToolBar.h"
 #include "toolbars/MixerToolBar.h"
-#include "toolbars/ScrubbingToolBar.h"
 #include "toolbars/SelectionBar.h"
 #include "toolbars/SpectralSelectionBar.h"
-#include "toolbars/ToolsToolBar.h"
-#include "toolbars/TranscriptionToolBar.h"
 
 #include "tracks/ui/EditCursorOverlay.h"
 #include "tracks/ui/PlayIndicatorOverlay.h"
@@ -1015,9 +1011,9 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
    //
    // Create the ToolDock
    //
-   GetSelectionBar()->SetListener(this);
+   SelectionBar::Get( project ).SetListener(this);
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   GetSpectralSelectionBar()->SetListener(this);
+   SpectralSelectionBar::Get( project ).SetListener(this);
 #endif
    ToolManager::Get( project ).LayoutToolBars();
 
@@ -1214,12 +1210,17 @@ AudacityProject::AudacityProject(wxWindow * parent, wxWindowID id,
 #endif
    mIconized = false;
 
-   int widths[] = {0, GetControlToolBar()->WidthForStatusBar(mStatusBar), -1, 150};
+   int widths[] = {
+      0,
+      ControlToolBar::Get( *this ).WidthForStatusBar(mStatusBar),
+      -1,
+      150
+   };
    mStatusBar->SetStatusWidths(4, widths);
    wxString msg = wxString::Format(_("Welcome to Audacity version %s"),
                                    AUDACITY_VERSION_STRING);
    mStatusBar->SetStatusText(msg, mainStatusBarField);
-   GetControlToolBar()->UpdateStatusBar(this);
+   ControlToolBar::Get( *this ).UpdateStatusBar(this);
 
    mTimer = std::make_unique<wxTimer>(this, AudacityProjectTimerID);
    RestartTimer();
@@ -1289,10 +1290,8 @@ void AudacityProject::UpdatePrefsVariables()
    if( GetTrackCount() == 0){
       gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleRate"), &mRate, AudioIO::GetOptimalSupportedSampleRate());
       // If necessary, we change this rate in the selection toolbar too.
-      auto bar = GetSelectionBar();
-      if( bar ){
-         bar->SetRate( mRate );
-      }
+      auto bar = SelectionBar::Get( *this );
+      bar.SetRate( mRate );
    }
 #endif
 
@@ -1558,9 +1557,7 @@ void AudacityProject::SetFrequencySelectionFormatName(const NumericFormatSymbol 
 {
    SSBL_SetFrequencySelectionFormatName(formatName);
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   if (GetSpectralSelectionBar()) {
-      GetSpectralSelectionBar()->SetFrequencySelectionFormatName(formatName);
-   }
+   SpectralSelectionBar::Get( *this ).SetFrequencySelectionFormatName(formatName);
 #endif
 }
 
@@ -1573,18 +1570,14 @@ void AudacityProject::SetBandwidthSelectionFormatName(const NumericFormatSymbol 
 {
    SSBL_SetBandwidthSelectionFormatName(formatName);
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   if (GetSpectralSelectionBar()) {
-      GetSpectralSelectionBar()->SetBandwidthSelectionFormatName(formatName);
-   }
+   SpectralSelectionBar::Get( *this ).SetBandwidthSelectionFormatName(formatName);
 #endif
 }
 
 void AudacityProject::SetSelectionFormat(const NumericFormatSymbol & format)
 {
    AS_SetSelectionFormat(format);
-   if (GetSelectionBar()) {
-      GetSelectionBar()->SetSelectionFormat(format);
-   }
+   SelectionBar::Get( *this ).SetSelectionFormat(format);
 }
 
 const NumericFormatSymbol & AudacityProject::GetSelectionFormat() const
@@ -2395,7 +2388,7 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
 
       // We were playing or recording audio, but we've stopped the stream.
       wxCommandEvent dummyEvent;
-      GetControlToolBar()->OnStop(dummyEvent);
+      ControlToolBar::Get( *this ).OnStop(dummyEvent);
 
       FixScrollbars();
       SetAudioIOToken(0);
@@ -3385,7 +3378,7 @@ bool AudacityProject::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 
       else if (!wxStrcmp(attr, wxT("rate"))) {
          Internat::CompatibleToDouble(value, &mRate);
-         GetSelectionBar()->SetRate(mRate);
+         SelectionBar::Get( *this ).SetRate(mRate);
       }
 
       else if (!wxStrcmp(attr, wxT("snapto"))) {
@@ -4165,7 +4158,7 @@ AudacityProject::AddImportedTracks(const FilePath &fileName,
    // if this is the first file that is imported
    if (initiallyEmpty && newRate > 0) {
       mRate = newRate;
-      GetSelectionBar()->SetRate(mRate);
+      SelectionBar::Get( *this ).SetRate(mRate);
    }
 
    PushState(wxString::Format(_("Imported '%s'"), fileName),
@@ -4778,73 +4771,6 @@ void AudacityProject::SkipEnd(bool shift)
 }
 
 
-namespace {
-   template<typename ToolBar>
-   ToolBar *DoGetToolBar( AudacityProject &project, int type )
-   {
-      auto &toolManager = ToolManager::Get( project );
-      return static_cast<ToolBar *>( toolManager.GetToolBar( type ) );
-   }
-
-   template<typename ToolBar>
-   const ToolBar *DoGetToolBar( const AudacityProject &project, int type )
-   {
-      return DoGetToolBar<ToolBar>(
-         const_cast<AudacityProject&>( project ), type );
-   }
-}
-
-////////////////////////////////////////////////////////////
-//  This fetches a pointer to the Transport Toolbar.  It may
-//  either be docked or floating out in the open.
-////////////////////////////////////////////////////////////
-ControlToolBar *AudacityProject::GetControlToolBar()
-{
-   return DoGetToolBar< ControlToolBar >( *this, TransportBarID );
-}
-
-DeviceToolBar *AudacityProject::GetDeviceToolBar()
-{
-   return DoGetToolBar< DeviceToolBar >( *this, DeviceBarID );
-}
-
-MixerToolBar *AudacityProject::GetMixerToolBar()
-{
-   return DoGetToolBar< MixerToolBar >( *this, MixerBarID );
-}
-
-ScrubbingToolBar *AudacityProject::GetScrubbingToolBar()
-{
-   return DoGetToolBar< ScrubbingToolBar >( *this, ScrubbingBarID );
-}
-
-SelectionBar *AudacityProject::GetSelectionBar()
-{
-   return DoGetToolBar< SelectionBar >( *this, SelectionBarID );
-}
-
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-SpectralSelectionBar *AudacityProject::GetSpectralSelectionBar()
-{
-   return DoGetToolBar< SpectralSelectionBar >( *this, SpectralSelectionBarID );
-}
-#endif
-
-ToolsToolBar *AudacityProject::GetToolsToolBar()
-{
-   return DoGetToolBar< ToolsToolBar >( *this, ToolsBarID );
-}
-
-const ToolsToolBar *AudacityProject::GetToolsToolBar() const
-{
-   return DoGetToolBar< const ToolsToolBar >( *this, ToolsBarID );
-}
-
-TranscriptionToolBar *AudacityProject::GetTranscriptionToolBar()
-{
-   return DoGetToolBar< TranscriptionToolBar >( *this, TranscriptionBarID );
-}
-
 MeterPanel *AudacityProject::GetPlaybackMeter()
 {
    return mPlaybackMeter;
@@ -4886,9 +4812,8 @@ void AudacityProject::OnTimer(wxTimerEvent& WXUNUSED(event))
 {
    auto &project = *this;
    auto &dirManager = DirManager::Get( project );
-   MixerToolBar *mixerToolBar = GetMixerToolBar();
-   if( mixerToolBar )
-      mixerToolBar->UpdateControls();
+   auto mixerToolBar = &MixerToolBar::Get( project );
+   mixerToolBar->UpdateControls();
 
    // gAudioIO->GetNumCaptureChannels() should only be positive
    // when we are recording.
@@ -4976,13 +4901,12 @@ void AudacityProject::TP_DisplaySelection()
    else
       audioTime = playRegion.GetStart();
 
-   GetSelectionBar()->SetTimes(selectedRegion.t0(),
+   SelectionBar::Get( *this ).SetTimes(selectedRegion.t0(),
                                selectedRegion.t1(), audioTime);
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   GetSpectralSelectionBar()->SetFrequencies
-      (selectedRegion.f0(), selectedRegion.f1());
+   SpectralSelectionBar::Get( *this ).SetFrequencies(
+      selectedRegion.f0(), selectedRegion.f1());
 #endif
-
 }
 
 
@@ -5113,7 +5037,12 @@ void AudacityProject::OnAudioIORate(int rate)
 
    int x, y;
    mStatusBar->GetTextExtent(display, &x, &y);
-   int widths[] = {0, GetControlToolBar()->WidthForStatusBar(mStatusBar), -1, x+50};
+   int widths[] = {
+      0,
+      ControlToolBar::Get( *this ).WidthForStatusBar(mStatusBar),
+      -1,
+      x + 50
+   };
    mStatusBar->SetStatusWidths(4, widths);
    mStatusBar->SetStatusText(display, rateStatusBarField);
 }
@@ -5204,9 +5133,7 @@ void AudacityProject::OnAudioIONewBlockFiles(const AutoSaveFile & blockFileLog)
 void AudacityProject::SetSnapTo(int snap)
 {
    AS_SetSnapTo(snap);
-   if (GetSelectionBar()) {
-      GetSelectionBar()->SetSnapTo(snap);
-   }
+   SelectionBar::Get( *this ).SetSnapTo(snap);
 }
 
 int AudacityProject::GetSnapTo() const
