@@ -2523,6 +2523,8 @@ void AudacityProject::OnCloseWindow(wxCloseEvent & event)
    // references to the DirManager.
    UndoManager::Get( project ).ClearStates();
 
+   AttachedObjects::NullAll();
+
    // MM: Tell the DirManager it can now DELETE itself
    // if it finds it is no longer needed. If it is still
    // used (f.e. by the clipboard), it will recognize this
