@@ -13,6 +13,7 @@
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "../WaveClip.h"
+#include "../ViewInfo.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
@@ -155,7 +156,7 @@ void DoMoveToLabel(AudacityProject &project, bool next)
 
    // If there is a single label track, or there is a label track at or below
    // the focused track
-   auto &selectedRegion = project.GetViewInfo().selectedRegion;
+   auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    if (lt) {
       int i;
       if (next)
@@ -200,7 +201,7 @@ bool DoPlayStopSelect
    auto toolbar = project.GetControlToolBar();
    auto &scrubber = project.GetScrubber();
    auto token = project.GetAudioIOToken();
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    auto &selection = viewInfo.selectedRegion;
 
    //If busy, stop playing, make sure everything is unpaused.
@@ -482,7 +483,7 @@ void OnTimerRecord(const CommandContext &context)
 void OnPunchAndRoll(const CommandContext &context)
 {
    AudacityProject &project = context.project;
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
 
    static const auto url =
       wxT("Punch_and_Roll_Record#Using_Punch_and_Roll_Record");
@@ -717,7 +718,7 @@ void OnPlayToSelection(const CommandContext &context)
       return;
 
    auto trackPanel = project.GetTrackPanel();
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double pos = trackPanel->GetMostRecentXPos();
@@ -763,7 +764,7 @@ void OnPlayBeforeSelectionStart(const CommandContext &context)
    if( !MakeReadyToPlay(project) )
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
@@ -784,7 +785,7 @@ void OnPlayAfterSelectionStart(const CommandContext &context)
    if( !MakeReadyToPlay(project) )
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
@@ -811,7 +812,7 @@ void OnPlayBeforeSelectionEnd(const CommandContext &context)
    if( !MakeReadyToPlay(project) )
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
@@ -839,7 +840,7 @@ void OnPlayAfterSelectionEnd(const CommandContext &context)
    if( !MakeReadyToPlay(project) )
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t1 = selectedRegion.t1();
@@ -861,7 +862,7 @@ void OnPlayBeforeAndAfterSelectionStart
    if (!MakeReadyToPlay(project))
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
@@ -892,7 +893,7 @@ void OnPlayBeforeAndAfterSelectionEnd
    if (!MakeReadyToPlay(project))
       return;
 
-   auto &viewInfo = project.GetViewInfo();
+   auto &viewInfo = ViewInfo::Get( project );
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
