@@ -182,7 +182,7 @@ CommandHandlerFinder FinderScope::sFinder =
       // have been used somewhere, or an explicit CommandHandlerFinder passed
       // to menu item constructors
       wxASSERT( false );
-      return project;
+      return ProjectWindow::Get( project );
    };
 
 }
