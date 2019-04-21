@@ -4960,25 +4960,6 @@ void AudacityProject::TP_DisplaySelection()
 }
 
 
-// TrackPanel access
-
-wxSize AudacityProject::GetTPTracksUsableArea()
-{
-   auto &project = *this;
-   auto &trackPanel = TrackPanel::Get( project );
-   wxSize s;
-   trackPanel.GetTracksUsableArea(&s.x, &s.y);
-   return s;
-}
-
-void AudacityProject::RefreshTPTrack(Track* pTrk, bool refreshbacking /*= true*/)
-{
-   auto &project = *this;
-   auto &trackPanel = TrackPanel::Get( project );
-   trackPanel.RefreshTrack(pTrk, refreshbacking);
-}
-
-
 // TrackPanel callback method
 void AudacityProject::TP_ScrollLeft()
 {
