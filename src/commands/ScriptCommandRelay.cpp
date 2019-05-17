@@ -89,7 +89,8 @@ void ScriptCommandRelay::StartScriptServer(tpRegScriptServerFunc scriptFn)
    std::thread(server, scriptFn).detach();
 }
 
-void * ExecForLisp( char * pIn )
+
+void * ScriptCommandRelay::ExecForLisp( char * pIn )
 {
    wxString Str1(pIn);
    wxString Str2;

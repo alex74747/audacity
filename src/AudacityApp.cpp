@@ -104,6 +104,8 @@ It handles initialization and termination by subclassing wxApp.
 #include "AutoRecoveryDialog.h"
 #include "SplashDialog.h"
 #include "FFT.h"
+#include "commands/ScriptCommandRelay.h"
+#include "effects/nyquist/Nyquist.h"
 #include "widgets/AudacityMessageBox.h"
 #include "prefs/DirectoriesPrefs.h"
 #include "prefs/GUIPrefs.h"
@@ -1506,6 +1508,8 @@ bool AudacityApp::InitPart2()
    } );
 
    gInited = true;
+
+   NyquistEffect::SetCommandHook( ScriptCommandRelay::ExecForLisp );
 
    ModuleManager::Get().Dispatch(AppInitialized);
 

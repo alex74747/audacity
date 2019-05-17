@@ -71,6 +71,10 @@ public:
    NyquistEffect(const wxString &fName);
    virtual ~NyquistEffect();
 
+   // Interface for installing a hook
+   using CommandHook = void * ( char * );
+   static CommandHook *SetCommandHook( CommandHook *hook );
+
    // ComponentInterface implementation
 
    PluginPath GetPath() override;

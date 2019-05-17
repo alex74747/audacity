@@ -29,6 +29,7 @@ class AUDACITY_DLL_API ScriptCommandRelay
 {
 public:
    static void StartScriptServer(tpRegScriptServerFunc scriptFn);
+      static void *ExecForLisp( char * pIn );
 };
 
 // The void * return is actually a Lisp LVAL and will be cast to such as needed.

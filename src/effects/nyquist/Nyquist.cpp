@@ -3449,7 +3449,23 @@ void * nyq_reformat_aud_do_response(const wxString & Str) {
    return (void *)dst;
 }
 
-#include "../../commands/ScriptCommandRelay.h"
+namespace {
+
+NyquistEffect::CommandHook *&GetCommandHook()
+{
+   static NyquistEffect::CommandHook *sTheHook = nullptr;
+   return sTheHook;
+}
+
+}
+
+auto NyquistEffect::SetCommandHook( CommandHook *hook ) -> CommandHook *
+{
+   auto &theHook = GetCommandHook();
+   auto result = theHook;
+   theHook = hook;
+   return result;
+}
 
 
 /* xlc_aud_do -- interface to C routine aud_do */
@@ -3468,7 +3484,8 @@ LVAL xlc_aud_do(void)
     leftp = getstring(src);
 
     // Go call my real function here...
-    dst = (LVAL)ExecForLisp( (char *)leftp );
+    auto fn = GetCommandHook();
+    dst = fn ? ( (LVAL) fn ( (char *)leftp ) ) : (LVAL) NIL;
 
     //dst = cons(dst, (LVAL)1);
     /* return the new string */
