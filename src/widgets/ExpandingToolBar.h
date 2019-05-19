@@ -12,6 +12,7 @@
 #define __AUDACITY_EXPANDING_TOOL_BAR__
 
 #include <vector>
+class wxMemoryDC;
 #include <wx/generic/dragimgg.h> // use macros and typedefs in this header
 #include <wx/dragimag.h> // use macros and typedefs in this header
 #include <wx/timer.h> // member variable
