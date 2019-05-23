@@ -224,6 +224,7 @@ Scrubber::Scrubber(AudacityProject *project)
 #endif
 
    , mProject(project)
+   , mWindow( project )
    , mPoller { std::make_unique<ScrubPoller>(*this) }
    , mOptions {}
 
@@ -242,7 +243,8 @@ Scrubber::~Scrubber()
       mpThread->Delete();
 #endif
 
-   mProject->PopEventHandler();
+   if ( mWindow )
+      mWindow->PopEventHandler();
 }
 
 namespace {
