@@ -69,7 +69,7 @@ private:
 typedef std::vector<EnvPoint> EnvArray;
 struct TrackPanelDrawingContext;
 
-class Envelope final : public XMLTagHandler {
+class Envelope /* not final */ : public XMLTagHandler {
 public:
    // Envelope can define a piecewise linear function, or piecewise exponential.
    Envelope(bool exponential, double minValue, double maxValue, double defaultValue);
@@ -263,5 +263,20 @@ inline void EnvPoint::SetVal( Envelope *pEnvelope, double val )
       val = pEnvelope->ClampValue(val);
    mVal = val;
 }
+
+class BoundedEnvelope final : public Envelope
+{
+public:
+   using Envelope::Envelope;
+
+   double GetRangeLower() const { return mRangeLower; }
+   double GetRangeUpper() const { return mRangeUpper; }
+
+   void SetRangeLower(double lower) { mRangeLower = lower; }
+   void SetRangeUpper(double upper) { mRangeUpper = upper; }
+
+private:
+   double mRangeLower{}, mRangeUpper{};
+};
 
 #endif
