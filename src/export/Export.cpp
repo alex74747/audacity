@@ -66,6 +66,7 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"
+#include "../TimeTrack.h"
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/Warning.h"
@@ -248,11 +249,12 @@ std::unique_ptr<Mixer> ExportPlugin::CreateMixer(const TrackList &tracks,
    const WaveTrackConstArray inputTracks =
       tracks.GetWaveTrackConstArray(selectionOnly, false);
    const TimeTrack *timeTrack = tracks.GetTimeTrack();
+   auto envelope = timeTrack ? timeTrack->GetEnvelope() : nullptr;
    // MB: the stop time should not be warped, this was a bug.
    return std::make_unique<Mixer>(inputTracks,
                   // Throw, to stop exporting, if read fails:
                   true,
-                  Mixer::WarpOptions(timeTrack),
+                  Mixer::WarpOptions(envelope),
                   startTime, stopTime,
                   numOutChannels, outBufferSize, outInterleaved,
                   outRate, outFormat,

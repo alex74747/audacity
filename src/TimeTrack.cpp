@@ -187,22 +187,6 @@ void TimeTrack::SetInterpolateLog(bool interpolateLog) {
    mEnvelope->SetExponential(interpolateLog);
 }
 
-//Compute the (average) warp factor between two non-warped time points
-double TimeTrack::ComputeWarpFactor(double t0, double t1) const
-{
-   return GetEnvelope()->AverageOfInverse(t0, t1);
-}
-
-double TimeTrack::ComputeWarpedLength(double t0, double t1) const
-{
-   return GetEnvelope()->IntegralOfInverse(t0, t1);
-}
-
-double TimeTrack::SolveWarpedLength(double t0, double length) const
-{
-   return GetEnvelope()->SolveIntegralOfInverse(t0, length);
-}
-
 bool TimeTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 {
    if (!wxStrcmp(tag, wxT("timetrack"))) {
@@ -334,7 +318,7 @@ void TimeTrack::Draw
                             //      than the current value.
    mRuler->SetFlip(GetHeight() > 75 ? true : true); // MB: so why don't we just call Invalidate()? :)
    mRuler->SetTickColour( theTheme.Colour( clrTrackPanelText ));
-   mRuler->Draw(dc, this);
+   mRuler->Draw(dc, GetEnvelope());
 
    Doubles envValues{ size_t(mid.width) };
    EnvelopeEditor::GetValues( *GetEnvelope(),
