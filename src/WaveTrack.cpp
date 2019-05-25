@@ -91,7 +91,8 @@ WaveTrack::Holder TrackFactory::NewWaveTrack(sampleFormat format, double rate)
 }
 
 WaveTrack::WaveTrack(const std::shared_ptr<DirManager> &projDirManager, sampleFormat format, double rate) :
-   PlayableTrack(projDirManager)
+   PlayableTrack()
+   , mDirManager{ projDirManager }
 {
    if (format == (sampleFormat)0)
    {
@@ -164,6 +165,7 @@ void WaveTrack::Init(const WaveTrack &orig)
    mRate = orig.mRate;
    mGain = orig.mGain;
    mPan = orig.mPan;
+   mChannel = orig.mChannel;
    mOldGain[0] = 0.0;
    mOldGain[1] = 0.0;
    SetDefaultName(orig.GetDefaultName());

@@ -68,7 +68,7 @@ class AUDACITY_DLL_API NoteTrack final
    : public NoteTrackBase
 {
  public:
-   NoteTrack(const std::shared_ptr<DirManager> &projDirManager);
+   NoteTrack();
    virtual ~NoteTrack();
 
    std::vector<UIHandlePtr> DetailedHitTest

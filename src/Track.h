@@ -344,7 +344,6 @@ private:
    friend WaveTrack; // WaveTrack needs to call SetLinked when reloading project
    void SetLinked  (bool l);
 
-   void SetChannel(ChannelType c) { mChannel = c; }
 private:
    // No need yet to make this virtual
    void DoSetLinked(bool l);
@@ -356,16 +355,13 @@ private:
  // Keep in Track
 
  protected:
-   ChannelType         mChannel;
    double              mOffset;
-
-   mutable std::shared_ptr<DirManager> mDirManager;
 
  public:
 
    enum : unsigned { DefaultHeight = 150 };
 
-   Track(const std::shared_ptr<DirManager> &projDirManager);
+   Track();
    Track(const Track &orig);
 
    virtual ~ Track();
@@ -390,20 +386,10 @@ private:
 
 public:
 
-   virtual ChannelType GetChannel() const { return mChannel;}
    virtual double GetOffset() const = 0;
 
    void Offset(double t) { SetOffset(GetOffset() + t); }
    virtual void SetOffset (double o) { mOffset = o; }
-
-   virtual void SetPan( float ){ ;}
-   virtual void SetPanFromChannelType(){ ;};
-
-   // AS: Note that the dirManager is mutable.  This is
-   // mostly to support "Duplicate" of const objects,
-   // but in general, mucking with the dir manager is
-   // separate from the Track.
-   const std::shared_ptr<DirManager> &GetDirManager() const { return mDirManager; }
 
    // Create a NEW track and modify this track
    // Return non-NULL or else throw
@@ -760,8 +746,8 @@ protected:
 class AUDACITY_DLL_API AudioTrack /* not final */ : public Track
 {
 public:
-   AudioTrack(const std::shared_ptr<DirManager> &projDirManager)
-      : Track{ projDirManager } {}
+   AudioTrack()
+      : Track{} {}
    AudioTrack(const Track &orig) : Track{ orig } {}
 
    // Serialize, not with tags of its own, but as attributes within a tag.
@@ -775,8 +761,8 @@ public:
 class AUDACITY_DLL_API PlayableTrack /* not final */ : public AudioTrack
 {
 public:
-   PlayableTrack(const std::shared_ptr<DirManager> &projDirManager)
-      : AudioTrack{ projDirManager } {}
+   PlayableTrack()
+      : AudioTrack{} {}
    PlayableTrack(const Track &orig) : AudioTrack{ orig } {}
 
    bool GetMute    () const { return mMute;     }

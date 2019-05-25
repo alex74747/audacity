@@ -38,7 +38,7 @@
 
 std::shared_ptr<TimeTrack> TrackFactory::NewTimeTrack()
 {
-   return std::make_shared<TimeTrack>(mDirManager, mZoomInfo);
+   return std::make_shared<TimeTrack>(mZoomInfo);
 }
 
 static ProjectFileIORegistry::Entry registerFactory{
@@ -50,8 +50,8 @@ static ProjectFileIORegistry::Entry registerFactory{
    }
 };
 
-TimeTrack::TimeTrack(const std::shared_ptr<DirManager> &projDirManager, const ZoomInfo *zoomInfo):
-   Track(projDirManager)
+TimeTrack::TimeTrack(const ZoomInfo *zoomInfo):
+   Track()
    , mZoomInfo(zoomInfo)
 {
    mHeight = 100;

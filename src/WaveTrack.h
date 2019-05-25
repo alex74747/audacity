@@ -103,8 +103,15 @@ private:
    double GetOffset() const override;
    void SetOffset(double o) override;
    virtual ChannelType GetChannelIgnoringPan() const;
-   ChannelType GetChannel() const override;
-   virtual void SetPanFromChannelType() override;
+   ChannelType GetChannel() const;
+   void SetChannel(ChannelType c) { mChannel = c; }
+   virtual void SetPanFromChannelType();
+
+   // AS: Note that the dirManager is mutable.  This is
+   // mostly to support "Duplicate" of const objects,
+   // but in general, mucking with the dir manager is
+   // separate from the Track.
+   const std::shared_ptr<DirManager> &GetDirManager() const { return mDirManager; }
 
    /** @brief Get the time at which the first clip in the track starts
     *
@@ -136,7 +143,7 @@ private:
 
    // -1.0 (left) -> 1.0 (right)
    float GetPan() const;
-   void SetPan(float newPan) override;
+   void SetPan(float newPan);
 
    // Takes gain and pan into account
    float GetChannelGain(int channel) const;
@@ -640,6 +647,9 @@ private:
    float         mPan;
    int           mWaveColorIndex;
    float         mOldGain[2];
+
+   ChannelType         mChannel{ MonoChannel };
+   mutable std::shared_ptr<DirManager> mDirManager;
 
 
    //

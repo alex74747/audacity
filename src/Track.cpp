@@ -51,9 +51,8 @@ and TimeTrack.
 #pragma warning( disable : 4786 )
 #endif
 
-Track::Track(const std::shared_ptr<DirManager> &projDirManager)
-:  vrulerSize(36,0),
-   mDirManager(projDirManager)
+Track::Track()
+:  vrulerSize(36,0)
 {
    mSelected  = false;
    mLinked    = false;
@@ -65,8 +64,6 @@ Track::Track(const std::shared_ptr<DirManager> &projDirManager)
    mMinimized = false;
 
    mOffset = 0.0;
-
-   mChannel = MonoChannel;
 }
 
 Track::Track(const Track &orig)
@@ -86,13 +83,10 @@ void Track::Init(const Track &orig)
    mDefaultName = orig.mDefaultName;
    mName = orig.mName;
 
-   mDirManager = orig.mDirManager;
-
    mSelected = orig.mSelected;
    mLinked = orig.mLinked;
    mHeight = orig.mHeight;
    mMinimized = orig.mMinimized;
-   mChannel = orig.mChannel;
 }
 
 void Track::SetName( const wxString &n )
@@ -459,7 +453,11 @@ void Track::FinishCopy
 (const Track *n, Track *dest)
 {
    if (dest) {
-      dest->SetChannel(n->GetChannel());
+      if (auto wdest = dynamic_cast<WaveTrack*>(dest) ) {
+         if (auto wsrc = dynamic_cast<const WaveTrack*>(n) ) {
+            wdest->SetChannel(wsrc->GetChannel());
+         }
+      }
       dest->SetLinked(n->GetLinked());
       dest->SetName(n->GetName());
    }
@@ -486,6 +484,7 @@ bool Track::LinkConsistencyCheck()
             l->SetLinked(false);
          }
 
+#if 0
          // Channels should be left and right
          if ( !(  (GetChannel() == Track::LeftChannel &&
                      l->GetChannel() == Track::RightChannel) ||
@@ -498,6 +497,7 @@ bool Track::LinkConsistencyCheck()
             err = true;
             SetLinked(false);
          }
+#endif
       }
       else
       {
@@ -785,17 +785,22 @@ void TrackList::GroupChannels(
       for ( ; after != end && count; ++after, --count )
          ;
       if ( count == 0 ) {
+         auto setChannel = [&]( Track &tr, Track::ChannelType type ) {
+            auto wt = track_cast<WaveTrack*>( &tr );
+            if (wt)
+               wt->SetChannel( type );
+         };
          auto unlink = [&] ( Track &tr ) {
             if ( tr.GetLinked() ) {
                if ( resetChannels ) {
                   auto link = tr.GetLink();
                   if ( link )
-                     link->SetChannel( Track::MonoChannel );
+                     setChannel( *link, Track::MonoChannel );
                }
                tr.SetLinked( false );
             }
             if ( resetChannels )
-               tr.SetChannel( Track::MonoChannel );
+               setChannel( tr, Track::MonoChannel );
          };
 
          // Disassociate previous tracks -- at most one
@@ -810,10 +815,10 @@ void TrackList::GroupChannels(
          if ( groupSize > 1 ) {
             const auto channel = *iter++;
             channel->SetLinked( true );
-            channel->SetChannel( Track::LeftChannel );
-            (*iter++)->SetChannel( Track::RightChannel );
+            setChannel( *channel, Track::LeftChannel );
+            setChannel( *(*iter++), Track::RightChannel );
             while (iter != after)
-               (*iter++)->SetChannel( Track::MonoChannel );
+               setChannel( *(*iter++), Track::MonoChannel );
          }
          return;
       }

@@ -111,11 +111,11 @@ static ProjectFileIORegistry::Entry registerFactory{
 
 LabelTrack::Holder TrackFactory::NewLabelTrack()
 {
-   return std::make_shared<LabelTrack>(mDirManager);
+   return std::make_shared<LabelTrack>();
 }
 
-LabelTrack::LabelTrack(const std::shared_ptr<DirManager> &projDirManager):
-   Track(projDirManager),
+LabelTrack::LabelTrack():
+   Track(),
    mSelIndex(-1),
    mRestoreFocus(-1),
    mClipLen(0.0),
@@ -2523,7 +2523,7 @@ Track::Holder LabelTrack::SplitCut(double t0, double t1)
 
 Track::Holder LabelTrack::Copy(double t0, double t1, bool) const
 {
-   auto tmp = std::make_shared<LabelTrack>(GetDirManager());
+   auto tmp = std::make_shared<LabelTrack>();
    const auto lt = static_cast<LabelTrack*>(tmp.get());
 
    for (auto &labelStruct: mLabels) {
