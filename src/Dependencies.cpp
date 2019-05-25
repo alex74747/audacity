@@ -76,7 +76,7 @@ static void GetAllSeqBlocks(AudacityProject *project,
                             BlockPtrArray *outBlocks)
 {
    for (auto waveTrack : TrackList::Get( *project ).Any< WaveTrack >()) {
-      for(const auto &clip : waveTrack->GetAllClips()) {
+      for(const auto &clip : waveTrack->GetData()->GetAllClips()) {
          Sequence *sequence = clip->GetSequence();
          BlockArray &blocks = sequence->GetBlockArray();
          for (size_t i = 0; i < blocks.size(); i++)

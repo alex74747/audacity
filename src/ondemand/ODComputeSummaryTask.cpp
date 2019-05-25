@@ -188,7 +188,7 @@ void ODComputeSummaryTask::Update()
          Sequence *seq;
 
          //gather all the blockfiles that we should process in the wavetrack.
-         for (const auto &clip : mWaveTracks[j]->GetAllClips()) {
+         for (const auto &clip : mWaveTracks[j]->GetData()->GetAllClips()) {
             seq = clip->GetSequence();
             //This lock may be way too big since the whole file is one sequence.
             //TODO: test for large files and find a way to break it down.

@@ -40,6 +40,8 @@ using WaveClipConstHolders = std::vector < std::shared_ptr< const WaveClip > >;
 using WaveClipPointers = std::vector < WaveClip* >;
 using WaveClipConstPointers = std::vector < const WaveClip* >;
 
+class WaveTrackData;
+
 //
 // Tolerance for merging wave tracks (in seconds)
 //
@@ -106,12 +108,6 @@ private:
    ChannelType GetChannel() const;
    void SetChannel(ChannelType c) { mChannel = c; }
    virtual void SetPanFromChannelType();
-
-   // AS: Note that the dirManager is mutable.  This is
-   // mostly to support "Duplicate" of const objects,
-   // but in general, mucking with the dir manager is
-   // separate from the Track.
-   const std::shared_ptr<DirManager> &GetDirManager() const { return mDirManager; }
 
    /** @brief Get the time at which the first clip in the track starts
     *
@@ -374,100 +370,9 @@ private:
     */
    double LongSamplesToTime(sampleCount pos) const;
 
-   // Get access to the (visible) clips in the tracks, in unspecified order
-   // (not necessarioy sequenced in time).
-   WaveClipHolders &GetClips() { return mClips; }
-   const WaveClipConstHolders &GetClips() const
-      { return reinterpret_cast< const WaveClipConstHolders& >( mClips ); }
+   const std::shared_ptr<WaveTrackData> &GetData() { return mpData; }
+   std::shared_ptr<const WaveTrackData> GetData() const { return mpData; }
 
-   // Get mutative access to all clips (in some unspecified sequence),
-   // including those hidden in cutlines.
-   class AllClipsIterator
-      : public ValueIterator< WaveClip * >
-   {
-   public:
-      // Constructs an "end" iterator
-      AllClipsIterator () {}
-
-      // Construct a "begin" iterator
-      explicit AllClipsIterator( WaveTrack &track )
-      {
-         push( track.mClips );
-      }
-
-      WaveClip *operator * () const
-      {
-         if (mStack.empty())
-            return nullptr;
-         else
-            return mStack.back().first->get();
-      }
-
-      AllClipsIterator &operator ++ ();
-
-      // Define == well enough to serve for loop termination test
-      friend bool operator == (
-         const AllClipsIterator &a, const AllClipsIterator &b)
-      { return a.mStack.empty() == b.mStack.empty(); }
-
-      friend bool operator != (
-         const AllClipsIterator &a, const AllClipsIterator &b)
-      { return !( a == b ); }
-
-   private:
-
-      void push( WaveClipHolders &clips );
-
-      using Iterator = WaveClipHolders::iterator;
-      using Pair = std::pair< Iterator, Iterator >;
-      using Stack = std::vector< Pair >;
-
-      Stack mStack;
-   };
-
-   // Get const access to all clips (in some unspecified sequence),
-   // including those hidden in cutlines.
-   class AllClipsConstIterator
-      : public ValueIterator< const WaveClip * >
-   {
-   public:
-      // Constructs an "end" iterator
-      AllClipsConstIterator () {}
-
-      // Construct a "begin" iterator
-      explicit AllClipsConstIterator( const WaveTrack &track )
-         : mIter{ const_cast< WaveTrack& >( track ) }
-      {}
-
-      const WaveClip *operator * () const
-      { return *mIter; }
-
-      AllClipsConstIterator &operator ++ ()
-      { ++mIter; return *this; }
-
-      // Define == well enough to serve for loop termination test
-      friend bool operator == (
-         const AllClipsConstIterator &a, const AllClipsConstIterator &b)
-      { return a.mIter == b.mIter; }
-
-      friend bool operator != (
-         const AllClipsConstIterator &a, const AllClipsConstIterator &b)
-      { return !( a == b ); }
-
-   private:
-      AllClipsIterator mIter;
-   };
-
-   IteratorRange< AllClipsIterator > GetAllClips()
-   {
-      return { AllClipsIterator{ *this }, AllClipsIterator{ } };
-   }
-   
-   IteratorRange< AllClipsConstIterator > GetAllClips() const
-   {
-      return { AllClipsConstIterator{ *this }, AllClipsConstIterator{ } };
-   }
-   
    // Create NEW clip and add it to this track. Returns a pointer
    // to the newly created clip.
    WaveClip* CreateClip();
@@ -639,7 +544,7 @@ private:
    // Protected variables
    //
 
-   WaveClipHolders mClips;
+   std::shared_ptr<WaveTrackData> mpData;
 
    sampleFormat  mFormat;
    int           mRate;

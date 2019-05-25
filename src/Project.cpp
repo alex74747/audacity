@@ -1420,7 +1420,7 @@ void AudacityProject::RedrawProject(const bool bForceWaveTracks /*= false*/)
    if (bForceWaveTracks)
    {
       for ( auto pWaveTrack : tracks.Any< WaveTrack >() )
-         for (const auto &clip: pWaveTrack->GetClips())
+         for (const auto &clip: pWaveTrack->GetData()->GetClips())
             clip->MarkChanged();
    }
    trackPanel.Refresh(false);
@@ -3200,7 +3200,7 @@ void AudacityProject::OpenFile(const FilePath &fileNameArg, bool addtohistory)
             // Mark the wave tracks as changed and redraw.
             for ( auto wt : tracks.Any<WaveTrack>() )
                // Only wave tracks have a notion of "changed".
-               for (const auto &clip: wt->GetClips())
+               for (const auto &clip: wt->GetData()->GetClips())
                   clip->MarkChanged();
 
             trackPanel.Refresh(true);

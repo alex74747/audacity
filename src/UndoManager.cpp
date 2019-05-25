@@ -100,7 +100,7 @@ namespace {
       for (auto wt : tracks.Any< const WaveTrack >())
       {
          // Scan all clips within current track
-         for(const auto &clip : wt->GetAllClips())
+         for(const auto &clip : wt->GetData()->GetAllClips())
          {
             // Scan all blockfiles within current clip
             auto blocks = clip->GetSequenceBlockArray();

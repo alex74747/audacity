@@ -369,7 +369,7 @@ void TrackArt::DrawTrack(TrackPanelDrawingContext &context,
 
    t->TypeSwitch(
       [&](const WaveTrack *wt) {
-         for (const auto &clip : wt->GetClips()) {
+         for (const auto &clip : wt->GetData()->GetClips()) {
             clip->ClearDisplayRect();
          }
 
@@ -1487,7 +1487,7 @@ void TrackArt::DrawWaveform(TrackPanelDrawingContext &context,
    DrawBackgroundWithSelection(
       context, rect, track, blankSelectedBrush, blankBrush );
 
-   for (const auto &clip: track->GetClips())
+   for (const auto &clip: track->GetData()->GetClips())
       DrawClipWaveform(context, track, clip.get(), rect,
                        dB, muted);
 
@@ -2079,7 +2079,7 @@ void TrackArt::DrawSpectrum( TrackPanelDrawingContext &context,
       context, rect, track, blankSelectedBrush, blankBrush );
 
    WaveTrackCache cache(track->SharedPointer<const WaveTrack>());
-   for (const auto &clip: track->GetClips())
+   for (const auto &clip: track->GetData()->GetClips())
       DrawClipSpectrum( context, track, cache, clip.get(), rect );
 }
 

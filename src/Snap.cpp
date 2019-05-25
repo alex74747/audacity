@@ -124,7 +124,7 @@ void SnapManager::Reinit()
          }
       },
       [&](const WaveTrack *waveTrack) {
-         for (const auto &clip: waveTrack->GetClips())
+         for (const auto &clip: waveTrack->GetData()->GetClips())
          {
             if (mClipExclusions)
             {

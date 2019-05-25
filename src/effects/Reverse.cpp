@@ -103,7 +103,7 @@ bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount sta
    // STEP 1:
    // If a reverse selection begins and/or ends at the inside of a clip
    // perform a split at the start and/or end of the reverse selection
-   const auto &clips = track->GetClips();
+   const auto &clips = track->GetData()->GetClips();
    // Beware, the array grows as we loop over it.  Use integer subscripts, not iterators.
    for (size_t ii = 0; ii < clips.size(); ++ii) {
       const auto &clip = clips[ii].get();

@@ -58,8 +58,8 @@ bool TwoChannelsHaveSameBoundaries
 {
    bool sameClips = false;
 
-   auto& left = first->GetClips();
-   auto& right = second->GetClips();
+   auto& left = first->GetData()->GetClips();
+   auto& right = second->GetData()->GetClips();
    
    // PRL:  should that have been? :
    // auto left = first->SortedClipArray();

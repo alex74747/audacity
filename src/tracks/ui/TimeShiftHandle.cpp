@@ -110,7 +110,7 @@ namespace
       t->TypeSwitch(
          [&](WaveTrack *wt) {
             exclude = false;
-            for(const auto &clip: wt->GetClips())
+            for(const auto &clip: wt->GetData()->GetClips())
                if ( ! clip->AfterClip(t0) && ! clip->BeforeClip(t1) &&
                   // Avoid getting clips that were already captured
                     ! std::any_of( clips.begin(), clips.end(),
