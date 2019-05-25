@@ -31,6 +31,7 @@ class ProgressDialog;
 class Sequence;
 class SpectrogramSettings;
 class WaveCache;
+class WaveTrack;
 class WaveTrackCache;
 
 class SpecCache {
@@ -254,7 +255,8 @@ public:
     * calculations and Contrast */
    bool GetWaveDisplay(WaveDisplay &display,
                        double t0, double pixelsPerSecond, bool &isLoadingOD) const;
-   bool GetSpectrogram(WaveTrackCache &cache,
+   bool GetSpectrogram(const WaveTrack *track,
+                       WaveTrackCache &cache,
                        const float *& spectrogram,
                        const sampleCount *& where,
                        size_t numPixels,

@@ -2079,7 +2079,7 @@ void TrackArt::DrawSpectrum( TrackPanelDrawingContext &context,
 
    WaveTrackCache cache(track->SharedPointer<const WaveTrack>());
    for (const auto &clip: track->GetClips())
-      DrawClipSpectrum( context, cache, clip.get(), rect );
+      DrawClipSpectrum( context, track, cache, clip.get(), rect );
 }
 
 static inline float findValue
@@ -2164,6 +2164,7 @@ AColor::ColorGradientChoice ChooseColorSet( float bin0, float bin1, float selBin
 
 
 void TrackArt::DrawClipSpectrum(TrackPanelDrawingContext &context,
+                                   const WaveTrack *track,
                                    WaveTrackCache &waveTrackCache,
                                    const WaveClip *clip,
                                    const wxRect & rect)
@@ -2177,7 +2178,6 @@ void TrackArt::DrawClipSpectrum(TrackPanelDrawingContext &context,
    Profiler profiler;
 #endif
 
-   const WaveTrack *const track = waveTrackCache.GetTrack().get();
    const SpectrogramSettings &settings = track->GetSpectrogramSettings();
    const bool autocorrelation = (settings.algorithm == SpectrogramSettings::algPitchEAC);
 
@@ -2249,7 +2249,8 @@ void TrackArt::DrawClipSpectrum(TrackPanelDrawingContext &context,
    bool updated;
    {
       const double pps = averagePixelsPerSample * rate;
-      updated = clip->GetSpectrogram(waveTrackCache, freq, where,
+      updated = clip->GetSpectrogram(track,
+                                     waveTrackCache, freq, where,
                                      (size_t)hiddenMid.width,
          t0, pps);
    }

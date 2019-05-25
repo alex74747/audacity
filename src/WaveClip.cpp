@@ -1195,13 +1195,13 @@ void SpecCache::Populate
    }
 }
 
-bool WaveClip::GetSpectrogram(WaveTrackCache &waveTrackCache,
+bool WaveClip::GetSpectrogram(const WaveTrack *track,
+                              WaveTrackCache &waveTrackCache,
                               const float *& spectrogram,
                               const sampleCount *& where,
                               size_t numPixels,
                               double t0, double pixelsPerSecond) const
 {
-   const WaveTrack *const track = waveTrackCache.GetTrack().get();
    const SpectrogramSettings &settings = track->GetSpectrogramSettings();
 
    bool match =

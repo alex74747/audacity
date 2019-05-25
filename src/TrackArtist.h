@@ -119,6 +119,7 @@ namespace TrackArt {
                          bool dB, bool muted);
 
    void DrawClipSpectrum(TrackPanelDrawingContext &context,
+                         const WaveTrack *track,
                          WaveTrackCache &cache, const WaveClip *clip,
                          const wxRect & rect);
 
