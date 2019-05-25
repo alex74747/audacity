@@ -122,6 +122,8 @@ using WaveClipConstHolders = std::vector < std::shared_ptr< const WaveClip > >;
 
 class WaveTrackData {
 public:
+   using ChannelType = XMLValueChecker::ChannelType;
+
    WaveTrackData(
       const std::shared_ptr<DirManager> &dirManager,
       sampleFormat format, double rate)
@@ -131,6 +133,22 @@ public:
    {}
 
    WaveTrackData( const WaveTrackData& ) = default;
+
+   // Multiplicative factor.  Only converted to dB for display.
+   float GetGain() const;
+   void SetGain(float newGain);
+
+   // Takes gain and pan into account
+   float GetChannelGain(int channel) const;
+
+   // -1.0 (left) -> 1.0 (right)
+   float GetPan() const;
+   void SetPan(float newPan);
+
+   virtual ChannelType GetChannelIgnoringPan() const;
+   virtual void SetPanFromChannelType();
+
+   const std::shared_ptr<DirManager> &GetDirManager() const { return mDirManager; }
 
    sampleFormat GetSampleFormat() const { return mFormat; }
    void ConvertToSampleFormat(sampleFormat format);
@@ -170,6 +188,9 @@ public:
     * @return time in seconds, or zero if there are no clips in the track.
     */
    double GetEndTime() const;
+
+   ChannelType GetChannel() const;
+   void SetChannel(ChannelType c) { mChannel = c; }
 
    /** @brief Convert correctly between an (absolute) time in seconds and a number of samples.
     *
@@ -303,6 +324,10 @@ private:
    WaveClipHolders mClips;
    sampleFormat  mFormat;
    int           mRate;
+
+   float         mGain{ 1.0 };
+   float         mPan{ 0.0 };
+   ChannelType mChannel{ XMLValueChecker::MonoChannel };
 };
 
 // Array of pointers that assume ownership

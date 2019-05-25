@@ -404,9 +404,9 @@ void MixerTrackCluster::HandleSliderGain(const bool bWantPushState /*= false*/)
 {
    float fValue = mSlider_Gain->Get();
    if (GetWave())
-      GetWave()->SetGain(fValue);
+      GetWave()->GetData()->SetGain(fValue);
    if (GetRight())
-      GetRight()->SetGain(fValue);
+      GetRight()->GetData()->SetGain(fValue);
 
    // Update the TrackPanel correspondingly.
    TrackPanel::Get( *mProject ).RefreshTrack(mTrack.get());
@@ -432,9 +432,9 @@ void MixerTrackCluster::HandleSliderPan(const bool bWantPushState /*= false*/)
 {
    float fValue = mSlider_Pan->Get();
    if (GetWave()) // test in case track is a NoteTrack
-      GetWave()->SetPan(fValue);
+      GetWave()->GetData()->SetPan(fValue);
    if (GetRight())
-      GetRight()->SetPan(fValue);
+      GetRight()->GetData()->SetPan(fValue);
 
    // Update the TrackPanel correspondingly.
    TrackPanel::Get( *mProject ).RefreshTrack(mTrack.get());
@@ -481,12 +481,12 @@ void MixerTrackCluster::UpdateForStateChange()
    if (!GetWave())
       mSlider_Pan->Hide();
    else
-      mSlider_Pan->Set(GetWave()->GetPan());
+      mSlider_Pan->Set(GetWave()->GetData()->GetPan());
 
    if (!GetWave())
       mSlider_Gain->Hide();
    else
-      mSlider_Gain->Set(GetWave()->GetGain());
+      mSlider_Gain->Set(GetWave()->GetData()->GetGain());
 
 #ifdef EXPERIMENTAL_MIDI_OUT
    if (!GetNote())
@@ -629,14 +629,14 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
    if (bSuccess)
    {
       //vvv Need to apply envelope, too? See Mixer::MixSameRate.
-      float gain = pTrack->GetChannelGain(0);
+      float gain = pTrack->GetData()->GetChannelGain(0);
       if (gain < 1.0)
          for (unsigned int index = 0; index < nFrames; index++)
             meterFloatsArray[2 * index] *= gain;
       if (GetRight())
-         gain = GetRight()->GetChannelGain(1);
+         gain = GetRight()->GetData()->GetChannelGain(1);
       else
-         gain = pTrack->GetChannelGain(1);
+         gain = pTrack->GetData()->GetChannelGain(1);
       if (gain < 1.0)
          for (unsigned int index = 0; index < nFrames; index++)
             meterFloatsArray[(2 * index) + 1] *= gain;

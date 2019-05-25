@@ -359,7 +359,7 @@ size_t Mixer::MixVariableRates(int *channelFlags, WaveTrackCache &cache,
 
    for (size_t c = 0; c < mNumChannels; c++) {
       if (mApplyTrackGains) {
-         mGains[c] = track->GetChannelGain(c);
+         mGains[c] = track->GetData()->GetChannelGain(c);
       }
       else {
          mGains[c] = 1.0;
@@ -431,7 +431,7 @@ size_t Mixer::MixSameRate(int *channelFlags, WaveTrackCache &cache,
 
    for(size_t c=0; c<mNumChannels; c++)
       if (mApplyTrackGains)
-         mGains[c] = track->GetChannelGain(c);
+         mGains[c] = track->GetData()->GetChannelGain(c);
       else
          mGains[c] = 1.0;
 
@@ -465,7 +465,7 @@ size_t Mixer::Process(size_t maxToProcess)
             channelFlags[ j ] = mMixerSpec->mMap[ i ][ j ] ? 1 : 0;
       }
       else {
-         switch(track->GetChannel()) {
+         switch(track->GetData()->GetChannel()) {
          case Track::MonoChannel:
          default:
             for(size_t j=0; j<mNumChannels; j++)

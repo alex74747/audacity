@@ -1693,18 +1693,20 @@ void TrackInfo::Status1DrawFunction
    /// Returns the string to be displayed in the track label
    /// indicating whether the track is mono, left, right, or
    /// stereo and what sample rate it's using.
-   auto rate = wt ? wt->GetData()->GetRate() : 44100.0;
+   auto waveTrackData = wt ? wt->GetData() : nullptr;
+   auto rate = wt ? waveTrackData->GetRate() : 44100.0;
    wxString s;
    if (!pTrack || TrackList::Channels(pTrack).size() > 1)
       // TODO: more-than-two-channels-message
       // more appropriate strings
       s = _("Stereo, %dHz");
    else {
-      if (wt->GetChannel() == Track::MonoChannel)
+      auto channelType = waveTrackData->GetChannel();
+      if (channelType == Track::MonoChannel)
          s = _("Mono, %dHz");
-      else if (wt->GetChannel() == Track::LeftChannel)
+      else if (channelType == Track::LeftChannel)
          s = _("Left, %dHz");
-      else if (wt->GetChannel() == Track::RightChannel)
+      else if (channelType == Track::RightChannel)
          s = _("Right, %dHz");
    }
    s = wxString::Format( s, (int) (rate + 0.5) );
@@ -2754,7 +2756,7 @@ LWSlider * TrackInfo::GainSlider
 (const wxRect &sliderRect, const WaveTrack *t, bool captured, wxWindow *pParent)
 {
    wxPoint pos = sliderRect.GetPosition();
-   float gain = t ? t->GetGain() : 1.0;
+   float gain = t ? t->GetData()->GetGain() : 1.0;
 
    gGain->Move(pos);
    gGain->Set(gain);
@@ -2770,7 +2772,7 @@ LWSlider * TrackInfo::PanSlider
 (const wxRect &sliderRect, const WaveTrack *t, bool captured, wxWindow *pParent)
 {
    wxPoint pos = sliderRect.GetPosition();
-   float pan = t ? t->GetPan() : 0.0;
+   float pan = t ? t->GetData()->GetPan() : 0.0;
 
    gPan->Move(pos);
    gPan->Set(pan);

@@ -67,6 +67,7 @@
 #include "../Project.h"
 #include "../ShuttleGui.h"
 #include "../TimeTrack.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/Warning.h"
@@ -475,15 +476,17 @@ bool Exporter::ExamineTracks()
    ) {
       mNumSelected++;
 
-      if (tr->GetChannel() == Track::LeftChannel) {
+      auto waveTrackData = tr->GetData();
+      auto channelType = waveTrackData->GetChannel();
+      if (channelType == Track::LeftChannel) {
          mNumLeft++;
       }
-      else if (tr->GetChannel() == Track::RightChannel) {
+      else if (channelType == Track::RightChannel) {
          mNumRight++;
       }
-      else if (tr->GetChannel() == Track::MonoChannel) {
+      else if (channelType == Track::MonoChannel) {
          // It's a mono channel, but it may be panned
-         float pan = tr->GetPan();
+         float pan = waveTrackData->GetPan();
 
          if (pan == -1.0)
             mNumLeft++;
@@ -1316,10 +1319,11 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
    ) {
       numTracks++;
       const wxString sTrackName = (t->GetName()).Left(20);
-      if( t->GetChannel() == Track::LeftChannel )
+      auto channelType = t->GetData()->GetChannel();
+      if( channelType == Track::LeftChannel )
       /* i18n-hint: track name and L abbreviating Left channel */
          mTrackNames.push_back( wxString::Format( _( "%s - L" ), sTrackName ) );
-      else if( t->GetChannel() == Track::RightChannel )
+      else if( channelType == Track::RightChannel )
       /* i18n-hint: track name and R abbreviating Right channel */
          mTrackNames.push_back( wxString::Format( _( "%s - R" ), sTrackName ) );
       else

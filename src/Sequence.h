@@ -126,7 +126,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    void SetSilence(sampleCount s0, sampleCount len);
    void InsertSilence(sampleCount s0, sampleCount len);
 
-   const std::shared_ptr<DirManager> &GetDirManager() { return mDirManager; }
+   const std::shared_ptr<DirManager> &GetDirManager() const { return mDirManager; }
 
    //
    // XMLTagHandler callback methods for loading and saving

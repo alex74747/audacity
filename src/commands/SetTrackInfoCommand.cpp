@@ -38,6 +38,7 @@ SetTrackAudioCommand and SetTrackVisualsCommand.
 
 #include "../Project.h"
 #include "../TrackPanel.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../prefs/WaveformSettings.h"
 #include "../prefs/SpectrogramSettings.h"
@@ -211,9 +212,9 @@ bool SetTrackAudioCommand::ApplyInner(const CommandContext & context, Track * t 
    auto pt = dynamic_cast<PlayableTrack *>(t);
 
    if( wt && bHasGain )
-      wt->SetGain(DB_TO_LINEAR(mGain));
+      wt->GetData()->SetGain(DB_TO_LINEAR(mGain));
    if( wt && bHasPan )
-      wt->SetPan(mPan/100.0);
+      wt->GetData()->SetPan(mPan/100.0);
 
    // These ones don't make sense on the second channel of a stereo track.
    if( !bIsSecondChannel ){

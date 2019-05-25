@@ -36,6 +36,7 @@ and TimeTrack.
 #include <wx/log.h>
 
 #include "TimeTrack.h"
+#include "WaveClip.h"
 #include "WaveTrack.h"
 #include "NoteTrack.h"
 #include "LabelTrack.h"
@@ -455,7 +456,7 @@ void Track::FinishCopy
    if (dest) {
       if (auto wdest = dynamic_cast<WaveTrack*>(dest) ) {
          if (auto wsrc = dynamic_cast<const WaveTrack*>(n) ) {
-            wdest->SetChannel(wsrc->GetChannel());
+            wdest->GetData()->SetChannel(wsrc->GetData()->GetChannel());
          }
       }
       dest->SetLinked(n->GetLinked());
@@ -788,7 +789,7 @@ void TrackList::GroupChannels(
          auto setChannel = [&]( Track &tr, Track::ChannelType type ) {
             auto wt = track_cast<WaveTrack*>( &tr );
             if (wt)
-               wt->SetChannel( type );
+               wt->GetData()->SetChannel( type );
          };
          auto unlink = [&] ( Track &tr ) {
             if ( tr.GetLinked() ) {
@@ -1099,18 +1100,20 @@ unsigned TrackList::GetNumExportChannels(bool selectionOnly) const
             - &WaveTrack::GetMute
    ) {
       // Found a left channel
-      if (tr->GetChannel() == Track::LeftChannel) {
+      auto waveTrackData = tr->GetData();
+      auto channelType = waveTrackData->GetChannel();
+      if (channelType == Track::LeftChannel) {
          numLeft++;
       }
 
       // Found a right channel
-      else if (tr->GetChannel() == Track::RightChannel) {
+      else if (channelType == Track::RightChannel) {
          numRight++;
       }
 
       // Found a mono channel, but it may be panned
-      else if (tr->GetChannel() == Track::MonoChannel) {
-         float pan = tr->GetPan();
+      else if (channelType == Track::MonoChannel) {
+         float pan = waveTrackData->GetPan();
 
          // Figure out what kind of channel it should be
          if (pan == -1.0) {   // panned hard left

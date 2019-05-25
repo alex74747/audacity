@@ -15,6 +15,7 @@
 #include "Mix.h"
 #include "Mixer.h"
 
+#include "WaveClip.h"
 #include "WaveTrack.h"
 #include "TimeTrack.h"
 
@@ -45,8 +46,9 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    int numMono = 0;  /* number of mono, centre-panned wave tracks in selection*/
    for(auto wt : trackRange) {
       numWaves++;
-      float pan = wt->GetPan();
-      if (wt->GetChannel() == Track::MonoChannel && pan == 0)
+      auto waveTrackData = wt->GetData();
+      float pan = waveTrackData->GetPan();
+      if (waveTrackData->GetChannel() == Track::MonoChannel && pan == 0)
          numMono++;
    }
 

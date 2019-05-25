@@ -15,6 +15,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../RefreshCode.h"
 #include "../../../../TrackPanel.h"
 #include "../../../../UndoManager.h"
+#include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 
 GainSliderHandle::GainSliderHandle
@@ -34,7 +35,7 @@ std::shared_ptr<WaveTrack> GainSliderHandle::GetWaveTrack()
 float GainSliderHandle::GetValue()
 {
    if (GetWaveTrack())
-      return GetWaveTrack()->GetGain();
+      return GetWaveTrack()->GetData()->GetGain();
    else
       return 0;
 }
@@ -48,7 +49,7 @@ UIHandle::Result GainSliderHandle::SetValue
    if (pTrack) {
       for (auto channel :
            TrackList::Channels(pTrack.get()))
-         channel->SetGain(newValue);
+         channel->GetData()->SetGain(newValue);
    }
 
    return RefreshCode::RefreshNone;
@@ -111,7 +112,7 @@ std::shared_ptr<WaveTrack> PanSliderHandle::GetWaveTrack()
 float PanSliderHandle::GetValue()
 {
    if (GetWaveTrack())
-      return GetWaveTrack()->GetPan();
+      return GetWaveTrack()->GetData()->GetPan();
    else
       return 0;
 }
@@ -126,7 +127,7 @@ UIHandle::Result PanSliderHandle::SetValue(AudacityProject *pProject, float newV
    if (pTrack) {
       for (auto channel :
            TrackList::Channels(pTrack.get()))
-         channel->SetPan(newValue);
+         channel->GetData()->SetPan(newValue);
    }
 
    return result;

@@ -3696,8 +3696,9 @@ void AudacityProject::WriteXML(XMLWriter &xmlFile, bool bWantSaveCopy)
 
             // Don't store "rate" tag because the importer can figure that out.
             //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
-            xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
-            xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
+            auto waveTrackData = pWaveTrack->GetData();
+            xmlFile.WriteAttr(wxT("gain"), (double)waveTrackData->GetGain());
+            xmlFile.WriteAttr(wxT("pan"), (double)waveTrackData->GetPan());
             xmlFile.EndTag(wxT("import"));
 
             ndx++;
@@ -4074,8 +4075,9 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
          pWaveTrack->SetMute(pSavedWaveTrack->GetMute());
          pWaveTrack->SetSolo(pSavedWaveTrack->GetSolo());
 
-         pWaveTrack->SetGain(pSavedWaveTrack->GetGain());
-         pWaveTrack->SetPan(pSavedWaveTrack->GetPan());
+         auto waveTrackData = pWaveTrack->GetData();
+         waveTrackData->SetGain(pSavedWaveTrack->GetData()->GetGain());
+         waveTrackData->SetPan(pSavedWaveTrack->GetData()->GetPan());
       }
    } );
 
@@ -4090,8 +4092,9 @@ bool AudacityProject::SaveCopyWaveTracks(const FilePath & strProjectPathName,
       pWaveTrack->SetMute(false);
       pWaveTrack->SetSolo(false);
 
-      pWaveTrack->SetGain(1.0);
-      pWaveTrack->SetPan(0.0);
+      auto waveTrackData = pWaveTrack->GetData();
+      waveTrackData->SetGain(1.0);
+      waveTrackData->SetPan(0.0);
    }
 
    FilePath strDataDirPathName = strProjectPathName + wxT("_data");

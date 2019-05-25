@@ -120,7 +120,7 @@ void DoPanTracks(AudacityProject &project, float PanValue)
 
    // iter through them, all if none selected.
    for (auto left : count == 0 ? range : selectedRange )
-      left->SetPan( PanValue );
+      left->GetData()->SetPan( PanValue );
 
    project.RedrawProject();
 
@@ -529,7 +529,7 @@ void SetTrackGain(AudacityProject &project, WaveTrack * wt, LWSlider * slider)
    float newValue = slider->Get();
 
    for (auto channel : TrackList::Channels(wt))
-      channel->SetGain(newValue);
+      channel->GetData()->SetGain(newValue);
 
    project.PushState(_("Adjusted gain"), _("Gain"), UndoPush::CONSOLIDATE);
 
@@ -542,7 +542,7 @@ void SetTrackPan(AudacityProject &project, WaveTrack * wt, LWSlider * slider)
    float newValue = slider->Get();
 
    for (auto channel : TrackList::Channels(wt))
-      channel->SetPan(newValue);
+      channel->GetData()->SetPan(newValue);
 
    project.PushState(_("Adjusted Pan"), _("Pan"), UndoPush::CONSOLIDATE);
 

@@ -630,7 +630,7 @@ void WaveTrackMenuTable::InitMenu(Menu *pMenu, void *pUserData)
          pMenu->Enable(OnMergeStereoID, canMakeStereo && !unsafe);
 
          int itemId;
-         switch (pTrack2->GetChannel()) {
+         switch (pTrack2->GetData()->GetChannel()) {
             case Track::LeftChannel:
                itemId = OnChannelLeftID;
                break;
@@ -855,8 +855,8 @@ void WaveTrackMenuTable::OnMergeStereo(wxCommandEvent &)
    // Set partner's parameters to match target.
    partner->Merge(*pTrack);
 
-   pTrack->SetPan( 0.0f );
-   partner->SetPan( 0.0f );
+   pTrack->GetData()->SetPan( 0.0f );
+   partner->GetData()->SetPan( 0.0f );
 
    // Set NEW track heights and minimized state
    bool bBothMinimizedp = ((pTrack->GetMinimized()) && (partner->GetMinimized()));
@@ -902,7 +902,7 @@ void WaveTrackMenuTable::SplitStereo(bool stereo)
       // Keep original stereo track name.
       channel->SetName(pTrack->GetName());
       if (stereo)
-         channel->SetPanFromChannelType();
+         channel->GetData()->SetPanFromChannelType();
 
       //On Demand - have each channel add its own.
       if (ODManager::IsInstanceCreated())

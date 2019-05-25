@@ -1421,9 +1421,10 @@ bool Effect::ProcessPass()
          // which is a leader.
          for (auto channel :
               TrackList::Channels(left).StartingWith(left)) {
-            if (channel->GetChannel() == Track::LeftChannel)
+            auto channelType = channel->GetData()->GetChannel();
+            if (channelType == Track::LeftChannel)
                map[mNumChannels] = ChannelNameFrontLeft;
-            else if (channel->GetChannel() == Track::RightChannel)
+            else if (channelType == Track::RightChannel)
                map[mNumChannels] = ChannelNameFrontRight;
             else
                map[mNumChannels] = ChannelNameMono;

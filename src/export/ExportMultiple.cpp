@@ -47,6 +47,7 @@
 #include "../SelectionState.h"
 #include "../ShuttleGui.h"
 #include "../Tags.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/HelpSystem.h"
 #include "../widgets/AudacityMessageBox.h"
@@ -810,9 +811,10 @@ ProgressResult ExportMultiple::ExportMultipleByTrack(bool byName,
 
       // number of export channels?
       setting.channels = channels.size();
+      auto waveTrackData = tr->GetData();;
       if (setting.channels == 1 &&
-          !(tr->GetChannel() == WaveTrack::MonoChannel &&
-                  tr->GetPan() == 0.0))
+          !(waveTrackData->GetChannel() == WaveTrack::MonoChannel &&
+                  waveTrackData->GetPan() == 0.0))
          setting.channels = 2;
 
       // Get name and title

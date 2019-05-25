@@ -104,10 +104,6 @@ private:
 
    double GetOffset() const override;
    void SetOffset(double o) override;
-   virtual ChannelType GetChannelIgnoringPan() const;
-   ChannelType GetChannel() const;
-   void SetChannel(ChannelType c) { mChannel = c; }
-   virtual void SetPanFromChannelType();
 
    /** @brief Get the time at which the first clip in the track starts
     *
@@ -129,17 +125,6 @@ private:
    //
    // WaveTrack parameters
    //
-
-   // Multiplicative factor.  Only converted to dB for display.
-   float GetGain() const;
-   void SetGain(float newGain);
-
-   // -1.0 (left) -> 1.0 (right)
-   float GetPan() const;
-   void SetPan(float newPan);
-
-   // Takes gain and pan into account
-   float GetChannelGain(int channel) const;
 
    // Old gain is used in playback in linearly interpolating 
    // the gain.
@@ -504,13 +489,8 @@ private:
 
    std::shared_ptr<WaveTrackData> mpData;
 
-   float         mGain;
-   float         mPan;
    int           mWaveColorIndex;
    float         mOldGain[2];
-
-   ChannelType         mChannel{ MonoChannel };
-   mutable std::shared_ptr<DirManager> mDirManager;
 
 
    //

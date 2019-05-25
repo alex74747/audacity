@@ -4855,7 +4855,7 @@ void AudioIoCallback::AddToOutputChannel( unsigned int chan,
 {
    const auto numPlaybackChannels = mNumPlaybackChannels;
 
-   float gain = vt->GetChannelGain(chan);
+   float gain = vt->GetData()->GetChannelGain(chan);
    if (drop || !mAudioThreadFillBuffersLoopRunning || mPaused)
       gain = 0.0;
 
@@ -5057,12 +5057,13 @@ bool AudioIoCallback::FillOutputBuffers(
       {
          vt = chans[c];
 
-         if (vt->GetChannelIgnoringPan() == Track::LeftChannel ||
-               vt->GetChannelIgnoringPan() == Track::MonoChannel )
+         auto waveTrackData = vt->GetData();
+         if (waveTrackData->GetChannelIgnoringPan() == Track::LeftChannel ||
+               waveTrackData->GetChannelIgnoringPan() == Track::MonoChannel )
             AddToOutputChannel( 0, outputMeterFloats, outputFloats, tempFloats, tempBufs[c], drop, len, vt);
 
-         if (vt->GetChannelIgnoringPan() == Track::RightChannel ||
-               vt->GetChannelIgnoringPan() == Track::MonoChannel  )
+         if (waveTrackData->GetChannelIgnoringPan() == Track::RightChannel ||
+               waveTrackData->GetChannelIgnoringPan() == Track::MonoChannel  )
             AddToOutputChannel( 1, outputMeterFloats, outputFloats, tempFloats, tempBufs[c], drop, len, vt);
       }
 
@@ -5417,7 +5418,7 @@ bool AudioIoCallback::TrackShouldBeSilent( const WaveTrack &wt )
 // This is about micro-fades.
 bool AudioIoCallback::TrackHasBeenFadedOut( const WaveTrack &wt )
 {
-   const auto channel = wt.GetChannelIgnoringPan();
+   const auto channel = wt.GetData()->GetChannelIgnoringPan();
    if ((channel == Track::LeftChannel  || channel == Track::MonoChannel) &&
       wt.GetOldChannelGain(0) != 0.0)
       return false;

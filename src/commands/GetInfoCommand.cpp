@@ -502,8 +502,8 @@ bool GetInfoCommand::SendTracks(const CommandContext & context)
          context.AddItem( "wave", "kind" );
          context.AddItem( t->GetStartTime(), "start" );
          context.AddItem( t->GetEndTime(), "end" );
-         context.AddItem( t->GetPan() , "pan");
-         context.AddItem( t->GetGain() , "gain");
+         context.AddItem( t->GetData()->GetPan() , "pan");
+         context.AddItem( t->GetData()->GetGain() , "gain");
          context.AddItem( TrackList::Channels(t).size(), "channels");
          context.AddBool( t->GetSolo(), "solo" );
          context.AddBool( t->GetMute(), "mute");
