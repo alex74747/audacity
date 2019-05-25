@@ -26,7 +26,7 @@
 #include "sndfile.h"
 
 #include "../FileFormats.h"
-#include "../Mix.h"
+#include "../Mixer.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"

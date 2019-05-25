@@ -111,7 +111,6 @@ scroll information.  It also has some status flags.
 #include "Legacy.h"
 #include "Menus.h"
 #include "MissingAliasFileDialog.h"
-#include "Mix.h"
 #include "NoteTrack.h"
 #include "Prefs.h"
 #include "ProjectFSCK.h"

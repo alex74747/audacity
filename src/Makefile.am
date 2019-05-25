@@ -194,6 +194,8 @@ audacity_SOURCES = \
 	MissingAliasFileDialog.h \
 	Mix.cpp \
 	Mix.h \
+	Mixer.cpp \
+	Mixer.h \
 	MixerBoard.cpp \
 	MixerBoard.h \
 	ModuleManager.cpp \

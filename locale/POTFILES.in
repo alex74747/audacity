@@ -139,6 +139,8 @@ src/MissingAliasFileDialog.cpp
 src/MissingAliasFileDialog.h
 src/Mix.cpp
 src/Mix.h
+src/Mixer.cpp
+src/Mixer.h
 src/MixerBoard.cpp
 src/MixerBoard.h
 src/ModuleManager.cpp

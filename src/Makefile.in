@@ -315,12 +315,13 @@ am__audacity_SOURCES_DIST = BlockFile.cpp BlockFile.h DirManager.cpp \
 	Legacy.cpp Legacy.h Lyrics.cpp Lyrics.h LyricsWindow.cpp \
 	LyricsWindow.h MacroMagic.h Matrix.cpp Matrix.h MemoryX.h \
 	Menus.cpp Menus.h MissingAliasFileDialog.cpp \
-	MissingAliasFileDialog.h Mix.cpp Mix.h MixerBoard.cpp \
-	MixerBoard.h ModuleManager.cpp ModuleManager.h NumberScale.h \
-	PitchName.cpp PitchName.h PlatformCompatibility.cpp \
-	PlatformCompatibility.h PluginManager.cpp PluginManager.h \
-	Printing.cpp Printing.h Profiler.cpp Profiler.h Project.cpp \
-	Project.h ProjectFileIORegistry.cpp ProjectFileIORegistry.h \
+	MissingAliasFileDialog.h Mix.cpp Mix.h Mixer.cpp Mixer.h \
+	MixerBoard.cpp MixerBoard.h ModuleManager.cpp ModuleManager.h \
+	NumberScale.h PitchName.cpp PitchName.h \
+	PlatformCompatibility.cpp PlatformCompatibility.h \
+	PluginManager.cpp PluginManager.h Printing.cpp Printing.h \
+	Profiler.cpp Profiler.h Project.cpp Project.h \
+	ProjectFileIORegistry.cpp ProjectFileIORegistry.h \
 	ProjectFSCK.cpp ProjectFSCK.h RealFFTf.cpp RealFFTf.h \
 	RealFFTf48x.cpp RealFFTf48x.h RefreshCode.h Resample.cpp \
 	Resample.h RevisionIdent.h RingBuffer.cpp RingBuffer.h \
@@ -659,8 +660,9 @@ am_audacity_OBJECTS = $(am__objects_1) audacity-AboutDialog.$(OBJEXT) \
 	audacity-LyricsWindow.$(OBJEXT) audacity-Matrix.$(OBJEXT) \
 	audacity-Menus.$(OBJEXT) \
 	audacity-MissingAliasFileDialog.$(OBJEXT) \
-	audacity-Mix.$(OBJEXT) audacity-MixerBoard.$(OBJEXT) \
-	audacity-ModuleManager.$(OBJEXT) audacity-PitchName.$(OBJEXT) \
+	audacity-Mix.$(OBJEXT) audacity-Mixer.$(OBJEXT) \
+	audacity-MixerBoard.$(OBJEXT) audacity-ModuleManager.$(OBJEXT) \
+	audacity-PitchName.$(OBJEXT) \
 	audacity-PlatformCompatibility.$(OBJEXT) \
 	audacity-PluginManager.$(OBJEXT) audacity-Printing.$(OBJEXT) \
 	audacity-Profiler.$(OBJEXT) audacity-Project.$(OBJEXT) \
@@ -1377,12 +1379,13 @@ audacity_SOURCES = $(libaudacity_la_SOURCES) AboutDialog.cpp \
 	Legacy.cpp Legacy.h Lyrics.cpp Lyrics.h LyricsWindow.cpp \
 	LyricsWindow.h MacroMagic.h Matrix.cpp Matrix.h MemoryX.h \
 	Menus.cpp Menus.h MissingAliasFileDialog.cpp \
-	MissingAliasFileDialog.h Mix.cpp Mix.h MixerBoard.cpp \
-	MixerBoard.h ModuleManager.cpp ModuleManager.h NumberScale.h \
-	PitchName.cpp PitchName.h PlatformCompatibility.cpp \
-	PlatformCompatibility.h PluginManager.cpp PluginManager.h \
-	Printing.cpp Printing.h Profiler.cpp Profiler.h Project.cpp \
-	Project.h ProjectFileIORegistry.cpp ProjectFileIORegistry.h \
+	MissingAliasFileDialog.h Mix.cpp Mix.h Mixer.cpp Mixer.h \
+	MixerBoard.cpp MixerBoard.h ModuleManager.cpp ModuleManager.h \
+	NumberScale.h PitchName.cpp PitchName.h \
+	PlatformCompatibility.cpp PlatformCompatibility.h \
+	PluginManager.cpp PluginManager.h Printing.cpp Printing.h \
+	Profiler.cpp Profiler.h Project.cpp Project.h \
+	ProjectFileIORegistry.cpp ProjectFileIORegistry.h \
 	ProjectFSCK.cpp ProjectFSCK.h RealFFTf.cpp RealFFTf.h \
 	RealFFTf48x.cpp RealFFTf48x.h RefreshCode.h Resample.cpp \
 	Resample.h RevisionIdent.h RingBuffer.cpp RingBuffer.h \
@@ -2548,6 +2551,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-Menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-MissingAliasFileDialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-Mix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-Mixer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-MixerBoard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-ModuleManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audacity-NoteTrack.Po@am__quote@
@@ -3862,6 +3866,20 @@ audacity-Mix.obj: Mix.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Mix.cpp' object='audacity-Mix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -c -o audacity-Mix.obj `if test -f 'Mix.cpp'; then $(CYGPATH_W) 'Mix.cpp'; else $(CYGPATH_W) '$(srcdir)/Mix.cpp'; fi`
+
+audacity-Mixer.o: Mixer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -MT audacity-Mixer.o -MD -MP -MF $(DEPDIR)/audacity-Mixer.Tpo -c -o audacity-Mixer.o `test -f 'Mixer.cpp' || echo '$(srcdir)/'`Mixer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/audacity-Mixer.Tpo $(DEPDIR)/audacity-Mixer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Mixer.cpp' object='audacity-Mixer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -c -o audacity-Mixer.o `test -f 'Mixer.cpp' || echo '$(srcdir)/'`Mixer.cpp
+
+audacity-Mixer.obj: Mixer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -MT audacity-Mixer.obj -MD -MP -MF $(DEPDIR)/audacity-Mixer.Tpo -c -o audacity-Mixer.obj `if test -f 'Mixer.cpp'; then $(CYGPATH_W) 'Mixer.cpp'; else $(CYGPATH_W) '$(srcdir)/Mixer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/audacity-Mixer.Tpo $(DEPDIR)/audacity-Mixer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Mixer.cpp' object='audacity-Mixer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -c -o audacity-Mixer.obj `if test -f 'Mixer.cpp'; then $(CYGPATH_W) 'Mixer.cpp'; else $(CYGPATH_W) '$(srcdir)/Mixer.cpp'; fi`
 
 audacity-MixerBoard.o: MixerBoard.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(audacity_CPPFLAGS) $(CPPFLAGS) $(audacity_CXXFLAGS) $(CXXFLAGS) -MT audacity-MixerBoard.o -MD -MP -MF $(DEPDIR)/audacity-MixerBoard.Tpo -c -o audacity-MixerBoard.o `test -f 'MixerBoard.cpp' || echo '$(srcdir)/'`MixerBoard.cpp

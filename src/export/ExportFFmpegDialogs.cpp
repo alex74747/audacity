@@ -57,7 +57,7 @@
 #include <FileDialog.h>
 
 #include "../FileFormats.h"
-#include "../Mix.h"
+#include "../Mixer.h"
 #include "../Tags.h"
 #include "../TranslatableStringArray.h"
 #include "../widgets/AudacityMessageBox.h"

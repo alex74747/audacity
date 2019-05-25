@@ -53,7 +53,7 @@
 #include "FileFormats.h"
 #include "ImageManipulation.h"
 #include "LabelTrack.h"
-#include "Mix.h"
+#include "Mixer.h"
 #include "NoteTrack.h"
 #include "Prefs.h"
 #include "Project.h"

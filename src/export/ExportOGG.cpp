@@ -29,7 +29,7 @@
 
 #include "../FileIO.h"
 #include "../Project.h"
-#include "../Mix.h"
+#include "../Mixer.h"
 #include "../Prefs.h"
 #include "../ShuttleGui.h"
 

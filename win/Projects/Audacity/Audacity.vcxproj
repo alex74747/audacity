@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\..\src\menus\WindowMenus.cpp" />
     <ClCompile Include="..\..\..\src\MissingAliasFileDialog.cpp" />
     <ClCompile Include="..\..\..\src\Mix.cpp" />
+    <ClCompile Include="..\..\..\src\Mixer.cpp" />
     <ClCompile Include="..\..\..\src\MixerBoard.cpp" />
     <ClCompile Include="..\..\..\lib-src\lib-widget-extra\NonGuiThread.cpp" />
     <ClCompile Include="..\..\..\src\ModuleManager.cpp" />
@@ -640,6 +641,7 @@
     <ClInclude Include="..\..\..\src\Menus.h" />
     <ClInclude Include="..\..\..\src\MissingAliasFileDialog.h" />
     <ClInclude Include="..\..\..\src\Mix.h" />
+    <ClInclude Include="..\..\..\src\Mixer.h" />
     <ClInclude Include="..\..\..\src\MixerBoard.h" />
     <ClInclude Include="..\..\..\lib-src\lib-widget-extra\NonGuiThread.h" />
     <ClInclude Include="..\..\..\src\NoteTrack.h" />

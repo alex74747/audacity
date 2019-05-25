@@ -449,7 +449,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include <wx/txtstrm.h>
 
 #include "MissingAliasFileDialog.h"
-#include "Mix.h"
+#include "Mixer.h"
 #include "Resample.h"
 #include "RingBuffer.h"
 #include "prefs/GUISettings.h"
