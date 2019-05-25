@@ -20,6 +20,7 @@ effect that uses SoundTouch to do its processing (ChangeTempo
 #include <math.h>
 
 #include "../LabelTrack.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../NoteTrack.h"
 
@@ -120,6 +121,7 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
 
             // TODO: more-than-two-channels
             auto channels = TrackList::Channels(leftTrack);
+            auto waveTrackData = leftTrack->GetData();
             auto rightTrack = (channels.size() > 1)
                ? * ++ channels.first
                : nullptr;
@@ -135,8 +137,8 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
                mCurT1 = wxMax(mCurT1, t);
 
                //Transform the marker timepoints to samples
-               auto start = leftTrack->TimeToLongSamples(mCurT0);
-               auto end = leftTrack->TimeToLongSamples(mCurT1);
+               auto start = waveTrackData->TimeToLongSamples(mCurT0);
+               auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
                //Inform soundtouch there's 2 channels
                mSoundTouch->setChannels(2);
@@ -147,8 +149,8 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
                mCurTrackNum++; // Increment for rightTrack, too.
             } else {
                //Transform the marker timepoints to samples
-               auto start = leftTrack->TimeToLongSamples(mCurT0);
-               auto end = leftTrack->TimeToLongSamples(mCurT1);
+               auto start = waveTrackData->TimeToLongSamples(mCurT0);
+               auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
                //Inform soundtouch there's a single channel
                mSoundTouch->setChannels(1);
@@ -187,9 +189,13 @@ bool EffectSoundTouch::ProcessOne(WaveTrack *track,
                                   sampleCount start, sampleCount end,
                                   const TimeWarper &warper)
 {
-   mSoundTouch->setSampleRate((unsigned int)(track->GetRate()+0.5));
+   auto waveTrackData = track->GetData();
+   auto rate = waveTrackData->GetRate();
 
-   auto outputTrack = mFactory->NewWaveTrack(track->GetSampleFormat(), track->GetRate());
+   mSoundTouch->setSampleRate((unsigned int)(rate+0.5));
+
+   auto outputTrack = mFactory->NewWaveTrack(
+      waveTrackData->GetSampleFormat(), rate);
 
    //Get the length of the buffer (as double). len is
    //used simple to calculate a progress meter, so it is easier
@@ -199,7 +205,7 @@ bool EffectSoundTouch::ProcessOne(WaveTrack *track,
    {
       //Initiate a processing buffer.  This buffer will (most likely)
       //be shorter than the length of the track being processed.
-      Floats buffer{ track->GetMaxBlockSize() };
+      Floats buffer{ waveTrackData->GetMaxBlockSize() };
 
       //Go through the track one buffer at a time. s counts which
       //sample the current buffer starts at.
@@ -207,10 +213,12 @@ bool EffectSoundTouch::ProcessOne(WaveTrack *track,
       while (s < end) {
          //Get a block of samples (smaller than the size of the buffer)
          const auto block =
-            limitSampleBufferSize( track->GetBestBlockSize(s), end - s );
+            limitSampleBufferSize(
+               waveTrackData->GetBestBlockSize(s), end - s );
 
          //Get the samples from the track and put them in the buffer
-         track->Get((samplePtr)buffer.get(), floatSample, s, block);
+         waveTrackData->Get(
+            (samplePtr)buffer.get(), floatSample, s, block);
 
          //Add samples to SoundTouch
          mSoundTouch->putSamples(buffer.get(), block);
@@ -260,12 +268,17 @@ bool EffectSoundTouch::ProcessStereo(
    WaveTrack* leftTrack, WaveTrack* rightTrack,
    sampleCount start, sampleCount end, const TimeWarper &warper)
 {
-   mSoundTouch->setSampleRate((unsigned int)(leftTrack->GetRate() + 0.5));
+   auto waveTrackData = leftTrack->GetData();
+   auto waveTrackDataRight = rightTrack->GetData();
+   auto rate = waveTrackData->GetRate();
+   mSoundTouch->setSampleRate((unsigned int)(rate + 0.5));
 
-   auto outputLeftTrack = mFactory->NewWaveTrack(leftTrack->GetSampleFormat(),
-                                                       leftTrack->GetRate());
-   auto outputRightTrack = mFactory->NewWaveTrack(rightTrack->GetSampleFormat(),
-                                                        rightTrack->GetRate());
+   auto outputLeftTrack = mFactory->NewWaveTrack(
+      waveTrackData->GetSampleFormat(),
+      rate);
+   auto outputRightTrack = mFactory->NewWaveTrack(
+      waveTrackDataRight->GetSampleFormat(),
+      waveTrackDataRight->GetRate());
 
    //Get the length of the buffer (as double). len is
    //used simple to calculate a progress meter, so it is easier
@@ -277,7 +290,7 @@ bool EffectSoundTouch::ProcessStereo(
    // Make soundTouchBuffer twice as big as MaxBlockSize for each channel,
    // because Soundtouch wants them interleaved, i.e., each
    // Soundtouch sample is left-right pair.
-   auto maxBlockSize = leftTrack->GetMaxBlockSize();
+   auto maxBlockSize = waveTrackData->GetMaxBlockSize();
    {
       Floats leftBuffer{ maxBlockSize };
       Floats rightBuffer{ maxBlockSize };
@@ -289,13 +302,13 @@ bool EffectSoundTouch::ProcessStereo(
       auto sourceSampleCount = start;
       while (sourceSampleCount < end) {
          auto blockSize = limitSampleBufferSize(
-            leftTrack->GetBestBlockSize(sourceSampleCount),
+            waveTrackData->GetBestBlockSize(sourceSampleCount),
             end - sourceSampleCount
          );
 
          // Get the samples from the tracks and put them in the buffers.
-         leftTrack->Get((samplePtr)(leftBuffer.get()), floatSample, sourceSampleCount, blockSize);
-         rightTrack->Get((samplePtr)(rightBuffer.get()), floatSample, sourceSampleCount, blockSize);
+         waveTrackData->Get((samplePtr)(leftBuffer.get()), floatSample, sourceSampleCount, blockSize);
+         waveTrackDataRight->Get((samplePtr)(rightBuffer.get()), floatSample, sourceSampleCount, blockSize);
 
          // Interleave into soundTouchBuffer.
          for (decltype(blockSize) index = 0; index < blockSize; index++) {

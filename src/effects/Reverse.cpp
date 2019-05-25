@@ -75,8 +75,9 @@ bool EffectReverse::Process()
    trackRange.VisitWhile( bGoodResult,
       [&](WaveTrack * track) {
          if (mT1 > mT0) {
-            auto start = track->TimeToLongSamples(mT0);
-            auto end = track->TimeToLongSamples(mT1);
+            auto waveTrackData = track->GetData();
+            auto start = waveTrackData->TimeToLongSamples(mT0);
+            auto end = waveTrackData->TimeToLongSamples(mT1);
             auto len = end - start;
 
             if (!ProcessOneWave(count, track, start, len))
@@ -103,24 +104,25 @@ bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount sta
    // STEP 1:
    // If a reverse selection begins and/or ends at the inside of a clip
    // perform a split at the start and/or end of the reverse selection
-   const auto &clips = track->GetData()->GetClips();
+   auto waveTrackData = track->GetData();
+   const auto &clips = waveTrackData->GetClips();
    // Beware, the array grows as we loop over it.  Use integer subscripts, not iterators.
    for (size_t ii = 0; ii < clips.size(); ++ii) {
       const auto &clip = clips[ii].get();
       auto clipStart = clip->GetStartSample();
       auto clipEnd = clip->GetEndSample();
       if (clipStart < start && clipEnd > start && clipEnd <= end) { // the reverse selection begins at the inside of a clip
-         double splitTime = track->LongSamplesToTime(start);
+         double splitTime = waveTrackData->LongSamplesToTime(start);
          track->SplitAt(splitTime);
       }
       else if (clipStart >= start && clipStart < end && clipEnd > end) { // the reverse selection ends at the inside of a clip
-         double splitTime = track->LongSamplesToTime(end);
+         double splitTime = waveTrackData->LongSamplesToTime(end);
          track->SplitAt(splitTime);
       }
       else if (clipStart < start && clipEnd > end) { // the selection begins AND ends at the inside of a clip
-         double splitTime = track->LongSamplesToTime(start);
+         double splitTime = waveTrackData->LongSamplesToTime(start);
          track->SplitAt(splitTime);
-         splitTime = track->LongSamplesToTime(end);
+         splitTime = waveTrackData->LongSamplesToTime(end);
          track->SplitAt(splitTime);
       }
    }
@@ -173,7 +175,7 @@ bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount sta
             }
 
             auto clipOffsetStart = currentEnd - (clipEnd - clipStart); // calculate the offset required
-            double offsetStartTime = track->LongSamplesToTime(clipOffsetStart);
+            double offsetStartTime = waveTrackData->LongSamplesToTime(clipOffsetStart);
             if(i+1 < clipArray.size()) // update currentEnd if there is a clip to process next
             {
                auto nextClipStart = clipArray[i+1]->GetStartSample();
@@ -181,7 +183,8 @@ bool EffectReverse::ProcessOneWave(int count, WaveTrack * track, sampleCount sta
             }
 
             revClips.push_back(track->RemoveAndReturnClip(clip)); // detach the clip from track
-            revClips.back()->SetOffset(track->LongSamplesToTime(track->TimeToLongSamples(offsetStartTime))); // align time to a sample and set offset
+            revClips.back()->SetOffset(waveTrackData->LongSamplesToTime(
+               waveTrackData->TimeToLongSamples(offsetStartTime))); // align time to a sample and set offset
          }
       }
       else if (clipStart >= end) { // clip is after the selection region
@@ -213,7 +216,8 @@ bool EffectReverse::ProcessOneClip(int count, WaveTrack *track,
    // keep track of two blocks whose data we will swap
    auto first = start;
 
-   auto blockSize = track->GetMaxBlockSize();
+   auto waveTrackData = track->GetData();
+   auto blockSize = waveTrackData->GetMaxBlockSize();
    float tmp;
    Floats buffer1{ blockSize };
    Floats buffer2{ blockSize };
@@ -222,11 +226,14 @@ bool EffectReverse::ProcessOneClip(int count, WaveTrack *track,
 
    while (len > 1) {
       auto block =
-         limitSampleBufferSize( track->GetBestBlockSize(first), len / 2 );
+         limitSampleBufferSize(
+            waveTrackData->GetBestBlockSize(first), len / 2 );
       auto second = first + (len - block);
 
-      track->Get((samplePtr)buffer1.get(), floatSample, first, block);
-      track->Get((samplePtr)buffer2.get(), floatSample, second, block);
+      waveTrackData->Get(
+         (samplePtr)buffer1.get(), floatSample, first, block);
+      waveTrackData->Get(
+         (samplePtr)buffer2.get(), floatSample, second, block);
       for (decltype(block) i = 0; i < block; i++) {
          tmp = buffer1[i];
          buffer1[i] = buffer2[block-i-1];

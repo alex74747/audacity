@@ -988,7 +988,7 @@ void OnResample(const CommandContext &context)
       // But the thrown exception will cause rollback in the application
       // level handler.
 
-       wt->Resample(newRate, &progress);
+       wt->GetData()->Resample(newRate, &progress);
 
       // Each time a track is successfully, completely resampled,
       // commit that to the undo stack.  The second and later times,

@@ -38,6 +38,7 @@ the pitch without changing the tempo.
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 #include "../Spectrum.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/valnum.h"
 #include "TimeWarper.h"
@@ -427,7 +428,8 @@ void EffectChangePitch::DeduceFrequencies()
    // beginning of the selection.
    auto track = FirstTrack();
    if (track) {
-      double rate = track->GetRate();
+      auto waveTrackData = track->GetData();
+      double rate = waveTrackData->GetRate();
 
       // Auto-size window -- high sample rates require larger windowSize.
       // Aim for around 2048 samples at 44.1 kHz (good down to about 100 Hz).
@@ -444,7 +446,7 @@ void EffectChangePitch::DeduceFrequencies()
 
       double trackStart = track->GetStartTime();
       double t0 = mT0 < trackStart? trackStart: mT0;
-      auto start = track->TimeToLongSamples(t0);
+      auto start = waveTrackData->TimeToLongSamples(t0);
 
       auto analyzeSize = windowSize * numWindows;
       Floats buffer{ analyzeSize };
@@ -452,7 +454,8 @@ void EffectChangePitch::DeduceFrequencies()
       Floats freq{ windowSize / 2 };
       Floats freqa{ windowSize / 2, true };
 
-      track->Get((samplePtr) buffer.get(), floatSample, start, analyzeSize);
+      waveTrackData->Get(
+         (samplePtr) buffer.get(), floatSample, start, analyzeSize);
       for(unsigned i = 0; i < numWindows; i++) {
          ComputeSpectrum(buffer.get() + i * windowSize, windowSize,
                          windowSize, rate, freq.get(), true);

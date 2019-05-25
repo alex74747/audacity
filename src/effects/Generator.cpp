@@ -19,6 +19,7 @@
 #include "../Project.h"
 #include "../Prefs.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 #include "TimeWarper.h"
@@ -47,9 +48,13 @@ bool Generator::Process()
 
          //if we can't move clips, and we're generating into an empty space,
          //make sure there's room.
+         auto waveTrackData = track->GetData();
+         auto rate = waveTrackData->GetRate();
          if (!editClipCanMove &&
-             track->IsEmpty(mT0, mT1+1.0/track->GetRate()) &&
-             !track->IsEmpty(mT0, mT0+GetDuration()-(mT1-mT0)-1.0/track->GetRate()))
+             track->IsEmpty(mT0,
+                mT1+1.0/rate) &&
+             !track->IsEmpty(mT0,
+                mT0+GetDuration()-(mT1-mT0)-1.0/rate))
          {
             Effect::MessageBox(
                   _("There is not enough room available to generate the audio"),
@@ -65,8 +70,8 @@ bool Generator::Process()
             AudacityProject *p = GetActiveProject();
             // Create a temporary track
             WaveTrack::Holder tmp(
-               mFactory->NewWaveTrack(track->GetSampleFormat(),
-               track->GetRate())
+               mFactory->NewWaveTrack(waveTrackData->GetSampleFormat(),
+               waveTrackData->GetRate())
             );
             BeforeTrack(*track);
             BeforeGenerate();
@@ -122,13 +127,15 @@ bool BlockGenerator::GenerateTrack(WaveTrack *tmp,
                                    int ntrack)
 {
    bool bGoodResult = true;
-   numSamples = track.TimeToLongSamples(GetDuration());
+   auto waveTrackData = track.GetData();
+   numSamples = waveTrackData->TimeToLongSamples(GetDuration());
    decltype(numSamples) i = 0;
-   Floats data{ tmp->GetMaxBlockSize() };
+   Floats data{ waveTrackData->GetMaxBlockSize() };
 
    while ((i < numSamples) && bGoodResult) {
       const auto block =
-         limitSampleBufferSize( tmp->GetBestBlockSize(i), numSamples - i );
+         limitSampleBufferSize(
+            waveTrackData->GetBestBlockSize(i), numSamples - i );
 
       GenerateBlock(data.get(), track, block);
 

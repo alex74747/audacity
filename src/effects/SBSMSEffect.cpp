@@ -19,6 +19,7 @@ effect that uses SBSMS to do its processing (TimeScale)
 #include <math.h>
 
 #include "../LabelTrack.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "TimeWarper.h"
 
@@ -88,8 +89,9 @@ long resampleCB(void *cb_data, SBSMSFrame *data)
 {
    ResampleBuf *r = (ResampleBuf*) cb_data;
 
+   auto waveTrackData = r->leftTrack->GetData();
    auto blockSize = limitSampleBufferSize(
-      r->leftTrack->GetBestBlockSize(r->offset),
+      waveTrackData->GetBestBlockSize(r->offset),
       r->end - r->offset
    );
 
@@ -98,9 +100,9 @@ long resampleCB(void *cb_data, SBSMSFrame *data)
    // does not seem to let us report error codes, so use this roundabout to
    // stop the effect early.
    try {
-      r->leftTrack->Get(
+      waveTrackData->Get(
          (samplePtr)(r->leftBuffer.get()), floatSample, r->offset, blockSize);
-      r->rightTrack->Get(
+      r->rightTrack->GetData()->Get(
          (samplePtr)(r->rightBuffer.get()), floatSample, r->offset, blockSize);
    }
    catch ( ... ) {
@@ -245,10 +247,11 @@ bool EffectSBSMS::Process()
          mCurT0 = wxMax(mT0, mCurT0);
          mCurT1 = wxMin(mT1, mCurT1);
 
+         auto waveTrackData = leftTrack->GetData();
          // Process only if the right marker is to the right of the left marker
          if (mCurT1 > mCurT0) {
-            auto start = leftTrack->TimeToLongSamples(mCurT0);
-            auto end = leftTrack->TimeToLongSamples(mCurT1);
+            auto start = waveTrackData->TimeToLongSamples(mCurT0);
+            auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
             // TODO: more-than-two-channels
             auto channels = TrackList::Channels(leftTrack);
@@ -267,23 +270,23 @@ bool EffectSBSMS::Process()
                mCurT1 = wxMax(mCurT1, t);
 
                //Transform the marker timepoints to samples
-               start = leftTrack->TimeToLongSamples(mCurT0);
-               end = leftTrack->TimeToLongSamples(mCurT1);
+               start = waveTrackData->TimeToLongSamples(mCurT0);
+               end = waveTrackData->TimeToLongSamples(mCurT1);
 
                mCurTrackNum++; // Increment for rightTrack, too.
             }
             const auto trackStart =
-               leftTrack->TimeToLongSamples(leftTrack->GetStartTime());
+               waveTrackData->TimeToLongSamples(leftTrack->GetStartTime());
             const auto trackEnd =
-               leftTrack->TimeToLongSamples(leftTrack->GetEndTime());
+               waveTrackData->TimeToLongSamples(leftTrack->GetEndTime());
 
             // SBSMS has a fixed sample rate - we just convert to its sample rate and then convert back
-            float srTrack = leftTrack->GetRate();
+            float srTrack = waveTrackData->GetRate();
             float srProcess = bLinkRatePitch ? srTrack : 44100.0;
 
             // the resampler needs a callback to supply its samples
             ResampleBuf rb;
-            auto maxBlockSize = leftTrack->GetMaxBlockSize();
+            auto maxBlockSize = waveTrackData->GetMaxBlockSize();
             rb.blockSize = maxBlockSize;
             rb.buf.reinit(rb.blockSize, true);
             rb.leftTrack = leftTrack;
@@ -374,11 +377,15 @@ bool EffectSBSMS::Process()
 
             auto warper = createTimeWarper(mCurT0,mCurT1,maxDuration,rateStart,rateEnd,rateSlideType);
 
-            rb.outputLeftTrack = mFactory->NewWaveTrack(leftTrack->GetSampleFormat(),
-                                                        leftTrack->GetRate());
-            if(rightTrack)
-               rb.outputRightTrack = mFactory->NewWaveTrack(rightTrack->GetSampleFormat(),
-                                                            rightTrack->GetRate());
+            rb.outputLeftTrack = mFactory->NewWaveTrack(
+               waveTrackData->GetSampleFormat(),
+               waveTrackData->GetRate());
+            if(rightTrack) {
+               auto waveTrackDataRight = rightTrack->GetData();
+               rb.outputRightTrack = mFactory->NewWaveTrack(
+               waveTrackDataRight->GetSampleFormat(),
+               waveTrackDataRight->GetRate());
+            }
             long pos = 0;
             long outputCount = -1;
 

@@ -122,9 +122,93 @@ using WaveClipConstHolders = std::vector < std::shared_ptr< const WaveClip > >;
 
 class WaveTrackData {
 public:
+   WaveTrackData(
+      const std::shared_ptr<DirManager> &dirManager,
+      sampleFormat format, double rate)
+      : mDirManager{ dirManager }
+      , mFormat{ format }
+      , mRate{ (int)rate }
+   {}
+
+   WaveTrackData( const WaveTrackData& ) = default;
+
+   sampleFormat GetSampleFormat() const { return mFormat; }
+   void ConvertToSampleFormat(sampleFormat format);
+   
+   double GetRate() const;
+   void InitializeRate(double newRate); // for deserialization only
+   void SetRate(double newRate);
+
+   // Resample track (i.e. all clips in the track)
+   void Resample(int rate, ProgressDialog *progress = NULL);
+
+   //
+   // Getting information about the track's internal block sizes
+   // and alignment for efficiency
+   //
+   
+   // This returns a possibly large or negative value
+   sampleCount GetBlockStart(sampleCount t) const;
+   
    WaveClipHolders &GetClips() { return mClips; }
    const WaveClipConstHolders &GetClips() const
       { return reinterpret_cast< const WaveClipConstHolders& >( mClips ); }
+
+   // These return a nonnegative number of samples meant to size a memory buffer
+   size_t GetBestBlockSize(sampleCount t) const;
+   size_t GetMaxBlockSize() const;
+
+   /** @brief Get the time at which the first clip in the track starts
+    *
+    * @return time in seconds, or zero if there are no clips in the track
+    */
+   double GetStartTime() const;
+
+   /** @brief Get the time at which the last clip in the track ends, plus
+    * recorded stuff
+    *
+    * @return time in seconds, or zero if there are no clips in the track.
+    */
+   double GetEndTime() const;
+
+   /** @brief Convert correctly between an (absolute) time in seconds and a number of samples.
+    *
+    * This method will not give the correct results if used on a relative time (difference of two
+    * times). Each absolute time must be converted and the numbers of samples differenced:
+    *    sampleCount start = track->TimeToLongSamples(t0);
+    *    sampleCount end = track->TimeToLongSamples(t1);
+    *    sampleCount len = (sampleCount)(end - start);
+    * NOT the likes of:
+    *    sampleCount len = track->TimeToLongSamples(t1 - t0);
+    * See also WaveTrack::TimeToLongSamples().
+    * @param t0 The time (floating point seconds) to convert
+    * @return The number of samples from the start of the track which lie before the given time.
+    */
+   sampleCount TimeToLongSamples(double t0) const;
+   /** @brief Convert correctly between an number of samples and an (absolute) time in seconds.
+    *
+    * @param pos The time number of samples from the start of the track to convert.
+    * @return The time in seconds.
+    */
+   double LongSamplesToTime(sampleCount pos) const;
+
+   /// MM: Now that each wave track can contain multiple clips, we don't
+   /// have a continous space of samples anymore, but we simulate it,
+   /// because there are alot of places (e.g. effects) using this interface.
+   /// This interface makes much sense for modifying samples, but note that
+   /// it is not time-accurate, because the "offset" is a double value and
+   /// therefore can lie inbetween samples. But as long as you use the
+   /// same value for "start" in both calls to "Set" and "Get" it is
+   /// guaranteed that the same samples are affected.
+   ///
+   bool Get(samplePtr buffer, sampleFormat format,
+                   sampleCount start, size_t len,
+                   fillFormat fill = fillZero, bool mayThrow = true, sampleCount * pNumCopied = nullptr) const;
+
+   // Fetch envelope values corresponding to uniformly separated sample times
+   // starting at the given time.
+   void GetEnvelopeValues(double *buffer, size_t bufferLen,
+                         double t0) const;
 
    // Get mutative access to all clips (in some unspecified sequence),
    // including those hidden in cutlines.
@@ -215,7 +299,10 @@ public:
    }
    
 private:
+   std::shared_ptr<DirManager> mDirManager;
    WaveClipHolders mClips;
+   sampleFormat  mFormat;
+   int           mRate;
 };
 
 // Array of pointers that assume ownership

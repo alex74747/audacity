@@ -19,6 +19,7 @@
 #include <wx/intl.h>
 
 #include "../Project.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 EffectStereoToMono::EffectStereoToMono()
@@ -90,13 +91,20 @@ bool EffectStereoToMono::Process()
 
       mRightTrack = * channels.rbegin();
 
-      if ((mLeftTrack->GetRate() == mRightTrack->GetRate())) {
-         auto leftTrackStart = mLeftTrack->TimeToLongSamples(mLeftTrack->GetStartTime());
-         auto rightTrackStart = mRightTrack->TimeToLongSamples(mRightTrack->GetStartTime());
+      auto waveTrackData = mLeftTrack->GetData();
+      auto waveTrackDataRight = mRightTrack->GetData();
+      if (waveTrackData->GetRate() ==
+         waveTrackDataRight->GetRate()) {
+         auto leftTrackStart = waveTrackData->TimeToLongSamples(
+            mLeftTrack->GetStartTime());
+         auto rightTrackStart = waveTrackDataRight->TimeToLongSamples(
+            mRightTrack->GetStartTime());
          mStart = wxMin(leftTrackStart, rightTrackStart);
 
-         auto leftTrackEnd = mLeftTrack->TimeToLongSamples(mLeftTrack->GetEndTime());
-         auto rightTrackEnd = mRightTrack->TimeToLongSamples(mRightTrack->GetEndTime());
+         auto leftTrackEnd = waveTrackData->TimeToLongSamples(
+            mLeftTrack->GetEndTime());
+         auto rightTrackEnd = waveTrackDataRight->TimeToLongSamples(
+            mRightTrack->GetEndTime());
          mEnd = wxMax(leftTrackEnd, rightTrackEnd);
 
          bGoodResult = ProcessOne(count);
@@ -127,7 +135,8 @@ bool EffectStereoToMono::ProcessOne(int count)
    float  curRightFrame;
    float  curMonoFrame;
 
-   auto idealBlockLen = mLeftTrack->GetMaxBlockSize() * 2;
+   auto waveTrackData = mLeftTrack->GetData();
+   auto idealBlockLen = waveTrackData->GetMaxBlockSize() * 2;
    auto index = mStart;
    Floats leftBuffer { idealBlockLen };
    Floats rightBuffer{ idealBlockLen };
@@ -135,11 +144,14 @@ bool EffectStereoToMono::ProcessOne(int count)
 
    AudacityProject *p = GetActiveProject();
    auto outTrack =
-      TrackFactory::Get( *p ).NewWaveTrack(floatSample, mLeftTrack->GetRate());
+      TrackFactory::Get( *p ).NewWaveTrack(
+         floatSample, waveTrackData->GetRate());
 
    while (index < mEnd) {
-      bResult &= mLeftTrack->Get((samplePtr)leftBuffer.get(), floatSample, index, idealBlockLen);
-      bResult &= mRightTrack->Get((samplePtr)rightBuffer.get(), floatSample, index, idealBlockLen);
+      bResult &= waveTrackData->Get(
+         (samplePtr)leftBuffer.get(), floatSample, index, idealBlockLen);
+      bResult &= mRightTrack->GetData()->Get(
+         (samplePtr)rightBuffer.get(), floatSample, index, idealBlockLen);
       auto limit = limitSampleBufferSize( idealBlockLen, mEnd - index );
       for (decltype(limit) i = 0; i < limit; ++i) {
          index++;

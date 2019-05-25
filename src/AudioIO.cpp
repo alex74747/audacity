@@ -456,6 +456,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "Prefs.h"
 #include "Project.h"
 #include "Envelope.h"
+#include "WaveClip.h"
 #include "WaveTrack.h"
 #include "AutoRecovery.h"
 
@@ -1865,7 +1866,7 @@ int AudioIO::StartStream(const TransportTracks &tracks,
       // we would set the sound card to capture in 16 bits and the second
       // track wouldn't get the benefit of all 24 bits the card is capable
       // of.
-      captureFormat = mCaptureTracks[0]->GetSampleFormat();
+      captureFormat = mCaptureTracks[0]->GetData()->GetSampleFormat();
 
       // Tell project that we are about to start recording
       if (mListener)
@@ -2219,7 +2220,9 @@ bool AudioIO::AllocateBuffers(
             for( unsigned int i = 0; i < mCaptureTracks.size(); i++ )
             {
                mCaptureBuffers[i] = std::make_unique<RingBuffer>(
-                  mCaptureTracks[i]->GetSampleFormat(), captureBufferSize );
+                  mCaptureTracks[i]->GetData()->GetSampleFormat(),
+                  captureBufferSize
+               );
                mResample[i] =
                   std::make_unique<Resample>(true, mFactor, mFactor);
                   // constant rate resampling
@@ -3995,7 +3998,8 @@ void AudioIO::FillBuffers()
 
             for( i = 0; i < numChannels; i++ )
             {
-               sampleFormat trackFormat = mCaptureTracks[i]->GetSampleFormat();
+               sampleFormat trackFormat =
+                  mCaptureTracks[i]->GetData()->GetSampleFormat();
 
                AutoSaveFile appendLog;
                size_t discarded = 0;
@@ -4039,7 +4043,8 @@ void AudioIO::FillBuffers()
                   totalCrossfadeLength = data.size();
                   if (totalCrossfadeLength) {
                      crossfadeStart =
-                        floor(mRecordingSchedule.Consumed() * mCaptureTracks[i]->GetRate());
+                        floor(mRecordingSchedule.Consumed() *
+                           mCaptureTracks[i]->GetData()->GetRate());
                      if (crossfadeStart < totalCrossfadeLength)
                         pCrossfadeSrc = data.data() + crossfadeStart;
                   }

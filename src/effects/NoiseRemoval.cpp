@@ -526,10 +526,10 @@ bool EffectNoiseRemoval::ProcessOne(int count, WaveTrack * track,
    StartNewTrack();
 
    if (!mDoProfile)
-      mOutputTrack = mFactory->NewWaveTrack(track->GetSampleFormat(),
-                                            track->GetRate());
+      mOutputTrack = mFactory->NewWaveTrack(track->GetData()->GetSampleFormat(),
+                                            track->GetData()->GetRate());
 
-   auto bufferSize = track->GetMaxBlockSize();
+   auto bufferSize = track->GetData()->GetMaxBlockSize();
    Floats buffer{ bufferSize };
 
    bool bLoopSuccess = true;
@@ -538,7 +538,7 @@ bool EffectNoiseRemoval::ProcessOne(int count, WaveTrack * track,
       //Get a blockSize of samples (smaller than the size of the buffer)
       //Adjust the block size if it is the final block in the track
       const auto blockSize = limitSampleBufferSize(
-         track->GetBestBlockSize(samplePos),
+         track->GetData()->GetBestBlockSize(samplePos),
          start + len - samplePos
       );
 

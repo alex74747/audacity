@@ -20,6 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../UndoManager.h"
 #include "../../../../ViewInfo.h"
+#include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 #include "../../../../../images/Cursors.h"
 
@@ -55,7 +56,7 @@ namespace
 {
    int FindMergeLine(WaveTrack *track, double time)
    {
-      const double tolerance = 0.5 / track->GetRate();
+      const double tolerance = 0.5 / track->GetData()->GetRate();
       int ii = 0;
       for (const auto loc: track->GetCachedLocations()) {
          if (loc.typ == WaveTrackLocation::locationMergePoint &&

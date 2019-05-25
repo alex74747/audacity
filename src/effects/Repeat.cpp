@@ -32,6 +32,7 @@
 #include "../LabelTrack.h"
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/NumericTextCtrl.h"
 #include "../widgets/valnum.h"
@@ -127,10 +128,11 @@ bool EffectRepeat::Process()
       {
          if (!track->GetSelected())
             return fallthrough(); // Fall through to next lambda
-         auto start = track->TimeToLongSamples(mT0);
-         auto end = track->TimeToLongSamples(mT1);
+         auto waveTrackData = track->GetData();
+         auto start = waveTrackData->TimeToLongSamples(mT0);
+         auto end = waveTrackData->TimeToLongSamples(mT1);
          auto len = end - start;
-         double tLen = track->LongSamplesToTime(len);
+         double tLen = waveTrackData->LongSamplesToTime(len);
          double tc = mT0 + tLen;
 
          if (len <= 0)

@@ -40,6 +40,7 @@
 #include "../widgets/valnum.h"
 
 #include "../WaveTrack.h"
+#include "../WaveClip.h"
 
 enum
 {
@@ -182,8 +183,9 @@ bool EffectClickRemoval::Process()
       double t1 = mT1 > trackEnd? trackEnd: mT1;
 
       if (t1 > t0) {
-         auto start = track->TimeToLongSamples(t0);
-         auto end = track->TimeToLongSamples(t1);
+         auto waveTrackData = track->GetData();
+         auto start = waveTrackData->TimeToLongSamples(t0);
+         auto end = waveTrackData->TimeToLongSamples(t1);
          auto len = end - start;
 
          if (!ProcessOne(count, track, start, len))
@@ -215,7 +217,8 @@ bool EffectClickRemoval::ProcessOne(int count, WaveTrack * track, sampleCount st
       return false;
    }
 
-   auto idealBlockLen = track->GetMaxBlockSize() * 4;
+   auto waveTrackData = track->GetData();
+   auto idealBlockLen = waveTrackData->GetMaxBlockSize() * 4;
    if (idealBlockLen % windowSize != 0)
       idealBlockLen += (windowSize - (idealBlockLen % windowSize));
 
@@ -227,7 +230,8 @@ bool EffectClickRemoval::ProcessOne(int count, WaveTrack * track, sampleCount st
    {
       auto block = limitSampleBufferSize( idealBlockLen, len - s );
 
-      track->Get((samplePtr) buffer.get(), floatSample, start + s, block);
+      waveTrackData->Get(
+         (samplePtr) buffer.get(), floatSample, start + s, block);
 
       for (decltype(block) i = 0; i + windowSize / 2 < block; i += windowSize / 2)
       {

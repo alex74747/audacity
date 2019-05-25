@@ -48,6 +48,7 @@
 #include "../Prefs.h"
 #include "../RealFFTf.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/valnum.h"
@@ -618,7 +619,7 @@ bool EffectNoiseReduction::Process()
    if (mSettings->mDoProfile) {
       size_t spectrumSize = 1 + mSettings->WindowSize() / 2;
       mStatistics = std::make_unique<Statistics>
-         (spectrumSize, track->GetRate(), mSettings->mWindowTypes);
+         (spectrumSize, track->GetData()->GetRate(), mSettings->mWindowTypes);
    }
    else if (mStatistics->mWindowSize != mSettings->WindowSize()) {
       // possible only with advanced settings
@@ -657,7 +658,8 @@ bool EffectNoiseReduction::Worker::Process
 {
    int count = 0;
    for ( auto track : tracks.Selected< WaveTrack >() ) {
-      if (track->GetRate() != mSampleRate) {
+      auto waveTrackData = track->GetData();
+      if (waveTrackData->GetRate() != mSampleRate) {
          if (mDoProfile)
             effect.Effect::MessageBox(_("All noise profile data must have the same sample rate."));
          else
@@ -671,8 +673,8 @@ bool EffectNoiseReduction::Worker::Process
       double t1 = std::min(trackEnd, inT1);
 
       if (t1 > t0) {
-         auto start = track->TimeToLongSamples(t0);
-         auto end = track->TimeToLongSamples(t1);
+         auto start = waveTrackData->TimeToLongSamples(t0);
+         auto end = waveTrackData->TimeToLongSamples(t1);
          auto len = end - start;
 
          if (!ProcessOne(effect, statistics, factory,
@@ -1295,10 +1297,12 @@ bool EffectNoiseReduction::Worker::ProcessOne
    StartNewTrack();
 
    WaveTrack::Holder outputTrack;
+   auto waveTrackData = track->GetData();
    if(!mDoProfile)
-      outputTrack = factory.NewWaveTrack(track->GetSampleFormat(), track->GetRate());
+      outputTrack = factory.NewWaveTrack(
+         waveTrackData->GetSampleFormat(), waveTrackData->GetRate());
 
-   auto bufferSize = track->GetMaxBlockSize();
+   auto bufferSize = waveTrackData->GetMaxBlockSize();
    FloatVector buffer(bufferSize);
 
    bool bLoopSuccess = true;
@@ -1306,12 +1310,13 @@ bool EffectNoiseReduction::Worker::ProcessOne
    while (bLoopSuccess && samplePos < start + len) {
       //Get a blockSize of samples (smaller than the size of the buffer)
       const auto blockSize = limitSampleBufferSize(
-         track->GetBestBlockSize(samplePos),
+         waveTrackData->GetBestBlockSize(samplePos),
          start + len - samplePos
       );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr)&buffer[0], floatSample, samplePos, blockSize);
+      waveTrackData->Get(
+         (samplePtr)&buffer[0], floatSample, samplePos, blockSize);
       samplePos += blockSize;
 
       mInSampleCount += blockSize;
@@ -1337,8 +1342,9 @@ bool EffectNoiseReduction::Worker::ProcessOne
 
       // Take the output track and insert it in place of the original
       // sample data (as operated on -- this may not match mT0/mT1)
-      double t0 = outputTrack->LongSamplesToTime(start);
-      double tLen = outputTrack->LongSamplesToTime(len);
+      auto outputWaveTrackData = outputTrack->GetData();
+      double t0 = outputWaveTrackData->LongSamplesToTime(start);
+      double tLen = outputWaveTrackData->LongSamplesToTime(len);
       // Filtering effects always end up with more data than they started with.  Delete this 'tail'.
       outputTrack->HandleClear(tLen, outputTrack->GetEndTime(), false, false);
       track->ClearAndPaste(t0, t0 + tLen, &*outputTrack, true, false);

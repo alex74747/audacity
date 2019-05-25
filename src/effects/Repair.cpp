@@ -29,6 +29,7 @@ the audio, rather than actually finding the clicks.
 #include <wx/intl.h>
 
 #include "../InterpolateAudio.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 
@@ -84,8 +85,9 @@ bool EffectRepair::Process()
       const
       double repair_deltat = repair_t1 - repair_t0;
       if (repair_deltat > 0) {  // selection is within track audio
-         const auto repair0 = track->TimeToLongSamples(repair_t0);
-         const auto repair1 = track->TimeToLongSamples(repair_t1);
+         auto waveTrackData = track->GetData();
+         const auto repair0 = waveTrackData->TimeToLongSamples(repair_t0);
+         const auto repair1 = waveTrackData->TimeToLongSamples(repair_t1);
          const auto repairLen = repair1 - repair0;
          if (repairLen > 128) {
             ::Effect::MessageBox(_("The Repair effect is intended to be used on very short sections of damaged audio (up to 128 samples).\n\nZoom in and select a tiny fraction of a second to repair."));
@@ -93,13 +95,13 @@ bool EffectRepair::Process()
             break;
          }
 
-         const double rate = track->GetRate();
+         const double rate = waveTrackData->GetRate();
          const double spacing = std::max(repair_deltat * 2, 128. / rate);
          const double t0 = std::max(repair_t0 - spacing, trackStart);
          const double t1 = std::min(repair_t1 + spacing, trackEnd);
 
-         const auto s0 = track->TimeToLongSamples(t0);
-         const auto s1 = track->TimeToLongSamples(t1);
+         const auto s0 = waveTrackData->TimeToLongSamples(t0);
+         const auto s1 = waveTrackData->TimeToLongSamples(t1);
          // The difference is at most 2 * 128:
          const auto repairStart = (repair0 - s0).as_size_t();
          const auto len = s1 - s0;
@@ -135,7 +137,8 @@ bool EffectRepair::ProcessOne(int count, WaveTrack * track,
                               size_t repairStart, size_t repairLen)
 {
    Floats buffer{ len };
-   track->Get((samplePtr) buffer.get(), floatSample, start, len);
+   track->GetData()->Get(
+      (samplePtr) buffer.get(), floatSample, start, len);
    InterpolateAudio(buffer.get(), len, repairStart, repairLen);
    track->Set((samplePtr)&buffer[repairStart], floatSample,
               start + repairStart, repairLen);

@@ -31,6 +31,7 @@ and sample size to help you importing data of an unknown format.
 #include "../Prefs.h"
 #include "../ShuttleGui.h"
 #include "../UserException.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../prefs/QualityPrefs.h"
 #include "../widgets/ProgressDialog.h"
@@ -209,7 +210,7 @@ void ImportRaw(wxWindow *parent, const wxString &fileName,
             *iter = trackFactory->NewWaveTrack(format, rate);
       }
       const auto firstChannel = channels.begin()->get();
-      auto maxBlockSize = firstChannel->GetMaxBlockSize();
+      auto maxBlockSize = firstChannel->GetData()->GetMaxBlockSize();
 
       SampleBuffer srcbuffer(maxBlockSize * numChannels, format);
       SampleBuffer buffer(maxBlockSize, format);

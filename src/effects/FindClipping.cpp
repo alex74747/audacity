@@ -32,6 +32,7 @@
 #include "../widgets/AudacityMessageBox.h"
 
 #include "../LabelTrack.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 // Define keys, defaults, minimums, and maximums for the effect parameters
@@ -128,8 +129,9 @@ bool EffectFindClipping::Process()
       double t1 = mT1 > trackEnd ? trackEnd : mT1;
 
       if (t1 > t0) {
-         auto start = t->TimeToLongSamples(t0);
-         auto end = t->TimeToLongSamples(t1);
+         auto waveTrackData = t->GetData();
+         auto start = waveTrackData->TimeToLongSamples(t0);
+         auto end = waveTrackData->TimeToLongSamples(t1);
          auto len = end - start;
 
          if (!ProcessOne(lt, count, t, start, len)) {
@@ -181,6 +183,7 @@ bool EffectFindClipping::ProcessOne(LabelTrack * lt,
    decltype(blockSize) block = 0;
    double startTime = -1.0;
 
+   auto waveTrackData = wt->GetData();
    while (s < len) {
       if (block == 0) {
          if (TrackProgress(count,
@@ -192,14 +195,15 @@ bool EffectFindClipping::ProcessOne(LabelTrack * lt,
 
          block = limitSampleBufferSize( blockSize, len - s );
 
-         wt->Get((samplePtr)buffer.get(), floatSample, start + s, block);
+         waveTrackData->Get(
+            (samplePtr)buffer.get(), floatSample, start + s, block);
          ptr = buffer.get();
       }
 
       float v = fabs(*ptr++);
       if (v >= MAX_AUDIO) {
          if (startrun == 0) {
-            startTime = wt->LongSamplesToTime(start + s);
+            startTime = waveTrackData->LongSamplesToTime(start + s);
             samps = 0;
          }
          else {
@@ -215,7 +219,7 @@ bool EffectFindClipping::ProcessOne(LabelTrack * lt,
 
             if (stoprun >= mStop) {
                lt->AddLabel(SelectedRegion(startTime,
-                                          wt->LongSamplesToTime(start + s - mStop)),
+                              waveTrackData->LongSamplesToTime(start + s - mStop)),
                            wxString::Format(wxT("%lld of %lld"), startrun.as_long_long(), (samps - mStop).as_long_long()),
                            -2);
                startrun = 0;

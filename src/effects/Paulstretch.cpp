@@ -32,6 +32,7 @@
 #include "../widgets/AudacityMessageBox.h"
 #include "../Prefs.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 // Define keys, defaults, minimums, and maximums for the effect parameters
@@ -259,7 +260,9 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
 {
    auto badAllocMessage = _("Requested value exceeds memory capacity.");
 
-   const auto stretch_buf_size = GetBufferSize(track->GetRate());
+   auto waveTrackData = track->GetData();
+   auto rate = waveTrackData->GetRate();
+   const auto stretch_buf_size = GetBufferSize(rate);
    if (stretch_buf_size == 0) {
       ::Effect::MessageBox( badAllocMessage );
       return false;
@@ -267,8 +270,8 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
 
    double amount = this->mAmount;
 
-   auto start = track->TimeToLongSamples(t0);
-   auto end = track->TimeToLongSamples(t1);
+   auto start = waveTrackData->TimeToLongSamples(t0);
+   auto end = waveTrackData->TimeToLongSamples(t1);
    auto len = end - start;
 
    const auto minDuration = stretch_buf_size * 2 + 1;
@@ -282,7 +285,7 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
 
       float maxTimeRes = log( len.as_double() ) / log(2.0);
       maxTimeRes = pow(2.0, floor(maxTimeRes) + 0.5);
-      maxTimeRes = maxTimeRes / track->GetRate();
+      maxTimeRes = maxTimeRes / track->GetData()->GetRate();
 
       if (this->IsPreviewing()) {
          double defaultPreviewLen;
@@ -293,7 +296,7 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
             ::Effect::MessageBox (wxString::Format(_("Audio selection too short to preview.\n\n"
                                                "Try increasing the audio selection to at least %.1f seconds,\n"
                                                "or reducing the 'Time Resolution' to less than %.1f seconds."),
-                                             (minDuration / track->GetRate()) + 0.05, // round up to 1/10 s.
+                                             (minDuration / rate) + 0.05, // round up to 1/10 s.
                                              floor(maxTimeRes * 10.0) / 10.0),
                             wxOK | wxICON_EXCLAMATION);
          }
@@ -311,7 +314,7 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
          ::Effect::MessageBox (wxString::Format(_("The 'Time Resolution' is too long for the selection.\n\n"
                                             "Try increasing the audio selection to at least %.1f seconds,\n"
                                             "or reducing the 'Time Resolution' to less than %.1f seconds."),
-                                          (minDuration / track->GetRate()) + 0.05, // round up to 1/10 s.
+                                          (minDuration / rate) + 0.05, // round up to 1/10 s.
                                           floor(maxTimeRes * 10.0) / 10.0),
                          wxOK | wxICON_EXCLAMATION);
       }
@@ -325,13 +328,14 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
       (dlen - ((double)stretch_buf_size * 2.0));
    amount = 1.0 + (amount - 1.0) * adjust_amount;
 
-   auto outputTrack = mFactory->NewWaveTrack(track->GetSampleFormat(),track->GetRate());
+   auto outputTrack = mFactory->NewWaveTrack(
+      waveTrackData->GetSampleFormat(), waveTrackData->GetRate());
 
    try {
       // This encloses all the allocations of buffers, including those in
       // the constructor of the PaulStretch object
 
-      PaulStretch stretch(amount, stretch_buf_size, track->GetRate());
+      PaulStretch stretch(amount, stretch_buf_size, rate);
 
       auto nget = stretch.get_nsamples_for_fill();
 
@@ -348,7 +352,8 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
          decltype(len) s=0;
 
          while (s < len) {
-            track->Get((samplePtr)bufferptr0, floatSample, start + s, nget);
+            waveTrackData->Get(
+               (samplePtr)bufferptr0, floatSample, start + s, nget);
             stretch.process(buffer0.get(), nget);
 
             if (first_time) {
@@ -358,7 +363,8 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
             s += nget;
 
             if (first_time){//blend the the start of the selection
-               track->Get((samplePtr)fade_track_smps.get(), floatSample, start, fade_len);
+               waveTrackData->Get(
+                  (samplePtr)fade_track_smps.get(), floatSample, start, fade_len);
                first_time = false;
                for (size_t i = 0; i < fade_len; i++){
                   float fi = (float)i / (float)fade_len;
@@ -367,7 +373,8 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
                }
             }
             if (s >= len){//blend the end of the selection
-               track->Get((samplePtr)fade_track_smps.get(), floatSample, end - fade_len, fade_len);
+               waveTrackData->Get(
+                  (samplePtr)fade_track_smps.get(), floatSample, end - fade_len, fade_len);
                for (size_t i = 0; i < fade_len; i++){
                   float fi = (float)i / (float)fade_len;
                   auto i2 = bufsize / 2 - 1 - i;

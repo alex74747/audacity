@@ -59,7 +59,9 @@ greater use in future.
 #include "../ShuttleGui.h"
 #include "../Shuttle.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
+#include "../WaveClip.h"
 #include "../commands/Command.h"
 #include "../toolbars/ControlToolBar.h"
 #include "../widgets/AButton.h"
@@ -1397,6 +1399,7 @@ bool Effect::ProcessPass()
          sampleCount len;
          sampleCount leftStart;
          sampleCount rightStart = 0;
+         auto leftWaveTrackData = left->GetData();
 
          if (!isGenerator)
          {
@@ -1407,7 +1410,7 @@ bool Effect::ProcessPass()
          {
             len = 0;
             leftStart = 0;
-            mSampleCnt = left->TimeToLongSamples(mDuration);
+            mSampleCnt = leftWaveTrackData->TimeToLongSamples(mDuration);
          }
 
          mNumChannels = 0;
@@ -1444,10 +1447,10 @@ bool Effect::ProcessPass()
          }
 
          // Let the client know the sample rate
-         SetSampleRate(left->GetRate());
+         SetSampleRate(leftWaveTrackData->GetRate());
 
          // Get the block size the client wants to use
-         auto max = left->GetMaxBlockSize() * 2;
+         auto max = leftWaveTrackData->GetMaxBlockSize() * 2;
          mBlockSize = SetBlockSize(max);
 
          // Calculate the buffer size to be at least the max rounded up to the clients
@@ -1589,6 +1592,8 @@ bool Effect::ProcessTrack(int count,
    bool isGenerator = GetType() == EffectTypeGenerate;
    bool isProcessor = GetType() == EffectTypeProcess;
    double genDur = 0;
+   auto leftWaveTrackData = left->GetData();
+   auto rightWaveTrackData = right ? right->GetData() : nullptr;
    if (isGenerator)
    {
       if (mIsPreview) {
@@ -1599,17 +1604,21 @@ bool Effect::ProcessTrack(int count,
          genDur = mDuration;
       }
 
-      genLength = sampleCount((left->GetRate() * genDur) + 0.5);  // round to nearest sample
+      genLength = sampleCount((leftWaveTrackData->GetRate() * genDur) + 0.5);  // round to nearest sample
       delayRemaining = genLength;
       cleared = true;
 
       // Create temporary tracks
-      genLeft = mFactory->NewWaveTrack(left->GetSampleFormat(), left->GetRate());
+      genLeft = mFactory->NewWaveTrack(
+         leftWaveTrackData->GetSampleFormat(),
+         leftWaveTrackData->GetRate());
       genLeft->SetWaveColorIndex( left->GetWaveColorIndex() );
 
       if (right)
       {
-         genRight = mFactory->NewWaveTrack(right->GetSampleFormat(), right->GetRate());
+         genRight = mFactory->NewWaveTrack(
+            rightWaveTrackData->GetSampleFormat(),
+            rightWaveTrackData->GetRate());
          genRight->SetWaveColorIndex( right->GetWaveColorIndex() );
       }
    }
@@ -1628,10 +1637,12 @@ bool Effect::ProcessTrack(int count,
                limitSampleBufferSize( mBufferSize, inputRemaining );
 
             // Fill the input buffers
-            left->Get((samplePtr) inBuffer[0].get(), floatSample, inLeftPos, inputBufferCnt);
+            leftWaveTrackData->Get( (samplePtr) inBuffer[0].get(),
+               floatSample, inLeftPos, inputBufferCnt);
             if (right)
             {
-               right->Get((samplePtr) inBuffer[1].get(), floatSample, inRightPos, inputBufferCnt);
+               rightWaveTrackData->Get( (samplePtr) inBuffer[1].get(),
+               floatSample, inRightPos, inputBufferCnt);
             }
 
             // Reset the input buffer positions
@@ -2063,8 +2074,9 @@ void Effect::GetSamples(
 #endif
 
    if (t1 > t0) {
-      *start = track->TimeToLongSamples(t0);
-      auto end = track->TimeToLongSamples(t1);
+      auto waveTrackData = track->GetData();
+      *start = waveTrackData->TimeToLongSamples(t0);
+      auto end = waveTrackData->TimeToLongSamples(t1);
       *len = end - *start;
    }
    else {

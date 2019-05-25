@@ -25,6 +25,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../UndoManager.h"
 #include "../../../../ViewInfo.h"
+#include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 #include "../../../../../images/Cursors.h"
 #include "../../../../widgets/AudacityMessageBox.h"
@@ -83,7 +84,9 @@ namespace {
    inline double adjustTime(const WaveTrack *wt, double time)
    {
       // Round to an exact sample time
-      return wt->LongSamplesToTime(wt->TimeToLongSamples(time));
+      auto waveTrackData = wt->GetData();
+      return waveTrackData->LongSamplesToTime(
+         waveTrackData->TimeToLongSamples(time));
    }
 
    // Is the sample horizontally nearest to the cursor sufficiently separated
@@ -94,7 +97,7 @@ namespace {
       // Require more than 3 pixels per sample
       const wxInt64 xx = std::max(wxInt64(0), viewInfo.TimeToPosition(time));
       ZoomInfo::Intervals intervals;
-      const double rate = wt->GetRate();
+      const double rate = wt->GetData()->GetRate();
       viewInfo.FindIntervals(rate, intervals, width);
       ZoomInfo::Intervals::const_iterator it = intervals.begin(),
          end = intervals.end(), prev;
@@ -130,9 +133,11 @@ UIHandlePtr SampleHandle::HitTest
 
    // Just get one sample.
    float oneSample;
-   const double rate = wavetrack->GetRate();
+   auto waveTrackData = wavetrack->GetData();
+   const double rate = waveTrackData->GetRate();
    const auto s0 = (sampleCount)(tt * rate + 0.5);
-   if (! wavetrack->Get((samplePtr)&oneSample, floatSample, s0, 1, fillZero,
+   if (! waveTrackData->Get(
+      (samplePtr)&oneSample, floatSample, s0, 1, fillZero,
          // Do not propagate exception but return a failure value
          false) )
       return {};
@@ -146,7 +151,7 @@ UIHandlePtr SampleHandle::HitTest
    Envelope* env = wavetrack->GetEnvelopeAtX(state.GetX());
    if (env)
       // Calculate sample as it would be rendered, so quantize time
-      envValue = env->GetValue( tt, 1.0 / wavetrack->GetRate() );
+      envValue = env->GetValue( tt, 1.0 / rate );
 
    const bool dB = !wavetrack->GetWaveformSettings().isLinear();
    int yValue = GetWaveYPos(oneSample * envValue,
@@ -228,7 +233,8 @@ UIHandle::Result SampleHandle::Click
       adjustTime(mClickedTrack.get(), viewInfo.PositionToTime(event.m_x, rect.x));
 
    //convert t0 to samples
-   mClickedStartSample = mClickedTrack->TimeToLongSamples(t0);
+   auto waveTrackData = mClickedTrack->GetData();
+   mClickedStartSample = waveTrackData->TimeToLongSamples(t0);
 
    //Determine how drawing should occur.  If alt is down,
    //do a smoothing, instead of redrawing.
@@ -253,7 +259,8 @@ UIHandle::Result SampleHandle::Click
       Floats newSampleRegion{ 1 + 2 * (size_t)SMOOTHING_BRUSH_RADIUS };
 
       //Get a sample  from the track to do some tricks on.
-      mClickedTrack->Get((samplePtr)sampleRegion.get(), floatSample,
+      waveTrackData->Get(
+         (samplePtr)sampleRegion.get(), floatSample,
          mClickedStartSample - SMOOTHING_KERNEL_RADIUS - SMOOTHING_BRUSH_RADIUS,
          sampleRegionSize);
 
@@ -358,6 +365,7 @@ UIHandle::Result SampleHandle::Drag
    //Find the point that we want to redraw at. If the control button is down,
    //adjust only the originally clicked-on sample
 
+   auto waveTrackData = mClickedTrack->GetData();
    if (event.m_controlDown) {
       //*************************************************
       //***   CTRL-DOWN (Hold Initial Sample Constant ***
@@ -373,10 +381,10 @@ UIHandle::Result SampleHandle::Drag
       //Otherwise, adjust the sample you are dragging over right now.
       //convert this to samples
       const double tt = viewInfo.PositionToTime(event.m_x, mRect.x);
-      s0 = mClickedTrack->TimeToLongSamples(tt);
+      s0 = waveTrackData->TimeToLongSamples(tt);
    }
 
-   const double t0 = mClickedTrack->LongSamplesToTime(s0);
+   const double t0 = waveTrackData->LongSamplesToTime(s0);
 
    // Do redrawing, based on the mouse position.
    // Calculate where the mouse is located vertically (between +/- 1)
@@ -467,7 +475,7 @@ float SampleHandle::FindSampleEditingLevel
    if (env)
    {
       // Calculate sample as it would be rendered, so quantize time
-      double envValue = env->GetValue( t0, 1.0 / mClickedTrack->GetRate());
+      double envValue = env->GetValue( t0, 1.0 / mClickedTrack->GetData()->GetRate());
       if (envValue > 0)
          newLevel /= envValue;
       else

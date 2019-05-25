@@ -663,9 +663,11 @@ double DoClipMove
       // set it to a sample point, and minimum of 1 sample point
       if (!right)
          desiredSlideAmount *= -1;
-      double nSamples = rint(wt->GetRate() * desiredSlideAmount);
+      auto waveTrackData = wt->GetData();
+      auto rate = waveTrackData->GetRate();
+      double nSamples = rint(rate * desiredSlideAmount);
       nSamples = std::max(nSamples, 1.0);
-      desiredSlideAmount = nSamples / wt->GetRate();
+      desiredSlideAmount = nSamples / rate;
       if (!right)
          desiredSlideAmount *= -1;
 

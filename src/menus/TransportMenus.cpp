@@ -540,7 +540,7 @@ void OnPunchAndRoll(const CommandContext &context)
 
    double newt1 = t1;
    for (const auto &wt : tracks) {
-      sampleCount testSample(floor(t1 * wt->GetRate()));
+      sampleCount testSample(floor(t1 * wt->GetData()->GetRate()));
       auto clip = wt->GetClipAtSample(testSample);
       if (!clip)
          // Bug 1890 (an enhancement request)
@@ -569,12 +569,14 @@ void OnPunchAndRoll(const CommandContext &context)
       const auto endTime = wt->GetEndTime();
       const auto duration =
          std::max(0.0, std::min(crossFadeDuration, endTime - t1));
-      const size_t getLen = floor(duration * wt->GetRate());
+      auto waveTrackData = wt->GetData();
+      const size_t getLen = floor(duration * waveTrackData->GetRate());
       std::vector<float> data(getLen);
       if (getLen > 0) {
          float *const samples = data.data();
-         const sampleCount pos = wt->TimeToLongSamples(t1);
-         wt->Get((samplePtr)samples, floatSample, pos, getLen);
+         const sampleCount pos = waveTrackData->TimeToLongSamples(t1);
+         waveTrackData->Get(
+            (samplePtr)samples, floatSample, pos, getLen);
       }
       crossfadeData.push_back(std::move(data));
    }

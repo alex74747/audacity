@@ -22,6 +22,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../Project.h"
 #include "../../../../RefreshCode.h"
 #include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 #include "../../../../widgets/PopupMenuTable.h"
 #include "../../../../../images/Cursors.h"
@@ -81,7 +82,7 @@ void WaveTrackVZoomHandle::DoZoom
       std::swap( zoomStart, zoomEnd );
 
    float min, max, minBand = 0;
-   const double rate = pTrack->GetRate();
+   const double rate = pTrack->GetData()->GetRate();
    const float halfrate = rate / 2;
    float maxFreq = 8000.0;
    const SpectrogramSettings &specSettings = pTrack->GetSpectrogramSettings();

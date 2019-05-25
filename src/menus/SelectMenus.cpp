@@ -11,6 +11,7 @@
 #include "../TimeDialog.h"
 #include "../TrackPanel.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../NoteTrack.h"
 #include "../commands/CommandContext.h"
@@ -102,12 +103,14 @@ double NearestZeroCrossing
 
    int nTracks = 0;
    for (auto one : tracks.Selected< const WaveTrack >()) {
-      auto oneWindowSize = size_t(std::max(1.0, one->GetRate() / 100));
+      auto waveTrackData = one->GetData();
+      auto oneWindowSize =
+         size_t(std::max(1.0, waveTrackData->GetRate() / 100));
       Floats oneDist{ oneWindowSize };
-      auto s = one->TimeToLongSamples(t0);
+      auto s = waveTrackData->TimeToLongSamples(t0);
       // fillTwo to ensure that missing values are treated as 2, and hence do
       // not get used as zero crossings.
-      one->Get((samplePtr)oneDist.get(), floatSample,
+      waveTrackData->Get((samplePtr)oneDist.get(), floatSample,
                s - (int)oneWindowSize/2, oneWindowSize, fillTwo);
 
 

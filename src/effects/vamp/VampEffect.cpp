@@ -41,6 +41,7 @@
 #include "../../widgets/AudacityMessageBox.h"
 
 #include "../../LabelTrack.h"
+#include "../../WaveClip.h"
 #include "../../WaveTrack.h"
 
 enum
@@ -305,9 +306,9 @@ bool VampEffect::Init()
 
    for (auto leader : inputTracks()->Leaders<const WaveTrack>()) {
       auto channelGroup = TrackList::Channels( leader );
-      auto rate = (*channelGroup.first++) -> GetRate();
+      auto rate = (*channelGroup.first++) -> GetData()->GetRate();
       for(auto channel : channelGroup) {
-         if (rate != channel->GetRate())
+         if (rate != channel->GetData()->GetRate())
          // PRL:  Track rate might not match individual clip rates.
          // So is this check not adequate?
           {
@@ -452,12 +453,14 @@ bool VampEffect::Process()
 
          if (left)
          {
-            left->Get((samplePtr)data[0].get(), floatSample, ls, request);
+            left->GetData()->Get(
+               (samplePtr)data[0].get(), floatSample, ls, request);
          }
 
          if (right)
          {
-            right->Get((samplePtr)data[1].get(), floatSample, rs, request);
+            right->GetData()->Get(
+               (samplePtr)data[1].get(), floatSample, rs, request);
          }
 
          if (request < block)

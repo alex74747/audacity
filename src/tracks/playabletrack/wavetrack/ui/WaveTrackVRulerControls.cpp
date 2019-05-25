@@ -20,6 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../Project.h"
 #include "../../../../RefreshCode.h"
 #include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,7 +151,7 @@ unsigned WaveTrackVRulerControls::HandleWheelRotation
          const bool isLinear = settings.scaleType == SpectrogramSettings::stLinear;
          float bottom, top;
          wt->GetSpectrumBounds(&bottom, &top);
-         const double rate = wt->GetRate();
+         const double rate = wt->GetData()->GetRate();
          const float bound = rate / 2;
          const NumberScale numberScale(settings.GetScale(bottom, top));
          float newTop =

@@ -585,11 +585,12 @@ void FreqWindow::GetAudio()
    int selcount = 0;
    bool warning = false;
    for (auto track : TrackList::Get( *p ).Selected< const WaveTrack >()) {
+      auto waveTrackData = track->GetData();
       auto &selectedRegion = ViewInfo::Get( *p ).selectedRegion;
       if (selcount==0) {
-         mRate = track->GetRate();
-         auto start = track->TimeToLongSamples(selectedRegion.t0());
-         auto end = track->TimeToLongSamples(selectedRegion.t1());
+         mRate = waveTrackData->GetRate();
+         auto start = waveTrackData->TimeToLongSamples(selectedRegion.t0());
+         auto end = waveTrackData->TimeToLongSamples(selectedRegion.t1());
          auto dataLen = end - start;
          if (dataLen > 10485760) {
             warning = true;
@@ -600,20 +601,22 @@ void FreqWindow::GetAudio()
             mDataLen = dataLen.as_size_t();
          mData = Floats{ mDataLen };
          // Don't allow throw for bad reads
-         track->Get((samplePtr)mData.get(), floatSample, start, mDataLen,
+         waveTrackData->Get(
+            (samplePtr)mData.get(), floatSample, start, mDataLen,
                     fillZero, false);
       }
       else {
-         if (track->GetRate() != mRate) {
+         if (waveTrackData->GetRate() != mRate) {
             AudacityMessageBox(_("To plot the spectrum, all selected tracks must be the same sample rate."));
             mData.reset();
             mDataLen = 0;
             return;
          }
-         auto start = track->TimeToLongSamples(selectedRegion.t0());
+         auto start = waveTrackData->TimeToLongSamples(selectedRegion.t0());
          Floats buffer2{ mDataLen };
          // Again, stop exceptions
-         track->Get((samplePtr)buffer2.get(), floatSample, start, mDataLen,
+         waveTrackData->Get(
+            (samplePtr)buffer2.get(), floatSample, start, mDataLen,
                     fillZero, false);
          for (size_t i = 0; i < mDataLen; i++)
             mData[i] += buffer2[i];

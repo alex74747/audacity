@@ -200,7 +200,7 @@ namespace
       if (pTrack) {
          // WaveClip::GetClipAtX doesn't work unless the clip is on the screen and can return bad info otherwise
          // instead calculate the time manually
-         double rate = pTrack->GetRate();
+         double rate = pTrack->GetData()->GetRate();
          auto s0 = (sampleCount)(time * rate + 0.5);
 
          if (s0 >= 0)
@@ -444,7 +444,7 @@ namespace {
          double clipLeft = 0, clipRight = 0;
 
          track.TypeSwitch( [&](WaveTrack *mtw){
-            const double rate = mtw->GetRate();
+            const double rate = mtw->GetData()->GetRate();
             // set it to a sample point
             desiredSlideAmount = rint(desiredSlideAmount * rate) / rate;
          });
@@ -814,7 +814,7 @@ UIHandle::Result TimeShiftHandle::Release
          // make sure the sample rate matches the destination track.
          // Assume the clip was dropped in a wave track
          pWaveClip->Resample
-            (static_cast<WaveTrack*>(trackClip.track)->GetRate());
+            (static_cast<WaveTrack*>(trackClip.track)->GetData()->GetRate());
          pWaveClip->MarkChanged();
       }
    }

@@ -12,6 +12,7 @@
 #include "../Audacity.h"
 #include "Contrast.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../Prefs.h"
 #include "../Project.h"
@@ -74,9 +75,10 @@ bool ContrastDialog::GetDB(float &dB)
          mT0 = t->GetStartTime();
       if(mT1 > t->GetEndTime())
          mT1 = t->GetEndTime();
-
-      auto SelT0 = t->TimeToLongSamples(mT0);
-      auto SelT1 = t->TimeToLongSamples(mT1);
+      
+      auto waveTrackData = t->GetData();
+      auto SelT0 = waveTrackData->TimeToLongSamples(mT0);
+      auto SelT1 = waveTrackData->TimeToLongSamples(mT1);
 
       if(SelT0 > SelT1)
       {

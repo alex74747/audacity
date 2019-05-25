@@ -95,7 +95,7 @@ namespace
       wxInt64 trackTopEdge,
       int trackHeight)
    {
-      const double rate = wt->GetRate();
+      const double rate = wt->GetData()->GetRate();
 
       // Handle snapping
       if (maySnap &&
@@ -1224,7 +1224,7 @@ void SelectHandle::AdjustFreqSelection(
    // Extension happens only when dragging in the same track in which we
    // started, and that is of a spectrogram display type.
 
-   const double rate =  wt->GetRate();
+   const double rate =  wt->GetData()->GetRate();
    const double frequency =
       PositionToFrequency(wt, true, mouseYCoordinate,
          trackTopEdge, trackHeight);
@@ -1324,21 +1324,22 @@ void SelectHandle::StartSnappingFreqSelection
 {
    static const size_t minLength = 8;
 
-   const double rate = pTrack->GetRate();
+   auto waveTrackData = pTrack->GetData();
+   const double rate = waveTrackData->GetRate();
 
    // Grab samples, just for this track, at these times
    std::vector<float> frequencySnappingData;
    const auto start =
-      pTrack->TimeToLongSamples(viewInfo.selectedRegion.t0());
+      waveTrackData->TimeToLongSamples(viewInfo.selectedRegion.t0());
    const auto end =
-      pTrack->TimeToLongSamples(viewInfo.selectedRegion.t1());
+      waveTrackData->TimeToLongSamples(viewInfo.selectedRegion.t1());
    const auto length =
       std::min(frequencySnappingData.max_size(),
          limitSampleBufferSize(10485760, // as in FreqWindow.cpp
             end - start));
    const auto effectiveLength = std::max(minLength, length);
    frequencySnappingData.resize(effectiveLength, 0.0f);
-   pTrack->Get(
+   waveTrackData->Get(
       reinterpret_cast<samplePtr>(&frequencySnappingData[0]),
       floatSample, start, length, fillZero,
       // Don't try to cope with exceptions, just read zeroes instead.
@@ -1378,7 +1379,7 @@ void SelectHandle::MoveSnappingFreqSelection
       // but snap according to the peaks in the old track.
 
       // But if we always supply the original clicked track here that doesn't matter.
-      const double rate = wt->GetRate();
+      const double rate = wt->GetData()->GetRate();
       const double frequency =
          PositionToFrequency(wt, false, mouseYCoordinate,
          trackTopEdge, trackHeight);
@@ -1416,7 +1417,7 @@ void SelectHandle::SnapCenterOnce
 {
    const SpectrogramSettings &settings = pTrack->GetSpectrogramSettings();
    const auto windowSize = settings.GetFFTLength();
-   const double rate = pTrack->GetRate();
+   const double rate = pTrack->GetData()->GetRate();
    const double nyq = rate / 2.0;
    const double binFrequency = rate / windowSize;
 

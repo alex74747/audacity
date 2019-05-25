@@ -11,6 +11,7 @@
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
@@ -96,8 +97,9 @@ bool DoPasteNothingSelected(AudacityProject &project)
                   // Cause duplication of block files on disk, when copy is
                   // between projects
                   locker.create(wc);
+               auto waveTrackData = wc->GetData();
                uNewTrack = trackFactory.NewWaveTrack(
-                  wc->GetSampleFormat(), wc->GetRate()),
+                  waveTrackData->GetSampleFormat(), waveTrackData->GetRate()),
                pNewTrack = uNewTrack.get();
             },
 #ifdef USE_MIDI
@@ -647,8 +649,9 @@ void OnPaste(const CommandContext &context)
                wt->ClearAndPaste(t0, t1, wc, true, true);
             }
             else {
+               auto waveTrackData = wt->GetData();
                auto tmp = trackFactory.NewWaveTrack(
-                  wt->GetSampleFormat(), wt->GetRate());
+                  waveTrackData->GetSampleFormat(), waveTrackData->GetRate());
                tmp->InsertSilence( 0.0,
                   // MJS: Is this correct?
                   clipboard.Duration() );
@@ -919,11 +922,15 @@ void OnSplitNew(const CommandContext &context)
             // Clips must be aligned to sample positions or the NEW clip will
             // not fit in the gap where it came from
             double offset = wt->GetOffset();
-            offset = wt->LongSamplesToTime(wt->TimeToLongSamples(offset));
-            double newt0 = wt->LongSamplesToTime(wt->TimeToLongSamples(
-               selectedRegion.t0()));
-            double newt1 = wt->LongSamplesToTime(wt->TimeToLongSamples(
-               selectedRegion.t1()));
+            auto waveTrackData = wt->GetData();
+            offset = waveTrackData->LongSamplesToTime(
+               waveTrackData->TimeToLongSamples(offset));
+            double newt0 = waveTrackData->LongSamplesToTime(
+               waveTrackData->TimeToLongSamples(
+                  selectedRegion.t0()));
+            double newt1 = waveTrackData->LongSamplesToTime(
+               waveTrackData->TimeToLongSamples(
+                  selectedRegion.t1()));
             dest = wt->SplitCut(newt0, newt1);
             if (dest) {
                dest->SetOffset(wxMax(newt0, offset));

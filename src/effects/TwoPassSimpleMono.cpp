@@ -21,6 +21,7 @@ doing the second pass over all selected tracks.
 #include "../Audacity.h"
 #include "TwoPassSimpleMono.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 bool EffectTwoPassSimpleMono::Process()
@@ -61,11 +62,12 @@ bool EffectTwoPassSimpleMono::ProcessPass()
       if (mCurT1 > mCurT0) {
 
          //Transform the marker timepoints to samples
-         auto start = track->TimeToLongSamples(mCurT0);
-         auto end = track->TimeToLongSamples(mCurT1);
+         auto waveTrackData = track->GetData();
+         auto start = waveTrackData->TimeToLongSamples(mCurT0);
+         auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
          //Get the track rate and samples
-         mCurRate = track->GetRate();
+         mCurRate = waveTrackData->GetRate();
          mCurChannel = track->GetChannel();
 
          //NewTrackPass1/2() returns true by default
@@ -100,17 +102,21 @@ bool EffectTwoPassSimpleMono::ProcessOne(WaveTrack * track,
    //used simple to calculate a progress meter, so it is easier
    //to make it a double now than it is to do it later
    auto len = (end - start).as_double();
-   auto maxblock = track->GetMaxBlockSize();
+   auto waveTrackData = track->GetData();
+   auto maxblock = waveTrackData->GetMaxBlockSize();
 
    //Initiate a processing buffer.  This buffer will (most likely)
    //be shorter than the length of the track being processed.
    Floats buffer1{ maxblock };
    Floats buffer2{ maxblock };
    auto samples1 =  limitSampleBufferSize(
-      std::min( maxblock, track->GetBestBlockSize(start) ), end - start );
+      std::min( maxblock,
+         waveTrackData->GetBestBlockSize(start) ),
+      end - start );
 
    //Get the samples from the track and put them in the buffer
-   track->Get((samplePtr) buffer1.get(), floatSample, start, samples1);
+   waveTrackData->Get(
+      (samplePtr) buffer1.get(), floatSample, start, samples1);
 
    // Process the first buffer with a NULL previous buffer
    if (mPass == 0)
@@ -128,11 +134,13 @@ bool EffectTwoPassSimpleMono::ProcessOne(WaveTrack * track,
       //Get a block of samples (smaller than the size of the buffer)
       //Adjust the block size if it is the final block in the track
       auto samples2 = limitSampleBufferSize(
-         std::min( track->GetBestBlockSize(s), maxblock ), end - s
+         std::min( waveTrackData->GetBestBlockSize(s), maxblock ),
+         end - s
       );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr)buffer2.get(), floatSample, s, samples2);
+      waveTrackData->Get(
+         (samplePtr)buffer2.get(), floatSample, s, samples2);
 
       //Process the buffer.  If it fails, clean up and exit.
       if (mPass == 0)

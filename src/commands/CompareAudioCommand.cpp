@@ -22,6 +22,7 @@ threshold of difference in two selected tracks
 #include "CompareAudioCommand.h"
 
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 
@@ -116,24 +117,30 @@ bool CompareAudioCommand::Apply(const CommandContext & context)
 
    long errorCount = 0;
    // Initialize buffers for track data to be analyzed
-   auto buffSize = std::min(mTrack0->GetMaxBlockSize(), mTrack1->GetMaxBlockSize());
+   auto waveTrackData0 = mTrack0->GetData();
+   auto waveTrackData1 = mTrack1->GetData();
+   auto buffSize = std::min(
+      waveTrackData0->GetMaxBlockSize(),
+      waveTrackData1->GetMaxBlockSize());
 
    Floats buff0{ buffSize };
    Floats buff1{ buffSize };
 
    // Compare tracks block by block
-   auto s0 = mTrack0->TimeToLongSamples(mT0);
-   auto s1 = mTrack0->TimeToLongSamples(mT1);
+   auto s0 = waveTrackData0->TimeToLongSamples(mT0);
+   auto s1 = waveTrackData0->TimeToLongSamples(mT1);
    auto position = s0;
    auto length = s1 - s0;
    while (position < s1)
    {
       // Get a block of data into the buffers
       auto block = limitSampleBufferSize(
-         mTrack0->GetBestBlockSize(position), s1 - position
+         waveTrackData0->GetBestBlockSize(position), s1 - position
       );
-      mTrack0->Get((samplePtr)buff0.get(), floatSample, position, block);
-      mTrack1->Get((samplePtr)buff1.get(), floatSample, position, block);
+      waveTrackData0->Get(
+         (samplePtr)buff0.get(), floatSample, position, block);
+      waveTrackData1->Get(
+         (samplePtr)buff1.get(), floatSample, position, block);
 
       for (decltype(block) buffPos = 0; buffPos < block; ++buffPos)
       {
@@ -151,7 +158,7 @@ bool CompareAudioCommand::Apply(const CommandContext & context)
    }
 
    // Output the results
-   double errorSeconds = mTrack0->LongSamplesToTime(errorCount);
+   double errorSeconds = waveTrackData0->LongSamplesToTime(errorCount);
    context.Status(wxString::Format(wxT("%li"), errorCount));
    context.Status(wxString::Format(wxT("%.4f"), errorSeconds));
    context.Status(wxString::Format(wxT("Finished comparison: %li samples (%.3f seconds) exceeded the error threshold of %f."), errorCount, errorSeconds, errorThreshold));

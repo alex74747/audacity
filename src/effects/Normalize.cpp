@@ -32,6 +32,7 @@
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 #include "../WaveTrack.h"
+#include "../WaveClip.h"
 #include "../widgets/valnum.h"
 #include "../widgets/ProgressDialog.h"
 
@@ -525,8 +526,9 @@ bool EffectNormalize::AnalyseTrackData(const WaveTrack * track, const wxString &
    bool rc = true;
 
    //Transform the marker timepoints to samples
-   auto start = track->TimeToLongSamples(mCurT0);
-   auto end = track->TimeToLongSamples(mCurT1);
+   auto waveTrackData = track->GetData();
+   auto start = waveTrackData->TimeToLongSamples(mCurT0);
+   auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
    //Get the length of the buffer (as double). len is
    //used simply to calculate a progress meter, so it is easier
@@ -535,7 +537,7 @@ bool EffectNormalize::AnalyseTrackData(const WaveTrack * track, const wxString &
 
    //Initiate a processing buffer.  This buffer will (most likely)
    //be shorter than the length of the track being processed.
-   Floats buffer{ track->GetMaxBlockSize() };
+   Floats buffer{ waveTrackData->GetMaxBlockSize() };
 
    mSum   = 0.0; // dc offset inits
    mCount = 0;
@@ -553,12 +555,13 @@ bool EffectNormalize::AnalyseTrackData(const WaveTrack * track, const wxString &
       //Get a block of samples (smaller than the size of the buffer)
       //Adjust the block size if it is the final block in the track
       const auto block = limitSampleBufferSize(
-         track->GetBestBlockSize(s),
+         waveTrackData->GetBestBlockSize(s),
          end - s
       );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr) buffer.get(), floatSample, s, block, fillZero, true, &blockSamples);
+      waveTrackData->Get(
+         (samplePtr) buffer.get(), floatSample, s, block, fillZero, true, &blockSamples);
       totalSamples += blockSamples;
 
       //Process the buffer.
@@ -601,8 +604,9 @@ bool EffectNormalize::ProcessOne(
    bool rc = true;
 
    //Transform the marker timepoints to samples
-   auto start = track->TimeToLongSamples(mCurT0);
-   auto end = track->TimeToLongSamples(mCurT1);
+   auto waveTrackData = track->GetData();
+   auto start = waveTrackData->TimeToLongSamples(mCurT0);
+   auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
    //Get the length of the buffer (as double). len is
    //used simply to calculate a progress meter, so it is easier
@@ -611,7 +615,7 @@ bool EffectNormalize::ProcessOne(
 
    //Initiate a processing buffer.  This buffer will (most likely)
    //be shorter than the length of the track being processed.
-   Floats buffer{ track->GetMaxBlockSize() };
+   Floats buffer{ waveTrackData->GetMaxBlockSize() };
 
    //Go through the track one buffer at a time. s counts which
    //sample the current buffer starts at.
@@ -620,12 +624,13 @@ bool EffectNormalize::ProcessOne(
       //Get a block of samples (smaller than the size of the buffer)
       //Adjust the block size if it is the final block in the track
       const auto block = limitSampleBufferSize(
-         track->GetBestBlockSize(s),
+         waveTrackData->GetBestBlockSize(s),
          end - s
       );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr) buffer.get(), floatSample, s, block);
+      waveTrackData->Get(
+         (samplePtr) buffer.get(), floatSample, s, block);
 
       //Process the buffer.
       ProcessData(buffer.get(), block, offset);

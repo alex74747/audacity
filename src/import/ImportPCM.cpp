@@ -52,6 +52,7 @@
 #include "../FileFormats.h"
 #include "../Prefs.h"
 #include "../ShuttleGui.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "ImportPlugin.h"
 
@@ -376,7 +377,7 @@ ProgressResult PCMImportFileHandle::Import(TrackFactory *trackFactory,
 
    auto fileTotalFrames =
       (sampleCount)mInfo.frames; // convert from sf_count_t
-   auto maxBlockSize = channels.begin()->get()->GetMaxBlockSize();
+   auto maxBlockSize = channels.begin()->get()->GetData()->GetMaxBlockSize();
    auto updateResult = ProgressResult::Cancelled;
 
    // If the format is not seekable, we must use 'copy' mode,

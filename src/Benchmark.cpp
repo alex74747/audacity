@@ -364,7 +364,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
    auto dd = DirManager::Create();
    const auto t = TrackFactory{ dd, &zoomInfo }.NewWaveTrack(int16Sample);
 
-   t->SetRate(1);
+   auto waveTrackData = t->GetData();
+   waveTrackData->SetRate(1);
 
    srand(randSeed);
 
@@ -508,7 +509,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
    timer.Start();
    for (size_t i = 0; i < nChunks; i++) {
       v = small1[i];
-      t->Get((samplePtr)block.get(), int16Sample, i * chunkSize, chunkSize);
+      waveTrackData->Get(
+         (samplePtr)block.get(), int16Sample, i * chunkSize, chunkSize);
       for (size_t b = 0; b < chunkSize; b++)
          if (block[b] != v) {
             bad++;
@@ -534,7 +536,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
    for (size_t i = 0; i < nChunks; i++) {
       v = small1[i];
-      t->Get((samplePtr)block.get(), int16Sample, i * chunkSize, chunkSize);
+      waveTrackData->Get(
+         (samplePtr)block.get(), int16Sample, i * chunkSize, chunkSize);
       for (size_t b = 0; b < chunkSize; b++)
          if (block[b] != v)
             bad++;

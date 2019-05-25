@@ -1597,13 +1597,14 @@ struct ClipParameters
       }
 
       // Use the WaveTrack method to show what is selected and 'should' be copied, pasted etc.
+      auto waveTrackData = track->GetData();
       ssel0 = std::max(sampleCount(0), spectrum
          ? sampleCount((sel0 - tOffset) * rate + .99) // PRL: why?
-         : track->TimeToLongSamples(sel0 - tOffset)
+         : waveTrackData->TimeToLongSamples(sel0 - tOffset)
       );
       ssel1 = std::max(sampleCount(0), spectrum
          ? sampleCount((sel1 - tOffset) * rate + .99) // PRL: why?
-         : track->TimeToLongSamples(sel1 - tOffset)
+         : waveTrackData->TimeToLongSamples(sel1 - tOffset)
       );
 
       //trim selection so that it only contains the actual samples
@@ -1795,6 +1796,8 @@ void TrackArt::DrawClipWaveform(TrackPanelDrawingContext &context,
 
    const float dBRange = track->GetWaveformSettings().dBRange;
 
+   auto waveTrackData = track->GetData();
+
    dc.SetPen(*wxTRANSPARENT_PEN);
    int iColorIndex = clip->GetColourIndex();
    artist->SetColours( iColorIndex );
@@ -1825,8 +1828,11 @@ void TrackArt::DrawClipWaveform(TrackPanelDrawingContext &context,
    {
       double tt0, tt1;
       if (track->GetSelected() || track->IsSyncLockSelected()) {
-         tt0 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t0())),
-            tt1 = track->LongSamplesToTime(track->TimeToLongSamples(selectedRegion.t1()));
+         tt0 = waveTrackData->LongSamplesToTime(
+            waveTrackData->TimeToLongSamples(selectedRegion.t0())),
+         tt1 =
+            waveTrackData->LongSamplesToTime(
+               waveTrackData->TimeToLongSamples(selectedRegion.t1()));
       }
       else
          tt0 = tt1 = 0.0;

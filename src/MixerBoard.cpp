@@ -40,6 +40,7 @@
 #include "Project.h"
 #include "TrackPanel.h" // for EVT_TRACK_PANEL_TIMER
 #include "UndoManager.h"
+#include "WaveClip.h"
 #include "WaveTrack.h"
 
 #include "widgets/AButton.h"
@@ -445,7 +446,7 @@ void MixerTrackCluster::HandleSliderPan(const bool bWantPushState /*= false*/)
 void MixerTrackCluster::ResetMeter(const bool bResetClipping)
 {
    if (mMeter)
-      mMeter->Reset(GetWave()->GetRate(), bResetClipping);
+      mMeter->Reset(GetWave()->GetData()->GetRate(), bResetClipping);
 }
 
 
@@ -587,8 +588,10 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
    //
 
    const auto pTrack = GetWave();
-   auto startSample = (sampleCount)((pTrack->GetRate() * t0) + 0.5);
-   auto scnFrames = (sampleCount)((pTrack->GetRate() * (t1 - t0)) + 0.5);
+   auto waveTrackData = pTrack->GetData();
+   auto rate = waveTrackData->GetRate();
+   auto startSample = (sampleCount)((rate * t0) + 0.5);
+   auto scnFrames = (sampleCount)((rate * (t1 - t0)) + 0.5);
 
    // Expect that the difference of t1 and t0 is the part of a track played
    // in about 1/20 second (ticks of TrackPanel timer), so this won't overflow
@@ -597,7 +600,7 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
    Floats tempFloatsArray{ nFrames };
    decltype(tempFloatsArray) meterFloatsArray;
    // Don't throw on read error in this drawing update routine
-   bool bSuccess = pTrack->Get((samplePtr)tempFloatsArray.get(),
+   bool bSuccess = waveTrackData->Get((samplePtr)tempFloatsArray.get(),
       floatSample, startSample, nFrames, fillZero, false);
    if (bSuccess)
    {
@@ -612,7 +615,7 @@ void MixerTrackCluster::UpdateMeter(const double t0, const double t1)
 
       if (GetRight())
          // Again, don't throw
-         bSuccess = GetRight()->Get((samplePtr)tempFloatsArray.get(),
+         bSuccess = GetRight()->GetData()->Get((samplePtr)tempFloatsArray.get(),
             floatSample, startSample, nFrames, fillZero, false);
 
       if (bSuccess)

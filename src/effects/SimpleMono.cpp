@@ -22,6 +22,7 @@
 #include "../Audacity.h"
 #include "SimpleMono.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 
 #include <math.h>
@@ -48,11 +49,12 @@ bool EffectSimpleMono::Process()
       if (mCurT1 > mCurT0) {
 
          //Transform the marker timepoints to samples
-         auto start = pOutWaveTrack->TimeToLongSamples(mCurT0);
-         auto end = pOutWaveTrack->TimeToLongSamples(mCurT1);
+         auto waveTrackData = pOutWaveTrack->GetData();
+         auto start = waveTrackData->TimeToLongSamples(mCurT0);
+         auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
          //Get the track rate and samples
-         mCurRate = pOutWaveTrack->GetRate();
+         mCurRate = waveTrackData->GetRate();
          mCurChannel = pOutWaveTrack->GetChannel();
 
          //NewTrackSimpleMono() will returns true by default
@@ -82,9 +84,11 @@ bool EffectSimpleMono::ProcessOne(WaveTrack * track,
    //to make it a double now than it is to do it later
    auto len = (end - start).as_double();
 
+   auto waveTrackData = track->GetData();
+
    //Initiate a processing buffer.  This buffer will (most likely)
    //be shorter than the length of the track being processed.
-   Floats buffer{ track->GetMaxBlockSize() };
+   Floats buffer{ waveTrackData->GetMaxBlockSize() };
 
    //Go through the track one buffer at a time. s counts which
    //sample the current buffer starts at.
@@ -93,10 +97,12 @@ bool EffectSimpleMono::ProcessOne(WaveTrack * track,
       //Get a block of samples (smaller than the size of the buffer)
       //Adjust the block size if it is the final block in the track
       const auto block =
-         limitSampleBufferSize( track->GetBestBlockSize(s), end - s );
+         limitSampleBufferSize(
+            waveTrackData->GetBestBlockSize(s), end - s );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr) buffer.get(), floatSample, s, block);
+      waveTrackData->Get(
+         (samplePtr) buffer.get(), floatSample, s, block);
 
       //Process the buffer.  If it fails, clean up and exit.
       if (!ProcessSimpleMono(buffer.get(), block))

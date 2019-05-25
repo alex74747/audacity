@@ -58,6 +58,7 @@ a graph for EffectScienFilter.
 #include "../Project.h"
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/valnum.h"
 #include "../widgets/AudacityMessageBox.h"
@@ -346,18 +347,18 @@ bool EffectScienFilter::Init()
 
    {
       auto t = *trackRange.begin();
-      mNyquist = (t ? t->GetRate() : GetActiveProject()->GetRate()) / 2.0;
+      mNyquist = (t ? t->GetData()->GetRate() : GetActiveProject()->GetRate()) / 2.0;
    }
 
    for (auto t : trackRange)
    {
       if (selcount == 0)
       {
-         rate = t->GetRate();
+         rate = t->GetData()->GetRate();
       }
       else
       {
-         if (t->GetRate() != rate)
+         if (t->GetData()->GetRate() != rate)
          {
             Effect::MessageBox(_("To apply a filter, all selected tracks must have the same sample rate."));
             return false;

@@ -84,6 +84,7 @@ is time to refresh some aspect of the screen.
 #include "TrackArtist.h"
 #include "TrackPanelAx.h"
 #include "ViewInfo.h"
+#include "WaveClip.h"
 #include "WaveTrack.h"
 #ifdef EXPERIMENTAL_MIDI_OUT
 #include "NoteTrack.h"
@@ -1692,7 +1693,7 @@ void TrackInfo::Status1DrawFunction
    /// Returns the string to be displayed in the track label
    /// indicating whether the track is mono, left, right, or
    /// stereo and what sample rate it's using.
-   auto rate = wt ? wt->GetRate() : 44100.0;
+   auto rate = wt ? wt->GetData()->GetRate() : 44100.0;
    wxString s;
    if (!pTrack || TrackList::Channels(pTrack).size() > 1)
       // TODO: more-than-two-channels-message
@@ -1717,7 +1718,7 @@ void TrackInfo::Status2DrawFunction
 {
    auto dc = &context.dc;
    auto wt = static_cast<const WaveTrack*>(pTrack);
-   auto format = wt ? wt->GetSampleFormat() : floatSample;
+   auto format = wt ? wt->GetData()->GetSampleFormat() : floatSample;
    auto s = GetSampleFormatStr(format);
    StatusDrawFunction( s, dc, rect );
 }

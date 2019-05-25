@@ -23,6 +23,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../ShuttleGui.h"
 #include "../../../../TrackPanel.h"
 #include "../../../../TrackPanelMouseEvent.h"
+#include "../../../../WaveClip.h"
 #include "../../../../widgets/PopupMenuTable.h"
 #include "../../../../effects/EffectManager.h"
 #include "../../../../ondemand/ODManager.h"
@@ -265,7 +266,7 @@ void FormatMenuTable::InitMenu(Menu *pMenu, void *pUserData)
 {
    mpData = static_cast<TrackControls::InitMenuData*>(pUserData);
    WaveTrack *const pTrack = static_cast<WaveTrack*>(mpData->pTrack);
-   auto formatId = IdOfFormat(pTrack->GetSampleFormat());
+   auto formatId = IdOfFormat(pTrack->GetData()->GetSampleFormat());
    SetMenuChecks(*pMenu, [=](int id){ return id == formatId; });
 
    AudacityProject *const project = ::GetActiveProject();
@@ -327,13 +328,13 @@ void FormatMenuTable::OnFormatChange(wxCommandEvent & event)
       wxASSERT(false);
       break;
    }
-   if (newFormat == pTrack->GetSampleFormat())
+   if (newFormat == pTrack->GetData()->GetSampleFormat())
       return; // Nothing to do.
 
    AudacityProject *const project = ::GetActiveProject();
 
    for (auto channel : TrackList::Channels(pTrack))
-      channel->ConvertToSampleFormat(newFormat);
+      channel->GetData()->ConvertToSampleFormat(newFormat);
 
    /* i18n-hint: The strings name a track and a format */
    project->PushState(wxString::Format(_("Changed '%s' to %s"),
@@ -383,7 +384,7 @@ void RateMenuTable::InitMenu(Menu *pMenu, void *pUserData)
 {
    mpData = static_cast<TrackControls::InitMenuData*>(pUserData);
    WaveTrack *const pTrack = static_cast<WaveTrack*>(mpData->pTrack);
-   const auto rateId = IdOfRate((int)pTrack->GetRate());
+   const auto rateId = IdOfRate((int)pTrack->GetData()->GetRate());
    SetMenuChecks(*pMenu, [=](int id){ return id == rateId; });
 
    AudacityProject *const project = ::GetActiveProject();
@@ -432,7 +433,7 @@ void RateMenuTable::SetRate(WaveTrack * pTrack, double rate)
 {
    AudacityProject *const project = ::GetActiveProject();
    for (auto channel : TrackList::Channels(pTrack))
-      channel->SetRate(rate);
+      channel->GetData()->SetRate(rate);
 
    // Separate conversion of "rate" enables changing the decimals without affecting i18n
    wxString rateString = wxString::Format(wxT("%.3f"), rate);
@@ -472,7 +473,7 @@ void RateMenuTable::OnRateOther(wxCommandEvent &)
       wxString rate;
       wxComboBox *cb;
 
-      rate.Printf(wxT("%ld"), lrint(pTrack->GetRate()));
+      rate.Printf(wxT("%ld"), lrint(pTrack->GetData()->GetRate()));
 
       wxArrayStringEx rates{
          wxT("8000") ,

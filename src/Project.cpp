@@ -1590,7 +1590,9 @@ double AudacityProject::SSBL_GetRate() const
    auto &tracks = TrackList::Get( project );
    // Return maximum of project rate and all track rates.
    return std::max( mRate,
-      tracks.Any<const WaveTrack>().max( &WaveTrack::GetRate ) );
+      tracks.Any<const WaveTrack>().max(
+         [](const WaveTrack *pTrack) {
+            return pTrack->GetData()->GetRate(); } ) );
 }
 
 const NumericFormatSymbol & AudacityProject::SSBL_GetFrequencySelectionFormatName()
@@ -4188,7 +4190,7 @@ AudacityProject::AddImportedTracks(const FilePath &fileName,
 
       newTrack->TypeSwitch( [&](WaveTrack *wt) {
          if (newRate == 0)
-            newRate = wt->GetRate();
+            newRate = wt->GetData()->GetRate();
 
          // Check if NEW track contains aliased blockfiles and if yes,
          // remember this to show a warning later

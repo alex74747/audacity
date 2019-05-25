@@ -33,6 +33,7 @@
 #include "../ShuttleGui.h"
 #include "../widgets/valnum.h"
 
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 
@@ -266,10 +267,11 @@ bool EffectAutoDuck::Process()
 
    bool cancel = false;
 
+   auto waveTrackData = mControlTrack->GetData();
    auto start =
-      mControlTrack->TimeToLongSamples(mT0 + mOuterFadeDownLen);
+      waveTrackData->TimeToLongSamples(mT0 + mOuterFadeDownLen);
    auto end =
-      mControlTrack->TimeToLongSamples(mT1 - mOuterFadeUpLen);
+      waveTrackData->TimeToLongSamples(mT1 - mOuterFadeUpLen);
 
    if (end <= start)
       return false;
@@ -283,7 +285,7 @@ bool EffectAutoDuck::Process()
       maxPause = mOuterFadeDownLen + mOuterFadeUpLen;
 
    auto minSamplesPause =
-      mControlTrack->TimeToLongSamples(maxPause);
+      waveTrackData->TimeToLongSamples(maxPause);
 
    double threshold = DB_TO_LINEAR(mThresholdDb);
 
@@ -311,7 +313,8 @@ bool EffectAutoDuck::Process()
       {
          const auto len = limitSampleBufferSize( kBufSize, end - pos );
          
-         mControlTrack->Get((samplePtr)buf.get(), floatSample, pos, len);
+         waveTrackData->Get(
+            (samplePtr)buf.get(), floatSample, pos, len);
 
          for (auto i = pos; i < pos + len; i++)
          {
@@ -335,7 +338,8 @@ bool EffectAutoDuck::Process()
                   // the threshold has been exceeded for the first time, so
                   // let the duck region begin here
                   inDuckRegion = true;
-                  duckRegionStart = mControlTrack->LongSamplesToTime(i);
+                  duckRegionStart =
+                     waveTrackData->LongSamplesToTime(i);
                }
             }
 
@@ -350,7 +354,7 @@ bool EffectAutoDuck::Process()
                {
                   // do the actual duck fade and reset all values
                   double duckRegionEnd =
-                     mControlTrack->LongSamplesToTime(i - curSamplesPause);
+                     waveTrackData->LongSamplesToTime(i - curSamplesPause);
 
                   regions.push_back(AutoDuckRegion(
                      duckRegionStart - mOuterFadeDownLen,
@@ -378,7 +382,7 @@ bool EffectAutoDuck::Process()
       if (inDuckRegion)
       {
          double duckRegionEnd =
-            mControlTrack->LongSamplesToTime(end - curSamplesPause);
+            waveTrackData->LongSamplesToTime(end - curSamplesPause);
          regions.push_back(AutoDuckRegion(
             duckRegionStart - mOuterFadeDownLen,
             duckRegionEnd + mOuterFadeUpLen));
@@ -512,18 +516,19 @@ bool EffectAutoDuck::ApplyDuckFade(int trackNum, WaveTrack* t,
 {
    bool cancel = false;
 
-   auto start = t->TimeToLongSamples(t0);
-   auto end = t->TimeToLongSamples(t1);
+   auto waveTrackData = t->GetData();
+   auto start = waveTrackData->TimeToLongSamples(t0);
+   auto end = waveTrackData->TimeToLongSamples(t1);
 
    Floats buf{ kBufSize };
    auto pos = start;
 
-   auto fadeDownSamples = t->TimeToLongSamples(
+   auto fadeDownSamples = waveTrackData->TimeToLongSamples(
       mOuterFadeDownLen + mInnerFadeDownLen);
    if (fadeDownSamples < 1)
       fadeDownSamples = 1;
 
-   auto fadeUpSamples = t->TimeToLongSamples(
+   auto fadeUpSamples = waveTrackData->TimeToLongSamples(
       mOuterFadeUpLen + mInnerFadeUpLen);
    if (fadeUpSamples < 1)
       fadeUpSamples = 1;
@@ -535,7 +540,8 @@ bool EffectAutoDuck::ApplyDuckFade(int trackNum, WaveTrack* t,
    {
       const auto len = limitSampleBufferSize( kBufSize, end - pos );
 
-      t->Get((samplePtr)buf.get(), floatSample, pos, len);
+      waveTrackData->Get(
+         (samplePtr)buf.get(), floatSample, pos, len);
 
       for (auto i = pos; i < pos + len; i++)
       {
@@ -558,7 +564,7 @@ bool EffectAutoDuck::ApplyDuckFade(int trackNum, WaveTrack* t,
 
       pos += len;
 
-      float curTime = t->LongSamplesToTime(pos);
+      float curTime = waveTrackData->LongSamplesToTime(pos);
       float fractionFinished = (curTime - mT0) / (mT1 - mT0);
       if (TotalProgress( (trackNum + 1 + fractionFinished) /
                          (GetNumWaveTracks() + 1) ))

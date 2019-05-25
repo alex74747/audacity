@@ -31,7 +31,9 @@
 #include "../widgets/valnum.h"
 
 #include "TimeWarper.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
+#include "../WaveClip.h"
 
 enum
 {
@@ -261,8 +263,9 @@ bool EffectChangeSpeed::Process()
          // Process only if the right marker is to the right of the left marker
          if (mCurT1 > mCurT0) {
             //Transform the marker timepoints to samples
-            auto start = pOutWaveTrack->TimeToLongSamples(mCurT0);
-            auto end = pOutWaveTrack->TimeToLongSamples(mCurT1);
+            auto waveTrackData = pOutWaveTrack->GetData();
+            auto start = waveTrackData->TimeToLongSamples(mCurT0);
+            auto end = waveTrackData->TimeToLongSamples(mCurT1);
 
             //ProcessOne() (implemented below) processes a single track
             if (!ProcessOne(pOutWaveTrack, start, end))
@@ -480,8 +483,10 @@ bool EffectChangeSpeed::ProcessOne(WaveTrack * track,
    // initialization, per examples of Mixer::Mixer and
    // EffectSoundTouch::ProcessOne
 
-   auto outputTrack = mFactory->NewWaveTrack(track->GetSampleFormat(),
-                                                    track->GetRate());
+   auto waveTrackData = track->GetData();
+   auto outputTrack = mFactory->NewWaveTrack(
+      waveTrackData->GetSampleFormat(),
+      waveTrackData->GetRate());
 
    //Get the length of the selection (as double). len is
    //used simple to calculate a progress meter, so it is easier
@@ -490,7 +495,7 @@ bool EffectChangeSpeed::ProcessOne(WaveTrack * track,
 
    // Initiate processing buffers, most likely shorter than
    // the length of the selection being processed.
-   auto inBufferSize = track->GetMaxBlockSize();
+   auto inBufferSize = waveTrackData->GetMaxBlockSize();
 
    Floats inBuffer{ inBufferSize };
 
@@ -508,12 +513,13 @@ bool EffectChangeSpeed::ProcessOne(WaveTrack * track,
    while (samplePos < end) {
       //Get a blockSize of samples (smaller than the size of the buffer)
       auto blockSize = limitSampleBufferSize(
-         track->GetBestBlockSize(samplePos),
+         waveTrackData->GetBestBlockSize(samplePos),
          end - samplePos
       );
 
       //Get the samples from the track and put them in the buffer
-      track->Get((samplePtr) inBuffer.get(), floatSample, samplePos, blockSize);
+      waveTrackData->Get(
+         (samplePtr) inBuffer.get(), floatSample, samplePos, blockSize);
 
       const auto results = resample.Process(mFactor,
                                     inBuffer.get(),

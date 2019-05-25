@@ -513,11 +513,11 @@ bool EffectEqualization::Init()
    auto trackRange =
       TrackList::Get( *GetActiveProject() ).Selected< const WaveTrack >();
    if (trackRange) {
-      rate = (*(trackRange.first++)) -> GetRate();
+      rate = (*(trackRange.first++)) -> GetData()->GetRate();
       ++selcount;
 
       for (auto track : trackRange) {
-         if (track->GetRate() != rate) {
+         if (track->GetData()->GetRate() != rate) {
             Effect::MessageBox(_("To apply Equalization, all selected tracks must have the same sample rate."));
             return(false);
          }
@@ -575,8 +575,9 @@ bool EffectEqualization::Process()
       double t1 = mT1 > trackEnd? trackEnd: mT1;
 
       if (t1 > t0) {
-         auto start = track->TimeToLongSamples(t0);
-         auto end = track->TimeToLongSamples(t1);
+         auto waveTrackData = track->GetData();
+         auto start = waveTrackData->TimeToLongSamples(t0);
+         auto end = waveTrackData->TimeToLongSamples(t1);
          auto len = end - start;
 
          if (!ProcessOne(count, track, start, len))
@@ -621,7 +622,7 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
    LoadCurves();
 
    const auto t = *inputTracks()->Any< const WaveTrack >().first;
-   mHiFreq = (t ? t->GetRate() : GetActiveProject()->GetRate()) / 2.0;
+   mHiFreq = (t ? t->GetData()->GetRate() : GetActiveProject()->GetRate()) / 2.0;
    mLoFreq = loFreqI;
 
    S.SetBorder(0);
@@ -1093,12 +1094,14 @@ bool EffectEqualization::ProcessOne(int count, WaveTrack * t,
 {
    // create a NEW WaveTrack to hold all of the output, including 'tails' each end
    AudacityProject *p = GetActiveProject();
-   auto output = TrackFactory::Get( *p ).NewWaveTrack(floatSample, t->GetRate());
+   auto waveTrackData = t->GetData();
+   auto output = TrackFactory::Get( *p ).NewWaveTrack(
+      floatSample, waveTrackData->GetRate());
 
    wxASSERT(mM - 1 < windowSize);
    size_t L = windowSize - (mM - 1);   //Process L samples at a go
    auto s = start;
-   auto idealBlockLen = t->GetMaxBlockSize() * 4;
+   auto idealBlockLen = waveTrackData->GetMaxBlockSize() * 4;
    if (idealBlockLen % L != 0)
       idealBlockLen += (L - (idealBlockLen % L));
 
@@ -1123,7 +1126,8 @@ bool EffectEqualization::ProcessOne(int count, WaveTrack * t,
    {
       auto block = limitSampleBufferSize( idealBlockLen, len );
 
-      t->Get((samplePtr)buffer.get(), floatSample, s, block);
+      waveTrackData->Get(
+         (samplePtr)buffer.get(), floatSample, s, block);
 
       for(size_t i = 0; i < block; i += L)   //go through block in lumps of length L
       {
@@ -1178,12 +1182,12 @@ bool EffectEqualization::ProcessOne(int count, WaveTrack * t,
 
       // now move the appropriate bit of the output back to the track
       // (this could be enhanced in the future to use the tails)
-      double offsetT0 = t->LongSamplesToTime(offset);
-      double lenT = t->LongSamplesToTime(originalLen);
+      double offsetT0 = waveTrackData->LongSamplesToTime(offset);
+      double lenT = waveTrackData->LongSamplesToTime(originalLen);
       // 'start' is the sample offset in 't', the passed in track
       // 'startT' is the equivalent time value
       // 'output' starts at zero
-      double startT = t->LongSamplesToTime(start);
+      double startT = waveTrackData->LongSamplesToTime(start);
 
       //output has one waveclip for the total length, even though
       //t might have whitespace seperating multiple clips
@@ -1193,7 +1197,7 @@ bool EffectEqualization::ProcessOne(int count, WaveTrack * t,
       //Find the bits of clips that need replacing
       std::vector<std::pair<double, double> > clipStartEndTimes;
       std::vector<std::pair<double, double> > clipRealStartEndTimes; //the above may be truncated due to a clip being partially selected
-      for (const auto &clip : t->GetData()->GetClips())
+      for (const auto &clip : waveTrackData->GetClips())
       {
          double clipStartT;
          double clipEndT;

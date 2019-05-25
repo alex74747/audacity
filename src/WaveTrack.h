@@ -130,9 +130,6 @@ private:
    // WaveTrack parameters
    //
 
-   double GetRate() const;
-   void SetRate(double newRate);
-
    // Multiplicative factor.  Only converted to dB for display.
    float GetGain() const;
    void SetGain(float newGain);
@@ -153,9 +150,6 @@ private:
 
    int GetWaveColorIndex() const { return mWaveColorIndex; };
    void SetWaveColorIndex(int colorIndex);
-
-   sampleFormat GetSampleFormat() const { return mFormat; }
-   void ConvertToSampleFormat(sampleFormat format);
 
    const SpectrogramSettings &GetSpectrogramSettings() const;
    SpectrogramSettings &GetSpectrogramSettings();
@@ -262,16 +256,9 @@ private:
    /// same value for "start" in both calls to "Set" and "Get" it is
    /// guaranteed that the same samples are affected.
    ///
-   bool Get(samplePtr buffer, sampleFormat format,
-                   sampleCount start, size_t len,
-                   fillFormat fill = fillZero, bool mayThrow = true, sampleCount * pNumCopied = nullptr) const;
+   ///
    void Set(samplePtr buffer, sampleFormat format,
                    sampleCount start, size_t len);
-
-   // Fetch envelope values corresponding to uniformly separated sample times
-   // starting at the given time.
-   void GetEnvelopeValues(double *buffer, size_t bufferLen,
-                         double t0) const;
 
    // May assume precondition: t0 <= t1
    std::pair<float, float> GetMinMax(
@@ -296,13 +283,8 @@ private:
    // Getting information about the track's internal block sizes
    // and alignment for efficiency
    //
-
-   // This returns a possibly large or negative value
-   sampleCount GetBlockStart(sampleCount t) const;
-
+   
    // These return a nonnegative number of samples meant to size a memory buffer
-   size_t GetBestBlockSize(sampleCount t) const;
-   size_t GetMaxBlockSize() const;
    size_t GetIdealBlockSize();
 
    //
@@ -348,27 +330,6 @@ private:
 
    bool CloseLock(); //similar to Lock but should be called when the project closes.
    // not balanced by unlocking calls.
-
-   /** @brief Convert correctly between an (absolute) time in seconds and a number of samples.
-    *
-    * This method will not give the correct results if used on a relative time (difference of two
-    * times). Each absolute time must be converted and the numbers of samples differenced:
-    *    sampleCount start = track->TimeToLongSamples(t0);
-    *    sampleCount end = track->TimeToLongSamples(t1);
-    *    sampleCount len = (sampleCount)(end - start);
-    * NOT the likes of:
-    *    sampleCount len = track->TimeToLongSamples(t1 - t0);
-    * See also WaveTrack::TimeToLongSamples().
-    * @param t0 The time (floating point seconds) to convert
-    * @return The number of samples from the start of the track which lie before the given time.
-    */
-   sampleCount TimeToLongSamples(double t0) const;
-   /** @brief Convert correctly between an number of samples and an (absolute) time in seconds.
-    *
-    * @param pos The time number of samples from the start of the track to convert.
-    * @return The time in seconds.
-    */
-   double LongSamplesToTime(sampleCount pos) const;
 
    const std::shared_ptr<WaveTrackData> &GetData() { return mpData; }
    std::shared_ptr<const WaveTrackData> GetData() const { return mpData; }
@@ -446,9 +407,6 @@ private:
    // This track has been merged into a stereo track.  Copy shared parameters
    // from the NEW partner.
    void Merge(const Track &orig) override;
-
-   // Resample track (i.e. all clips in the track)
-   void Resample(int rate, ProgressDialog *progress = NULL);
 
    //
    // AutoSave related
@@ -546,8 +504,6 @@ private:
 
    std::shared_ptr<WaveTrackData> mpData;
 
-   sampleFormat  mFormat;
-   int           mRate;
    float         mGain;
    float         mPan;
    int           mWaveColorIndex;

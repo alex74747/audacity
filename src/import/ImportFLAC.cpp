@@ -77,6 +77,7 @@ void GetFLACImportPlugin(ImportPluginList &importPluginList,
 
 #include "../FileFormats.h"
 #include "../Prefs.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "ImportPlugin.h"
 #include "../ondemand/ODDecodeFlacTask.h"
@@ -479,7 +480,7 @@ ProgressResult FLACImportFileHandle::Import(TrackFactory *trackFactory,
    {
       auto fileTotalFrames =
          (sampleCount)mNumSamples; // convert from FLAC__uint64
-      auto maxBlockSize = mChannels.begin()->get()->GetMaxBlockSize();
+      auto maxBlockSize = mChannels.begin()->get()->GetData()->GetMaxBlockSize();
       for (decltype(fileTotalFrames) i = 0; i < fileTotalFrames; i += maxBlockSize) {
          const auto blockLen =
             limitSampleBufferSize( maxBlockSize, fileTotalFrames - i );

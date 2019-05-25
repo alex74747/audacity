@@ -30,6 +30,7 @@ or "OFF" point
 #include <wx/intl.h>
 #include <iostream>
 
+#include "WaveClip.h"
 #include "WaveTrack.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ErrorDialog.h"
@@ -102,7 +103,7 @@ sampleCount VoiceKey::OnForward (
    else {
 
       //Change the millisecond-based parameters into sample-based parameters
-      double rate = t.GetRate();                                                     //Translates seconds to samples
+      double rate = t.GetData()->GetRate();                       //Translates seconds to samples
       size_t WindowSizeInt = (rate  * mWindowSize);               //Size of window to examine
       size_t SignalWindowSizeInt = (rate  * mSignalWindowSize);   //This much signal is necessary to trip key
 
@@ -150,7 +151,8 @@ sampleCount VoiceKey::OnForward (
          //To speed things up, create a local buffer to store things in, to avoid the costly t.Get();
          //Only go through the first SignalWindowSizeInt samples, and choose the first that trips the key.
          Floats buffer{ remaining };
-         t.Get((samplePtr)buffer.get(), floatSample,
+         t.GetData()->Get(
+            (samplePtr)buffer.get(), floatSample,
                lastsubthresholdsample, remaining);
 
 
@@ -250,7 +252,7 @@ sampleCount VoiceKey::OnBackward (
    else {
 
       //Change the millisecond-based parameters into sample-based parameters
-      double rate = t.GetRate();                                                     //Translates seconds to samples
+      double rate = t.GetData()->GetRate();                                                     //Translates seconds to samples
       size_t WindowSizeInt = (rate  * mWindowSize);               //Size of window to examine
       //unsigned int SilentWindowSizeInt = (unsigned int)(rate  * mSilentWindowSize);   //This much signal is necessary to trip key
 
@@ -300,7 +302,8 @@ sampleCount VoiceKey::OnBackward (
          //To speed things up, create a local buffer to store things in, to avoid the costly t.Get();
          //Only go through the first mSilentWindowSizeInt samples, and choose the first that trips the key.
          Floats buffer{ remaining };
-         t.Get((samplePtr)buffer.get(), floatSample,
+         t.GetData()->Get(
+            (samplePtr)buffer.get(), floatSample,
                lastsubthresholdsample - remaining, remaining);
 
          //Initialize these trend markers atrend and ztrend.  They keep track of the
@@ -396,7 +399,7 @@ sampleCount VoiceKey::OffForward (
 
 
       //Change the millisecond-based parameters into sample-based parameters
-      double rate = t.GetRate();                                                     //Translates seconds to samples
+      double rate = t.GetData()->GetRate();                                           //Translates seconds to samples
       unsigned int WindowSizeInt = (unsigned int)(rate  * mWindowSize);               //Size of window to examine
       unsigned int SilentWindowSizeInt = (unsigned int)(rate  * mSilentWindowSize);   //This much signal is necessary to trip key
 
@@ -443,7 +446,8 @@ sampleCount VoiceKey::OffForward (
          //To speed things up, create a local buffer to store things in, to avoid the costly t.Get();
          //Only go through the first SilentWindowSizeInt samples, and choose the first that trips the key.
          Floats buffer{ remaining };
-         t.Get((samplePtr)buffer.get(), floatSample,
+         t.GetData()->Get(
+            (samplePtr)buffer.get(), floatSample,
                lastsubthresholdsample, remaining);
 
          //Initialize these trend markers atrend and ztrend.  They keep track of the
@@ -532,9 +536,9 @@ sampleCount VoiceKey::OffBackward (
    else {
 
       //Change the millisecond-based parameters into sample-based parameters
-      double rate = t.GetRate();                                                     //Translates seconds to samples
+      double rate = t.GetData()->GetRate();                                           //Translates seconds to samples
       unsigned int WindowSizeInt = (unsigned int)(rate  * mWindowSize);               //Size of window to examine
-      //unsigned int SilentWindowSizeInt = (unsigned int)(rate  * mSilentWindowSize);   //This much signal is necessary to trip key
+      //unsigned int SilentWindowSizeInt = (unsigned int)(rate  * mSilentWindowSize); //This much signal is necessary to trip key
 
       auto samplesleft = len - WindowSizeInt;                 //Indexes the number of samples remaining in the selection
       auto lastsubthresholdsample = end;            //start this off at the end
@@ -580,7 +584,8 @@ sampleCount VoiceKey::OffBackward (
          //To speed things up, create a local buffer to store things in, to avoid the costly t.Get();
          //Only go through the first SilentWindowSizeInt samples, and choose the first that trips the key.
          Floats buffer{ remaining };
-         t.Get((samplePtr)buffer.get(), floatSample,
+         t.GetData()->Get(
+            (samplePtr)buffer.get(), floatSample,
                lastsubthresholdsample - remaining, remaining);
 
          //Initialize these trend markers atrend and ztrend.  They keep track of the
@@ -756,7 +761,7 @@ void VoiceKey::CalibrateNoise(const WaveTrack & t, sampleCount start, sampleCoun
    double erg, sc, dc;
    //Now, change the millisecond-based parameters into sample-based parameters
    //(This depends on WaveTrack t)
-   double rate = t.GetRate();
+   double rate = t.GetData()->GetRate();
    unsigned int WindowSizeInt = (unsigned int)(rate  * mWindowSize);
    //   unsigned int SignalWindowSizeInt = (unsigned int)(rate  * mSignalWindowSize);
 
@@ -854,15 +859,17 @@ double VoiceKey::TestEnergy (
    auto s = start;                                //Keep track of start
    auto originalLen = len;                        //Keep track of the length of block to process (its not the length of t)
    const auto blockSize = limitSampleBufferSize(
-      t.GetMaxBlockSize(), len);               //Determine size of sampling buffer
+      t.GetData()->GetMaxBlockSize(), len);               //Determine size of sampling buffer
    Floats buffer{ blockSize };       //Get a sampling buffer
 
    while(len > 0)
       {
          //Figure out how much to grab
-         auto block = limitSampleBufferSize ( t.GetBestBlockSize(s), len );
+         auto block = limitSampleBufferSize (
+            t.GetData()->GetBestBlockSize(s), len );
 
-         t.Get((samplePtr)buffer.get(), floatSample, s,block);                      //grab the block;
+         t.GetData()->Get(
+            (samplePtr)buffer.get(), floatSample, s,block);                      //grab the block;
 
          //Now, go through the block and calculate energy
          for(decltype(block) i = 0; i< block; i++)
@@ -895,7 +902,7 @@ double VoiceKey::TestSignChanges(
    auto s = start;                                //Keep track of start
    auto originalLen = len;                        //Keep track of the length of block to process (its not the length of t)
    const auto blockSize = limitSampleBufferSize(
-      t.GetMaxBlockSize(), len);               //Determine size of sampling buffer
+      t.GetData()->GetMaxBlockSize(), len);               //Determine size of sampling buffer
    unsigned long signchanges = 1;
    int currentsign=0;
 
@@ -903,9 +910,11 @@ double VoiceKey::TestSignChanges(
 
    while(len > 0) {
       //Figure out how much to grab
-      auto block = limitSampleBufferSize ( t.GetBestBlockSize(s), len );
+      auto block = limitSampleBufferSize (
+         t.GetData()->GetBestBlockSize(s), len );
 
-      t.Get((samplePtr)buffer.get(), floatSample, s, block);                      //grab the block;
+      t.GetData()->Get(
+         (samplePtr)buffer.get(), floatSample, s, block);                      //grab the block;
 
       if  (len == originalLen)
          {
@@ -951,7 +960,7 @@ double VoiceKey::TestDirectionChanges(
    auto s = start;                                //Keep track of start
    auto originalLen = len;                        //Keep track of the length of block to process (its not the length of t)
    const auto blockSize = limitSampleBufferSize(
-      t.GetMaxBlockSize(), len);               //Determine size of sampling buffer
+      t.GetData()->GetMaxBlockSize(), len);               //Determine size of sampling buffer
    unsigned long directionchanges = 1;
    float lastval=float(0);
    int lastdirection=1;
@@ -960,9 +969,11 @@ double VoiceKey::TestDirectionChanges(
 
    while(len > 0) {
       //Figure out how much to grab
-      auto block = limitSampleBufferSize ( t.GetBestBlockSize(s), len );
+      auto block = limitSampleBufferSize (
+         t.GetData()->GetBestBlockSize(s), len );
 
-      t.Get((samplePtr)buffer.get(), floatSample, s, block);                      //grab the block;
+      t.GetData()->Get(
+         (samplePtr)buffer.get(), floatSample, s, block);                      //grab the block;
 
       if  (len == originalLen) {
          //The first time through, set stuff up special.

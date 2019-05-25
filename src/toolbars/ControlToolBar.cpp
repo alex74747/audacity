@@ -67,6 +67,7 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../widgets/AButton.h"
 #include "../widgets/Meter.h"
 #include "../widgets/LinkingHtmlWindow.h"
@@ -1198,10 +1199,13 @@ bool ControlToolBar::DoRecord(AudacityProject &project,
 
             // Quantize bounds to the rate of the new track.
             if (c == 0) {
+               auto waveTrackData = newTrack->GetData();
                if (t0 < DBL_MAX)
-                  t0 = newTrack->LongSamplesToTime(newTrack->TimeToLongSamples(t0));
+                  t0 = waveTrackData->LongSamplesToTime(
+                     waveTrackData->TimeToLongSamples(t0));
                if (t1 < DBL_MAX)
-                  t1 = newTrack->LongSamplesToTime(newTrack->TimeToLongSamples(t1));
+                  t1 = waveTrackData->LongSamplesToTime(
+                     waveTrackData->TimeToLongSamples(t1));
             }
 
             newTrack->SetOffset(t0);

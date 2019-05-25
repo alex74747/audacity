@@ -782,6 +782,7 @@ bool NyquistEffect::Process()
         (void) (!pRange || (++pRange->first, true))
    ) {
       mCurTrack[0] = pRange ? *pRange->first : nullptr;
+      auto waveTrackData = pRange ? mCurTrack[0]->GetData() : nullptr;
       mCurNumChannels = 1;
       if ( (mT1 >= mT0) || bOnePassTool ) {
          if (bOnePassTool) {
@@ -795,13 +796,15 @@ bool NyquistEffect::Process()
                mCurNumChannels = 2;
 
                mCurTrack[1] = * ++ channels.first;
-               if (mCurTrack[1]->GetRate() != mCurTrack[0]->GetRate()) {
+               auto waveTrackData1 = mCurTrack[1]->GetData();
+               if (waveTrackData1->GetRate() !=
+                  waveTrackData->GetRate()) {
                   Effect::MessageBox(_("Sorry, cannot apply effect on stereo tracks where the tracks don't match."),
                                wxOK | wxCENTRE);
                   success = false;
                   goto finish;
                }
-               mCurStart[1] = mCurTrack[1]->TimeToLongSamples(mT0);
+               mCurStart[1] = waveTrackData1->TimeToLongSamples(mT0);
             }
 
             // Check whether we're in the same group as the last selected track
@@ -809,8 +812,8 @@ bool NyquistEffect::Process()
             mFirstInGroup = !gtLast || (gtLast != gt);
             gtLast = gt;
 
-            mCurStart[0] = mCurTrack[0]->TimeToLongSamples(mT0);
-            auto end = mCurTrack[0]->TimeToLongSamples(mT1);
+            mCurStart[0] = waveTrackData->TimeToLongSamples(mT0);
+            auto end = waveTrackData->TimeToLongSamples(mT1);
             mCurLen = end - mCurStart[0];
 
             if (mCurLen > NYQ_MAX_LEN) {
@@ -1061,6 +1064,7 @@ bool NyquistEffect::ProcessOne()
 
       mCurTrack[0]->TypeSwitch(
          [&](const WaveTrack *wt) {
+            auto waveTrackData = mCurTrack[0]->GetData();
             type = wxT("wave");
             spectralEditp = mCurTrack[0]->GetSpectrogramSettings().SpectralSelectionEnabled()? wxT("T") : wxT("NIL");
             switch (wt->GetDisplay())
@@ -1103,7 +1107,9 @@ bool NyquistEffect::ProcessOne()
       auto channels = TrackList::Channels( mCurTrack[0] );
       double startTime = channels.min( &Track::GetStartTime );
       double endTime = channels.max( &Track::GetEndTime );
-
+      
+      auto waveTrackData = mCurTrack[0]->GetData();
+   
       cmd += wxString::Format(wxT("(putprop '*TRACK* (float %s) 'START-TIME)\n"),
                               Internat::ToString(startTime));
       cmd += wxString::Format(wxT("(putprop '*TRACK* (float %s) 'END-TIME)\n"),
@@ -1113,9 +1119,10 @@ bool NyquistEffect::ProcessOne()
       cmd += wxString::Format(wxT("(putprop '*TRACK* (float %s) 'PAN)\n"),
                               Internat::ToString(mCurTrack[0]->GetPan()));
       cmd += wxString::Format(wxT("(putprop '*TRACK* (float %s) 'RATE)\n"),
-                              Internat::ToString(mCurTrack[0]->GetRate()));
+                              Internat::ToString(
+                                 waveTrackData->GetRate()));
 
-      switch (mCurTrack[0]->GetSampleFormat())
+      switch (waveTrackData->GetSampleFormat())
       {
          case int16Sample:
             bitFormat = wxT("16");
@@ -1186,12 +1193,15 @@ bool NyquistEffect::ProcessOne()
          cmd += wxString::Format(wxT("(putprop '*SELECTION* %s 'RMS)\n"), rmsString);
    }
 
+   auto waveTrackData = mCurTrack[0]->GetData();
+   auto rate = waveTrackData->GetRate();
+
    // If in tool mode, then we don't do anything with the track and selection.
    if (GetType() == EffectTypeTool) {
       nyx_set_audio_params(44100, 0);
    }
    else if (GetType() == EffectTypeGenerate) {
-      nyx_set_audio_params(mCurTrack[0]->GetRate(), 0);
+      nyx_set_audio_params(rate, 0);
    }
    else {
       // UNSAFE_SAMPLE_COUNT_TRUNCATION
@@ -1204,11 +1214,11 @@ bool NyquistEffect::ProcessOne()
       // See the parsing of "maxlen"
 
       auto curLen = long(mCurLen.as_long_long());
-      nyx_set_audio_params(mCurTrack[0]->GetRate(), curLen);
+      nyx_set_audio_params(rate, curLen);
 
       nyx_set_input_audio(StaticGetCallback, (void *)this,
                           (int)mCurNumChannels,
-                          curLen, mCurTrack[0]->GetRate());
+                          curLen, rate);
    }
 
    // Restore the Nyquist sixteenth note symbol for Generate plug-ins.
@@ -1429,12 +1439,13 @@ bool NyquistEffect::ProcessOne()
 
    std::shared_ptr<WaveTrack> outputTrack[2];
 
-   double rate = mCurTrack[0]->GetRate();
+   rate = waveTrackData->GetRate();
    for (int i = 0; i < outChannels; i++) {
-      sampleFormat format = mCurTrack[i]->GetSampleFormat();
+      auto waveTrackDatai = mCurTrack[i]->GetData();
+      sampleFormat format = waveTrackDatai->GetSampleFormat();
 
       if (outChannels == (int)mCurNumChannels) {
-         rate = mCurTrack[i]->GetRate();
+         rate = waveTrackDatai->GetRate();
       }
 
       outputTrack[i] = mFactory->NewWaveTrack(format, rate);
@@ -1486,8 +1497,10 @@ bool NyquistEffect::ProcessOne()
 
       if (mMergeClips < 0) {
          // Use sample counts to determine default behaviour - times will rarely be equal.
-         bool bMergeClips = (out->TimeToLongSamples(mT0) + out->TimeToLongSamples(mOutputTime) ==
-                                                                     out->TimeToLongSamples(mT1));
+         auto outWaveTrackData = out->GetData();
+         bool bMergeClips = (outWaveTrackData->TimeToLongSamples(mT0) +
+            outWaveTrackData->TimeToLongSamples(mOutputTime) ==
+            outWaveTrackData->TimeToLongSamples(mT1));
          mCurTrack[i]->ClearAndPaste(mT0, mT1, out, mRestoreSplits, bMergeClips);
       }
       else {
@@ -2221,7 +2234,9 @@ int NyquistEffect::GetCallback(float *buffer, int ch,
 
    if (!mCurBuffer[ch].ptr()) {
       mCurBufferStart[ch] = (mCurStart[ch] + start);
-      mCurBufferLen[ch] = mCurTrack[ch]->GetBestBlockSize(mCurBufferStart[ch]);
+      auto waveTrackData = mCurTrack[ch]->GetData();
+      mCurBufferLen[ch] =
+         waveTrackData->GetBestBlockSize(mCurBufferStart[ch]);
 
       if (mCurBufferLen[ch] < (size_t) len) {
          mCurBufferLen[ch] = mCurTrack[ch]->GetIdealBlockSize();
@@ -2233,7 +2248,7 @@ int NyquistEffect::GetCallback(float *buffer, int ch,
 
       mCurBuffer[ch].Allocate(mCurBufferLen[ch], floatSample);
       try {
-         mCurTrack[ch]->Get(
+         waveTrackData->Get(
             mCurBuffer[ch].ptr(), floatSample,
             mCurBufferStart[ch], mCurBufferLen[ch]);
       }

@@ -41,6 +41,7 @@
 #include "../Project.h"
 #include "../Envelope.h"
 #include "../ViewInfo.h"
+#include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../widgets/AButton.h"
 #include "../widgets/ASlider.h"
@@ -420,8 +421,10 @@ void TranscriptionToolBar::GetSamples(
    double start = selectedRegion.t0();
    double end = selectedRegion.t1();
 
-   auto ss0 = sampleCount( (start - t->GetOffset()) * t->GetRate() );
-   auto ss1 = sampleCount( (end - t->GetOffset()) * t->GetRate() );
+   auto waveTrackData = t->GetData();
+   auto rate = waveTrackData->GetRate();
+   auto ss0 = sampleCount( (start - t->GetOffset()) * rate );
+   auto ss1 = sampleCount( (end - t->GetOffset()) * rate );
 
    if (start < t->GetOffset()) {
       ss0 = 0;

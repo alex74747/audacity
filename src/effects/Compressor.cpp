@@ -45,6 +45,7 @@
 #include "../widgets/Ruler.h"
 
 #include "../WaveTrack.h"
+#include "../WaveClip.h"
 #include "../AllThemeResources.h"
 
 enum
@@ -366,7 +367,8 @@ bool EffectCompressor::InitPass1()
 
    // Find the maximum block length required for any track
    size_t maxlen = inputTracks()->Selected< const WaveTrack >().max(
-      &WaveTrack::GetMaxBlockSize
+      [](const WaveTrack* pTrack){
+         return pTrack->GetData()->GetMaxBlockSize(); }
    );
    mFollow1.reset();
    mFollow2.reset();
