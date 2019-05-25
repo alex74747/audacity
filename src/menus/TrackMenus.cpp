@@ -1162,6 +1162,7 @@ void OnScoreAlign(const CommandContext &context)
    }
    alignedNoteTrack->SetOffset(0);
 
+   std::vector< std::shared_ptr< const WaveTrackData > > waveTracks;
    WaveTrackConstArray waveTracks =
       tracks->GetWaveTrackConstArray(true /* selectionOnly */);
 

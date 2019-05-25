@@ -2084,7 +2084,7 @@ void TrackArt::DrawSpectrum( TrackPanelDrawingContext &context,
    DrawBackgroundWithSelection(
       context, rect, track, blankSelectedBrush, blankBrush );
 
-   WaveTrackCache cache(track->SharedPointer<const WaveTrack>());
+   WaveTrackCache cache(track->GetData());
    for (const auto &clip: track->GetData()->GetClips())
       DrawClipSpectrum( context, track, cache, clip.get(), rect );
 }

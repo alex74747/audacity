@@ -1414,7 +1414,6 @@ public:
    unsigned GetNumExportChannels(bool selectionOnly) const;
 
    WaveTrackArray GetWaveTrackArray(bool selectionOnly, bool includeMuted = true);
-   WaveTrackConstArray GetWaveTrackConstArray(bool selectionOnly, bool includeMuted = true) const;
 
 #if defined(USE_MIDI)
    NoteTrackConstArray GetNoteTrackConstArray(bool selectionOnly) const;

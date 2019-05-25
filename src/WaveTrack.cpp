@@ -2750,13 +2750,13 @@ WaveTrackCache::~WaveTrackCache()
 {
 }
 
-void WaveTrackCache::SetTrack(const std::shared_ptr<const WaveTrack> &pTrack)
+void WaveTrackCache::SetTrack(const std::shared_ptr<const WaveTrackData> &pTrack)
 {
    if (mPTrack != pTrack) {
       if (pTrack) {
-         mBufferSize = pTrack->GetData()->GetMaxBlockSize();
+         mBufferSize = pTrack->GetMaxBlockSize();
          if (!mPTrack ||
-             mPTrack->GetData()->GetMaxBlockSize() != mBufferSize) {
+             mPTrack->GetMaxBlockSize() != mBufferSize) {
             Free();
             mBuffers[0].data = Floats{ mBufferSize };
             mBuffers[1].data = Floats{ mBufferSize };
@@ -2798,7 +2798,7 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
       }
       else if (mNValidBuffers > 0 &&
          start < mBuffers[0].start &&
-         0 <= mPTrack->GetData()->GetBlockStart(start)) {
+         0 <= mPTrack->GetBlockStart(start)) {
          // Request is not a total miss but starts before the cache,
          // and there is a clip to fetch from.
          // Not the access pattern for drawing spectrogram or playback,
@@ -2816,11 +2816,11 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
 
       // Refill buffers as needed
       if (fillFirst) {
-         const auto start0 = mPTrack->GetData()->GetBlockStart(start);
+         const auto start0 = mPTrack->GetBlockStart(start);
          if (start0 >= 0) {
-            const auto len0 = mPTrack->GetData()->GetBestBlockSize(start0);
+            const auto len0 = mPTrack->GetBestBlockSize(start0);
             wxASSERT(len0 <= mBufferSize);
-            if (!mPTrack->GetData()->Get(
+            if (!mPTrack->Get(
                   samplePtr(mBuffers[0].data.get()), floatSample, start0, len0,
                   fillZero, mayThrow))
                return 0;
@@ -2844,11 +2844,11 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
          mNValidBuffers = 1;
          const auto end0 = mBuffers[0].end();
          if (end > end0) {
-            const auto start1 = mPTrack->GetData()->GetBlockStart(end0);
+            const auto start1 = mPTrack->GetBlockStart(end0);
             if (start1 == end0) {
-               const auto len1 = mPTrack->GetData()->GetBestBlockSize(start1);
+               const auto len1 = mPTrack->GetBestBlockSize(start1);
                wxASSERT(len1 <= mBufferSize);
-               if (!mPTrack->GetData()->Get(
+               if (!mPTrack->Get(
                   samplePtr(mBuffers[1].data.get()), floatSample, start1, len1,
                   fillZero, mayThrow))
                   return 0;
@@ -2875,7 +2875,7 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
          mOverlapBuffer.Resize(len, format);
          // initLen is not more than len:
          auto sinitLen = initLen.as_size_t();
-         if (!mPTrack->GetData()->Get(
+         if (!mPTrack->Get(
             mOverlapBuffer.ptr(), format, start, sinitLen,
                            fillZero, mayThrow))
             return 0;
@@ -2926,7 +2926,7 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
             mOverlapBuffer.Resize(len, format);
             buffer = mOverlapBuffer.ptr();
          }
-         if (!mPTrack->GetData()->Get(
+         if (!mPTrack->Get(
             buffer, format, start, remaining, fillZero, mayThrow))
             return 0;
       }
@@ -2936,7 +2936,7 @@ constSamplePtr WaveTrackCache::Get(sampleFormat format,
 
    // Cache works only for float format.
    mOverlapBuffer.Resize(len, format);
-   if (mPTrack->GetData()->Get(
+   if (mPTrack->Get(
       mOverlapBuffer.ptr(), format, start, len, fillZero, mayThrow))
       return mOverlapBuffer.ptr();
    else

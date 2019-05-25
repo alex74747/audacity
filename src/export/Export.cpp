@@ -247,8 +247,9 @@ std::unique_ptr<Mixer> ExportPlugin::CreateMixer(const TrackList &tracks,
          double outRate, sampleFormat outFormat,
          bool highQuality, MixerSpec *mixerSpec)
 {
-   const WaveTrackConstArray inputTracks =
-      tracks.GetWaveTrackConstArray(selectionOnly, false);
+   std::vector< std::shared_ptr<const WaveTrackData> > inputTracks;
+   for (auto track : tracks.Any< const WaveTrack >() )
+      inputTracks.push_back( track->GetData() );
    const TimeTrack *timeTrack = tracks.GetTimeTrack();
    auto envelope = timeTrack ? timeTrack->GetEnvelope() : nullptr;
    // MB: the stop time should not be warped, this was a bug.

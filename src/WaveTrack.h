@@ -549,7 +549,7 @@ public:
    {
    }
 
-   explicit WaveTrackCache(const std::shared_ptr<const WaveTrack> &pTrack)
+   explicit WaveTrackCache(const std::shared_ptr<const WaveTrackData> &pTrack)
       : mBufferSize(0)
       , mOverlapBuffer()
       , mNValidBuffers(0)
@@ -558,8 +558,8 @@ public:
    }
    ~WaveTrackCache();
 
-   const std::shared_ptr<const WaveTrack>& GetTrack() const { return mPTrack; }
-   void SetTrack(const std::shared_ptr<const WaveTrack> &pTrack);
+   const std::shared_ptr<const WaveTrackData>& GetTrack() const { return mPTrack; }
+   void SetTrack(const std::shared_ptr<const WaveTrackData> &pTrack);
 
    // Uses fillZero always
    // Returns null on failure
@@ -588,7 +588,7 @@ private:
       }
    };
 
-   std::shared_ptr<const WaveTrack> mPTrack;
+   std::shared_ptr<const WaveTrackData> mPTrack;
    size_t mBufferSize;
    Buffer mBuffers[2];
    GrowableSampleBuffer mOverlapBuffer;

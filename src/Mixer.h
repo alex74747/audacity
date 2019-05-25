@@ -27,8 +27,7 @@
 
 class Resample;
 class BoundedEnvelope;
-class WaveTrack;
-using WaveTrackConstArray = std::vector < std::shared_ptr < const WaveTrack > >;
+class WaveTrackData;
 class WaveTrackCache;
 
 void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
@@ -80,7 +79,8 @@ class AUDACITY_DLL_API Mixer {
    // Constructor / Destructor
    //
 
-   Mixer(const WaveTrackConstArray &inputTracks, bool mayThrow,
+   Mixer(const std::vector< std::shared_ptr<const WaveTrackData> > &inputTracks,
+         bool mayThrow,
          const WarpOptions &warpOptions,
          double startTime, double stopTime,
          unsigned numOutChannels, size_t outBufferSize, bool outInterleaved,

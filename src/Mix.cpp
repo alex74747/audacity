@@ -66,10 +66,10 @@ void MixAndRender(TrackList *tracks, TrackFactory *trackFactory,
    double mixEndTime = 0.0;   /* end time of last track to end */
    double tstart, tend;    // start and end times for one track.
 
-   WaveTrackConstArray waveArray;
+   std::vector< std::shared_ptr<const WaveTrackData> > waveArray;
 
    for(auto wt : trackRange) {
-      waveArray.push_back( wt->SharedPointer< const WaveTrack >() );
+      waveArray.push_back( wt->GetData() );
       tstart = wt->GetStartTime();
       tend = wt->GetEndTime();
       if (tend > mixEndTime)

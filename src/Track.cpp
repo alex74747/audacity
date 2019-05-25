@@ -1165,11 +1165,6 @@ WaveTrackArray TrackList::GetWaveTrackArray(bool selectionOnly, bool includeMute
    return GetTypedTracks<WaveTrackArray>(Any(), selectionOnly, includeMuted);
 }
 
-WaveTrackConstArray TrackList::GetWaveTrackConstArray(bool selectionOnly, bool includeMuted) const
-{
-   return GetTypedTracks<WaveTrackConstArray>(Any(), selectionOnly, includeMuted);
-}
-
 #if defined(USE_MIDI)
 NoteTrackConstArray TrackList::GetNoteTrackConstArray(bool selectionOnly) const
 {

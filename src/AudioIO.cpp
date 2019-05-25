@@ -2168,10 +2168,10 @@ bool AudioIO::AllocateBuffers(
                mTimeQueue.mData.reinit( timeQueueSize );
                mTimeQueue.mSize = timeQueueSize;
 
-               // use track time for the end time, not real time!
-               WaveTrackConstArray mixTracks;
-               mixTracks.push_back(mPlaybackTracks[i]);
+               std::vector< std::shared_ptr< const WaveTrackData > > mixTracks;
+               mixTracks.push_back(mPlaybackTracks[i]->GetData());
 
+               // use track time for the end time, not real time!
                double endTime;
                if (make_iterator_range(tracks.prerollTracks)
                       .contains(mPlaybackTracks[i]))
