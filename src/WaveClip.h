@@ -244,6 +244,7 @@ public:
    // but use more high-level functions inside WaveClip (or add them if you
    // think they are useful for general use)
    Sequence* GetSequence() { return mSequence.get(); }
+   const Sequence* GetSequence() const { return mSequence.get(); }
 
    /** WaveTrack calls this whenever data in the wave clip changes. It is
     * called automatically when WaveClip has a chance to know that something
@@ -332,9 +333,9 @@ public:
    void OffsetCutLines(double t0, double len);
 
    /// Lock all blockfiles
-   void Lock();
+   void Lock() const;
    /// Unlock all blockfiles
-   void Unlock();
+   void Unlock() const;
 
    void CloseLock(); //similar to Lock but should be called when the project closes.
    // not balanced by unlocking calls.

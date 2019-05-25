@@ -146,8 +146,8 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    // for details.
    //
 
-   bool Lock();
-   bool Unlock();
+   bool Lock() const;
+   bool Unlock() const;
 
    bool CloseLock();//similar to Lock but should be called upon project close.
    // not balanced by unlocking calls.
@@ -187,6 +187,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    //
 
    BlockArray &GetBlockArray() {return mBlock;}
+   const BlockArray &GetBlockArray() const {return mBlock;}
 
    ///
    void LockDeleteUpdateMutex(){mDeleteUpdateMutex.Lock();}

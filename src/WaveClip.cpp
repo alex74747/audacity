@@ -1888,7 +1888,7 @@ void WaveClip::OffsetCutLines(double t0, double len)
    }
 }
 
-void WaveClip::Lock()
+void WaveClip::Lock() const
 {
    GetSequence()->Lock();
    for (const auto &cutline: mCutLines)
@@ -1902,7 +1902,7 @@ void WaveClip::CloseLock()
       cutline->CloseLock();
 }
 
-void WaveClip::Unlock()
+void WaveClip::Unlock() const
 {
    GetSequence()->Unlock();
    for (const auto &cutline: mCutLines)
