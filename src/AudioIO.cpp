@@ -450,6 +450,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include <wx/timer.h>
 #include <wx/intl.h>
 #include <wx/debug.h>
+#include <wx/frame.h>
 
 #if defined(__WXMAC__) || defined(__WXMSW__)
 #include <wx/power.h>

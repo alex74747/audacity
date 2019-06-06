@@ -41,6 +41,7 @@ AliasedFile s.
 #include <wx/defs.h>
 #include <wx/dialog.h>
 #include <wx/filename.h>
+#include <wx/frame.h>
 #include <wx/listctrl.h>
 #include <wx/menu.h>
 #include <wx/choice.h>

@@ -25,6 +25,7 @@
 #include <wx/dialog.h>
 #include <wx/dirdlg.h>
 #include <wx/event.h>
+#include <wx/frame.h>
 #include <wx/listbase.h>
 #include <wx/filefn.h>
 #include <wx/filename.h>
@@ -41,7 +42,6 @@
 #include "../LabelTrack.h"
 #include "../Project.h"
 #include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
 #include "../Prefs.h"
 #include "../SelectionState.h"
 #include "../ShuttleGui.h"
@@ -849,7 +849,7 @@ ProgressResult ExportMultipleDialog::ExportMultipleByLabel(bool byName,
 
          if( bShowTagsDialog ){
             bool bCancelled = !setting.filetags.ShowEditDialog(
-               ProjectWindow::Find( mProject ),
+               FindProjectFrame( mProject ),
                XO("Edit Metadata Tags"), bShowTagsDialog);
             gPrefs->Read(wxT("/AudioFiles/ShowId3Dialog"), &bShowTagsDialog, true);
             settings.SetShowId3Dialog( bShowTagsDialog );
@@ -993,7 +993,7 @@ ProgressResult ExportMultipleDialog::ExportMultipleByTrack(bool byName,
 
          if( bShowTagsDialog ){
             bool bCancelled = !setting.filetags.ShowEditDialog(
-               ProjectWindow::Find( mProject ),
+               FindProjectFrame( mProject ),
                XO("Edit Metadata Tags"), bShowTagsDialog);
             gPrefs->Read(wxT("/AudioFiles/ShowId3Dialog"), &bShowTagsDialog, true);
             settings.SetShowId3Dialog( bShowTagsDialog );

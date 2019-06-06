@@ -36,6 +36,7 @@
 #include <wx/file.h>
 #include <wx/filectrl.h>
 #include <wx/filename.h>
+#include <wx/frame.h>
 #include <wx/simplebook.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>
@@ -58,7 +59,6 @@
 #include "../Project.h"
 #include "../ProjectHistory.h"
 #include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
 #include "../ShuttleGui.h"
 #include "../Tags.h"
 #include "../Theme.h"
@@ -650,7 +650,7 @@ bool Exporter::GetFilename()
          auto useFileName = mFilename;
          if (!useFileName.HasExt())
             useFileName.SetExt(defext);
-         FileDialogWrapper fd( ProjectWindow::Find( mProject ),
+         FileDialogWrapper fd( FindProjectFrame( mProject ),
                        mFileDialogTitle,
                        mFilename.GetPath(),
                        useFileName.GetFullName(),
@@ -858,7 +858,7 @@ bool Exporter::CheckMix(bool prompt /*= true*/ )
             exportedChannels = mChannels;
 
          if (prompt) {
-            auto pWindow = ProjectWindow::Find(mProject);
+         auto pWindow = FindProjectFrame( mProject );
             if (exportedChannels == 1) {
                if (ShowWarningDialog(pWindow,
                   wxT("MixMono"),

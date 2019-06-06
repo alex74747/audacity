@@ -69,6 +69,7 @@
 #include <wx/checkbox.h>
 #include <wx/dynlib.h>
 #include <wx/ffile.h>
+#include <wx/frame.h>
 #include <wx/intl.h>
 #include <wx/log.h>
 #include <wx/mimetype.h>
@@ -83,8 +84,8 @@
 #include "../float_cast.h"
 #include "../Mix.h"
 #include "../Prefs.h"
+#include "../Project.h"
 #include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
 #include "../ShuttleGui.h"
 #include "../Tags.h"
 #include "../Track.h"
@@ -1769,7 +1770,7 @@ ProgressResult ExportMP3::Export(AudacityProject *project,
 {
    int rate = lrint( ProjectSettings::Get( *project ).GetRate());
 #ifndef DISABLE_DYNAMIC_LOADING_LAME
-   wxWindow *parent = ProjectWindow::Find( project );
+   wxWindow *parent = FindProjectFrame( project );
 #endif // DISABLE_DYNAMIC_LOADING_LAME
    const auto &tracks = TrackList::Get( *project );
    MP3Exporter exporter;

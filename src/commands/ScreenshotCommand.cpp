@@ -37,7 +37,6 @@ small calculations of rectangles.
 #include "../effects/Effect.h"
 #include "../toolbars/ToolManager.h"
 #include "../Prefs.h"
-#include "../ProjectWindow.h"
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 #include "../Track.h"
@@ -166,7 +165,7 @@ void ScreenshotCommand::SetIdleHandler( AudacityProject &project )
 wxTopLevelWindow *ScreenshotCommand::GetFrontWindow(AudacityProject *project)
 {
    wxWindow *front = NULL;
-   wxWindow *proj = wxGetTopLevelParent( ProjectWindow::Find( project ) );
+   wxWindow *proj = wxGetTopLevelParent( FindProjectFrame( project ) );
 
    for (auto & win : wxTopLevelWindows)
    {
@@ -753,7 +752,7 @@ wxRect ScreenshotCommand::GetTrackRect( AudacityProject * pProj, TrackPanel * pa
 }
 
 wxString ScreenshotCommand::WindowFileName(AudacityProject * proj, wxTopLevelWindow *w){
-   if (w != ProjectWindow::Find( proj ) && !w->GetTitle().empty()) {
+   if (w != FindProjectFrame( proj ) && !w->GetTitle().empty()) {
       mFileName = MakeFileName(mFilePath,
          kCaptureWhatStrings[ mCaptureMode ].Translation() +
             (wxT("-") + w->GetTitle() + wxT("-")));
