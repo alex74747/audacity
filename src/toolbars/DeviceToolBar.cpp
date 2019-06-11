@@ -353,7 +353,7 @@ void DeviceToolBar::EnableDisableButtons()
       if (audioStreamActive) {
          wxWindow *focus = wxWindow::FindFocus();
          if (focus == mHost || focus == mInput || focus == mOutput || focus == mInputChannels)
-            TrackPanel::Get( mProject ).SetFocus();
+           ((wxWindow&)TrackPanel::Get( mProject )).SetFocus();
       }
 
       mHost->Enable(!audioStreamActive);

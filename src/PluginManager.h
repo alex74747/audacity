@@ -15,7 +15,7 @@
 
 #include "wxArrayStringEx.h"
 #include <map>
-#include <memory>
+#include "MemoryX.h"
 
 #include "audacity/EffectInterface.h"
 #include "audacity/ImporterInterface.h"

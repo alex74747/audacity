@@ -38,7 +38,7 @@ void NextOrPrevFrame(AudacityProject &project, bool forward)
 
    wxWindow *const begin [rotationSize] = {
       ProjectWindow::Get( project ).GetTopPanel(),
-      &TrackPanel::Get( project ),
+      ((wxWindow*)&TrackPanel::Get( project )),
       botDock,
    };
 

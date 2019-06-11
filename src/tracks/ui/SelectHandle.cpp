@@ -1090,7 +1090,7 @@ void SelectHandle::TimerHandler::OnTimer(wxCommandEvent &event)
    //  smoother on MacOS 9.
 
    const auto project = mConnectedProject;
-   const auto &trackPanel = TrackPanel::Get( *project );
+   const wxWindow &trackPanel = TrackPanel::Get( *project );
    auto &window = ProjectWindow::Get( *project );
    if (mParent->mMostRecentX >= mParent->mRect.x + mParent->mRect.width) {
       mParent->mAutoScrolling = true;
@@ -1137,7 +1137,7 @@ void SelectHandle::TimerHandler::OnTimer(wxCommandEvent &event)
          project
       );
       mParent->mAutoScrolling = false;
-      TrackPanel::Get( *mConnectedProject ).Refresh(false);
+      ((wxWindow&)TrackPanel::Get( *mConnectedProject )).Refresh(false);
    }
 }
 

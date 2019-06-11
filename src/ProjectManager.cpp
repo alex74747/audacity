@@ -580,7 +580,7 @@ AudacityProject *ProjectManager::New()
    //   mTrackPanel->SetDropTarget(safenew AudacityDropTarget(this));
    
    // SetDropTarget takes ownership
-   TrackPanel::Get( project ).SetDropTarget( safenew DropTarget( &project ) );
+   ((wxWindow&)TrackPanel::Get( project )).SetDropTarget( safenew DropTarget( &project ) );
 #endif
    
    //Set the NEW project as active:
