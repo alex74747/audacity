@@ -164,7 +164,7 @@ using Path = std::vector< Identifier >;
 
    std::unordered_set< wxString > sBadPaths;
    void BadPath(
-     const TranslatableString &format, const wxString &key, const Identifier &name )
+      TranslatableString format, const wxString &key, const Identifier &name )
    {
      // Warn, but not more than once in a session for each bad path
      auto badPath = key + '/' + name.GET();
