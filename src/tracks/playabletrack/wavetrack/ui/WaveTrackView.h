@@ -29,7 +29,6 @@ public:
 
    std::shared_ptr<TrackVRulerControls> DoGetVRulerControls() override;
 
-
 private:
    // TrackPanelDrawable implementation
    void Draw(
@@ -44,9 +43,6 @@ private:
    std::weak_ptr<CutlineHandle> mCutlineHandle;
    std::weak_ptr<SampleHandle> mSampleHandle;
    std::weak_ptr<EnvelopeHandle> mEnvelopeHandle;
-
-protected:
-   void DoSetMinimized( bool minimized ) override;
 };
 
 #endif

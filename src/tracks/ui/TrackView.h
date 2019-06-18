@@ -47,9 +47,6 @@ public:
    static TrackView &Get( Track & );
    static const TrackView &Get( const Track & );
 
-   bool GetMinimized() const { return mMinimized; }
-   void SetMinimized( bool minimized );
-
    int GetY() const { return mY; }
    int GetActualHeight() const { return mHeight; }
    virtual int GetMinimizedHeight() const = 0;
@@ -73,7 +70,6 @@ public:
    bool HandleXMLAttribute( const wxChar *attr, const wxChar *value ) override;
 
 protected:
-   virtual void DoSetMinimized( bool isMinimized );
 
    // No need yet to make this virtual
    void DoSetY(int y);
@@ -88,7 +84,6 @@ protected:
    std::shared_ptr<TrackPanelResizerCell> mpResizer;
 
 private:
-   bool           mMinimized{ false };
    int            mY{ 0 };
    int            mHeight{ DefaultHeight };
 };

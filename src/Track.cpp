@@ -1235,6 +1235,7 @@ void Track::HandleXMLEndTag( const wxChar * )
       PostLoad();
 }
 
+#include "tracks/ui/TrackViewGroupData.h"
 // Serialize, not with tags of its own, but as attributes within a tag.
 void Track::WriteCommonXMLAttributes(
    XMLWriter &xmlFile, bool includeNameAndSelected) const

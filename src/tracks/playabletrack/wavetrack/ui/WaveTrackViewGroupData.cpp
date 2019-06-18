@@ -8,10 +8,7 @@ Paul Licameli split from class WaveTrack
 
 **********************************************************************/
 
-#include "Audacity.h"
 #include "WaveTrackViewGroupData.h"
-
-#include "Experimental.h"
 
 #include "../../../../NumberScale.h"
 #include "../../../../Prefs.h"

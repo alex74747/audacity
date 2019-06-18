@@ -21,6 +21,7 @@
 #include "../prefs/GUIPrefs.h"
 #include "../prefs/TracksPrefs.h"
 #include "../tracks/ui/TrackView.h"
+#include "../tracks/ui/TrackViewGroupData.h"
 
 #ifdef EXPERIMENTAL_EFFECTS_RACK
 #include "../effects/EffectManager.h"
@@ -153,7 +154,7 @@ void DoZoomFitV(AudacityProject &project)
    // Only nonminimized audio tracks will be resized
    auto range = tracks.Any<AudioTrack>()
       - [](const Track *pTrack){
-         return TrackView::Get( *pTrack ).GetMinimized(); };
+         return TrackViewGroupData::Get( *pTrack ).GetMinimized(); };
    auto count = range.size();
    if (count == 0)
       return;
@@ -279,8 +280,8 @@ void OnCollapseAllTracks(const CommandContext &context)
    auto &tracks = TrackList::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   for (auto t : tracks.Any())
-      TrackView::Get( *t ).SetMinimized(true);
+   for (auto group : tracks.Any().ByGroups())
+      TrackViewGroupData::Get( *group.data ).SetMinimized(true);
 
    ProjectHistory::Get( project ).ModifyState(true);
 }
@@ -291,8 +292,8 @@ void OnExpandAllTracks(const CommandContext &context)
    auto &tracks = TrackList::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   for (auto t : tracks.Any())
-      TrackView::Get( *t ).SetMinimized(false);
+   for (auto group : tracks.Any().ByGroups())
+      TrackViewGroupData::Get( *group.data ).SetMinimized(false);
 
    ProjectHistory::Get( project ).ModifyState(true);
 }

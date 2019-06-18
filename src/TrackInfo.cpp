@@ -363,6 +363,7 @@ void TrackInfo::CloseTitleDrawFunction
    }
 }
 
+#include "tracks/ui/TrackViewGroupData.h"
 void TrackInfo::MinimizeSyncLockDrawFunction
 ( TrackPanelDrawingContext &context,
   const wxRect &rect, const Track *pTrack )
@@ -371,7 +372,7 @@ void TrackInfo::MinimizeSyncLockDrawFunction
    bool selected = pTrack ? pTrack->GetSelected() : true;
    bool syncLockSelected = pTrack ? pTrack->IsSyncLockSelected() : true;
    bool minimized =
-      pTrack ? TrackView::Get( *pTrack ).GetMinimized() : false;
+      pTrack ? TrackViewGroupData::Get( *pTrack ).GetMinimized() : false;
    {
       wxRect bev = rect;
       GetMinimizeHorizontalBounds(rect, bev);

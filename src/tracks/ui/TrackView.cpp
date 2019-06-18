@@ -11,6 +11,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackView.h"
 #include "../../Track.h"
 
+#include "TrackViewGroupData.h"
+
 #include "TrackControls.h"
 #include "../../TrackPanelResizerCell.h"
 
@@ -50,8 +52,6 @@ void TrackView::CopyTo( Track &track ) const
 {
    auto &other = Get( track );
 
-   other.mMinimized = mMinimized;
-
    // Let mY remain 0 -- TrackPositioner corrects it later
    other.mY = 0;
    other.mHeight = mHeight;
@@ -71,21 +71,9 @@ const TrackView &TrackView::Get( const Track &track )
    return Get( const_cast< Track& >( track ) );
 }
 
-void TrackView::SetMinimized(bool isMinimized)
-{
-   // Do special changes appropriate to subclass
-   DoSetMinimized(isMinimized);
-
-   // Update positions and heights starting from the first track in the group
-   auto leader = *TrackList::Channels( FindTrack().get() ).begin();
-   if ( leader )
-      leader->AdjustPositions();
-}
-
 void TrackView::WriteXMLAttributes( XMLWriter &xmlFile ) const
 {
    xmlFile.WriteAttr(wxT("height"), GetActualHeight());
-   xmlFile.WriteAttr(wxT("minimized"), GetMinimized());
 }
 
 bool TrackView::HandleXMLAttribute( const wxChar *attr, const wxChar *value )
@@ -97,18 +85,8 @@ bool TrackView::HandleXMLAttribute( const wxChar *attr, const wxChar *value )
       SetHeight(nValue);
       return true;
    }
-   else if (!wxStrcmp(attr, wxT("minimized")) &&
-         XMLValueChecker::IsGoodInt(strValue) && strValue.ToLong(&nValue)) {
-      SetMinimized(nValue != 0);
-      return true;
-   }
    else
       return false;
-}
-
-void TrackView::DoSetMinimized(bool isMinimized)
-{
-   mMinimized = isMinimized;
 }
 
 std::shared_ptr<TrackVRulerControls> TrackView::GetVRulerControls()
@@ -145,7 +123,7 @@ void TrackView::DoSetY(int y)
 
 int TrackView::GetHeight() const
 {
-   if ( GetMinimized() )
+   if ( TrackViewGroupData::Get( *FindTrack() ).GetMinimized() )
       return GetMinimizedHeight();
 
    return mHeight;

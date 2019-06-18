@@ -132,13 +132,6 @@ std::vector<UIHandlePtr> WaveTrackView::DetailedHitTest
    return results;
 }
 
-void WaveTrackView::DoSetMinimized( bool minimized )
-{
-   auto wt = static_cast<WaveTrack*>( FindTrack().get() );
-   WaveTrackViewGroupData::Get( *wt ).DoSetMinimized( minimized );
-   TrackView::DoSetMinimized( minimized );
-}
-
 using DoGetWaveTrackView = DoGetView::Override< WaveTrack >;
 template<> template<> auto DoGetWaveTrackView::Implementation() -> Function {
    return [](WaveTrack &track) {

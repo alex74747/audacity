@@ -866,8 +866,8 @@ void WaveTrackMenuTable::OnMergeStereo(wxCommandEvent &)
       ( *tracks.Find( pTrack ).advance( 1 ) );
 
    bool bBothMinimizedp =
-      ((TrackView::Get( *pTrack ).GetMinimized()) &&
-       (TrackView::Get( *partner ).GetMinimized()));
+      ((TrackViewGroupData::Get( *pTrack ).GetMinimized()) &&
+       (TrackViewGroupData::Get( *partner ).GetMinimized()));
 
    tracks.GroupChannels( *pTrack, 2 );
 
@@ -875,16 +875,15 @@ void WaveTrackMenuTable::OnMergeStereo(wxCommandEvent &)
    data.SetPan( 0.0f );
 
    // Set NEW track heights and minimized state
+   auto &viewData = TrackViewGroupData::Get( *pTrack );
    auto
       &view = TrackView::Get( *pTrack ),
       &partnerView = TrackView::Get( *partner );
-   view.SetMinimized(false);
-   partnerView.SetMinimized(false);
+   viewData.SetMinimized(false);
    int AverageHeight = (view.GetHeight() + partnerView.GetHeight()) / 2;
    view.SetHeight(AverageHeight);
    partnerView.SetHeight(AverageHeight);
-   view.SetMinimized(bBothMinimizedp);
-   partnerView.SetMinimized(bBothMinimizedp);
+   viewData.SetMinimized(bBothMinimizedp);
 
    //On Demand - join the queues together.
    if (ODManager::IsInstanceCreated())

@@ -20,6 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "Track.h"
 #include "TrackPanelMouseEvent.h"
 #include "tracks/ui/TrackView.h"
+#include "tracks/ui/TrackViewGroupData.h"
 
 HitTestPreview TrackPanelResizeHandle::HitPreview(bool bLinked)
 {
@@ -70,7 +71,7 @@ TrackPanelResizeHandle::TrackPanelResizeHandle
    auto &lastView = TrackView::Get( *last );
    mInitialTrackHeight = lastView.GetHeight();
    mInitialActualHeight = lastView.GetActualHeight();
-   mInitialMinimized = lastView.GetMinimized();
+   mInitialMinimized = TrackViewGroupData::Get( *last ).GetMinimized();
 
    if (channels.size() > 1) {
       auto first = *channels.begin();
@@ -109,13 +110,13 @@ UIHandle::Result TrackPanelResizeHandle::Drag
    //
    // This used to be in HandleResizeClick(), but simply clicking
    // on a resize border would switch the minimized state.
-   auto &data = TrackView::Get( *pTrack );
+   auto &data = TrackViewGroupData::Get( *pTrack );
    if (data.GetMinimized()) {
+      data.SetMinimized( false );
       auto channels = TrackList::Channels( pTrack.get() );
       for (auto channel : channels) {
          auto &channelView = TrackView::Get( *channel );
          channelView.SetHeight(channelView.GetHeight());
-         channelView.SetMinimized( false );
       }
 
       if (channels.size() > 1) {
@@ -240,13 +241,13 @@ UIHandle::Result TrackPanelResizeHandle::Cancel(AudacityProject *pProject)
    if ( !pTrack )
       return RefreshCode::Cancelled;
 
+   TrackViewGroupData::Get( *pTrack ).SetMinimized( mInitialMinimized );
 
    switch (mMode) {
    case IsResizing:
    {
       auto &view = TrackView::Get( *pTrack );
       view.SetHeight(mInitialActualHeight);
-      view.SetMinimized( mInitialMinimized );
    }
    break;
    case IsResizingBetweenLinkedTracks:
@@ -255,9 +256,7 @@ UIHandle::Result TrackPanelResizeHandle::Cancel(AudacityProject *pProject)
       auto
          &view = TrackView::Get( *pTrack ), &nextView = TrackView::Get( *next );
       view.SetHeight(mInitialUpperActualHeight);
-      view.SetMinimized( mInitialMinimized );
       nextView.SetHeight(mInitialActualHeight);
-      nextView.SetMinimized( mInitialMinimized );
    }
    break;
    case IsResizingBelowLinkedTracks:
@@ -266,9 +265,7 @@ UIHandle::Result TrackPanelResizeHandle::Cancel(AudacityProject *pProject)
       auto
          &view = TrackView::Get( *pTrack ), &prevView = TrackView::Get( *prev );
       view.SetHeight(mInitialActualHeight);
-      view.SetMinimized( mInitialMinimized );
       prevView.SetHeight(mInitialUpperActualHeight);
-      prevView.SetMinimized(mInitialMinimized);
    }
    break;
    }

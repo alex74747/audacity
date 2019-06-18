@@ -29,7 +29,7 @@
 #include "prefs/TracksPrefs.h"
 //#include "toolbars/ToolManager.h"
 #include "tracks/ui/Scrubbing.h"
-#include "tracks/ui/TrackView.h"
+#include "tracks/ui/TrackViewGroupData.h"
 #include "widgets/ErrorDialog.h"
 #include "widgets/Meter.h"
 
@@ -601,8 +601,8 @@ bool TransportState::DoRecord(AudacityProject &project,
             }
 
             if ((recordingChannels > 2) &&
-                !(ProjectSettings::Get(*p).GetTracksFitVerticallyZoomed())) {
-               TrackView::Get( *newTrack ).SetMinimized(true);
+               !(ProjectSettings::Get(*p).GetTracksFitVerticallyZoomed())) {
+               TrackViewGroupData::Get( *newTrack ).SetMinimized(true);
             }
 
             TrackList::Get( *p ).RegisterPendingNewTrack( newTrack, c == 0 );

@@ -23,7 +23,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../TrackPanel.h"
 #include "../../TrackUtilities.h"
 #include "../../commands/CommandManager.h"
-#include "../../tracks/ui/TrackView.h"
+#include "../../tracks/ui/TrackViewGroupData.h"
 
 MinimizeButtonHandle::MinimizeButtonHandle
 ( const std::shared_ptr<Track> &pTrack, const wxRect &rect )
@@ -42,10 +42,9 @@ UIHandle::Result MinimizeButtonHandle::CommitChanges
    auto pTrack = mpTrack.lock();
    if (pTrack)
    {
-      auto channels = TrackList::Channels(pTrack.get());
-      bool wasMinimized = TrackView::Get( **channels.begin() ).GetMinimized();
-      for (auto channel : channels)
-         TrackView::Get( *channel ).SetMinimized( !wasMinimized );
+      auto &data = TrackViewGroupData::Get( *pTrack );
+      bool wasMinimized = data.GetMinimized();
+      data.SetMinimized( !wasMinimized );
       ProjectHistory::Get( *pProject ).ModifyState(true);
 
       // Redraw all tracks when any one of them expands or contracts
@@ -60,7 +59,7 @@ UIHandle::Result MinimizeButtonHandle::CommitChanges
 wxString MinimizeButtonHandle::Tip(const wxMouseState &) const
 {
    auto pTrack = GetTrack();
-   return TrackView::Get( *pTrack ).GetMinimized()
+   return TrackViewGroupData::Get( *pTrack ).GetMinimized()
       ? _("Expand") : _("Collapse");
 }
 
