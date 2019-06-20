@@ -45,7 +45,6 @@ Paul Licameli split from TrackPanel.cpp
 WaveTrackView::WaveTrackView( const std::shared_ptr<Track> &pTrack )
    : CommonTrackView{ pTrack }
 {
-   DoSetHeight( WaveTrackControls::DefaultWaveTrackHeight() );
 }
 
 WaveTrackView::~WaveTrackView()
