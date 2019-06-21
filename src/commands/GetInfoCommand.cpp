@@ -44,6 +44,7 @@ This class now lists
 #include "../prefs/PrefsDialog.h"
 #include "../Shuttle.h"
 #include "../PluginManager.h"
+#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewGroupData.h"
 #include "../tracks/ui/TrackView.h"
 #include "../ShuttleGui.h"
 
@@ -501,8 +502,9 @@ bool GetInfoCommand::SendTracks(const CommandContext & context)
       //context.AddItem( TrackView::Get( *trk ).GetHeight(), "height" );
       trk->TypeSwitch( [&] (const WaveTrack* t ) {
          auto &data = t->GetGroupData();
+         auto &viewData = WaveTrackViewGroupData::Get( *t );
          float vzmin, vzmax;
-         t->GetDisplayBounds(&vzmin, &vzmax);
+         viewData.GetDisplayBounds(&vzmin, &vzmax);
          context.AddItem( "wave", "kind" );
          context.AddItem( t->GetStartTime(), "start" );
          context.AddItem( t->GetEndTime(), "end" );

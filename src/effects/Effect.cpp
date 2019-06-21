@@ -75,6 +75,7 @@ greater use in future.
 #include "../widgets/ErrorDialog.h"
 #include "../FileNames.h"
 #include "../commands/CommandContext.h"
+#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewGroupData.h"
 
 #if defined(__WXMAC__)
 #include <Cocoa/Cocoa.h>
@@ -2370,7 +2371,8 @@ void Effect::Preview(bool dryOnly)
 
       mixLeft->Offset(-mixLeft->GetStartTime());
       mixLeft->GetGroupData().SetSelected(true);
-      mixLeft->SetDisplay(WaveTrackViewConstants::NoDisplay);
+      auto &data = WaveTrackViewGroupData::Get( *mixLeft );
+      data.SetDisplay(WaveTrackViewConstants::NoDisplay);
       auto pLeft = mTracks->Add( mixLeft, true );
       Track *pRight{};
       if (mixRight) {
@@ -2386,8 +2388,9 @@ void Effect::Preview(bool dryOnly)
             if (isLeader)
                dest->GetGroupData().SetSelected(
                   src->GetGroupData().GetSelected() );
-            static_cast<WaveTrack*>(dest.get())
-               ->SetDisplay(WaveTrackViewConstants::NoDisplay);
+            auto &data = WaveTrackViewGroupData::Get(
+               *static_cast<WaveTrack*>( dest.get() ) );
+            data.SetDisplay(WaveTrackViewConstants::NoDisplay);
             mTracks->Add( dest, isLeader );
          }
       }

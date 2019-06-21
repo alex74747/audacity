@@ -13,6 +13,7 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../../Experimental.h"
 
+#include "WaveTrackViewGroupData.h"
 #include "../../../ui/TrackVRulerControls.h"
 
 #include "../../../../HitTestResult.h"
@@ -88,12 +89,13 @@ void WaveTrackVZoomHandle::DoZoom
    const double rate = pTrack->GetRate();
    const float halfrate = rate / 2;
    float maxFreq = 8000.0;
-   const SpectrogramSettings &specSettings = pTrack->GetSpectrogramSettings();
+   auto &data = WaveTrackViewGroupData::Get( *pTrack );
+   const SpectrogramSettings &specSettings = data.GetSpectrogramSettings();
    NumberScale scale;
    const bool spectral =
-      (pTrack->GetDisplay() == Spectrum);
+      (data.GetDisplay() == WaveTrackViewConstants::Spectrum);
    const bool spectrumLinear = spectral &&
-      (pTrack->GetSpectrogramSettings().scaleType == SpectrogramSettings::stLinear);
+      (data.GetSpectrogramSettings().scaleType == SpectrogramSettings::stLinear);
 
 
    bool bDragZoom = IsDragZooming(zoomStart, zoomEnd);
@@ -111,7 +113,7 @@ void WaveTrackVZoomHandle::DoZoom
    float half=0.5;
 
    if (spectral) {
-      pTrack->GetSpectrumBounds(&min, &max);
+      data.GetSpectrumBounds(pTrack->GetRate(), &min, &max);
       scale = (specSettings.GetScale(min, max));
       const auto fftLength = specSettings.GetFFTLength();
       const float binSize = rate / fftLength;
@@ -124,8 +126,8 @@ void WaveTrackVZoomHandle::DoZoom
       minBand = minBins * binSize;
    }
    else{
-      pTrack->GetDisplayBounds(&min, &max);
-      const WaveformSettings &waveSettings = pTrack->GetWaveformSettings();
+      data.GetDisplayBounds(&min, &max);
+      const WaveformSettings &waveSettings = data.GetWaveformSettings();
       const bool linear = waveSettings.isLinear();
       if( !linear ){
          top = (LINEAR_TO_DB(2.0) + waveSettings.dBRange) / waveSettings.dBRange;
@@ -326,12 +328,10 @@ void WaveTrackVZoomHandle::DoZoom
    }
 
    // Now actually apply the zoom.
-   for (auto channel : TrackList::Channels(pTrack)) {
-      if (spectral)
-         channel->SetSpectrumBounds(min, max);
-      else
-         channel->SetDisplayBounds(min, max);
-   }
+   if (spectral)
+      data.SetSpectrumBounds(min, max);
+   else
+      data.SetDisplayBounds(min, max);
 
    zoomEnd = zoomStart = 0;
    if( pProject )
@@ -484,10 +484,9 @@ void WaveformVRulerMenuTable::OnWaveformScaleType(wxCommandEvent &evt)
                evt.GetId() - OnFirstWaveformScaleID
       )));
 
-   if (wt->GetWaveformSettings().scaleType != newScaleType) {
-      for (auto channel : TrackList::Channels(wt)) {
-         channel->GetIndependentWaveformSettings().scaleType = newScaleType;
-      }
+   auto &data = WaveTrackViewGroupData::Get( *wt );
+   if (data.GetWaveformSettings().scaleType != newScaleType) {
+      data.GetIndependentWaveformSettings().scaleType = newScaleType;
 
       ProjectHistory::Get( *::GetActiveProject() ).ModifyState(true);
 
@@ -525,8 +524,9 @@ void SpectrumVRulerMenuTable::InitMenu(Menu *pMenu, void *pUserData)
    WaveTrackVRulerMenuTable::InitMenu(pMenu, pUserData);
 
    WaveTrack *const wt = mpData->pTrack;
+   auto &data = WaveTrackViewGroupData::Get( *wt );
    const int id =
-      OnFirstSpectrumScaleID + (int)(wt->GetSpectrogramSettings().scaleType);
+      OnFirstSpectrumScaleID + (int)(data.GetSpectrogramSettings().scaleType);
    pMenu->Check(id, true);
 }
 
@@ -550,6 +550,7 @@ END_POPUP_MENU()
 void SpectrumVRulerMenuTable::OnSpectrumScaleType(wxCommandEvent &evt)
 {
    WaveTrack *const wt = mpData->pTrack;
+   auto &data = WaveTrackViewGroupData::Get( *wt );
 
    const SpectrogramSettings::ScaleType newScaleType =
       SpectrogramSettings::ScaleType(
@@ -557,9 +558,8 @@ void SpectrumVRulerMenuTable::OnSpectrumScaleType(wxCommandEvent &evt)
             std::min((int)(SpectrogramSettings::stNumScaleTypes) - 1,
                evt.GetId() - OnFirstSpectrumScaleID
       )));
-   if (wt->GetSpectrogramSettings().scaleType != newScaleType) {
-      for (auto channel : TrackList::Channels(wt))
-         channel->GetIndependentSpectrogramSettings().scaleType = newScaleType;
+   if (data.GetSpectrogramSettings().scaleType != newScaleType) {
+      data.GetIndependentSpectrogramSettings().scaleType = newScaleType;
 
       ProjectHistory::Get( *::GetActiveProject() ).ModifyState(true);
 
@@ -642,7 +642,6 @@ UIHandle::Result WaveTrackVZoomHandle::Release
    gPrefs->Read(wxT("/GUI/VerticalZooming"), &bVZoom, false);
 
    // Popup menu... 
-   using namespace WaveTrackViewConstants;
    if (
        rightUp &&
        !(event.ShiftDown() || event.CmdDown()))
@@ -651,8 +650,9 @@ UIHandle::Result WaveTrackVZoomHandle::Release
          pTrack.get(), mRect, RefreshCode::RefreshNone, event.m_y
       };
 
+      auto &groupData = WaveTrackViewGroupData::Get( *pTrack );
       PopupMenuTable *const pTable =
-         (pTrack->GetDisplay() == Spectrum)
+         (groupData.GetDisplay() == WaveTrackViewConstants::Spectrum)
          ? (PopupMenuTable *) &SpectrumVRulerMenuTable::Instance()
          : (PopupMenuTable *) &WaveformVRulerMenuTable::Instance();
       std::unique_ptr<PopupMenuTable::Menu>
@@ -684,7 +684,8 @@ UIHandle::Result WaveTrackVZoomHandle::Release
       //    T      |    T    | 1to1
       //    T      |    F    | Out
       //    F      |    -    | In
-      if( bVZoom ) {
+      if( bVZoom ){
+         using namespace WaveTrackViewConstants;
          if( shiftDown )
             mZoomStart = mZoomEnd;
          DoZoom(pProject, pTrack.get(),

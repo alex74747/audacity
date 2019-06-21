@@ -19,6 +19,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../WaveTrack.h"
 
 #include "WaveTrackControls.h"
+#include "WaveTrackViewGroupData.h"
 #include "WaveTrackVRulerControls.h"
 
 #include "../../../../AColor.h"
@@ -63,7 +64,8 @@ std::vector<UIHandlePtr> WaveTrackView::DetailedHitTest
    UIHandlePtr result;
    std::vector<UIHandlePtr> results;
    const auto pTrack = std::static_pointer_cast< WaveTrack >( FindTrack() );
-   bool isWaveform = (pTrack->GetDisplay() == WaveTrackViewConstants::Waveform);
+   const auto &data = WaveTrackViewGroupData::Get( *pTrack );
+   bool isWaveform = (data.GetDisplay() == WaveTrackViewConstants::Waveform);
 
    if (bMultiTool && st.state.CmdDown()) {
       // Ctrl modifier key in multi-tool overrides everything else
@@ -133,37 +135,7 @@ std::vector<UIHandlePtr> WaveTrackView::DetailedHitTest
 void WaveTrackView::DoSetMinimized( bool minimized )
 {
    auto wt = static_cast<WaveTrack*>( FindTrack().get() );
-
-#ifdef EXPERIMENTAL_HALF_WAVE
-   bool bHalfWave;
-   gPrefs->Read(wxT("/GUI/CollapseToHalfWave"), &bHalfWave, false);
-   if( bHalfWave )
-   {
-      const bool spectral =
-         (wt->GetDisplay() == WaveTrackViewConstants::Spectrum);
-      if ( spectral ) {
-         // It is all right to set the top of scale to a huge number,
-         // not knowing the track rate here -- because when retrieving the
-         // value, then we pass in a sample rate and clamp it above to the
-         // Nyquist frequency.
-         constexpr auto max = std::numeric_limits<float>::max();
-         const bool spectrumLinear =
-            (wt->GetSpectrogramSettings().scaleType ==
-               SpectrogramSettings::stLinear);
-         // Zoom out full
-         wt->SetSpectrumBounds( spectrumLinear ? 0.0f : 1.0f, max );
-      }
-      else {
-         if (minimized)
-            // Zoom to show fractionally more than the top half of the wave.
-            wt->SetDisplayBounds( -0.01f, 1.0f );
-         else
-            // Zoom out full
-            wt->SetDisplayBounds( -1.0f, 1.0f );
-      }
-   }
-#endif
-
+   WaveTrackViewGroupData::Get( *wt ).DoSetMinimized( minimized );
    TrackView::DoSetMinimized( minimized );
 }
 
@@ -932,6 +904,7 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
    const auto artist = TrackArtist::Get( context );
    const auto &selectedRegion = *artist->pSelectedRegion;
    const auto &zoomInfo = *artist->pZoomInfo;
+   const auto &groupData = WaveTrackViewGroupData::Get( *track );
 
 #ifdef PROFILE_WAVEFORM
    Profiler profiler;
@@ -963,7 +936,7 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
    double leftOffset = params.leftOffset;
    const wxRect &mid = params.mid;
 
-   const float dBRange = track->GetWaveformSettings().dBRange;
+   const float dBRange = groupData.GetWaveformSettings().dBRange;
 
    dc.SetPen(*wxTRANSPARENT_PEN);
    int iColorIndex = clip->GetColourIndex();
@@ -976,7 +949,7 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
    // The bounds (controlled by vertical zooming; -1.0...1.0
    // by default)
    float zoomMin, zoomMax;
-   track->GetDisplayBounds(&zoomMin, &zoomMax);
+   groupData.GetDisplayBounds(&zoomMin, &zoomMax);
 
    std::vector<double> vEnv(mid.width);
    double *const env = &vEnv[0];
@@ -1003,7 +976,7 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
       DrawWaveformBackground(context, leftOffset, mid,
          env,
          zoomMin, zoomMax,
-         track->ZeroLevelYCoordinate(mid),
+         groupData.ZeroLevelYCoordinate(mid),
          dB, dBRange,
          tt0, tt1,
          !track->GetSelected(), highlightEnvelope);
@@ -1247,6 +1220,7 @@ void DrawWaveform(TrackPanelDrawingContext &context,
 {
    auto &dc = context.dc;
    const auto artist = TrackArtist::Get( context );
+   const auto &groupData = WaveTrackViewGroupData::Get( *track );
 
    bool highlight = false;
    bool gripHit = false;
@@ -1256,7 +1230,7 @@ void DrawWaveform(TrackPanelDrawingContext &context,
    highlight = target && target->GetTrack().get() == track;
 #endif
 
-   const bool dB = !track->GetWaveformSettings().isLinear();
+   const bool dB = !groupData.GetWaveformSettings().isLinear();
 
    const auto &blankSelectedBrush = artist->blankSelectedBrush;
    const auto &blankBrush = artist->blankBrush;
@@ -1403,7 +1377,8 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
 #endif
 
    const WaveTrack *const track = waveTrackCache.GetTrack().get();
-   const SpectrogramSettings &settings = track->GetSpectrogramSettings();
+   const auto &groupData = WaveTrackViewGroupData::Get( *track );
+   const SpectrogramSettings &settings = groupData.GetSpectrogramSettings();
    const bool autocorrelation = (settings.algorithm == SpectrogramSettings::algPitchEAC);
 
    enum { DASH_LENGTH = 10 /* pixels */ };
@@ -1481,7 +1456,7 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
    auto nBins = settings.NBins();
 
    float minFreq, maxFreq;
-   track->GetSpectrumBounds(&minFreq, &maxFreq);
+   groupData.GetSpectrumBounds(track->GetRate(), &minFreq, &maxFreq);
 
    const SpectrogramSettings::ScaleType scaleType = settings.scaleType;
 
@@ -1851,6 +1826,7 @@ void WaveTrackView::Draw(
       auto &dc = context.dc;
       const auto wt = std::static_pointer_cast<const WaveTrack>(
          FindTrack()->SubstitutePendingChangedTrack());
+      const auto &groupData = WaveTrackViewGroupData::Get( *wt );
 
       for (const auto &clip : wt->GetClips()) {
          clip->ClearDisplayRect();
@@ -1866,7 +1842,7 @@ void WaveTrackView::Draw(
       dc.GetGraphicsContext()->SetAntialiasMode(wxANTIALIAS_NONE);
 #endif
       
-      switch (wt->GetDisplay()) {
+      switch (groupData.GetDisplay()) {
          case WaveTrackViewConstants::Waveform:
             DrawWaveform(context, wt.get(), rect, muted);
             break;
