@@ -120,10 +120,6 @@ class AUDACITY_DLL_API TrackPanel final
    void UpdateTrackVRuler(Track *t);
    void UpdateVRulerSize();
 
-public:
-   size_t GetSelectedTrackCount() const;
-
-public:
    void MakeParentRedrawScrollbars();
 
    // Rectangle includes track control panel, and the vertical ruler, and

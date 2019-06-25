@@ -545,12 +545,6 @@ void TrackPanel::UpdateStatusMessage( const TranslatableString &st )
    ProjectStatus::Get( *GetProject() ).Set( status );
 }
 
-// Counts selected tracks, counting stereo tracks as one track.
-size_t TrackPanel::GetSelectedTrackCount() const
-{
-   return GetTracks()->SelectedLeaders().size();
-}
-
 // The tracks positions within the list have changed, so update the vertical
 // ruler size for the track that triggered the event.
 void TrackPanel::OnTrackListResizing(TrackListEvent & e)

@@ -526,9 +526,9 @@ UIHandle::Result SelectHandle::Click
       return Cancelled;
 
    wxMouseEvent &event = evt.event;
-   const auto sTrack = TrackList::Get( *pProject ).Lock( FindTrack() );
+   auto &trackList = TrackList::Get( *pProject );
+   const auto sTrack = trackList.Lock( FindTrack() );
    const auto pTrack = sTrack.get();
-   auto &trackPanel = TrackPanel::Get( *pProject );
    auto &viewInfo = ViewInfo::Get( *pProject );
 
    mMostRecentX = event.m_x;
@@ -554,8 +554,6 @@ UIHandle::Result SelectHandle::Click
    auto &selectionState = SelectionState::Get( *pProject );
    const auto &settings = ProjectSettings::Get( *pProject );
    if (event.LeftDClick() && !event.ShiftDown()) {
-      auto &trackList = TrackList::Get( *pProject );
-
       // Deselect all other tracks and select this one.
       selectionState.SelectNone( trackList );
 
@@ -586,7 +584,6 @@ UIHandle::Result SelectHandle::Click
 
    mInitialSelection = viewInfo.selectedRegion;
 
-   auto &trackList = TrackList::Get( *pProject );
    mSelectionStateChanger =
       std::make_shared< SelectionStateChanger >( selectionState, trackList );
 
@@ -608,7 +605,7 @@ UIHandle::Result SelectHandle::Click
          //Actual bIsSelected will always add.
          bool bIsSelected = false;
          // Don't toggle away the last selected track.
-         if( !bIsSelected || trackPanel.GetSelectedTrackCount() > 1 )
+         if( !bIsSelected || trackList.SelectedLeaders().size() > 1 )
             selectionState.SelectTrack( *pTrack, !bIsSelected, true );
       }
 
