@@ -3,7 +3,7 @@
 use strict 'vars';
 use File::Spec;
 
-my $traceLevel = 3;
+my $traceLevel = 1;
 
 # whether to box the clusters by sub-folder, but always color nodes regardless
 my @clusterlist = qw(
@@ -313,7 +313,7 @@ foreach my $node ( keys %graph ) {
 if ($traceLevel >= 1) {
    print STDERR "Found ", scalar(keys(%quotientGraph)), " strongly connected component(s) in ", (1 + $maxRank), " rank(s)\n";
    print STDERR "Largest component size is ${largest}\n";
-   print STDERR "${arcs} arc(s) found (${prunedArcs} after pruning)\n";
+   print STDERR "${arcs} arc(s) found in quotient graph (${prunedArcs} after pruning)\n";
 }
 
 # Step 4: output the graph in dot language
