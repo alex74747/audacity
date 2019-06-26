@@ -32,7 +32,7 @@ class TrackList;
 //allow name change
 class AUDACITY_DLL_API WaveTrackAffordanceControls : 
     public TrackAffordanceControls,
-    public TextEditDelegate,
+    public TextEditDelegate
 {
     std::weak_ptr<WaveClip> mFocusClip;
     std::weak_ptr<WaveTrackAffordanceHandle> mAffordanceHandle;
