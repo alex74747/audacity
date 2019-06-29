@@ -108,6 +108,10 @@ void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
                // Don't draw the indicator in label tracks
             },
             [&](Track *) {
+               if ( mLastIndicatorX < rect.GetLeft() )
+                  return;
+               if ( mLastIndicatorX > rect.GetRight() )
+                  return;
                // Draw the NEW indicator in its NEW location
                // AColor::Line includes both endpoints so use GetBottom()
                AColor::Line(dc,
