@@ -174,6 +174,7 @@ class AUDACITY_DLL_API MeterPanel final
     */
    bool IsMeterDisabled() const override;
 
+   bool HasMaxPeak() const override;
    float GetMaxPeak() const override;
 
    bool IsClipping() const override;

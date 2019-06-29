@@ -300,8 +300,6 @@ AudioIO::AudioIO()
    mUpdateMeters = false;
    mUpdatingMeters = false;
 
-   mOutputMeter.reset();
-
    PaError err = Pa_Initialize();
 
    if (err != paNoError) {
@@ -488,8 +486,8 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
    if (mOwningProject.expired())
       return false;
 
-   mInputMeter.reset();
-   mOutputMeter.reset();
+   mInputMeters.clear();
+   mOutputMeters.clear();
 
    mLastPaError = paNoError;
    // pick a rate to do the audio I/O at, from those available. The project
@@ -554,7 +552,7 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
          playbackParameters.suggestedLatency = isWASAPI ? 0.0 : latencyDuration/1000.0;
       }
 
-      mOutputMeter = options.playbackMeter;
+      mOutputMeters = std::move( options.playbackMeters );
    }
 
    if( numCaptureChannels > 0)
@@ -584,7 +582,7 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
       else
          captureParameters.suggestedLatency = latencyDuration/1000.0;
 
-      SetCaptureMeter( mOwningProject.lock(), options.captureMeter );
+      SetCaptureMeters( mOwningProject.lock(), std::move( options.captureMeters ) );
    }
 
    SetMeters();
@@ -1293,10 +1291,12 @@ bool AudioIO::IsAvailable(AudacityProject &project) const
 
 void AudioIO::SetMeters()
 {
-   if (auto pInputMeter = mInputMeter.lock())
-      pInputMeter->Reset(mRate, true);
-   if (auto pOutputMeter = mOutputMeter.lock())
-      pOutputMeter->Reset(mRate, true);
+   for ( auto &wMeter : mInputMeters )
+      if (auto pInputMeter = wMeter.lock())
+         pInputMeter->Reset(mRate, true);
+   for ( auto &wMeter : mOutputMeters )
+      if (auto pOutputMeter = wMeter.lock())
+         pOutputMeter->Reset(mRate, true);
 
    mUpdateMeters = true;
 }
@@ -1519,14 +1519,16 @@ void AudioIO::StopStream()
       }
    }
 
-   if (auto pInputMeter = mInputMeter.lock())
-      pInputMeter->Reset(mRate, false);
+   for ( auto &wMeter : mInputMeters )
+      if (auto pInputMeter = wMeter.lock())
+         pInputMeter->Reset(mRate, false);
 
-   if (auto pOutputMeter = mOutputMeter.lock())
-      pOutputMeter->Reset(mRate, false);
+   for ( auto &wMeter : mOutputMeters )
+      if (auto pOutputMeter = wMeter.lock())
+         pOutputMeter->Reset(mRate, false);
 
-   mInputMeter.reset();
-   mOutputMeter.reset();
+   mInputMeters.clear();
+   mOutputMeters.clear();
    ResetOwningProject();
 
    if (pListener && mNumCaptureChannels > 0)
@@ -2759,30 +2761,34 @@ void AudioIoCallback::SendVuInputMeterData(
    unsigned long framesPerBuffer
    )
 {
+   if( !inputSamples)
+      return;
+
    const auto numCaptureChannels = mNumCaptureChannels;
 
-   auto pInputMeter = mInputMeter.lock();
-   if ( !pInputMeter )
-      return;
-   if( pInputMeter->IsMeterDisabled())
-      return;
-
-   // get here if meters are actually live , and being updated
-   /* It's critical that we don't update the meters while StopStream is
-      * trying to stop PortAudio, otherwise it can lead to a freeze.  We use
-      * two variables to synchronize:
-      *   mUpdatingMeters tells StopStream when the callback is about to enter
-      *     the code where it might update the meters, and
-      *   mUpdateMeters is how the rest of the code tells the callback when it
-      *     is allowed to actually do the updating.
-      * Note that mUpdatingMeters must be set first to avoid a race condition.
-      */
    //TODO use atomics instead.
    mUpdatingMeters = true;
-   if (mUpdateMeters) {
-         pInputMeter->UpdateDisplay(numCaptureChannels,
-                                    framesPerBuffer,
-                                    inputSamples);
+   for (auto &wMeter : mInputMeters) {
+      if ( auto pInputMeter = wMeter.lock() ) {
+         if( pInputMeter->IsMeterDisabled())
+            continue;
+
+         // get here if meters are actually live , and being updated
+         /* It's critical that we don't update the meters while StopStream is
+            * trying to stop PortAudio, otherwise it can lead to a freeze.  We use
+            * two variables to synchronize:
+            *   mUpdatingMeters tells StopStream when the callback is about to enter
+            *     the code where it might update the meters, and
+            *   mUpdateMeters is how the rest of the code tells the callback when it
+            *     is allowed to actually do the updating.
+            * Note that mUpdatingMeters must be set first to avoid a race condition.
+            */
+         if (mUpdateMeters) {
+               pInputMeter->UpdateDisplay(numCaptureChannels,
+                                          framesPerBuffer,
+                                          inputSamples);
+         }
+      }
    }
    mUpdatingMeters = false;
 }
@@ -2792,42 +2798,44 @@ void AudioIoCallback::SendVuOutputMeterData(
    const float *outputMeterFloats,
    unsigned long framesPerBuffer)
 {
-   const auto numPlaybackChannels = mNumPlaybackChannels;
-
-   auto pOutputMeter = mOutputMeter.lock();
-   if (!pOutputMeter)
-      return;
-   if( pOutputMeter->IsMeterDisabled() )
-      return;
    if( !outputMeterFloats) 
       return;
 
-   // Get here if playback meter is live
-   /* It's critical that we don't update the meters while StopStream is
-      * trying to stop PortAudio, otherwise it can lead to a freeze.  We use
-      * two variables to synchronize:
-      *  mUpdatingMeters tells StopStream when the callback is about to enter
-      *    the code where it might update the meters, and
-      *  mUpdateMeters is how the rest of the code tells the callback when it
-      *    is allowed to actually do the updating.
-      * Note that mUpdatingMeters must be set first to avoid a race condition.
-      */
-   mUpdatingMeters = true;
-   if (mUpdateMeters) {
-      pOutputMeter->UpdateDisplay(numPlaybackChannels,
-                                             framesPerBuffer,
-                                             outputMeterFloats);
+   const auto numPlaybackChannels = mNumPlaybackChannels;
 
-      //v Vaughan, 2011-02-25: Moved this update back to TrackPanel::OnTimer()
-      //    as it helps with playback issues reported by Bill and noted on Bug 258.
-      //    The problem there occurs if Software Playthrough is on.
-      //    Could conditionally do the update here if Software Playthrough is off,
-      //    and in TrackPanel::OnTimer() if Software Playthrough is on, but not now.
-      // PRL 12 Jul 2015: and what was in TrackPanel::OnTimer is now handled by means of track panel timer events
-      //MixerBoard* pMixerBoard = mOwningProject->GetMixerBoard();
-      //if (pMixerBoard)
-      //   pMixerBoard->UpdateMeters(GetStreamTime(),
-      //                              (pProj->GetControlToolBar()->GetLastPlayMode() == loopedPlay));
+   for (auto &wMeter : mOutputMeters) {
+      if ( auto pOutputMeter = wMeter.lock() ) {
+         if( pOutputMeter->IsMeterDisabled() )
+            continue;
+
+         // Get here if playback meter is live
+         /* It's critical that we don't update the meters while StopStream is
+            * trying to stop PortAudio, otherwise it can lead to a freeze.  We use
+            * two variables to synchronize:
+            *  mUpdatingMeters tells StopStream when the callback is about to enter
+            *    the code where it might update the meters, and
+            *  mUpdateMeters is how the rest of the code tells the callback when it
+            *    is allowed to actually do the updating.
+            * Note that mUpdatingMeters must be set first to avoid a race condition.
+            */
+         mUpdatingMeters = true;
+         if (mUpdateMeters) {
+            pOutputMeter->UpdateDisplay(numPlaybackChannels,
+                                                   framesPerBuffer,
+                                                   outputMeterFloats);
+
+            //v Vaughan, 2011-02-25: Moved this update back to TrackPanel::OnTimer()
+            //    as it helps with playback issues reported by Bill and noted on Bug 258.
+            //    The problem there occurs if Software Playthrough is on.
+            //    Could conditionally do the update here if Software Playthrough is off,
+            //    and in TrackPanel::OnTimer() if Software Playthrough is on, but not now.
+            // PRL 12 Jul 2015: and what was in TrackPanel::OnTimer is now handled by means of trck panel timer events
+            //MixerBoard* pMixerBoard = mOwningProject->GetMixerBoard();
+            //if (pMixerBoard)
+            //   pMixerBoard->UpdateMeters(GetStreamTime(),
+            //                              (pProj->GetControlToolBar()->GetLastPlayMode() == loopedPlay));
+         }
+      }
    }
    mUpdatingMeters = false;
 }
