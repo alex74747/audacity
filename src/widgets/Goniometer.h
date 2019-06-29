@@ -37,6 +37,11 @@ public:
       (const TrackPanelMouseState &state,
        const AudacityProject *pProject) override;
 
+   // TrackPanelDrawable implementation
+   void Draw(
+      TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
+      override;
+
 private:
    std::vector<float> mRecentSamples;
    size_t mLastSample{ 0 };
