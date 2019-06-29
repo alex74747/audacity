@@ -1167,6 +1167,11 @@ void MeterPanel::OnMeterUpdate(wxTimerEvent & WXUNUSED(event))
    }
 }
 
+bool MeterPanel::HasMaxPeak() const
+{
+   return true;
+}
+
 float MeterPanel::GetMaxPeak() const
 {
    float maxPeak = 0.;

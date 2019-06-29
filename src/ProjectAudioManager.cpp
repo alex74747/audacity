@@ -355,15 +355,13 @@ void ProjectAudioManager::Stop(bool stopStream /* = true*/)
    // also clean the MeterQueues
    if( project ) {
       auto &projectAudioIO = ProjectAudioIO::Get( *project );
-      auto meter = projectAudioIO.GetPlaybackMeter();
-      if( meter ) {
-         meter->Clear();
-      }
+      for ( auto &meter : projectAudioIO.GetPlaybackMeters() )
+         if( meter )
+            meter->Clear();
 
-      meter = projectAudioIO.GetCaptureMeter();
-      if( meter ) {
-         meter->Clear();
-      }
+      for ( auto &meter : projectAudioIO.GetCaptureMeters() )
+         if( meter )
+            meter->Clear();
    }
 
    const auto toolbar = ToolManager::Get( *project ).GetToolBar(ScrubbingBarID);
@@ -1005,8 +1003,12 @@ DefaultPlayOptions( AudacityProject &project )
    auto &projectAudioIO = ProjectAudioIO::Get( project );
    AudioIOStartStreamOptions options { &project,
       ProjectSettings::Get( project ).GetRate() };
-   options.captureMeter = projectAudioIO.GetCaptureMeter();
-   options.playbackMeter = projectAudioIO.GetPlaybackMeter();
+   options.captureMeters =
+      { projectAudioIO.GetCaptureMeters().begin(),
+        projectAudioIO.GetCaptureMeters().end() };
+   options.playbackMeters =
+      { projectAudioIO.GetPlaybackMeters().begin(),
+        projectAudioIO.GetPlaybackMeters().end() };
    auto timeTrack = *TrackList::Get( project ).Any<TimeTrack>().begin();
    options.envelope = timeTrack ? timeTrack->GetEnvelope() : nullptr;
    options.listener = ProjectAudioManager::Get( project ).shared_from_this();

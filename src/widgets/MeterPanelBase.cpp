@@ -51,6 +51,13 @@ struct MeterPanelBase::Forwarder : Meter
       else
          return true;
    }
+   bool HasMaxPeak() const override
+   {
+      if (mOwner)
+         return mOwner->HasMaxPeak();
+      else
+         return false;
+   }
    float GetMaxPeak() const override
    {
       if (mOwner)

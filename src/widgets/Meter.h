@@ -171,6 +171,7 @@ class MeterPanel final : public MeterPanelBase, private PrefsListener
     */
    bool IsMeterDisabled() const override;
 
+   bool HasMaxPeak() const override;
    float GetMaxPeak() const override;
 
    bool IsClipping() const override;
