@@ -644,6 +644,10 @@ void AdornedRulerPanel::TrackPanelGuidelineOverlay::Draw(
             const auto pTrackView = dynamic_cast<TrackView*>(&cell);
             if (!pTrackView)
                return;
+            if ( mOldQPIndicatorPos < rect.GetLeft() )
+               return;
+            if ( mOldQPIndicatorPos > rect.GetRight() )
+               return;
 
             // Draw the NEW indicator in its NEW location
             AColor::Line(dc,
