@@ -998,9 +998,6 @@ AudioIO::AudioIO()
    mPaused = false;
    mSilenceLevel = 0.0;
 
-   mUpdateMeters = false;
-   mUpdatingMeters = false;
-
    mOwningProject = NULL;
 
    PaError err = Pa_Initialize();
@@ -2155,7 +2152,7 @@ void AudioIO::SetMeters()
       if (auto pOutputMeter = wMeter.lock())
          pOutputMeter->Reset(mRate, true);
 
-   mUpdateMeters = true;
+   mUpdateMeters.store( true, std::memory_order_release );
 }
 
 void AudioIO::StopStream()
@@ -2239,8 +2236,8 @@ void AudioIO::StopStream()
    // pthread).  So we tell the callback to stop updating meters,
    // and wait until the callback has left this part of the code
    // if it was already there.
-   mUpdateMeters = false;
-   while(mUpdatingMeters) {
+   mUpdateMeters.store( false, std::memory_order_release );
+   while(mUpdatingMeters.load( std::memory_order_acquire )) {
       ::wxSafeYield();
       wxMilliSleep( 50 );
    }
@@ -4238,15 +4235,17 @@ void AudioIoCallback::SendVuInputMeterData(
             * Note that mUpdatingMeters must be set first to avoid a race condition.
             */
          //TODO use atomics instead.
-         mUpdatingMeters = true;
-         if (mUpdateMeters) {
+         // Release in our thread what StopStream acquires, but also
+         // acquire it so it is ordered before any updating we do
+         mUpdatingMeters.store( true, std::memory_order_acq_rel );
+         if (mUpdateMeters.load( std::memory_order_acquire )) {
                pInputMeter->UpdateDisplay(numCaptureChannels,
                                           framesPerBuffer,
                                           inputSamples);
          }
       }
    }
-   mUpdatingMeters = false;
+   mUpdatingMeters.store( false, std::memory_order_release );
 }
 
 /* Send data to playback VU meter if applicable */
@@ -4274,8 +4273,10 @@ void AudioIoCallback::SendVuOutputMeterData(
             *    is allowed to actually do the updating.
             * Note that mUpdatingMeters must be set first to avoid a race condition.
             */
-         mUpdatingMeters = true;
-         if (mUpdateMeters) {
+         // Release in our thread what StopStream acquires, but also
+         // acquire it so it is ordered before any updating we do
+         mUpdatingMeters.store( true, std::memory_order_acq_rel );
+         if (mUpdateMeters.load( std::memory_order_acquire )) {
             pOutputMeter->UpdateDisplay(numPlaybackChannels,
                                                    framesPerBuffer,
                                                    outputMeterFloats);
@@ -4294,7 +4295,7 @@ void AudioIoCallback::SendVuOutputMeterData(
          }
       }
    }
-   mUpdatingMeters = false;
+   mUpdatingMeters.store( false, std::memory_order_release );
 }
 
 unsigned AudioIoCallback::CountSoloingTracks(){
