@@ -38,6 +38,11 @@ public:
        const AudacityProject *pProject) override;
 
 private:
+   std::vector<float> mRecentSamples;
+   size_t mLastSample{ 0 };
+   size_t mSampleCount{ 0 };
+   size_t mSampleInterval{ 0 };
+
    Track &mTrack;
 };
 
