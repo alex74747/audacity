@@ -1002,7 +1002,7 @@ AudioIO::AudioIO()
    mUpdatingMeters = false;
 
    mOwningProject = NULL;
-   mOutputMeter.Release();
+   mOutputMeter.reset();
 
    PaError err = Pa_Initialize();
 
@@ -1246,8 +1246,8 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
    if (!mOwningProject)
       return false;
 
-   mInputMeter.Release();
-   mOutputMeter.Release();
+   mInputMeter.reset();
+   mOutputMeter.reset();
 
    mLastPaError = paNoError;
    // pick a rate to do the audio I/O at, from those available. The project
@@ -1313,10 +1313,7 @@ bool AudioIO::StartPortAudioStream(const AudioIOStartStreamOptions &options,
          playbackParameters.suggestedLatency = isWASAPI ? 0.0 : latencyDuration/1000.0;
       }
 
-      if ( options.playbackMeter )
-         mOutputMeter = options.playbackMeter;
-      else
-         mOutputMeter.Release();
+      mOutputMeter = options.playbackMeter;
    }
 
    if( numCaptureChannels > 0)
@@ -2152,10 +2149,10 @@ bool AudioIO::IsAvailable(AudacityProject *project) const
 
 void AudioIO::SetMeters()
 {
-   if (mInputMeter)
-      mInputMeter->Reset(mRate, true);
-   if (mOutputMeter)
-      mOutputMeter->Reset(mRate, true);
+   if (auto pInputMeter = mInputMeter.lock())
+      pInputMeter->Reset(mRate, true);
+   if (auto pOutputMeter = mOutputMeter.lock())
+      pOutputMeter->Reset(mRate, true);
 
    mUpdateMeters = true;
 }
@@ -2408,14 +2405,14 @@ void AudioIO::StopStream()
       }
    }
 
-   if (mInputMeter)
-      mInputMeter->Reset(mRate, false);
+   if (auto pInputMeter = mInputMeter.lock())
+      pInputMeter->Reset(mRate, false);
 
-   if (mOutputMeter)
-      mOutputMeter->Reset(mRate, false);
+   if (auto pOutputMeter = mOutputMeter.lock())
+      pOutputMeter->Reset(mRate, false);
 
-   mInputMeter.Release();
-   mOutputMeter.Release();
+   mInputMeter.reset();
+   mOutputMeter.reset();
    mOwningProject = nullptr;
 
    if (pListener && mNumCaptureChannels > 0)
@@ -4219,9 +4216,10 @@ void AudioIoCallback::SendVuInputMeterData(
 {
    const auto numCaptureChannels = mNumCaptureChannels;
 
-   if (!mInputMeter)
+   auto pInputMeter = mInputMeter.lock();
+   if ( !pInputMeter )
       return;
-   if( mInputMeter->IsMeterDisabled())
+   if( pInputMeter->IsMeterDisabled())
       return;
 
    // get here if meters are actually live , and being updated
@@ -4237,7 +4235,7 @@ void AudioIoCallback::SendVuInputMeterData(
    //TODO use atomics instead.
    mUpdatingMeters = true;
    if (mUpdateMeters) {
-         mInputMeter->UpdateDisplay(numCaptureChannels,
+         pInputMeter->UpdateDisplay(numCaptureChannels,
                                     framesPerBuffer,
                                     inputSamples);
    }
@@ -4251,9 +4249,10 @@ void AudioIoCallback::SendVuOutputMeterData(
 {
    const auto numPlaybackChannels = mNumPlaybackChannels;
 
-   if (!mOutputMeter)
+   auto pOutputMeter = mOutputMeter.lock();
+   if (!pOutputMeter)
       return;
-   if( mOutputMeter->IsMeterDisabled() )
+   if( pOutputMeter->IsMeterDisabled() )
       return;
    if( !outputMeterFloats) 
       return;
@@ -4270,7 +4269,7 @@ void AudioIoCallback::SendVuOutputMeterData(
       */
    mUpdatingMeters = true;
    if (mUpdateMeters) {
-      mOutputMeter->UpdateDisplay(numPlaybackChannels,
+      pOutputMeter->UpdateDisplay(numPlaybackChannels,
                                              framesPerBuffer,
                                              outputMeterFloats);
 
