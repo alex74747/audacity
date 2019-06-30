@@ -39,6 +39,8 @@
 #include "RefreshCode.h"
 #include "TrackPanelCell.h"
 
+#include <wx/timer.h>
+
 // A singleton class that intercepts escape key presses when some cellular
 // panel is dragging
 struct CellularPanel::Filter : wxEventFilter
@@ -1123,10 +1125,41 @@ std::shared_ptr<TrackPanelCell> CellularPanel::LastCell() const
    return state.mLastCell.lock();
 }
 
+namespace {
+class RedrawTimer final : public wxTimer
+{
+ public:
+   RedrawTimer( CellularPanel &panel )
+      : mPanel{ panel }
+   {
+   }
+
+   void Notify() override
+   {
+      // Process timer notification just once, then destroy self
+      mPanel.Refresh();
+      delete this;
+   }
+
+ private:
+   CellularPanel &mPanel;
+};
+}
+
 void CellularPanel::Draw( TrackPanelDrawingContext &context, unsigned nPasses )
 {
    const auto panelRect = GetClientRect();
    auto lastCell = LastCell();
+
+   using DrawResult = TrackPanelDrawable::DrawResult;
+   constexpr DrawResult maximumValue = std::numeric_limits<DrawResult>::max();
+   auto minimum = maximumValue;
+
+   auto combineResults = [&]( DrawResult result ){
+      if (result)
+         minimum = std::min( minimum, result );
+   };
+
    for ( unsigned iPass = 0; iPass < nPasses; ++iPass ) {
 
       VisitPostorder( [&]( const wxRect &rect, TrackPanelNode &node ) {
@@ -1134,7 +1167,7 @@ void CellularPanel::Draw( TrackPanelDrawingContext &context, unsigned nPasses )
          // Draw the node
          const auto newRect = node.DrawingArea( rect, panelRect, iPass );
          if ( newRect.Intersects( panelRect ) )
-            node.Draw( context, newRect, iPass );
+            combineResults( node.Draw( context, newRect, iPass ) );
 
          // Draw the current handle if it is associated with the node
          if ( &node == lastCell.get() ) {
@@ -1143,11 +1176,18 @@ void CellularPanel::Draw( TrackPanelDrawingContext &context, unsigned nPasses )
                const auto targetRect =
                   target->DrawingArea( rect, panelRect, iPass );
                if ( targetRect.Intersects( panelRect ) )
-                  target->Draw( context, targetRect, iPass );
+                  combineResults(
+                     target->Draw( context, targetRect, iPass ) );
             }
          }
 
       } ); // nodes
 
    } // passes
+
+   if (minimum != maximumValue) {
+      // safenew because it's a one-shot that deletes itself
+      auto timer = safenew RedrawTimer( *this );
+      timer->Start(minimum, true);
+   }
 }
