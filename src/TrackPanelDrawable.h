@@ -26,7 +26,11 @@ public:
    // Drawing function is given the rectangle computed by DrawingArea.
    // iPass counts zero-based up to some limit given to CellularPanel::Draw.
    // Default implementation does nothing.
-   virtual void Draw(
+   // Return value, if not zero, is a request to refresh the panel, after so
+   // many milliseconds.  It will be done after the minimum of all such
+   // requests.
+   using DrawResult = unsigned;
+   virtual DrawResult Draw(
       TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass );
 
    // For drawing purposes, a cell might require a bigger rectangle than for

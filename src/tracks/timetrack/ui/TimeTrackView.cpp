@@ -156,14 +156,14 @@ void DrawTimeTrack(TrackPanelDrawingContext &context,
 }
 }
 
-void TimeTrackView::Draw(
+auto TimeTrackView::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassTracks ) {
       const auto tt = std::static_pointer_cast<const TimeTrack>(
          FindTrack()->SubstitutePendingChangedTrack());
       DrawTimeTrack( context, *tt, tt->GetRuler(), rect );
    }
-   CommonTrackView::Draw( context, rect, iPass );
+   return CommonTrackView::Draw( context, rect, iPass );
 }

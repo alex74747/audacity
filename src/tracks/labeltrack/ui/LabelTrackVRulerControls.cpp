@@ -21,12 +21,10 @@ LabelTrackVRulerControls::~LabelTrackVRulerControls()
 {
 }
 
-void LabelTrackVRulerControls::Draw(
+auto LabelTrackVRulerControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
-   TrackVRulerControls::Draw( context, rect_, iPass );
-
    // Draw on a later pass because the bevel overpaints one pixel
    // out of bounds on the bottom
 
@@ -41,6 +39,8 @@ void LabelTrackVRulerControls::Draw(
       bev.width += 1;
       AColor::BevelTrackInfo(*dc, true, bev);
    }
+
+   return TrackVRulerControls::Draw( context, rect_, iPass );
 }
 
 void LabelTrackVRulerControls::UpdateRuler( const wxRect &rect )

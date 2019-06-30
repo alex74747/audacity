@@ -57,7 +57,7 @@ protected:
    virtual PopupMenuTable *GetMenuExtension(Track *pTrack) = 0;
 
    // TrackPanelDrawable implementation
-   void Draw(
+   DrawResult Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override;
 

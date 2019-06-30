@@ -1843,9 +1843,9 @@ void DrawSpectrum( TrackPanelDrawingContext &context,
 
 }
 
-void WaveTrackView::Draw(
+auto WaveTrackView::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassTracks ) {
       auto &dc = context.dc;
@@ -1881,5 +1881,5 @@ void WaveTrackView::Draw(
       dc.GetGraphicsContext()->SetAntialiasMode(aamode);
 #endif
    }
-   CommonTrackView::Draw( context, rect, iPass );
+   return CommonTrackView::Draw( context, rect, iPass );
 }

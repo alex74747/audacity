@@ -324,9 +324,9 @@ void TrackInfo::DrawBordersWithin
 }
 #endif
 
-void CommonTrackControls::Draw(
+auto CommonTrackControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassMargins ) {
       // fill in label
@@ -389,6 +389,7 @@ void CommonTrackControls::Draw(
    }
 #endif
 
+   return {};
 }
 
 wxRect CommonTrackControls::DrawingArea(

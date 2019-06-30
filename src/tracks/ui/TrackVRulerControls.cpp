@@ -104,9 +104,9 @@ wxRect TrackVRulerControls::ZoomingArea(
    };
 }
 
-void TrackVRulerControls::Draw(
+auto TrackVRulerControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
    // Common initial part of drawing for all subtypes
    if ( iPass == TrackArtist::PassMargins ) {
@@ -128,6 +128,7 @@ void TrackVRulerControls::Draw(
          AColor::Line( *dc, left, rect.GetTop(), left, rect.GetBottom() );
       }
    }
+   return {};
 }
 
 wxRect TrackVRulerControls::DrawingArea(

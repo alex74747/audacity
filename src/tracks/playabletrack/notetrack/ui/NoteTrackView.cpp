@@ -711,9 +711,9 @@ void DrawNoteTrack(TrackPanelDrawingContext &context,
 
 }
 
-void NoteTrackView::Draw(
+auto NoteTrackView::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassTracks ) {
       const auto nt = std::static_pointer_cast<const NoteTrack>(
@@ -726,6 +726,6 @@ void NoteTrackView::Draw(
 #endif
       DrawNoteTrack( context, nt.get(), rect, muted );
    }
-   CommonTrackView::Draw( context, rect, iPass );
+   return CommonTrackView::Draw( context, rect, iPass );
 }
 #endif

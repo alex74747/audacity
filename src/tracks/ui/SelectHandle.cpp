@@ -1010,9 +1010,9 @@ UIHandle::Result SelectHandle::Cancel(AudacityProject *pProject)
    return RefreshCode::RefreshAll;
 }
 
-void SelectHandle::Draw(
+auto SelectHandle::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassSnapping ) {
       auto &dc = context.dc;
@@ -1023,6 +1023,7 @@ void SelectHandle::Draw(
          mSnapManager->Draw( &dc, coord1, coord2 );
       }
    }
+   return {};
 }
 
 wxRect SelectHandle::DrawingArea(

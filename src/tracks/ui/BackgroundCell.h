@@ -46,7 +46,7 @@ protected:
 
 private:
    // TrackPanelDrawable implementation
-   void Draw(
+   DrawResult Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override;
 

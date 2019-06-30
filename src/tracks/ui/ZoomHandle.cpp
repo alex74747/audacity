@@ -185,9 +185,9 @@ UIHandle::Result ZoomHandle::Cancel(AudacityProject*)
    return RefreshCode::RefreshAll;
 }
 
-void ZoomHandle::Draw(
+auto ZoomHandle::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassZooming &&
        // PRL: Draw dashed lines only if we would zoom in
@@ -205,6 +205,7 @@ void ZoomHandle::Draw(
          rect.height + 2
       } );
    }
+   return {};
 }
 
 wxRect ZoomHandle::DrawingArea(

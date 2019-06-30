@@ -850,9 +850,9 @@ UIHandle::Result TimeShiftHandle::Cancel(AudacityProject *pProject)
    return RefreshCode::RefreshAll;
 }
 
-void TimeShiftHandle::Draw(
+auto TimeShiftHandle::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassSnapping ) {
       auto &dc = context.dc;
@@ -862,6 +862,7 @@ void TimeShiftHandle::Draw(
             &dc, mClipMoveState.snapLeft, mClipMoveState.snapRight );
       }
    }
+   return {};
 }
 
 wxRect TimeShiftHandle::DrawingArea(

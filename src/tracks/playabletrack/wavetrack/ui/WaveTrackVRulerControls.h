@@ -36,7 +36,7 @@ public:
    void DoZoomPreset( int i);
 private:
    // TrackPanelDrawable implementation
-   void Draw(
+   DrawResult Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override;
 

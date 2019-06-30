@@ -93,20 +93,16 @@ unsigned NoteTrackVRulerControls::HandleWheelRotation
    return RefreshCell | UpdateVRuler;
 }
 
-void NoteTrackVRulerControls::Draw(
+auto NoteTrackVRulerControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
-   TrackVRulerControls::Draw( context, rect_, iPass );
-
    // Draw on a later pass like other vertical rulers,
    // although the bevel is done a little differently
 
    if ( iPass == TrackArtist::PassControls ) {
       // The note track draws a vertical keyboard to label pitches
-      auto track = std::static_pointer_cast<NoteTrack>( FindTrack() );
-      if ( !track )
-         return;
+   if ( auto track = std::static_pointer_cast<NoteTrack>( FindTrack() ) ) {
 
       auto rect = rect_;
       --rect.width;
@@ -208,7 +204,8 @@ void NoteTrackVRulerControls::Draw(
       AColor::Line(*dc, rect.x, rect.y + rect.height - marg - 1,
                         rect.x + rect.width, rect.y + rect.height - marg - 1);
 
-   }
+   } }
+   return TrackVRulerControls::Draw( context, rect_, iPass );
 }
 
 

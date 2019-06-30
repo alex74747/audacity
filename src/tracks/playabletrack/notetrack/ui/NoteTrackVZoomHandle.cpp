@@ -357,18 +357,19 @@ UIHandle::Result NoteTrackVZoomHandle::Cancel(AudacityProject *WXUNUSED(pProject
    return RefreshCode::RefreshAll;
 }
 
-void NoteTrackVZoomHandle::Draw(
+auto NoteTrackVZoomHandle::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassZooming ) {
       if (!mpTrack.lock()) //? TrackList::Lock()
-         return;
+         return {};
       
       if ( IsDragZooming( mZoomStart, mZoomEnd ) )
          TrackVRulerControls::DrawZooming
             ( context, rect, mZoomStart, mZoomEnd );
    }
+   return {};
 }
 
 wxRect NoteTrackVZoomHandle::DrawingArea(

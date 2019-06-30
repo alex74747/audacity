@@ -215,12 +215,10 @@ namespace {
    }
 }
 
-void WaveTrackVRulerControls::Draw(
+auto WaveTrackVRulerControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
-   TrackVRulerControls::Draw( context, rect_, iPass );
-
    // Draw on a later pass because the bevel overpaints one pixel
    // out of bounds on the bottom
 
@@ -249,22 +247,22 @@ void WaveTrackVRulerControls::Draw(
       rr.width--;
       
       auto t = FindTrack();
-      if ( !t )
-         return;
+      if ( t ) {
+         if ( t->vrulerSize.GetWidth() < rect.GetWidth()) {
+            int adj = rr.GetWidth() - t->vrulerSize.GetWidth();
+            rr.x += adj;
+            rr.width -= adj;
+         }
+         
+         UpdateRuler(rr);
+         
+         auto vruler = &ruler();
 
-      if ( t->vrulerSize.GetWidth() < rect.GetWidth()) {
-         int adj = rr.GetWidth() - t->vrulerSize.GetWidth();
-         rr.x += adj;
-         rr.width -= adj;
+         vruler->SetTickColour( theTheme.Colour( clrTrackPanelText ));
+         vruler->Draw(*dc);
       }
-      
-      UpdateRuler(rr);
-      
-      auto vruler = &ruler();
-
-      vruler->SetTickColour( theTheme.Colour( clrTrackPanelText ));
-      vruler->Draw(*dc);
    }
+   return TrackVRulerControls::Draw( context, rect_, iPass );
 }
 
 void WaveTrackVRulerControls::UpdateRuler( const wxRect &rect )

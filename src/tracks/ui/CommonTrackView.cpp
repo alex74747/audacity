@@ -143,14 +143,16 @@ static void DrawTrackName(
    dc.DrawText (t->GetName(), rect.x+15, rect.y+3);  // move right 15 pixels to avoid overwriting <- symbol
 }
 
-void CommonTrackView::Draw(
+auto CommonTrackView::Draw(
    TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
+      -> DrawResult
 {
    // This overpaints only the track area, so any pass after tracks is late
    // enough.
    if ( iPass == TrackArtist::PassMargins )
       DrawTrackName(
          context, FindTrack()->SubstitutePendingChangedTrack().get(), rect );
+   return TrackView::Draw( context, rect, iPass );
 }
 
 std::shared_ptr<TrackPanelCell> CommonTrackView::ContextMenuDelegate()

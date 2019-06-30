@@ -32,20 +32,15 @@ namespace {
    }
 }
 
-void TimeTrackVRulerControls::Draw(
+auto TimeTrackVRulerControls::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect_, unsigned iPass )
+   const wxRect &rect_, unsigned iPass ) -> DrawResult
 {
-   TrackVRulerControls::Draw( context, rect_, iPass );
-
    // Draw on a later pass because the bevel overpaints one pixel
    // out of bounds on the bottom
 
    if ( iPass == TrackArtist::PassControls ) {
-      auto t = FindTrack();
-      if ( !t )
-         return;
-
+   if ( auto t = FindTrack() ) {
       auto rect = rect_;
       --rect.width;
       --rect.height;
@@ -71,7 +66,8 @@ void TimeTrackVRulerControls::Draw(
 
       vruler->SetTickColour( theTheme.Colour( clrTrackPanelText ));
       vruler->Draw(*dc);
-   }
+   } }
+   return TrackVRulerControls::Draw( context, rect_, iPass );
 }
 
 void TimeTrackVRulerControls::UpdateRuler( const wxRect &rect )

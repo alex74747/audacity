@@ -837,13 +837,13 @@ void LabelTrackView::Draw
    }
 }
 
-void LabelTrackView::Draw(
+auto LabelTrackView::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassTracks )
       Draw( context, rect );
-   CommonTrackView::Draw( context, rect, iPass );
+   return CommonTrackView::Draw( context, rect, iPass );
 }
 
 void LabelTrackView::SetSelectedIndex( int index )

@@ -72,6 +72,11 @@ public:
    void WriteXMLAttributes( XMLWriter & ) const override;
    bool HandleXMLAttribute( const wxChar *attr, const wxChar *value ) override;
 
+   // TrackPanelDrawable implementation
+   DrawResult Draw(
+      TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
+         override;
+
 protected:
    virtual void DoSetMinimized( bool isMinimized );
 

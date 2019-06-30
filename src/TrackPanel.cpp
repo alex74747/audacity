@@ -1061,7 +1061,7 @@ struct EmptyCell final : CommonTrackPanelCell {
    }
 
    // TrackPanelDrawable implementation
-   void Draw(
+   DrawResult Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override
    {
@@ -1072,6 +1072,7 @@ struct EmptyCell final : CommonTrackPanelCell {
          AColor::TrackPanelBackground( dc, false );
          dc->DrawRectangle( rect );
       }
+      return {};
    }
 };
 
@@ -1138,7 +1139,7 @@ struct LabeledChannelGroup final : TrackPanelGroup {
    } }; }
 
    // TrackPanelDrawable impementation
-   void Draw( TrackPanelDrawingContext &context,
+   DrawResult Draw( TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override
    {
       if ( iPass == TrackArtist::PassBorders ) {
@@ -1192,6 +1193,7 @@ struct LabeledChannelGroup final : TrackPanelGroup {
             dc.DrawRectangle(theRect);
          }
       }
+      return {};
    }
 
    wxRect DrawingArea(
@@ -1340,9 +1342,10 @@ TrackPanelDrawable::~TrackPanelDrawable()
 {
 }
 
-void TrackPanelDrawable::Draw(
-   TrackPanelDrawingContext &, const wxRect &, unsigned )
+auto TrackPanelDrawable::Draw(
+   TrackPanelDrawingContext &, const wxRect &, unsigned ) -> DrawResult
 {
+   return {};
 }
 
 wxRect TrackPanelDrawable::DrawingArea(

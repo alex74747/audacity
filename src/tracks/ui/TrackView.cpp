@@ -138,6 +138,12 @@ std::shared_ptr<const TrackPanelCell> TrackView::GetResizer() const
    return const_cast<TrackView*>(this)->GetResizer();
 }
 
+auto TrackView::Draw( TrackPanelDrawingContext &, const wxRect &, unsigned  )
+   -> DrawResult
+{
+   return {};
+}
+
 void TrackView::DoSetY(int y)
 {
    mY = y;

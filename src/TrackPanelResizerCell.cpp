@@ -53,9 +53,9 @@ std::shared_ptr<Track> TrackPanelResizerCell::DoFindTrack()
    return {};
 }
 
-void TrackPanelResizerCell::Draw(
+auto TrackPanelResizerCell::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassMargins ) {
       auto pTrack = FindTrack();
@@ -111,4 +111,5 @@ void TrackPanelResizerCell::Draw(
          }
       }
    }
+   return {};
 }

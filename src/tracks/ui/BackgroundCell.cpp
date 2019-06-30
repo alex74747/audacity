@@ -121,9 +121,9 @@ std::shared_ptr<Track> BackgroundCell::DoFindTrack()
    return {};
 }
 
-void BackgroundCell::Draw(
+auto BackgroundCell::Draw(
    TrackPanelDrawingContext &context,
-   const wxRect &rect, unsigned iPass )
+   const wxRect &rect, unsigned iPass ) -> DrawResult
 {
    if ( iPass == TrackArtist::PassBackground ) {
       auto &dc = context.dc;
@@ -131,6 +131,7 @@ void BackgroundCell::Draw(
       AColor::TrackPanelBackground( &dc, false );
       dc.DrawRectangle( rect );
    }
+   return {};
 }
 
 wxRect BackgroundCell::DrawingArea(
