@@ -65,6 +65,7 @@ public:
       PassBackground,
       PassFocus,
       PassSnapping,
+      PassFinal,
       
       NPasses
    };

@@ -16,8 +16,20 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../ClientData.h"
 #include "../../Project.h"
+#include "../../TrackArtist.h"
 #include "../../xml/XMLTagHandler.h"
 #include "../../xml/XMLWriter.h"
+
+enum {
+   ExpansionCount = 3,
+   ExpansionDelay = 50 // milliseconds
+};
+
+TrackView::TrackView( const std::shared_ptr<Track> &pTrack )
+   : CommonTrackCell{ pTrack }
+   , mExpanded{ ExpansionCount }
+{
+}
 
 TrackView::~TrackView()
 {
@@ -50,7 +62,7 @@ void TrackView::CopyTo( Track &track ) const
 {
    auto &other = Get( track );
 
-   other.mMinimized = mMinimized;
+   other.mExpanded = mExpanded ? ExpansionCount : 0;
 
    // Let mY remain 0 -- TrackPositioner corrects it later
    other.mY = 0;
@@ -108,7 +120,15 @@ bool TrackView::HandleXMLAttribute( const wxChar *attr, const wxChar *value )
 
 void TrackView::DoSetMinimized(bool isMinimized)
 {
-   mMinimized = isMinimized;
+   if (isMinimized)
+      // Give it a negative value if not already zero
+      mExpanded = -std::abs( mExpanded );
+   else if (!mExpanded)
+      // Start the growth
+      mExpanded = 1;
+   else
+      // Give it a positive value
+      mExpanded = std::abs( mExpanded );
 }
 
 std::shared_ptr<TrackVRulerControls> TrackView::GetVRulerControls()
@@ -138,10 +158,24 @@ std::shared_ptr<const TrackPanelCell> TrackView::GetResizer() const
    return const_cast<TrackView*>(this)->GetResizer();
 }
 
-auto TrackView::Draw( TrackPanelDrawingContext &, const wxRect &, unsigned  )
+auto TrackView::Draw(
+   TrackPanelDrawingContext &, const wxRect &, unsigned iPass )
    -> DrawResult
 {
-   return {};
+   if (iPass != TrackArtist::PassFinal)
+      return 0;
+
+   // Return values cause a bit of animation of expansion and contraction
+   if ( mExpanded == 0 || mExpanded >= ExpansionCount)
+      // at an end state
+      return 0;
+   else {
+      // Make a transition, assuming we have already drawn for the previous
+      // state, and request a redraw
+      ++mExpanded;
+      FindTrack()->AdjustPositions();
+      return ExpansionDelay;
+   }
 }
 
 void TrackView::DoSetY(int y)
@@ -151,10 +185,9 @@ void TrackView::DoSetY(int y)
 
 int TrackView::GetHeight() const
 {
-   if ( GetMinimized() )
-      return GetMinimizedHeight();
-
-   return mHeight;
+   auto minimizedHeight = GetMinimizedHeight();
+   auto frac = float( std::abs(mExpanded) ) / ExpansionCount;
+   return (1.0f - frac) * minimizedHeight + frac * mHeight;
 }
 
 void TrackView::SetHeight(int h)

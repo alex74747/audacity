@@ -29,8 +29,7 @@ public:
    enum : unsigned { DefaultHeight = 150 };
 
    explicit
-   TrackView( const std::shared_ptr<Track> &pTrack )
-      : CommonTrackCell{ pTrack } {}
+   TrackView( const std::shared_ptr<Track> &pTrack );
    virtual ~TrackView() = 0;
 
    // some static conveniences, useful for summation over track iterator
@@ -47,7 +46,7 @@ public:
    static TrackView &Get( Track & );
    static const TrackView &Get( const Track & );
 
-   bool GetMinimized() const { return mMinimized; }
+   bool GetMinimized() const { return !mExpanded; }
    void SetMinimized( bool minimized );
 
    int GetY() const { return mY; }
@@ -93,7 +92,10 @@ protected:
    std::shared_ptr<TrackPanelResizerCell> mpResizer;
 
 private:
-   bool           mMinimized{ false };
+   // If zero, then minimized, else maybe positive or negative, for
+   // transitional states in animated size change
+   int            mExpanded;
+
    int            mY{ 0 };
    int            mHeight{ DefaultHeight };
 };

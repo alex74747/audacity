@@ -1137,7 +1137,7 @@ class RedrawTimer final : public wxTimer
    void Notify() override
    {
       // Process timer notification just once, then destroy self
-      mPanel.Refresh();
+      mPanel.Refresh( false );
       delete this;
    }
 
