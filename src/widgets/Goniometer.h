@@ -28,6 +28,8 @@ public:
    bool IsMeterDisabled() const override;
    bool HasMaxPeak() const override;
    float GetMaxPeak() const override;
+   bool IsClipping() const override;
+   int GetDBRange() const override;
 
    // CommonTrackPanelCell implementation
    std::shared_ptr<Track> DoFindTrack() override;

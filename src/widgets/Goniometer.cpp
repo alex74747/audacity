@@ -86,6 +86,16 @@ float Goniometer::GetMaxPeak() const
    return 0.0;
 }
 
+bool Goniometer::IsClipping() const
+{
+   return false;
+}
+
+int Goniometer::GetDBRange() const
+{
+   return 0;
+}
+
 std::shared_ptr<Track> Goniometer::DoFindTrack()
 {
    return mTrack.SharedPointer();
