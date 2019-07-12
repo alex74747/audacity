@@ -3,25 +3,7 @@
 use strict 'vars';
 use File::Spec;
 
-my $traceLevel = 1;
-
-# whether to box the clusters by sub-folder, but always color nodes regardless
-my @clusterlist = qw(
-   /xml
-   /export
-   /menus
-   /effects/VST
-   /effects/ladspa
-   /effects/lv2
-   /effects/nyquist
-   /effects/vamp
-);
-my %clusters;
-@clusters{@clusterlist} = ();
-sub clustering
-{
-   return exists( $clusters{ $_[0] } );
-}
+my $traceLevel = 3;
 
 # whether to prune redundant arcs implied in transitive closure
 my $pruning = 1;
@@ -51,14 +33,44 @@ my $linkroot = "file://" . File::Spec->rel2abs( $dir ); #?
 
 print STDERR "Found ", scalar( keys %names ), " filename(s)\n" if $traceLevel >= 1;
 
-# Step 2: collect inclusions in each .cpp/.h pair, and folder information,
+# Step 2: Collect information about desired clustering
+my %folders; # build our own tree like the directories
+my $nFolders = 1;
+my %clusters;
+if (open my $clusterfh, '<', "CLUSTERS.txt") {
+   foreach (<$clusterfh>) {
+      chop;
+      my @words = split ' ';
+      my $folder = shift @words;
+      last if $folder eq "END";
+      if (@words) {
+          if (not exists $folders{ $folder }) {
+            my %empty = ("",());
+            $folders{ $folder } = \%empty;
+            ++$nFolders;
+         }
+         print STDERR "$folder\n";
+         foreach my $word (@words) {
+            print STDERR " ${word}\n";
+            $clusters{$word} = $folder;
+         }
+         $clusters{ "/" . $folder } = $folder;
+      }
+   }
+   close $clusterfh;
+}
+
+sub clustering
+{
+   return exists( $clusters{ $_[0] } );
+}
+
+# Step 3: collect inclusions in each .cpp/.h pair, and folder information,
 # and build a graph
 my $arcs = 0;
 my %graph; # hash from names to sets of names
 my $grepcmd = "grep '^ *# *include[^\"]*\"[^\"]*\\.h\"'"; # find include directives with quotes
 my $sedcmd = "sed -E 's|^[^\"]*\"([^\"]*)\\.h\".*\$|\\1|'"; # extract quoted path
-my %folders; # build our own tree like the directories
-my $nFolders = 1;
 while( my ($shorter, $short) = each(%names) ) {
    # find relevant files (.cpp and .h, and sometimes .mm too)
    my $pat = "${short}.*";
@@ -70,26 +82,33 @@ while( my ($shorter, $short) = each(%names) ) {
    shift @ownComponents;
    shift @ownComponents;
    my $last = pop @ownComponents;
-   my $folder = \%folders;
-   # this improves the graph in some ways:
-   # files that we just put directly under src should be treated as if in
-   # a separate subfolder.
+   my $folder;
    @ownComponents = ("UNCLASSIFIED") if not @ownComponents;
-   # store paths in a hash from strings to references to hashes from strings to references to ...
-   # (ensuring a nonempty set at key "" for each node of this tree)
-   while (@ownComponents) {
-      my $component = shift @ownComponents;
-      if (not exists $$folder{ $component }) {
-         my %empty = ("",());
-         $$folder{ $component } = \%empty;
-         ++$nFolders;
-      }
-      $folder = $$folder{ $component };
+   if (clustering($last)) {
+      $folder = $folders{ $clusters{ $last } };
    }
-   # at the last folder, hash empty string specially, to the set of files
-   if (not exists $$folder{ "" }) {
-      my %empty = ("",());
-      $$folder{ "" } = \%empty;
+   else
+   {
+      $folder = \%folders;
+      # this improves the graph in some ways:
+      # files that we just put directly under src should be treated as if in
+      # a separate subfolder.
+      # store paths in a hash from strings to references to hashes from strings to references to ...
+      # (ensuring a nonempty set at key "" for each node of this tree)
+      while (@ownComponents) {
+         my $component = shift @ownComponents;
+         if (not exists $$folder{ $component }) {
+            my %empty = ("",());
+            $$folder{ $component } = \%empty;
+            ++$nFolders;
+         }
+         $folder = $$folder{ $component };
+      }
+      # at the last folder, hash empty string specially, to the set of files
+      if (not exists $$folder{ "" }) {
+         my %empty = ("",());
+         $$folder{ "" } = \%empty;
+      }
    }
    $$folder{""}{$last} = ();
 
@@ -133,7 +152,7 @@ if ( open my $fh, '<', "clusters.txt" ) {
 
 print STDERR "Found ", scalar( keys %graph ), " node(s) and ${arcs} arc(s)\n" if $traceLevel >= 1;
 
-# Step 3: compute an acyclic quotient graph
+# Step 4: compute an acyclic quotient graph
 
 my %quotientMap; # from node name to reference to array of node names
 
@@ -316,7 +335,7 @@ if ($traceLevel >= 1) {
    print STDERR "${arcs} arc(s) found in quotient graph (${prunedArcs} after pruning)\n";
 }
 
-# Step 4: output the graph in dot language
+# Step 5: output the graph in dot language
 print STDERR "Generating .dot file\n" if $traceLevel >= 1;
 
 # temporary redirection
@@ -333,7 +352,6 @@ my $graphAttr =
    ;
 print "strict digraph{ graph [";
 print $graphAttr;
-print " newrank=true";
 #print " mclimit=0.01";
 #print " nslimit=1";
 #print " rank=max";
@@ -347,17 +365,19 @@ print "\n";
 print "// Nodes\n";
 
 my $hue = 0;
-my $saturation = 1.0;
+my @saturations = (0.333, 0.666, 1.0);
 my $huestep = 1.0 / $nFolders;
 sub subgraph{
    my ($foldername, $hashref) = @_;
    my $clustered = clustering( $foldername );
    my $cluster = $clustered ? "cluster" : "";
-   my $clusterAttr = $clustered ? "style=bold color=\"blue\"" : "";
+   my $clusterAttr = $clustered ? "style=dashed " : "";
    print STDERR "subgraph \"$foldername\"\n" if $traceLevel >= 3;
+   my $saturation = shift @saturations;
    my $color = "${hue},${saturation},1.0";
    $hue += $huestep;
-   $saturation = 1.5 - $saturation; # alternate bold and pale
+   push @saturations, $saturation;
+   $foldername = substr $foldername, 1;
    my $attrs = $clusterAttr . "label=\"$foldername\"";
    print "\nsubgraph \"${cluster}${foldername}\" { $attrs node [fillcolor=\"${color}\"]\n";
    # describe the nodes at this level, stored as a set (i.e. a hash to
@@ -394,7 +414,6 @@ while( my ($head, $data) = each( %quotientGraph ) ) {
    foreach my $tail ( @{$$data[0]} ) {
       print "   \"$head\" -> \"$tail\" [";
       # insert arc attributes here as key=value pairs,
-      print "penwidth=2.0";
       # separated by spaces
       print"]\n";
    }
@@ -403,10 +422,12 @@ while( my ($head, $data) = each( %quotientGraph ) ) {
 #footer
 print "}\n";
 
+close $fh;
+
 # restore
 *STDOUT = *OLD_STDOUT;
 
-# Step 5: generate image
+# Step 6: generate image
 print STDERR "Generating image...\n" if $traceLevel >= 1;
 my $verbosity = ($traceLevel >= 2) ? "-v" : "";
 `dot $verbosity -O -Tsvg $fname`;
