@@ -352,6 +352,7 @@ my $graphAttr =
    ;
 print "strict digraph{ graph [";
 print $graphAttr;
+print " newrank=true";
 #print " mclimit=0.01";
 #print " nslimit=1";
 #print " rank=max";
