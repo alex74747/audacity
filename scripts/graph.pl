@@ -31,10 +31,9 @@ my $links = 1;
 
 # Step 1: collect short names and paths to .cpp files
 # We assume that final path components uniquely identify the files!
-my $dir = "../src";
 
 my %names; # string to string
-{
+foreach my $dir ( "../src", "../include" ) {
    foreach my $file (`find $dir -name '*.cpp' -o -name '*.h' -o -name '*.mm'`) {
       my $short = $file;
       chop $short;
@@ -47,7 +46,7 @@ my %names; # string to string
 }
 
 #my $linkroot = "https://github.com/audacity/audacity/tree/master/src";
-my $linkroot = "file://" . File::Spec->rel2abs( $dir );
+my $linkroot = "file://" . File::Spec->rel2abs( $dir ); #?
 
 
 print STDERR "Found ", scalar( keys %names ), " filename(s)\n" if $traceLevel >= 1;
@@ -66,8 +65,10 @@ while( my ($shorter, $short) = each(%names) ) {
    my @files = glob $pat;
 
    # store path information, for subgraph clustering later
-   $short = substr $short, length( $dir ) + 1;
    my @ownComponents = split '/', $short;
+   # first remove ../src/ or ../include/
+   shift @ownComponents;
+   shift @ownComponents;
    my $last = pop @ownComponents;
    my $folder = \%folders;
    # this improves the graph in some ways:
