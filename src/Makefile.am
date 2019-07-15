@@ -325,7 +325,6 @@ audacity_SOURCES = \
 	WaveClip.h \
 	WaveTrack.cpp \
 	WaveTrack.h \
-	WaveTrackLocation.h \
 	WrappedType.cpp \
 	WrappedType.h \
 	ZoomInfo.cpp \
@@ -686,6 +685,7 @@ audacity_SOURCES = \
 	tracks/playabletrack/wavetrack/ui/WaveformVZoomHandle.h \
 	tracks/playabletrack/wavetrack/ui/WaveTrackControls.cpp \
 	tracks/playabletrack/wavetrack/ui/WaveTrackControls.h \
+	tracks/playabletrack/wavetrack/ui/WaveTrackLocation.h \
 	tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.cpp \
 	tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.h \
 	tracks/playabletrack/wavetrack/ui/WaveTrackView.cpp \
