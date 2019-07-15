@@ -2078,6 +2078,7 @@ int LabelTrackView::DialogForLabelName(
    auto &trackFocus = TrackFocus::Get( project );
    auto &trackPanel = TrackPanel::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
+   auto &window = GetProjectFrame( project );
 
    wxPoint position =
       trackPanel.FindTrackRect( trackFocus.Get() ).GetBottomLeft();
@@ -2088,7 +2089,6 @@ int LabelTrackView::DialogForLabelName(
       -40;
    position.y += 2;  // just below the bottom of the track
    position = trackPanel.ClientToScreen(position);
-   auto &window = GetProjectFrame( project );
    AudacityTextEntryDialog dialog{ &window,
       _("Name:"),
       _("New label"),
