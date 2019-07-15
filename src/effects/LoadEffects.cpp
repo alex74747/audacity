@@ -18,7 +18,6 @@
 
 #include "../Prefs.h"
 
-#include "Effect.h"
 #include "EffectManager.h"
 
 #include "Amplify.h"

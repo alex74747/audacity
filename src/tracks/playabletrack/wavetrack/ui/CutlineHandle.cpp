@@ -13,7 +13,6 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../../../Experimental.h"
 
-#include "WaveTrackViewGroupData.h"
 #include "../../../../HitTestResult.h"
 #include "../../../../ProjectAudioIO.h"
 #include "../../../../ProjectHistory.h"

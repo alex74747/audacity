@@ -16,6 +16,9 @@
 #include <vector>
 #include <wx/longlong.h>
 
+#include "WaveTrackLocation.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
+
 class ProgressDialog;
 
 class TimeWarper;
