@@ -152,5 +152,5 @@ void ProjectHistory::SetStateTo(unsigned int n)
    auto &undoManager = UndoManager::Get( project );
 
    undoManager.SetStateTo(n,
-      [this]( const UndoState &state ){ PopState(state); } );
+      [this]( const UndoStackElem &elem ){ PopState(elem.state); } );
 }

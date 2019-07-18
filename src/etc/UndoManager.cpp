@@ -47,24 +47,6 @@ wxDEFINE_EVENT(EVT_UNDO_RESET, wxCommandEvent);
 using ConstBlockFilePtr = const BlockFile*;
 using Set = std::unordered_set<ConstBlockFilePtr>;
 
-struct UndoStackElem {
-
-   UndoStackElem(std::shared_ptr<TrackList> &&tracks_,
-      const TranslatableString &description_,
-      const TranslatableString &shortDescription_,
-      const SelectedRegion &selectedRegion_,
-      const std::shared_ptr<Tags> &tags_)
-      : state(std::move(tracks_), tags_, selectedRegion_)
-      , description(description_)
-      , shortDescription(shortDescription_)
-   {
-   }
-
-   UndoState state;
-   TranslatableString description;
-   TranslatableString shortDescription;
-};
-
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
    [](AudacityProject &project)
       { return std::make_unique<UndoManager>( project ); }
@@ -341,7 +323,7 @@ void UndoManager::SetStateTo(unsigned int n, const Consumer &consumer)
    lastAction = {};
    mayConsolidate = false;
 
-   consumer( stack[current]->state );
+   consumer( *stack[current] );
 
    // wxWidgets will own the event object
    mProject.QueueEvent( safenew wxCommandEvent{ EVT_UNDO_RESET } );
@@ -356,7 +338,7 @@ void UndoManager::Undo(const Consumer &consumer)
    lastAction = {};
    mayConsolidate = false;
 
-   consumer( stack[current]->state );
+   consumer( *stack[current] );
 
    // wxWidgets will own the event object
    mProject.QueueEvent( safenew wxCommandEvent{ EVT_UNDO_OR_REDO } );
@@ -384,10 +366,19 @@ void UndoManager::Redo(const Consumer &consumer)
    lastAction = {};
    mayConsolidate = false;
 
-   consumer( stack[current]->state );
+   consumer( *stack[current] );
 
    // wxWidgets will own the event object
    mProject.QueueEvent( safenew wxCommandEvent{ EVT_UNDO_OR_REDO } );
+}
+
+void UndoManager::VisitStates( const Consumer &consumer, bool newestFirst )
+{
+   auto fn = [&]( decltype(stack[0]) &ptr ){ consumer( *ptr ); };
+   if (newestFirst)
+      std::for_each(stack.rbegin(), stack.rend(), fn);
+   else
+      std::for_each(stack.begin(), stack.end(), fn);
 }
 
 bool UndoManager::UnsavedChanges() const
