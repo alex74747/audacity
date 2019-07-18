@@ -25,27 +25,18 @@ UndoManager
 
 #include <wx/hashset.h>
 
-#include "BlockFile.h"
-#include "Clipboard.h"
 #include "Diags.h"
 #include "Project.h"
-#include "Sequence.h"
-#include "WaveClip.h"
-#include "WaveTrack.h"          // temp
-#include "NoteTrack.h"  // for Sonify* function declarations
+//#include "NoteTrack.h"  // for Sonify* function declarations
 #include "Diags.h"
 #include "Tags.h"
+#include "Track.h"
 
-
-#include <unordered_set>
 
 wxDEFINE_EVENT(EVT_UNDO_PUSHED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UNDO_MODIFIED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UNDO_OR_REDO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UNDO_RESET, wxCommandEvent);
-
-using ConstBlockFilePtr = const BlockFile*;
-using Set = std::unordered_set<ConstBlockFilePtr>;
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
    [](AudacityProject &project)
@@ -73,92 +64,6 @@ UndoManager::UndoManager( AudacityProject &project )
 UndoManager::~UndoManager()
 {
    ClearStates();
-}
-
-namespace {
-   SpaceArray::value_type
-   CalculateUsage(const TrackList &tracks, Set *seen)
-   {
-      SpaceArray::value_type result = 0;
-
-      //TIMER_START( "CalculateSpaceUsage", space_calc );
-      for (auto wt : tracks.Any< const WaveTrack >())
-      {
-         // Scan all clips within current track
-         for(const auto &clip : wt->GetAllClips())
-         {
-            // Scan all blockfiles within current clip
-            auto blocks = clip->GetSequenceBlockArray();
-            for (const auto &block : *blocks)
-            {
-               const auto &file = block.f;
-
-               // Accumulate space used by the file if the file was not
-               // yet seen
-               if ( !seen || (seen->count( &*file ) == 0 ) )
-               {
-                  unsigned long long usage{ file->GetSpaceUsage() };
-                  result += usage;
-               }
-
-               // Add file to current set
-               if (seen)
-                  seen->insert( &*file );
-            }
-         }
-      }
-
-      return result;
-   }
-}
-
-void UndoManager::CalculateSpaceUsage()
-{
-   space.clear();
-   space.resize(stack.size(), 0);
-
-   Set seen;
-
-   // After copies and pastes, a block file may be used in more than
-   // one place in one undo history state, and it may be used in more than
-   // one undo history state.  It might even be used in two states, but not
-   // in another state that is between them -- as when you have state A,
-   // then make a cut to get state B, but then paste it back into state C.
-
-   // So be sure to count each block file once only, in the last undo item that
-   // contains it.
-
-   // Why the last and not the first? Because the user of the History dialog
-   // may DELETE undo states, oldest first.  To reclaim disk space you must
-   // DELETE all states containing the block file.  So the block file's
-   // contribution to space usage should be counted only in that latest state.
-
-   for (size_t nn = stack.size(); nn--;)
-   {
-      // Scan all tracks at current level
-      auto &tracks = *stack[nn]->state.tracks;
-      space[nn] = CalculateUsage(tracks, &seen);
-   }
-
-   mClipboardSpaceUsage = CalculateUsage(
-      Clipboard::Get().GetTracks(), nullptr);
-
-   //TIMER_STOP( space_calc );
-}
-
-wxLongLong_t UndoManager::GetLongDescription(
-   unsigned int n, TranslatableString *desc, TranslatableString *size)
-{
-   n -= 1; // 1 based to zero based
-
-   wxASSERT(n < stack.size());
-   wxASSERT(space.size() == stack.size());
-
-   *desc = stack[n]->description;
-
-   *size = Internat::FormatSize(space[n]);
-
-   return space[n];
 }
 
 void UndoManager::GetShortDescription(unsigned int n, TranslatableString *desc)
@@ -231,7 +136,7 @@ void UndoManager::ModifyState(const TrackList * l,
       return;
    }
 
-   SonifyBeginModifyState();
+//   SonifyBeginModifyState();
    // Delete current -- not necessary, but let's reclaim space early
    stack[current]->state.tracks.reset();
 
@@ -249,7 +154,7 @@ void UndoManager::ModifyState(const TrackList * l,
    stack[current]->state.tags = tags;
 
    stack[current]->state.selectedRegion = selectedRegion;
-   SonifyEndModifyState();
+//   SonifyEndModifyState();
 
    // wxWidgets will own the event object
    mProject.QueueEvent( safenew wxCommandEvent{ EVT_UNDO_MODIFIED } );

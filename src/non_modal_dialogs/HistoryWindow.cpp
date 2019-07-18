@@ -43,6 +43,89 @@ undo memory so as to free up space.
 #include "ProjectHistory.h"
 #include "ShuttleGui.h"
 
+#include <unordered_set>
+#include "BlockFile.h"
+#include "Sequence.h"
+#include "WaveClip.h"
+#include "WaveTrack.h"
+
+struct SpaceUsageCalculator {
+   using ConstBlockFilePtr = const BlockFile*;
+   using Set = std::unordered_set<ConstBlockFilePtr>;
+
+   using Type = unsigned long long;
+   using SpaceArray = std::vector<Type> ;
+   SpaceArray space;
+   Type clipboardSpaceUsage;
+
+   Type CalculateUsage(const TrackList &tracks, Set *seen)
+   {
+      Type result = 0;
+
+      //TIMER_START( "CalculateSpaceUsage", space_calc );
+      for (auto wt : tracks.Any< const WaveTrack >())
+      {
+         // Scan all clips within current track
+         for(const auto &clip : wt->GetAllClips())
+         {
+            // Scan all blockfiles within current clip
+            auto blocks = clip->GetSequenceBlockArray();
+            for (const auto &block : *blocks)
+            {
+               const auto &file = block.f;
+
+               // Accumulate space used by the file if the file was not
+               // yet seen
+               if ( !seen || ( seen->count( &*file ) == 0 ) )
+               {
+                  Type usage{ file->GetSpaceUsage() };
+                  result += usage;
+               }
+
+               // Add file to current set
+               if (seen)
+                  seen->insert( &*file );
+            }
+         }
+      }
+
+      return result;
+   }
+
+   void Calculate( UndoManager &manager )
+   {
+      Set seen;
+
+      // After copies and pastes, a block file may be used in more than
+      // one place in one undo history state, and it may be used in more than
+      // one undo history state.  It might even be used in two states, but not
+      // in another state that is between them -- as when you have state A,
+      // then make a cut to get state B, but then paste it back into state C.
+
+      // So be sure to count each block file once only, in the last undo item that
+      // contains it.
+
+      // Why the last and not the first? Because the user of the History dialog
+      // may DELETE undo states, oldest first.  To reclaim disk space you must
+      // DELETE all states containing the block file.  So the block file's
+      // contribution to space usage should be counted only in that latest state.
+
+      manager.VisitStates(
+         [this, &seen]( const UndoStackElem &elem ){
+            // Scan all tracks at current level
+            auto &tracks = elem.state.tracks;
+            space.push_back( CalculateUsage( *tracks, &seen) );
+         },
+         true // newest state first
+      );
+
+      clipboardSpaceUsage = CalculateUsage(
+         Clipboard::Get().GetTracks(), nullptr);
+
+      //TIMER_STOP( space_calc );
+   }
+};
+
 enum {
    ID_AVAIL = 1000,
    ID_TOTAL,
@@ -197,23 +280,31 @@ void HistoryDialog::DoUpdate()
 {
    int i;
 
-   mManager->CalculateSpaceUsage();
+   SpaceUsageCalculator calculator;
+   calculator.Calculate( *mManager );
+
+   // point to size for oldest state
+   auto iter = calculator.space.rbegin();
 
    mList->DeleteAllItems();
 
    wxLongLong_t total = 0;
    mSelected = mManager->GetCurrentState() - 1;
-   for (i = 0; i < (int)mManager->GetNumStates(); i++) {
-      TranslatableString desc, size;
-
-      total += mManager->GetLongDescription(i + 1, &desc, &size);
-      mList->InsertItem(i, desc.Translation(), i == mSelected ? 1 : 0);
-      mList->SetItem(i, 1, size.Translation());
-   }
+   mManager->VisitStates(
+      [&]( const UndoStackElem &elem ){
+         const auto space = *iter++;
+         total += space;
+         const auto size = Internat::FormatSize(space);
+         const auto &desc = elem.description;
+         mList->InsertItem(i, desc.Translation(), i == mSelected ? 1 : 0);
+         mList->SetItem(i, 1, size.Translation());
+      },
+      false // oldest state first
+   );
 
    mTotal->SetValue(Internat::FormatSize(total).Translation());
 
-   auto clipboardUsage = mManager->GetClipboardSpaceUsage();
+   auto clipboardUsage = calculator.clipboardSpaceUsage;
    mClipboard->SetValue(Internat::FormatSize(clipboardUsage).Translation());
    FindWindowById(ID_DISCARD_CLIPBOARD)->Enable(clipboardUsage > 0);
 
