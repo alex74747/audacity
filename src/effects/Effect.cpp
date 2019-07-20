@@ -1208,6 +1208,7 @@ void Effect::SetBatchProcessing(bool start)
 
 bool Effect::DoEffect(double projectRate,
                       TrackList *list,
+                      AudacityProject *project,
                       WaveTrackFactory *factory,
                       NotifyingSelectedRegion &selectedRegion,
                       wxWindow *pParent,
@@ -1218,6 +1219,7 @@ bool Effect::DoEffect(double projectRate,
    mOutputTracks.reset();
 
    mpSelectedRegion = &selectedRegion;
+   mProject = project;
    mFactory = factory;
    mProjectRate = projectRate;
    mTracks = list;
@@ -1343,7 +1345,7 @@ bool Effect::Delegate( Effect &delegate )
    region.setTimes( mT0, mT1 );
 
    return delegate.DoEffect(
-      mProjectRate, mTracks, mFactory, region );
+      mProjectRate, mTracks, mProject, mFactory, region);
 }
 
 // All legacy effects should have this overridden

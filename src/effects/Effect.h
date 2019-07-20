@@ -256,6 +256,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    // Audacity's standard UI.
    // Create a user interface only if the supplied function is not null.
    /* not virtual */ bool DoEffect( double projectRate, TrackList *list,
+      AudacityProject *project,
       WaveTrackFactory *factory, NotifyingSelectedRegion &selectedRegion,
       // Prompt the user for input only if these arguments are both not null.
       wxWindow *pParent = nullptr,
@@ -501,6 +502,7 @@ protected:
  // Used only by the base Effect class
  //
 private:
+   AudacityProject *mProject;
    TrackList *mTracks; // the complete list of all tracks
 
    bool mIsBatch;

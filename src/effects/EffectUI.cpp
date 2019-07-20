@@ -1928,6 +1928,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
       success = effect->DoEffect(
          rate,
          &tracks,
+         &project,
          &trackFactory,
          selectedRegion,
          &window,
