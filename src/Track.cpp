@@ -782,6 +782,8 @@ auto TrackList::Replace(Track * t, const ListOfTracks::value_type &with) ->
    ListOfTracks::value_type holder;
    if (t && with) {
       auto node = t->GetNode();
+      DeletionEvent(node);
+
       t->SetOwner({}, {});
 
       holder = *node.first;
@@ -792,7 +794,6 @@ auto TrackList::Replace(Track * t, const ListOfTracks::value_type &with) ->
       pTrack->SetId( t->GetId() );
       RecalcPositions(node);
 
-      DeletionEvent(node);
       AdditionEvent(node);
    }
    return holder;
