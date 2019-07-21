@@ -20,6 +20,7 @@ ODTask requests and internals.
 #include "ODTask.h"
 #include "ODWaveTrackTaskQueue.h"
 #include "../Project.h"
+#include "../WaveTrack.h"
 #include <wx/utils.h>
 #include <wx/wx.h>
 #include <wx/event.h>
@@ -511,5 +512,56 @@ std::pair< float, int > ODManager::GetOverallCompletion()
    //avoid div by zero and be thread smart.
    auto percent = total / ( totalTasks > 0 ? totalTasks : 1 );
    return { percent, totalTasks };
+}
+
+namespace {
+
+// Attach an object to each project.  It receives track list events and updates
+// the OD manager as needed
+struct ReplacementHandler final : ClientData::Base, wxEvtHandler
+{
+   AudacityProject &mProject;
+   std::shared_ptr< WaveTrack > mpOldTrack; // lifetime?
+
+   explicit ReplacementHandler( AudacityProject &project )
+      : mProject{ project }
+   {
+      TrackList::Get( project ).Bind(
+         EVT_TRACKLIST_DELETION, &ReplacementHandler::OnDeletion, this );
+      TrackList::Get( project ).Bind(
+         EVT_TRACKLIST_ADDITION, &ReplacementHandler::OnAddition, this );
+   }
+   ReplacementHandler( const ReplacementHandler & ) PROHIBITED;
+   ReplacementHandler &operator=( const ReplacementHandler & ) PROHIBITED;
+
+   void OnDeletion( TrackListEvent & e )
+   {
+      e.Skip();
+      mpOldTrack =
+         std::dynamic_pointer_cast<WaveTrack>( e.mpTrack.lock() );
+   }
+
+   void OnAddition( TrackListEvent & e )
+   {
+      e.Skip();
+
+      auto pNewTrack = std::dynamic_pointer_cast<WaveTrack>( e.mpTrack.lock() );
+      if ( mpOldTrack && pNewTrack && ODManager::IsInstanceCreated() ) {
+         // If the track is a wave track,
+         // Swap the wavecache track the ondemand task uses, since now the NEW
+         // one will be kept in the project
+         ODManager::Instance()->ReplaceWaveTrack( mpOldTrack.get(), pNewTrack );
+      }
+
+      mpOldTrack.reset();
+   }
+};
+
+static const AudacityProject::AttachedObjects::RegisteredFactory key{
+  []( AudacityProject &project ){
+     return std::make_shared< ReplacementHandler >( project );
+   }
+};
+
 }
 
