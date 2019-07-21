@@ -45,6 +45,8 @@
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ErrorDialog.h"
 
+#include "../widgets/valnum.h" // unnecessary but improves graph appearance
+
 #include <unordered_map>
 
 // Effect application counter
