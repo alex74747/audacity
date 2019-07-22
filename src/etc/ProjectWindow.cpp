@@ -1647,7 +1647,7 @@ void ProjectWindow::TP_HandleResize()
 ProjectWindow::PlaybackScroller::PlaybackScroller(AudacityProject *project)
 : mProject(project)
 {
-   ViewInfo::Get( *mProject ).Bind(EVT_TRACK_PANEL_TIMER,
+   mProject->Bind(EVT_TRACK_PANEL_TIMER,
       &PlaybackScroller::OnTimer,
       this);
 }
@@ -1656,6 +1656,9 @@ void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
 {
    // Let other listeners get the notification
    event.Skip();
+
+   auto gAudioIO = AudioIOBase::Get();
+   mRecentStreamTime = gAudioIO->GetStreamTime();
 
    auto cleanup = finally([&]{
       // Propagate the message to other listeners bound to this
@@ -1679,7 +1682,7 @@ void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
 
       auto &viewInfo = ViewInfo::Get( *mProject );
       auto &trackPanel = GetProjectPanel( *mProject );
-      const int posX = viewInfo.TimeToPosition(viewInfo.mRecentStreamTime);
+      const int posX = viewInfo.TimeToPosition(mRecentStreamTime);
       auto width = viewInfo.GetTracksUsableWidth();
       int deltaX;
       switch (mMode)

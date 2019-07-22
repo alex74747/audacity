@@ -175,7 +175,9 @@ void PlayIndicatorOverlay::OnTimer(wxCommandEvent &event)
    }
    else {
       // Calculate the horizontal position of the indicator
-      const double playPos = viewInfo.mRecentStreamTime;
+      const double playPos =
+         ProjectWindow::Get( *mProject ).GetPlaybackScroller()
+            .mRecentStreamTime;
 
       auto &window = ProjectWindow::Get( *mProject );
       using Mode = ProjectWindow::PlaybackScroller::Mode;

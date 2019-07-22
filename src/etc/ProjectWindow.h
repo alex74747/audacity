@@ -76,6 +76,10 @@ public:
          mMode = mode;
       }
 
+      // During timer update, grab the volatile stream time just once, so that
+      // various other drawing code can use the exact same value.
+      double mRecentStreamTime;
+
    private:
       void OnTimer(wxCommandEvent &event);
 
@@ -191,7 +195,6 @@ private:
    bool mIsDeleting{ false };
 
 private:
-
    std::unique_ptr<PlaybackScroller> mPlaybackScroller;
 
    DECLARE_EVENT_TABLE()
