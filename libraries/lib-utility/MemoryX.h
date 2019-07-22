@@ -127,6 +127,12 @@ public:
    }
 };
 
+// These are so commonly done for processing samples in floating point form in memory,
+// let's have abbreviations.
+using Floats = ArrayOf<float>;
+using FloatBuffers = ArraysOf<float>;
+using Doubles = ArrayOf<double>;
+
 /**
   \class Optional
   \brief Like a smart pointer, allows for object to not exist (nullptr)

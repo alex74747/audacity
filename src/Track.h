@@ -22,7 +22,6 @@
 #include <wx/longlong.h>
 
 #include "ClientData.h"
-#include "SampleFormat.h"
 #include "xml/XMLTagHandler.h"
 
 #ifdef __WXMSW__

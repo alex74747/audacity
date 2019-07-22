@@ -17,6 +17,7 @@
 #include <functional>
 #include <wx/longlong.h>
 
+#include "SampleFormat.h"
 #include "WaveTrackLocation.h"
 
 class ProgressDialog;
