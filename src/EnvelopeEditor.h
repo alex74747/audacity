@@ -11,10 +11,10 @@
 #ifndef __AUDACITY_ENVELOPE_EDITOR__
 #define __AUDACITY_ENVELOPE_EDITOR__
 
+class wxDC;
 class wxMouseEvent;
 class wxRect;
 class Envelope;
-struct TrackPanelDrawingContext;
 class ZoomInfo;
 
 // A class that holds state for the duration of dragging
@@ -23,8 +23,8 @@ class AUDACITY_DLL_API EnvelopeEditor
 {
 public:
    static void DrawPoints(
-      const Envelope &env,
-      TrackPanelDrawingContext &context,
+      const Envelope &env, const ZoomInfo &zoomInfo,
+      wxDC &dc,
       const wxRect & r,
       bool dB, double dBRange,
       float zoomMin, float zoomMax, bool mirrored);

@@ -18,8 +18,6 @@
 
 #include "AColor.h"
 #include "Envelope.h"
-#include "TrackArtist.h"
-#include "TrackPanelDrawingContext.h"
 #include "ViewInfo.h"
 
 namespace {
@@ -33,15 +31,11 @@ void DrawPoint(wxDC & dc, const wxRect & r, int x, int y, bool top)
 }
 
 void EnvelopeEditor::DrawPoints
-(const Envelope &env,
- TrackPanelDrawingContext &context, const wxRect & r,
+(const Envelope &env, const ZoomInfo &zoomInfo,
+ wxDC &dc, const wxRect & r,
  bool dB, double dBRange,
  float zoomMin, float zoomMax, bool mirrored)
 {
-   auto &dc = context.dc;
-   const auto artist = TrackArtist::Get( context );
-   const auto &zoomInfo = *artist->pZoomInfo;
-
    bool highlight = false;
 #ifdef EXPERIMENTAL_TRACK_PANEL_HIGHLIGHTING
    auto target = dynamic_cast<EnvelopeHandle*>(context.target.get());

@@ -145,7 +145,7 @@ void DrawTimeTrack(TrackPanelDrawingContext &context,
       upper = LINEAR_TO_DB(std::max(1.0e-7, upper)) / dbRange + 1.0;
    }
    EnvelopeEditor::DrawPoints( *track.GetEnvelope(),
-        context, envRect,
+        *artist->pZoomInfo, context.dc, envRect,
         track.GetDisplayLog(), dbRange, lower, upper, false );
 }
 }

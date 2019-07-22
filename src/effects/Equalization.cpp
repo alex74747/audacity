@@ -98,7 +98,6 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../Theme.h"
-#include "../TrackArtist.h"
 #include "../WaveClip.h"
 #include "../ViewInfo.h"
 #include "../WaveTrack.h"
@@ -3295,17 +3294,10 @@ void EqualizationPanel::OnPaint(wxPaintEvent &  WXUNUSED(event))
    memDC.SetPen(*wxBLACK_PEN);
    if( mEffect->mDrawMode )
    {
-      ZoomInfo zoomInfo( 0.0, mEnvRect.width-1 );
-
-      // Back pointer to TrackPanel won't be needed in the one drawing
-      // function we use here
-      TrackArtist artist( nullptr );
-
-      artist.pZoomInfo = &zoomInfo;
-      TrackPanelDrawingContext context{ memDC, {}, {}, &artist  };
       EnvelopeEditor::DrawPoints( *mEffect->mEnvelope,
-         context, mEnvRect, false, 0.0,
-      mEffect->mdBMin, mEffect->mdBMax, false);
+         ZoomInfo( 0.0, mEnvRect.width-1 ), memDC,
+         mEnvRect, false, 0.0,
+         mEffect->mdBMin, mEffect->mdBMax, false);
    }
 
    dc.Blit(0, 0, mWidth, mHeight, &memDC, 0, 0, wxCOPY, FALSE);

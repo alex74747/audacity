@@ -20,7 +20,6 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../ProjectAudioIO.h"
 #include "../../../../ProjectHistory.h"
 #include "../../../../RefreshCode.h"
-#include "../../../../TrackArtist.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../UndoManager.h"
 #include "../../../../ViewInfo.h"
