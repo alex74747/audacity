@@ -11,7 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_TRACK_CONTROLS__
 #define __AUDACITY_TRACK_CONTROLS__
 
-#include "CommonTrackPanelCell.h"
+#include "CommonTrackPanelCell.h" // to inherit
 
 class Track;
 

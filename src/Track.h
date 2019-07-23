@@ -225,6 +225,24 @@ public:
    TrackIntervalData *Extra() const { return pExtra.get(); }
 };
 
+class TrackAttachment
+{
+public:
+   virtual ~TrackAttachment();
+
+   // Copy state, for undo/redo purposes
+   // The default does nothing
+   virtual void CopyTo( Track &track ) const;
+
+   virtual void Reparent( const std::shared_ptr<Track> &parent );
+
+   // default does nothing
+   virtual void WriteXMLAttributes( XMLWriter & ) const;
+
+   // default recognizes no attributes, and returns false
+   virtual bool HandleXMLAttribute( const wxChar *attr, const wxChar *value );
+};
+
 //! Template generated base class for Track lets it host opaque UI related objects
 using AttachedTrackObjects = ClientData::Site<
    Track, ClientData::Base, ClientData::SkipCopying, std::shared_ptr
@@ -343,13 +361,13 @@ class AUDACITY_DLL_API Track /* not final */
 
    // These are exposed only for the purposes of the TrackView class, to
    // initialize the pointer on demand
-   const std::shared_ptr<CommonTrackCell> &GetTrackView();
-   void SetTrackView( const std::shared_ptr<CommonTrackCell> &pView );
+   const std::shared_ptr<TrackAttachment> &GetTrackView();
+   void SetTrackView( const std::shared_ptr<TrackAttachment> &pView );
 
    // These are exposed only for the purposes of the TrackControls class, to
    // initialize the pointer on demand
-   const std::shared_ptr<CommonTrackCell> &GetTrackControls();
-   void SetTrackControls( const std::shared_ptr<CommonTrackCell> &pControls );
+   const std::shared_ptr<TrackAttachment> &GetTrackControls();
+   void SetTrackControls( const std::shared_ptr<TrackAttachment> &pControls );
 
    // Return another, associated TrackPanelCell object that implements the
 
@@ -812,8 +830,8 @@ public:
    bool HandleCommonXMLAttribute(const wxChar *attr, const wxChar *value);
 
 protected:
-   std::shared_ptr<CommonTrackCell> mpView;
-   std::shared_ptr<CommonTrackCell> mpControls;
+   std::shared_ptr<TrackAttachment> mpView;
+   std::shared_ptr<TrackAttachment> mpControls;
 };
 
 //! Track subclass holding data representing sound (as notes, or samples, or ...)

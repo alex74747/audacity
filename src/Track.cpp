@@ -46,8 +46,29 @@ and TimeTrack.
 #pragma warning( disable : 4786 )
 #endif
 
+   TrackAttachment::~TrackAttachment()
+{
+}
+
+void TrackAttachment::CopyTo( Track& ) const
+{
+}
+
+void TrackAttachment::Reparent( const std::shared_ptr<Track> &parent )
+{
+}
+
+void TrackAttachment::WriteXMLAttributes( XMLWriter & ) const
+{
+}
+
+bool TrackAttachment::HandleXMLAttribute( const wxChar *, const wxChar * )
+{
+   return false;
+}
+
 Track::Track()
-:  vrulerSize(36,0)
+   : vrulerSize(36,0)
 {
    mSelected  = false;
    mLinked    = false;
@@ -142,22 +163,22 @@ void Track::SetOwner
    mNode = node;
 }
 
-const std::shared_ptr<CommonTrackCell> &Track::GetTrackView()
+const std::shared_ptr<TrackAttachment> &Track::GetTrackView()
 {
    return mpView;
 }
 
-void Track::SetTrackView( const std::shared_ptr<CommonTrackCell> &pView )
+void Track::SetTrackView( const std::shared_ptr<TrackAttachment> &pView )
 {
    mpView = pView;
 }
 
-const std::shared_ptr<CommonTrackCell> &Track::GetTrackControls()
+const std::shared_ptr<TrackAttachment> &Track::GetTrackControls()
 {
    return mpControls;
 }
 
-void Track::SetTrackControls( const std::shared_ptr<CommonTrackCell> &pControls )
+void Track::SetTrackControls( const std::shared_ptr<TrackAttachment> &pControls )
 {
    mpControls = pControls;
 }

@@ -57,25 +57,13 @@ CommonTrackCell::CommonTrackCell( const std::shared_ptr< Track > &parent )
 
 CommonTrackCell::~CommonTrackCell() = default;
 
-void CommonTrackCell::CopyTo( Track& ) const
-{
-}
-
 void CommonTrackCell::Reparent( const std::shared_ptr<Track> &parent )
 {
+   TrackAttachment::Reparent( parent );
    mwTrack = parent;
 }
 
 std::shared_ptr<Track> CommonTrackCell::DoFindTrack()
 {
    return mwTrack.lock();
-}
-
-void CommonTrackCell::WriteXMLAttributes( XMLWriter & ) const
-{
-}
-
-bool CommonTrackCell::HandleXMLAttribute( const wxChar *, const wxChar * )
-{
-   return false;
 }
