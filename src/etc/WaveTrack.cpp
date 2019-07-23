@@ -113,7 +113,6 @@ WaveTrack::WaveTrack(const std::shared_ptr<DirManager> &projDirManager, sampleFo
    mSpectrumMin = mSpectrumMax = -1; // so values will default to settings
    mLastScaleType = -1;
    mLastdBRange = -1;
-   mAutoSaveIdent = 0;
 }
 
 WaveTrack::WaveTrack(const WaveTrack &orig):
@@ -2486,16 +2485,6 @@ void WaveTrack::AddInvalidRegion(sampleCount startSample, sampleCount endSample)
 {
    for (const auto &clip : mClips)
       clip->AddInvalidRegion(startSample, endSample);
-}
-
-int WaveTrack::GetAutoSaveIdent() const
-{
-   return mAutoSaveIdent;
-}
-
-void WaveTrack::SetAutoSaveIdent(int ident)
-{
-   mAutoSaveIdent = ident;
 }
 
 WaveTrackCache::~WaveTrackCache()

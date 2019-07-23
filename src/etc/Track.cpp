@@ -85,6 +85,16 @@ void Track::Init(const Track &orig)
    mChannel = orig.mChannel;
 }
 
+int Track::GetAutoSaveIdent() const
+{
+   return mAutoSaveIdent;
+}
+
+void Track::SetAutoSaveIdent(int ident)
+{
+   mAutoSaveIdent = ident;
+}
+
 void Track::SetName( const wxString &n )
 {
    if ( mName != n ) {

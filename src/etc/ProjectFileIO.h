@@ -11,11 +11,14 @@ Paul Licameli split from AudacityProject.h
 #ifndef __AUDACITY_PROJECT_FILE_IO__
 #define __AUDACITY_PROJECT_FILE_IO__
 
+#include <functional>
+
 #include "ClientData.h" // to inherit
 #include "Prefs.h" // to inherit
 #include "XMLTagHandler.h" // to inherit
 
 class AudacityProject;
+class Track;
 
 ///\brief Object associated with a project that manages reading and writing
 /// of Audacity project file formats, and autosave
@@ -57,11 +60,14 @@ public:
    XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
    void WriteXMLHeader(XMLWriter &xmlFile) const;
 
-   // If the second argument is not null, that means we are saving a
-   // compressed project, and the wave tracks have been exported into the
-   // named files
+   using TrackSaver = std::function< void( XMLWriter&, const Track& ) >;
+
+   // If the second argument is defaulted, then invoke each Track's WriteXML
+   // method.  Otherwise invoke the custom saver on each.
    void WriteXML(
-      XMLWriter &xmlFile, FilePaths *strOtherNamesArray) /* not override */;
+      XMLWriter &xmlFile,
+      const TrackSaver &saver = {}
+   ) /* not override */;
 
 private:
    // XMLTagHandler callback methods

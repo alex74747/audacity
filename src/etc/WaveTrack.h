@@ -527,14 +527,6 @@ private:
    // Resample track (i.e. all clips in the track)
    void Resample(int rate, ProgressDialog *progress = NULL);
 
-   //
-   // AutoSave related
-   //
-   // Retrieve the unique autosave ID
-   int GetAutoSaveIdent() const;
-   // Set the unique autosave ID
-   void SetAutoSaveIdent(int id);
-
    int GetLastScaleType() const { return mLastScaleType; }
    void SetLastScaleType() const;
 
@@ -594,7 +586,6 @@ private:
    wxCriticalSection mFlushCriticalSection;
    wxCriticalSection mAppendCriticalSection;
    double mLegacyProjectFileOffset;
-   int mAutoSaveIdent;
 
    std::unique_ptr<SpectrogramSettings> mpSpectrumSettings;
    std::unique_ptr<WaveformSettings> mpWaveformSettings;

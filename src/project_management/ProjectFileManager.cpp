@@ -679,6 +679,55 @@ bool ProjectFileManager::DoSave (const bool fromSaveAs,
          return false;
    }
 
+   // Choose the per-track saving action
+   unsigned int ndx = 0;
+   const auto saveCompressedFn = [&]( XMLWriter &xmlFile, const Track &track ){
+   track.TypeSwitch(
+      [&](const WaveTrack *pWaveTrack) {
+         if (bWantSaveCopy) {
+            if (!pWaveTrack->IsLeader())
+               return;
+
+            //vvv This should probably be a method, WaveTrack::WriteCompressedTrackXML().
+            xmlFile.StartTag(wxT("import"));
+            xmlFile.WriteAttr(wxT("filename"),
+               strOtherNamesArray[ndx]); // Assumes mTracks order hasn't changed!
+
+            // Don't store "channel" and "linked" tags because the importer can figure that out,
+            // e.g., from stereo Ogg files.
+            //    xmlFile.WriteAttr(wxT("channel"), t->GetChannel());
+            //    xmlFile.WriteAttr(wxT("linked"), t->GetLinked());
+
+            const auto offset =
+               TrackList::Channels( pWaveTrack ).min( &WaveTrack::GetOffset );
+            xmlFile.WriteAttr(wxT("offset"), offset, 8);
+            xmlFile.WriteAttr(wxT("mute"), pWaveTrack->GetMute());
+            xmlFile.WriteAttr(wxT("solo"), pWaveTrack->GetSolo());
+            pWaveTrack->Track::WriteCommonXMLAttributes( xmlFile, false );
+
+            // Don't store "rate" tag because the importer can figure that out.
+            //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
+            xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
+            xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
+            xmlFile.EndTag(wxT("import"));
+
+            ndx++;
+         }
+         else {
+            pWaveTrack->WriteXML(xmlFile);
+         }
+      },
+      [&](const Track *t) {
+         t->WriteXML(xmlFile);
+      }
+   );
+   };
+
+   ProjectFileIO::TrackSaver saveFn;
+   if ( bWantSaveCopy )
+      saveFn = saveCompressedFn;
+      // else, use the default action
+
    // Write the .aup now, before DirManager::SetProject,
    // because it's easier to clean up the effects of successful write of .aup
    // followed by failed SetProject, than the other way about.
@@ -686,9 +735,10 @@ bool ProjectFileManager::DoSave (const bool fromSaveAs,
    // not done.
    // (SetProject, when it fails, cleans itself up.)
    XMLFileWriter saveFile{ fileName, XO("Error Saving Project") };
+
    success = GuardedCall< bool >( [&] {
          projectFileIO.WriteXMLHeader(saveFile);
-         projectFileIO.WriteXML(saveFile, bWantSaveCopy ? &strOtherNamesArray : nullptr);
+         projectFileIO.WriteXML( saveFile, saveFn );
          // Flushes files, forcing space exhaustion errors before trying
          // SetProject():
          saveFile.PreCommit();

@@ -19,8 +19,8 @@ Paul Licameli split from AudacityProject.cpp
 #include "ProjectFileIORegistry.h"
 #include "ProjectSettings.h"
 #include "Tags.h"
+#include "Track.h"
 #include "ViewInfo.h"
-#include "WaveTrack.h"
 #include "AudacityMessageBox.h"
 #include "NumericTextCtrl.h"
 
@@ -432,7 +432,7 @@ void ProjectFileIO::WriteXMLHeader(XMLWriter &xmlFile) const
 }
 
 void ProjectFileIO::WriteXML(
-   XMLWriter &xmlFile, FilePaths *strOtherNamesArray)
+   XMLWriter &xmlFile, const TrackSaver &saver)
 // may throw
 {
    auto &proj = mProject;
@@ -441,8 +441,6 @@ void ProjectFileIO::WriteXML(
    auto &dirManager = DirManager::Get( proj );
    auto &tags = Tags::Get( proj );
    const auto &settings = ProjectSettings::Get( proj );
-
-   bool bWantSaveCopy = (strOtherNamesArray != nullptr);
 
    //TIMER_START( "AudacityProject::WriteXML", xml_writer_timer );
    // Warning: This block of code is duplicated in Save, for now...
@@ -489,47 +487,15 @@ void ProjectFileIO::WriteXML(
 
    tags.WriteXML(xmlFile);
 
-   unsigned int ndx = 0;
-   tracks.Any().Visit(
-      [&](WaveTrack *pWaveTrack) {
-         if (bWantSaveCopy) {
-            if (!pWaveTrack->IsLeader())
-               return;
-
-            //vvv This should probably be a method, WaveTrack::WriteCompressedTrackXML().
-            xmlFile.StartTag(wxT("import"));
-            xmlFile.WriteAttr(wxT("filename"),
-               (*strOtherNamesArray)[ndx]); // Assumes mTracks order hasn't changed!
-
-            // Don't store "channel" and "linked" tags because the importer can figure that out,
-            // e.g., from stereo Ogg files.
-            //    xmlFile.WriteAttr(wxT("channel"), t->GetChannel());
-            //    xmlFile.WriteAttr(wxT("linked"), t->GetLinked());
-
-            const auto offset =
-               TrackList::Channels( pWaveTrack ).min( &WaveTrack::GetOffset );
-            xmlFile.WriteAttr(wxT("offset"), offset, 8);
-            xmlFile.WriteAttr(wxT("mute"), pWaveTrack->GetMute());
-            xmlFile.WriteAttr(wxT("solo"), pWaveTrack->GetSolo());
-            pWaveTrack->Track::WriteCommonXMLAttributes( xmlFile, false );
-
-            // Don't store "rate" tag because the importer can figure that out.
-            //    xmlFile.WriteAttr(wxT("rate"), pWaveTrack->GetRate());
-            xmlFile.WriteAttr(wxT("gain"), (double)pWaveTrack->GetGain());
-            xmlFile.WriteAttr(wxT("pan"), (double)pWaveTrack->GetPan());
-            xmlFile.EndTag(wxT("import"));
-
-            ndx++;
-         }
-         else {
-            pWaveTrack->SetAutoSaveIdent(mAutoSaving ? ++ndx : 0);
-            pWaveTrack->WriteXML(xmlFile);
-         }
-      },
-      [&](Track *t) {
-         t->WriteXML(xmlFile);
+   unsigned ndx = 0;
+   for ( const auto pTrack : tracks.Any() ) {
+      if ( saver )
+         saver( xmlFile, *pTrack );
+      else {
+         pTrack->SetAutoSaveIdent(mAutoSaving ? ++ndx : 0);
+         pTrack->WriteXML( xmlFile );
       }
-   );
+   }
 
    if (!mAutoSaving)
    {

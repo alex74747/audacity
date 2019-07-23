@@ -219,6 +219,14 @@ class AUDACITY_DLL_API Track /* not final */
    void SetId( TrackId id ) { mId = id; }
  public:
 
+   //
+   // AutoSave related
+   //
+   // Retrieve the unique autosave ID
+   int GetAutoSaveIdent() const;
+   // Set the unique autosave ID
+   void SetAutoSaveIdent(int id);
+
    // Given a bare pointer, find a shared_ptr.  Undefined results if the track
    // is not yet managed by a shared_ptr.  Undefined results if the track is
    // not really of the subclass.  (That is, trusts the caller and uses static
@@ -712,6 +720,8 @@ public:
 protected:
    std::shared_ptr<CommonTrackCell> mpView;
    std::shared_ptr<CommonTrackCell> mpControls;
+
+   int mAutoSaveIdent{ 0 };
 };
 
 class AUDACITY_DLL_API AudioTrack /* not final */ : public Track
