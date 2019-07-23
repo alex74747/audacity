@@ -22,7 +22,6 @@ class wxString;
 class wxFileName;
 class AudacityProject;
 class ImportXMLTagHandler;
-class RecordingRecoveryHandler;
 class Track;
 class TrackList;
 class WaveTrack;
@@ -130,6 +129,7 @@ private:
    std::shared_ptr<TrackList> mLastSavedTracks;
    
    // The handler that handles recovery of <recordingrecovery> tags
+   class RecordingRecoveryHandler;
    std::unique_ptr<RecordingRecoveryHandler> mRecordingRecoveryHandler;
    
    std::unique_ptr<ImportXMLTagHandler> mImportXMLTagHandler;

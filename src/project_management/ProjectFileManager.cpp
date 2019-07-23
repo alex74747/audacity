@@ -60,6 +60,195 @@ Paul Licameli split from AudacityProject.cpp
 #include "Warning.h"
 #include "XMLFileReader.h"
 
+////////////////////////////////////////////////////////////////////////////
+/// Recording recovery handler
+
+//
+// XML Handler for a <recordingrecovery> tag
+//
+class ProjectFileManager::RecordingRecoveryHandler final : public XMLTagHandler
+{
+public:
+   RecordingRecoveryHandler(AudacityProject* proj);
+   bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
+   void HandleXMLEndTag(const wxChar *tag) override;
+   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
+
+   // This class only knows reading tags
+
+private:
+
+   int FindTrack() const;
+
+   AudacityProject* mProject;
+   int mChannel;
+   int mNumChannels;
+   int mAutoSaveIdent;
+};
+
+ProjectFileManager::
+RecordingRecoveryHandler::RecordingRecoveryHandler(AudacityProject* proj)
+{
+   mProject = proj;
+   mChannel = -1;
+   mNumChannels = -1;
+}
+
+int ProjectFileManager::RecordingRecoveryHandler::FindTrack() const
+{
+   auto tracks = TrackList::Get( *mProject ).Any< const WaveTrack >();
+   int index = 0;
+   if (mAutoSaveIdent)
+   {
+      auto iter = tracks.begin(), end = tracks.end();
+      for (; iter != end; ++iter, ++index)
+      {
+         if ((*iter)->GetAutoSaveIdent() == mAutoSaveIdent)
+         {
+            break;
+         }
+      }
+   }
+   else
+   {
+      index = tracks.size() - mNumChannels + mChannel;
+   }
+
+   return index;
+}
+
+bool ProjectFileManager::
+   RecordingRecoveryHandler::HandleXMLTag(const wxChar *tag,
+                                            const wxChar **attrs)
+{
+   if (wxStrcmp(tag, wxT("simpleblockfile")) == 0)
+   {
+      // Check if we have a valid channel and numchannels
+      if (mChannel < 0 || mNumChannels < 0 || mChannel >= mNumChannels)
+      {
+         // This should only happen if there is a bug
+         wxASSERT(false);
+         return false;
+      }
+
+      auto tracks = TrackList::Get( *mProject ).Any< WaveTrack >();
+      int index = FindTrack();
+      // We need to find the track and sequence where the blockfile belongs
+
+      if (index < 0 || index >= (int)tracks.size())
+      {
+         // This should only happen if there is a bug
+         wxASSERT(false);
+         return false;
+      }
+
+      auto iter = tracks.begin();
+      std::advance( iter, index );
+      WaveTrack* track = *iter;
+      WaveClip*  clip = track->NewestOrNewClip();
+      Sequence* seq = clip->GetSequence();
+
+      // Load the blockfile from the XML
+      auto &dirManager = DirManager::Get( *mProject );
+      dirManager.SetLoadingFormat(seq->GetSampleFormat());
+
+      BlockFilePtr blockFile;
+      dirManager.SetLoadingTarget(
+         [&]() -> BlockFilePtr& { return blockFile; } );
+
+      if (!dirManager.HandleXMLTag(tag, attrs) || !blockFile)
+      {
+         // This should only happen if there is a bug
+         wxASSERT(false);
+         return false;
+      }
+
+      seq->AppendBlockFile(blockFile);
+      clip->UpdateEnvelopeTrackLen();
+
+   } else if (wxStrcmp(tag, wxT("recordingrecovery")) == 0)
+   {
+      mAutoSaveIdent = 0;
+
+      // loop through attrs, which is a null-terminated list of
+      // attribute-value pairs
+      long nValue;
+      while(*attrs)
+      {
+         const wxChar *attr = *attrs++;
+         const wxChar *value = *attrs++;
+
+         if (!value)
+            break;
+
+         const wxString strValue = value;
+         //this channels value does not correspond to WaveTrack::Left/Right/Mono, but which channel of the recording device
+         //it came from, and thus we can't use XMLValueChecker::IsValidChannel on it.  Rather we compare to the next attribute value.
+         if (wxStrcmp(attr, wxT("channel")) == 0)
+         {
+            if (!XMLValueChecker::IsGoodInt(strValue) || !strValue.ToLong(&nValue) || nValue < 0)
+               return false;
+            mChannel = nValue;
+         }
+         else if (wxStrcmp(attr, wxT("numchannels")) == 0)
+         {
+            if (!XMLValueChecker::IsGoodInt(strValue) || !strValue.ToLong(&nValue) ||
+                  (nValue < 1))
+               return false;
+            if(mChannel >= nValue )
+               return false;
+            mNumChannels = nValue;
+         }
+         else if (wxStrcmp(attr, wxT("id")) == 0)
+         {
+            if (!XMLValueChecker::IsGoodInt(strValue) || !strValue.ToLong(&nValue) ||
+                  (nValue < 1))
+               return false;
+            mAutoSaveIdent = nValue;
+         }
+
+      }
+   }
+
+   return true;
+}
+
+void ProjectFileManager::
+   RecordingRecoveryHandler::HandleXMLEndTag(const wxChar *tag)
+{
+   if (wxStrcmp(tag, wxT("simpleblockfile")) == 0)
+      // Still in inner loop
+      return;
+
+   auto tracks = TrackList::Get( *mProject ).Any< WaveTrack >();
+   int index = FindTrack();
+   // We need to find the track and sequence where the blockfile belongs
+
+   if (index < 0 || index >= (int)tracks.size()) {
+      // This should only happen if there is a bug
+      wxASSERT(false);
+   }
+   else {
+      auto iter = tracks.begin();
+      std::advance( iter, index );
+      WaveTrack* track = *iter;
+      WaveClip*  clip = track->NewestOrNewClip();
+      Sequence* seq = clip->GetSequence();
+
+      seq->ConsistencyCheck
+         (wxT("RecordingRecoveryHandler::HandleXMLEndTag"), false);
+   }
+}
+
+XMLTagHandler* ProjectFileManager::
+   RecordingRecoveryHandler::HandleXMLChild(const wxChar *tag)
+{
+   if (wxStrcmp(tag, wxT("simpleblockfile")) == 0)
+      return this; // HandleXMLTag also handles <simpleblockfile>
+
+   return NULL;
+}
+
 static const AudacityProject::AttachedObjects::RegisteredFactory sFileManagerKey{
    []( AudacityProject &parent ){
       auto result = std::make_shared< ProjectFileManager >( parent );

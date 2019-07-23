@@ -11,7 +11,7 @@
 #ifndef __AUDACITY_AUTORECOVERY__
 #define __AUDACITY_AUTORECOVERY__
 
-#include "XMLTagHandler.h"
+#include "XMLTagHandler.h" // to inherit
 
 #include <wx/mstream.h> // member variables
 
@@ -19,30 +19,6 @@
 #include "audacity/Types.h"
 
 class wxFFile;
-class AudacityProject;
-
-//
-// XML Handler for a <recordingrecovery> tag
-//
-class RecordingRecoveryHandler final : public XMLTagHandler
-{
-public:
-   RecordingRecoveryHandler(AudacityProject* proj);
-   bool HandleXMLTag(const wxChar *tag, const wxChar **attrs) override;
-   void HandleXMLEndTag(const wxChar *tag) override;
-   XMLTagHandler *HandleXMLChild(const wxChar *tag) override;
-
-   // This class only knows reading tags
-
-private:
-
-   int FindTrack() const;
-
-   AudacityProject* mProject;
-   int mChannel;
-   int mNumChannels;
-   int mAutoSaveIdent;
-};
 
 ///
 /// AutoSaveFile
