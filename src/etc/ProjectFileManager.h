@@ -14,6 +14,7 @@ Paul Licameli split from AudacityProject.h
 #include <memory>
 #include <vector>
 
+#include <wx/event.h> // to inherit
 #include "ClientData.h" // to inherit
 #include "FileNames.h" // for FileType
 
@@ -33,6 +34,7 @@ using TrackHolders = std::vector< WaveTrackArray >;
 
 class ProjectFileManager final
    : public ClientData::Base
+   , public wxEvtHandler
 {
 public:
    static ProjectFileManager &Get( AudacityProject &project );
@@ -114,6 +116,8 @@ private:
    bool SaveCopyWaveTracks(const FilePath & strProjectPathName,
       bool bLossless, FilePaths &strOtherNamesArray);
    bool DoSave(bool fromSaveAs, bool bWantSaveCopy, bool bLossless = false);
+
+   void OnODTask(wxCommandEvent &);
 
    // Declared in this class so that they can have access to private members
    static XMLTagHandler *RecordingRecoveryFactory( AudacityProject &project );

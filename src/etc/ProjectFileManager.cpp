@@ -80,6 +80,8 @@ const ProjectFileManager &ProjectFileManager::Get( const AudacityProject &projec
 ProjectFileManager::ProjectFileManager( AudacityProject &project )
 : mProject{ project }
 {
+   wxTheApp->Bind(EVT_ODTASK_UPDATE, &ProjectFileManager::OnODTask, this);
+   mProject.Bind(EVT_ODTASK_COMPLETE, &ProjectFileManager::OnODTask, this);
 }
 
 ProjectFileManager::~ProjectFileManager() = default;
@@ -1682,4 +1684,14 @@ bool ProjectFileManager::Import(
    // This is a no-fail:
    dirManager.FillBlockfilesCache();
    return true;
+}
+
+///Handles the redrawing necessary for tasks as they partially update in the
+///background, or finish.
+void ProjectFileManager::OnODTask( wxCommandEvent &event )
+{
+   event.Skip();
+   //todo: add track data to the event -
+   // check to see if the project contains it before redrawing.
+   TrackPanel::Get( mProject ).Refresh(false);
 }
