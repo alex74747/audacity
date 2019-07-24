@@ -117,7 +117,7 @@ private:
    static int mReentryCount;
    // NyquistEffect implementation
 
-   bool ProcessOne();
+   bool ProcessOne( const EffectContext &context );
 
    void BuildPromptWindow(ShuttleGui & S);
    void BuildEffectWindow(ShuttleGui & S);

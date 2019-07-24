@@ -234,7 +234,7 @@ public:
    virtual void SetHostUI(EffectUIHostInterface *host) = 0;
    virtual bool IsGraphicalUI() = 0;
    virtual bool PopulateUI(wxWindow *parent) = 0;
-   virtual bool ValidateUI() = 0;
+   virtual bool ValidateUI( EffectContext &context ) = 0;
    virtual bool HideUI() = 0;
    virtual bool CloseUI() = 0;
 

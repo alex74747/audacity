@@ -240,7 +240,7 @@ bool EffectChangePitch::Process( EffectContext &context )
       // eliminate the next line:
       mSemitones = m_dSemitonesChange;
 #endif
-      return EffectSoundTouch::ProcessWithTimeWarper(warper);
+      return EffectSoundTouch::ProcessWithTimeWarper( context, warper );
    }
 }
 

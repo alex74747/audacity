@@ -186,7 +186,7 @@ bool EffectClickRemoval::Process( EffectContext &context )
          auto end = track->TimeToLongSamples(t1);
          auto len = end - start;
 
-         if (!ProcessOne(count, track, start, len))
+         if (!ProcessOne( context, count, track, start, len ))
          {
             bGoodResult = false;
             break;
@@ -204,7 +204,8 @@ bool EffectClickRemoval::Process( EffectContext &context )
    return bGoodResult && mbDidSomething;
 }
 
-bool EffectClickRemoval::ProcessOne(int count, WaveTrack * track, sampleCount start, sampleCount len)
+bool EffectClickRemoval::ProcessOne( const EffectContext &context,
+   int count, WaveTrack * track, sampleCount start, sampleCount len)
 {
    if (len <= windowSize / 2)
    {

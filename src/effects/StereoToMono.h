@@ -44,7 +44,7 @@ public:
 private:
    // EffectStereoToMono implementation
 
-   bool ProcessOne(int count);
+   bool ProcessOne( const EffectContext &context, int count );
 
 private:
    sampleCount mStart;

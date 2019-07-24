@@ -1801,7 +1801,7 @@ bool VSTEffect::IsGraphicalUI()
    return mGui;
 }
 
-bool VSTEffect::ValidateUI()
+bool VSTEffect::ValidateUI( EffectContext &context )
 {
    if (!mParent->Validate() || !mParent->TransferDataFromWindow())
    {

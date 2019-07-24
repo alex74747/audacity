@@ -132,7 +132,7 @@ bool EffectFindClipping::Process( EffectContext &context )
          auto end = t->TimeToLongSamples(t1);
          auto len = end - start;
 
-         if (!ProcessOne(lt, count, t, start, len)) {
+         if (!ProcessOne( context, lt, count, t, start, len )) {
             return false;
          }
       }
@@ -148,7 +148,8 @@ bool EffectFindClipping::Process( EffectContext &context )
    return true;
 }
 
-bool EffectFindClipping::ProcessOne(LabelTrack * lt,
+bool EffectFindClipping::ProcessOne( const EffectContext &context,
+                                    LabelTrack * lt,
                                     int count,
                                     const WaveTrack * wt,
                                     sampleCount start,

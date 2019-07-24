@@ -1597,7 +1597,7 @@ bool LV2Effect::IsGraphicalUI()
    return mUseGUI;
 }
 
-bool LV2Effect::ValidateUI()
+bool LV2Effect::ValidateUI( EffectContext &context )
 {
    if (!mParent->Validate() || !mParent->TransferDataFromWindow())
    {

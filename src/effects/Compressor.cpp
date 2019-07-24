@@ -377,7 +377,7 @@ bool EffectCompressor::TransferDataFromWindow()
 
 // EffectTwoPassSimpleMono implementation
 
-bool EffectCompressor::NewTrackPass1()
+bool EffectCompressor::NewTrackPass1( const EffectContext &context )
 {
    mThreshold = DB_TO_LINEAR(mThresholdDB);
    mNoiseFloor = DB_TO_LINEAR(mNoiseFloorDB);
@@ -402,7 +402,7 @@ bool EffectCompressor::NewTrackPass1()
    return true;
 }
 
-bool EffectCompressor::InitPass1()
+bool EffectCompressor::InitPass1( const EffectContext &context )
 {
    mMax=0.0;
    if (!mNormalize)
@@ -424,7 +424,7 @@ bool EffectCompressor::InitPass1()
    return true;
 }
 
-bool EffectCompressor::InitPass2()
+bool EffectCompressor::InitPass2( const EffectContext &context )
 {
    // Actually, this should not even be called, because we call
    // DisableSecondPass() before, if mNormalize is false.

@@ -99,7 +99,7 @@ bool EffectStereoToMono::Process( EffectContext &context )
          auto rightTrackEnd = mRightTrack->TimeToLongSamples(mRightTrack->GetEndTime());
          mEnd = wxMax(leftTrackEnd, rightTrackEnd);
 
-         bGoodResult = ProcessOne(count);
+         bGoodResult = ProcessOne( context, count );
          if (!bGoodResult)
             break;
 
@@ -121,7 +121,7 @@ bool EffectStereoToMono::Process( EffectContext &context )
    return bGoodResult;
 }
 
-bool EffectStereoToMono::ProcessOne(int count)
+bool EffectStereoToMono::ProcessOne( const EffectContext &context, int count )
 {
    float  curLeftFrame;
    float  curRightFrame;

@@ -1518,7 +1518,7 @@ bool LadspaEffect::IsGraphicalUI()
    return false;
 }
 
-bool LadspaEffect::ValidateUI()
+bool LadspaEffect::ValidateUI( EffectContext &context )
 {
    if (!mParent->Validate())
    {

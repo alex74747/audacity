@@ -921,7 +921,7 @@ bool NyquistEffect::Process( EffectContext &context )
             mPerTrackProps += wxString::Format(wxT("(putprop '*SELECTION* %s 'BANDWIDTH)\n"), bandwidth);
          }
 
-         success = ProcessOne();
+         success = ProcessOne( context );
 
          // Reset previous locale
          wxSetlocale(LC_NUMERIC, prevlocale);
@@ -1058,7 +1058,7 @@ bool NyquistEffect::TransferDataFromWindow()
 
 // NyquistEffect implementation
 
-bool NyquistEffect::ProcessOne()
+bool NyquistEffect::ProcessOne( const EffectContext &context )
 {
    mpException = {};
 

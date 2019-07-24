@@ -48,7 +48,8 @@ public:
 protected:
    // Effect implementation
 
-   bool ProcessWithTimeWarper(const TimeWarper &warper);
+   bool ProcessWithTimeWarper(
+      const EffectContext &context, const TimeWarper &warper );
 
    std::unique_ptr<soundtouch::SoundTouch> mSoundTouch;
    double mCurT0;
@@ -59,15 +60,17 @@ private:
 #ifdef USE_MIDI
    bool ProcessNoteTrack(NoteTrack *track, const TimeWarper &warper);
 #endif
-   bool ProcessOne(
+   bool ProcessOne( const EffectContext &context,
       WaveTrack * t, sampleCount start, sampleCount end,
       const TimeWarper &warper);
-   bool ProcessStereo(WaveTrack* leftTrack, WaveTrack* rightTrack,
-                     sampleCount start, sampleCount end,
-                      const TimeWarper &warper);
-   bool ProcessStereoResults(const size_t outputCount,
-                              WaveTrack* outputLeftTrack,
-                              WaveTrack* outputRightTrack);
+   bool ProcessStereo( const EffectContext &contect,
+      WaveTrack* leftTrack, WaveTrack* rightTrack,
+      sampleCount start, sampleCount end,
+      const TimeWarper &warper);
+   bool ProcessStereoResults( const EffectContext &context,
+      const size_t outputCount,
+      WaveTrack* outputLeftTrack,
+      WaveTrack* outputRightTrack);
 
    int    mCurTrackNum;
 

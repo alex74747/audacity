@@ -127,7 +127,7 @@ public:
 
    // EffectUIClientInterface implementation
 
-   bool ValidateUI() override;
+   bool ValidateUI( EffectContext &context ) override;
 
    // Effect implementation
 
@@ -152,7 +152,7 @@ private:
    // low range of human hearing
    enum {loFreqI=20};
 
-   bool ProcessOne(int count, WaveTrack * t,
+   bool ProcessOne( const EffectContext &context, int count, WaveTrack * t,
                    sampleCount start, sampleCount len);
    bool CalcFilter();
    void Filter(size_t len, float *buffer);

@@ -63,7 +63,7 @@ private:
       ANALYSE_DC, ANALYSE_LOUDNESS, ANALYSE_LOUDNESS_DC
    };
 
-   bool ProcessOne(
+   bool ProcessOne( const EffectContext &context,
       WaveTrack * t, const TranslatableString &msg, double& progress, float offset);
    bool AnalyseTrack(const WaveTrack * track, const TranslatableString &msg,
                      double &progress, float &offset, float &extent);

@@ -54,9 +54,9 @@ public:
 protected:
    // EffectTwoPassSimpleMono implementation
 
-   bool InitPass1() override;
-   bool InitPass2() override;
-   bool NewTrackPass1() override;
+   bool InitPass1( const EffectContext &context ) override;
+   bool InitPass2( const EffectContext &context ) override;
+   bool NewTrackPass1( const EffectContext &context ) override;
    bool ProcessPass2(float *buffer, size_t len) override;
    bool TwoBufferProcessPass1
       (float *buffer1, size_t len1, float *buffer2, size_t len2) override;

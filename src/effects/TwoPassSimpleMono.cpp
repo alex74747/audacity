@@ -28,22 +28,22 @@ bool EffectTwoPassSimpleMono::Process( EffectContext &context )
     mPass = 0;
     mSecondPassDisabled = false;
 
-    InitPass1();
+    InitPass1( context );
     this->CopyInputTracks(); // Set up mOutputTracks.
-    bool bGoodResult = ProcessPass();
+    bool bGoodResult = ProcessPass( context );
 
     if (bGoodResult && !mSecondPassDisabled)
     {
         mPass = 1;
-        if (InitPass2())
-            bGoodResult = ProcessPass();
+        if (InitPass2( context ))
+            bGoodResult = ProcessPass( context );
     }
 
     this->ReplaceProcessedTracks(bGoodResult);
     return bGoodResult;
 }
 
-bool EffectTwoPassSimpleMono::ProcessPass()
+bool EffectTwoPassSimpleMono::ProcessPass( const EffectContext &context )
 {
    //Iterate over each track
    mCurTrackNum = 0;
@@ -71,14 +71,14 @@ bool EffectTwoPassSimpleMono::ProcessPass()
          //NewTrackPass1/2() returns true by default
          bool ret;
          if (mPass == 0)
-            ret = NewTrackPass1();
+            ret = NewTrackPass1( context );
          else
-            ret = NewTrackPass2();
+            ret = NewTrackPass2( context );
          if (!ret)
             return false;
 
          //ProcessOne() (implemented below) processes a single track
-         if (!ProcessOne(track, start, end))
+         if (!ProcessOne( context, track, start, end ))
             return false;
       }
 
@@ -91,8 +91,8 @@ bool EffectTwoPassSimpleMono::ProcessPass()
 
 //ProcessOne() takes a track, transforms it to bunch of buffer-blocks,
 //and executes TwoBufferProcessPass1 or TwoBufferProcessPass2 on these blocks
-bool EffectTwoPassSimpleMono::ProcessOne(WaveTrack * track,
-                                         sampleCount start, sampleCount end)
+bool EffectTwoPassSimpleMono::ProcessOne(const EffectContext &context,
+   WaveTrack * track, sampleCount start, sampleCount end)
 {
    bool ret;
 
@@ -187,25 +187,25 @@ bool EffectTwoPassSimpleMono::ProcessOne(WaveTrack * track,
    return true;
 }
 
-bool EffectTwoPassSimpleMono::NewTrackPass1()
+bool EffectTwoPassSimpleMono::NewTrackPass1( const EffectContext & )
 {
    return true;
 }
 
-bool EffectTwoPassSimpleMono::NewTrackPass2()
+bool EffectTwoPassSimpleMono::NewTrackPass2( const EffectContext & )
 {
    return true;
 }
 
 //Initialisations before the first pass
-bool EffectTwoPassSimpleMono::InitPass1()
+bool EffectTwoPassSimpleMono::InitPass1( const EffectContext & )
 {
    return true;
 }
 
 //Initialisations before the second pass.
 //Return true if you actually want the second pass to go ahead
-bool EffectTwoPassSimpleMono::InitPass2()
+bool EffectTwoPassSimpleMono::InitPass2( const EffectContext & )
 {
    return true;
 }

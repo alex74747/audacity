@@ -638,7 +638,7 @@ bool Effect::IsGraphicalUI()
    return false;
 }
 
-bool Effect::ValidateUI()
+bool Effect::ValidateUI( EffectContext &context )
 {
    return mUIParent->Validate();
 }
@@ -1172,7 +1172,7 @@ bool Effect::DoEffect(const EffectContext &,
 
 #endif
    CountWaveTracks();
-
+   
    EffectContext context;
 
    // Note: Init may read parameters from preferences
@@ -1235,12 +1235,12 @@ int Effect::GetPass()
    return mPass;
 }
 
-bool Effect::InitPass1()
+bool Effect::InitPass1( const EffectContext & )
 {
    return true;
 }
 
-bool Effect::InitPass2()
+bool Effect::InitPass2( const EffectContext & )
 {
    return false;
 }
@@ -1256,13 +1256,13 @@ bool Effect::Process( EffectContext &context )
    mNumAudioOut = GetAudioOutCount();
 
    mPass = 1;
-   if (InitPass1())
+   if (InitPass1( context ))
    {
-      bGoodResult = ProcessPass();
+      bGoodResult = ProcessPass( context );
       mPass = 2;
-      if (bGoodResult && InitPass2())
+      if (bGoodResult && InitPass2( context ))
       {
-         bGoodResult = ProcessPass();
+         bGoodResult = ProcessPass( context );
       }
    }
 
@@ -1271,7 +1271,7 @@ bool Effect::Process( EffectContext &context )
    return bGoodResult;
 }
 
-bool Effect::ProcessPass()
+bool Effect::ProcessPass( const EffectContext &context )
 {
    bool bGoodResult = true;
    bool isGenerator = GetType() == EffectTypeGenerate;
@@ -1405,7 +1405,7 @@ bool Effect::ProcessPass()
          }
 
          // Go process the track(s)
-         bGoodResult = ProcessTrack(
+         bGoodResult = ProcessTrack( context,
             count, map, left, right, leftStart, rightStart, len,
             inBuffer, outBuffer, inBufPos, outBufPos);
          if (!bGoodResult)
@@ -1427,7 +1427,7 @@ bool Effect::ProcessPass()
    return bGoodResult;
 }
 
-bool Effect::ProcessTrack(int count,
+bool Effect::ProcessTrack( const EffectContext &context, int count,
                           ChannelNames map,
                           WaveTrack *left,
                           WaveTrack *right,
@@ -2186,7 +2186,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
 
 const AudacityProject *Effect::FindProject() const
 {
-   return context.inputTracks.GetOwner();
+   return inputTracks()->GetOwner();
 }
 
 void Effect::CountWaveTracks()
@@ -2222,7 +2222,7 @@ void Effect::Preview( const EffectContext &origContext, bool dryOnly )
    }
 
    EffectContext newContext = origContext;
-
+	
    wxWindow *FocusDialog = wxWindow::FindFocus();
 
    double previewDuration;

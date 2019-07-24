@@ -30,15 +30,15 @@ protected:
    // Override these methods if you need to initialize something
    // before each pass. Return None if processing should stop.
    // These should not depend on mOutputTracks having been set up via CopyInputTracks().
-   bool InitPass1() override;
-   bool InitPass2() override;
+   bool InitPass1( const EffectContext &context ) override;
+   bool InitPass2( const EffectContext &context ) override;
 
    // NEW virtuals
 
    // Override these methods if you need to do things
    // before every track (including the first one)
-   virtual bool NewTrackPass1();
-   virtual bool NewTrackPass2();
+   virtual bool NewTrackPass1( const EffectContext &context );
+   virtual bool NewTrackPass2( const EffectContext &context );
 
    // Override this method to actually process audio
    virtual bool ProcessPass1
@@ -76,9 +76,9 @@ protected:
    bool   mSecondPassDisabled;
 
 private:
-   bool ProcessOne(WaveTrack * t,
+   bool ProcessOne(const EffectContext &context, WaveTrack * t,
                    sampleCount start, sampleCount end);
-   bool ProcessPass() override;
+   bool ProcessPass( const EffectContext &context ) override;
 };
 
 #endif

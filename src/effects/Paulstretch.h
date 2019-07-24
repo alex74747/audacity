@@ -52,7 +52,8 @@ private:
    void OnText(wxCommandEvent & evt);
    size_t GetBufferSize(double rate);
 
-   bool ProcessOne(WaveTrack *track, double t0, double t1, int count);
+   bool ProcessOne(const EffectContext &context,
+      WaveTrack *track, double t0, double t1, int count);
 
 private:
    float mAmount;

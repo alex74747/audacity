@@ -176,7 +176,7 @@ bool EffectPaulstretch::Process( EffectContext &context )
       double t1 = mT1 > trackEnd? trackEnd: mT1;
 
       if (t1 > t0) {
-         if (!ProcessOne(track, t0,t1,count))
+         if (!ProcessOne( context, track, t0, t1, count ))
             return false;
       }
 
@@ -254,7 +254,8 @@ size_t EffectPaulstretch::GetBufferSize(double rate)
    return std::max<size_t>(stmp, 128);
 }
 
-bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int count)
+bool EffectPaulstretch::ProcessOne( const EffectContext &context,
+   WaveTrack *track,double t0,double t1,int count)
 {
    const auto badAllocMessage =
       XO("Requested value exceeds memory capacity.");

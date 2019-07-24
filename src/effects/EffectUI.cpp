@@ -1163,8 +1163,8 @@ void EffectUIHost::OnApply(wxCommandEvent & evt)
       if (!allowed)
          return;
    }
-   
-   if (!mClient->ValidateUI())
+
+   if (!mClient->ValidateUI( *mContext ))
    {
       return;
    }
@@ -1345,7 +1345,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
 
 void EffectUIHost::Resume()
 {
-   if (!mClient->ValidateUI()) {
+   if (!mClient->ValidateUI( *mContext )) {
       // If we're previewing we should still be able to stop playback
       // so don't disable transport buttons.
       //   mEffect->EnableApply(false);   // currently this would also disable transport buttons.
@@ -1379,7 +1379,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
 {
    if (!mSupportsRealtime)
    {
-      if (!mClient->ValidateUI() || !mEffect->TransferDataFromWindow())
+      if (!mClient->ValidateUI( *mContext ) || !mEffect->TransferDataFromWindow())
       {
          return;
       }

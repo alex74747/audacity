@@ -52,8 +52,9 @@ public:
 private:
    // EffectFindCliping implementation
 
-   bool ProcessOne(LabelTrack *lt, int count, const WaveTrack * wt,
-                   sampleCount start, sampleCount len);
+   bool ProcessOne(const EffectContext &context,
+      LabelTrack *lt, int count, const WaveTrack * wt,
+      sampleCount start, sampleCount len);
 
 private:
    int mStart;   ///< Using int rather than sampleCount because values are only ever small numbers

@@ -85,7 +85,7 @@ private:
    double     mAttackDecayTime;        // in secs
    bool       mbLeaveNoise;
 
-   bool ProcessOne(int count, WaveTrack * track,
+   bool ProcessOne(const EffectContext &context, int count, WaveTrack * track,
                    sampleCount start, sampleCount len);
 
    void Initialize();

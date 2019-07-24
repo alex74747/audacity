@@ -266,7 +266,8 @@ bool EffectNormalize::Process( EffectContext &context )
          auto pOffset = offsets.begin();
          for (auto channel : range) {
             if (false ==
-                (bGoodResult = ProcessOne(channel, msg, progress, *pOffset++)) )
+                (bGoodResult =
+                   ProcessOne( context, channel, msg, progress, *pOffset++)) )
                goto break2;
             // TODO: more-than-two-channels-message
             msg = topMsg +
@@ -474,7 +475,7 @@ bool EffectNormalize::AnalyseTrackData(const WaveTrack * track, const Translatab
 //and executes ProcessData, on it...
 // uses mMult and offset to normalize a track.
 // mMult must be set before this is called
-bool EffectNormalize::ProcessOne(
+bool EffectNormalize::ProcessOne( const EffectContext &context,
    WaveTrack * track, const TranslatableString &msg, double &progress, float offset)
 {
    bool rc = true;

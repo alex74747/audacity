@@ -57,7 +57,8 @@ bool EffectSimpleMono::Process( EffectContext &context )
 
          //NewTrackSimpleMono() will returns true by default
          //ProcessOne() processes a single track
-         if (!NewTrackSimpleMono() || !ProcessOne(pOutWaveTrack, start, end))
+         if (!NewTrackSimpleMono() ||
+            !ProcessOne( context, pOutWaveTrack, start, end ))
          {
             bGoodResult = false;
             break;
@@ -74,8 +75,8 @@ bool EffectSimpleMono::Process( EffectContext &context )
 
 //ProcessOne() takes a track, transforms it to bunch of buffer-blocks,
 //and executes ProcessSimpleMono on these blocks
-bool EffectSimpleMono::ProcessOne(WaveTrack * track,
-                                  sampleCount start, sampleCount end)
+bool EffectSimpleMono::ProcessOne(const EffectContext &context,
+   WaveTrack * track, sampleCount start, sampleCount end)
 {
    //Get the length of the buffer (as double). len is
    //used simple to calculate a progress meter, so it is easier

@@ -45,7 +45,8 @@ protected:
    int    mCurChannel;
 
 private:
-   bool ProcessOne(WaveTrack * t, sampleCount start, sampleCount end);
+   bool ProcessOne(const EffectContext &context,
+      WaveTrack * t, sampleCount start, sampleCount end);
 };
 
 #endif

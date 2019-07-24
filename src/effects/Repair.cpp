@@ -115,7 +115,7 @@ bool EffectRepair::Process( EffectContext &context )
             break;
          }
 
-         if (!ProcessOne(count, track, s0,
+         if (!ProcessOne(context, count, track, s0,
                          // len is at most 5 * 128.
                          len.as_size_t(),
                          repairStart,
@@ -133,7 +133,8 @@ bool EffectRepair::Process( EffectContext &context )
    return bGoodResult;
 }
 
-bool EffectRepair::ProcessOne(int count, WaveTrack * track,
+bool EffectRepair::ProcessOne(const EffectContext &context,
+                              int count, WaveTrack * track,
                               sampleCount start,
                               size_t len,
                               size_t repairStart, size_t repairLen)

@@ -1783,7 +1783,7 @@ bool AudioUnitEffect::IsGraphicalUI()
    return mUIType != wxT("Plain");
 }
 
-bool AudioUnitEffect::ValidateUI()
+bool AudioUnitEffect::ValidateUI( EffectContext &context )
 {
 #if 0
    if (!mParent->Validate())

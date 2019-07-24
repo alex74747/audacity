@@ -495,7 +495,7 @@ bool EffectEqualization::LoadFactoryPreset(int id)
 
 // EffectUIClientInterface implementation
 
-bool EffectEqualization::ValidateUI()
+bool EffectEqualization::ValidateUI( EffectContext &context )
 {
    // If editing a macro, we don't want to be using the unnamed curve so
    // we offer to save it.
@@ -691,7 +691,7 @@ bool EffectEqualization::Process( EffectContext &context )
          auto end = track->TimeToLongSamples(t1);
          auto len = end - start;
 
-         if (!ProcessOne(count, track, start, len))
+         if (!ProcessOne( context, count, track, start, len ))
          {
             bGoodResult = false;
             break;
@@ -1257,8 +1257,8 @@ bool EffectEqualization::TransferDataFromWindow()
 
 // EffectEqualization implementation
 
-bool EffectEqualization::ProcessOne(int count, WaveTrack * t,
-                                    sampleCount start, sampleCount len)
+bool EffectEqualization::ProcessOne(const EffectContext &context,
+   int count, WaveTrack * t, sampleCount start, sampleCount len)
 {
    // create a NEW WaveTrack to hold all of the output, including 'tails' each end
    auto output = mFactory->NewWaveTrack(floatSample, t->GetRate());

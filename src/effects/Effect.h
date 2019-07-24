@@ -163,7 +163,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    void SetHostUI(EffectUIHostInterface *host) override;
    bool PopulateUI(wxWindow *parent) override;
    bool IsGraphicalUI() override;
-   bool ValidateUI() override;
+   bool ValidateUI( EffectContext &context ) override;
    bool HideUI() override;
    bool CloseUI() override;
 
@@ -279,7 +279,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
                   const TranslatableString& titleStr = {});
 
    static void IncEffectCounter(){ nEffectsDone++;};
-
+   
 //
 // protected virtual methods
 //
@@ -302,9 +302,9 @@ protected:
 
    // Actually do the effect here.
    virtual bool Process( EffectContext &context );
-   virtual bool ProcessPass();
-   virtual bool InitPass1();
-   virtual bool InitPass2();
+   virtual bool ProcessPass( const EffectContext &context );
+   virtual bool InitPass1( const EffectContext &context );
+   virtual bool InitPass2( const EffectContext &context );
    virtual int GetPass();
 
    // clean up any temporary memory, needed only per invocation of the
@@ -490,7 +490,7 @@ protected:
    void CountWaveTracks();
 
    // Driver for client effects
-   bool ProcessTrack(int count,
+   bool ProcessTrack( const EffectContext &context, int count,
                      ChannelNames map,
                      WaveTrack *left,
                      WaveTrack *right,

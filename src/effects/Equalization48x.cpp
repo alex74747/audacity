@@ -280,7 +280,8 @@ bool EffectEqualization48x::RunFunctionSelect(int flags, int count, WaveTrack * 
       return ProcessOne1x(count, track, start, len);
       break;
    default:
-      return !mEffectEqualization->ProcessOne(count, track, start, len);
+      return !mEffectEqualization->ProcessOne( const EffectContext &context,
+         count, track, start, len);
       break;
    }
    return false;

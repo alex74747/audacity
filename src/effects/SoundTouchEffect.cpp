@@ -66,7 +66,8 @@ bool EffectSoundTouch::ProcessNoteTrack(NoteTrack *nt, const TimeWarper &warper)
 }
 #endif
 
-bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
+bool EffectSoundTouch::ProcessWithTimeWarper( const EffectContext &context,
+   const TimeWarper &warper)
 {
    // Assumes that mSoundTouch has already been initialized
    // by the subclass for subclass-specific parameters. The
@@ -142,7 +143,9 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
                mSoundTouch->setChannels(2);
 
                //ProcessStereo() (implemented below) processes a stereo track
-               if (!ProcessStereo(leftTrack, rightTrack, start, end, warper))
+               if (!ProcessStereo( context,
+                  leftTrack, rightTrack, start, end, warper
+               ))
                   bGoodResult = false;
                mCurTrackNum++; // Increment for rightTrack, too.
             } else {
@@ -154,7 +157,7 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
                mSoundTouch->setChannels(1);
 
                //ProcessOne() (implemented below) processes a single track
-               if (!ProcessOne(leftTrack, start, end, warper))
+               if (!ProcessOne( context, leftTrack, start, end, warper ))
                   bGoodResult = false;
             }
          }
@@ -183,7 +186,8 @@ void EffectSoundTouch::End()
 
 //ProcessOne() takes a track, transforms it to bunch of buffer-blocks,
 //and executes ProcessSoundTouch on these blocks
-bool EffectSoundTouch::ProcessOne(WaveTrack *track,
+bool EffectSoundTouch::ProcessOne(const EffectContext &context,
+                                  WaveTrack *track,
                                   sampleCount start, sampleCount end,
                                   const TimeWarper &warper)
 {
@@ -257,6 +261,7 @@ bool EffectSoundTouch::ProcessOne(WaveTrack *track,
 }
 
 bool EffectSoundTouch::ProcessStereo(
+   const EffectContext &context,
    WaveTrack* leftTrack, WaveTrack* rightTrack,
    sampleCount start, sampleCount end, const TimeWarper &warper)
 {
@@ -309,7 +314,8 @@ bool EffectSoundTouch::ProcessStereo(
          //Get back samples from SoundTouch
          unsigned int outputCount = mSoundTouch->numSamples();
          if (outputCount > 0)
-            this->ProcessStereoResults(outputCount, outputLeftTrack.get(), outputRightTrack.get());
+            this->ProcessStereoResults( context,
+               outputCount, outputLeftTrack.get(), outputRightTrack.get() );
 
          //Increment sourceSampleCount one blockfull of samples
          sourceSampleCount += blockSize;
@@ -335,7 +341,8 @@ bool EffectSoundTouch::ProcessStereo(
 
       unsigned int outputCount = mSoundTouch->numSamples();
       if (outputCount > 0)
-         this->ProcessStereoResults(outputCount, outputLeftTrack.get(), outputRightTrack.get());
+         this->ProcessStereoResults( context,
+            outputCount, outputLeftTrack.get(), outputRightTrack.get() );
 
       // Flush the output WaveTracks (since they're buffered, too)
       outputLeftTrack->Flush();
@@ -359,9 +366,10 @@ bool EffectSoundTouch::ProcessStereo(
    return true;
 }
 
-bool EffectSoundTouch::ProcessStereoResults(const size_t outputCount,
-                                            WaveTrack* outputLeftTrack,
-                                            WaveTrack* outputRightTrack)
+bool EffectSoundTouch::ProcessStereoResults( const EffectContext &context,
+   const size_t outputCount,
+   WaveTrack* outputLeftTrack,
+   WaveTrack* outputRightTrack)
 {
    Floats outputSoundTouchBuffer{ outputCount * 2 };
    mSoundTouch->receiveSamples(outputSoundTouchBuffer.get(), outputCount);

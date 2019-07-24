@@ -210,7 +210,7 @@ bool EffectChangeTempo::Process( EffectContext &context )
       double mT1Dashed = mT0 + (mT1 - mT0)/(m_PercentChange/100.0 + 1.0);
       RegionTimeWarper warper{ mT0, mT1,
          std::make_unique<LinearTimeWarper>(mT0, mT0, mT1, mT1Dashed )  };
-      success = EffectSoundTouch::ProcessWithTimeWarper(warper);
+      success = EffectSoundTouch::ProcessWithTimeWarper( context, warper );
    }
 
    if(success)

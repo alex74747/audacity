@@ -118,7 +118,7 @@ public:
    void SetHostUI(EffectUIHostInterface *host) override;
    bool PopulateUI(wxWindow *parent) override;
    bool IsGraphicalUI() override;
-   bool ValidateUI() override;
+   bool ValidateUI( EffectContext &context ) override;
    bool HideUI() override;
    bool CloseUI() override;
 

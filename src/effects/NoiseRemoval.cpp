@@ -100,7 +100,7 @@ EffectNoiseRemoval::EffectNoiseRemoval()
 
    mNoiseThreshold.reinit(mSpectrumSize);
 
-   Init();
+   Init( EffectContext{} );
 }
 
 EffectNoiseRemoval::~EffectNoiseRemoval()
@@ -222,7 +222,7 @@ bool EffectNoiseRemoval::Process( EffectContext &context )
          auto end = track->TimeToLongSamples(t1);
          auto len = end - start;
 
-         if (!ProcessOne(count, track, start, len)) {
+         if (!ProcessOne( context, count, track, start, len )) {
             bGoodResult = false;
             break;
          }
@@ -520,8 +520,9 @@ void EffectNoiseRemoval::RemoveNoise()
    }
 }
 
-bool EffectNoiseRemoval::ProcessOne(int count, WaveTrack * track,
-                                    sampleCount start, sampleCount len)
+bool EffectNoiseRemoval::ProcessOne(const EffectContext &context,
+   int count, WaveTrack * track,
+   sampleCount start, sampleCount len)
 {
    if (track == NULL)
       return false;
