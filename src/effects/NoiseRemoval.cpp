@@ -41,7 +41,7 @@
 
 #include "NoiseRemoval.h"
 
-#if !defined(EXPERIMENTAL_NOISE_REDUCTION)
+#if 1
 
 #include "LoadEffects.h"
 
