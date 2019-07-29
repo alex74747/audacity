@@ -22,7 +22,6 @@ Paul Licameli split from Menus.cpp
 #include "ProjectAudioIO.h"
 #include "ProjectFileIO.h"
 #include "ProjectHistory.h"
-#include "ProjectSettings.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
@@ -311,13 +310,13 @@ const ReservedCommandFlag&
 const ReservedCommandFlag&
    IsNotSyncLockedFlag() { static ReservedCommandFlag flag{
       [](const AudacityProject &project){
-         return !ProjectSettings::Get( project ).IsSyncLocked();
+         return !TrackList::Get( project ).IsSyncLocked();
       }
    }; return flag; }  //awd
 const ReservedCommandFlag&
    IsSyncLockedFlag() { static ReservedCommandFlag flag{
       [](const AudacityProject &project){
-         return ProjectSettings::Get( project ).IsSyncLocked();
+         return TrackList::Get( project ).IsSyncLocked();
       }
    }; return flag; }  //awd
 const ReservedCommandFlag&

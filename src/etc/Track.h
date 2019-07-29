@@ -1123,6 +1123,11 @@ wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
 wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
                          EVT_TRACKLIST_DELETION, TrackListEvent);
 
+// Posted when sync lock setting of the whole track list changes.  There is no
+// associated track.
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+                         EVT_TRACKLIST_SYNC_LOCK, TrackListEvent);
+
 /** \brief TrackList is a flat linked list of tracks supporting Add,  Remove,
  * Clear, and Contains, plus serialization of the list of tracks.
  */
@@ -1341,6 +1346,9 @@ public:
    }
 
    friend class Track;
+
+   bool IsSyncLocked() const;
+   void SetSyncLocked( bool value );
 
    /// For use in sorting:  assume each iterator points into this list, no duplications
    void Permute(const std::vector<TrackNodePointer> &permutation);
@@ -1572,6 +1580,8 @@ private:
    ListOfTracks mPendingUpdates;
    // This is in correspondence with mPendingUpdates
    std::vector< Updater > mUpdaters;
+
+   bool mSyncLocked{ false };
 };
 
 class AUDACITY_DLL_API TrackFactory final

@@ -1,6 +1,5 @@
 #include "CommonCommandFlags.h"
 #include "ProjectHistory.h"
-#include "ProjectSettings.h"
 #include "TrackPanelAx.h"
 #include "ProjectWindow.h"
 #include "UndoManager.h"
@@ -702,9 +701,8 @@ void DoClipLeftOrRight
    auto &trackFocus = TrackFocus::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    auto &selectedRegion = viewInfo.selectedRegion;
-   const auto &settings = ProjectSettings::Get( project );
    auto &tracks = TrackList::Get( project );
-   auto isSyncLocked = settings.IsSyncLocked();
+   auto isSyncLocked = tracks.IsSyncLocked();
 
    auto amount = DoClipMove( viewInfo, trackFocus.Get(),
         tracks, isSyncLocked, right );

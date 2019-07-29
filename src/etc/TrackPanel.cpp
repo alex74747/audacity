@@ -304,8 +304,8 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
                     this);
 
    auto theProject = GetProject();
-   theProject->Bind(
-      EVT_PROJECT_SETTINGS_CHANGE, &TrackPanel::OnProjectSettingsChange, this);
+   mTracks->Bind(
+      EVT_TRACKLIST_SYNC_LOCK, &TrackPanel::OnSyncLockChange, this);
    theProject->Bind(
       EVT_TRACK_FOCUS_CHANGE, &TrackPanel::OnTrackFocusChange, this );
 
@@ -456,16 +456,10 @@ void TrackPanel::OnTimer(wxTimerEvent& )
       mTimeCount = 0;
 }
 
-void TrackPanel::OnProjectSettingsChange( wxCommandEvent &event )
+void TrackPanel::OnSyncLockChange( wxCommandEvent &event )
 {
    event.Skip();
-   switch ( static_cast<ProjectSettings::EventCode>( event.GetInt() ) ) {
-   case ProjectSettings::ChangedSyncLock:
-      Refresh(false);
-      break;
-   default:
-      break;
-   }
+   Refresh(false);
 }
 
 void TrackPanel::OnUndoReset( wxCommandEvent &event )

@@ -36,6 +36,7 @@ and TimeTrack.
 #include <wx/log.h>
 
 #include "CommonTrackPanelCell.h"
+#include "Prefs.h"
 #include "Project.h"
 #include "ProjectSettings.h"
 #include "DirManager.h"
@@ -249,12 +250,8 @@ namespace {
 bool Track::IsSyncLockSelected() const
 {
 #ifdef EXPERIMENTAL_SYNC_LOCK
-   auto pList = mList.lock();
-   if (!pList)
-      return false;
-
-   auto p = pList->GetOwner();
-   if (!p || !ProjectSettings::Get( *p ).IsSyncLocked())
+   auto pOwner = GetOwner();
+   if (!pOwner || !pOwner->IsSyncLocked())
       return false;
 
    auto shTrack = this->SubstituteOriginalTrack();
@@ -488,6 +485,7 @@ wxDEFINE_EVENT(EVT_TRACKLIST_PERMUTED, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_RESIZING, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_ADDITION, TrackListEvent);
 wxDEFINE_EVENT(EVT_TRACKLIST_DELETION, TrackListEvent);
+wxDEFINE_EVENT(EVT_TRACKLIST_SYNC_LOCK, TrackListEvent);
 
 // same value as in the default constructed TrackId:
 long TrackList::sCounter = -1;
@@ -510,6 +508,9 @@ TrackList::TrackList( AudacityProject *pOwner )
 :  wxEvtHandler()
 , mOwner{ pOwner }
 {
+#ifdef EXPERIMENTAL_SYNC_LOCK
+   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &mSyncLocked, false);
+#endif
 }
 
 // Factory function
@@ -656,6 +657,22 @@ auto TrackList::FindLeader( Track *pTrack )
    while( *iter && ! ( *iter )->IsLeader() )
       --iter;
    return iter.Filter( &Track::IsLeader );
+}
+
+bool TrackList::IsSyncLocked() const
+{
+   return mSyncLocked;
+}
+
+void TrackList::SetSyncLocked( bool value )
+{
+#ifdef EXPERIMENTAL_SYNC_LOCK
+   if ( mSyncLocked != value ) {
+      mSyncLocked = value;
+      // wxWidgets will own the event object
+      QueueEvent( safenew TrackListEvent{ EVT_TRACKLIST_SYNC_LOCK } );
+   }
+#endif
 }
 
 void TrackList::Permute(const std::vector<TrackNodePointer> &permutation)

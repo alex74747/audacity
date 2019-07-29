@@ -16,7 +16,6 @@
 #include "Menus.h"
 #include "Project.h"
 #include "ProjectHistory.h"
-#include "ProjectSettings.h"
 #include "SelectionState.h"
 #include "TrackPanelAx.h"
 #include "TrackPanel.h"
@@ -95,11 +94,10 @@ void DoListSelection
 {
    auto &tracks = TrackList::Get( project );
    auto &selectionState = SelectionState::Get( project );
-   const auto &settings = ProjectSettings::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    auto &window = GetProjectFrame( project );
 
-   auto isSyncLocked = settings.IsSyncLocked();
+   auto isSyncLocked = tracks.IsSyncLocked();
 
    selectionState.HandleListSelection(
       tracks, viewInfo, *t,

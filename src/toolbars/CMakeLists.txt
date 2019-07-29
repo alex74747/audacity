@@ -6,7 +6,7 @@ do_directory(
       src/track
 
    PRIVATE
-      #src/utility/math
+      src/utility/math
       src/utility/registries
       src/widgets/etc
       src/widgets/theme

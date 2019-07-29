@@ -1568,14 +1568,14 @@ void ToolManager::ModifyAllProjectToolbarMenus()
 }
 
 #include "CommandManager.h"
-#include "ProjectSettings.h"
+#include "Track.h"
 void ToolManager::ModifyToolbarMenus(AudacityProject &project)
 {
    // Refreshes can occur during shutdown and the toolmanager may already
    // be deleted, so protect against it.
    auto &toolManager = ToolManager::Get( project );
 
-   auto &settings = ProjectSettings::Get( project );
+   auto &tracks = TrackList::Get( project );
 
    // Now, go through each toolbar, and call EnableDisableButtons()
    for (int i = 0; i < ToolBarCount; i++) {
@@ -1589,7 +1589,7 @@ void ToolManager::ModifyToolbarMenus(AudacityProject &project)
    bool active;
 
    gPrefs->Read(wxT("/GUI/SyncLockTracks"), &active, false);
-   settings.SetSyncLock(active);
+   tracks.SetSyncLocked(active);
 
    CommandManager::Get( project ).UpdateCheckmarks( project );
 }

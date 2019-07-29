@@ -30,7 +30,6 @@
 
 #include "Prefs.h"
 #include "Project.h"
-#include "ProjectSettings.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "WaveTrack.h"
@@ -335,8 +334,7 @@ bool EffectTruncSilence::ProcessIndependently()
 {
    unsigned nGroups = 0;
 
-   const auto &settings = ProjectSettings::Get( *FindProject() );
-   const bool syncLock = settings.IsSyncLocked();
+   const bool syncLock = inputTracks()->IsSyncLocked();
 
    // Check if it's permissible
    {
