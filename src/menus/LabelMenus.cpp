@@ -2,7 +2,6 @@
 #include "../Clipboard.h"
 #include "../CommonCommandFlags.h"
 #include "../LabelTrack.h"
-#include "../Menus.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
@@ -18,6 +17,7 @@
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
 #include "../tracks/labeltrack/ui/LabelTrackView.h"
+#include "toolbars/ToolManager.h"
 
 // private helper classes and functions
 namespace {
@@ -383,7 +383,7 @@ void OnToggleTypeToCreateLabel(const CommandContext &WXUNUSED(context) )
    gPrefs->Read(wxT("/GUI/TypeToCreateLabel"), &typeToCreateLabel, false);
    gPrefs->Write(wxT("/GUI/TypeToCreateLabel"), !typeToCreateLabel);
    gPrefs->Flush();
-   MenuManager::ModifyAllProjectToolbarMenus();
+   ToolManager::ModifyAllProjectToolbarMenus();
 }
 
 void OnCutLabels(const CommandContext &context)

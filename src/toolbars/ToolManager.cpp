@@ -461,6 +461,8 @@ void ToolManager::CreateWindows()
    ReadConfig();
 
    wxEvtHandler::AddFilter(this);
+
+   parent->Bind( EVT_MENU_UPDATE, &ToolManager::OnMenuUpdate, this );
 }
 
 //
@@ -548,7 +550,7 @@ void ToolManager::OnResetToolBars(const CommandContext &context)
    auto &toolManager = ToolManager::Get( project );
 
    toolManager.Reset();
-   MenuManager::Get(project).ModifyToolbarMenus(project);
+   ToolManager::Get(project).ModifyToolbarMenus(project);
 }
 
 
@@ -1332,6 +1334,12 @@ void ToolManager::OnCaptureLost( wxMouseCaptureLostEvent & event )
    OnMouse(e);
 }
 
+void ToolManager::OnMenuUpdate( wxCommandEvent &event )
+{
+   event.Skip();
+   ModifyToolbarMenus( *mParent );
+}
+
 //
 // Watch for shift key changes
 //
@@ -1555,8 +1563,40 @@ bool ToolManager::RestoreFocus()
    return false;
 }
 
-#include "../commands/CommandContext.h"
-#include "../Menus.h"
+void ToolManager::ModifyAllProjectToolbarMenus()
+{
+   for (auto pProject : AllProjects{}) {
+      auto &project = *pProject;
+      ToolManager::Get(project).ModifyToolbarMenus(project);
+   }
+}
+
+#include "../commands/CommandManager.h"
+#include "../ProjectSettings.h"
+void ToolManager::ModifyToolbarMenus(AudacityProject &project)
+{
+   // Refreshes can occur during shutdown and the toolmanager may already
+   // be deleted, so protect against it.
+   auto &toolManager = ToolManager::Get( project );
+
+   auto &settings = ProjectSettings::Get( project );
+
+   // Now, go through each toolbar, and call EnableDisableButtons()
+   for (int i = 0; i < ToolBarCount; i++) {
+      auto bar = toolManager.GetToolBar(i);
+      if (bar)
+         bar->EnableDisableButtons();
+   }
+
+   // These don't really belong here, but it's easier and especially so for
+   // the Edit toolbar and the sync-lock menu item.
+   bool active;
+
+   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &active, false);
+   settings.SetSyncLock(active);
+
+   CommandManager::Get( project ).UpdateCheckmarks( project );
+}
 
 AttachedToolBarMenuItem::AttachedToolBarMenuItem(
    ToolBarID id, const CommandID &name, const TranslatableString &label_in,
@@ -1589,5 +1629,5 @@ void AttachedToolBarMenuItem::OnShowToolBar( const CommandContext &context )
    }
 
    toolManager.ShowHide(mId);
-   MenuManager::Get(project).ModifyToolbarMenus(project);
+   ToolManager::Get(project).ModifyToolbarMenus(project);
 }

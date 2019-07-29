@@ -28,6 +28,7 @@
 #include "../effects/EffectUI.h"
 #include "QualitySettings.h"
 #include "../tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
+#include "../toolbars/ToolManager.h"
 #include "ASlider.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ProgressDialog.h"
@@ -989,7 +990,7 @@ void OnSyncLock(const CommandContext &context)
    gPrefs->Flush();
 
    // Toolbar, project sync-lock handled within
-   MenuManager::ModifyAllProjectToolbarMenus();
+   ToolManager::ModifyAllProjectToolbarMenus();
 
    trackPanel.Refresh(false);
 }
