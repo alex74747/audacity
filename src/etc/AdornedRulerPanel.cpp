@@ -31,7 +31,6 @@
 #include "AudioIO.h"
 #include "CellularPanel.h"
 #include "HitTestResult.h"
-#include "Menus.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
@@ -47,6 +46,7 @@
 #include "TracksPrefs.h"
 #include "ThemePrefs.h"
 #include "ToolBar.h"
+#include "ToolManager.h"
 #include "Scrubbing.h"
 #include "TrackView.h"
 #include "AButton.h"
@@ -2373,7 +2373,7 @@ void AdornedRulerPanel::TogglePinnedHead()
 {
    bool value = !TracksPrefs::GetPinnedHeadPreference();
    TracksPrefs::SetPinnedHeadPreference(value, true);
-   MenuManager::ModifyAllProjectToolbarMenus();
+   ToolManager::ModifyAllProjectToolbarMenus();
 
    auto &project = *mProject;
    // Update button image

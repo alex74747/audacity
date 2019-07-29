@@ -1,6 +1,5 @@
 #include "Audacity.h"
 
-#include "Menus.h"
 #include "ProjectSettings.h"
 #include "CommandContext.h"
 #include "CommandManager.h"

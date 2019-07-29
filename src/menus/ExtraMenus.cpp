@@ -6,6 +6,7 @@
 #include "CommandManager.h"
 #include "MixerToolBar.h"
 #include "DeviceToolBar.h"
+#include "ToolManager.h"
 
 #include <wx/frame.h>
 
@@ -119,7 +120,7 @@ void OnFullScreen(const CommandContext &context)
    bool bChecked = !window.wxTopLevelWindow::IsFullScreen();
    window.wxTopLevelWindow::ShowFullScreen(bChecked);
 
-   MenuManager::Get(project).ModifyToolbarMenus(project);
+   ToolManager::ModifyAllProjectToolbarMenus();
 }
 
 }; // struct Handler

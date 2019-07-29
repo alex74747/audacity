@@ -33,6 +33,7 @@
 #include "ASlider.h"
 #include "AudacityMessageBox.h"
 #include "ProgressDialog.h"
+#include "ToolManager.h"
 
 #include <wx/combobox.h>
 
@@ -1085,7 +1086,7 @@ void OnSyncLock(const CommandContext &context)
    gPrefs->Flush();
 
    // Toolbar, project sync-lock handled within
-   MenuManager::ModifyAllProjectToolbarMenus();
+   ToolManager::ModifyAllProjectToolbarMenus();
 
    trackPanel.Refresh(false);
 }
