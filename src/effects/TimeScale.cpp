@@ -170,11 +170,14 @@ double EffectTimeScale::CalcPreviewInputLength(double previewLength)
    }
 }
 
-void EffectTimeScale::Preview(bool dryOnly)
+auto EffectTimeScale::MakePreviewStateRestorer() -> PreviewStateRestorer
 {
    previewSelectedDuration = Effect::GetDuration();
-   auto cleanup = valueRestorer( bPreview, true );
-   Effect::Preview(dryOnly);
+   auto oldPreview = bPreview;
+   bPreview = true;
+   return [this, oldPreview]{
+      bPreview = oldPreview;
+   };
 }
 
 bool EffectTimeScale::Process()

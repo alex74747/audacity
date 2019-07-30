@@ -311,9 +311,13 @@ protected:
    // effects need to use a different input length, so override this method.
    virtual double CalcPreviewInputLength(double previewLength);
 
+   // Return a function that restores the state of the effect object after
+   // computing a preview
+   using PreviewStateRestorer = std::function< void() >;
+   virtual PreviewStateRestorer MakePreviewStateRestorer();
+
    // The Effect class fully implements the Preview method for you.
-   // Only override it if you need to do preprocessing or cleanup.
-   virtual void Preview(bool dryOnly);
+   void Preview(bool dryOnly);
 
    virtual void PopulateOrExchange(ShuttleGui & S);
    virtual bool TransferDataToWindow() /* not override */;

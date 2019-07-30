@@ -2208,6 +2208,11 @@ bool Effect::IsHidden()
    return false;
 }
 
+auto Effect::MakePreviewStateRestorer() -> PreviewStateRestorer
+{
+   return []{};
+}
+
 void Effect::Preview(bool dryOnly)
 {
    if (mNumTracks == 0) { // nothing to preview

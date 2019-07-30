@@ -197,12 +197,14 @@ bool EffectAmplify::Init()
    return true;
 }
 
-void EffectAmplify::Preview(bool dryOnly)
+auto EffectAmplify::MakePreviewStateRestorer() -> PreviewStateRestorer
 {
-   auto cleanup1 = valueRestorer( mRatio );
-   auto cleanup2 = valueRestorer( mPeak );
-
-   Effect::Preview(dryOnly);
+   auto oldRatio = mRatio;
+   auto oldPeak = mPeak;
+   return [this, oldRatio, oldPeak]{
+      mRatio = oldRatio;
+      mPeak = oldPeak;
+   };
 }
 
 void EffectAmplify::PopulateOrExchange(ShuttleGui & S)

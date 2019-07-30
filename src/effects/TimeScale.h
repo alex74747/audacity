@@ -52,7 +52,7 @@ public:
    // Effect implementation
 
    bool Init() override;
-   void Preview(bool dryOnly) override;
+   PreviewStateRestorer MakePreviewStateRestorer() override;
    bool Process() override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;
