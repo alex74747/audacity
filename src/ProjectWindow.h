@@ -11,6 +11,7 @@ Paul Licameli split from AudacityProject.h
 #ifndef __AUDACITY_PROJECT_WINDOW__
 #define __AUDACITY_PROJECT_WINDOW__
 
+#include <functional>
 #include <memory>
 #include "ProjectWindowBase.h" // to inherit
 #include "TrackPanelListener.h" // to inherit
@@ -23,6 +24,45 @@ class wxPanel;
 
 class ProjectWindow;
 void InitProjectWindow( ProjectWindow &window );
+
+#include "ClientData.h"
+class PlaybackScroller final
+   : public wxEvtHandler
+   , public ClientData::Base
+{
+public:
+   static PlaybackScroller &Get( AudacityProject &project );
+   static const PlaybackScroller &Get( const AudacityProject &project );
+
+   explicit PlaybackScroller(AudacityProject &project);
+
+   bool MayScrollBeyondZero() const;
+
+   enum class Mode {
+      Off,
+      Refresh,
+      Pinned,
+      Right,
+   };
+
+   Mode GetMode() const { return mMode; }
+   void Activate(Mode mode)
+   {
+      mMode = mode;
+   }
+
+   double GetRecentStreamTime() const { return mRecentStreamTime; }
+
+private:
+   void OnTimer(wxCommandEvent &event);
+
+   AudacityProject &mProject;
+   Mode mMode { Mode::Off };
+
+   // During timer update, grab the volatile stream time just once, so that
+   // various other drawing code can use the exact same value.
+   double mRecentStreamTime{ -1.0 };
+};
 
 ///\brief A top-level window associated with a project, and handling scrollbars
 /// and zooming
@@ -56,38 +96,6 @@ public:
    wxPanel *GetTopPanel() { return mTopPanel; }
 
    void UpdateStatusWidths();
-
-   class PlaybackScroller final : public wxEvtHandler
-   {
-   public:
-      explicit PlaybackScroller(AudacityProject *project);
-
-      enum class Mode {
-         Off,
-         Refresh,
-         Pinned,
-         Right,
-      };
-
-      Mode GetMode() const { return mMode; }
-      void Activate(Mode mode)
-      {
-         mMode = mode;
-      }
-
-      double GetRecentStreamTime() const { return mRecentStreamTime; }
-
-   private:
-      void OnTimer(wxCommandEvent &event);
-
-      AudacityProject *mProject;
-      Mode mMode { Mode::Off };
-
-      // During timer update, grab the volatile stream time just once, so that
-      // various other drawing code can use the exact same value.
-      double mRecentStreamTime{ -1.0 };
-   };
-   PlaybackScroller &GetPlaybackScroller() { return *mPlaybackScroller; }
 
    void SetNormalizedWindowState(wxRect pSizeAndLocation) {  mNormalizedWindowState = pSizeAndLocation;   }
    wxRect GetNormalizedWindowState() const { return mNormalizedWindowState;   }
@@ -123,6 +131,11 @@ public:
 
    void FinishAutoScroll();
    void FixScrollbars();
+
+   // Set a function that returns true when scrolling left of zero is enabled;
+   // default is always false.
+   void SetMayScrollBeyondZero( const std::function< bool() > &pred )
+      { mMayScrollBeyondZero = pred; }
 
    bool MayScrollBeyondZero() const;
    double ScrollingLowerBoundTime() const;
@@ -196,9 +209,7 @@ private:
    bool mIsDeleting{ false };
 
 private:
-
-   std::unique_ptr<PlaybackScroller> mPlaybackScroller;
-
+   std::function< bool() > mMayScrollBeyondZero;
    DECLARE_EVENT_TABLE()
 };
 

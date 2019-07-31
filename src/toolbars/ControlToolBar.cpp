@@ -750,8 +750,8 @@ void ControlToolBar::StartScrollingIfPreferred()
       // doing this causes wheel rotation events (mapped from the double finger vertical
       // swipe) to be delivered more uniformly to the application, so that speed control
       // works better.
-      ProjectWindow::Get( mProject ).GetPlaybackScroller().Activate
-         (ProjectWindow::PlaybackScroller::Mode::Refresh);
+      PlaybackScroller::Get( mProject )
+         .Activate( PlaybackScroller::Mode::Refresh );
    }
 #endif
    else
@@ -760,7 +760,7 @@ void ControlToolBar::StartScrollingIfPreferred()
 
 void ControlToolBar::StartScrolling()
 {
-   using Mode = ProjectWindow::PlaybackScroller::Mode;
+   using Mode = PlaybackScroller::Mode;
    const auto project = &mProject;
    if (project) {
       auto mode = Mode::Pinned;
@@ -793,7 +793,7 @@ void ControlToolBar::StartScrolling()
       }
 #endif
 
-      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate(mode);
+      PlaybackScroller::Get( *project ).Activate(mode);
    }
 }
 
@@ -801,8 +801,8 @@ void ControlToolBar::StopScrolling()
 {
    const auto project = &mProject;
    if(project)
-      ProjectWindow::Get( *project ).GetPlaybackScroller().Activate
-         (ProjectWindow::PlaybackScroller::Mode::Off);
+      PlaybackScroller::Get( *project )
+         .Activate( PlaybackScroller::Mode::Off );
 }
 
 static RegisteredToolbarFactory factory{ TransportBarID,

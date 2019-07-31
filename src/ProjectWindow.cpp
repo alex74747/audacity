@@ -38,6 +38,23 @@ Paul Licameli split from AudacityProject.cpp
 #include <wx/scrolbar.h>
 #include <wx/sizer.h>
 
+AudacityProject::AttachedObjects::RegisteredFactory sPlaybackScrollerKey{
+   []( AudacityProject &project ){
+      return std::make_shared< PlaybackScroller >( project );
+   }
+};
+
+PlaybackScroller &PlaybackScroller::Get( AudacityProject &project )
+{
+   return
+      project.AttachedObjects::Get< PlaybackScroller >( sPlaybackScrollerKey );
+}
+
+const PlaybackScroller &PlaybackScroller::Get( const AudacityProject &project )
+{
+   return Get( const_cast< AudacityProject & >( project ) );
+}
+
 // Returns the screen containing a rectangle, or -1 if none does.
 int ScreenContaining( wxRect & r ){
    unsigned int n = wxDisplay::GetCount();
@@ -496,8 +513,6 @@ ProjectWindow::ProjectWindow(wxWindow * parent, wxWindowID id,
 
    mMainPage = pPage;
 
-   mPlaybackScroller = std::make_unique<PlaybackScroller>( &project );
-
    // PRL: Old comments below.  No longer observing the ordering that it
    //      recommends.  ProjectWindow::OnActivate puts the focus directly into
    //      the TrackPanel, which avoids the problems.
@@ -751,7 +766,7 @@ void ProjectWindow::OnScrollRightButton(wxScrollEvent & /*event*/)
 }
 
 
-bool ProjectWindow::MayScrollBeyondZero() const
+bool PlaybackScroller::MayScrollBeyondZero() const
 {
    auto &project = mProject;
    auto &scrubber = Scrubber::Get( project );
@@ -761,15 +776,18 @@ bool ProjectWindow::MayScrollBeyondZero() const
 
    if (scrubber.HasMark() ||
        ProjectAudioIO::Get( project ).IsAudioActive()) {
-      if (mPlaybackScroller) {
-         auto mode = mPlaybackScroller->GetMode();
-         if (mode == PlaybackScroller::Mode::Pinned ||
-             mode == PlaybackScroller::Mode::Right)
-            return true;
-      }
+      auto mode = GetMode();
+      if ( mode == Mode::Pinned || mode == Mode::Right )
+         return true;
    }
 
    return false;
+}
+
+
+bool ProjectWindow::MayScrollBeyondZero() const
+{
+   return mMayScrollBeyondZero && mMayScrollBeyondZero();
 }
 
 double ProjectWindow::ScrollingLowerBoundTime() const
@@ -1513,15 +1531,18 @@ void ProjectWindow::TP_HandleResize()
    HandleResize();
 }
 
-ProjectWindow::PlaybackScroller::PlaybackScroller(AudacityProject *project)
-: mProject(project)
+PlaybackScroller::PlaybackScroller( AudacityProject &project )
+: mProject{ project }
 {
-   mProject->Bind(EVT_TRACK_PANEL_TIMER,
+   mProject.Bind(EVT_TRACK_PANEL_TIMER,
       &PlaybackScroller::OnTimer,
       this);
+
+   ProjectWindow::Get( project )
+      .SetMayScrollBeyondZero( [this]{ return MayScrollBeyondZero(); } );
 }
 
-void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
+void PlaybackScroller::OnTimer(wxCommandEvent &event)
 {
    // Let other listeners get the notification
    event.Skip();
@@ -1534,7 +1555,7 @@ void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
       this->SafelyProcessEvent( event );
    });
 
-   if(!ProjectAudioIO::Get( *mProject ).IsAudioActive())
+   if(!ProjectAudioIO::Get( mProject ).IsAudioActive())
       return;
    else if (mMode == Mode::Refresh) {
       // PRL:  see comments in Scrubbing.cpp for why this is sometimes needed.
@@ -1542,15 +1563,15 @@ void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
       // to the application, so scrub speed control is smoother.
       // (So I see at least with OS 10.10 and wxWidgets 3.0.2.)
       // Is there another way to ensure that than by refreshing?
-      auto &trackPanel = GetProjectPanel( *mProject );
+      auto &trackPanel = GetProjectPanel( mProject );
       trackPanel.Refresh(false);
    }
    else if (mMode != Mode::Off) {
       // Pan the view, so that we put the play indicator at some fixed
       // fraction of the window width.
 
-      auto &viewInfo = ViewInfo::Get( *mProject );
-      auto &trackPanel = GetProjectPanel( *mProject );
+      auto &viewInfo = ViewInfo::Get( mProject );
+      auto &trackPanel = GetProjectPanel( mProject );
       const int posX = viewInfo.TimeToPosition(mRecentStreamTime);
       auto width = viewInfo.GetTracksUsableWidth();
       int deltaX;
@@ -1568,7 +1589,7 @@ void ProjectWindow::PlaybackScroller::OnTimer(wxCommandEvent &event)
       }
       viewInfo.h =
          viewInfo.OffsetTimeByPixels(viewInfo.h, deltaX, true);
-      if (!ProjectWindow::Get( *mProject ).MayScrollBeyondZero())
+      if (!MayScrollBeyondZero())
          // Can't scroll too far left
          viewInfo.h = std::max(0.0, viewInfo.h);
       trackPanel.Refresh(false);

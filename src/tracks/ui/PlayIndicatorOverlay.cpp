@@ -140,7 +140,7 @@ static const AudacityProject::AttachedObjects::RegisteredFactory sOverlayKey{
 PlayIndicatorOverlay::PlayIndicatorOverlay(AudacityProject *project)
 : PlayIndicatorOverlayBase(project, true)
 {
-   ProjectWindow::Get( *mProject ).GetPlaybackScroller().Bind(
+   PlaybackScroller::Get( *mProject ).Bind(
       EVT_TRACK_PANEL_TIMER,
       &PlayIndicatorOverlay::OnTimer,
       this);
@@ -175,11 +175,11 @@ void PlayIndicatorOverlay::OnTimer(wxCommandEvent &event)
    }
    else {
       auto &window = ProjectWindow::Get( *mProject );
-      auto &scroller = window.GetPlaybackScroller();
+      const auto &scroller = PlaybackScroller::Get( *mProject );
       // Calculate the horizontal position of the indicator
       const double playPos = scroller.GetRecentStreamTime();
 
-      using Mode = ProjectWindow::PlaybackScroller::Mode;
+      using Mode = PlaybackScroller::Mode;
       const Mode mode = scroller.GetMode();
       const bool pinned = ( mode == Mode::Pinned || mode == Mode::Right );
 
