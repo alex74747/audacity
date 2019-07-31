@@ -25,45 +25,6 @@ class wxPanel;
 class ProjectWindow;
 void InitProjectWindow( ProjectWindow &window );
 
-#include "ClientData.h"
-class PlaybackScroller final
-   : public wxEvtHandler
-   , public ClientData::Base
-{
-public:
-   static PlaybackScroller &Get( AudacityProject &project );
-   static const PlaybackScroller &Get( const AudacityProject &project );
-
-   explicit PlaybackScroller(AudacityProject &project);
-
-   bool MayScrollBeyondZero() const;
-
-   enum class Mode {
-      Off,
-      Refresh,
-      Pinned,
-      Right,
-   };
-
-   Mode GetMode() const { return mMode; }
-   void Activate(Mode mode)
-   {
-      mMode = mode;
-   }
-
-   double GetRecentStreamTime() const { return mRecentStreamTime; }
-
-private:
-   void OnTimer(wxCommandEvent &event);
-
-   AudacityProject &mProject;
-   Mode mMode { Mode::Off };
-
-   // During timer update, grab the volatile stream time just once, so that
-   // various other drawing code can use the exact same value.
-   double mRecentStreamTime{ -1.0 };
-};
-
 ///\brief A top-level window associated with a project, and handling scrollbars
 /// and zooming
 class AUDACITY_DLL_API ProjectWindow final : public ProjectWindowBase
