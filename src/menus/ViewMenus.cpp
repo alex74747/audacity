@@ -1,9 +1,11 @@
 
 
+#include "../AudioIO.h"
 #include "../CommonCommandFlags.h"
 #include "../Menus.h"
 #include "../Prefs.h"
 #include "../Project.h"
+#include "../ProjectAudioIO.h"
 #include "../ProjectHistory.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
@@ -172,7 +174,21 @@ void OnZoomIn(const CommandContext &context)
    auto &project = context.project;
    auto &trackPanel = TrackPanel::Get( project );
    auto &window = ProjectWindow::Get( project );
-   window.ZoomInByFactor( 2.0 );
+   auto gAudioIO = AudioIO::Get();
+
+   constexpr auto ZoomFactor = 2.0;
+
+   // LLL: Handling positioning differently when audio is
+   // actively playing.  Don't do this if paused.
+   if (gAudioIO->IsStreamActive(
+         ProjectAudioIO::Get( project ).GetAudioIOToken()) &&
+       !gAudioIO->IsPaused()){
+      window.ZoomBy( ZoomFactor );
+      window.ScrollIntoView( gAudioIO->GetStreamTime() );
+   }
+   else
+      window.ZoomInByFactor( ZoomFactor );
+
    trackPanel.Refresh(false);
 }
 

@@ -2566,6 +2566,9 @@ unsigned operator()
          double ZoomFactor = pow(2.0, steps);
          AudacityProject *p = GetProject();
          if( steps > 0 ) {
+            // PRL:  If this code is enabled again, consider whether the
+            // logic lifted into OnZoom in ViewMenus.cpp, to do differently
+            // in case of playing, should be replicated here
             p->ZoomInByFactor( ZoomFactor );
             TrackPanel::Get( *p ).Refresh( false );
          }
