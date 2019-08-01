@@ -31,6 +31,7 @@
 
 class wxRect;
 
+class SelectedRegionEvent;
 class SpectrumAnalyst;
 class Track;
 class TrackList;
@@ -97,6 +98,7 @@ class AUDACITY_DLL_API TrackPanel final
    void OnIdle(wxIdleEvent & event);
    void OnTimer(wxTimerEvent& event);
    void OnProjectSettingsChange(wxCommandEvent &event);
+   void OnSelectionChange(SelectedRegionEvent& evt);
    void OnTrackFocusChange( wxCommandEvent &event );
 
    void OnUndoReset( wxCommandEvent &event );
@@ -128,9 +130,6 @@ class AUDACITY_DLL_API TrackPanel final
 
 public:
    size_t GetSelectedTrackCount() const;
-
-protected:
-   void UpdateSelectionDisplay();
 
 public:
    void MakeParentRedrawScrollbars();

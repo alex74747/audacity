@@ -316,6 +316,10 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    wxTheApp->Bind(EVT_AUDIOIO_CAPTURE,
                      &TrackPanel::OnAudioIO,
                      this);
+
+   mViewInfo->selectedRegion.Bind(EVT_SELECTED_REGION_CHANGE,
+      &TrackPanel::OnSelectionChange, this);
+
    UpdatePrefs();
 }
 
@@ -417,9 +421,6 @@ void TrackPanel::OnTimer(wxTimerEvent& )
       projectAudioIO.SetAudioIOToken(0);
       window.RedrawProject();
    }
-   if (mLastDrawnSelectedRegion != mViewInfo->selectedRegion) {
-      UpdateSelectionDisplay();
-   }
 
    // Notify listeners for timer ticks
    {
@@ -443,6 +444,22 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    }
    if(mTimeCount > 1000)
       mTimeCount = 0;
+}
+
+void TrackPanel::OnSelectionChange(SelectedRegionEvent& evt)
+{
+   evt.Skip();
+   if (!evt.pRegion)
+      return;
+   auto &selectedRegion = *evt.pRegion;
+   if ( mLastDrawnSelectedRegion != selectedRegion ) {
+      if ( mLastDrawnSelectedRegion.isPoint() && selectedRegion.isPoint() ) {
+         mLastDrawnSelectedRegion = selectedRegion;
+         DrawOverlays( false );
+      }
+      else
+         Refresh( false );
+   }
 }
 
 void TrackPanel::OnProjectSettingsChange( wxCommandEvent &event )
@@ -619,16 +636,6 @@ void TrackPanel::UpdateStatusMessage( const TranslatableString &st )
       /* i18n-hint Esc is a key on the keyboard */
       status.Join( XO("(Esc to cancel)"), " " );
    ProjectStatus::Get( *GetProject() ).Set( status );
-}
-
-void TrackPanel::UpdateSelectionDisplay()
-{
-   // Full refresh since the label area may need to indicate
-   // newly selected tracks.
-   Refresh(false);
-
-   // Make sure the ruler follows suit.
-   mRuler->DrawSelection();
 }
 
 // Counts selected tracks, counting stereo tracks as one track.
