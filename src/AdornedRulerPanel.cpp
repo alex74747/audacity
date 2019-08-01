@@ -956,6 +956,8 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
 
    // And call it once to initialize it
    DoSelectionChange( mViewInfo->selectedRegion );
+
+   project->Bind( EVT_PROJECT_TIMER, &AdornedRulerPanel::OnTimer, this );
 }
 
 AdornedRulerPanel::~AdornedRulerPanel()
@@ -1248,6 +1250,13 @@ void AdornedRulerPanel::OnThemeChange(wxCommandEvent& evt)
 {
    evt.Skip();
    ReCreateButtons();
+}
+
+/// AS: This gets called on our wx timer events.
+void AdornedRulerPanel::OnTimer( wxCommandEvent &evt )
+{
+   evt.Skip();
+   DrawOverlays(false);
 }
 
 void AdornedRulerPanel::OnSelectionChange(SelectedRegionEvent& evt)

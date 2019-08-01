@@ -367,7 +367,6 @@ void TrackPanel::OnTimer( wxCommandEvent &evt )
 {
    evt.Skip();
    DrawOverlays(false);
-   mRuler->DrawOverlays(false);
 }
 
 void TrackPanel::OnSelectionChange(SelectedRegionEvent& evt)
