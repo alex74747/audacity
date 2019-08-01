@@ -58,7 +58,7 @@ ScrubbingOverlay::ScrubbingOverlay(AudacityProject *project)
    , mLastScrubSpeedText()
    , mNextScrubSpeedText()
 {
-   mProject->Bind(EVT_TRACK_PANEL_TIMER,
+   mProject->Bind(EVT_PROJECT_TIMER,
       &ScrubbingOverlay::OnTimer,
       this);
 }

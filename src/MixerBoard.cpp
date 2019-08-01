@@ -44,7 +44,7 @@
 #include "ProjectWindow.h"
 #include "SelectUtilities.h"
 #include "Theme.h"
-#include "TrackPanel.h" // for EVT_TRACK_PANEL_TIMER
+#include "TrackPanel.h"
 #include "TrackUtilities.h"
 #include "UndoManager.h"
 #include "WaveTrack.h"
@@ -916,7 +916,7 @@ MixerBoard::MixerBoard(AudacityProject* pProject,
    mTracks = &TrackList::Get( *mProject );
 
    // Events from the project don't propagate directly to this other frame, so...
-   mProject->Bind(EVT_TRACK_PANEL_TIMER,
+   mProject->Bind(EVT_PROJECT_TIMER,
       &MixerBoard::OnTimer,
       this);
 

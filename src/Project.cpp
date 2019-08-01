@@ -20,7 +20,7 @@
 #include <wx/filename.h>
 #include <wx/frame.h>
 
-wxDEFINE_EVENT(EVT_TRACK_PANEL_TIMER, wxCommandEvent);
+wxDEFINE_EVENT(EVT_PROJECT_TIMER, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PROJECT_ACTIVATION, wxCommandEvent);
 
 size_t AllProjects::size() const

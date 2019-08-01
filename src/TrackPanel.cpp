@@ -424,7 +424,7 @@ void TrackPanel::OnTimer(wxTimerEvent& )
 
    // Notify listeners for timer ticks
    {
-      wxCommandEvent e(EVT_TRACK_PANEL_TIMER);
+      wxCommandEvent e(EVT_PROJECT_TIMER);
       p->ProcessEvent(e);
    }
 

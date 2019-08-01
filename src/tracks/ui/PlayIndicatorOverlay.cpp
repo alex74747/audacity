@@ -142,7 +142,7 @@ PlayIndicatorOverlay::PlayIndicatorOverlay(AudacityProject *project)
 : PlayIndicatorOverlayBase(project, true)
 {
    PlaybackScroller::Get( *mProject ).Bind(
-      EVT_TRACK_PANEL_TIMER,
+      EVT_PROJECT_TIMER,
       &PlayIndicatorOverlay::OnTimer,
       this);
 }

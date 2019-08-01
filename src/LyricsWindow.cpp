@@ -135,7 +135,7 @@ LyricsWindow::LyricsWindow(AudacityProject *parent)
    //}
 
    // Events from the project don't propagate directly to this other frame, so...
-   mProject->Bind(EVT_TRACK_PANEL_TIMER,
+   mProject->Bind(EVT_PROJECT_TIMER,
       &LyricsWindow::OnTimer,
       this);
    Center();

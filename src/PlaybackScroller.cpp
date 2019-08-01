@@ -56,7 +56,7 @@ bool PlaybackScroller::MayScrollBeyondZero() const
 PlaybackScroller::PlaybackScroller( AudacityProject &project )
 : mProject{ project }
 {
-   mProject.Bind(EVT_TRACK_PANEL_TIMER,
+   mProject.Bind(EVT_PROJECT_TIMER,
       &PlaybackScroller::OnTimer,
       this);
 

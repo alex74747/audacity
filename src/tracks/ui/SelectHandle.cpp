@@ -1058,7 +1058,7 @@ public:
       , mConnectedProject{ pProject }
    {
       if (mConnectedProject)
-         mConnectedProject->Bind(EVT_TRACK_PANEL_TIMER,
+         mConnectedProject->Bind(EVT_PROJECT_TIMER,
             &SelectHandle::TimerHandler::OnTimer,
             this);
    }
