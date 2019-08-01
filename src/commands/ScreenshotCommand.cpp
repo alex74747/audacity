@@ -671,10 +671,10 @@ wxRect ScreenshotCommand::GetScreenRect(){
    return wxRect( 0,0,width,height);
 }
 
-wxRect ScreenshotCommand::GetPanelRect(TrackPanel * panel){
-   //AdornedRulerPanel *ruler = panel->mRuler;
+wxRect ScreenshotCommand::GetPanelRect(
+   AdornedRulerPanel *ruler, TrackPanel * panel){
 
-   int h = panel->GetRuler()->GetRulerHeight();
+   int h = ruler->GetRulerHeight();
    int x = 0, y = -h;
    int width, height;
 
@@ -773,7 +773,7 @@ bool ScreenshotCommand::Apply(const CommandContext & context)
       return false;
 
    TrackPanel *panel = &TrackPanel::Get( context.project );
-   AdornedRulerPanel *ruler = panel->GetRuler();
+   AdornedRulerPanel *ruler = &AdornedRulerPanel::Get( context.project );
 
    int nTracks = TrackList::Get( context.project ).size();
 
@@ -831,7 +831,7 @@ bool ScreenshotCommand::Apply(const CommandContext & context)
    case kscrub:
       return CaptureToolbar(context, &toolManager, ScrubbingBarID, mFileName);
    case ktrackpanel:
-      return Capture(context, mFileName, panel, GetPanelRect(panel));
+      return Capture(context, mFileName, panel, GetPanelRect(ruler, panel));
    case kruler:
       return Capture(context, mFileName, ruler, GetRulerRect(ruler) );
    case ktracks:

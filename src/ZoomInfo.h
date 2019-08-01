@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_ZOOM_INFO__
 #define __AUDACITY_ZOOM_INFO__
 
+#include <wx/event.h> // to inherit
 #include "ClientData.h" // to inherit
 #include "Prefs.h" // to inherit
 
@@ -36,13 +37,17 @@ enum : int {
    kTrackInfoWidth = 100 - kLeftMargin,
 };
 
+wxDECLARE_EXPORTED_EVENT( AUDACITY_DLL_API,
+   EVT_VRULER_WIDTH_CHANGE, wxCommandEvent );
+
 // The subset of ViewInfo information (other than selection)
 // that is sufficient for purposes of TrackArtist,
 // and for computing conversions between track times and pixel positions.
 class AUDACITY_DLL_API ZoomInfo /* not final */
    // Note that ViewInfo inherits from ZoomInfo but there are no virtual functions.
    // That's okay if we pass always by reference and never copy, suffering "slicing."
-   : public ClientData::Base
+   : public wxEvtHandler
+   , public ClientData::Base
    , protected PrefsListener
 {
 public:
@@ -96,7 +101,7 @@ public:
    void SetWidth( int width ) { mWidth = width; }
 
    int GetVRulerWidth() const { return mVRulerWidth; }
-   void SetVRulerWidth( int width ) { mVRulerWidth = width; }
+   void SetVRulerWidth( int width ); // emits an event from this
    int GetVRulerOffset() const { return kTrackInfoWidth + kLeftMargin; }
    int GetLabelWidth() const { return GetVRulerOffset() + GetVRulerWidth(); }
    int GetLeftOffset() const { return GetLabelWidth() + 1;}

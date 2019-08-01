@@ -13,7 +13,6 @@
 
 #include <utility>
 #include <vector>
-#include <wx/event.h> // inherit wxEvtHandler
 #include <wx/weakref.h> // member variable
 #include "SelectedRegion.h"
 #include <memory>
@@ -168,7 +167,7 @@ private:
 };
 
 class AUDACITY_DLL_API ViewInfo final
-   : public wxEvtHandler, public ZoomInfo
+   : public ZoomInfo
 {
 public:
    static ViewInfo &Get( AudacityProject &project );

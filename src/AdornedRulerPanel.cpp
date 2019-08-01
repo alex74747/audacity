@@ -958,6 +958,9 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
    DoSelectionChange( mViewInfo->selectedRegion );
 
    project->Bind( EVT_PROJECT_TIMER, &AdornedRulerPanel::OnTimer, this );
+   
+   viewinfo->Bind(
+      EVT_VRULER_WIDTH_CHANGE, &AdornedRulerPanel::OnVRulerWidthChange, this );
 }
 
 AdornedRulerPanel::~AdornedRulerPanel()
@@ -1257,6 +1260,13 @@ void AdornedRulerPanel::OnTimer( wxCommandEvent &evt )
 {
    evt.Skip();
    DrawOverlays(false);
+}
+
+void AdornedRulerPanel::OnVRulerWidthChange( wxCommandEvent &evt )
+{
+   evt.Skip();
+   SetLeftOffset( mViewInfo->GetLeftOffset() );  // bevel on AdornedRuler
+   Refresh();
 }
 
 void AdornedRulerPanel::OnSelectionChange(SelectedRegionEvent& evt)

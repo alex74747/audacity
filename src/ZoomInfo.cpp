@@ -15,6 +15,8 @@
 
 #include "prefs/GUISettings.h"
 
+wxDEFINE_EVENT(EVT_VRULER_WIDTH_CHANGE, wxCommandEvent);
+
 namespace {
 static const double gMaxZoom = 6000000;
 static const double gMinZoom = 0.001;
@@ -69,6 +71,13 @@ wxInt64 ZoomInfo::TimeToPosition(double projectTime,
 double ZoomInfo::TimeRangeToPixelWidth(double timeRange) const
 {
    return timeRange * zoom;
+}
+
+void ZoomInfo::SetVRulerWidth( int width )
+{
+   mVRulerWidth = width;
+   wxCommandEvent evt{ EVT_VRULER_WIDTH_CHANGE };
+   ProcessEvent( evt );
 }
 
 bool ZoomInfo::ZoomInAvailable() const

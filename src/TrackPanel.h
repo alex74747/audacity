@@ -37,9 +37,7 @@ class TrackList;
 struct TrackListEvent;
 class TrackPanel;
 class TrackArtist;
-class Ruler;
 class SnapManager;
-class AdornedRulerPanel;
 class LWSlider;
 
 class TrackPanelAx;
@@ -73,8 +71,7 @@ class AUDACITY_DLL_API TrackPanel final
               const wxSize & size,
               const std::shared_ptr<TrackList> &tracks,
               ViewInfo * viewInfo,
-              AudacityProject * project,
-              AdornedRulerPanel * ruler );
+              AudacityProject * project );
 
    virtual ~ TrackPanel();
 
@@ -146,7 +143,6 @@ public:
    TrackList * GetTracks() { return mTracks.get(); }
    ViewInfo * GetViewInfo(){ return mViewInfo;}
    TrackPanelListener * GetListener(){ return mListener;}
-   AdornedRulerPanel * GetRuler(){ return mRuler;}
 
 protected:
    void DrawTracks(wxDC * dc);
@@ -164,8 +160,6 @@ protected:
    TrackPanelListener *mListener;
 
    std::shared_ptr<TrackList> mTracks;
-
-   AdornedRulerPanel *mRuler;
 
    std::unique_ptr<TrackArtist> mTrackArtist;
 

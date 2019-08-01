@@ -87,6 +87,7 @@ private:
    void OnSize(wxSizeEvent &evt);
    void OnThemeChange(wxCommandEvent& evt);
    void OnTimer( wxCommandEvent &evt );
+   void OnVRulerWidthChange( wxCommandEvent &evt );
    void OnSelectionChange(SelectedRegionEvent& evt);
    void DoSelectionChange( const SelectedRegion &selectedRegion );
    bool UpdateRects();
