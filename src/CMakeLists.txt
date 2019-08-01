@@ -236,6 +236,7 @@ list( APPEND SOURCES
       ProjectSettings.h
       ProjectStatus.cpp
       ProjectStatus.h
+      ProjectTimer.cpp
       ProjectWindow.cpp
       ProjectWindow.h
       ProjectWindowBase.cpp
