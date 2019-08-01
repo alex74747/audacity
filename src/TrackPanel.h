@@ -17,7 +17,6 @@
 #include <vector>
 
 #include <wx/setup.h> // for wxUSE_* macros
-#include <wx/timer.h> // to inherit
 
 #include "HitTestResult.h"
 #include "Prefs.h"
@@ -95,8 +94,7 @@ class AUDACITY_DLL_API TrackPanel final
    double GetMostRecentXPos();
 
    void OnSize( wxSizeEvent & );
-   void OnIdle(wxIdleEvent & event);
-   void OnTimer(wxTimerEvent& event);
+   void OnTimer( wxCommandEvent& event );
    void OnProjectSettingsChange(wxCommandEvent &event);
    void OnSelectionChange(SelectedRegionEvent& evt);
    void OnTrackFocusChange( wxCommandEvent &event );
@@ -108,6 +106,7 @@ class AUDACITY_DLL_API TrackPanel final
       override;
 
    void RefreshTrack(Track *trk, bool refreshbacking = true);
+   void RefreshBacking() { mRefreshBacking = true; }
 
    void HandlePageUpKey();
    void HandlePageDownKey();
@@ -124,9 +123,6 @@ class AUDACITY_DLL_API TrackPanel final
    void UpdateVRuler(Track *t);
    void UpdateTrackVRuler(Track *t);
    void UpdateVRulerSize();
-
- protected:
-   bool IsAudioActive();
 
 public:
    size_t GetSelectedTrackCount() const;
@@ -173,26 +169,7 @@ protected:
 
    std::unique_ptr<TrackArtist> mTrackArtist;
 
-   class AUDACITY_DLL_API AudacityTimer final : public wxTimer {
-   public:
-     void Notify() override{
-       // (From Debian)
-       //
-       // Don't call parent->OnTimer(..) directly here, but instead post
-       // an event. This ensures that this is a pure wxWidgets event
-       // (no GDK event behind it) and that it therefore isn't processed
-       // within the YieldFor(..) of the clipboard operations (workaround
-       // for Debian bug #765341).
-       // QueueEvent() will take ownership of the event
-       parent->GetEventHandler()->QueueEvent(safenew wxTimerEvent(*this));
-     }
-     TrackPanel *parent;
-   } mTimer;
-
-   int mTimeCount;
-
    bool mRefreshBacking;
-
 
 protected:
 

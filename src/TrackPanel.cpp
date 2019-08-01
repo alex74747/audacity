@@ -166,8 +166,6 @@ BEGIN_EVENT_TABLE(TrackPanel, CellularPanel)
 
     EVT_PAINT(TrackPanel::OnPaint)
 
-    EVT_TIMER(wxID_ANY, TrackPanel::OnTimer)
-
     EVT_SIZE(TrackPanel::OnSize)
 
 END_EVENT_TABLE()
@@ -192,6 +190,54 @@ std::unique_ptr<wxCursor> MakeCursor( int WXUNUSED(CursorId), const char * const
    return std::make_unique<wxCursor>( Image );
 }
 
+
+#include <wx/timer.h> // to inherit
+class AUDACITY_DLL_API ProjectTimer final
+   : public wxTimer
+   , public wxEventFilter
+   , public ClientData::Base
+{
+public:
+
+   explicit ProjectTimer( AudacityProject &project );
+   ~ProjectTimer() override;
+
+   ProjectTimer( const ProjectTimer& ) = delete;
+   ProjectTimer &operator=( const ProjectTimer & ) = delete;
+
+   void Notify() override;
+
+   int FilterEvent(wxEvent &event) override;
+
+private:
+   void OnIdle(wxIdleEvent & event);
+
+   AudacityProject &mProject;
+   int mTimeCount{ 0 };
+};
+
+namespace {
+
+AudacityProject::AttachedObjects::RegisteredFactory sTimerKey{
+   []( AudacityProject &project ){
+      return std::make_shared< ProjectTimer >( project ); }
+};
+
+}
+
+ProjectTimer::ProjectTimer( AudacityProject &project )
+   : mProject{ project }
+{
+   // Timer is started after the window is visible
+   ProjectWindow::Get( mProject )
+      .Bind( wxEVT_IDLE, &ProjectTimer::OnIdle, this );
+   wxEvtHandler::AddFilter( this );
+}
+
+ProjectTimer::~ProjectTimer()
+{
+   wxEvtHandler::RemoveFilter( this );
+}
 
 namespace{
 
@@ -282,12 +328,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
    mTrackArtist = std::make_unique<TrackArtist>( this );
 
-   mTimeCount = 0;
-   mTimer.parent = this;
-   // Timer is started after the window is visible
-   ProjectWindow::Get( *GetProject() ).Bind(wxEVT_IDLE,
-      &TrackPanel::OnIdle, this);
-
    // Register for tracklist updates
    mTracks->Bind(EVT_TRACKLIST_RESIZING,
                     &TrackPanel::OnTrackListResizing,
@@ -310,6 +350,8 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
    theProject->Bind(EVT_UNDO_RESET, &TrackPanel::OnUndoReset, this);
 
+   theProject->Bind( EVT_PROJECT_TIMER, &TrackPanel::OnTimer, this );
+
    wxTheApp->Bind(EVT_AUDIOIO_PLAYBACK,
                      &TrackPanel::OnAudioIO,
                      this);
@@ -326,8 +368,6 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
 TrackPanel::~TrackPanel()
 {
-   mTimer.Stop();
-
    // This can happen if a label is being edited and the user presses
    // ALT+F4 or Command+Q
    if (HasCapture())
@@ -373,17 +413,18 @@ void TrackPanel::OnSize( wxSizeEvent &evt )
    mViewInfo->SetHeight( size.GetHeight() );
 }
 
-void TrackPanel::OnIdle(wxIdleEvent& event)
+void ProjectTimer::OnIdle( wxIdleEvent &event )
 {
    event.Skip();
+   auto &window = TrackPanel::Get( mProject );
    // The window must be ready when the timer fires (#1401)
-   if (IsShownOnScreen())
+   if (window.IsShownOnScreen())
    {
-      mTimer.Start(kTimerInterval, FALSE);
+      Start(kTimerInterval, FALSE);
 
       // Timer is started, we don't need the event anymore
-      GetProjectFrame( *GetProject() ).Unbind(wxEVT_IDLE,
-         &TrackPanel::OnIdle, this);
+      GetProjectFrame( mProject ).Unbind(wxEVT_IDLE,
+         &ProjectTimer::OnIdle, this);
    }
    else
    {
@@ -393,57 +434,68 @@ void TrackPanel::OnIdle(wxIdleEvent& event)
    }
 }
 
-/// AS: This gets called on our wx timer events.
-void TrackPanel::OnTimer(wxTimerEvent& )
+void ProjectTimer::Notify()
 {
    mTimeCount++;
 
-   AudacityProject *const p = GetProject();
+   AudacityProject *const p = &mProject;
+   auto &trackPanel = TrackPanel::Get( *p );
    auto &window = ProjectWindow::Get( *p );
-
+   
    auto &projectAudioIO = ProjectAudioIO::Get( *p );
    auto gAudioIO = AudioIO::Get();
-
+   
    // Check whether we were playing or recording, but the stream has stopped.
-   if (projectAudioIO.GetAudioIOToken()>0 && !IsAudioActive())
+   if (projectAudioIO.GetAudioIOToken()>0 &&
+      !projectAudioIO.IsAudioActive())
    {
       //the stream may have been started up after this one finished (by some other project)
       //in that case reset the buttons don't stop the stream
       auto &projectAudioManager = ProjectAudioManager::Get( *p );
       projectAudioManager.Stop(!gAudioIO->IsStreamActive());
    }
-
+   
    // Next, check to see if we were playing or recording
    // audio, but now Audio I/O is completely finished.
    if (projectAudioIO.GetAudioIOToken()>0 &&
-         !gAudioIO->IsAudioTokenActive(projectAudioIO.GetAudioIOToken()))
+       !gAudioIO->IsAudioTokenActive(projectAudioIO.GetAudioIOToken()))
    {
       projectAudioIO.SetAudioIOToken(0);
       window.RedrawProject();
    }
 
    // Notify listeners for timer ticks
-   {
-      wxCommandEvent e(EVT_PROJECT_TIMER);
-      p->ProcessEvent(e);
-   }
+   // (From Debian)
+   //
+   // Don't call TrackPanel::OnTimer(..) directly here, but instead post
+   // an event. This ensures that this is a pure wxWidgets event
+   // (no GDK event behind it) and that it therefore isn't processed
+   // within the YieldFor(..) of the clipboard operations (workaround
+   // for Debian bug #765341).
+   // QueueEvent() will take ownership of the event
+   p->QueueEvent( safenew wxCommandEvent{ EVT_PROJECT_TIMER } );
 
-   DrawOverlays(false);
-   mRuler->DrawOverlays(false);
-
-   if(IsAudioActive() && gAudioIO->GetNumCaptureChannels()) {
+   if(projectAudioIO.IsAudioActive() && gAudioIO->GetNumCaptureChannels()) {
 
       // Periodically update the display while recording
 
       if ((mTimeCount % 5) == 0) {
          // Must tell OnPaint() to recreate the backing bitmap
          // since we've not done a full refresh.
-         mRefreshBacking = true;
-         Refresh( false );
+         trackPanel.RefreshBacking();
+         trackPanel.Refresh( false );
       }
    }
    if(mTimeCount > 1000)
       mTimeCount = 0;
+}
+
+/// AS: This gets called on our wx timer events.
+void TrackPanel::OnTimer( wxCommandEvent &evt )
+{
+   evt.Skip();
+   DrawOverlays(false);
+   mRuler->DrawOverlays(false);
 }
 
 void TrackPanel::OnSelectionChange(SelectedRegionEvent& evt)
@@ -623,12 +675,6 @@ void TrackPanel::HandlePageDownKey()
    mListener->TP_ScrollWindow(mViewInfo->GetScreenEndTime());
 }
 
-bool TrackPanel::IsAudioActive()
-{
-   AudacityProject *p = GetProject();
-   return ProjectAudioIO::Get( *p ).IsAudioActive();
-}
-
 void TrackPanel::UpdateStatusMessage( const TranslatableString &st )
 {
    auto status = st;
@@ -719,19 +765,22 @@ void TrackPanel::OnKeyDown(wxKeyEvent & event)
    }
 }
 
-void TrackPanel::OnMouseEvent(wxMouseEvent & event)
+int ProjectTimer::FilterEvent(wxEvent &event)
 {
-   if (event.LeftDown()) {
+   if ( event.GetEventType() == wxEVT_LEFT_DOWN ) {
       // wxTimers seem to be a little unreliable, so this
       // "primes" it to make sure it keeps going for a while...
 
       // When this timer fires, we call TrackPanel::OnTimer and
       // possibly update the screen for offscreen scrolling.
-      mTimer.Stop();
-      mTimer.Start(kTimerInterval, FALSE);
+      Stop();
+      Start(kTimerInterval, FALSE);
    }
+   return Event_Skip;
+}
 
-
+void TrackPanel::OnMouseEvent(wxMouseEvent & event)
+{
    if (event.ButtonUp()) {
       //EnsureVisible should be called after processing the up-click.
       this->CallAfter( [this, event]{
