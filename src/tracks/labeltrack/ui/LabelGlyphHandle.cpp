@@ -375,7 +375,7 @@ UIHandle::Result LabelGlyphHandle::Drag
       *pProject, *mpHit, event, mRect, viewInfo, viewInfo.selectedRegion);
 
    // Refresh all so that the change of selection is redrawn in all tracks
-   return result | RefreshCode::RefreshAll | RefreshCode::DrawOverlays;
+   return result | RefreshCode::RefreshAll;
 }
 
 HitTestPreview LabelGlyphHandle::Preview
@@ -400,7 +400,7 @@ UIHandle::Result LabelGlyphHandle::Release
    }
 
    // Refresh all so that the change of selection is redrawn in all tracks
-   return result | RefreshCode::RefreshAll | RefreshCode::DrawOverlays;
+   return result | RefreshCode::RefreshAll;
 }
 
 UIHandle::Result LabelGlyphHandle::Cancel(AudacityProject *pProject)

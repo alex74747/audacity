@@ -503,11 +503,6 @@ void TrackPanel::ProcessUIHandleResult
    if (pClickedTrack && (refreshResult & RefreshCode::UpdateVRuler))
       panel->UpdateVRuler(pClickedTrack);
 
-   if (refreshResult & RefreshCode::DrawOverlays) {
-      panel->DrawOverlays(false);
-      mRuler->DrawOverlays(false);
-   }
-
    // Refresh all if told to do so, or if told to refresh a track that
    // is not known.
    const bool refreshAll =
