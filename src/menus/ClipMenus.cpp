@@ -249,7 +249,7 @@ FoundClipBoundary FindPrevClipBoundary(const WaveTrack* wt, double time)
 }
 
 int FindClipBoundaries
-(AudacityProject &project,
+(const AudacityProject &project,
  double time, bool next, std::vector<FoundClipBoundary>& finalResults)
 {
    auto &tracks = TrackList::Get( project );
@@ -396,7 +396,7 @@ void DoSelectClipBoundary(AudacityProject &project, bool next)
 }
 
 FoundClip FindNextClip
-(AudacityProject &project, const WaveTrack* wt, double t0, double t1)
+(const AudacityProject &project, const WaveTrack* wt, double t0, double t1)
 {
    (void)project;//Compiler food.
 
@@ -436,7 +436,7 @@ FoundClip FindNextClip
 }
 
 FoundClip FindPrevClip
-(AudacityProject &project, const WaveTrack* wt, double t0, double t1)
+(const AudacityProject &project, const WaveTrack* wt, double t0, double t1)
 {
    (void)project;//Compiler food.
 
@@ -478,7 +478,7 @@ FoundClip FindPrevClip
 }
 
 int FindClips
-(AudacityProject &project,
+(const AudacityProject &project,
  double t0, double t1, bool next, std::vector<FoundClip>& finalResults)
 {
    auto &tracks = TrackList::Get( project );

@@ -17,7 +17,6 @@ Paul Licameli split from ProjectManager.cpp
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
 #include "Snap.h"
-#include "TrackPanel.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "toolbars/SelectionBar.h"
@@ -144,8 +143,7 @@ void ProjectSelectionManager::AS_SetSelectionFormat(
    gPrefs->Write(wxT("/SelectionFormat"), format.Internal());
    gPrefs->Flush();
 
-   if (SnapSelection())
-      TrackPanel::Get( project ).Refresh(false);
+   SnapSelection();
 
    SelectionBar::Get( project ).SetSelectionFormat(format);
 }
@@ -175,10 +173,8 @@ void ProjectSelectionManager::AS_ModifySelection(
 {
    auto &project = mProject;
    auto &history = ProjectHistory::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
    viewInfo.selectedRegion.setTimes(start, end);
-   trackPanel.Refresh(false);
    if (done) {
       history.ModifyState(false);
    }
@@ -250,7 +246,6 @@ void ProjectSelectionManager::SSBL_ModifySpectralSelection(
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
    auto &project = mProject;
    auto &history = ProjectHistory::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
    auto &viewInfo = ViewInfo::Get( project );
 
    double nyq = SSBL_GetRate() / 2.0;
@@ -259,7 +254,6 @@ void ProjectSelectionManager::SSBL_ModifySpectralSelection(
    if (top >= 0.0)
       top = std::min(nyq, top);
    viewInfo.selectedRegion.setFrequencies(bottom, top);
-   trackPanel.Refresh(false);
    if (done) {
       history.ModifyState(false);
    }

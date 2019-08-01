@@ -264,7 +264,6 @@ void MoveWhenAudioInactive
       viewInfo.selectedRegion.collapseToT0();
 
       // Move the visual cursor, avoiding an unnecessary complete redraw
-      trackPanel.DrawOverlays(false);
       ruler.DrawOverlays(false);
    }
    else
@@ -274,7 +273,6 @@ void MoveWhenAudioInactive
          viewInfo.selectedRegion.collapseToT0();
       else
          viewInfo.selectedRegion.collapseToT1();
-      trackPanel.Refresh(false);
    }
 
    // Make sure NEW position is in view
