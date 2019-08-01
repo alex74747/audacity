@@ -29,6 +29,10 @@ Paul Licameli split from AudioIO.cpp
 #include "../lib-src/portmidi/pm_common/portmidi.h"
 #endif
 
+wxDEFINE_EVENT(EVT_AUDIOIO_PLAYBACK, wxCommandEvent);
+wxDEFINE_EVENT(EVT_AUDIOIO_CAPTURE, wxCommandEvent);
+wxDEFINE_EVENT(EVT_AUDIOIO_MONITOR, wxCommandEvent);
+
 int AudioIOBase::mCachedPlaybackIndex = -1;
 std::vector<long> AudioIOBase::mCachedPlaybackRates;
 int AudioIOBase::mCachedCaptureIndex = -1;

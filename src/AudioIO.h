@@ -38,8 +38,6 @@ using NoteTrackConstArray = std::vector < std::shared_ptr< const NoteTrack > >;
 
 #endif // EXPERIMENTAL_MIDI_OUT
 
-#include <wx/event.h> // to declare custom event types
-
 #include "SampleFormat.h"
 
 class wxArrayString;
@@ -65,13 +63,6 @@ bool ValidateDeviceNames();
 
 #define MAX_MIDI_BUFFER_SIZE 5000
 #define DEFAULT_SYNTH_LATENCY 5
-
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
-                         EVT_AUDIOIO_PLAYBACK, wxCommandEvent);
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
-                         EVT_AUDIOIO_CAPTURE, wxCommandEvent);
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
-                         EVT_AUDIOIO_MONITOR, wxCommandEvent);
 
 // PRL:
 // If we always run a portaudio output stream (even just to produce silence)

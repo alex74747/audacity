@@ -19,7 +19,7 @@
 #include <wx/frame.h>
 #include <wx/mimetype.h>
 
-#include "AudioIO.h"
+#include "AudioIOBase.h"
 #include "Project.h"
 #include "ProjectWindowBase.h"
 #include "LabelTrack.h"

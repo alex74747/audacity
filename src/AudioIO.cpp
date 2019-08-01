@@ -507,10 +507,6 @@ AudioIO *AudioIO::Get()
    return static_cast< AudioIO* >( AudioIOBase::Get() );
 }
 
-wxDEFINE_EVENT(EVT_AUDIOIO_PLAYBACK, wxCommandEvent);
-wxDEFINE_EVENT(EVT_AUDIOIO_CAPTURE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_AUDIOIO_MONITOR, wxCommandEvent);
-
 // static
 int AudioIoCallback::mNextStreamToken = 0;
 double AudioIoCallback::mCachedBestRateOut;

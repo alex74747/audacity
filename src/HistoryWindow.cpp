@@ -33,7 +33,7 @@ undo memory so as to free up space.
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
-#include "AudioIO.h"
+#include "AudioIOBase.h"
 #include "Clipboard.h"
 #include "CommonCommandFlags.h"
 #include "../images/Arrow.xpm"

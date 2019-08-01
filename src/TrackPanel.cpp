@@ -65,7 +65,7 @@ is time to refresh some aspect of the screen.
 
 #include "AColor.h"
 #include "AllThemeResources.h"
-#include "AudioIO.h"
+#include "AudioIOBase.h"
 #include "float_cast.h"
 
 #include "Prefs.h"

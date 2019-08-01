@@ -17,6 +17,7 @@ Paul Licameli split from AudioIO.h
 #include <cfloat>
 #include <functional>
 #include <vector>
+#include <wx/event.h> // to declare custom event types
 #include <wx/string.h>
 #include <wx/weakref.h> // member variable
 #include "MemoryX.h"
@@ -27,6 +28,13 @@ typedef void PaStream;
 #if USE_PORTMIXER
 typedef void PxMixer;
 #endif
+
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+                         EVT_AUDIOIO_PLAYBACK, wxCommandEvent);
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+                         EVT_AUDIOIO_CAPTURE, wxCommandEvent);
+wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+                         EVT_AUDIOIO_MONITOR, wxCommandEvent);
 
 class AudioIOBase;
 
