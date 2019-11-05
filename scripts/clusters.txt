@@ -8,7 +8,7 @@ ladspa support:ladspa LadspaEffect
 VST support:VSTEffect VSTControlOSX VSTControlMSW VSTControlGTK VSTControl aeffectx
 Vamp support:LoadVamp VampEffect
 Nyquist support:LoadNyquist Nyquist
-LV2 support:win_gtk LV2Effect LoadLV2
+LV2 support:LV2Effect LoadLV2
 common track UI:CommonTrackView ButtonHandle SliderHandle ZoomHandle SelectHandle TimeShiftHandle TrackInfo TrackButtonHandles CommonTrackControls TrackSelectHandle
 Label track UI:LabelTrackControls LabelDefaultClickHandle LabelDialog LabelGlyphHandle LabelTextHandle LabelTrackView LabelTrackVRulerControls
 Note track UI:NoteTrackView NoteTrackControls NoteTrackButtonHandle NoteTrackSliderHandles StretchHandle NoteTrackVZoomHandle NoteTrackVRulerControls
@@ -38,14 +38,14 @@ various nonmodal windows:Contrast HistoryWindow Lyrics LyricsWindow FreqWindow M
 various toolbars:ControlToolBar DeviceToolBar EditToolBar MeterToolBar MixerToolBar ScrubbingToolBar SelectionBar SpectralSelectionBar TranscriptionToolBar ToolsToolBar SelectionBarListener SpectralSelectionBarListener VoiceKey
 on-demand support:NotYetAvailableException ODManager ODTask ODWaveTrackTaskQueue ODComputeSummaryTask ODPCMAliasBlockFile
 project management:ProjectManager ProjectSelectionManager ProjectFileManager ProjectFSCK Legacy
-math:Dither float_cast SseMathFuncs RealFFTf RealFFTf48x FFT SampleFormat Spectrum Matrix Resample SpecPowerMeter SpectrumAnalyst
+math:Dither float_cast SseMathFuncs RealFFTf RealFFTf48x FFT SampleFormat Spectrum Matrix Resample SpecPowerMeter
 project history:ProjectHistory ProjectFileIO AutoRecovery
 audio unit support:AUControl AudioUnitEffect
 application:AudacityApp AutoRecoveryDialog CommandHandler LangChoice
 various dialogs: ScoreAlignDialog Benchmark AboutDialog TimerRecordDialog SplashDialog BatchProcessDialog Screenshot BatchCommandDialog SoundActivatedRecord
 project state:Project ProjectStatus
 data shuttle:ShuttleGui WrappedType Shuttle ShuttlePrefs
-utilities:ODTaskThread PlatformCompatibility MemoryX Profiler Prefs Internat numformatter wxFileNameWrapper FileIO Diags TranslatableStringArray FileHistory PitchName GUISettings
+utilities:ODTaskThread PlatformCompatibility MemoryX Profiler Prefs Internat numformatter wxFileNameWrapper FileIO Diags FileHistory PitchName GUISettings
 gui utilities:wxPanelWrapper Keyboard AudacityMessageBox WindowAccessible Overlay OverlayPanel BackedPanel ImageRoll HtmlWindow valnum PopupMenuTable
 various widgets:AButton ASlider ExpandingToolBar Grid AttachableScrollBar Ruler NumericTextCtrl ProgressDialog TimeDialog AudacityLogger MultiDialog Warning
 more utilities, using exceptions:AttachedVirtualFunction ClientData ClientDataHelpers
