@@ -121,12 +121,12 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
    {
       S.StartMultiColumn(2);
       {
-         mHost =
          S
             .Target( Choice( MidiIOHost, Verbatim( hostLabels ) ) )
             .Action( [this]{ OnHost(); } )
             /* i18n-hint: (noun) */
-            .AddChoice( XXO("&Host:") );
+            .AddChoice( XXO("&Host:") )
+            .Assign(mHost);
 
          S
             .AddPrompt(XXO("Using: PortMidi"));
@@ -140,7 +140,6 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
    {
       S.StartMultiColumn(2);
       {
-         mPlay =
          S
             .Id(PlayID)
             .AddChoice(XXO("&Device:"),
@@ -159,16 +158,16 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
    {
       S.StartMultiColumn(2);
       {
-         mRecord =
          S
-            // .Action( [this]{ OnDevice(); } )
+            // .Action( &My::OnDevice )
             .AddChoice(XO("De&vice:") );
+            .Assign(mRecord);
 
          /*
-         mChannels =
          S
             .Id(ChannelsID)
-            .AddChoice( XO("&Channels:"), wxEmptyString, {} );
+            .AddChoice( XO("&Channels:"), wxEmptyString, {} )
+            .Assign(mChannels);
          */
       }
       S.EndMultiColumn();

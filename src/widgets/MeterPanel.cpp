@@ -1989,7 +1989,6 @@ void MeterPanel::OnPreferences()
 
          S.StartHorizontalLay();
          {
-            rate =
             S
                .Text(XO("Meter refresh rate per second [1-100]"))
                .Target( mMeterRefreshRate,
@@ -1997,7 +1996,8 @@ void MeterPanel::OnPreferences()
                   MIN_REFRESH_RATE, MAX_REFRESH_RATE)
                .AddTextBox(XXO("Meter refresh rate per second [1-100]: "),
                                 wxString::Format(L"%d", meterRefreshRate),
-                                10);
+                                10)
+               .Assign(rate);
          }
          S.EndHorizontalLay();
       }

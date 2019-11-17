@@ -1251,7 +1251,6 @@ int ExportFFmpeg::AskResample(int bitrate, int rate, int lowrate, int highrate, 
 
          S.StartHorizontalLay(wxALIGN_CENTER, false);
          {
-            choice =
             S
                .AddChoice(XO("Sample Rates"),
                   [&]{
@@ -1269,7 +1268,8 @@ int ExportFFmpeg::AskResample(int bitrate, int rate, int lowrate, int highrate, 
                      }
                      return choices;
                   }(),
-                  std::max( 0, selected ) );
+                  std::max( 0, selected ) )
+               .Assign(choice);
          }
          S.EndHorizontalLay();
       }

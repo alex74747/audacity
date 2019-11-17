@@ -145,16 +145,20 @@ public:
          {
             if (mFullPath.GetFullPath().empty())
             {
-               mPathText = S.AddTextBox(
-                  {},
-                  XO("To find '%s', click here -->")
-                     .Format(mName)
-                     .Translation(),
-                  0);
+               S
+                  .AddTextBox(
+                     {},
+                     XO("To find '%s', click here -->")
+                        .Format(mName)
+                        .Translation(),
+                     0)
+                  .Assign(mPathText);
             }
             else
             {
-               mPathText = S.AddTextBox({}, mFullPath.GetFullPath(), 0);
+               S
+                  .AddTextBox({}, mFullPath.GetFullPath(), 0)
+                  .Assign(mPathText);
             }
 
             S
@@ -276,10 +280,10 @@ To use FFmpeg import, go to Edit > Preferences > Libraries\n\
 to download or locate the FFmpeg libraries."
          ) );
 
-      mDontShow =
       S
          .AddCheckBox(XXO("Do not show this warning again"),
-            FFmpegNotFoundDontShow.Read() );
+            FFmpegNotFoundDontShow.Read() )
+         .Assign( mDontShow );
 
       S
          .AddStandardButtons( 0, {

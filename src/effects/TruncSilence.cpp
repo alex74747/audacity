@@ -776,7 +776,7 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
                Minimum.min, Minimum.max)
             .Text({ {}, XO("seconds") })
             .AddTextBox(XXO("&Duration:"), L"", 12);
-
+   
          S.AddUnits(XO("seconds"));
       }
       S.EndMultiColumn();

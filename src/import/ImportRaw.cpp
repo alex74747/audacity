@@ -366,7 +366,9 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
 
          S
             .Action( [this]{ OnChoice(); } )
-            .AddChoice(XXO("Channels:"), chans, mChannels - 1);
+            .AddChoice(XXO("Channels:"),
+               chans,
+               mChannels - 1);
       }
       S.EndTwoColumn();
 
@@ -375,21 +377,21 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
       {
          // Offset text
          /* i18n-hint: (noun)*/
-         mOffsetText =
          S
             .AddTextBox( XXO("Start offset:"),
                wxString::Format(L"%d", mOffset),
-               12);
+               12)
+            .Assign(mOffsetText);
 
          S
             .AddUnits(XO("bytes"));
 
          // Percent text
-         mPercentText =
          S
             .AddTextBox( XXO("Amount to import:"),
                L"100",
-               12);
+               12)
+            .Assign(mPercentText);
 
          S
             .AddUnits(XO("%"));
@@ -402,11 +404,11 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
          }
 
          /* i18n-hint: (noun)*/
-         mRateText =
          S
             .AddCombo(XXO("Sample rate:"),
                wxString::Format(L"%d", (int)mRate),
-               rates);
+               rates)
+            .Assign(mRateText);
          /* i18n-hint: This is the abbreviation for "Hertz", or
             cycles per second. */
          S

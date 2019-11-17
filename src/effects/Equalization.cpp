@@ -767,7 +767,6 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
          {
             S.Prop(0).AddSpace(0, 1);
 
-            mdBRuler =
             S
                .Prop(1)
                .Position(wxEXPAND)
@@ -780,17 +779,19 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
                   RulerPanel::Options{}
                      .LabelEdges(true)
                      .TicksAtExtremes(true)
-                     .TickColour( { 0, 0, 0 } ) );
+                     .TickColour( { 0, 0, 0 } ) )
+               .Assign(mdBRuler);
+   
             S.AddSpace(0, 1);
          }
          S.EndVerticalLay();
 
-         mPanel =
          S
             .Prop(1)
             .Position(wxEXPAND)
             .MinSize( { wxDefaultCoord, wxDefaultCoord } )
-            .Window<EqualizationPanel>(this);
+            .Window<EqualizationPanel>(this)
+            .Assign(mPanel);
 
          S.SetBorder(5);
          S.StartVerticalLay();
@@ -839,7 +840,6 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
 
          S.SetBorder(1);
 
-         mFreqRuler =
          S
             .Prop(1)
             .Position(wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP | wxLEFT)
@@ -854,8 +854,9 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
                   .Flip(true)
                   .LabelEdges(true)
                   .TicksAtExtremes(true)
-                  .TickColour( { 0, 0, 0 } ) );
-
+                  .TickColour( { 0, 0, 0 } ) )
+            .Assign(mFreqRuler);
+   
          S.SetBorder(0);
 
          // Column 3 is empty
@@ -908,7 +909,6 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
                      ? XO("%d").Format((int)kThirdOct[i])
                      : XO("%gk").Format(kThirdOct[i] / 1000.) );
 
-               mSliders[i] =
                S
                   .Id(ID_Slider + i)
                   .Prop(1)
@@ -924,7 +924,8 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
 #if wxUSE_ACCESSIBILITY
                   .Accessible(MakeAccessibleFactory<SliderAx>(XO("%d dB")))
 #endif
-                  .AddSlider( {}, 0, -20, +20 );
+                  .AddSlider( {}, 0, -20, +20 )
+                  .Assign( mSliders[i] );
             }
             S.EndVerticalLay();
          }
@@ -986,7 +987,6 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
             {
                szrI = S.GetSizer();
 
-               auto interpChoice =
                S
                   .Text(XO("Interpolation type"))
                   .Target( mInterp )
@@ -3316,13 +3316,13 @@ void EditCurvesDialog::PopulateOrExchange(ShuttleGui & S)
    {
       S.StartStatic(XO("&Curves"), 1);
       {
-         mList =
          S
             .Id(CurvesListID)
             .Style(wxSUNKEN_BORDER | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES )
             .AddListControlReportMode({
                { XO("Curve Name"), wxLIST_FORMAT_RIGHT }
-            });
+            })
+            .Assign(mList);
       }
       S.EndStatic();
       S.StartVerticalLay(0);
