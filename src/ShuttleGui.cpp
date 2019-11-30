@@ -743,15 +743,20 @@ void ShuttleGuiBase::AddConstTextBox(
    UpdateSizers();
 }
 
-wxListBox * ShuttleGuiBase::AddListBox(const wxArrayStringEx &choices)
+wxListBox * ShuttleGuiBase::AddListBox(const LocalizedStringVector &choices)
 {
    UseUpId();
    if( mShuttleMode != eIsCreating )
       return wxDynamicCast(wxWindow::FindWindowById( miId, mpDlg), wxListBox);
    wxListBox * pListBox;
    SetProportions( 1 );
+
+   wxArrayString newChoices;
+   for (const auto &choice : choices)
+      newChoices.Add( choice );
+
    mpWind = pListBox = safenew wxListBox(GetParent(), miId,
-      wxDefaultPosition, wxDefaultSize, choices, GetStyle(0));
+      wxDefaultPosition, wxDefaultSize, newChoices, GetStyle(0));
    pListBox->SetMinSize( wxSize( 120,150 ));
    UpdateSizers();
    return pListBox;

@@ -235,13 +235,13 @@ public:
 
 private:
 
-   wxArrayString mShownFormatNames;
+   LocalizedStringVector mShownFormatNames;
    wxArrayString mShownFormatLongNames;
-   wxArrayString mShownCodecNames;
+   LocalizedStringVector mShownCodecNames;
    wxArrayString mShownCodecLongNames;
-   wxArrayStringEx mFormatNames;
+   LocalizedStringVector mFormatNames;
    wxArrayString mFormatLongNames;
-   wxArrayStringEx mCodecNames;
+   LocalizedStringVector mCodecNames;
    wxArrayString mCodecLongNames;
 
    wxListBox *mFormatList;
@@ -260,10 +260,10 @@ private:
    wxArrayStringEx mPresetNames;
 
    /// Finds the format currently selected and returns its name and description
-   void FindSelectedFormat(wxString **name, wxString **longname);
+   void FindSelectedFormat(LocalizedString **name, wxString **longname);
 
    /// Finds the codec currently selected and returns its name and description
-   void FindSelectedCodec(wxString **name, wxString **longname);
+   void FindSelectedCodec(LocalizedString **name, wxString **longname);
 
    /// Retrieves format list from libavformat
    void FetchFormatList();
@@ -272,7 +272,7 @@ private:
    ///\param id Codec ID
    ///\param selfmt format selected at the moment
    ///\return index of the selfmt in NEW format list or -1 if it is not in the list
-   int FetchCompatibleFormatList(AVCodecID id, wxString *selfmt);
+   int FetchCompatibleFormatList(AVCodecID id, const wxString *selfmt);
 
    /// Retrieves codec list from libavcodec
    void FetchCodecList();

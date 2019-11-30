@@ -862,9 +862,9 @@ wxDialogWrapper( parent, id, title, position, size, style | wxRESIZE_BORDER )
          .Position(wxEXPAND | wxALIGN_LEFT | wxALL)
          .Style(wxLB_EXTENDED | wxLB_ALWAYS_SB)
          .AddListBox(
-            transform_container<wxArrayStringEx>(
+            transform_container<LocalizedStringVector>(
                mFile->GetStreamInfo(),
-               std::mem_fn( &TranslatableString::Translation ) ) );
+               [](const TranslatableString &str){ return LocalizedString{ str }; } ) );
 
       S.AddStandardButtons();
    }

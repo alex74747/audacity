@@ -14,7 +14,6 @@
 #ifndef SHUTTLE_GUI
 #define SHUTTLE_GUI
 
-
 #include "Identifier.h"
 
 #include <vector>
@@ -300,7 +299,7 @@ public:
       const TranslatableString &Caption,
       const wxString &Value, const int nChars);
    wxTextCtrl * AddTextWindow(const wxString &Value);
-   wxListBox * AddListBox(const wxArrayStringEx &choices);
+   wxListBox * AddListBox(const LocalizedStringVector &choices);
 
    struct ListControlColumn{
       ListControlColumn(

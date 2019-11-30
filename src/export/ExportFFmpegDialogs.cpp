@@ -1777,8 +1777,10 @@ void ExportFFmpegOptions::FetchFormatList()
       // If it doesn't, then it doesn't supports any audio codecs
       if (ofmt->audio_codec != AV_CODEC_ID_NONE)
       {
-         mFormatNames.push_back(wxString::FromUTF8(ofmt->name));
-         mFormatLongNames.push_back(wxString::Format(L"%s - %s",mFormatNames.back(),wxString::FromUTF8(ofmt->long_name)));
+         const auto name = wxString::FromUTF8(ofmt->name);
+         mFormatNames.push_back( VERBATIM( name ) );
+         mFormatLongNames.push_back(wxString::Format(
+            L"%s - %s", name, wxString::FromUTF8(ofmt->long_name) ));
       }
    }
    // Show all formats
@@ -1800,8 +1802,10 @@ void ExportFFmpegOptions::FetchCodecList()
          // MP2 Codec is broken.  Don't allow it.
          if( codec->id == AV_CODEC_ID_MP2)
             continue;
-         mCodecNames.push_back(wxString::FromUTF8(codec->name));
-         mCodecLongNames.push_back(wxString::Format(L"%s - %s",mCodecNames.back(),wxString::FromUTF8(codec->long_name)));
+         const auto name = wxString::FromUTF8(codec->name);
+         mCodecNames.push_back( VERBATIM( name ) );
+         mCodecLongNames.push_back(wxString::Format( L"%s - %s",
+            name, wxString::FromUTF8(codec->long_name) ));
       }
    }
    // Show all codecs
@@ -2001,7 +2005,7 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
 
 ///
 ///
-void ExportFFmpegOptions::FindSelectedFormat(wxString **name, wxString **longname)
+void ExportFFmpegOptions::FindSelectedFormat(LocalizedString **name, wxString **longname)
 {
    // Get current selection
    wxArrayInt selections;
@@ -2012,7 +2016,7 @@ void ExportFFmpegOptions::FindSelectedFormat(wxString **name, wxString **longnam
    wxString selfmt = mFormatList->GetString(selections[0]);
 
    // Find its index
-   int nFormat = make_iterator_range( mFormatNames ).index( selfmt );
+   auto nFormat = make_iterator_range(mFormatNames).index(LocalizedString{ selfmt });
    if (nFormat == wxNOT_FOUND) return;
 
    // Return short name and description
@@ -2022,7 +2026,7 @@ void ExportFFmpegOptions::FindSelectedFormat(wxString **name, wxString **longnam
 }
 ///
 ///
-void ExportFFmpegOptions::FindSelectedCodec(wxString **name, wxString **longname)
+void ExportFFmpegOptions::FindSelectedCodec(LocalizedString **name, wxString **longname)
 {
    // Get current selection
    wxArrayInt selections;
@@ -2033,7 +2037,7 @@ void ExportFFmpegOptions::FindSelectedCodec(wxString **name, wxString **longname
    wxString selcdc = mCodecList->GetString(selections[0]);
 
    // Find its index
-   int nCodec = make_iterator_range( mCodecNames ).index( selcdc );
+   auto nCodec = make_iterator_range(mCodecNames).index( LocalizedString{ selcdc } );
    if (nCodec == wxNOT_FOUND) return;
 
    // Return short name and description
@@ -2073,9 +2077,12 @@ int ExportFFmpegOptions::FetchCompatibleCodecList(const wxChar *fmt, AVCodecID i
          if (codec != NULL && (codec->type == AVMEDIA_TYPE_AUDIO) && av_codec_is_encoder(codec))
          {
             // If it was selected - remember its NEW index
-            if ((id >= 0) && codec->id == id) index = mShownCodecNames.size();
-            mShownCodecNames.push_back(wxString::FromUTF8(codec->name));
-            mShownCodecLongNames.push_back(wxString::Format(L"%s - %s",mShownCodecNames.back(),wxString::FromUTF8(codec->long_name)));
+            if ((id >= 0) && codec->id == id)
+               index = mShownCodecNames.size();
+            const auto &name = wxString::FromUTF8(codec->name);
+            mShownCodecNames.push_back( VERBATIM( name ) );
+            mShownCodecLongNames.push_back( wxString::Format(L"%s - %s",
+               name, wxString::FromUTF8(codec->long_name)));
          }
       }
    }
@@ -2093,9 +2100,13 @@ int ExportFFmpegOptions::FetchCompatibleCodecList(const wxChar *fmt, AVCodecID i
             if (! make_iterator_range( mShownCodecNames )
                .contains( wxString::FromUTF8(codec->name) ) )
             {
-               if ((id >= 0) && codec->id == id) index = mShownCodecNames.size();
-               mShownCodecNames.push_back(wxString::FromUTF8(codec->name));
-               mShownCodecLongNames.push_back(wxString::Format(L"%s - %s",mShownCodecNames.back(),wxString::FromUTF8(codec->long_name)));
+               if ((id >= 0) && codec->id == id)
+                  index = mShownCodecNames.size();
+               const auto name = wxString::FromUTF8(codec->name);
+               mShownCodecNames.push_back( VERBATIM( name ) );
+
+               mShownCodecLongNames.push_back( wxString::Format(L"%s - %s",
+                  name, wxString::FromUTF8(codec->long_name)) );
             }
          }
       }
@@ -2111,21 +2122,25 @@ int ExportFFmpegOptions::FetchCompatibleCodecList(const wxChar *fmt, AVCodecID i
          AVCodec *codec = avcodec_find_encoder(format->audio_codec);
          if (codec != NULL && (codec->type == AVMEDIA_TYPE_AUDIO) && av_codec_is_encoder(codec))
          {
-            if ((id >= 0) && codec->id == id) index = mShownCodecNames.size();
-            mShownCodecNames.push_back(wxString::FromUTF8(codec->name));
-            mShownCodecLongNames.push_back(wxString::Format(L"%s - %s",mShownCodecNames.back(),wxString::FromUTF8(codec->long_name)));
+            if ((id >= 0) && codec->id == id)
+               index = mShownCodecNames.size();
+            auto name = wxString::FromUTF8(codec->name);
+            mShownCodecNames.push_back( VERBATIM( name ) );
+            mShownCodecLongNames.push_back( wxString::Format(L"%s - %s",
+               name, wxString::FromUTF8(codec->long_name)));
          }
       }
    }
    // Show NEW codec list
-   mCodecList->Append(mShownCodecNames);
+   for (const auto &name : mShownCodecNames)
+      mCodecList->Append(name);
 
    return index;
 }
 
 ///
 ///
-int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, wxString *selfmt)
+int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, const wxString *selfmt)
 {
    int index = -1;
    mShownFormatNames.clear();
@@ -2141,7 +2156,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, wxString *selfm
       {
          if ((selfmt != NULL) && (*selfmt == CompatibilityList[i].fmt)) index = mShownFormatNames.size();
          FromList.push_back(CompatibilityList[i].fmt);
-         mShownFormatNames.push_back(CompatibilityList[i].fmt);
+         mShownFormatNames.push_back( VERBATIM( CompatibilityList[i].fmt ) );
          AVOutputFormat *tofmt = av_guess_format(wxString(CompatibilityList[i].fmt).ToUTF8(),NULL,NULL);
          if (tofmt != NULL) mShownFormatLongNames.push_back(wxString::Format(L"%s - %s",CompatibilityList[i].fmt,wxString::FromUTF8(tofmt->long_name)));
       }
@@ -2181,13 +2196,17 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(AVCodecID id, wxString *selfm
                if ((selfmt != NULL) &&
                   (*selfmt == wxString::FromUTF8(ofmt->name)))
                   index = mShownFormatNames.size();
-               mShownFormatNames.push_back(wxString::FromUTF8(ofmt->name));
-               mShownFormatLongNames.push_back(wxString::Format(L"%s - %s",mShownFormatNames.back(),wxString::FromUTF8(ofmt->long_name)));
+               const auto name = wxString::FromUTF8(ofmt->name);
+               mShownFormatNames.push_back( VERBATIM( name ) );
+               mShownFormatLongNames.push_back( wxString::Format(L"%s - %s",
+                  name, wxString::FromUTF8(ofmt->long_name)));
             }
          }
       }
    }
-   mFormatList->Append(mShownFormatNames);
+
+   for(const auto &name : mShownFormatNames)
+      mFormatList->Append(name);
    return index;
 }
 
@@ -2261,12 +2280,14 @@ void ExportFFmpegOptions::OnLoadPreset(wxCommandEvent& WXUNUSED(event))
    mShownFormatNames = mFormatNames;
    mShownFormatLongNames = mFormatLongNames;
    mFormatList->Clear();
-   mFormatList->Append(mFormatNames);
+   for(const auto &name : mFormatNames)
+      mFormatList->Append(name);
 
    mShownCodecNames = mCodecNames;
    mShownCodecLongNames = mCodecLongNames;
    mCodecList->Clear();
-   mCodecList->Append(mCodecNames);
+   for(const auto &name : mCodecNames)
+      mCodecList->Append(name);
 
    mPresets->LoadPreset(this,presetname);
 
@@ -2337,7 +2358,8 @@ void ExportFFmpegOptions::OnAllFormats(wxCommandEvent& WXUNUSED(event))
    mShownFormatNames = mFormatNames;
    mShownFormatLongNames = mFormatLongNames;
    mFormatList->Clear();
-   mFormatList->Append(mFormatNames);
+   for (const auto &name : mFormatNames)
+      mFormatList->Append(name);
 }
 
 ///
@@ -2347,7 +2369,8 @@ void ExportFFmpegOptions::OnAllCodecs(wxCommandEvent& WXUNUSED(event))
    mShownCodecNames = mCodecNames;
    mShownCodecLongNames = mCodecLongNames;
    mCodecList->Clear();
-   mCodecList->Append(mCodecNames);
+   for (const auto &name : mCodecNames)
+      mCodecList->Append(name);
 }
 
 /// ReportIfBadCombination will trap 
@@ -2359,7 +2382,7 @@ void ExportFFmpegOptions::OnAllCodecs(wxCommandEvent& WXUNUSED(event))
 /// or codec.  (We do not expect them to happen ever).
 bool ExportFFmpegOptions::ReportIfBadCombination()
 {
-   wxString *selcdc = NULL;
+   LocalizedString *selcdc = NULL;
    wxString *selcdclong = NULL;
    FindSelectedCodec(&selcdc, &selcdclong);
    if (selcdc == NULL)
@@ -2368,7 +2391,7 @@ bool ExportFFmpegOptions::ReportIfBadCombination()
    if (cdc == NULL)
       return false; // unrecognised codec. Treated as OK
 
-   wxString *selfmt = NULL;
+   LocalizedString *selfmt = NULL;
    wxString *selfmtlong = NULL;
    FindSelectedFormat(&selfmt, &selfmtlong);
    if( selfmt == NULL )
@@ -2438,7 +2461,7 @@ void ExportFFmpegOptions::EnableDisableControls(AVCodec *cdc, wxString *selfmt)
 
 void ExportFFmpegOptions::DoOnFormatList()
 {
-   wxString *selfmt = NULL;
+   LocalizedString *selfmt = NULL;
    wxString *selfmtlong = NULL;
    FindSelectedFormat(&selfmt, &selfmtlong);
    if (selfmt == NULL)
@@ -2446,7 +2469,7 @@ void ExportFFmpegOptions::DoOnFormatList()
       return;
    }
 
-   wxString *selcdc = NULL;
+   LocalizedString *selcdc = NULL;
    wxString *selcdclong = NULL;
    FindSelectedCodec(&selcdc, &selcdclong);
 
@@ -2468,7 +2491,8 @@ void ExportFFmpegOptions::DoOnFormatList()
          selcdcid = cdc->id;
       }
    }
-   int newselcdc = FetchCompatibleCodecList(*selfmt, (AVCodecID)selcdcid);
+   int newselcdc = FetchCompatibleCodecList((const wxString&) selfmt, (AVCodecID)selcdcid);
+
    if (newselcdc >= 0) mCodecList->Select(newselcdc);
 
    AVCodec *cdc = NULL;
@@ -2482,7 +2506,7 @@ void ExportFFmpegOptions::DoOnFormatList()
 
 void ExportFFmpegOptions::DoOnCodecList()
 {
-   wxString *selcdc = NULL;
+   LocalizedString *selcdc = NULL;
    wxString *selcdclong = NULL;
    FindSelectedCodec(&selcdc, &selcdclong);
    if (selcdc == NULL)
@@ -2490,7 +2514,7 @@ void ExportFFmpegOptions::DoOnCodecList()
       return;
    }
 
-   wxString *selfmt = NULL;
+   LocalizedString *selfmt = NULL;
    wxString *selfmtlong = NULL;
    FindSelectedFormat(&selfmt, &selfmtlong);
 
