@@ -275,18 +275,18 @@ bool ScoreAlignDialog::TransferDataFromWindow()
    p.mLineTime = (double) mLineTimeSlider->GetValue() / 100.0;
    p.mSmoothTime = (double) mSmoothTimeSlider->GetValue() / 100.0;
 
-   mFramePeriodText->SetLabel(wxString::Format(_("%.2f secs"),
+   mFramePeriodText->SetLabel(_("%.2f secs").Format(
                                                p.mFramePeriod));
-   mWindowSizeText->SetLabel(wxString::Format(_("%.2f secs"), p.mWindowSize));
-   mSilenceThresholdText->SetLabel(wxString::Format(_("%.3f"),
+   mWindowSizeText->SetLabel(_("%.2f secs").Format( p.mWindowSize));
+   mSilenceThresholdText->SetLabel(_("%.3f").Format(
                                                     p.mSilenceThreshold));
    mPresmoothText->SetLabel(p.mPresmoothTime > 0 ?
-                            wxString::Format(_("%.2f secs"),
+                            _("%.2f secs").Format(
                                              p.mPresmoothTime) : L"(off)");
    mLineTimeText->SetLabel(p.mLineTime > 0 ?
-                           wxString::Format(_("%.2f secs"), p.mLineTime) :
+                           _("%.2f secs").Format( p.mLineTime) :
                            L"(off)");
-   mSmoothTimeText->SetLabel(wxString::Format(_("%.2f secs"), p.mSmoothTime));
+   mSmoothTimeText->SetLabel(_("%.2f secs").Format( p.mSmoothTime));
    return true;
 }
 

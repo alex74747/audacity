@@ -493,7 +493,7 @@ public:
          {
             if (mLibPath.GetFullPath().empty()) {
                mPathText = S.AddTextBox( {},
-                  wxString::Format(_("To find '%s', click here -->"), mName), 0);
+                  _("To find '%s', click here -->").Format( mName ), 0);
             }
             else {
                mPathText = S.AddTextBox( {}, mLibPath.GetFullPath(), 0);

@@ -395,8 +395,8 @@ void SelectionBar::RegenerateTooltips()
          ? mListener->AS_GetSelectionFormat()
          : NumericFormatSymbol{};
    mSnapTo->SetToolTip(
-      wxString::Format(
-         _("Snap Clicks/Selections to %s"), formatName.Translation() ));
+         _("Snap Clicks/Selections to %s").Format(
+            formatName.Translation() ) );
 #endif
 }
 

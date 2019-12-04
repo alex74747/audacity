@@ -145,6 +145,25 @@ public:
    friend inline bool operator ==
       ( const LocalizedString &xx, const LocalizedString &yy )
    { return (const wxString&) xx == (const wxString&) yy; }
+private:
+   template< typename T > T static ConvertFormatArg( const T t ) { return t; }
+   wxString static ConvertFormatArg( const VerbatimString &string )
+      { return string; }
+   wxString static ConvertFormatArg( const TranslatableString &string )
+      { return  ( LocalizedString{ string }); }
+   wxString static ConvertFormatArg( const LocalizedString &string )
+      { return string; }
+
+   void ConvertFormatArg( const Identifier &string ) PROHIBITED;
+
+public:
+
+   template<typename... Args>
+   LocalizedString Format(Args... args) const
+   {
+      return LocalizedString{
+         wxString::Format( *this, LocalizedString::ConvertFormatArg( args )... ) };
+   }
 
    void c_str() PROHIBITED;
 };
@@ -299,19 +318,19 @@ struct wxArgNormalizerNative<LocalizedClause>
    // include <windows.h> directly since it then causes "MemoryX.h" to spew errors.
    #include <wx/app.h>
    #define _(s) ((wxTranslations::Get() || (DebugBreak(), true)), \
-                GetCustomTranslation((s)))
+                LocalizedString{ GetCustomTranslation( (L"" s)) })
 
    #else
 
    #include <signal.h>
    // Raise a signal because it's even too early to use wxASSERT for this.
    #define _(s) ((wxTranslations::Get() || raise(SIGTRAP)), \
-                GetCustomTranslation((s)))
+                LocalizedString{ GetCustomTranslation( (L"" s)) })
 
    #endif
 
 #else
-   #define _(s) GetCustomTranslation((s))
+   #define _(s) (LocalizedString{ GetCustomTranslation( (L"" s)) })
 #endif
 
 #ifdef XP

@@ -81,7 +81,7 @@ public:
       return Name.CmpNoCase(that.Name) < 0;
    }
 
-   wxString Name;
+   wxString Name; //
    std::vector<EQPoint> points;
 };
 

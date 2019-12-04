@@ -625,7 +625,7 @@ public:
             if (mLibPath.GetFullPath().empty()) {
                mPathText = S.AddTextBox( {},
                   /* i18n-hint: There is a  button to the right of the arrow.*/
-                  wxString::Format(_("To find %s, click here -->"), mName), 0);
+                  _("To find %s, click here -->").Format( mName ), 0);
             }
             else {
                mPathText = S.AddTextBox( {}, mLibPath.GetFullPath(), 0);

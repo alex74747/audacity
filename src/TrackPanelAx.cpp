@@ -367,7 +367,7 @@ wxAccStatus TrackPanelAx::GetName( int childId, wxString* name )
             if( *name == t->GetDefaultName() )
             {
                /* i18n-hint: The %d is replaced by the number of the track.*/
-               name->Printf(_("Track %d"), TrackNum( t ) );
+               *name = _("Track %d").Format( TrackNum( t ) );
             }
 
             t->TypeSwitch(
@@ -573,7 +573,7 @@ wxAccStatus TrackPanelAx::GetValue( int WXUNUSED(childId), wxString* WXUNUSED(st
          *strValue = t->GetName();
          if( *strValue == t->GetDefaultName() )
          {
-            strValue->Printf(_("Track %d"), TrackNum( t ) );
+            *strValue = _("Track %d").Format( TrackNum( t ) );
          }
 
          // LLL: Remove these during "refactor"

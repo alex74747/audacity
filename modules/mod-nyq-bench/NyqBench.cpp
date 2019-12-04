@@ -1550,7 +1550,7 @@ void NyqBench::OnRunUpdate(wxUpdateUIEvent & e)
 void NyqBench::OnScriptUpdate(wxUpdateUIEvent & e)
 {
    if (mScriptBox && mScript && FindFocus() == mScript) {
-      wxString label = mScriptBox->GetLabel();
+      LocalizedString label { mScriptBox->GetLabel() };
       if (label == _("Script")) {
          label += L"*";
          mScriptBox->SetLabel(label);
@@ -1562,7 +1562,7 @@ void NyqBench::OnScriptUpdate(wxUpdateUIEvent & e)
 void NyqBench::OnOutputUpdate(wxUpdateUIEvent & e)
 {
    if (mOutputBox && mOutput && FindFocus() == mOutput) {
-      wxString label = mOutputBox->GetLabel();
+      LocalizedString label { mOutputBox->GetLabel() };
       if (label == _("Output")) {
          label += L"*";
          mOutputBox->SetLabel(label);

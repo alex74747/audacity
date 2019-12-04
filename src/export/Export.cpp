@@ -1271,7 +1271,7 @@ void ExportMixerPanel::OnPaint(wxPaintEvent & WXUNUSED(event))
       memDC.SetPen( mSelectedChannel == (int)i ? *wxRED_PEN : *wxBLACK_PEN );
       memDC.DrawRectangle( mChannelRects[ i ] );
 
-      memDC.DrawText( wxString::Format( _( "Channel: %2d" ), i + 1 ),
+      memDC.DrawText( _( "Channel: %2d" ).Format( i + 1 ),
             mChannelRects[ i ].x + ( mBoxWidth - w ) / 2,
             mChannelRects[ i ].y + ( mChannelHeight - h ) / 2 );
    }
@@ -1393,10 +1393,10 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
       const wxString sTrackName = (t->GetName()).Left(20);
       if( t->GetChannel() == Track::LeftChannel )
       /* i18n-hint: track name and L abbreviating Left channel */
-         mTrackNames.push_back( wxString::Format( _( "%s - L" ), sTrackName ) );
+         mTrackNames.push_back( _( "%s - L" ).Format( sTrackName ) );
       else if( t->GetChannel() == Track::RightChannel )
       /* i18n-hint: track name and R abbreviating Right channel */
-         mTrackNames.push_back( wxString::Format( _( "%s - R" ), sTrackName ) );
+         mTrackNames.push_back( _( "%s - R" ).Format( sTrackName ) );
       else
          mTrackNames.push_back(sTrackName);
    }
@@ -1479,8 +1479,7 @@ void ExportMixerDialog::OnSlider( wxCommandEvent & WXUNUSED(event))
    ExportMixerPanel *pnl = ( ( ExportMixerPanel* ) FindWindow( ID_MIXERPANEL ) );
    mMixerSpec->SetNumChannels( channels->GetValue() );
    pnl->Refresh( false );
-   wxString label;
-   label.Printf( _( "Output Channels: %2d" ), mMixerSpec->GetNumChannels() );
+   auto label = _( "Output Channels: %2d" ).Format( mMixerSpec->GetNumChannels() );
    mChannelsText->SetLabel( label );
    channels->SetName( label );
 }

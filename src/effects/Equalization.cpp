@@ -1676,7 +1676,8 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
    EQCurve tempUnnamed(L"tempUnnamed");
    for( curve = 0; curve < numCurves-1; curve++ )
    {
-      if( mCurves[curve].Name == _("unnamed") )
+      // ??
+      if( LocalizedString{ mCurves[curve].Name } == _("unnamed") )
       {
          tempUnnamed.points = mCurves[curve].points;
          mCurves.erase(mCurves.begin() + curve);
@@ -3571,7 +3572,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
             XO("Rename...") );
          dlg.SetTextValidator( wxFILTER_EXCLUDE_CHAR_LIST ); //
          dlg.SetName(
-            wxString::Format( _("Rename '%s'"), mEditCurves[ item ].Name ) );
+            _("Rename '%s'").Format( mEditCurves[ item ].Name ) );
          wxTextValidator *tv = dlg.GetTextValidator();
          tv->SetExcludes( exclude );   // Tell the validator about excluded chars
          if( dlg.ShowModal() == wxID_CANCEL )

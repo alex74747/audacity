@@ -540,7 +540,7 @@ void EffectPresetsDialog::UpdateUI()
       selected = 0;
       mType->SetSelection(selected);
    }
-   wxString type = mType->GetString(selected);
+   auto type = LocalizedString{ mType->GetString(selected) };
 
    if (type == _("User Presets"))
    {

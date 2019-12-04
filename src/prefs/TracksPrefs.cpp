@@ -442,7 +442,8 @@ bool TracksPrefs::Commit()
 
    // Bug 1661: Don't store the name for new tracks if the name is the
    // default in that language.
-   if (GetDefaultAudioTrackNamePreference() == _("Audio Track")) {
+   if (GetDefaultAudioTrackNamePreference() ==
+       (const wxString&) _("Audio Track") ) {
       gPrefs->DeleteEntry(L"/GUI/TrackNames/DefaultTrackName");
       gPrefs->Flush();
    }

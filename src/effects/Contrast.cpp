@@ -504,7 +504,7 @@ void ContrastDialog::results()
          mForegroundRMSText->ChangeValue(_("zero"));
       else
          // i18n-hint: short form of 'decibels'
-         mForegroundRMSText->ChangeValue(wxString::Format(_("%.2f dB"), foregrounddB));
+         mForegroundRMSText->ChangeValue(_("%.2f dB").Format( foregrounddB));
    }
    else {
       mForegroundRMSText->SetName(_("No foreground measured"));   // Read by screen-readers
@@ -517,7 +517,7 @@ void ContrastDialog::results()
       if(std::isinf(- backgrounddB))
          mBackgroundRMSText->ChangeValue(_("zero"));
       else
-         mBackgroundRMSText->ChangeValue(wxString::Format(_("%.2f dB"), backgrounddB));
+         mBackgroundRMSText->ChangeValue(_("%.2f dB").Format( backgrounddB));
    }
    else {
       mBackgroundRMSText->SetName(_("No background measured"));

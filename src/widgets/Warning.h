@@ -18,6 +18,8 @@ class wxString;
 class wxWindow;
 class TranslatableString;
 
+#include "Internat.h"
+
 // "Don't show this warning again"
 AUDACITY_DLL_API
 const TranslatableString &DefaultWarningFooter();

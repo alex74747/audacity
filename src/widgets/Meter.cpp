@@ -2271,9 +2271,9 @@ wxAccStatus MeterAx::GetName(int WXUNUSED(childId), wxString* name)
       }
 
       if (m->mDB)
-         *name += L" " + wxString::Format(_(" Peak %2.f dB"), (peak * m->mDBRange) - m->mDBRange);
+         *name += L" " + _(" Peak %2.f dB").Format( (peak * m->mDBRange) - m->mDBRange);
       else
-         *name += L" " + wxString::Format(_(" Peak %.2f "), peak);
+         *name += L" " + _(" Peak %.2f ").Format( peak);
 
       if (clipped)
          *name += L" " + _(" Clipped ");

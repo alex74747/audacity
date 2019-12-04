@@ -15,6 +15,7 @@
 #define __AUDACITY_MULTIDIALOG__
 
 #include <wx/defs.h>
+#include <wx/string.h>
 
 #include <wx/chartype.h> // for typedef wxChar
 #include "Internat.h" // for TranslatableStrings
