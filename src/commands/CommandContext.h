@@ -18,6 +18,7 @@ class AudacityProject;
 class wxEvent;
 class CommandOutputTargets;
 using CommandParameter = CommandID;
+class TranslatableString;
 
 class AUDACITY_DLL_API CommandContext {
 public:
@@ -34,8 +35,9 @@ public:
 
    ~CommandContext();
 
-   virtual void Status( const wxString &message, bool bFlush = false ) const;
-   virtual void Error(  const wxString &message ) const;
+   virtual void Status(
+      const TranslatableString &message, bool bFlush = false ) const;
+   virtual void Error(  const TranslatableString &message ) const;
    virtual void Progress( double d ) const;
 
    // Output formatting...

@@ -46,7 +46,7 @@ bool DemoCommand::DefineParams( ShuttleParams & S ){
 }
 
 bool DemoCommand::Apply(const CommandContext & context){
-   context.Status( "A Message");
+   context.Status( XO("A Message") );
    return true;
 }
 

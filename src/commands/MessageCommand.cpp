@@ -43,6 +43,6 @@ void MessageCommand::PopulateOrExchange(ShuttleGui & S)
 }
 
 bool MessageCommand::Apply(const CommandContext & context){
-   context.Status( mMessage );
+   context.Status( Verbatim( mMessage ) );
    return true;
 }

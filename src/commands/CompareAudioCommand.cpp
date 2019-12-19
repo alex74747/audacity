@@ -72,7 +72,7 @@ bool CompareAudioCommand::GetSelection(const CommandContext &context, AudacityPr
    mT1 = selectedRegion.t1();
    if (mT0 >= mT1)
    {
-      context.Error(L"There is no selection!");
+      context.Error(XO("There is no selection!"));
       return false;
    }
 
@@ -82,18 +82,18 @@ bool CompareAudioCommand::GetSelection(const CommandContext &context, AudacityPr
    mTrack0 = *trackRange.first;
    if (mTrack0 == NULL)
    {
-      context.Error(L"No tracks selected! Select two tracks to compare.");
+      context.Error(XO("No tracks selected! Select two tracks to compare."));
       return false;
    }
    mTrack1 = * ++ trackRange.first;
    if (mTrack1 == NULL)
    {
-      context.Error(L"Only one track selected! Select two tracks to compare.");
+      context.Error(XO("Only one track selected! Select two tracks to compare."));
       return false;
    }
    if ( * ++ trackRange.first )
    {
-      context.Status(L"More than two tracks selected - only the first two will be compared.");
+      context.Status(XO("More than two tracks selected - only the first two will be compared."));
    }
    return true;
 }
@@ -115,9 +115,8 @@ bool CompareAudioCommand::Apply(const CommandContext & context)
       return false;
    }
 
-   wxString msg = L"Comparing tracks '";
-   msg += mTrack0->GetName() + L"' and '"
-      + mTrack1->GetName() + L"'.";
+   auto msg = XO("Comparing tracks '%s' and '%s'.")
+      .Format( mTrack0->GetName(), mTrack1->GetName() );
    context.Status(msg);
 
    long errorCount = 0;
@@ -158,9 +157,12 @@ bool CompareAudioCommand::Apply(const CommandContext & context)
 
    // Output the results
    double errorSeconds = mTrack0->LongSamplesToTime(errorCount);
-   context.Status(wxString::Format(L"%li", errorCount));
-   context.Status(wxString::Format(L"%.4f", errorSeconds));
-   context.Status(wxString::Format(L"Finished comparison: %li samples (%.3f seconds) exceeded the error threshold of %f.", errorCount, errorSeconds, errorThreshold));
+   context.Status(XO("%li").Format( errorCount ) );
+   context.Status(XO("%.4f").Format( errorSeconds ) );
+   context.Status(
+      XO(
+"Finished comparison: %li samples (%.3f seconds) exceeded the error threshold of %f.")
+          .Format( errorCount, errorSeconds, errorThreshold));
    return true;
 }
 

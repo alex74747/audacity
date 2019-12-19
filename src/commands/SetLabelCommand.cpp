@@ -95,7 +95,7 @@ bool SetLabelCommand::Apply(const CommandContext & context)
 
    if ( !pLabel )
    {
-      context.Error(L"LabelIndex was invalid.");
+      context.Error(XO("LabelIndex was invalid."));
       return false;
    }
    auto newLabel = *pLabel;

@@ -64,7 +64,7 @@ void PlayCurrentRegionAndWait(const CommandContext &context,
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(L"Playing interrupted");
+               context.Error(XO("Playing interrupted"));
             }
             break;
          }
@@ -104,7 +104,7 @@ void PlayPlayRegionAndWait(const CommandContext &context,
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(L"Playing interrupted");
+               context.Error(XO("Playing interrupted"));
             }
             break;
          }
@@ -142,7 +142,7 @@ void RecordAndWait(const CommandContext &context, bool altAppearance)
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(L"Recording interrupted");
+               context.Error(XO("Recording interrupted"));
             }
             break;
          }

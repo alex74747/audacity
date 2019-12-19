@@ -74,7 +74,7 @@ bool BatchEvalCommand::Apply(const CommandContext & context)
    MacroCommands Batch{ context.project };
    bool bResult = Batch.ApplyCommandInBatchMode(friendly, cmdName, cmdParams, &context);
    // Relay messages, if any.
-   wxString Message = Batch.GetMessage();
+   auto Message = Batch.GetMessage();
    if( !Message.empty() )
       context.Status( Message );
    return bResult;

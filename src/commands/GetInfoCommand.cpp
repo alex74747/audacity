@@ -159,7 +159,7 @@ bool GetInfoCommand::ApplyInner(const CommandContext &context)
       case kLabels       : return SendLabels( context );
       case kBoxes        : return SendBoxes( context );
       default:
-         context.Status( "Command options not recognised" );
+         context.Status( XO("Command options not recognised") );
    }
    return false;
 }

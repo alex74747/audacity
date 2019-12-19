@@ -39,7 +39,8 @@ void CommandMessageTarget::StartArray()
 {
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
-   Update( wxString::Format( "%s%s[ ", ( mCounts.back() > 0 ) ? ",\n" : "\n", Padding ));
+   Update( XO("%s%s[ ")
+      .Format( ( mCounts.back() > 0 ) ? ",\n" : "\n", Padding ));
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -48,12 +49,13 @@ void CommandMessageTarget::EndArray(){
    if( mCounts.size() > 1 ){
       mCounts.pop_back();
    }
-   Update( " ]" );
+   Update( XO(" ]") );
 }
 void CommandMessageTarget::StartStruct(){
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
-   Update( wxString::Format( "%s%s{ ", ( mCounts.back() > 0 ) ? ",\n" : "\n", Padding ));
+   Update( XO("%s%s{ ")
+      .Format( ( mCounts.back() > 0 ) ? ",\n" : "\n", Padding ));
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -61,28 +63,36 @@ void CommandMessageTarget::EndStruct(){
    if( mCounts.size() > 1 ){
       mCounts.pop_back();
    }
-   Update( " }" );
+   Update( XO(" }") );
 }
 void CommandMessageTarget::AddItem(const wxString &value, const wxString &name){
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
    Padding = (( value.length() < 15 ) || (mCounts.back()<=0))  ? "" : wxString("\n") + Padding;
    if( name.empty() )
-      Update( wxString::Format( "%s%s\"%s\"", (mCounts.back()>0)?", ":"", Padding, Escaped(value)));
+      Update(
+         XO("%s%s\"%s\"")
+            .Format( (mCounts.back()>0)?", ":"", Padding, Escaped(value)));
    else
-      Update( wxString::Format( "%s%s\"%s\":\"%s\"", (mCounts.back()>0)?", ":"", Padding, name, Escaped(value)));
+      Update(
+         XO("%s%s\"%s\":\"%s\"")
+            .Format( (mCounts.back()>0)?", ":"", Padding, name, Escaped(value)));
    mCounts.back() += 1;
 }
 
 void CommandMessageTarget::AddBool(const bool value,      const wxString &name){
    if( name.empty() )
-      Update( wxString::Format( "%s\"%s\"", (mCounts.back()>0)?", ":"", value?"true":"false"));
+      Update(
+         XO("%s\"%s\"")
+            .Format( (mCounts.back()>0)?", ":"", value?"true":"false") );
    else
-      Update( wxString::Format( "%s\"%s\":\"%s\"", (mCounts.back()>0)?", ":"", name,value?"true":"false"));
+      Update(
+         XO( "%s\"%s\":\"%s\"")
+            .Format( (mCounts.back()>0)?", ":"", name,value?"true":"false") );
    mCounts.back() += 1;
 }
 
-void CommandMessageTarget::AddItem(const double value,    const wxString &name){
+void CommandMessageTarget::AddItem(const double value, const wxString &name){
    std::stringstream str;
    std::locale nolocale("C");
    str.imbue(nolocale);
@@ -92,15 +102,17 @@ void CommandMessageTarget::AddItem(const double value,    const wxString &name){
    else
       str << ((mCounts.back()>0)? ", " : "") << "\"" << name << "\"" << ":" << value;
 
-   Update( str.str() );
+   Update( Verbatim( str.str() ) );
    mCounts.back() += 1;
 }
 
 void CommandMessageTarget::StartField(const wxString &name){
    if( name.empty() )
-      Update( wxString::Format( "%s", (mCounts.back()>0)? ", " : ""));
+      Update(
+         XO( "%s" ).Format( (mCounts.back()>0)? ", " : "") );
    else
-      Update( wxString::Format( "%s\"%s\":", (mCounts.back()>0) ?", ":"", name));
+      Update(
+         XO( "%s\"%s\":" ).Format( (mCounts.back()>0) ?", ":"", name) );
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -126,7 +138,8 @@ void LispyCommandMessageTarget::StartArray()
 {
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
-   Update( wxString::Format( (mCounts.back()>0)?"\n%s(":"(", Padding ));
+   Update(
+      ( mCounts.back() > 0 ) ? XO("\n%s(").Format( Padding ) : XO("(") );
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -135,12 +148,13 @@ void LispyCommandMessageTarget::EndArray(){
    if( mCounts.size() > 1 ){
       mCounts.pop_back();
    }
-   Update( ")" );
+   Update( XO(")") );
 }
 void LispyCommandMessageTarget::StartStruct(){
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
-   Update( wxString::Format( (mCounts.back()>0)?"\n%s(":"(", Padding ));
+   Update(
+      ( mCounts.back() > 0 ) ? XO("\n%s(").Format( Padding ) : XO("(") );
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -148,33 +162,43 @@ void LispyCommandMessageTarget::EndStruct(){
    if( mCounts.size() > 1 ){
       mCounts.pop_back();
    }
-   Update( ")" );
+   Update( XO(")") );
 }
 void LispyCommandMessageTarget::AddItem(const wxString &value, const wxString &name){
    wxString Padding;
    if( name.empty() )
-      Update( wxString::Format( "%s%s\"%s\"", (mCounts.back()>0)?" ":"", Padding, Escaped(value)));
+      Update(
+         XO("%s%s\"%s\"")
+            .Format( (mCounts.back()>0)?" ":"", Padding, Escaped(value)));
    else 
-      Update( wxString::Format( "%s%s(%s \"%s\")", (mCounts.back()>0)?" ":"", Padding, name, Escaped(value)));
+      Update(
+         XO("%s%s(%s \"%s\")")
+            .Format( (mCounts.back()>0)?" ":"", Padding, name, Escaped(value)));
    mCounts.back() += 1;
 }
 void LispyCommandMessageTarget::AddBool(const bool value,      const wxString &name){
    if( name.empty() )
-      Update( wxString::Format( "%s%s", (mCounts.back()>0)?" ":"",value?"True":"False"));
+      Update(
+         XO("%s%s")
+            .Format( (mCounts.back()>0)?" ":"",value?"True":"False" ) );
    else 
-      Update( wxString::Format( "%s(%s %s)", (mCounts.back()>0)?" ":"", name,value?"True":"False"));
+      Update(
+         XO("%s(%s %s)")
+            .Format( (mCounts.back()>0)?" ":"", name,value?"True":"False") );
    mCounts.back() += 1;
 }
 void LispyCommandMessageTarget::AddItem(const double value,    const wxString &name){
    if( name.empty() )
-      Update( wxString::Format( "%s%g", (mCounts.back()>0)?" ":"", value));
+      Update(
+         XO("%s%g").Format( (mCounts.back()>0)?" ":"", value) );
    else 
-      Update( wxString::Format( "%s(%s %g)", (mCounts.back()>0)?" ":"", name,value));
+      Update(
+         XO("%s(%s %g)").Format( (mCounts.back()>0)?" ":"", name,value) );
    mCounts.back() += 1;
 }
 
 void LispyCommandMessageTarget::StartField(const wxString &name){
-   Update( wxString::Format( "%s(%s", (mCounts.back()>0)?" ":"", name ));
+   Update( XO("%s(%s").Format( (mCounts.back()>0)?" ":"", name ) );
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -183,7 +207,7 @@ void LispyCommandMessageTarget::EndField(){
    if( mCounts.size() > 1 ){
       mCounts.pop_back();
    }
-   Update( ")" );
+   Update( XO(")") );
 }
 
 
@@ -196,7 +220,8 @@ void BriefCommandMessageTarget::StartArray()
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
    if( mCounts.size() <= 3 )
-      Update( wxString::Format( "%s%s ", ( mCounts.back() > 0 ) ? " \n" : "", Padding ));
+      Update(
+         XO( "%s%s ").Format( ( mCounts.back() > 0 ) ? " \n" : "", Padding ) );
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -206,13 +231,14 @@ void BriefCommandMessageTarget::EndArray(){
       mCounts.pop_back();
    }
    if( mCounts.size() <= 3 )
-     Update( " " );
+     Update( XO(" ") );
 }
 void BriefCommandMessageTarget::StartStruct(){
    wxString Padding;
    Padding.Pad( mCounts.size() *2 -2);
    if( mCounts.size() <= 3 )
-      Update( wxString::Format( "%s%s ", ( mCounts.back() > 0 ) ? " \n" : "", Padding ));
+      Update(
+         XO( "%s%s ").Format( ( mCounts.back() > 0 ) ? " \n" : "", Padding ));
    mCounts.back() += 1;
    mCounts.push_back( 0 );
 }
@@ -221,21 +247,24 @@ void BriefCommandMessageTarget::EndStruct(){
       mCounts.pop_back();
    }
    if( mCounts.size() <= 3 )
-      Update( " " );
+      Update( XO(" ") );
 }
 void BriefCommandMessageTarget::AddItem(const wxString &value, const wxString &WXUNUSED(name)){
    if( mCounts.size() <= 3 )
-      Update( wxString::Format( "%s\"%s\"", (mCounts.back()>0)?" ":"",Escaped(value)));
+      Update(
+         XO("%s\"%s\"").Format( (mCounts.back()>0)?" ":"",Escaped(value)) );
    mCounts.back() += 1;
 }
 void BriefCommandMessageTarget::AddBool(const bool value,      const wxString &WXUNUSED(name)){
    if( mCounts.size() <= 3 )
-      Update( wxString::Format( "%s%s", (mCounts.back()>0)?" ":"",value?"True":"False"));
+      Update(
+         XO("%s%s").Format( (mCounts.back()>0)?" ":"",value?"True":"False") );
    mCounts.back() += 1;
 }
 void BriefCommandMessageTarget::AddItem(const double value,    const wxString &WXUNUSED(name)){
    if( mCounts.size() <= 3 )
-      Update( wxString::Format( "%s%g", (mCounts.back()>0)?" ":"", value));
+      Update(
+         XO("%s%g").Format( (mCounts.back()>0)?" ":"", value) );
    mCounts.back() += 1;
 }
 
@@ -251,10 +280,9 @@ void BriefCommandMessageTarget::EndField(){
 }
 
 
-void MessageBoxTarget::Update(const wxString &message)
+void MessageBoxTarget::Update(const TranslatableString &message)
 {
-   // Should these messages be localized?
-   AudacityMessageBox( Verbatim( message ) );
+   AudacityMessageBox( message );
 }
 
 
@@ -317,11 +345,11 @@ public:
    virtual void OnOk(wxCommandEvent & evt);
    virtual void OnCancel(wxCommandEvent & evt);
 
-   static void AcceptText( const wxString & Text );
+   static void AcceptText( const TranslatableString & Text );
    static void Flush();
 
    wxTextCtrl * mTextCtrl;
-   wxString mText;
+   TranslatableString mText;
    static LongMessageDialog * pDlg;
 private:
    int mType;
@@ -352,7 +380,8 @@ LongMessageDialog::LongMessageDialog(wxWindow * parent,
    // The long message adds lots of short strings onto this one.
    // So preallocate to make it faster.
    // Needs 37Kb for all commands.
-   mText.Alloc(40000);
+   // mText.Alloc(40000) // ??
+   ;
 }
 
 LongMessageDialog::~LongMessageDialog(){
@@ -390,7 +419,7 @@ void LongMessageDialog::OnCancel(wxCommandEvent & WXUNUSED(evt)){
    Destroy();
 }
 
-void LongMessageDialog::AcceptText( const wxString & Text )
+void LongMessageDialog::AcceptText( const TranslatableString & Text )
 {
    if( pDlg == NULL ){
       pDlg = new LongMessageDialog(
@@ -404,10 +433,11 @@ void LongMessageDialog::AcceptText( const wxString & Text )
 void LongMessageDialog::Flush()
 {
    if( pDlg ){
-      if( !pDlg->mText.EndsWith( "\n\n" ))
+      auto translation = pDlg->mText.Translation();
+      if( !translation.EndsWith( "\n\n" ))
       {
-         pDlg->mText += "\n\n";
-         pDlg->mTextCtrl->SetValue( pDlg->mText );
+         pDlg->mText += XO("\n\n");
+         pDlg->mTextCtrl->SetValue( translation );
          pDlg->mTextCtrl->ShowPosition( pDlg->mTextCtrl->GetLastPosition() );
       }
    }
@@ -426,7 +456,7 @@ class MessageDialogTarget final : public CommandMessageTarget
 {
 public:
    virtual ~MessageDialogTarget() {Flush();}
-   void Update(const wxString &message) override
+   void Update(const TranslatableString &message) override
    {
       LongMessageDialog::AcceptText(message);
    }
@@ -459,7 +489,7 @@ InteractiveOutputTargets::InteractiveOutputTargets() :
 {
 }
 
-void StatusBarTarget::Update(const wxString &message)
+void StatusBarTarget::Update(const TranslatableString &message)
 {
-   mStatus.SetStatusText(message, 0);
+   mStatus.SetStatusText(message.Translation(), 0);
 }

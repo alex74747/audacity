@@ -101,7 +101,7 @@ bool HelpCommand::ApplyInner(const CommandContext & context){
    EffectManager & em = EffectManager::Get();
    PluginID ID = em.GetEffectByIdentifier( mCommandName );
    if( ID.empty() )
-      context.Status( "Command not found" );
+      context.Status( XO("Command not found") );
    else
       em.GetCommandDefinition( ID, context, 1);
    return true;

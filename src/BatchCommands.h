@@ -112,8 +112,8 @@ class MacroCommands final {
    CommandID GetCommand(int index);
    wxString GetParams(int index);
    int GetCount();
-   wxString GetMessage(){ return mMessage;};
-   void AddToMessage(const wxString & msgIn ){ mMessage += msgIn;};
+   TranslatableString GetMessage(){ return mMessage;};
+   void AddToMessage(const TranslatableString & msgIn ){ mMessage += msgIn;};
 
    bool IsFixed(const wxString & name);
 
@@ -126,7 +126,7 @@ private:
    CommandIDs mCommandMacro;
    wxArrayString mParamsMacro;
    bool mAbort;
-   wxString mMessage;
+   TranslatableString mMessage;
 
    Exporter mExporter;
    wxString mFileName;

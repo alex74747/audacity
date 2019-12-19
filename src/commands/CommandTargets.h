@@ -59,6 +59,7 @@ and sends it to that message target.
 #include <vector>
 #include <wx/string.h>
 #include <wx/thread.h>
+#include "Internat.h"
 
 class wxStatusBar;
 
@@ -76,7 +77,7 @@ class AUDACITY_DLL_API CommandMessageTarget /* not final */
 public:
    CommandMessageTarget() {mCounts.push_back(0);}
    virtual ~CommandMessageTarget() { Flush();}
-   virtual void Update(const wxString &message) = 0;
+   virtual void Update(const TranslatableString &message) = 0;
    virtual void StartArray();
    virtual void EndArray();
    virtual void StartStruct();
@@ -96,7 +97,7 @@ class CommandMessageTargetDecorator : public CommandMessageTarget
 public:
    CommandMessageTargetDecorator( CommandMessageTarget & target): mTarget(target) {}
    ~CommandMessageTargetDecorator() override { }
-   void Update(const wxString &message) override { mTarget.Update( message );}
+   void Update(const TranslatableString &message) override { mTarget.Update( message );}
    void StartArray() override { mTarget.StartArray();}
    void EndArray() override { mTarget.EndArray();}
    void StartStruct() override { mTarget.StartStruct();}
@@ -190,7 +191,7 @@ public:
    }
    void Update(double completed) override
    {
-      mTarget->Update(wxString::Format(L"%.2f%%", completed*100));
+      mTarget->Update(XO("%.2f%%").Format( completed*100 ) );
    }
 };
 
@@ -199,7 +200,7 @@ class NullMessageTarget final : public CommandMessageTarget
 {
 public:
    virtual ~NullMessageTarget() {}
-   void Update(const wxString &) override {}
+   void Update(const TranslatableString &) override {}
 };
 
 /// Displays messages from a command in an AudacityMessageBox
@@ -207,7 +208,7 @@ class AUDACITY_DLL_API MessageBoxTarget final : public CommandMessageTarget
 {
 public:
    virtual ~MessageBoxTarget() {}
-   void Update(const wxString &message) override;
+   void Update(const TranslatableString &message) override;
 };
 
 /// Displays messages from a command in a wxStatusBar
@@ -219,7 +220,7 @@ public:
    StatusBarTarget(wxStatusBar &sb)
       : mStatus(sb)
    {}
-   void Update(const wxString &message) override;
+   void Update(const TranslatableString &message) override;
 };
 
 /// Constructs a response (to be sent back to a script)
@@ -227,19 +228,18 @@ class ResponseTarget final : public CommandMessageTarget
 {
 private:
    wxSemaphore mSemaphore;
-   wxString mBuffer;
+   TranslatableString mBuffer;
 public:
    ResponseTarget()
-      : mBuffer(wxEmptyString),
-        mSemaphore(0, 1)
+      : mSemaphore(0, 1)
    { 
       // Cater for handling long responses quickly.
-      mBuffer.Alloc(40000);
+      // mBuffer.Alloc(40000); //??
    }
    virtual ~ResponseTarget()
    {
    }
-   void Update(const wxString &message) override
+   void Update(const TranslatableString &message) override
    {
       mBuffer += message;
    }
@@ -247,7 +247,7 @@ public:
    {
       mSemaphore.Post();
    }
-   wxString GetResponse()
+   TranslatableString GetResponse()
    {
       mSemaphore.Wait();
       return mBuffer;
@@ -270,7 +270,7 @@ public:
    ~CombinedMessageTarget()
    {
    }
-   void Update(const wxString &message) override
+   void Update(const TranslatableString &message) override
    {
       m1->Update(message);
       m2->Update(message);
@@ -326,7 +326,7 @@ public:
       if (mProgressTarget)
          mProgressTarget->Update(completed);
    }
-   void Status(const wxString &status, bool bFlush=false)
+   void Status(const TranslatableString &status, bool bFlush=false)
    {
       if (mStatusTarget){
          mStatusTarget->Update(status);
@@ -334,7 +334,7 @@ public:
             mStatusTarget->Flush();
       }
    }
-   void Error(const wxString &message)
+   void Error(const TranslatableString &message)
    {
       if (mErrorTarget)
          mErrorTarget->Update(message);

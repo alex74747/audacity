@@ -288,11 +288,11 @@ bool ScreenshotCommand::Capture(
 
    if (image.SaveFile(filename)) {
       // flush
-      context.Status( wxString::Format( _("Saved %s"), filename ), true );
+      context.Status( XO("Saved %s").Format( filename ), true );
    }
    else {
       context.Error(
-         wxString::Format( _("Error trying to save file: %s"), filename ) );
+         XO("Error trying to save file: %s").Format( filename ) );
       return false;
    }
    return true;

@@ -60,23 +60,24 @@ CommandContext::CommandContext(
 
 CommandContext::~CommandContext() = default;
 
-void CommandContext::Status( const wxString & message, bool bFlush ) const
+void CommandContext::Status(
+   const TranslatableString & message, bool bFlush ) const
 {
    if( pOutput )
       pOutput->Status( message, bFlush );
    else
    {
-      wxLogDebug("Status:%s", message );
+      wxLogDebug("Status:%s", message.Debug() );
    }
 }
 
-void CommandContext::Error(  const wxString & message ) const
+void CommandContext::Error(  const TranslatableString & message ) const
 {
    if( pOutput )
       pOutput->Error( message );
    else
    {
-      wxLogDebug("Error:%s", message );
+      wxLogDebug("Error:%s", message.Debug() );
    }
 }
 

@@ -647,8 +647,9 @@ bool MacroCommands::ApplyCommand( const TranslatableString &friendlyCommand,
       if( HandleTextualCommand(
          manager, command, *pContext, AlwaysEnabledFlag, true ) )
          return true;
-      pContext->Status( wxString::Format(
-         _("Your batch command of %s was not recognized."), friendlyCommand.Translation() ));
+      pContext->Status(
+         XO("Your batch command of %s was not recognized.")
+            .Format( friendlyCommand ));
       return false;
    }
    else

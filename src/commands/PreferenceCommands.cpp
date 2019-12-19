@@ -53,7 +53,7 @@ bool GetPreferenceCommand::Apply(const CommandContext & context)
    if (!gPrefs->Read(mName, &prefValue))
       return false;
 
-   context.Status(prefValue);
+   context.Status( Verbatim( prefValue ) );
    return true;
 }
 

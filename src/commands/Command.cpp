@@ -148,22 +148,22 @@ bool ApplyAndSendResponse::Apply()
       bool bResult = mCommand->Apply(*( mCtx.get()));
       return bResult; }
    );
-   wxString response = L"\n";
+   auto response = XO( "\n" );
 
    // PRL: it's all right to send untranslated strings to this channel
    // I don't see _("") used with literal strings.
-   response += GetSymbol().Internal().GET();
+   response += Verbatim( GetSymbol().Internal().GET() );
 
    // These three strings are deliberately not localised.
    // They are used in script responses and always happen in English.
-   response += L" finished: ";
+   response += XO(" finished: ");
    if (result)
    {
-      response += L"OK";
+      response += XO("OK");
    }
    else
    {
-      response += L"Failed!";
+      response += XO("Failed!");
    }
    mCtx->Status(response, true);
    return result;
@@ -267,9 +267,9 @@ bool CommandImplementation::SetParameter(const wxString &paramName, const wxVari
    {
       // Translated format, but untranslated command name substituted into it?
       // Perhaps these formats that don't need translating.
-      context.Error( wxString::Format(
-         _("%s is not a parameter accepted by %s"),
-            paramName, GetSymbol().Internal().GET() ) );
+      context.Error(
+         XO("%s is not a parameter accepted by %s")
+            .Format( paramName, GetSymbol().Internal().GET() ) );
                     // neglect translation for scripting ??
       return false;
    }
@@ -277,9 +277,9 @@ bool CommandImplementation::SetParameter(const wxString &paramName, const wxVari
    Validator &validator = mType.GetSignature().GetValidator(iter->first);
    if (!validator.Validate(paramValue))
    {
-      context.Error( wxString::Format(
-         _("Invalid value for parameter '%s': should be %s"),
-            paramName, validator.GetDescription() ) );
+      context.Error(
+         XO("Invalid value for parameter '%s': should be %s")
+            .Format( paramName, validator.GetDescription() ) );
       return false;
    }
    mParams[paramName] = validator.GetConverted();

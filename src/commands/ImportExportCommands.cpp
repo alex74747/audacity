@@ -102,7 +102,7 @@ bool ExportCommand::Apply(const CommandContext & context)
    int splitAt = mFileName.Find(wxUniChar('.'), true);
    if (splitAt < 0)
    {
-      context.Error(L"Export filename must have an extension!");
+      context.Error(XO("Export filename must have an extension!"));
       return false;
    }
    wxString extension = mFileName.Mid(splitAt+1).MakeUpper();
@@ -115,12 +115,12 @@ bool ExportCommand::Apply(const CommandContext & context)
 
    if (exportSuccess)
    {
-      context.Status(wxString::Format(L"Exported to %s format: %s",
-                              extension, mFileName));
+      context.Status(
+         XO("Exported to %s format: %s").Format( extension, mFileName));
       return true;
    }
 
-   context.Error(wxString::Format(L"Could not export to %s format!", extension));
+   context.Error( XO("Could not export to %s format!").Format( extension ) );
    return false;
 }
 
