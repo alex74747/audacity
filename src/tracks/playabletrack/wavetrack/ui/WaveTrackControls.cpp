@@ -32,6 +32,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../prefs/PrefsDialog.h"
 #include "../../../../prefs/ThemePrefs.h"
 #include "../../../../widgets/AudacityMessageBox.h"
+#include "../../../../widgets/wxMenuWrapper.h"
 #include "widgets/ProgressDialog.h"
 #include "UserException.h"
 #include "Identifier.h"
@@ -662,7 +663,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
    //   );
       AppendItem( "MakeStereo", OnMergeStereoID, XXO("Ma&ke Stereo Track"),
          POPUP_MENU_FN( OnMergeStereo ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
             bool canMakeStereo = !isUnsafe( handler ) && isMono( handler );
             if ( canMakeStereo ) {
                AudacityProject &project =

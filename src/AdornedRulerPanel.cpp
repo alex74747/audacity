@@ -53,9 +53,9 @@
 #include "widgets/AButton.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/Grabber.h"
+#include "widgets/wxMenuWrapper.h"
 
 #include <wx/dcclient.h>
-#include <wx/menu.h>
 
 using std::min;
 using std::max;
@@ -1842,28 +1842,28 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
 {
    const auto &viewInfo = ViewInfo::Get( *GetProject() );
    const auto &playRegion = viewInfo.playRegion;
-   wxMenu rulerMenu;
+   wxMenuWrapper rulerMenu;
 
-   rulerMenu.AppendCheckItem(OnToggleQuickPlayID, _("Enable Quick-Play"))->
+   rulerMenu.AppendCheckItem(OnToggleQuickPlayID, XO("Enable Quick-Play"))->
       Check(mQuickPlayEnabled);
 
-   auto pDrag = rulerMenu.AppendCheckItem(OnSyncQuickPlaySelID, _("Enable dragging selection"));
+   auto pDrag = rulerMenu.AppendCheckItem(OnSyncQuickPlaySelID, XO("Enable dragging selection"));
    pDrag->Check(mPlayRegionDragsSelection && !playRegion.Locked());
    pDrag->Enable(mQuickPlayEnabled && !playRegion.Locked());
 
-   rulerMenu.AppendCheckItem(OnAutoScrollID, _("Update display while playing"))->
+   rulerMenu.AppendCheckItem(OnAutoScrollID, XO("Update display while playing"))->
       Check(mViewInfo->bUpdateTrackIndicator);
 
-   auto pLock = rulerMenu.AppendCheckItem(OnLockPlayRegionID, _("Lock Play Region"));
+   auto pLock = rulerMenu.AppendCheckItem(OnLockPlayRegionID, XO("Lock Play Region"));
    pLock->Check(playRegion.Locked());
    pLock->Enable( playRegion.Locked() || !playRegion.Empty() );
 
 
    rulerMenu.AppendSeparator();
-   rulerMenu.AppendCheckItem(OnTogglePinnedStateID, _("Pinned Play Head"))->
+   rulerMenu.AppendCheckItem(OnTogglePinnedStateID, XO("Pinned Play Head"))->
       Check(TracksPrefs::GetPinnedHeadPreference());
 
-   PopupMenu(&rulerMenu, pos);
+   PopupMenu(rulerMenu.get(), pos);
 }
 
 void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
@@ -1872,9 +1872,9 @@ void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
    PushEventHandler(&scrubber);
    auto cleanup = finally([this]{ PopEventHandler(); });
 
-   wxMenu rulerMenu;
+   wxMenuWrapper rulerMenu;
    scrubber.PopulatePopupMenu(rulerMenu);
-   PopupMenu(&rulerMenu, pos);
+   PopupMenu(rulerMenu.get(), pos);
 }
 
 void AdornedRulerPanel::OnToggleQuickPlay(wxCommandEvent&)

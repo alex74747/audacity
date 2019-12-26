@@ -33,12 +33,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../UndoManager.h"
 #include "../../../ViewInfo.h"
 #include "../../../widgets/ErrorDialog.h"
+#include "../../../widgets/wxMenuWrapper.h"
 
 #include <wx/clipbrd.h>
 #include <wx/dcclient.h>
 #include <wx/font.h>
 #include <wx/frame.h>
-#include <wx/menu.h>
 
 LabelTrackView::Index::Index()
 :  mIndex(-1),
@@ -1811,17 +1811,17 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
 
    if( parent )
    {
-      wxMenu menu;
+      wxMenuWrapper menu;
       menu.Bind(wxEVT_MENU,
          [this, &project]( wxCommandEvent &event ){
             OnContextMenu( project, event ); }
       );
 
-      menu.Append(OnCutSelectedTextID, _("Cu&t Label text"));
-      menu.Append(OnCopySelectedTextID, _("&Copy Label text"));
-      menu.Append(OnPasteSelectedTextID, _("&Paste"));
-      menu.Append(OnDeleteSelectedLabelID, _("&Delete Label"));
-      menu.Append(OnEditSelectedLabelID, _("&Edit Label..."));
+      menu.Append(OnCutSelectedTextID, XO("Cu&t Label text"));
+      menu.Append(OnCopySelectedTextID, XO("&Copy Label text"));
+      menu.Append(OnPasteSelectedTextID, XO("&Paste"));
+      menu.Append(OnDeleteSelectedLabelID, XO("&Delete Label"));
+      menu.Append(OnEditSelectedLabelID, XO("&Edit Label..."));
 
       menu.Enable(OnCutSelectedTextID, IsTextSelected( project ));
       menu.Enable(OnCopySelectedTextID, IsTextSelected( project ));
@@ -1854,7 +1854,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
       // So, workaround it by editing the label AFTER the popup menu is
       // closed. It's really ugly, but it works.  :-(
       mEditIndex = -1;
-      parent->PopupMenu(&menu, x, ls->y + (mIconHeight / 2) - 1);
+      parent->PopupMenu(menu.get(), x, ls->y + (mIconHeight / 2) - 1);
       if (mEditIndex >= 0)
       {
          DoEditLabels( project, FindLabelTrack().get(), mEditIndex );

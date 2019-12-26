@@ -20,6 +20,7 @@ Paul Licameli split from WaveTrackVZoomHandle.cpp
 #include "../../../../RefreshCode.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../WaveTrack.h"
+#include "../../../../widgets/wxMenuWrapper.h"
 #include "../../../../prefs/WaveformSettings.h"
 
 WaveformVZoomHandle::WaveformVZoomHandle(
@@ -274,7 +275,7 @@ BEGIN_POPUP_MENU(WaveformVRulerMenuTable)
          AppendRadioItem( names[ii].Internal(),
             OnFirstWaveformScaleID + ii, names[ii].Msgid(),
             POPUP_MENU_FN( OnWaveformScaleType ),
-            []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+            []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
                const auto pData =
                   static_cast< WaveformVRulerMenuTable& >( handler ).mpData;
                WaveTrack *const wt = pData->pTrack;

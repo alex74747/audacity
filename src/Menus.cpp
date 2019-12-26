@@ -40,10 +40,10 @@
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ErrorDialog.h"
+#include "widgets/wxMenuWrapper.h"
 
 #include <unordered_set>
 
-#include <wx/menu.h>
 #include <wx/windowptr.h>
 
 MenuCreator::MenuCreator()

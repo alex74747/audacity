@@ -46,9 +46,9 @@ This class now lists
 #include "../PluginManager.h"
 #include "../tracks/ui/TrackView.h"
 #include "../ShuttleGui.h"
+#include "../widgets/wxMenuWrapper.h"
 
 #include <wx/frame.h>
-#include <wx/menu.h>
 
 const ComponentInterfaceSymbol GetInfoCommand::Symbol
 { XO("Get Info") };
@@ -185,7 +185,9 @@ bool GetInfoCommand::SendMenus(const CommandContext &context)
       context.AddItem( Label, "label" );
       context.AddItem( "", "accel" );
       context.EndStruct();
-      ExploreMenu( context, pBar->GetMenu( i ), pBar->GetId(), 1 );
+      ExploreMenu( context,
+         static_cast<wxMenuWrapper*>( pBar->GetMenu( i ) ), pBar->GetId(), 1 )
+      ;
    }
    context.EndArray();
    return true;
@@ -619,7 +621,8 @@ The various Explore functions are called from the Send functions,
 and may be recursive.  'Send' is the top level.
 *******************************************************************/
 
-void GetInfoCommand::ExploreMenu( const CommandContext &context, wxMenu * pMenu, int Id, int depth ){
+void GetInfoCommand::ExploreMenu(
+   const CommandContext &context, wxMenuWrapper * pMenu, int Id, int depth ){
    static_cast<void>(Id);//compiler food.
    if( !pMenu )
       return;
@@ -662,7 +665,8 @@ void GetInfoCommand::ExploreMenu( const CommandContext &context, wxMenu * pMenu,
       context.EndStruct();
 
       if (item->IsSubMenu()) {
-         pMenu = item->GetSubMenu();
+         pMenu = static_cast<wxMenuWrapper*>(item->GetSubMenu())
+         ;
          ExploreMenu( context, pMenu, item->GetId(), depth+1 );
       }
    }

@@ -20,6 +20,7 @@
 #include "../ProjectWindowBase.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
+#include "../widgets/wxMenuWrapper.h"
 
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
 
@@ -664,7 +665,6 @@ private:
 #include <wx/checkbox.h>
 #include <wx/dcclient.h>
 #include <wx/dcmemory.h>
-#include <wx/menu.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
@@ -1254,7 +1254,7 @@ void EffectUIHost::OnDebug(wxCommandEvent & evt)
 
 void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
 {
-   wxMenu menu;
+   wxMenuWrapper menu;
    if( !mEffect )
       return;
    
@@ -1262,32 +1262,32 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
    
    if (mUserPresets.size() == 0)
    {
-      menu.Append(kUserPresetsDummyID, _("User Presets"))->Enable(false);
+      menu.Append(kUserPresetsDummyID, XO("User Presets"))->Enable(false);
    }
    else
    {
-      auto sub = std::make_unique<wxMenu>();
+      auto sub = std::make_unique<wxMenuWrapper>();
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub->Append(kUserPresetsID + i, mUserPresets[i]);
+         sub->Append(kUserPresetsID + i, Verbatim( mUserPresets[i] ) );
       }
-      menu.Append(0, _("User Presets"), sub.release());
+      menu.Append(0, XO("User Presets"), sub.release());
    }
    
-   menu.Append(kSaveAsID, _("Save Preset..."));
+   menu.Append(kSaveAsID, XO("Save Preset..."));
    
    if (mUserPresets.size() == 0)
    {
-      menu.Append(kDeletePresetDummyID, _("Delete Preset"))->Enable(false);
+      menu.Append(kDeletePresetDummyID, XO("Delete Preset"))->Enable(false);
    }
    else
    {
-      auto sub = std::make_unique<wxMenu>();
+      auto sub = std::make_unique<wxMenuWrapper>();
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub->Append(kDeletePresetID + i, mUserPresets[i]);
+         sub->Append(kDeletePresetID + i, Verbatim( mUserPresets[i] ) );
       }
-      menu.Append(0, _("Delete Preset"), sub.release());
+      menu.Append(0, XO("Delete Preset"), sub.release());
    }
    
    menu.AppendSeparator();
@@ -1295,48 +1295,52 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
    auto factory = mEffect->GetFactoryPresets();
    
    {
-      auto sub = std::make_unique<wxMenu>();
-      sub->Append(kDefaultsID, _("Defaults"));
+      auto sub = std::make_unique<wxMenuWrapper>();
+      sub->Append(kDefaultsID, XO("Defaults"));
       if (factory.size() > 0)
       {
          sub->AppendSeparator();
          for (size_t i = 0, cnt = factory.size(); i < cnt; i++)
          {
-            auto label = factory[i];
+            auto label = Verbatim( factory[i] );
             if (label.empty())
             {
-               label = _("None");
+               label = XO("None");
             }
             
             sub->Append(kFactoryPresetsID + i, label);
          }
       }
-      menu.Append(0, _("Factory Presets"), sub.release());
+      menu.Append(0, XO("Factory Presets"), sub.release());
    }
    
    menu.AppendSeparator();
-   menu.Append(kImportID, _("Import..."))->Enable(mClient->CanExportPresets());
-   menu.Append(kExportID, _("Export..."))->Enable(mClient->CanExportPresets());
+   menu.Append(kImportID, XO("Import..."))->Enable(mClient->CanExportPresets());
+   menu.Append(kExportID, XO("Export..."))->Enable(mClient->CanExportPresets());
    menu.AppendSeparator();
-   menu.Append(kOptionsID, _("Options..."))->Enable(mClient->HasOptions());
+   menu.Append(kOptionsID, XO("Options..."))->Enable(mClient->HasOptions());
    menu.AppendSeparator();
    
    {
-      auto sub = std::make_unique<wxMenu>();
+      auto sub = std::make_unique<wxMenuWrapper>();
       
-      sub->Append(kDummyID, wxString::Format(_("Type: %s"),
-                                             ::wxGetTranslation( mEffect->GetFamily().Translation() )));
-      sub->Append(kDummyID, wxString::Format(_("Name: %s"), mEffect->GetName().Translation()));
-      sub->Append(kDummyID, wxString::Format(_("Version: %s"), mEffect->GetVersion()));
-      sub->Append(kDummyID, wxString::Format(_("Vendor: %s"), mEffect->GetVendor().Translation()));
-      sub->Append(kDummyID, wxString::Format(_("Description: %s"), mEffect->GetDescription().Translation()));
+      sub->Append(kDummyID, XO("Type: %s")
+         .Format( mEffect->GetFamily().Translation() ) );
+      sub->Append(kDummyID, XO("Name: %s")
+         .Format( mEffect->GetName().Translation() ) );
+      sub->Append(kDummyID, XO("Version: %s")
+         .Format( mEffect->GetVersion() ) );
+      sub->Append(kDummyID, XO("Vendor: %s")
+         .Format( mEffect->GetVendor().Translation() ) );
+      sub->Append(kDummyID, XO("Description: %s")
+         .Format( mEffect->GetDescription().Translation() ) );
       
-      menu.Append(0, _("About"), sub.release());
+      menu.Append(0, XO("About"), sub.release());
    }
    
    wxWindow *btn = FindWindow(kMenuID);
    wxRect r = btn->GetRect();
-   btn->PopupMenu(&menu, r.GetLeft(), r.GetBottom());
+   btn->PopupMenu(menu.get(), r.GetLeft(), r.GetBottom());
 }
 
 void EffectUIHost::Resume()

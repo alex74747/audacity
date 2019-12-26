@@ -51,7 +51,6 @@
 #include <wx/frame.h>
 #include <wx/image.h>
 #include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/settings.h>
 #include <wx/textdlg.h>
 #include <wx/numdlg.h>
@@ -73,6 +72,7 @@
 
 #include "../AllThemeResources.h"
 #include "../widgets/valnum.h"
+#include "../widgets/wxMenuWrapper.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"
@@ -788,18 +788,18 @@ void MeterPanel::OnMouse(wxMouseEvent &evt)
    if (evt.RightDown() ||
        (evt.ButtonDown() && InIcon(&evt)))
    {
-      wxMenu menu;
+      wxMenuWrapper menu;
       // Note: these should be kept in the same order as the enum
       if (mIsInput) {
          wxMenuItem *mi;
          if (mMonitoring)
-            mi = menu.Append(OnMonitorID, _("Stop Monitoring"));
+            mi = menu.Append(OnMonitorID, XO("Stop Monitoring"));
          else
-            mi = menu.Append(OnMonitorID, _("Start Monitoring"));
+            mi = menu.Append(OnMonitorID, XO("Start Monitoring"));
          mi->Enable(!mActive || mMonitoring);
       }
 
-      menu.Append(OnPreferencesID, _("Options..."));
+      menu.Append(OnPreferencesID, XO("Options..."));
 
       if (evt.RightDown()) {
          ShowMenu(evt.GetPosition());
@@ -1957,22 +1957,22 @@ void MeterPanel::RestoreState(const State &state)
 
 void MeterPanel::ShowMenu(const wxPoint & pos)
 {
-   wxMenu menu;
+   wxMenuWrapper menu;
    // Note: these should be kept in the same order as the enum
    if (mIsInput) {
       wxMenuItem *mi;
       if (mMonitoring)
-         mi = menu.Append(OnMonitorID, _("Stop Monitoring"));
+         mi = menu.Append(OnMonitorID, XO("Stop Monitoring"));
       else
-         mi = menu.Append(OnMonitorID, _("Start Monitoring"));
+         mi = menu.Append(OnMonitorID, XO("Start Monitoring"));
       mi->Enable(!mActive || mMonitoring);
    }
 
-   menu.Append(OnPreferencesID, _("Options..."));
+   menu.Append(OnPreferencesID, XO("Options..."));
 
    mAccSilent = true;      // temporarily make screen readers say (close to) nothing on focus events
 
-   PopupMenu(&menu, pos);
+   PopupMenu(menu.get(), pos);
 
    /* if stop/start monitoring was chosen in the menu, then by this point
    OnMonitoring has been called and variables which affect the accessibility

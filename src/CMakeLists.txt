@@ -968,6 +968,7 @@ list( APPEND SOURCES
       widgets/numformatter.h
       widgets/valnum.cpp
       widgets/valnum.h
+      widgets/wxMenuWrapper.h
       widgets/wxPanelWrapper.cpp
       widgets/wxPanelWrapper.h
       widgets/wxTextCtrlWrapper.h

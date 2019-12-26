@@ -27,6 +27,7 @@ Paul Licameli split from TrackControls.cpp
 #include "../../ShuttleGui.h"
 #include "../../Track.h"
 #include "../../widgets/PopupMenuTable.h"
+#include "../../widgets/wxMenuWrapper.h"
 
 #include <wx/dc.h>
 #include <wx/frame.h>
@@ -123,7 +124,7 @@ void TrackMenuTable::InitUserData(void *pUserData)
 
 BEGIN_POPUP_MENU(TrackMenuTable)
    static const auto enableIfCanMove = [](bool up){ return
-      [up]( PopupMenuHandler &handler, wxMenu &menu, int id ){
+      [up]( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
          auto pData = static_cast<TrackMenuTable&>( handler ).mpData;
          const auto &tracks = TrackList::Get( pData->project );
          Track *const pTrack = pData->pTrack;
@@ -295,7 +296,7 @@ unsigned CommonTrackControls::DoContextMenu(
       PopupMenuTable::ExtendMenu( *pMenu, *pExtension );
 
    pParent->PopupMenu
-      (pMenu.get(), buttonRect.x + 1, buttonRect.y + buttonRect.height + 1);
+      (pMenu.get()->get(), buttonRect.x + 1, buttonRect.y + buttonRect.height + 1);
 
    return data.result;
 }

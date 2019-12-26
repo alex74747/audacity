@@ -24,6 +24,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
 #include "../../../../prefs/SpectrogramSettings.h"
+#include "../../../../widgets/wxMenuWrapper.h"
 
 #include <wx/dcmemory.h>
 #include <wx/graphics.h>
@@ -797,7 +798,7 @@ PopupMenuTable::AttachedItem sAttachment{
                   (wxCommandEventFunction)
                      (&SpectrogramSettingsHandler::OnSpectrogramSettings),
                   SpectrogramSettingsHandler::Instance(),
-                  []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+                  []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
                      // Bug 1253.  Shouldn't open preferences if audio is busy.
                      // We can't change them on the fly yet anyway.
                      auto gAudioIO = AudioIOBase::Get();

@@ -27,7 +27,6 @@ KeyConfigPrefs and MousePrefs use.
 #include <wx/defs.h>
 #include <wx/ffile.h>
 #include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/button.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
@@ -45,6 +44,7 @@ KeyConfigPrefs and MousePrefs use.
 
 #include "../widgets/KeyView.h"
 #include "../widgets/AudacityMessageBox.h"
+#include "../widgets/wxMenuWrapper.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "../widgets/WindowAccessible.h"
@@ -590,12 +590,12 @@ void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
 // so we just do what it needs.
 void KeyConfigPrefs::OnDefaults(wxCommandEvent & WXUNUSED(event))
 {
-   wxMenu Menu;
-   Menu.Append( 1, _("Standard") );
-   Menu.Append( 2, _("Full") );
+   wxMenuWrapper Menu;
+   Menu.Append( 1, XO("Standard") );
+   Menu.Append( 2, XO("Full") );
    Menu.Bind( wxEVT_COMMAND_MENU_SELECTED, &KeyConfigPrefs::OnImportDefaults, this );
    // Pop it up where the mouse is.
-   PopupMenu(&Menu);//, wxPoint(0, 0));
+   PopupMenu(Menu.get());//, wxPoint(0, 0));
 }
 
 void KeyConfigPrefs::FilterKeys( std::vector<NormalizedKeyString> & arr )

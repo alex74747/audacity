@@ -22,7 +22,7 @@ class wxCommandEvent;
 
 #include <functional>
 #include <vector>
-#include <wx/menu.h> // to inherit wxMenu
+#include <wx/menu.h> // to inherit wxMenuWrapper
 #include <memory>
 
 #include "Internat.h"
@@ -35,7 +35,7 @@ struct AUDACITY_DLL_API PopupMenuTableEntry : Registry::SingleItem
 {
    enum Type { Item, RadioItem, CheckItem };
    using InitFunction =
-      std::function< void( PopupMenuHandler &handler, wxMenu &menu, int id ) >;
+      std::function< void( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ) >;
 
    Type type;
    int id;
@@ -114,7 +114,7 @@ public:
 
    // Optional pUserData gets passed to the InitUserData routines of tables.
    // No memory management responsibility is assumed by this function.
-   static std::unique_ptr<wxMenu> BuildMenu
+   static std::unique_ptr<wxMenuWrapper> BuildMenu
       (wxEvtHandler *pParent, PopupMenuTable *pTable, void *pUserData = NULL);
 
    const Identifier &Id() const { return mId; }
@@ -130,7 +130,7 @@ public:
 
    // menu must have been built by BuildMenu
    // More items get added to the end of it
-   static void ExtendMenu( wxMenu &menu, PopupMenuTable &otherTable );
+   static void ExtendMenu( wxMenuWrapper &menu, PopupMenuTable &otherTable );
    
    const std::shared_ptr< Registry::GroupItem > &Get( void *pUserData )
    {
@@ -271,7 +271,7 @@ BEGIN_POPUP_MENU(MyTable)
    AppendItem("Cut",
       OnCutSelectedTextID, XO("Cu&t"), POPUP_MENU_FN( OnCutSelectedText ),
       // optional argument:
-      [](PopupMenuHandler &handler, wxMenu &menu, int id)
+      [](PopupMenuHandler &handler, wxMenuWrapper &menu, int id)
       {
          auto data = static_cast<MyTable&>( handler ).pData;
          // maybe enable or disable the menu item

@@ -17,6 +17,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../RefreshCode.h"
 #include "../../../TimeTrack.h"
 #include "../../../widgets/PopupMenuTable.h"
+#include "../../../widgets/wxMenuWrapper.h"
 #include <wx/numdlg.h>
 
 TimeTrackControls::~TimeTrackControls()
@@ -142,12 +143,12 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
    BeginSection( "Scales" );
       AppendRadioItem( "Linear", OnTimeTrackLinID, XXO("&Linear scale"),
          POPUP_MENU_FN( OnTimeTrackLin ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
             menu.Check( id, !findTrack(handler)->GetDisplayLog() );
          } );
       AppendRadioItem( "Log", OnTimeTrackLogID, XXO("L&ogarithmic scale"),
          POPUP_MENU_FN( OnTimeTrackLog ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
             menu.Check( id, findTrack(handler)->GetDisplayLog() );
          } );
    EndSection();
@@ -157,7 +158,7 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
          POPUP_MENU_FN( OnSetTimeTrackRange ) );
       AppendCheckItem( "LogInterp", OnTimeTrackLogIntID,
          XXO("Logarithmic &Interpolation"), POPUP_MENU_FN( OnTimeTrackLogInt),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
             menu.Check( id, findTrack(handler)->GetInterpolateLog() );
          } );
    EndSection();

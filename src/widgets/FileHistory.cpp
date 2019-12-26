@@ -17,10 +17,10 @@
 #include "FileHistory.h"
 
 #include <wx/defs.h>
-#include <wx/menu.h>
 
 #include "Internat.h"
 #include "../Prefs.h"
+#include "wxMenuWrapper.h"
 
 #include <mutex>
 
@@ -94,7 +94,7 @@ void FileHistory::Clear()
    NotifyMenus();
 }
 
-void FileHistory::UseMenu(wxMenu *menu)
+void FileHistory::UseMenu(wxMenuWrapper *menu)
 {
    Compress();
 
@@ -103,7 +103,8 @@ void FileHistory::UseMenu(wxMenu *menu)
    auto found = (iter != end);
 
    if (!found)
-      mMenus.push_back(menu);
+      //mMenus.push_back(menu)
+      ;
    else {
       wxASSERT(false);
    }
@@ -159,7 +160,7 @@ void FileHistory::NotifyMenus()
    Save(*gPrefs);
 }
 
-void FileHistory::NotifyMenu(wxMenu *menu)
+void FileHistory::NotifyMenu(wxMenuWrapper *menu)
 {
    wxMenuItemList items = menu->GetMenuItems();
    for (auto end = items.end(), iter = items.begin(); iter != end;)
@@ -168,13 +169,13 @@ void FileHistory::NotifyMenu(wxMenu *menu)
    for (size_t i = 0; i < mHistory.size(); i++) {
       wxString item =  mHistory[i];
       item.Replace( "&", "&&" );
-      menu->Append(mIDBase + 1 + i,item);
+      menu->Append(mIDBase + 1 + i, Verbatim( item ) );
    }
 
    if (mHistory.size() > 0) {
       menu->AppendSeparator();
    }
-   menu->Append(mIDBase, _("&Clear"));
+   menu->Append(mIDBase, XO("&Clear"));
    menu->Enable(mIDBase, mHistory.size() > 0);
 }
 
@@ -184,7 +185,7 @@ void FileHistory::Compress()
    auto end = mMenus.end();
    mMenus.erase(
      std::remove_if( mMenus.begin(), end,
-        [](wxWeakRef<wxMenu> &pMenu){ return !pMenu; } ),
+        [](wxWeakRef<wxMenuWrapper> &pMenu){ return !pMenu; } ),
      end
    );
 }

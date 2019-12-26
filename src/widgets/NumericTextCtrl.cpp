@@ -174,6 +174,8 @@ different formats.
 #include "../KeyboardCapture.h"
 #include "../Theme.h"
 
+#include "wxMenuWrapper.h"
+
 #include <algorithm>
 #include <math.h>
 #include <limits>
@@ -184,7 +186,6 @@ different formats.
 #include <wx/dcbuffer.h>
 #include <wx/font.h>
 #include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/tooltip.h>
@@ -1752,7 +1753,7 @@ void NumericTextCtrl::OnPaint(wxPaintEvent & WXUNUSED(event))
 
 void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
 {
-   wxMenu menu;
+   wxMenuWrapper menu;
    int i;
 
    if (!mMenuEnabled) {
@@ -1764,14 +1765,14 @@ void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
 
    int currentSelection = -1;
    for (i = 0; i < GetNumBuiltins(); i++) {
-      menu.AppendRadioItem(ID_MENU + i, GetBuiltinName(i).Translation());
+      menu.AppendRadioItem(ID_MENU + i, GetBuiltinName(i).Msgid());
       if (mFormatString == GetBuiltinFormat(i)) {
          menu.Check(ID_MENU + i, true);
          currentSelection = i;
       }
    }
 
-   PopupMenu(&menu, wxPoint(0, 0));
+   PopupMenu(menu.get(), wxPoint(0, 0));
 
    // This used to be in an EVT_MENU() event handler, but GTK
    // is sensitive to what is done within the handler if the

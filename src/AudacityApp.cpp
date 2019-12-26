@@ -37,7 +37,6 @@ It handles initialization and termination by subclassing wxApp.
 #include <wx/ipc.h>
 #include <wx/window.h>
 #include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/snglinst.h>
 #include <wx/splash.h>
 #include <wx/stdpaths.h>
@@ -111,6 +110,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "tracks/ui/Scrubbing.h"
 #include "widgets/FileConfig.h"
 #include "widgets/FileHistory.h"
+#include "widgets/wxMenuWrapper.h"
 
 #ifdef HAS_NETWORKING
 #include "NetworkManager.h"
@@ -1415,18 +1415,18 @@ bool AudacityApp::InitPart2()
       // On the Mac, users don't expect a program to quit when you close the last window.
       // Create a menubar that will show when all project windows are closed.
 
-      auto fileMenu = std::make_unique<wxMenu>();
-      auto urecentMenu = std::make_unique<wxMenu>();
+      auto fileMenu = std::make_unique<wxMenuWrapper>();
+      auto urecentMenu = std::make_unique<wxMenuWrapper>();
       auto recentMenu = urecentMenu.get();
-      fileMenu->Append(wxID_NEW, wxString(_("&New")) + L"\tCtrl+N");
-      fileMenu->Append(wxID_OPEN, wxString(_("&Open...")) + L"\tCtrl+O");
-      fileMenu->AppendSubMenu(urecentMenu.release(), _("Open &Recent..."));
-      fileMenu->Append(wxID_ABOUT, _("&About Audacity..."));
-      fileMenu->Append(wxID_PREFERENCES, wxString(_("&Preferences...")) + L"\tCtrl+,");
+      fileMenu->Append(wxID_NEW, XO("&New") + Verbatim("\tCtrl+N"));
+      fileMenu->Append(wxID_OPEN, XO("&Open...") + Verbatim("\tCtrl+O"));
+      fileMenu->AppendSubMenu(urecentMenu.release(), XO("Open &Recent..."));
+      fileMenu->Append(wxID_ABOUT, XO("&About Audacity..."));
+      fileMenu->Append(wxID_PREFERENCES, XO("&Preferences...") + Verbatim("\tCtrl+,"));
 
       {
          auto menuBar = std::make_unique<wxMenuBar>();
-         menuBar->Append(fileMenu.release(), _("&File"));
+         menuBar->Append(fileMenu.release()->get(), _("&File"));
 
          // PRL:  Are we sure wxWindows will not leak this menuBar?
          // The online documentation is not explicit.

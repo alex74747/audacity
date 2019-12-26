@@ -29,6 +29,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "../../../../ViewInfo.h"
 #include "../../../../WaveClip.h"
 #include "../../../../WaveTrack.h"
+#include "../../../../widgets/wxMenuWrapper.h"
 #include "../../../../prefs/WaveformSettings.h"
 
 #include <wx/graphics.h>
@@ -1099,7 +1100,8 @@ const TranslatableString GetWaveColorStr(int colorIndex)
 }
 
 BEGIN_POPUP_MENU(WaveColorMenuTable)
-   static const auto fn = []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   static const auto fn =
+   []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
       auto &me = static_cast<WaveColorMenuTable&>( handler );
       auto pData = me.mpData;
       const auto &track = *static_cast<WaveTrack*>(pData->pTrack);

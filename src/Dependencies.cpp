@@ -536,9 +536,9 @@ void DependencyDialog::OnCopySelectedFiles(wxCommandEvent & WXUNUSED(event))
 void DependencyDialog::OnRightClick( wxListEvent& event)
 {
    static_cast<void>(event);
-   wxMenu menu;
-   menu.Append(CopyNamesToClipboardID, _("&Copy Names to Clipboard"));
-   PopupMenu(&menu);
+   wxMenuWrapper menu;
+   menu.Append(CopyNamesToClipboardID, XO("&Copy Names to Clipboard"));
+   PopupMenu(menu.get());
 }
 
 void DependencyDialog::OnCopyToClipboard( wxCommandEvent& )

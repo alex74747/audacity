@@ -10,6 +10,7 @@ Paul Licameli split from TrackPanel.cpp
 
 
 #include "PopupMenuTable.h"
+#include "wxMenuWrapper.h"
 
 PopupMenuTableEntry::~PopupMenuTableEntry()
 {}
@@ -27,7 +28,7 @@ PopupSubMenu::PopupSubMenu( const Identifier &stringId,
 }
 
 namespace {
-struct PopupMenu : public wxMenu
+struct PopupMenu : public wxMenuWrapper
 {
    PopupMenu(wxEvtHandler *pParent_, void *pUserData_)
       : pParent{ pParent_ }, tables{}, pUserData{ pUserData_ } {}
@@ -83,7 +84,7 @@ void PopupMenuBuilder::DoEndGroup( Registry::GroupItem &item, const Path &path )
          auto subMenu = std::move( mMenus.back() );
          mMenus.pop_back();
          mMenu = mMenus.empty() ? mRoot : mMenus.back().get();
-         mMenu->AppendSubMenu( subMenu.release(), pItem->caption.Translation());
+         mMenu->AppendSubMenu( subMenu.release(), pItem->caption );
       }
    }
 }
@@ -94,17 +95,17 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
    switch (pEntry->type) {
       case PopupMenuTable::Entry::Item:
       {
-         mMenu->Append(pEntry->id, pEntry->caption.Translation());
+         mMenu->Append(pEntry->id, pEntry->caption);
          break;
       }
       case PopupMenuTable::Entry::RadioItem:
       {
-         mMenu->AppendRadioItem(pEntry->id, pEntry->caption.Translation());
+         mMenu->AppendRadioItem(pEntry->id, pEntry->caption);
          break;
       }
       case PopupMenuTable::Entry::CheckItem:
       {
-         mMenu->AppendCheckItem(pEntry->id, pEntry->caption.Translation());
+         mMenu->AppendCheckItem(pEntry->id, pEntry->caption);
          break;
       }
       default:
@@ -136,7 +137,7 @@ PopupMenu::~PopupMenu()
 }
 }
 
-void PopupMenuTable::ExtendMenu( wxMenu &menu, PopupMenuTable &table )
+void PopupMenuTable::ExtendMenu( wxMenuWrapper &menu, PopupMenuTable &table )
 {
    auto &theMenu = dynamic_cast<PopupMenu&>(menu);
    theMenu.tables.push_back( &table );
@@ -214,7 +215,7 @@ void PopupMenu::Disconnect()
 }
 
 // static
-std::unique_ptr<wxMenu> PopupMenuTable::BuildMenu
+std::unique_ptr<wxMenuWrapper> PopupMenuTable::BuildMenu
 ( wxEvtHandler *pParent, PopupMenuTable *pTable, void *pUserData )
 {
    // Rebuild as needed each time.  That makes it safe in case of language change.

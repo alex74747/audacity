@@ -14,7 +14,6 @@
 #include "../commands/CommandContext.h"
 
 #include <wx/frame.h>
-#include <wx/menu.h>
 
 #undef USE_COCOA
 

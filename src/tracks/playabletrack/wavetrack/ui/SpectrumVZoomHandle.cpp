@@ -20,6 +20,7 @@ Paul Licameli split from WaveTrackVZoomHandle.cpp
 #include "../../../../RefreshCode.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../WaveTrack.h"
+#include "../../../../widgets/wxMenuWrapper.h"
 #include "../../../../prefs/SpectrogramSettings.h"
 
 SpectrumVZoomHandle::SpectrumVZoomHandle
@@ -272,7 +273,7 @@ BeginSection( "Scales" );
          AppendRadioItem( names[ii].Internal(),
             OnFirstSpectrumScaleID + ii, names[ii].Msgid(),
             POPUP_MENU_FN( OnSpectrumScaleType ),
-            []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+            []( PopupMenuHandler &handler, wxMenuWrapper &menu, int id ){
                WaveTrack *const wt =
                   static_cast<SpectrumVRulerMenuTable&>( handler )
                      .mpData->pTrack;

@@ -24,6 +24,7 @@ channel.
 #include "CommandType.h"
 
 class wxMenuBar;
+class wxMenuWrapper;
 class wxPoint;
 
 class GetInfoCommand : public AudacityCommand
@@ -56,7 +57,8 @@ private:
    bool SendEnvelopes(const CommandContext & context);
    bool SendBoxes(const CommandContext & context);
 
-   void ExploreMenu( const CommandContext &context, wxMenu * pMenu, int Id, int depth );
+   void ExploreMenu( const CommandContext &context,
+      wxMenuWrapper * pMenu, int Id, int depth );
    void ExploreTrackPanel( const CommandContext & context,
       wxPoint P, wxWindow * pWin, int Id, int depth );
    void ExploreAdornments( const CommandContext & context,

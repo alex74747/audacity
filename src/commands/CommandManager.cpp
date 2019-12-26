@@ -88,7 +88,6 @@ CommandManager.  It holds the callback for one command.
 #include <wx/hash.h>
 #include <wx/intl.h>
 #include <wx/log.h>
-#include <wx/menu.h>
 #include <wx/tokenzr.h>
 
 #include "../Menus.h"
@@ -96,6 +95,7 @@ CommandManager.  It holds the callback for one command.
 #include "../Project.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/HelpSystem.h"
+#include "../widgets/wxMenuWrapper.h"
 
 
 // On wxGTK, there may be many many many plugins, but the menus don't automatically
@@ -129,7 +129,7 @@ struct SubMenuListEntry
    ~SubMenuListEntry();
 
    TranslatableString name;
-   std::unique_ptr<wxMenu> menu;
+   std::unique_ptr<wxMenuWrapper> menu;
 };
 
 struct CommandListEntry
@@ -142,7 +142,7 @@ struct CommandListEntry
    TranslatableString label;
    TranslatableString labelPrefix;
    TranslatableString labelTop;
-   wxMenu *menu;
+   wxMenuWrapper *menu;
    CommandHandlerFinder finder;
    CommandFunctorPointer callback;
    CommandParameter parameter;
@@ -184,7 +184,7 @@ MenuBarListEntry::~MenuBarListEntry()
 }
 
 SubMenuListEntry::SubMenuListEntry( const TranslatableString &name_ )
-   : name(name_), menu( std::make_unique< wxMenu >() )
+   : name(name_), menu( std::make_unique< wxMenuWrapper >() )
 {
 }
 
@@ -416,7 +416,7 @@ void CommandManager::PopMenuBar()
 ///
 /// This starts a NEW menu
 ///
-wxMenu *CommandManager::BeginMenu(const TranslatableString & tName)
+wxMenuWrapper *CommandManager::BeginMenu(const TranslatableString & tName)
 {
    if ( mCurrentMenu )
       return BeginSubMenu( tName );
@@ -441,9 +441,9 @@ void CommandManager::EndMenu()
 ///
 /// This starts a NEW menu
 ///
-wxMenu *CommandManager::BeginMainMenu(const TranslatableString & tName)
+wxMenuWrapper *CommandManager::BeginMainMenu(const TranslatableString & tName)
 {
-   uCurrentMenu = std::make_unique<wxMenu>();
+   uCurrentMenu = std::make_unique<wxMenuWrapper>();
    mCurrentMenu = uCurrentMenu.get();
    mCurrentMenuName = tName;
    return mCurrentMenu;
@@ -460,7 +460,7 @@ void CommandManager::EndMainMenu()
    // items like Preferences, About, and Quit.
    wxASSERT(uCurrentMenu);
    CurrentMenuBar()->Append(
-      uCurrentMenu.release(), mCurrentMenuName.Translation());
+      uCurrentMenu.release()->get(), mCurrentMenuName.Translation());
    mCurrentMenu = nullptr;
    mCurrentMenuName = COMMAND;
 }
@@ -469,7 +469,7 @@ void CommandManager::EndMainMenu()
 ///
 /// This starts a NEW submenu, and names it according to
 /// the function's argument.
-wxMenu* CommandManager::BeginSubMenu(const TranslatableString & tName)
+wxMenuWrapper* CommandManager::BeginSubMenu(const TranslatableString & tName)
 {
    mSubMenuList.emplace_back( tName );
    mbSeparatorAllowed = false;
@@ -490,7 +490,7 @@ void CommandManager::EndSubMenu()
    mSubMenuList.pop_back();
 
    //Add the submenu to the current menu
-   auto name = tmpSubMenu.name.Translation();
+   auto name = tmpSubMenu.name;
    CurrentMenu()->Append(0, name, tmpSubMenu.menu.release(),
       name /* help string */ );
    mbSeparatorAllowed = true;
@@ -500,7 +500,7 @@ void CommandManager::EndSubMenu()
 ///
 /// This returns the 'Current' Submenu, which is the one at the
 ///  end of the mSubMenuList (or NULL, if it doesn't exist).
-wxMenu * CommandManager::CurrentSubMenu() const
+wxMenuWrapper * CommandManager::CurrentSubMenu() const
 {
    if(mSubMenuList.empty())
       return NULL;
@@ -512,12 +512,12 @@ wxMenu * CommandManager::CurrentSubMenu() const
 /// This returns the current menu that we're appending to - note that
 /// it could be a submenu if BeginSubMenu was called and we haven't
 /// reached EndSubMenu yet.
-wxMenu * CommandManager::CurrentMenu() const
+wxMenuWrapper * CommandManager::CurrentMenu() const
 {
    if(!mCurrentMenu)
       return NULL;
 
-   wxMenu * tmpCurrentSubMenu = CurrentSubMenu();
+   wxMenuWrapper * tmpCurrentSubMenu = CurrentSubMenu();
 
    if(!tmpCurrentSubMenu)
    {
@@ -535,8 +535,6 @@ void CommandManager::UpdateCheckmarks( AudacityProject &project )
       }
    }
 }
-
-
 
 void CommandManager::AddItem(AudacityProject &project,
                              const CommandID &name,
@@ -563,7 +561,7 @@ void CommandManager::AddItem(AudacityProject &project,
          options);
    entry->useStrictFlags = options.useStrictFlags;
    int ID = entry->id;
-   wxString label = FormatLabelWithDisabledAccel(entry);
+   auto label = FormatLabelWithDisabledAccel(entry);
 
    SetCommandFlags(name, flags);
 
@@ -664,7 +662,7 @@ int CommandManager::NextIdentifier(int ID)
 ///and keep menus above wxID_HIGHEST
 CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
    const TranslatableString & label,
-   wxMenu *menu,
+   wxMenuWrapper *menu,
    CommandHandlerFinder finder,
    CommandFunctorPointer callback,
    const CommandID &nameSuffix,
@@ -815,15 +813,12 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
    return entry;
 }
 
-wxString CommandManager::FormatLabelForMenu(const CommandListEntry *entry) const
+TranslatableString CommandManager::FormatLabelForMenu(const CommandListEntry *entry) const
 {
-   auto label = entry->label.Translation();
+   auto label = entry->label;
    if (!entry->key.empty())
-   {
       // using GET to compose menu item name for wxWidgets
-      label += L"\t" + entry->key.GET();
-   }
-
+      label.Join( Verbatim( entry->key.GET() ), L"\t" );
    return label;
 }
 
@@ -832,9 +827,9 @@ wxString CommandManager::FormatLabelForMenu(const CommandListEntry *entry) const
 // catch them in normal wxWidgets processing, rather than passing the key presses on
 // to the controls that had the focus.  We would like all the menu accelerators to be
 // disabled, in fact.
-wxString CommandManager::FormatLabelWithDisabledAccel(const CommandListEntry *entry) const
+TranslatableString CommandManager::FormatLabelWithDisabledAccel(const CommandListEntry *entry) const
 {
-   auto label = entry->label.Translation();
+   auto label = entry->label;
 #if 1
    wxString Accel;
    do{
@@ -877,7 +872,7 @@ wxString CommandManager::FormatLabelWithDisabledAccel(const CommandListEntry *en
          Accel = wxString("\t") + entry->key.GET();
       }
    } while (false );
-   label += Accel;
+   label += Verbatim( Accel );
 #endif
    return label;
 }
