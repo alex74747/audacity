@@ -3569,7 +3569,7 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
          AudacityTextEntryDialog dlg( this,
             XO("Rename '%s' to...").Format( mEditCurves[ item ].Name ),
             XO("Rename...") );
-         dlg.SetTextValidator( wxFILTER_EXCLUDE_CHAR_LIST );
+         dlg.SetTextValidator( wxFILTER_EXCLUDE_CHAR_LIST ); //
          dlg.SetName(
             wxString::Format( _("Rename '%s'"), mEditCurves[ item ].Name ) );
          wxTextValidator *tv = dlg.GetTextValidator();

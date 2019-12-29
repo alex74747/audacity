@@ -653,7 +653,7 @@ void ScreenshotBigDialog::DoCapture(int captureMode)
    mCommand->mPath = mDirectoryTextBox->GetValue();
    mCommand->mWhat = captureMode;
    if (!mCommand->Apply(mContext))
-      mStatus->SetStatusText(_("Capture failed!"), mainStatusBarField);
+      mStatus->SetStatusText(_("Capture failed!"), mainStatusBarField); //
 
    // Bug 2323: (100% hackage alert) Since the command target dialog is not
    // accessible from outside the command, this seems to be the only way we

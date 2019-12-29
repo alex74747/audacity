@@ -142,7 +142,7 @@ wxString NumberFormatter::ToString(double val, int precision, int style)
 
     if (std::isnan(val))
     {
-        return _("NaN");
+        return _("NaN"); //
     }
     if (std::isinf(val))
     {

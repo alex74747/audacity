@@ -1087,7 +1087,7 @@ const TranslatableString &Scrubber::GetUntranslatedStateString() const
       return empty;
 }
 
-wxString Scrubber::StatusMessageForWave() const
+wxString Scrubber::StatusMessageForWave() const //
 {
    wxString result;
 

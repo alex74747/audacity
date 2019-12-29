@@ -770,7 +770,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
       // not to confuse users
       if (name == L"Undo")
       {
-         node.label = _("Undo");
+         node.label = _("Undo"); //
       }
       else if (name == L"Redo")
       {

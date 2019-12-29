@@ -64,6 +64,7 @@ void TimeTrackMenuTable::OnSetTimeTrackRange(wxCommandEvent & /*event*/)
 
       // MB: these lower/upper limits match the maximum allowed range of the time track
       // envelope, but this is not strictly required
+      //
       lower = wxGetNumberFromUser(_("Change lower speed limit (%) to:"),
          _("Lower speed limit"),
          _("Lower speed limit"),
