@@ -9611,6 +9611,7 @@
 				WARNING_CFLAGS = (
 					"-Wno-nonnull",
 					"-Wno-underaligned-exception-object",
+					"-Wno-unknown-warning-option",
 				);
 			};
 			name = Debug;
@@ -9952,6 +9953,7 @@
 				WARNING_CFLAGS = (
 					"-Wno-nonnull",
 					"-Wno-underaligned-exception-object",
+					"-Wno-unknown-warning-option",
 				);
 			};
 			name = Release;
@@ -10348,6 +10350,7 @@
 				WARNING_CFLAGS = (
 					"-Wno-nonnull",
 					"-Wno-underaligned-exception-object",
+					"-Wno-unknown-warning-option",
 				);
 			};
 			name = Debug64;
@@ -10813,6 +10816,7 @@
 				WARNING_CFLAGS = (
 					"-Wno-nonnull",
 					"-Wno-underaligned-exception-object",
+					"-Wno-unknown-warning-option",
 				);
 			};
 			name = Release64;
