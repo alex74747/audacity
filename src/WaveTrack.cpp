@@ -435,14 +435,14 @@ bool WaveTrack::IsEmpty(double t0, double t1) const
    return true;
 }
 
-Track::Holder WaveTrack::Cut(double t0, double t1)
+Track::Holder WaveTrack::Cut(double t0, double t1, double projectRate)
 {
    if (t1 < t0)
       THROW_INCONSISTENCY_EXCEPTION;
 
    auto tmp = Copy(t0, t1);
 
-   Clear(t0, t1);
+   Clear(t0, t1, projectRate);
 
    return tmp;
 }
@@ -514,7 +514,9 @@ void WaveTrack::Trim (double t0, double t1)
    //if inside0 is false, then the left selector was between
    //clips, so DELETE everything to its left.
    if(!inside1 && t1 < GetEndTime())
-      Clear(t1,GetEndTime());
+      Clear(t1,GetEndTime(),
+            0 // don't care about project rate
+            );
 
    if(!inside0 && t0 > GetStartTime())
       SplitDelete(GetStartTime(), t0);
@@ -595,7 +597,7 @@ Track::Holder WaveTrack::CopyNonconst(double t0, double t1)
    return Copy(t0, t1);
 }
 
-void WaveTrack::Clear(double t0, double t1)
+void WaveTrack::Clear(double t0, double t1, double)
 // STRONG-GUARANTEE
 {
    HandleClear(t0, t1, false, false);
@@ -715,7 +717,9 @@ void WaveTrack::ClearAndPaste(double t0, // Start of time to clear
    // If duration is 0, then it's just a plain paste
    if (dur == 0.0) {
       // use WEAK-GUARANTEE
-      Paste(t0, src);
+      Paste(t0, src,
+            0 // don't care about project rate
+            );
       return;
    }
 
@@ -775,7 +779,9 @@ void WaveTrack::ClearAndPaste(double t0, // Start of time to clear
    {
 
       // And paste in the NEW data
-      Paste(t0, src);
+      Paste(t0, src,
+            0 // don't care about project rate
+            );
       {
          // First, merge the NEW clip(s) in with the existing clips
          if (merge && splits.size() > 0)
@@ -1064,7 +1070,7 @@ void WaveTrack::HandleClear(double t0, double t1,
       mClips.push_back(std::move(clip)); // transfer ownership
 }
 
-void WaveTrack::SyncLockAdjust(double oldT1, double newT1)
+void WaveTrack::SyncLockAdjust(double oldT1, double newT1, double projectRate)
 {
    if (newT1 > oldT1) {
       // Insert space within the track
@@ -1082,9 +1088,9 @@ void WaveTrack::SyncLockAdjust(double oldT1, double newT1)
          bool clipsCanMove = true;
          gPrefs->Read(wxT("/GUI/EditClipCanMove"), &clipsCanMove);
          if (clipsCanMove) {
-            auto tmp = Cut (oldT1, GetEndTime() + 1.0/GetRate());
+            auto tmp = Cut (oldT1, GetEndTime() + 1.0/GetRate(), projectRate);
 
-            Paste(newT1, tmp.get());
+            Paste(newT1, tmp.get(), projectRate);
          }
          return;
       }
@@ -1096,15 +1102,15 @@ void WaveTrack::SyncLockAdjust(double oldT1, double newT1)
 
          tmp->InsertSilence(0.0, newT1 - oldT1);
          tmp->Flush();
-         Paste(oldT1, tmp.get());
+         Paste(oldT1, tmp.get(), projectRate);
       }
    }
    else if (newT1 < oldT1) {
-      Clear(newT1, oldT1);
+      Clear(newT1, oldT1, projectRate);
    }
 }
 
-void WaveTrack::Paste(double t0, const Track *src)
+void WaveTrack::Paste(double t0, const Track *src, double projectRate)
 // WEAK-GUARANTEE
 {
    bool editClipCanMove = gPrefs->GetEditClipsCanMove();
@@ -1156,8 +1162,8 @@ void WaveTrack::Paste(double t0, const Track *src)
             // We need to insert multiple clips, so split the current clip and
             // move everything to the right, then try to paste again
             if (!IsEmpty(t0, GetEndTime())) {
-               auto tmp = Cut(t0, GetEndTime()+1.0/mRate);
-               Paste(t0 + insertDuration, tmp.get());
+               auto tmp = Cut(t0, GetEndTime()+1.0/mRate, projectRate);
+               Paste(t0 + insertDuration, tmp.get(), projectRate);
             }
          }
          else {

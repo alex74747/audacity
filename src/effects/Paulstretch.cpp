@@ -398,8 +398,8 @@ bool EffectPaulstretch::ProcessOne( const EffectContext &context,
       if (!cancelled){
          outputTrack->Flush();
 
-         track->Clear(t0,t1);
-         track->Paste(t0, outputTrack.get());
+         track->Clear(t0,t1, mProjectRate);
+         track->Paste(t0, outputTrack.get(), mProjectRate);
          m_t1 = mT0 + outputTrack->GetEndTime();
       }
       

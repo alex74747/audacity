@@ -371,7 +371,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
    const auto t =
       TrackFactory{ mSettings, dd, &zoomInfo }.NewWaveTrack(int16Sample);
 
-   t->SetRate(1);
+   auto rate = 1.0;
+   t->SetRate(rate);
 
    srand(randSeed);
 
@@ -452,7 +453,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
       Track::Holder tmp;
       try {
-         tmp = t->Cut(double (x0 * chunkSize), double ((x0 + xlen) * chunkSize));
+         tmp = t->Cut(
+            double (x0 * chunkSize), double ((x0 + xlen) * chunkSize), rate);
       }
       catch (const AudacityException&) {
          Printf( XO("Trial %d\n").Format( z ) );
@@ -474,7 +476,7 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
          Printf( XO("Paste: %ld\n").Format( y0 * chunkSize ) );
 
       try {
-         t->Paste((double)(y0 * chunkSize), tmp.get());
+         t->Paste((double)(y0 * chunkSize), tmp.get(), rate);
       }
       catch (const AudacityException&) {
          Printf( XO("Trial %d\nFailed on Paste.\n").Format( z ) );

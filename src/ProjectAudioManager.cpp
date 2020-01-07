@@ -565,6 +565,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
       if (appendRecord) {
          // Append recording:
          // Pad selected/all wave tracks to make them all the same length
+         auto projectRate = ProjectSettings::Get( project ).GetRate();
          for (const auto &wt : tracks.captureTracks)
          {
             auto endTime = wt->GetEndTime();
@@ -601,8 +602,8 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
                auto newTrack = TrackFactory::Get( *p ).NewWaveTrack();
                newTrack->InsertSilence(0.0, t0 - endTime);
                newTrack->Flush();
-               pending->Clear(endTime, t0);
-               pending->Paste(endTime, newTrack.get());
+               pending->Clear(endTime, t0, projectRate);
+               pending->Paste(endTime, newTrack.get(), projectRate);
             }
             transportTracks.captureTracks.push_back(pending);
          }
@@ -764,6 +765,7 @@ void ProjectAudioManager::SetupCutPreviewTracks(double WXUNUSED(playStart), doub
 {
    ClearCutPreviewTracks();
    AudacityProject *p = &mProject;
+   auto projectRate = ProjectSettings::Get( *p ).GetRate();
    {
       auto trackRange = TrackList::Get( *p ).Selected< const PlayableTrack >();
       if( !trackRange.empty() ) {
@@ -773,7 +775,7 @@ void ProjectAudioManager::SetupCutPreviewTracks(double WXUNUSED(playStart), doub
             // Clear has a very small chance of throwing
 
             auto newTrack = track1->Duplicate();
-            newTrack->Clear(cutStart, cutEnd);
+            newTrack->Clear(cutStart, cutEnd, projectRate);
             cutPreviewTracks->Add( newTrack );
          }
          // use NOTHROW-GUARANTEE:

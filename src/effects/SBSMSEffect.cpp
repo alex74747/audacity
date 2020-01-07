@@ -439,7 +439,8 @@ bool EffectSBSMS::Process( EffectContext &context )
       [&](Track *t) {
          if (mustSync && t->IsSyncLockSelected())
          {
-            t->SyncLockAdjust(mCurT1, mCurT0 + (mCurT1 - mCurT0) * mTotalStretch);
+            t->SyncLockAdjust(
+               mCurT1, mCurT0 + (mCurT1 - mCurT0) * mTotalStretch, mProjectRate);
          }
       }
    );

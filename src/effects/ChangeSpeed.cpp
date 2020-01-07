@@ -270,7 +270,7 @@ bool EffectChangeSpeed::Process( EffectContext &context )
       },
       [&](Track *t) {
          if (t->IsSyncLockSelected())
-            t->SyncLockAdjust(mT1, mT0 + (mT1 - mT0) * mFactor);
+            t->SyncLockAdjust(mT1, mT0 + (mT1 - mT0) * mFactor, mProjectRate);
       }
    );
 

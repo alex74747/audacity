@@ -156,7 +156,7 @@ private:
    // High-level editing
    //
 
-   Track::Holder Cut(double t0, double t1) override;
+   Track::Holder Cut(double t0, double t1, double projectRate) override;
 
    // If forClipboard is true,
    // and there is no clip at the end time of the selection, then the result
@@ -165,8 +165,8 @@ private:
    Track::Holder Copy(double t0, double t1, bool forClipboard = true) const override;
    Track::Holder CopyNonconst(double t0, double t1) /* not override */;
 
-   void Clear(double t0, double t1) override;
-   void Paste(double t0, const Track *src) override;
+   void Clear(double t0, double t1, double projectRate) override;
+   void Paste(double t0, const Track *src, double projectRate) override;
    // May assume precondition: t0 <= t1
    void ClearAndPaste(double t0, double t1,
                               const Track *src,
@@ -196,7 +196,7 @@ private:
    // May assume precondition: t0 <= t1
    void HandleClear(double t0, double t1, bool addCutLines, bool split);
 
-   void SyncLockAdjust(double oldT1, double newT1) override;
+   void SyncLockAdjust(double oldT1, double newT1, double projectRate) override;
 
    /** @brief Returns true if there are no WaveClips in the specified region
     *

@@ -460,6 +460,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "prefs/GUISettings.h"
 #include "Prefs.h"
 #include "Project.h"
+#include "ProjectSettings.h"
 #include "WaveTrack.h"
 #include "AutoRecovery.h"
 
@@ -2360,12 +2361,13 @@ void AudioIO::StopStream()
             } );
          }
 
+         auto rate = ProjectSettings::Get( *mOwningProject ).GetRate();
          for (auto &interval : mLostCaptureIntervals) {
             auto &start = interval.first;
             auto duration = interval.second;
             for (auto &track : mCaptureTracks) {
                GuardedCall([&] {
-                  track->SyncLockAdjust(start, start + duration);
+                  track->SyncLockAdjust(start, start + duration, rate);
                });
             }
          }

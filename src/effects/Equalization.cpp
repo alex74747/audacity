@@ -1388,10 +1388,12 @@ bool EffectEqualization::ProcessOne(const EffectContext &context,
       for(unsigned int i = 0; i < clipStartEndTimes.size(); i++)
       {
          //remove the old audio and get the NEW
-         t->Clear(clipStartEndTimes[i].first,clipStartEndTimes[i].second);
+         t->Clear(clipStartEndTimes[i].first,clipStartEndTimes[i].second,
+            mProjectRate );
          auto toClipOutput = output->Copy(clipStartEndTimes[i].first-startT+offsetT0,clipStartEndTimes[i].second-startT+offsetT0);
          //put the processed audio in
-         t->Paste(clipStartEndTimes[i].first, toClipOutput.get());
+         t->Paste(clipStartEndTimes[i].first, toClipOutput.get(),
+            mProjectRate );
          //if the clip was only partially selected, the Paste will have created a split line.  Join is needed to take care of this
          //This is not true when the selection is fully contained within one clip (second half of conditional)
          if( (clipRealStartEndTimes[i].first  != clipStartEndTimes[i].first ||

@@ -572,14 +572,14 @@ bool EffectTruncSilence::DoRemoval
             }
 
             // Perform the cut
-            wt->Clear(cutStart, cutEnd);
+            wt->Clear(cutStart, cutEnd, mProjectRate);
 
             // Write cross-faded data
             wt->Set((samplePtr)buf1.get(), floatSample, t1, blendFrames);
          },
          [&](Track *t) {
             // Non-wave tracks: just do a sync-lock adjust
-            t->SyncLockAdjust(cutEnd, cutStart);
+            t->SyncLockAdjust(cutEnd, cutStart, mProjectRate);
          }
       );
       ++whichReg;

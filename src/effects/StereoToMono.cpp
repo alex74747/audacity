@@ -153,9 +153,10 @@ bool EffectStereoToMono::ProcessOne( const EffectContext &context, int count )
    }
 
    double minStart = wxMin(mLeftTrack->GetStartTime(), mRightTrack->GetStartTime());
-   mLeftTrack->Clear(mLeftTrack->GetStartTime(), mLeftTrack->GetEndTime());
+   mLeftTrack->Clear(
+      mLeftTrack->GetStartTime(), mLeftTrack->GetEndTime(), mProjectRate);
    outTrack->Flush();
-   mLeftTrack->Paste(minStart, outTrack.get());
+   mLeftTrack->Paste(minStart, outTrack.get(), mProjectRate);
    mOutputTracks->GroupChannels( *mLeftTrack,  1 );
    mOutputTracks->Remove(mRightTrack);
 

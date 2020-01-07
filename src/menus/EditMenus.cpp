@@ -79,6 +79,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
    auto &tracks = TrackList::Get( project );
    auto &trackFactory = TrackFactory::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &settings = ProjectSettings::Get( project );
    auto &window = ProjectWindow::Get( project );
 
    // First check whether anything's selected.
@@ -128,7 +129,7 @@ bool DoPasteNothingSelected(AudacityProject &project)
 
          wxASSERT(pClip);
 
-         pNewTrack->Paste(0.0, pClip);
+         pNewTrack->Paste(0.0, pClip, settings.GetRate());
 
          if (!pFirstNewTrack)
             pFirstNewTrack = pNewTrack;
@@ -239,6 +240,7 @@ void OnCut(const CommandContext &context)
    auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto &ruler = AdornedRulerPanel::Get( project );
+   auto &settings = ProjectSettings::Get( project );
    auto &window = ProjectWindow::Get( project );
 
    // This doesn't handle cutting labels, it handles
@@ -264,7 +266,7 @@ void OnCut(const CommandContext &context)
       [&](NoteTrack *n) {
          // Since portsmf has a built-in cut operator, we use that instead
          auto dest = n->Cut(selectedRegion.t0(),
-                selectedRegion.t1());
+                selectedRegion.t1(), settings.GetRate());
          FinishCopy(n, dest, newClipboard);
       },
 #endif
@@ -305,7 +307,7 @@ void OnCut(const CommandContext &context)
       },
       [&](Track *n) {
          n->Clear(selectedRegion.t0(),
-                  selectedRegion.t1());
+                  selectedRegion.t1(), settings.GetRate());
       }
    );
 
@@ -324,11 +326,12 @@ void OnDelete(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &settings = ProjectSettings::Get( project );
    auto &window = ProjectWindow::Get( project );
 
    for (auto n : tracks.Any()) {
       if (n->GetSelected() || n->IsSyncLockSelected()) {
-         n->Clear(selectedRegion.t0(), selectedRegion.t1());
+         n->Clear(selectedRegion.t0(), selectedRegion.t1(), settings.GetRate());
       }
    }
 
@@ -388,6 +391,8 @@ void OnPaste(const CommandContext &context)
    auto &window = ProjectWindow::Get( project );
 
    auto isSyncLocked = settings.IsSyncLocked();
+
+   auto projectRate = settings.GetRate();
 
    // Handle text paste (into active label) first.
    if (DoPasteText(project))
@@ -451,7 +456,7 @@ void OnPaste(const CommandContext &context)
                if (n->IsSyncLockSelected()) {
                   auto newT1 = t0 + clipboard.Duration();
                   if (t1 != newT1 && t1 <= n->GetEndTime()) {
-                     n->SyncLockAdjust(t1, newT1);
+                     n->SyncLockAdjust(t1, newT1, projectRate);
                      bPastedSomething = true;
                   }
                }
@@ -520,7 +525,7 @@ void OnPaste(const CommandContext &context)
             [&](LabelTrack *ln){
                // Per Bug 293, users expect labels to move on a paste into
                // a label track.
-               ln->Clear(t0, t1);
+               ln->Clear(t0, t1, projectRate);
 
                ln->ShiftLabelsOnInsert( clipboard.Duration(), t0 );
 
@@ -528,8 +533,8 @@ void OnPaste(const CommandContext &context)
             },
             [&](Track *){
                bPastedSomething = true;
-               n->Clear(t0, t1);
-               n->Paste(t0, c);
+               n->Clear(t0, t1, projectRate);
+               n->Paste(t0, c, projectRate);
             }
          );
 
@@ -552,9 +557,9 @@ void OnPaste(const CommandContext &context)
                   wn->ClearAndPaste(t0, t1, c, true, true);
                },
                [&](Track *){
-                  n->Clear(t0, t1);
+                  n->Clear(t0, t1, projectRate);
                   bPastedSomething = true;
-                  n->Paste(t0, c);
+                  n->Paste(t0, c, projectRate);
                }
             );
          }
@@ -568,7 +573,7 @@ void OnPaste(const CommandContext &context)
       {
          auto newT1 = t0 + clipboard.Duration();
          if (t1 != newT1 && t1 <= n->GetEndTime()) {
-            n->SyncLockAdjust(t1, newT1);
+            n->SyncLockAdjust(t1, newT1, projectRate);
             bPastedSomething = true;
          }
       }
@@ -614,7 +619,7 @@ void OnPaste(const CommandContext &context)
             if (!lt->GetSelected())
                return fallthrough();
 
-            lt->Clear(t0, t1);
+            lt->Clear(t0, t1, projectRate);
 
             // As above, only shift labels if sync-lock is on.
             if (isSyncLocked)
@@ -623,7 +628,8 @@ void OnPaste(const CommandContext &context)
          },
          [&](Track *n) {
             if (n->IsSyncLockSelected())
-               n->SyncLockAdjust(t1, t0 + clipboard.Duration() );
+               n->SyncLockAdjust(t1, t0 + clipboard.Duration(),
+                                 settings.GetRate() );
          }
       );
    }

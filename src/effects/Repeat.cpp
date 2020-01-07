@@ -144,7 +144,7 @@ bool EffectRepeat::Process( EffectContext &context )
                bGoodResult = false;
                return;
             }
-            track->Paste(tc, dest.get());
+            track->Paste(tc, dest.get(), mProjectRate);
             tc += tLen;
          }
          if (tc > maxDestLen)
@@ -154,7 +154,8 @@ bool EffectRepeat::Process( EffectContext &context )
       [&](Track *t)
       {
          if( t->IsSyncLockSelected() )
-            t->SyncLockAdjust(mT1, mT1 + (mT1 - mT0) * repeatCount);
+            t->SyncLockAdjust(mT1, mT1 + (mT1 - mT0) * repeatCount,
+            mProjectRate);
       }
    );
 

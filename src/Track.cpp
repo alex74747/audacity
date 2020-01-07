@@ -284,7 +284,7 @@ void Track::Notify( int code )
       pList->DataEvent( SharedPointer(), code );
 }
 
-void Track::SyncLockAdjust(double oldT1, double newT1)
+void Track::SyncLockAdjust(double oldT1, double newT1, double projectRate)
 {
    if (newT1 > oldT1) {
       // Insert space within the track
@@ -292,13 +292,13 @@ void Track::SyncLockAdjust(double oldT1, double newT1)
       if (oldT1 > GetEndTime())
          return;
 
-      auto tmp = Cut(oldT1, GetEndTime());
+      auto tmp = Cut(oldT1, GetEndTime(), projectRate);
 
-      Paste(newT1, tmp.get());
+      Paste(newT1, tmp.get(), projectRate);
    }
    else if (newT1 < oldT1) {
       // Remove from the track
-      Clear(newT1, oldT1);
+      Clear(newT1, oldT1, projectRate);
    }
 }
 

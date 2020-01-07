@@ -224,6 +224,8 @@ UIHandle::Result StretchHandle::Release
       return RefreshAll | Cancelled;
    }
 
+   auto projectRate = ProjectSettings::Get( *pProject ).GetRate();
+ 
    bool left = mStretchState.mMode == stretchLeft;
    bool right = mStretchState.mMode == stretchRight;
    const auto &settings = ProjectSettings::Get( *pProject );
@@ -236,15 +238,15 @@ UIHandle::Result StretchHandle::Release
                auto origT0 = mStretchState.mOrigSel0Quantized;
                auto diff = viewInfo.selectedRegion.t0() - origT0;
                if ( diff > 0)
-                  track->SyncLockAdjust( origT0 + diff, origT0 );
+                  track->SyncLockAdjust( origT0 + diff, origT0, projectRate );
                else
-                  track->SyncLockAdjust( origT0, origT0 - diff );
+                  track->SyncLockAdjust( origT0, origT0 - diff, projectRate );
                track->Offset( diff );
             }
             else {
                auto origT1 = mStretchState.mOrigSel1Quantized;
                auto diff = viewInfo.selectedRegion.t1() - origT1;
-               track->SyncLockAdjust( origT1, origT1 + diff );
+               track->SyncLockAdjust( origT1, origT1 + diff, projectRate );
             }
          }
       }

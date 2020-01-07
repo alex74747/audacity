@@ -444,7 +444,7 @@ void NoteTrack::PrintSequence()
    fclose(debugOutput);
 }
 
-Track::Holder NoteTrack::Cut(double t0, double t1)
+Track::Holder NoteTrack::Cut(double t0, double t1, double)
 {
    if (t1 < t0)
       THROW_INCONSISTENCY_EXCEPTION;
@@ -521,7 +521,7 @@ bool NoteTrack::Trim(double t0, double t1)
    return true;
 }
 
-void NoteTrack::Clear(double t0, double t1)
+void NoteTrack::Clear(double t0, double t1, double)
 {
    if (t1 < t0)
       THROW_INCONSISTENCY_EXCEPTION;
@@ -554,7 +554,7 @@ void NoteTrack::Clear(double t0, double t1)
    }
 }
 
-void NoteTrack::Paste(double t, const Track *src)
+void NoteTrack::Paste(double t, const Track *src, double)
 {
    // Paste inserts src at time t. If src has a positive offset,
    // the offset is treated as silence which is also inserted. If

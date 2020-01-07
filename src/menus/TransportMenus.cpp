@@ -476,8 +476,9 @@ void OnPunchAndRoll(const CommandContext &context)
    }
 
    // Change tracks only after passing the error checks above
+   auto projectRate = ProjectSettings::Get( project ).GetRate();
    for (const auto &wt : tracks) {
-      wt->Clear(t1, wt->GetEndTime());
+      wt->Clear(t1, wt->GetEndTime(), projectRate);
    }
 
    // Choose the tracks for playback.

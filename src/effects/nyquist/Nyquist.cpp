@@ -1554,7 +1554,7 @@ bool NyquistEffect::ProcessOne( const EffectContext &context )
          for (auto t : TrackList::SyncLockGroup(mCurTrack[i]))
          {
             if (!t->GetSelected() && t->IsSyncLockSelected()) {
-               t->SyncLockAdjust(mT1, mT0 + out->GetEndTime());
+               t->SyncLockAdjust(mT1, mT0 + out->GetEndTime(), mProjectRate);
             }
          }
       }

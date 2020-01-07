@@ -118,10 +118,10 @@ public:
    bool Save(wxTextFile * out, bool overwrite) override;
 #endif
 
-   Track::Holder Cut  (double t0, double t1) override;
+   Track::Holder Cut  (double t0, double t1, double projectRate) override;
    Track::Holder Copy (double t0, double t1, bool forClipboard = true) const override;
-   void Clear(double t0, double t1) override;
-   void Paste(double t, const Track * src) override;
+   void Clear(double t0, double t1, double projectRate) override;
+   void Paste(double t, const Track * src, double projectRate) override;
    bool Repeat(double t0, double t1, int n);
 
    void Silence(double t0, double t1) override;

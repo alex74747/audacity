@@ -128,10 +128,10 @@ void TimeTrack::SetRangeUpper(double upper)
    mEnvelope->SetRangeUpper( upper );
 }
 
-Track::Holder TimeTrack::Cut( double t0, double t1 )
+Track::Holder TimeTrack::Cut( double t0, double t1, double sampleRate )
 {
    auto result = Copy( t0, t1, false );
-   Clear( t0, t1 );
+   Clear( t0, t1, sampleRate );
    return result;
 }
 
@@ -140,16 +140,16 @@ Track::Holder TimeTrack::Copy( double t0, double t1, bool ) const
    return std::make_shared<TimeTrack>( *this, &t0, &t1 );
 }
 
-void TimeTrack::Clear(double t0, double t1)
+void TimeTrack::Clear(double t0, double t1, double projectRate)
 {
-   auto sampleTime = 1.0 / ProjectSettings::Get( *GetActiveProject() ).GetRate();
+   auto sampleTime = 1.0 / projectRate;
    mEnvelope->CollapseRegion( t0, t1, sampleTime );
 }
 
-void TimeTrack::Paste(double t, const Track * src)
+void TimeTrack::Paste(double t, const Track * src, double projectRate)
 {
    bool bOk = src && src->TypeSwitch< bool >( [&] (const TimeTrack *tt) {
-      auto sampleTime = 1.0 / ProjectSettings::Get( *GetActiveProject() ).GetRate();
+      auto sampleTime = 1.0 / projectRate;
       mEnvelope->PasteEnvelope
          (t, tt->mEnvelope.get(), sampleTime);
       return true;

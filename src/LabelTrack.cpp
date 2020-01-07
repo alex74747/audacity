@@ -103,7 +103,7 @@ void LabelTrack::SetOffset(double dOffset)
       labelStruct.selectedRegion.move(dOffset);
 }
 
-void LabelTrack::Clear(double b, double e)
+void LabelTrack::Clear(double b, double e, double)
 {
    // May DELETE labels, so use subscripts to iterate
    for (size_t i = 0; i < mLabels.size(); ++i) {
@@ -668,11 +668,11 @@ bool LabelTrack::Save(wxTextFile * out, bool overwrite)
 }
 #endif
 
-Track::Holder LabelTrack::Cut(double t0, double t1)
+Track::Holder LabelTrack::Cut(double t0, double t1, double projectRate)
 {
    auto tmp = Copy(t0, t1);
 
-   Clear(t0, t1);
+   Clear( t0, t1, projectRate );
 
    return tmp;
 }
@@ -771,7 +771,7 @@ bool LabelTrack::PasteOver(double t, const Track * src)
    return result;
 }
 
-void LabelTrack::Paste(double t, const Track *src)
+void LabelTrack::Paste(double t, const Track *src, double)
 {
    bool bOk = src->TypeSwitch< bool >( [&](const LabelTrack *lt) {
       double shiftAmt = lt->mClipLen > 0.0 ? lt->mClipLen : lt->GetEndTime();

@@ -6,6 +6,7 @@
 #include "../Prefs.h"
 #include "../ProjectAudioIO.h"
 #include "../ProjectHistory.h"
+#include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
 #include "../TrackPanelAx.h"
 #include "../TrackPanel.h"
@@ -127,7 +128,13 @@ void GetRegionsByLabel(
    }
 }
 
-using EditFunction = void (WaveTrack::*)(double, double);
+using EditFunction = std::function< void( WaveTrack*, double, double ) >;
+static EditFunction clearFn( double rate )
+{
+   return [rate]( WaveTrack *wt, double t0, double t1 ){
+      return wt->Clear( t0, t1, rate );
+   };
+}
 
 //Executes the edit function on all selected wave tracks with
 //regions specified by selected labels
@@ -159,7 +166,7 @@ void EditByLabel(
       {
          for (int i = (int)regions.size() - 1; i >= 0; i--) {
             const Region &region = regions.at(i);
-            (wt->*action)(region.start, region.end);
+            action( wt, region.start, region.end );
          }
       }
    }
@@ -177,6 +184,8 @@ void EditClipboardByLabel( AudacityProject &project,
    TrackList &tracks, const SelectedRegion &selectedRegion,
    EditDestFunction action )
 {
+   auto &settings = ProjectSettings::Get( project );
+
    Regions regions;
 
    GetRegionsByLabel( tracks, selectedRegion, regions );
@@ -225,7 +234,7 @@ void EditClipboardByLabel( AudacityProject &project,
                // right to left.  Any placeholder already in merged is kept.
                // Only the rightmost placeholder is important in the final
                // result.
-               merged->Paste( 0.0 , dest.get() );
+               merged->Paste( 0.0 , dest.get(), settings.GetRate() );
             }
          }
          else
@@ -364,8 +373,11 @@ void OnCutLabels(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &settings = ProjectSettings::Get( project );
    auto &window = ProjectWindow::Get( project );
 
+   auto rate = settings.GetRate();
+   
    if( selectedRegion.isPoint() )
      return;
 
@@ -378,7 +390,7 @@ void OnCutLabels(const CommandContext &context)
       EditByLabel(
          tracks, selectedRegion, &WaveTrack::ClearAndAddCutLine, true );
    else
-      EditByLabel( tracks, selectedRegion, &WaveTrack::Clear, true );
+      EditByLabel( tracks, selectedRegion, clearFn( rate ), true );
 
    selectedRegion.collapseToT0();
 
@@ -395,12 +407,15 @@ void OnDeleteLabels(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
+   auto &settings = ProjectSettings::Get( project );
    auto &window = ProjectWindow::Get( project );
+
+   auto rate = settings.GetRate();
 
    if( selectedRegion.isPoint() )
       return;
 
-   EditByLabel( tracks, selectedRegion, &WaveTrack::Clear, true );
+   EditByLabel( tracks, selectedRegion, clearFn( rate ), true );
 
    selectedRegion.collapseToT0();
 

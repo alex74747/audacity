@@ -40,10 +40,10 @@ class TimeTrack final : public Track {
    virtual ~TimeTrack();
 
 
-   Holder Cut( double t0, double t1 ) override;
+   Holder Cut( double t0, double t1, double sampleRate ) override;
    Holder Copy( double t0, double t1, bool forClipboard ) const override;
-   void Clear(double t0, double t1) override;
-   void Paste(double t, const Track * src) override;
+   void Clear(double t0, double t1, double projectRate) override;
+   void Paste(double t, const Track * src, double projectRate) override;
    void Silence(double t0, double t1) override;
    void InsertSilence(double t, double len) override;
 

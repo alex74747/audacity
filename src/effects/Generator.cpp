@@ -95,14 +95,14 @@ bool Generator::Process( EffectContext &context )
          {
             // If the duration is zero, there's no need to actually
             // generate anything
-            track->Clear(mT0, mT1);
+            track->Clear(mT0, mT1, mProjectRate);
          }
 
          ntrack++;
       },
       [&](Track *t) {
          if (t->IsSyncLockSelected()) {
-            t->SyncLockAdjust(mT1, mT0 + GetDuration());
+            t->SyncLockAdjust(mT1, mT0 + GetDuration(), mProjectRate);
          }
       }
    );

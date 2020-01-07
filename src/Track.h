@@ -362,7 +362,7 @@ public:
    // Create a NEW track and modify this track
    // Return non-NULL or else throw
    // May assume precondition: t0 <= t1
-   virtual Holder Cut(double WXUNUSED(t0), double WXUNUSED(t1)) = 0;
+   virtual Holder Cut(double t0, double t1, double projectRate) = 0;
 
    // Create a NEW track and don't modify this track
    // Return non-NULL or else throw
@@ -373,13 +373,13 @@ public:
       (double WXUNUSED(t0), double WXUNUSED(t1), bool forClipboard = true) const = 0;
 
    // May assume precondition: t0 <= t1
-   virtual void Clear(double WXUNUSED(t0), double WXUNUSED(t1)) = 0;
+   virtual void Clear(double t0, double t1, double sampleRate) = 0;
 
-   virtual void Paste(double WXUNUSED(t), const Track * WXUNUSED(src)) = 0;
+   virtual void Paste(double t, const Track * src, double sampleRate) = 0;
 
    // This can be used to adjust a sync-lock selected track when the selection
    // is replaced by one of a different length.
-   virtual void SyncLockAdjust(double oldT1, double newT1);
+   virtual void SyncLockAdjust(double oldT1, double newT1, double projectRate);
 
    // May assume precondition: t0 <= t1
    virtual void Silence(double WXUNUSED(t0), double WXUNUSED(t1)) = 0;

@@ -165,7 +165,7 @@ bool EffectSoundTouch::ProcessWithTimeWarper( const EffectContext &context,
       },
       [&]( Track *t ) {
          if (mustSync && t->IsSyncLockSelected()) {
-            t->SyncLockAdjust(mT1, warper.Warp(mT1));
+            t->SyncLockAdjust(mT1, warper.Warp(mT1), mProjectRate);
          }
       }
    );

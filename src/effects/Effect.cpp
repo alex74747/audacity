@@ -1415,7 +1415,7 @@ bool Effect::ProcessPass( const EffectContext &context )
       },
       [&](Track *t) {
          if (t->IsSyncLockSelected())
-            t->SyncLockAdjust(mT1, mT0 + mDuration);
+            t->SyncLockAdjust(mT1, mT0 + mDuration, mProjectRate);
       }
    );
 
