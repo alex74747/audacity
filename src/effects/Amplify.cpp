@@ -182,7 +182,7 @@ bool EffectAmplify::Init()
 {
    mPeak = 0.0;
 
-   for (auto t : inputTracks()->Selected< const WaveTrack >())
+   for (auto t : context.inputTracks.Selected< const WaveTrack >())
    {
       auto pair = t->GetMinMax(mT0, mT1); // may throw
       const float min = pair.first, max = pair.second;

@@ -211,7 +211,7 @@ bool EffectAutoDuck::Init()
    bool lastWasSelectedWaveTrack = false;
    const WaveTrack *controlTrackCandidate = NULL;
 
-   for (auto t : inputTracks()->Any())
+   for (auto t : context.inputTracks.Any())
    {
       if (lastWasSelectedWaveTrack && !t->GetSelected()) {
          // This could be the control track, so remember it

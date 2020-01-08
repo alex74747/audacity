@@ -326,7 +326,7 @@ bool EffectScienFilter::Init()
    int selcount = 0;
    double rate = 0.0;
 
-   auto trackRange = inputTracks()->Selected< const WaveTrack >();
+   auto trackRange = context.inputTracks.Selected< const WaveTrack >();
 
    {
       auto t = *trackRange.begin();

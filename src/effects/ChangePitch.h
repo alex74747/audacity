@@ -73,7 +73,7 @@ private:
 
    // Deduce m_FromFrequency from the samples at the beginning of
    // the selection. Then set some other params accordingly.
-   void DeduceFrequencies();
+   void DeduceFrequencies( const EffectContext &context );
 
    // calculations
    void Calc_ToPitch(); // Update m_nToPitch from NEW m_dSemitonesChange.

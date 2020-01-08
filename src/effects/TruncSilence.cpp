@@ -247,7 +247,7 @@ double EffectTruncSilence::CalcPreviewInputLength(double /* previewLength */)
 
    int whichTrack = 0;
 
-   for (auto wt : inputTracks()->Selected< const WaveTrack >()) {
+   for (auto wt : context.inputTracks.Selected< const WaveTrack >()) {
       RegionList trackSilences;
 
       auto index = wt->TimeToLongSamples(mT0);
@@ -334,7 +334,7 @@ bool EffectTruncSilence::ProcessIndependently()
 
    // Check if it's permissible
    {
-      for (auto track : inputTracks()->SelectedLeaders< const WaveTrack >() ) {
+      for (auto track : context.inputTracks.SelectedLeaders< const WaveTrack >() ) {
          if (syncLock) {
             auto channels = TrackList::Channels(track);
             auto otherTracks =
@@ -407,7 +407,7 @@ bool EffectTruncSilence::ProcessAll()
    // This list should always be kept in order.
    RegionList silences;
 
-   auto trackRange0 = inputTracks()->Selected< const WaveTrack >();
+   auto trackRange0 = context.inputTracks.Selected< const WaveTrack >();
    if (FindSilences(
          silences, inputTracks(), *trackRange0.begin(), *trackRange0.rbegin())) {
       auto trackRange = mOutputTracks->Any();

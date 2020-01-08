@@ -304,7 +304,7 @@ bool VampEffect::Init()
    // but there was no check that all tracks have one rate, and only the first
    // is remembered in mRate.  Is that correct?
 
-   for (auto leader : inputTracks()->Leaders<const WaveTrack>()) {
+   for (auto leader : context.inputTracks.Leaders<const WaveTrack>()) {
       auto channelGroup = TrackList::Channels( leader );
       auto rate = (*channelGroup.first++) -> GetRate();
       for(auto channel : channelGroup) {
@@ -364,7 +364,7 @@ bool VampEffect::Process( EffectContext &context )
 
    std::vector<std::shared_ptr<Effect::AddedAnalysisTrack>> addedTracks;
 
-   for (auto leader : inputTracks()->Leaders<const WaveTrack>())
+   for (auto leader : context.inputTracks.Leaders<const WaveTrack>())
    {
       auto channelGroup = TrackList::Channels(leader);
       auto left = *channelGroup.first++;

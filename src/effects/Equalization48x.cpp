@@ -343,7 +343,7 @@ bool EffectEqualization48x::TrackCompare()
    auto &SecondOutputTracks = *pSecondOutputTracks;
 
    for (auto aTrack :
-      mEffectEqualization->inputTracks()->Any< const WaveTrack >()) {
+      mEffectEqualization->context.inputTracks.Any< const WaveTrack >()) {
 
       // Include selected tracks, plus sync-lock selected tracks for Track::All.
       if (aTrack->GetSelected() ||

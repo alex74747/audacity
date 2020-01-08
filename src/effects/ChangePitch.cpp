@@ -192,7 +192,7 @@ bool EffectChangePitch::SetAutomationParameters(CommandParameters & parms)
 
 bool EffectChangePitch::LoadFactoryDefaults()
 {
-   DeduceFrequencies();
+   DeduceFrequencies( context );
 
    return Effect::LoadFactoryDefaults();
 }
@@ -251,7 +251,7 @@ bool EffectChangePitch::CheckWhetherSkipEffect()
 
 void EffectChangePitch::PopulateOrExchange(ShuttleGui & S)
 {
-   DeduceFrequencies(); // Set frequency-related control values based on sample.
+   DeduceFrequencies( context ); // Set frequency-related control values based on sample.
 
    TranslatableStrings pitch;
    for (int ii = 0; ii < 12; ++ii)
@@ -429,12 +429,12 @@ bool EffectChangePitch::TransferDataFromWindow()
 
 // Deduce m_FromFrequency from the samples at the beginning of
 // the selection. Then set some other params accordingly.
-void EffectChangePitch::DeduceFrequencies()
+void EffectChangePitch::DeduceFrequencies( EffectContext &context )
 {
     auto FirstTrack = [&]()->const WaveTrack *{
       if( !inputTracks() )
          return nullptr;
-      return *( inputTracks()->Selected< const WaveTrack >() ).first;
+      return *( context.inputTracks.Selected< const WaveTrack >() ).first;
    };
 
    m_dStartFrequency = 261.265;// Middle C.

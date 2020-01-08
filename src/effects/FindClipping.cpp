@@ -108,7 +108,7 @@ bool EffectFindClipping::Process( EffectContext &context )
    Maybe<ModifiedAnalysisTrack> modifiedTrack;
    const wxString name{ _("Clipping") };
 
-   auto clt = *inputTracks()->Any< const LabelTrack >().find_if(
+   auto clt = *context.inputTracks.Any< const LabelTrack >().find_if(
       [&]( const Track *track ){ return track->GetName() == name; } );
 
    LabelTrack *lt{};
@@ -121,7 +121,7 @@ bool EffectFindClipping::Process( EffectContext &context )
    int count = 0;
 
    // JC: Only process selected tracks.
-   for (auto t : inputTracks()->Selected< const WaveTrack >()) {
+   for (auto t : context.inputTracks.Selected< const WaveTrack >()) {
       double trackStart = t->GetStartTime();
       double trackEnd = t->GetEndTime();
       double t0 = mT0 < trackStart ? trackStart : mT0;

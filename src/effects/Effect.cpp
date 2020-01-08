@@ -2193,7 +2193,7 @@ void Effect::ReplaceProcessedTracks(const bool bGoodResult)
 
 const AudacityProject *Effect::FindProject() const
 {
-   return inputTracks()->GetOwner();
+   return context.inputTracks.GetOwner();
 }
 
 void Effect::CountWaveTracks()
