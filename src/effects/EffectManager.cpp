@@ -325,7 +325,7 @@ bool EffectManager::SetEffectParameters(const PluginID & ID, const wxString & pa
 }
 
 bool EffectManager::PromptUser(
-   const PluginID & ID,
+   const PluginID & ID, EffectContext &context,
    const EffectClientInterface::EffectDialogFactory &factory, wxWindow &parent)
 {
    bool result = false;
@@ -334,7 +334,7 @@ bool EffectManager::PromptUser(
    if (effect)
    {
       result = effect->ShowInterface(
-         parent, factory, effect->IsBatchProcessing() );
+         parent, factory, context, effect->IsBatchProcessing() );
       return result;
    }
 

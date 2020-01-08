@@ -105,7 +105,7 @@ public:
    bool SupportsAutomation(const PluginID & ID);
    wxString GetEffectParameters(const PluginID & ID);
    bool SetEffectParameters(const PluginID & ID, const wxString & params);
-   bool PromptUser( const PluginID & ID,
+   bool PromptUser( const PluginID & ID, EffectContext &context,
       const EffectClientInterface::EffectDialogFactory &factory,
       wxWindow &parent );
    bool HasPresets(const PluginID & ID);

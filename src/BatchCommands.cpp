@@ -454,7 +454,9 @@ wxString MacroCommands::PromptForParamsFor(
 
    if (EffectManager::Get().SetEffectParameters(ID, params))
    {
-      if (EffectManager::Get().PromptUser(ID, EffectUI::DialogFactory, parent))
+      EffectContext context;
+      if (EffectManager::Get()
+         .PromptUser(ID, context, EffectUI::DialogFactory, parent))
       {
          res = EffectManager::Get().GetEffectParameters(ID);
       }
