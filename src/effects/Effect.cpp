@@ -1096,7 +1096,8 @@ void Effect::SetBatchProcessing(bool start)
    }
 }
 
-bool Effect::DoEffect(double projectRate,
+bool Effect::DoEffect(const EffectContext &,
+                      double projectRate,
                       TrackList *list,
                       TrackFactory *factory,
                       NotifyingSelectedRegion &selectedRegion,
@@ -1218,13 +1219,13 @@ bool Effect::DoEffect(double projectRate,
    return returnVal;
 }
 
-bool Effect::Delegate( Effect &delegate )
+bool Effect::Delegate( Effect &delegate, const EffectContext &context )
 {
    NotifyingSelectedRegion region;
    region.setTimes( mT0, mT1 );
 
    return delegate.DoEffect(
-      mProjectRate, mTracks, mFactory, region );
+      context, mProjectRate, mTracks, mFactory, region );
 }
 
 // All legacy effects should have this overridden

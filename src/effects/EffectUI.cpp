@@ -1926,7 +1926,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
          EffectRack::Get( context.project ).Add(effect);
       }
 #endif
-      success = effect->DoEffect(
+      success = effect->DoEffect( EffectContext{},
          rate,
          &tracks,
          &trackFactory,

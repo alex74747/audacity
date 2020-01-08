@@ -606,7 +606,7 @@ bool NyquistEffect::Process()
    {
       mProgress->Hide();
       auto &effect = *mDelegate;
-      auto result = Delegate( effect );
+      auto result = Delegate( effect, EffectContext{} );
       mT0 = effect.mT0;
       mT1 = effect.mT1;
       mDelegate.reset();
