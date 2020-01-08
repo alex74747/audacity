@@ -133,7 +133,7 @@ public:
 
    bool Startup() override;
    bool Init() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
 
    bool PopulateUI(wxWindow *parent) override;
    bool CloseUI() override;

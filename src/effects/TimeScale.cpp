@@ -180,7 +180,7 @@ auto EffectTimeScale::MakePreviewStateRestorer() -> PreviewStateRestorer
    };
 }
 
-bool EffectTimeScale::Process()
+bool EffectTimeScale::Process( EffectContext &context )
 {
    double pitchStart1 = PercentChangeToRatio(m_PitchPercentChangeStart);
    double pitchEnd1 = PercentChangeToRatio(m_PitchPercentChangeEnd);
@@ -194,7 +194,7 @@ bool EffectTimeScale::Process()
    }
    
    EffectSBSMS::setParameters(rateStart1,rateEnd1,pitchStart1,pitchEnd1,slideTypeRate,slideTypePitch,false,false,false);
-   return EffectSBSMS::Process();
+   return EffectSBSMS::Process( context );
 }
 
 void EffectTimeScale::PopulateOrExchange(ShuttleGui & S)

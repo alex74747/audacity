@@ -49,7 +49,7 @@ public:
    bool Startup() override;
    bool Init() override;
    void End() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;

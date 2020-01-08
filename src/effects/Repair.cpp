@@ -66,7 +66,7 @@ bool EffectRepair::IsInteractive()
 
 // Effect implementation
 
-bool EffectRepair::Process()
+bool EffectRepair::Process( EffectContext &context )
 {
    //v This may be too much copying for EffectRepair. To support Cancel, may be able to copy much less.
    //  But for now, Cancel isn't supported without this.

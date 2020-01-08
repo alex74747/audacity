@@ -189,7 +189,7 @@ bool EffectChangeTempo::Init()
    return true;
 }
 
-bool EffectChangeTempo::Process()
+bool EffectChangeTempo::Process( EffectContext &context )
 {
    bool success = false;
 

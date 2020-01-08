@@ -22,7 +22,7 @@ class EffectTwoPassSimpleMono /* not final */ : public Effect
 public:
    // Effect implementation
 
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
 
 protected:
    // EffectTwoPassSimpleMono implementation

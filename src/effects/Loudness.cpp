@@ -162,7 +162,7 @@ bool EffectLoudness::Startup()
    return true;
 }
 
-bool EffectLoudness::Process()
+bool EffectLoudness::Process( EffectContext &context )
 {
    if(mNormalizeTo == kLoudness)
       // LU use 10*log10(...) instead of 20*log10(...)

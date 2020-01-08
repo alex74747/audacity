@@ -25,7 +25,7 @@
 
 #include "../widgets/AudacityMessageBox.h"
 
-bool Generator::Process()
+bool Generator::Process( EffectContext &context )
 {
    if (GetDuration() < 0.0)
       return false;

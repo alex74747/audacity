@@ -162,7 +162,7 @@ bool EffectNormalize::Startup()
    return true;
 }
 
-bool EffectNormalize::Process()
+bool EffectNormalize::Process( EffectContext &context )
 {
    if (mGain == false && mDC == false)
       return true;

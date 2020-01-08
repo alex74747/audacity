@@ -64,7 +64,7 @@ public:
    // Effect implementation
 
    bool Init() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    void End() override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;

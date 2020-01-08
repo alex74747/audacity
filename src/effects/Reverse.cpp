@@ -63,7 +63,7 @@ bool EffectReverse::IsInteractive()
 
 // Effect implementation
 
-bool EffectReverse::Process()
+bool EffectReverse::Process( EffectContext &context )
 {
    //all needed because Reverse should move the labels too
    this->CopyInputTracks(true); // Set up mOutputTracks.

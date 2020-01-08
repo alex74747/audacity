@@ -300,7 +300,7 @@ protected:
    virtual bool CheckWhetherSkipEffect() { return false; }
 
    // Actually do the effect here.
-   virtual bool Process();
+   virtual bool Process( EffectContext &context );
    virtual bool ProcessPass();
    virtual bool InitPass1();
    virtual bool InitPass2();

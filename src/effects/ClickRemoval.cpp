@@ -168,7 +168,7 @@ bool EffectClickRemoval::Startup()
    return true;
 }
 
-bool EffectClickRemoval::Process()
+bool EffectClickRemoval::Process( EffectContext &context )
 {
    this->CopyInputTracks(); // Set up mOutputTracks.
    bool bGoodResult = true;

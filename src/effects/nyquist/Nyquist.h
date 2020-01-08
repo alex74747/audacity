@@ -97,7 +97,7 @@ public:
    // Effect implementation
 
    bool Init() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    bool ShowInterface( wxWindow &parent,
       const EffectDialogFactory &factory, bool forceModal = false) override;
    void PopulateOrExchange(ShuttleGui & S) override;

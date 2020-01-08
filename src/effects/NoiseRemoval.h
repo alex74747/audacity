@@ -57,7 +57,7 @@ public:
       const EffectDialogFactory &factory, bool forceModal = false) override;
    bool Init() override;
    bool CheckWhetherSkipEffect() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    void End() override;
 
 private:

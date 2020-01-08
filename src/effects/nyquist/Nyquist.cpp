@@ -600,7 +600,7 @@ bool NyquistEffect::Init()
 
 static void RegisterFunctions();
 
-bool NyquistEffect::Process()
+bool NyquistEffect::Process( EffectContext &context )
 {
    if (mDelegate)
    {

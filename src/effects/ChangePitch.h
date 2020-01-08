@@ -62,7 +62,7 @@ public:
    // Effect implementation
 
    bool Init() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    bool CheckWhetherSkipEffect() override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;

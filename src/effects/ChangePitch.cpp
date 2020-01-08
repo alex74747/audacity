@@ -205,7 +205,7 @@ bool EffectChangePitch::Init()
    return true;
 }
 
-bool EffectChangePitch::Process()
+bool EffectChangePitch::Process( EffectContext &context )
 {
 #if USE_SBSMS
    if (mUseSBSMS)

@@ -104,7 +104,7 @@ bool EffectRepeat::SetAutomationParameters(CommandParameters & parms)
 
 // Effect implementation
 
-bool EffectRepeat::Process()
+bool EffectRepeat::Process( EffectContext &context )
 {
    // Set up mOutputTracks.
    // This effect needs all for sync-lock grouping.

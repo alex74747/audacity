@@ -52,7 +52,7 @@ public:
    double CalcPreviewInputLength(double previewLength) override;
    bool Startup() override;
    bool Init() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataFromWindow() override;
    bool TransferDataToWindow() override;

@@ -53,7 +53,7 @@ public:
 
    bool Init() override;
    PreviewStateRestorer MakePreviewStateRestorer() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;

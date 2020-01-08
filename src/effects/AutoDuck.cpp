@@ -262,7 +262,7 @@ void EffectAutoDuck::End()
    mControlTrack = NULL;
 }
 
-bool EffectAutoDuck::Process()
+bool EffectAutoDuck::Process( EffectContext &context )
 {
    if (GetNumWaveTracks() == 0 || !mControlTrack)
       return false;

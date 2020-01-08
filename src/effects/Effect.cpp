@@ -1207,7 +1207,7 @@ bool Effect::DoEffect(const EffectContext &,
       };
       auto vr = valueRestorer( mProgress, &progress );
 
-      returnVal = Process();
+      returnVal = Process( context );
    }
 
    if (returnVal && (mT1 >= mT0 ))
@@ -1249,7 +1249,7 @@ bool Effect::InitPass2()
    return false;
 }
 
-bool Effect::Process()
+bool Effect::Process( EffectContext &context )
 {
    CopyInputTracks(true);
    bool bGoodResult = true;
@@ -2344,7 +2344,7 @@ void Effect::Preview(bool dryOnly)
 
       auto vr2 = valueRestorer( mIsPreview, true );
 
-      success = Process();
+      success = Process( newContext );
    }
 
    if (success)

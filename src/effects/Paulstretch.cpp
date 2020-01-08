@@ -164,7 +164,7 @@ double EffectPaulstretch::CalcPreviewInputLength(double previewLength)
 }
 
 
-bool EffectPaulstretch::Process()
+bool EffectPaulstretch::Process( EffectContext &context )
 {
    CopyInputTracks();
    m_t1=mT1;

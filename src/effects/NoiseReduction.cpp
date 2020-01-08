@@ -612,7 +612,7 @@ bool EffectNoiseReduction::Settings::Validate(EffectNoiseReduction *effect) cons
    return true;
 }
 
-bool EffectNoiseReduction::Process()
+bool EffectNoiseReduction::Process( EffectContext &context )
 {
    // This same code will either reduce noise or profile it
 

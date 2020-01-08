@@ -43,7 +43,7 @@ public:
 
    bool Init() override;
    bool CheckWhetherSkipEffect() override;
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
 
    class Settings;
    class Statistics;

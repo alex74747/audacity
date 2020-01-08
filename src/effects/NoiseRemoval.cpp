@@ -200,7 +200,7 @@ bool EffectNoiseRemoval::ShowInterface(
    return gPrefs->Flush();
 }
 
-bool EffectNoiseRemoval::Process()
+bool EffectNoiseRemoval::Process( EffectContext &context )
 {
    Initialize();
 

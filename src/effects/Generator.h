@@ -51,7 +51,7 @@ protected:
    // Postcondition:
    // If mDuration was valid (>= 0), then the tracks are replaced by the
    // generated results and true is returned. Otherwise, return false.
-   bool Process() override;
+   bool Process( EffectContext &context ) override;
 };
 
 // Abstract generator which creates the sound in discrete blocks, whilst
