@@ -321,7 +321,8 @@ protected:
    virtual PreviewStateRestorer MakePreviewStateRestorer();
 
    // The Effect class fully implements the Preview method for you.
-   void Preview(bool dryOnly);
+   // The context is needed to re-Init() the effect.
+   void Preview( const EffectContext &origContext, bool dryOnly );
 
    virtual void PopulateOrExchange(ShuttleGui & S);
    virtual bool TransferDataToWindow() /* not override */;

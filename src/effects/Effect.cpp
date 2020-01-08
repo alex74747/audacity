@@ -1179,6 +1179,8 @@ bool Effect::DoEffect(const EffectContext &,
 #endif
    CountWaveTracks();
 
+   EffectContext context;
+
    // Note: Init may read parameters from preferences
    if (!Init())
    {
@@ -2214,7 +2216,7 @@ auto Effect::MakePreviewStateRestorer() -> PreviewStateRestorer
    return []{};
 }
 
-void Effect::Preview(bool dryOnly)
+void Effect::Preview( const EffectContext &origContext, bool dryOnly )
 {
    if (mNumTracks == 0) { // nothing to preview
       return;
@@ -2224,6 +2226,8 @@ void Effect::Preview(bool dryOnly)
    if (gAudioIO->IsBusy()) {
       return;
    }
+
+   EffectContext newContext = origContext;
 
    wxWindow *FocusDialog = wxWindow::FindFocus();
 
