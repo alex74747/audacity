@@ -484,7 +484,8 @@ bool Effect::RealtimeProcessEnd()
 }
 
 bool Effect::ShowInterface(wxWindow &parent,
-   const EffectDialogFactory &factory, bool forceModal)
+   const EffectDialogFactory &factory, EffectContext &context,
+   bool forceModal)
 {
    if (!IsInteractive())
    {
@@ -500,14 +501,14 @@ bool Effect::ShowInterface(wxWindow &parent,
 
    if (mClient)
    {
-      return mClient->ShowInterface(parent, factory, forceModal);
+      return mClient->ShowInterface(parent, factory, context, forceModal);
    }
 
    // mUIDialog is null
    auto cleanup = valueRestorer( mUIDialog );
    
    if ( factory )
-      mUIDialog = factory(parent, this, this);
+      mUIDialog = factory(parent, context, this, this);
    if (!mUIDialog)
    {
       return false;
@@ -1192,7 +1193,7 @@ bool Effect::DoEffect(const EffectContext &,
    // Prompting may call Effect::Preview
    if ( pParent && dialogFactory &&
       IsInteractive() &&
-      !ShowInterface( *pParent, dialogFactory, IsBatchProcessing() ) )
+      !ShowInterface( *pParent, dialogFactory, context, IsBatchProcessing()) )
    {
       return false;
    }

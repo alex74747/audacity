@@ -59,6 +59,7 @@ typedef enum EffectType : int
    EffectTypeTool,
 } EffectType;
 
+struct EffectContext;
 
 /*************************************************************************************//**
 
@@ -142,8 +143,8 @@ class AUDACITY_DLL_API EffectClientInterface  /* not final */ : public EffectDef
 {
 public:
    using EffectDialogFactory = std::function<
-      wxDialog* ( wxWindow &parent,
-         EffectHostInterface*, EffectUIClientInterface* )
+      wxDialog* ( wxWindow&,
+         EffectContext&, EffectHostInterface*, EffectUIClientInterface* )
    >;
 
    virtual ~EffectClientInterface() {};
@@ -180,7 +181,8 @@ public:
    virtual bool RealtimeProcessEnd() = 0;
 
    virtual bool ShowInterface(
-      wxWindow &parent, const EffectDialogFactory &factory,
+      wxWindow &parent,
+      const EffectDialogFactory &factory, EffectContext &context,
       bool forceModal = false
    ) = 0;
    // Some effects will use define params to define what parameters they take.

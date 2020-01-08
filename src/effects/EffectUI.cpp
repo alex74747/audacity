@@ -378,7 +378,9 @@ void EffectRack::OnEditor(wxCommandEvent & evt)
    }
 
    auto pEffect = mEffects[index];
-   pEffect->ShowInterface( *GetParent(), EffectUI::DialogFactory,
+   // empty context, is that right?
+   EffectContext context;
+   pEffect->ShowInterface( *GetParent(), EffectUI::DialogFactory, context,
       pEffect->IsBatchProcessing() );
 }
 
@@ -718,11 +720,13 @@ END_EVENT_TABLE()
 
 EffectUIHost::EffectUIHost(wxWindow *parent,
                            AudacityProject &project,
+                           EffectContext &context,
                            Effect *effect,
                            EffectUIClientInterface *client)
 :  wxDialogWrapper(parent, wxID_ANY, effect->GetName(),
-                   wxDefaultPosition, wxDefaultSize,
-                   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX)
+            wxDefaultPosition, wxDefaultSize,
+            wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX)
+, mContext{ &context }
 {
 #if defined(__WXMAC__)
    // Make sure the effect window actually floats above the main window
@@ -1818,7 +1822,9 @@ void EffectUIHost::CleanupRealtime()
    }
 }
 
-wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
+wxDialog *EffectUI::DialogFactory( wxWindow &parent,
+   EffectContext &context,
+   EffectHostInterface *pHost,
    EffectUIClientInterface *client)
 {
    auto pEffect = dynamic_cast< Effect* >( pHost );
@@ -1833,7 +1839,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
       return nullptr;
 
    Destroy_ptr<EffectUIHost> dlg{
-      safenew EffectUIHost{ &parent, *project, pEffect, client} };
+      safenew EffectUIHost{ &parent, *project, context, pEffect, client} };
    
    if (dlg->Initialize())
    {

@@ -110,6 +110,7 @@ private:
 class AudacityCommand;
 class AudacityProject;
 class Effect;
+struct EffectContext;
 
 class wxCheckBox;
 
@@ -121,6 +122,7 @@ public:
    // constructors and destructors
    EffectUIHost(wxWindow *parent,
                 AudacityProject &project,
+                EffectContext &context,
                 Effect *effect,
                 EffectUIClientInterface *client);
    EffectUIHost(wxWindow *parent,
@@ -171,6 +173,8 @@ private:
    void Resume();
 
 private:
+   EffectContext *mContext{};
+
    AudacityProject *mProject;
    wxWindow *mParent;
    Effect *mEffect;
@@ -218,7 +222,9 @@ class CommandContext;
 
 namespace  EffectUI {
 
-   wxDialog *DialogFactory( wxWindow &parent, EffectHostInterface *pHost,
+   wxDialog *DialogFactory( wxWindow &parent,
+      EffectContext &context,
+      EffectHostInterface *pHost,
       EffectUIClientInterface *client);
 
    /** Run an effect given the plugin ID */

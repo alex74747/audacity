@@ -100,7 +100,8 @@ public:
    bool RealtimeProcessEnd() override;
 
    bool ShowInterface( wxWindow &parent,
-      const EffectDialogFactory &factory, bool forceModal = false) override;
+      const EffectDialogFactory &factory, EffectContext &context,
+      bool forceModal = false) override;
 
    bool GetAutomationParameters(CommandParameters & parms) override;
    bool SetAutomationParameters(CommandParameters & parms) override;

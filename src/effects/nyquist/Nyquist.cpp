@@ -979,10 +979,12 @@ finish:
 }
 
 bool NyquistEffect::ShowInterface(
-   wxWindow &parent, const EffectDialogFactory &factory, bool forceModal)
+   wxWindow &parent,
+   const EffectDialogFactory &factory, EffectContext &context,
+   bool forceModal)
 {
    // Show the normal (prompt or effect) interface
-   bool res = Effect::ShowInterface(parent, factory, forceModal);
+   bool res = Effect::ShowInterface(parent, factory, context, forceModal);
 
    // Remember if the user clicked debug
    mDebug = (mUIResultID == eDebugID);
@@ -1001,7 +1003,7 @@ bool NyquistEffect::ShowInterface(
    auto &effect = *mDelegate;
    effect.SetCommand(mInputCmd);
    effect.mDebug = (mUIResultID == eDebugID);
-   return effect.ShowInterface( parent, factory, forceModal );
+   return effect.ShowInterface( parent, factory, context, forceModal );
 }
 
 void NyquistEffect::PopulateOrExchange(ShuttleGui & S)

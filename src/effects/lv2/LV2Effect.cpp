@@ -1440,7 +1440,9 @@ bool LV2Effect::RealtimeProcessEnd()
 }
 
 bool LV2Effect::ShowInterface(
-   wxWindow &parent, const EffectDialogFactory &factory, bool forceModal)
+   wxWindow &parent,
+   const EffectDialogFactory &factory, EffectContext &context,
+   bool forceModal)
 {
    if (mDialog)
    {
@@ -1455,7 +1457,7 @@ bool LV2Effect::ShowInterface(
    auto cleanup = valueRestorer(mDialog);
 
    if ( factory )
-      mDialog = factory(parent, mHost, this);
+      mDialog = factory(parent, context, mHost, this);
    if (!mDialog)
    {
       return false;

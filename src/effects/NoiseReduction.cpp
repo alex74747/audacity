@@ -460,7 +460,9 @@ bool EffectNoiseReduction::CheckWhetherSkipEffect()
 }
 
 bool EffectNoiseReduction::ShowInterface(
-   wxWindow &parent, const EffectDialogFactory &, bool forceModal)
+   wxWindow &parent,
+   const EffectDialogFactory &, EffectContext &,
+   bool forceModal)
 {
    // to do: use forceModal correctly
 
