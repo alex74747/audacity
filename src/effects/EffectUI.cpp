@@ -1382,7 +1382,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
 
       auto restorer = mEffect->MakePreviewStateRestorer();
       auto cleanup = finally( [&]{ restorer(); } );
-      mEffect->Preview( *mContext, false );
+      mEffect->Preview( EffectContext{}, false );
 
       return;
    }
