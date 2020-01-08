@@ -365,7 +365,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
                                  NumericConverter::TIME,
                                  mFormat,
                                  mFromLength,
-                                 mProjectRate,
+                                 context.projectRate,
                                  NumericTextCtrl::Options{}
                                   .ReadOnly(true)
                                   .MenuEnabled(false));
@@ -383,7 +383,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
                                  NumericConverter::TIME,
                                  mFormat,
                                  mToLength,
-                                 mProjectRate);
+                                 context.projectRate);
 
             /* i18n-hint: changing a quantity "from" one value "to" another */
             S.Name(XO("to"))

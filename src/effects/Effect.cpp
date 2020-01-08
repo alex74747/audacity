@@ -115,13 +115,6 @@ Effect::Effect()
 
    mUIDebug = false;
 
-   // PRL:  I think this initialization of mProjectRate doesn't matter
-   // because it is always reassigned in DoEffect before it is used
-   // STF: but can't call AudioIOBase::GetOptimalSupportedSampleRate() here.
-   gPrefs->Read(wxT("/SamplingRate/DefaultProjectSampleRate"),
-                &mProjectRate,
-                44100);
-
    mIsBatch = false;
 }
 
@@ -1111,7 +1104,7 @@ bool Effect::DoEffect(const EffectContext &,
 
    mpSelectedRegion = &selectedRegion;
    mFactory = factory;
-   mProjectRate = projectRate;
+   context.projectRate = projectRate;
    mTracks = list;
 
    // Update track/group counts
@@ -1156,8 +1149,8 @@ bool Effect::DoEffect(const EffectContext &,
       // there is a selection: let's fit in there...
       // MJS: note that this is just for the TTC and is independent of the track rate
       // but we do need to make sure we have the right number of samples at the project rate
-      double quantMT0 = QUANTIZED_TIME(mT0, mProjectRate);
-      double quantMT1 = QUANTIZED_TIME(mT1, mProjectRate);
+      double quantMT0 = QUANTIZED_TIME(mT0, context.projectRate);
+      double quantMT1 = QUANTIZED_TIME(mT1, context.projectRate);
       mDuration = quantMT1 - quantMT0;
       isSelection = true;
       mT1 = mT0 + mDuration;
@@ -1228,7 +1221,7 @@ bool Effect::Delegate( Effect &delegate, const EffectContext &context )
    region.setTimes( mT0, mT1 );
 
    return delegate.DoEffect(
-      context, mProjectRate, mTracks, mFactory, region );
+      context, context.projectRate, mTracks, mFactory, region );
 }
 
 // All legacy effects should have this overridden
@@ -2240,7 +2233,7 @@ void Effect::Preview( const EffectContext &origContext, bool dryOnly )
    double previewLen;
    gPrefs->Read(wxT("/AudioIO/EffectsPreviewLen"), &previewLen, 6.0);
 
-   const double rate = mProjectRate;
+   const double rate = context.projectRate;
 
    if (isNyquist && isGenerator) {
       previewDuration = CalcPreviewInputLength(previewLen);

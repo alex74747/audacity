@@ -325,7 +325,7 @@ bool VampEffect::Init()
 
    if (mRate <= 0.0)
    {
-      mRate = mProjectRate;
+      mRate = context.projectRate;
    }
 
    // The plugin must be reloaded to allow changing parameters

@@ -346,7 +346,7 @@ void EffectDtmf::PopulateOrExchange(ShuttleGui & S)
                          NumericConverter::TIME,
                          GetDurationFormat(),
                          GetDuration(),
-                         mProjectRate,
+                         context.projectRate,
                          NumericTextCtrl::Options{}
                             .AutoPos(true));
       S.Name(XO("Duration"))

@@ -461,8 +461,6 @@ protected:
 protected:
 
    ProgressDialog *mProgress; // Temporary pointer, NOT deleted in destructor.
-   double         mProjectRate; // Sample rate of the project - NEW tracks should
-                               // be created with this rate...
    double         mSampleRate;
    wxWeakRef<NotifyingSelectedRegion> mpSelectedRegion{};
    TrackFactory   *mFactory;

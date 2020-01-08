@@ -155,10 +155,10 @@ double EffectPaulstretch::CalcPreviewInputLength(double previewLength)
 {
    // FIXME: Preview is currently at the project rate, but should really be
    // at the track rate (bugs 1284 and 852).
-   auto minDuration = GetBufferSize(mProjectRate) * 2 + 1;
+   auto minDuration = GetBufferSize(context.projectRate) * 2 + 1;
 
    // Preview playback may need to be trimmed but this is the smallest selection that we can use.
-   double minLength = std::max<double>(minDuration / mProjectRate, previewLength / mAmount);
+   double minLength = std::max<double>(minDuration / context.projectRate, previewLength / mAmount);
 
    return minLength;
 }
@@ -289,7 +289,7 @@ bool EffectPaulstretch::ProcessOne(WaveTrack *track,double t0,double t1,int coun
          gPrefs->Read(wxT("/AudioIO/EffectsPreviewLen"), &defaultPreviewLen, 6.0);
 
          /* i18n-hint: 'Time Resolution' is the name of a control in the Paulstretch effect.*/
-         if ((minDuration / mProjectRate) < defaultPreviewLen) {
+         if ((minDuration / context.projectRate) < defaultPreviewLen) {
             ::Effect::MessageBox(
                XO("Audio selection too short to preview.\n\n"
                   "Try increasing the audio selection to at least %.1f seconds,\n"

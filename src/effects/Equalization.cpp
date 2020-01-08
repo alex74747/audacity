@@ -738,7 +738,7 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
    mHiFreq =
       (t
          ? t->GetRate()
-         : mProjectRate)
+         : context.projectRate)
       / 2.0;
    mLoFreq = loFreqI;
 

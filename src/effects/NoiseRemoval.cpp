@@ -260,7 +260,7 @@ void EffectNoiseRemoval::ApplyFreqSmoothing(float *spec)
 
 void EffectNoiseRemoval::Initialize()
 {
-   mSampleRate = mProjectRate;
+   mSampleRate = context.projectRate;
    mFreqSmoothingBins = (int)(mFreqSmoothingHz * mWindowSize / mSampleRate);
    mAttackDecayBlocks = 1 +
       (int)(mAttackDecayTime * mSampleRate / (mWindowSize / 2));

@@ -333,7 +333,7 @@ bool EffectScienFilter::Init()
       mNyquist =
          (t
             ? t->GetRate()
-            : mProjectRate)
+            : context.projectRate)
          / 2.0;
    }
 

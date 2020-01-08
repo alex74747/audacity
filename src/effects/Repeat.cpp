@@ -174,7 +174,7 @@ void EffectRepeat::PopulateOrExchange(ShuttleGui & S)
    {
       mRepeatCount = S.Validator<IntegerValidator<int>>(
             &repeatCount, NumValidatorStyle::DEFAULT,
-            MIN_Count, 2147483647 / mProjectRate
+            MIN_Count, 2147483647 / context.projectRate
          )
          .AddTextBox(XO("Number of repeats to add:"), wxT(""), 12);
    }
@@ -223,7 +223,7 @@ void EffectRepeat::DisplayNewTime()
    NumericConverter nc(NumericConverter::TIME,
                        GetSelectionFormat(),
                        mT1 - mT0,
-                       mProjectRate);
+                       context.projectRate);
 
    str = wxString::Format( _("Current selection length: %s"), nc.GetString() );
 

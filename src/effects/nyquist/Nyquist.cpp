@@ -2715,7 +2715,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                                      NumericConverter::TIME,
                                      GetSelectionFormat(),
                                      ctrl.val,
-                                     mProjectRate,
+                                     context.projectRate,
                                      options);
                   S
                      .Name( prompt )
