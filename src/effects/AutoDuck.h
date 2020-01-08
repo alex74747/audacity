@@ -47,7 +47,7 @@ public:
    // Effect implementation
 
    bool Startup() override;
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    void End() override;
    bool Process( EffectContext &context ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

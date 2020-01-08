@@ -296,7 +296,7 @@ bool VampEffect::SetAutomationParameters(CommandParameters & parms)
    return true;
 }
 
-bool VampEffect::Init()
+bool VampEffect::Init( const EffectContext &context )
 {
    mRate = 0.0;
 
@@ -422,7 +422,7 @@ bool VampEffect::Process( EffectContext &context )
          else
          {
             //!!! todo: retain parameters previously set
-            Init();
+            Init( context );
          }
       }
 

@@ -151,7 +151,7 @@ bool EffectTimeScale::SetAutomationParameters(CommandParameters & parms)
 
 // Effect implementation
 
-bool EffectTimeScale::Init()
+bool EffectTimeScale::Init( const EffectContext & )
 {
    return true;
 }

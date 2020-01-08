@@ -159,7 +159,7 @@ bool EffectAmplify::SetAutomationParameters(CommandParameters & parms)
 
 bool EffectAmplify::LoadFactoryDefaults( const EffectContext &context )
 {
-   Init();
+   Init( context );
 
    mRatioClip = 0.0;
    if (mPeak > 0.0)
@@ -178,7 +178,7 @@ bool EffectAmplify::LoadFactoryDefaults( const EffectContext &context )
 
 // Effect implementation
 
-bool EffectAmplify::Init()
+bool EffectAmplify::Init( const EffectContext &context )
 {
    mPeak = 0.0;
 

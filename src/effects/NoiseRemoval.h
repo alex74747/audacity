@@ -56,7 +56,7 @@ public:
    bool ShowInterface( wxWindow &parent,
       const EffectDialogFactory &factory, EffectContext &context,
       bool forceModal = false) override;
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    bool CheckWhetherSkipEffect() override;
    bool Process( EffectContext &context ) override;
    void End() override;

@@ -204,7 +204,7 @@ bool EffectAutoDuck::Startup()
    return true;
 }
 
-bool EffectAutoDuck::Init()
+bool EffectAutoDuck::Init( const EffectContext &context )
 {
    mControlTrack = NULL;
 

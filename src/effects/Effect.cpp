@@ -1176,7 +1176,7 @@ bool Effect::DoEffect(const EffectContext &,
    EffectContext context;
 
    // Note: Init may read parameters from preferences
-   if (!Init())
+   if (!Init( context ))
    {
       return false;
    }
@@ -1225,7 +1225,7 @@ bool Effect::Delegate( Effect &delegate, const EffectContext &context )
 }
 
 // All legacy effects should have this overridden
-bool Effect::Init()
+bool Effect::Init( const EffectContext &context )
 {
    return true;
 }
@@ -2260,7 +2260,7 @@ void Effect::Preview( const EffectContext &origContext, bool dryOnly )
       // was called.
       if (!dryOnly) {
          End();
-         GuardedCall( [&]{ Init(); } );
+         GuardedCall( [&]{ Init( origContext ); } );
       }
    } );
 

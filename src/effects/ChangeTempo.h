@@ -55,7 +55,7 @@ public:
 
    // Effect implementation
 
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    bool CheckWhetherSkipEffect() override;
    bool Process( EffectContext &context ) override;
    double CalcPreviewInputLength(double previewLength) override;

@@ -212,7 +212,7 @@ bool EffectChangeSpeed::Startup()
    return true;
 }
 
-bool EffectChangeSpeed::Init()
+bool EffectChangeSpeed::Init( const EffectContext &context )
 {
    // The selection might have changed since the last time EffectChangeSpeed
    // was invoked, so recalculate the Length parameters.

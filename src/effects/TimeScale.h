@@ -51,7 +51,7 @@ public:
 
    // Effect implementation
 
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    PreviewStateRestorer MakePreviewStateRestorer() override;
    bool Process( EffectContext &context ) override;
    void PopulateOrExchange(ShuttleGui & S) override;

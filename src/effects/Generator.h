@@ -34,8 +34,6 @@ protected:
                               const WaveTrack &track,
                               int ntrack) = 0;
 
-   bool Init()  override { return true; }
-
    // Actions to perform at the respective points in the generation process
    // NEW virtuals
    virtual void BeforeGenerate() { };

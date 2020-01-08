@@ -307,7 +307,7 @@ bool EffectDtmf::Startup()
    return true;
 }
 
-bool EffectDtmf::Init()
+bool EffectDtmf::Init( const EffectContext &context )
 {
    Recalculate();
 

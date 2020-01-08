@@ -613,7 +613,7 @@ bool EffectEqualization::Startup()
    return true;
 }
 
-bool EffectEqualization::Init()
+bool EffectEqualization::Init( const EffectContext &context )
 {
    int selcount = 0;
    double rate = 0.0;

@@ -321,7 +321,7 @@ bool EffectScienFilter::Startup()
    return true;
 }
 
-bool EffectScienFilter::Init()
+bool EffectScienFilter::Init( const EffectContext &context )
 {
    int selcount = 0;
    double rate = 0.0;

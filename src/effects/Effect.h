@@ -291,7 +291,7 @@ protected:
    // Called once each time an effect is called.  Perform any initialization;
    // make sure that the effect can be performed on the selected tracks and
    // return false otherwise
-   virtual bool Init();
+   virtual bool Init( const EffectContext &context );
 
    // Check whether effect should be skipped
    // Typically this is only useful in automation, for example

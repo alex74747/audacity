@@ -199,7 +199,7 @@ bool EffectChangePitch::LoadFactoryDefaults( const EffectContext &context )
 
 // Effect implementation
 
-bool EffectChangePitch::Init()
+bool EffectChangePitch::Init( const EffectContext &context )
 {
    mSoundTouch.reset();
    return true;

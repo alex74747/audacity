@@ -132,7 +132,7 @@ public:
    // Effect implementation
 
    bool Startup() override;
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    bool Process( EffectContext &context ) override;
 
    bool PopulateUI(wxWindow *parent) override;

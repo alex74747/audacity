@@ -177,7 +177,7 @@ bool EffectChangeTempo::CheckWhetherSkipEffect()
    return (m_PercentChange == 0.0);
 }
 
-bool EffectChangeTempo::Init()
+bool EffectChangeTempo::Init( const EffectContext &context )
 {
    // The selection might have changed since the last time EffectChangeTempo
    // was invoked, so recalculate the Length parameters.

@@ -521,7 +521,7 @@ bool NyquistEffect::SetAutomationParameters(CommandParameters & parms)
 
 // Effect Implementation
 
-bool NyquistEffect::Init()
+bool NyquistEffect::Init( const EffectContext &context )
 {
    mDelegate.reset();
 

@@ -96,7 +96,7 @@ public:
 
    // Effect implementation
 
-   bool Init() override;
+   bool Init( const EffectContext &context ) override;
    bool Process( EffectContext &context ) override;
    bool ShowInterface( wxWindow &parent,
       const EffectDialogFactory &factory, EffectContext &context,

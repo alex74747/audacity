@@ -134,7 +134,7 @@ bool EffectNoiseRemoval::SupportsAutomation()
 // Effect implementation
 
 #define MAX_NOISE_LEVEL  30
-bool EffectNoiseRemoval::Init()
+bool EffectNoiseRemoval::Init( const EffectContext & )
 {
    mLevel = gPrefs->Read(wxT("/Effects/NoiseRemoval/Noise_Level"), 3L);
    if ((mLevel < 0) || (mLevel > MAX_NOISE_LEVEL)) {  // corrupted Prefs?

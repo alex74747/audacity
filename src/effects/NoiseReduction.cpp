@@ -423,7 +423,6 @@ private:
 EffectNoiseReduction::EffectNoiseReduction()
 : mSettings(std::make_unique<EffectNoiseReduction::Settings>())
 {
-   Init();
 }
 
 EffectNoiseReduction::~EffectNoiseReduction()
@@ -449,7 +448,7 @@ EffectType EffectNoiseReduction::GetType()
    return EffectTypeProcess;
 }
 
-bool EffectNoiseReduction::Init()
+bool EffectNoiseReduction::Init( const EffectContext & )
 {
    return true;
 }
