@@ -163,7 +163,7 @@ class VSTEffect final : public wxEvtHandler,
 
    RegistryPaths GetFactoryPresets() override;
    bool LoadFactoryPreset(int id) override;
-   bool LoadFactoryDefaults() override;
+   bool LoadFactoryDefaults( const EffectContext &context ) override;
 
    // EffectUIClientInterface implementation
 

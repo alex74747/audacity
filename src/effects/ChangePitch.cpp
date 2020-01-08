@@ -190,11 +190,11 @@ bool EffectChangePitch::SetAutomationParameters(CommandParameters & parms)
    return true;
 }
 
-bool EffectChangePitch::LoadFactoryDefaults()
+bool EffectChangePitch::LoadFactoryDefaults( const EffectContext &context )
 {
    DeduceFrequencies( context );
 
-   return Effect::LoadFactoryDefaults();
+   return Effect::LoadFactoryDefaults( context );
 }
 
 // Effect implementation

@@ -157,7 +157,7 @@ bool EffectAmplify::SetAutomationParameters(CommandParameters & parms)
    return true;
 }
 
-bool EffectAmplify::LoadFactoryDefaults()
+bool EffectAmplify::LoadFactoryDefaults( const EffectContext &context )
 {
    Init();
 

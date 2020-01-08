@@ -1678,7 +1678,7 @@ bool AudioUnitEffect::LoadFactoryPreset(int id)
    return result == noErr;
 }
 
-bool AudioUnitEffect::LoadFactoryDefaults()
+bool AudioUnitEffect::LoadFactoryDefaults( const EffectContext &context )
 {
    return LoadParameters(mHost->GetFactoryDefaultsGroup());
 }

@@ -1666,8 +1666,8 @@ void EffectUIHost::OnOptions(wxCommandEvent & WXUNUSED(evt))
 
 void EffectUIHost::OnDefaults(wxCommandEvent & WXUNUSED(evt))
 {
-   mEffect->LoadFactoryDefaults();
-   
+   mEffect->LoadFactoryDefaults( *mContext );
+
    return;
 }
 

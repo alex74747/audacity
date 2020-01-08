@@ -602,11 +602,11 @@ bool Effect::LoadFactoryPreset(int id)
    return true;
 }
 
-bool Effect::LoadFactoryDefaults()
+bool Effect::LoadFactoryDefaults( const EffectContext &context )
 {
    if (mClient)
    {
-      return mClient->LoadFactoryDefaults();
+      return mClient->LoadFactoryDefaults( context );
    }
 
    return LoadUserPreset(GetFactoryDefaultsGroup());

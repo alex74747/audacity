@@ -112,7 +112,7 @@ public:
    bool SaveUserPreset(const RegistryPath & name) override;
 
    bool LoadFactoryPreset(int id) override;
-   bool LoadFactoryDefaults() override;
+   bool LoadFactoryDefaults( const EffectContext &context ) override;
    RegistryPaths GetFactoryPresets() override;
 
    // EffectUIClientInterface implementation

@@ -410,7 +410,7 @@ bool EffectEqualization::SetAutomationParameters(CommandParameters & parms)
 }
 
 // This function Apparently not used anymore.
-bool EffectEqualization::LoadFactoryDefaults()
+bool EffectEqualization::LoadFactoryDefaults( const EffectContext &context )
 {
    mdBMin = DEF_dBMin;
    mdBMax = DEF_dBMax;
@@ -422,7 +422,7 @@ bool EffectEqualization::LoadFactoryDefaults()
    if( mOptions == kEqOptionGraphic)
       mDrawMode = false;
 
-   return Effect::LoadFactoryDefaults();
+   return Effect::LoadFactoryDefaults( context );
 }
 
 static const struct

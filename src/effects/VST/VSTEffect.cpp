@@ -1742,7 +1742,7 @@ bool VSTEffect::LoadFactoryPreset(int id)
    return true;
 }
 
-bool VSTEffect::LoadFactoryDefaults()
+bool VSTEffect::LoadFactoryDefaults( const EffectContext &context )
 {
    if (!LoadParameters(mHost->GetFactoryDefaultsGroup()))
    {

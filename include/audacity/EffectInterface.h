@@ -200,7 +200,7 @@ public:
 
    virtual RegistryPaths GetFactoryPresets() = 0;
    virtual bool LoadFactoryPreset(int id) = 0;
-   virtual bool LoadFactoryDefaults() = 0;
+   virtual bool LoadFactoryDefaults( const EffectContext &context ) = 0;
 };
 
 /*************************************************************************************//**

@@ -1176,7 +1176,7 @@ bool LadspaEffect::LoadFactoryPreset(int WXUNUSED(id))
    return true;
 }
 
-bool LadspaEffect::LoadFactoryDefaults()
+bool LadspaEffect::LoadFactoryDefaults( const EffectContext &context )
 {
    if (!LoadParameters(mHost->GetFactoryDefaultsGroup()))
    {

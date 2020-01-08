@@ -326,7 +326,7 @@ public:
 
    RegistryPaths GetFactoryPresets() override;
    bool LoadFactoryPreset(int id) override;
-   bool LoadFactoryDefaults() override;
+   bool LoadFactoryDefaults( const EffectContext &context ) override;
 
    bool CanExportPresets() override;
    void ExportPresets() override;

@@ -1749,7 +1749,7 @@ bool LV2Effect::LoadFactoryPreset(int id)
    return state != NULL;
 }
 
-bool LV2Effect::LoadFactoryDefaults()
+bool LV2Effect::LoadFactoryDefaults( const EffectContext &context )
 {
    if (!LoadParameters(mHost->GetFactoryDefaultsGroup()))
    {

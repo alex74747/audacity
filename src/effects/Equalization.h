@@ -120,7 +120,7 @@ public:
    bool DefineParams( ShuttleParams & S ) override;
    bool GetAutomationParameters(CommandParameters & parms) override;
    bool SetAutomationParameters(CommandParameters & parms) override;
-   bool LoadFactoryDefaults() override;
+   bool LoadFactoryDefaults( const EffectContext &context ) override;
 
    RegistryPaths GetFactoryPresets() override;
    bool LoadFactoryPreset(int id) override;

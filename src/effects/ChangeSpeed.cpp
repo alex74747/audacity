@@ -151,12 +151,12 @@ bool EffectChangeSpeed::SetAutomationParameters(CommandParameters & parms)
    return true;
 }
 
-bool EffectChangeSpeed::LoadFactoryDefaults()
+bool EffectChangeSpeed::LoadFactoryDefaults( const EffectContext &context )
 {
    mFromVinyl = kVinyl_33AndAThird;
    mFormat = NumericConverter::DefaultSelectionFormat();
 
-   return Effect::LoadFactoryDefaults();
+   return Effect::LoadFactoryDefaults( context );
 }
 
 // Effect implementation
