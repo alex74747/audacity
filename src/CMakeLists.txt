@@ -452,6 +452,8 @@ list( APPEND SOURCES
       tracks/ui/SelectHandle.h
       tracks/ui/SliderHandle.cpp
       tracks/ui/SliderHandle.h
+      tracks/ui/SpectralSelectHandle.cpp
+      tracks/ui/SpectralSelectHandle.h
       tracks/ui/TimeShiftHandle.cpp
       tracks/ui/TimeShiftHandle.h
       tracks/ui/TrackButtonHandles.cpp
