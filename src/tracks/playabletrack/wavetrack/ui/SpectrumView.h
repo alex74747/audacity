@@ -166,6 +166,12 @@ private:
    static void ForAll( AudacityProject &project,
       std::function<void(SpectrumView &view)> fn );
 
+   UIHandlePtr SelectionHitTest(
+       std::weak_ptr<SelectHandle> &mSelectHandle,
+       const TrackPanelMouseState &state, const AudacityProject *pProject)
+      override;
+
+protected:
    void DoSetMinimized( bool minimized ) override;
 };
 

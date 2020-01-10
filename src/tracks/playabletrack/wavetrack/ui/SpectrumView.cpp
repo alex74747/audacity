@@ -34,6 +34,8 @@ Paul Licameli split from WaveTrackView.cpp
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
+#include "tracks/ui/SelectHandle.h"
+#include "tracks/ui/SpectralSelectHandle.h"
 #include "../../../../prefs/SpectrogramSettings.h"
 #include "SampleTrackCache.h"
 #include "WaveTrackLocation.h"
@@ -188,6 +190,23 @@ std::vector<UIHandlePtr> SpectrumView::DetailedHitTest(
    return WaveTrackSubView::DoDetailedHitTest(
       state, pProject, currentTool, bMultiTool, wt
    ).second;
+}
+
+UIHandlePtr SpectrumView::SelectionHitTest(
+    std::weak_ptr<SelectHandle> &mSelectHandle,
+    const TrackPanelMouseState &state, const AudacityProject *pProject)
+{
+   auto factory = [](
+      const std::shared_ptr<TrackView> &pTrackView,
+      bool oldUseSnap,
+      const TrackList &trackList,
+      const TrackPanelMouseState &st,
+      const ViewInfo &viewInfo) -> std::shared_ptr<SelectHandle> {
+         return std::make_shared<SpectralSelectHandle>(
+            pTrackView, oldUseSnap, trackList, st, viewInfo );
+   };
+   return SelectHandle::HitTest( factory,
+      mSelectHandle, state, pProject, shared_from_this() );
 }
 
 void SpectrumView::DoSetMinimized( bool minimized )

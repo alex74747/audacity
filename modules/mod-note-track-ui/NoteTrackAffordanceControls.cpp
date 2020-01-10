@@ -93,6 +93,7 @@ std::vector<UIHandlePtr> NoteTrackAffordanceControls::HitTest(const TrackPanelMo
     {
         results.push_back(
             SelectHandle::HitTest(
+                SelectHandle::DefaultFactory,
                 mSelectHandle, state, pProject,
                 TrackView::Get(*track).shared_from_this()
             )

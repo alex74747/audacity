@@ -73,13 +73,20 @@ std::vector<UIHandlePtr> CommonTrackView::HitTest
 
    // Finally, default of all is adjustment of the selection box.
    if ( isMultiTool || currentTool == selectTool ) {
-      result = SelectHandle::HitTest(
-         mSelectHandle, st, pProject, shared_from_this() );
+      result = SelectionHitTest( mSelectHandle, st, pProject );
       if (result)
          results.push_back(result);
    }
 
    return results;
+}
+
+UIHandlePtr CommonTrackView::SelectionHitTest(
+    std::weak_ptr<SelectHandle> &mSelectHandle,
+    const TrackPanelMouseState &state, const AudacityProject *pProject)
+{
+   return SelectHandle::HitTest( SelectHandle::DefaultFactory,
+      mSelectHandle, state, pProject, shared_from_this() );
 }
 
 std::shared_ptr<TrackPanelCell> CommonTrackView::ContextMenuDelegate()

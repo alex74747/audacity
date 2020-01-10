@@ -37,12 +37,29 @@ public:
        const TrackList &trackList,
        const TrackPanelMouseState &st, const ViewInfo &viewInfo);
 
+   //! Type of a function to manufacture a SelectHandle or subclass appropriate for the view
+   using SelectHandleFactory = std::function< std::shared_ptr<SelectHandle>(
+      const std::shared_ptr<TrackView> &pTrackView,
+      bool oldUseSnap,
+      const TrackList &trackList,
+      const TrackPanelMouseState &st,
+      const ViewInfo &viewInfo
+   ) >;
+
    // This always hits, but details of the hit vary with mouse position and
    // key state.
-   static UIHandlePtr HitTest
-      (std::weak_ptr<SelectHandle> &holder,
+   static UIHandlePtr HitTest( SelectHandleFactory factory,
+       std::weak_ptr<SelectHandle> &holder,
        const TrackPanelMouseState &state, const AudacityProject *pProject,
        const std::shared_ptr<TrackView> &pTrackView);
+
+   //! Default selection handle hit test factory, usable in HitTest()
+   static std::shared_ptr<SelectHandle> DefaultFactory(
+      const std::shared_ptr<TrackView> &pTrackView,
+      bool oldUseSnap,
+      const TrackList &trackList,
+      const TrackPanelMouseState &st,
+      const ViewInfo &viewInfo);
 
    SelectHandle &operator=(const SelectHandle&) = default;
    
@@ -172,4 +189,5 @@ private:
    friend TimerHandler;
    std::shared_ptr<TimerHandler> mTimerHandler;
 };
+
 #endif
