@@ -200,6 +200,8 @@ list( APPEND SOURCES
       PlatformCompatibility.h
       PlaybackSchedule.cpp
       PlaybackSchedule.h
+      PluginIds.cpp
+      PluginIds.h
       PluginManager.cpp
       PluginManager.h
       Prefs.cpp
