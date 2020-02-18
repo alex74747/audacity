@@ -46,6 +46,7 @@ for shared and private configs - which need to move out.
 #include "FileNames.h"
 #include "ModuleManager.h"
 #include "PlatformCompatibility.h"
+#include "PluginIds.h"
 #include "Prefs.h"
 #include "ShuttleGui.h"
 #include "wxFileNameWrapper.h"
@@ -1455,7 +1456,7 @@ bool PluginManager::IsPluginRegistered(
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *module)
 {
-   PluginDescriptor & plug = CreatePlugin(GetID(module), module, PluginTypeModule);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(module), module, PluginTypeModule);
    plug.SetEffectFamily(module->GetOptionalFamilySymbol().Internal());
 
    plug.SetEnabled(true);
@@ -1466,9 +1467,9 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *module)
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ComponentInterface *command)
 {
-   PluginDescriptor & plug = CreatePlugin(GetID(command), command, (PluginType)PluginTypeAudacityCommand);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(command), command, (PluginType)PluginTypeAudacityCommand);
 
-   plug.SetProviderID(PluginManager::GetID(provider));
+   plug.SetProviderID(PluginIds::GetID(provider));
 
    plug.SetEnabled(true);
    plug.SetValid(true);
@@ -1478,9 +1479,9 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Compon
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type)
 {
-   PluginDescriptor & plug = CreatePlugin(GetID(effect), effect, (PluginType)type);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(effect), effect, (PluginType)type);
 
-   plug.SetProviderID(PluginManager::GetID(provider));
+   plug.SetProviderID(PluginIds::GetID(provider));
 
    plug.SetEffectType(effect->GetClassification());
    plug.SetEffectFamily(effect->GetFamily().Internal());
@@ -1497,9 +1498,9 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Effect
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer)
 {
-   PluginDescriptor & plug = CreatePlugin(GetID(importer), importer, PluginTypeImporter);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(importer), importer, PluginTypeImporter);
 
-   plug.SetProviderID(PluginManager::GetID(provider));
+   plug.SetProviderID(PluginIds::GetID(provider));
 
    plug.SetImporterIdentifier(importer->GetPluginStringID());
    plug.SetImporterExtensions(importer->GetSupportedExtensions());
@@ -1959,7 +1960,7 @@ void PluginManager::Load()
       // We iterate through the effects, possibly updating their info.
       wxString groupName;
       long groupIndex;
-      wxString group = GetPluginTypeString(PluginTypeEffect);
+      wxString group = PluginIds::GetPluginTypeString(PluginTypeEffect);
       wxString cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
       wxArrayString groupsToDelete;
 
@@ -2056,7 +2057,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
    bool boolVal;
    wxString groupName;
    long groupIndex;
-   wxString group = GetPluginTypeString(type);
+   wxString group = PluginIds::GetPluginTypeString(type);
    wxString cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
 
    pRegistry->SetPath(cfgPath);
@@ -2312,7 +2313,7 @@ void PluginManager::Save()
 
 void PluginManager::SaveGroup(FileConfig *pRegistry, PluginType type)
 {
-   wxString group = GetPluginTypeString(type);
+   wxString group = PluginIds::GetPluginTypeString(type);
    for (PluginMap::iterator iter = mPlugins.begin(); iter != mPlugins.end(); ++iter)
    {
       PluginDescriptor & plug = iter->second;
@@ -2499,7 +2500,7 @@ bool PluginManager::ShowManager(wxWindow *parent, EffectType type)
 // a better solution is devised.
 const PluginID & PluginManager::RegisterPlugin(EffectDefinitionInterface *effect, PluginType type)
 {
-   PluginDescriptor & plug = CreatePlugin(GetID(effect), effect, type);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(effect), effect, type);
 
    plug.SetEffectType(effect->GetType());
    plug.SetEffectFamily(effect->GetFamily().Internal());
@@ -2694,81 +2695,6 @@ ComponentInterface *PluginManager::GetInstance(const PluginID & ID)
    }
 
    return plug.GetInstance();
-}
-
-PluginID PluginManager::GetID(ModuleInterface *module)
-{
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
-                           GetPluginTypeString(PluginTypeModule),
-                           wxEmptyString,
-                           module->GetVendor().Internal(),
-                           module->GetSymbol().Internal(),
-                           module->GetPath());
-}
-
-PluginID PluginManager::GetID(ComponentInterface *command)
-{
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
-                           GetPluginTypeString(PluginTypeAudacityCommand),
-                           wxEmptyString,
-                           command->GetVendor().Internal(),
-                           command->GetSymbol().Internal(),
-                           command->GetPath());
-}
-
-PluginID PluginManager::GetID(EffectDefinitionInterface *effect)
-{
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
-                           GetPluginTypeString(PluginTypeEffect),
-                           effect->GetFamily().Internal(),
-                           effect->GetVendor().Internal(),
-                           effect->GetSymbol().Internal(),
-                           effect->GetPath());
-}
-
-PluginID PluginManager::GetID(ImporterInterface *importer)
-{
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
-                           GetPluginTypeString(PluginTypeImporter),
-                           wxEmptyString,
-                           importer->GetVendor().Internal(),
-                           importer->GetSymbol().Internal(),
-                           importer->GetPath());
-}
-
-// This string persists in configuration files
-// So config compatibility will break if it is changed across Audacity versions
-wxString PluginManager::GetPluginTypeString(PluginType type)
-{
-   wxString str;
-
-   switch (type)
-   {
-   default:
-   case PluginTypeNone:
-      str = wxT("Placeholder");
-      break;
-   case PluginTypeStub:
-      str = wxT("Stub");
-      break;
-   case PluginTypeEffect:
-      str = wxT("Effect");
-      break;
-   case PluginTypeAudacityCommand:
-      str = wxT("Generic");
-      break;
-   case PluginTypeExporter:
-      str = wxT("Exporter");
-      break;
-   case PluginTypeImporter:
-      str = wxT("Importer");
-      break;
-   case PluginTypeModule:
-      str = wxT("Module");
-      break;
-   }
-
-   return str;
 }
 
 PluginDescriptor & PluginManager::CreatePlugin(const PluginID & id,
@@ -3026,7 +2952,7 @@ RegistryPath PluginManager::SettingsPath(const PluginID & ID, bool shared)
 
    const PluginDescriptor & plug = mPlugins[ID];
    
-   wxString id = GetPluginTypeString(plug.GetPluginType()) +
+   wxString id = PluginIds::GetPluginTypeString(plug.GetPluginType()) +
                  wxT("_") +
                  plug.GetEffectFamily() + // is empty for non-Effects
                  wxT("_") +

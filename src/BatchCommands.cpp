@@ -36,6 +36,7 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 #include "effects/EffectUI.h"
 #include "FileNames.h"
 #include "Menus.h"
+#include "PluginIds.h"
 #include "PluginManager.h"
 #include "Prefs.h"
 #include "SelectUtilities.h"

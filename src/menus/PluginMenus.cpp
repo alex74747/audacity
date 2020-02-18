@@ -5,6 +5,7 @@
 #include "../Benchmark.h"
 #include "../CommonCommandFlags.h"
 #include "../Menus.h"
+#include "../PluginIds.h"
 #include "../PluginManager.h"
 #include "../Prefs.h"
 #include "../Project.h"

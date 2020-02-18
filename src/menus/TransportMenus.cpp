@@ -1264,7 +1264,6 @@ AttachedItem sAttachment3{
 
 BaseItemSharedPtr ExtraSelectionItems()
 {
-   using Options = MenuTable::Options;
    static BaseItemSharedPtr items{
    (FinderScope{ findCommandHandler },
    Items(wxT("MoveToLabel"),

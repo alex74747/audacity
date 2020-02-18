@@ -23,23 +23,13 @@
 
 class wxArrayString;
 class FileConfig;
+enum PluginType : unsigned char;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // PluginDescriptor
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-typedef enum
-{
-   PluginTypeNone = 0,          // 2.1.0 placeholder entries...not used by 2.1.1 or greater
-   PluginTypeStub =1,               // Used for plugins that have not yet been registered
-   PluginTypeEffect =1<<1,
-   PluginTypeAudacityCommand=1<<2,
-   PluginTypeExporter=1<<3,
-   PluginTypeImporter=1<<4,
-   PluginTypeModule=1<<5,
-} PluginType;
 
 // TODO:  Convert this to multiple derived classes
 class AUDACITY_DLL_API PluginDescriptor
@@ -235,15 +225,6 @@ public:
    bool DropFile(const wxString &fileName);
 
    static PluginManager & Get();
-
-   static PluginID GetID(ModuleInterface *module);
-   static PluginID GetID(ComponentInterface *command);
-   static PluginID GetID(EffectDefinitionInterface *effect);
-   static PluginID GetID(ImporterInterface *importer);
-
-   // This string persists in configuration files
-   // So config compatibility will break if it is changed across Audacity versions
-   static wxString GetPluginTypeString(PluginType type);
 
    int GetPluginCount(PluginType type);
    const PluginDescriptor *GetPlugin(const PluginID & ID);

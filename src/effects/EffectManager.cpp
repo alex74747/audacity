@@ -31,6 +31,7 @@ effects.
 #include "../ShuttleGetDefinition.h"
 #include "../commands/CommandContext.h"
 #include "../commands/AudacityCommand.h"
+#include "../PluginIds.h"
 #include "../PluginManager.h"
 
 

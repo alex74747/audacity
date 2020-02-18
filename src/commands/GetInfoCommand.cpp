@@ -43,6 +43,7 @@ This class now lists
 
 #include "../prefs/PrefsDialog.h"
 #include "../Shuttle.h"
+#include "../PluginIds.h"
 #include "../PluginManager.h"
 #include "../tracks/ui/TrackView.h"
 #include "../ShuttleGui.h"

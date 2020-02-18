@@ -29,6 +29,7 @@
 #include "../DBConnection.h"
 #include "../LabelTrack.h"
 #include "../Mix.h"
+#include "../PluginIds.h"
 #include "../PluginManager.h"
 #include "../ProjectAudioManager.h"
 #include "../ProjectFileIO.h"
@@ -1024,10 +1025,10 @@ PluginID Effect::GetID()
 {
    if (mClient)
    {
-      return PluginManager::GetID(mClient);
+      return PluginIds::GetID(mClient);
    }
 
-   return PluginManager::GetID(this);
+   return PluginIds::GetID(this);
 }
 
 bool Effect::Startup(EffectClientInterface *client)
