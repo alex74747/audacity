@@ -1419,7 +1419,7 @@ RegistryPath PluginManager::GetPluginEnabledSetting(
    switch ( desc.GetPluginType() ) {
       case PluginTypeModule: {
          // Retrieve optional family symbol that was recorded in
-         // RegisterPlugin() for the module
+         // RegisterProvider() for the module
          auto family = desc.GetEffectFamily();
          if ( family.empty() ) // as for built-in effect and command modules
             return {};
@@ -1454,15 +1454,14 @@ bool PluginManager::IsPluginRegistered(
    return false;
 }
 
-const PluginID & PluginManager::RegisterPlugin(ModuleInterface *module)
+void PluginManager::RegisterProvider(
+   const PluginID &id, ModuleInterface *module)
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(module), module, PluginTypeModule);
+   PluginDescriptor & plug = CreatePlugin(id, module, PluginTypeModule);
    plug.SetEffectFamily(module->GetOptionalFamilySymbol().Internal());
 
    plug.SetEnabled(true);
    plug.SetValid(true);
-
-   return plug.GetID();
 }
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ComponentInterface *command)

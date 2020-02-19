@@ -171,7 +171,7 @@ public:
    bool IsPluginRegistered(
       const PluginPath &path, const TranslatableString *pSymbol) override;
 
-   const PluginID & RegisterPlugin(ModuleInterface *module) override;
+   void RegisterProvider( const PluginID &id, ModuleInterface *module ) override;
    const PluginID & RegisterPlugin(ModuleInterface *provider, ComponentInterface *command);
    const PluginID & RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type) override;
    const PluginID & RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer) override;

@@ -441,7 +441,7 @@ bool ModuleManager::DiscoverProviders()
       if (module)
       {
          // Register the provider
-         pm.RegisterPlugin(module);
+         pm.RegisterProvider(PluginIds::GetID(module), module);
 
          // Now, allow the module to auto-register children
          module->AutoRegisterPlugins(pm);
@@ -466,7 +466,8 @@ void ModuleManager::InitializeBuiltins()
       {
          // Register the provider
          ModuleInterface *pInterface = module.get();
-         const PluginID & id = pm.RegisterPlugin(pInterface);
+         auto id = PluginIds::GetID(pInterface);
+         pm.RegisterProvider(id, pInterface);
 
          // Need to remember it 
          mDynModules[id] = std::move(module);
