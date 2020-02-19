@@ -1025,10 +1025,10 @@ PluginID Effect::GetID()
 {
    if (mClient)
    {
-      return PluginIds::GetID(mClient);
+      return PluginIds::GetEffectID(mClient);
    }
 
-   return PluginIds::GetID(this);
+   return PluginIds::GetEffectID(this);
 }
 
 bool Effect::Startup(EffectClientInterface *client)

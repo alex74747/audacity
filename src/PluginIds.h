@@ -35,10 +35,10 @@ namespace PluginIds
    // So config compatibility will break if it is changed across Audacity versions
    wxString GetPluginTypeString(PluginType type);
 
-   PluginID GetID(ModuleInterface *module);
-   PluginID GetID(ComponentInterface *command);
-   PluginID GetID(EffectDefinitionInterface *effect);
-   PluginID GetID(ImporterInterface *importer);
+   PluginID GetProviderID(ModuleInterface *module);
+   PluginID GetCommandID(ComponentInterface *command);
+   PluginID GetEffectID(EffectDefinitionInterface *effect);
+   PluginID GetImporterID(ImporterInterface *importer);
 };
 
 #endif

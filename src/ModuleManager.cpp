@@ -441,7 +441,7 @@ bool ModuleManager::DiscoverProviders()
       if (module)
       {
          // Register the provider
-         pm.RegisterProvider(PluginIds::GetID(module), module);
+         pm.RegisterProvider(PluginIds::GetProviderID(module), module);
 
          // Now, allow the module to auto-register children
          module->AutoRegisterPlugins(pm);
@@ -466,7 +466,7 @@ void ModuleManager::InitializeBuiltins()
       {
          // Register the provider
          ModuleInterface *pInterface = module.get();
-         auto id = PluginIds::GetID(pInterface);
+         auto id = PluginIds::GetProviderID(pInterface);
          pm.RegisterProvider(id, pInterface);
 
          // Need to remember it 

@@ -1466,9 +1466,9 @@ void PluginManager::RegisterProvider(
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ComponentInterface *command)
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(command), command, (PluginType)PluginTypeAudacityCommand);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetCommandID(command), command, (PluginType)PluginTypeAudacityCommand);
 
-   plug.SetProviderID(PluginIds::GetID(provider));
+   plug.SetProviderID(PluginIds::GetProviderID(provider));
 
    plug.SetEnabled(true);
    plug.SetValid(true);
@@ -1478,9 +1478,9 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Compon
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type)
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(effect), effect, (PluginType)type);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetEffectID(effect), effect, (PluginType)type);
 
-   plug.SetProviderID(PluginIds::GetID(provider));
+   plug.SetProviderID(PluginIds::GetProviderID(provider));
 
    plug.SetEffectType(effect->GetClassification());
    plug.SetEffectFamily(effect->GetFamily().Internal());
@@ -1497,9 +1497,9 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Effect
 
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer)
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(importer), importer, PluginTypeImporter);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetImporterID(importer), importer, PluginTypeImporter);
 
-   plug.SetProviderID(PluginIds::GetID(provider));
+   plug.SetProviderID(PluginIds::GetProviderID(provider));
 
    plug.SetImporterIdentifier(importer->GetPluginStringID());
    plug.SetImporterExtensions(importer->GetSupportedExtensions());
@@ -2499,7 +2499,7 @@ bool PluginManager::ShowManager(wxWindow *parent, EffectType type)
 // a better solution is devised.
 const PluginID & PluginManager::RegisterPlugin(EffectDefinitionInterface *effect, PluginType type)
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetID(effect), effect, type);
+   PluginDescriptor & plug = CreatePlugin(PluginIds::GetEffectID(effect), effect, type);
 
    plug.SetEffectType(effect->GetType());
    plug.SetEffectFamily(effect->GetFamily().Internal());

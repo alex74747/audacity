@@ -48,7 +48,7 @@ wxString PluginIds::GetPluginTypeString(PluginType type)
    return str;
 }
 
-PluginID PluginIds::GetID(ModuleInterface *module)
+PluginID PluginIds::GetProviderID(ModuleInterface *module)
 {
    return wxString::Format(wxT("%s_%s_%s_%s_%s"),
                            GetPluginTypeString(PluginTypeModule),
@@ -58,7 +58,7 @@ PluginID PluginIds::GetID(ModuleInterface *module)
                            module->GetPath());
 }
 
-PluginID PluginIds::GetID(ComponentInterface *command)
+PluginID PluginIds::GetCommandID(ComponentInterface *command)
 {
    return wxString::Format(wxT("%s_%s_%s_%s_%s"),
                            GetPluginTypeString(PluginTypeAudacityCommand),
@@ -68,7 +68,7 @@ PluginID PluginIds::GetID(ComponentInterface *command)
                            command->GetPath());
 }
 
-PluginID PluginIds::GetID(EffectDefinitionInterface *effect)
+PluginID PluginIds::GetEffectID(EffectDefinitionInterface *effect)
 {
    return wxString::Format(wxT("%s_%s_%s_%s_%s"),
                            GetPluginTypeString(PluginTypeEffect),
@@ -78,7 +78,7 @@ PluginID PluginIds::GetID(EffectDefinitionInterface *effect)
                            effect->GetPath());
 }
 
-PluginID PluginIds::GetID(ImporterInterface *importer)
+PluginID PluginIds::GetImporterID(ImporterInterface *importer)
 {
    return wxString::Format(wxT("%s_%s_%s_%s_%s"),
                            GetPluginTypeString(PluginTypeImporter),
