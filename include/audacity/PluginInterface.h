@@ -72,8 +72,8 @@ public:
 
    virtual void RegisterProvider(
       const PluginID &id, ModuleInterface *module ) = 0;
-   virtual const PluginID & RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type) = 0;
-   virtual const PluginID & RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer) = 0;
+   virtual const PluginID & RegisterEffect(ModuleInterface *provider, EffectDefinitionInterface *effect) = 0;
+   virtual const PluginID & RegisterImporter(ModuleInterface *provider, ImporterInterface *importer) = 0;
 
    virtual void FindFilesInPathList(const wxString & pattern,
                                     const FilePaths & pathList,

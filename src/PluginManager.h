@@ -172,9 +172,12 @@ public:
       const PluginPath &path, const TranslatableString *pSymbol) override;
 
    void RegisterProvider( const PluginID &id, ModuleInterface *module ) override;
-   const PluginID & RegisterPlugin(ModuleInterface *provider, ComponentInterface *command);
-   const PluginID & RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type) override;
-   const PluginID & RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer) override;
+   const PluginID & RegisterCommand(
+      ModuleInterface *provider, ComponentInterface *command);
+   const PluginID & RegisterEffect(
+      ModuleInterface *provider, EffectDefinitionInterface *effect) override;
+   const PluginID & RegisterImporter(
+      ModuleInterface *provider, ImporterInterface *importer) override;
 
    void FindFilesInPathList(const wxString & pattern,
                                     const FilePaths & pathList,
@@ -245,7 +248,7 @@ public:
 
    bool ShowManager(wxWindow *parent, EffectType type = EffectTypeNone);
 
-   const PluginID & RegisterPlugin(EffectDefinitionInterface *effect, PluginType type );
+   const PluginID & RegisterEffect( EffectDefinitionInterface *effect );
    void UnregisterPlugin(const PluginID & ID);
 
 private:

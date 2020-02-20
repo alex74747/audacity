@@ -1387,10 +1387,10 @@ const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
 {
    EffectDefinitionInterface * pEInterface = dynamic_cast<EffectDefinitionInterface*>(pInterface);
    if( pEInterface )
-      return PluginManager::Get().RegisterPlugin(provider, pEInterface, PluginTypeEffect);
+      return PluginManager::Get().RegisterEffect(provider, pEInterface);
    ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
    if( pCInterface )
-      return PluginManager::Get().RegisterPlugin(provider, pCInterface);
+      return PluginManager::Get().RegisterCommand(provider, pCInterface);
    static wxString empty;
    return empty;
 }
@@ -1400,7 +1400,7 @@ const PluginID &PluginManagerInterface::AudacityCommandRegistrationCallback(
 {
    ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
    if( pCInterface )
-      return PluginManager::Get().RegisterPlugin(provider, pCInterface);
+      return PluginManager::Get().RegisterCommand(provider, pCInterface);
    static wxString empty;
    return empty;
 }
@@ -1464,7 +1464,8 @@ void PluginManager::RegisterProvider(
    plug.SetValid(true);
 }
 
-const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ComponentInterface *command)
+const PluginID & PluginManager::RegisterCommand(
+   ModuleInterface *provider, ComponentInterface *command)
 {
    PluginDescriptor & plug = CreatePlugin(PluginIds::GetCommandID(command), command, (PluginType)PluginTypeAudacityCommand);
 
@@ -1476,9 +1477,11 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Compon
    return plug.GetID();
 }
 
-const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, EffectDefinitionInterface *effect, int type)
+const PluginID & PluginManager::RegisterEffect(
+   ModuleInterface *provider, EffectDefinitionInterface *effect )
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetEffectID(effect), effect, (PluginType)type);
+   PluginDescriptor & plug = CreatePlugin(
+      PluginIds::GetEffectID(effect), effect, PluginTypeEffect);
 
    plug.SetProviderID(PluginIds::GetProviderID(provider));
 
@@ -1495,7 +1498,8 @@ const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, Effect
    return plug.GetID();
 }
 
-const PluginID & PluginManager::RegisterPlugin(ModuleInterface *provider, ImporterInterface *importer)
+const PluginID & PluginManager::RegisterImporter(
+   ModuleInterface *provider, ImporterInterface *importer)
 {
    PluginDescriptor & plug = CreatePlugin(PluginIds::GetImporterID(importer), importer, PluginTypeImporter);
 
@@ -2497,9 +2501,11 @@ bool PluginManager::ShowManager(wxWindow *parent, EffectType type)
 
 // Here solely for the purpose of Nyquist Workbench until
 // a better solution is devised.
-const PluginID & PluginManager::RegisterPlugin(EffectDefinitionInterface *effect, PluginType type)
+const PluginID & PluginManager::RegisterEffect(
+   EffectDefinitionInterface *effect )
 {
-   PluginDescriptor & plug = CreatePlugin(PluginIds::GetEffectID(effect), effect, type);
+   PluginDescriptor & plug = CreatePlugin(
+      PluginIds::GetEffectID(effect), effect, PluginTypeEffect);
 
    plug.SetEffectType(effect->GetType());
    plug.SetEffectFamily(effect->GetFamily().Internal());

@@ -59,7 +59,7 @@ EffectManager::~EffectManager()
 // a better solution is devised.
 const PluginID & EffectManager::RegisterEffect(Effect *f)
 {
-   const PluginID & ID = PluginManager::Get().RegisterPlugin(f, PluginTypeEffect);
+   const PluginID & ID = PluginManager::Get().RegisterEffect(f);
 
    mEffects[ID] = f;
 
