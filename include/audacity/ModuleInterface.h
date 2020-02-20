@@ -117,12 +117,11 @@ public:
    // Error message does not need to mention the path and may be nonempty
    // even if some plugins are also discovered successfully.
    // Return value is the number of plugins found.
-   using RegistrationCallback =
-      std::function<
-         const PluginID &(ModuleInterface *, ComponentInterface *) >;
+   // pPluginManager may be null, but return value should be the same in that
+   // case.
    virtual unsigned DiscoverPluginsAtPath(
       const PluginPath & path, TranslatableString &errMsg,
-      const RegistrationCallback &callback )
+      PluginManagerInterface *pPluginManager )
          = 0;
 
    // For modules providing an interface to other dynamically loaded plugins,

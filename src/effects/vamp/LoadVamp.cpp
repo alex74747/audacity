@@ -205,7 +205,7 @@ PluginPaths VampEffectsModule::FindPluginPaths(PluginManagerInterface & WXUNUSED
 
 unsigned VampEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    int output;
@@ -215,8 +215,8 @@ unsigned VampEffectsModule::DiscoverPluginsAtPath(
    if (vp)
    {
       VampEffect effect(std::move(vp), path, output, hasParameters);
-      if (callback)
-         callback( this, &effect );
+      if ( pPluginManager )
+         pPluginManager->RegisterPlugin( this, &effect );
 
       return 1;
    }

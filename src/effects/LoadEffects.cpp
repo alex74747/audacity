@@ -150,8 +150,7 @@ bool BuiltinEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
          if ( pair.second->excluded )
             continue;
          // No checking of error ?
-         DiscoverPluginsAtPath(path, ignoredErrMsg,
-            PluginManagerInterface::DefaultRegistrationCallback);
+         DiscoverPluginsAtPath(path, ignoredErrMsg, &pm);
       }
    }
 
@@ -169,14 +168,14 @@ PluginPaths BuiltinEffectsModule::FindPluginPaths(PluginManagerInterface & WXUNU
 
 unsigned BuiltinEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    auto effect = Instantiate(path);
    if (effect)
    {
-      if (callback)
-         callback(this, effect.get());
+      if ( pPluginManager )
+         pPluginManager->RegisterPlugin( this, effect.get() );
       return 1;
    }
 

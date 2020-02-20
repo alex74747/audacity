@@ -152,8 +152,7 @@ bool BuiltinCommandsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
          // No checking of error ?
          // Uses Generic Registration, not Default.
          // Registers as TypeGeneric, not TypeEffect.
-         DiscoverPluginsAtPath(path, ignoredErrMsg,
-            PluginManagerInterface::DefaultRegistrationCallback);
+         DiscoverPluginsAtPath(path, ignoredErrMsg, &pm);
       }
    }
 
@@ -171,15 +170,14 @@ PluginPaths BuiltinCommandsModule::FindPluginPaths(PluginManagerInterface & WXUN
 
 unsigned BuiltinCommandsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    auto Command = Instantiate(path);
    if (Command)
    {
-      if (callback){
-         callback(this, Command.get());
-      }
+      if ( pPluginManager )
+         pPluginManager->RegisterPlugin( this, Command.get() );
       return 1;
    }
 

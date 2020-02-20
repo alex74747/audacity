@@ -184,8 +184,7 @@ bool NyquistEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
    if (!pm.IsPluginRegistered(NYQUIST_PROMPT_ID, &name))
    {
       // No checking of error ?
-      DiscoverPluginsAtPath(NYQUIST_PROMPT_ID, ignoredErrMsg,
-         PluginManagerInterface::DefaultRegistrationCallback);
+      DiscoverPluginsAtPath(NYQUIST_PROMPT_ID, ignoredErrMsg, &pm);
    }
 
    for (size_t i = 0; i < WXSIZEOF(kShippedEffects); i++)
@@ -210,8 +209,7 @@ bool NyquistEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
          if (!pm.IsPluginRegistered(files[j]))
          {
             // No checking of error ?
-            DiscoverPluginsAtPath(files[j], ignoredErrMsg,
-               PluginManagerInterface::DefaultRegistrationCallback);
+            DiscoverPluginsAtPath(files[j], ignoredErrMsg, &pm);
          }
       }
    }
@@ -238,14 +236,14 @@ PluginPaths NyquistEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 unsigned NyquistEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    NyquistEffect effect(path);
    if (effect.IsOk())
    {
-      if (callback)
-         callback(this, &effect);
+      if ( pPluginManager )
+         pPluginManager->RegisterPlugin( this, &effect );
       return 1;
    }
 

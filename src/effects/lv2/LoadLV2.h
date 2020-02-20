@@ -187,7 +187,7 @@ public:
    PluginPaths FindPluginPaths(PluginManagerInterface & pm) override;
    unsigned DiscoverPluginsAtPath(
       const PluginPath & path, TranslatableString &errMsg,
-      const RegistrationCallback &callback)
+      PluginManagerInterface *pPluginManager )
          override;
 
    bool IsPluginValid(const PluginPath & path, bool bFast) override;

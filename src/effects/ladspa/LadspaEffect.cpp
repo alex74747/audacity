@@ -211,8 +211,7 @@ bool LadspaEffectsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
          if (!pm.IsPluginRegistered(files[j]))
          {
             // No checking for error ?
-            DiscoverPluginsAtPath(files[j], ignoredErrMsg,
-               PluginManagerInterface::DefaultRegistrationCallback);
+            DiscoverPluginsAtPath(files[j], ignoredErrMsg, &pm);
          }
       }
    }
@@ -248,7 +247,7 @@ PluginPaths LadspaEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    // Since we now have builtin VST support, ignore the VST bridge as it
@@ -290,8 +289,8 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
             LadspaEffect effect(path, index);
             if (effect.SetHost(NULL)) {
                ++nLoaded;
-               if (callback)
-                  callback( this, &effect );
+               if ( pPluginManager )
+                  pPluginManager->RegisterPlugin( this, &effect );
             }
             else
                errMsg = XO("Could not load the library");

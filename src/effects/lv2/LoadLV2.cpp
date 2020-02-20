@@ -276,7 +276,7 @@ PluginPaths LV2EffectsModule::FindPluginPaths(PluginManagerInterface & WXUNUSED(
 
 unsigned LV2EffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    const LilvPlugin *plug = GetPlugin(path);
@@ -285,8 +285,8 @@ unsigned LV2EffectsModule::DiscoverPluginsAtPath(
       LV2Effect effect(plug);
       if (effect.SetHost(NULL))
       {
-         if (callback)
-            callback( this, &effect );
+         if ( pPluginManager )
+            pPluginManager->RegisterPlugin( this, &effect );
          return 1;
       }
    }

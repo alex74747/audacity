@@ -161,6 +161,9 @@ class AUDACITY_DLL_API PluginManager final : public PluginManagerInterface
 {
 public:
 
+   void RegisterPlugin(
+      ModuleInterface *provider, ComponentInterface *pInterface ) override;
+
    RegistryPath GetPluginEnabledSetting( const PluginID &ID );
    RegistryPath GetPluginEnabledSetting( const PluginDescriptor &desc );
 
@@ -305,6 +308,10 @@ private:
 
    PluginMap mPlugins;
    PluginMap::iterator mPluginsIter;
+
+   std::vector<PluginID> *mCollectedIds{};
+   std::vector<wxString> *mCollectedNames{};
+
 
    friend class PluginRegistrationDialog;
 };

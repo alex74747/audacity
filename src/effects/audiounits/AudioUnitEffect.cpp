@@ -338,7 +338,7 @@ PluginPaths AudioUnitEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 unsigned AudioUnitEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    errMsg = {};
    wxString name;
@@ -358,10 +358,8 @@ unsigned AudioUnitEffectsModule::DiscoverPluginsAtPath(
       return 0;
    }
 
-   if (callback)
-   {
-      callback(this, &effect);
-   }
+   if ( pPluginManager )
+      pPluginManager->RegisterPlugin( this, &effect );
 
    return 1;
 }

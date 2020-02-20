@@ -55,8 +55,8 @@ class AUDACITY_DLL_API PluginManagerInterface /* not final */
 {
 public:
 
-   static const PluginID &DefaultRegistrationCallback(
-      ModuleInterface *provider, ComponentInterface *ident );
+   virtual void RegisterPlugin(
+      ModuleInterface *provider, ComponentInterface *pInterface ) = 0;
 
    //! Was the plugin registry already populated for a path (maybe from loading the config file)?
    /*!

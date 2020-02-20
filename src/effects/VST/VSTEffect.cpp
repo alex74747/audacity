@@ -500,7 +500,7 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
 unsigned VSTEffectsModule::DiscoverPluginsAtPath(
    const PluginPath & path, TranslatableString &errMsg,
-   const RegistrationCallback &callback)
+   PluginManagerInterface *pPluginManager )
 {
    bool error = false;
    unsigned nFound = 0;
@@ -655,8 +655,8 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
 
                if (!skip && cont)
                {
-                  if (callback)
-                     callback( this, &proc );
+                  if ( pPluginManager )
+                     pPluginManager->RegisterPlugin( this, &proc );
                   ++nFound;
                }
             }

@@ -1026,9 +1026,7 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
                auto provider =
                   mm.FindProviderInstance( item.plugs[j]->GetProviderID() );
                if (provider &&
-                   provider->DiscoverPluginsAtPath(
-                     path, errMsg,
-                     PluginManagerInterface::DefaultRegistrationCallback) )
+                   provider->DiscoverPluginsAtPath( path, errMsg, &pm ) )
                {
                   for (size_t k = 0, cntk = item.plugs.size(); k < cntk; k++)
                   {
@@ -1370,17 +1368,20 @@ void PluginDescriptor::SetImporterExtensions( FileExtensions extensions )
 //
 // ============================================================================
 
-const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
+void PluginManager::RegisterPlugin(
    ModuleInterface *provider, ComponentInterface *pInterface )
 {
    EffectDefinitionInterface * pEInterface = dynamic_cast<EffectDefinitionInterface*>(pInterface);
+   PluginID id;
    if( pEInterface )
-      return PluginManager::Get().RegisterEffect(provider, pEInterface);
+      id = RegisterEffect(provider, pEInterface);
    CommandDefinitionInterface * pCInterface = dynamic_cast<CommandDefinitionInterface*>(pInterface);
    if( pCInterface )
-      return PluginManager::Get().RegisterCommand(provider, pCInterface);
-   static wxString empty;
-   return empty;
+      id = RegisterCommand(provider, pCInterface);
+   if ( mCollectedIds )
+      mCollectedIds->push_back( id );
+   if ( mCollectedNames )
+      mCollectedNames->push_back( pInterface->GetSymbol().Translation() );
 }
 
 RegistryPath PluginManager::GetPluginEnabledSetting( const PluginID &ID )
@@ -1826,7 +1827,7 @@ bool PluginManager::DropFile(const wxString &fileName)
          TranslatableString errMsg;
          // Do dry-run test of the file format
          unsigned nPlugIns =
-            module->DiscoverPluginsAtPath(fileName, errMsg, {});
+            module->DiscoverPluginsAtPath(fileName, errMsg, nullptr);
          if (nPlugIns) {
             // File contents are good for this module, so check no others.
             // All branches of this block return true, even in case of
@@ -1871,17 +1872,13 @@ bool PluginManager::DropFile(const wxString &fileName)
             // Register for real
             std::vector<PluginID> ids;
             std::vector<wxString> names;
-            nPlugIns = module->DiscoverPluginsAtPath(dstPath, errMsg,
-               [&](ModuleInterface *provider, ComponentInterface *ident)
-                                                     -> const PluginID& {
-                  // Register as by default, but also collecting the PluginIDs
-                  // and names
-                  auto &id = PluginManagerInterface::DefaultRegistrationCallback(
-                        provider, ident);
-                  ids.push_back(id);
-                  names.push_back( ident->GetSymbol().Translation() );
-                  return id;
-               });
+            {
+               // Temporarily change this to detect calls to RegisterPlugin
+               ValueRestorer< std::vector<PluginID>* > r1{ mCollectedIds, &ids };
+               ValueRestorer< std::vector<wxString>* > r2{ mCollectedNames, &names };
+               nPlugIns =
+                  module->DiscoverPluginsAtPath( dstPath, errMsg, this );
+            }
             if ( ! nPlugIns ) {
                // Unlikely after the dry run succeeded
                ::AudacityMessageBox(
