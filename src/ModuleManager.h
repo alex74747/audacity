@@ -95,7 +95,6 @@ public:
       std::function< void( const PluginID &id, ModuleInterface &module ) >;
    void ForEachProvider( const ProviderCallback &callback );
 
-   PluginPaths FindPluginsForProvider(const PluginID & provider, const PluginPath & path);
    bool RegisterEffectPlugin(const PluginID & provider, const PluginPath & path,
                        TranslatableString &errMsg);
 
