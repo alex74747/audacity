@@ -58,7 +58,7 @@ PluginID PluginIds::GetProviderID(ModuleInterface *module)
                            module->GetPath());
 }
 
-PluginID PluginIds::GetCommandID(ComponentInterface *command)
+PluginID PluginIds::GetCommandID(CommandDefinitionInterface *command)
 {
    return wxString::Format(wxT("%s_%s_%s_%s_%s"),
                            GetPluginTypeString(PluginTypeAudacityCommand),

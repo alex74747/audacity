@@ -64,7 +64,21 @@ typedef enum EffectType : int
 
 /*************************************************************************************//**
 
-\class EffectDefinitionInterface 
+\class CommandDefinitionInterface
+
+\brief CommandDefinitionInterface is a ComponentInterface for commands.
+
+*******************************************************************************************/
+class AUDACITY_DLL_API CommandDefinitionInterface  /* not final */ : public ComponentInterface
+{
+public:
+   virtual ~CommandDefinitionInterface() {};
+};
+
+
+/*************************************************************************************//**
+
+\class EffectDefinitionInterface
 
 \brief EffectDefinitionInterface is a ComponentInterface that additionally tracks
 flag-functions for interactivity, play-preview and whether the effect can run without a GUI.

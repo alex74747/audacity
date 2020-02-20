@@ -1388,7 +1388,7 @@ const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
    EffectDefinitionInterface * pEInterface = dynamic_cast<EffectDefinitionInterface*>(pInterface);
    if( pEInterface )
       return PluginManager::Get().RegisterEffect(provider, pEInterface);
-   ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
+   CommandDefinitionInterface * pCInterface = dynamic_cast<CommandDefinitionInterface*>(pInterface);
    if( pCInterface )
       return PluginManager::Get().RegisterCommand(provider, pCInterface);
    static wxString empty;
@@ -1398,7 +1398,7 @@ const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
 const PluginID &PluginManagerInterface::AudacityCommandRegistrationCallback(
    ModuleInterface *provider, ComponentInterface *pInterface )
 {
-   ComponentInterface * pCInterface = dynamic_cast<ComponentInterface*>(pInterface);
+   CommandDefinitionInterface * pCInterface = dynamic_cast<CommandDefinitionInterface*>(pInterface);
    if( pCInterface )
       return PluginManager::Get().RegisterCommand(provider, pCInterface);
    static wxString empty;
@@ -1465,7 +1465,7 @@ void PluginManager::RegisterProvider(
 }
 
 const PluginID & PluginManager::RegisterCommand(
-   ModuleInterface *provider, ComponentInterface *command)
+   ModuleInterface *provider, CommandDefinitionInterface *command)
 {
    PluginDescriptor & plug = CreatePlugin(PluginIds::GetCommandID(command), command, (PluginType)PluginTypeAudacityCommand);
 

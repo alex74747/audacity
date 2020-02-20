@@ -173,7 +173,7 @@ public:
 
    void RegisterProvider( const PluginID &id, ModuleInterface *module ) override;
    const PluginID & RegisterCommand(
-      ModuleInterface *provider, ComponentInterface *command);
+      ModuleInterface *provider, CommandDefinitionInterface *command);
    const PluginID & RegisterEffect(
       ModuleInterface *provider, EffectDefinitionInterface *effect) override;
    const PluginID & RegisterImporter(

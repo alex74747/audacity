@@ -20,7 +20,7 @@
 
 #include "../widgets/wxPanelWrapper.h" // to inherit
 
-#include "../include/audacity/ComponentInterface.h"
+#include "../include/audacity/EffectInterface.h"
 #include "../include/audacity/EffectAutomationParameters.h" // for command automation
 
 #include "../Registrar.h"
@@ -37,7 +37,7 @@ class ProgressDialog;
 
 
 class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
-                                public ComponentInterface
+                                public CommandDefinitionInterface
 {
  public:
    //std::unique_ptr<CommandOutputTargets> mOutput;

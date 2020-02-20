@@ -14,7 +14,7 @@
 #include "audacity/Types.h"
 
 class ModuleInterface;
-class ComponentInterface;
+class CommandDefinitionInterface;
 class EffectDefinitionInterface;
 class ImporterInterface;
 
@@ -36,7 +36,7 @@ namespace PluginIds
    wxString GetPluginTypeString(PluginType type);
 
    PluginID GetProviderID(ModuleInterface *module);
-   PluginID GetCommandID(ComponentInterface *command);
+   PluginID GetCommandID(CommandDefinitionInterface *command);
    PluginID GetEffectID(EffectDefinitionInterface *effect);
    PluginID GetImporterID(ImporterInterface *importer);
 };
