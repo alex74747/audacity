@@ -31,6 +31,7 @@ i.e. an alternative to the usual interface, for Audacity.
 
 #include "FileNames.h"
 #include "MemoryX.h"
+#include "PluginIds.h"
 #include "PluginManager.h"
 
 #include "audacity/PluginInterface.h"
@@ -437,7 +438,7 @@ bool ModuleManager::DiscoverProviders()
 
    for (int i = 0, cnt = provList.size(); i < cnt; i++)
    {
-      ModuleInterface *module = LoadModule(provList[i]);
+      auto module = LoadModule(provList[i]).get();
       if (module)
       {
          // Register the provider
@@ -470,7 +471,7 @@ void ModuleManager::InitializeBuiltins()
          pm.RegisterProvider(id, pInterface);
 
          // Need to remember it 
-         mDynModules[id] = std::move(module);
+         mDynModules[id] = module;
 
          // Allow the module to auto-register children
          pInterface->AutoRegisterPlugins(pm);
@@ -520,19 +521,20 @@ bool ModuleManager::RegisterEffectPlugin(const PluginID & providerID, const Plug
    return nFound > 0;
 }
 
-ModuleInterface *ModuleManager::CreateProviderInstance(const PluginID & providerID,
-                                                      const PluginPath & path)
+std::shared_ptr<ModuleInterface>
+ModuleManager::CreateProviderInstance(
+   const PluginID & providerID, const PluginPath & path)
 {
    if (path.empty() && mDynModules.find(providerID) != mDynModules.end())
    {
-      return mDynModules[providerID].get();
+      return mDynModules[providerID];
    }
 
    return nullptr;
 }
 
-ComponentInterface *ModuleManager::CreateInstance(const PluginID & providerID,
-                                              const PluginPath & path)
+std::shared_ptr< ComponentInterface > ModuleManager::CreateInstance(
+   const PluginID & providerID, const PluginPath & path )
 {
    if (mDynModules.find(providerID) == mDynModules.end())
    {
@@ -540,17 +542,6 @@ ComponentInterface *ModuleManager::CreateInstance(const PluginID & providerID,
    }
 
    return mDynModules[providerID]->CreateInstance(path);
-}
-
-void ModuleManager::DeleteInstance(const PluginID & providerID,
-                                   ComponentInterface *instance)
-{
-   if (mDynModules.find(providerID) == mDynModules.end())
-   {
-      return;
-   }
-
-   mDynModules[providerID]->DeleteInstance(instance);
 }
 
 bool ModuleManager::IsProviderValid(const PluginID & WXUNUSED(providerID),

@@ -40,7 +40,7 @@ public:
 
    bool IsInstantiated() const;
    ComponentInterface *GetInstance();
-   void SetInstance(ComponentInterface *instance);
+   void SetInstance( const std::shared_ptr< ComponentInterface > &instance );
 
    PluginType GetPluginType() const;
    void SetPluginType(PluginType type);
@@ -111,14 +111,12 @@ public:
 
 private:
 
-   void DeleteInstance();
-
    // Common
 
    // Among other purposes, PluginDescriptor acts as the resource handle,
    // or smart pointer, to a resource created in a plugin library, and is responsible
    // for a cleanup of this pointer.
-   ComponentInterface *mInstance;
+   std::shared_ptr<ComponentInterface> mInstance;
 
    PluginType mPluginType;
 
@@ -248,7 +246,8 @@ public:
 
    bool ShowManager(wxWindow *parent, EffectType type = EffectTypeNone);
 
-   const PluginID & RegisterEffect( EffectDefinitionInterface *effect );
+   const PluginID & RegisterEffect(
+      const std::shared_ptr< EffectDefinitionInterface > &effect );
    void UnregisterPlugin(const PluginID & ID);
 
 private:

@@ -1089,7 +1089,6 @@ PluginDescriptor::PluginDescriptor()
    mPluginType = PluginTypeNone;
    mEnabled = false;
    mValid = false;
-   mInstance = NULL;
 
    mEffectType = EffectTypeNone;
    mEffectInteractive = false;
@@ -1101,21 +1100,11 @@ PluginDescriptor::PluginDescriptor()
 
 PluginDescriptor::~PluginDescriptor()
 {
-   DeleteInstance();
-}
-
-void PluginDescriptor::DeleteInstance()
-{
-   if (mInstance)
-   {
-      ModuleManager::Get().DeleteInstance(GetProviderID(), mInstance);
-      mInstance = nullptr;
-   }
 }
 
 bool PluginDescriptor::IsInstantiated() const
 {
-   return mInstance != NULL;
+   return mInstance != nullptr;
 }
 
 ComponentInterface *PluginDescriptor::GetInstance()
@@ -1132,17 +1121,12 @@ ComponentInterface *PluginDescriptor::GetInstance()
       }
    }
 
-   return mInstance;
+   return mInstance.get();
 }
 
-void PluginDescriptor::SetInstance(ComponentInterface *instance)
+void PluginDescriptor::SetInstance(
+   const std::shared_ptr< ComponentInterface > &instance)
 {
-   if (mInstance && mInstance != instance)
-   {
-      // Be sure not to leak resources!!
-      DeleteInstance();
-   }
-
    mInstance = instance;
 
    return;
@@ -1820,8 +1804,8 @@ bool PluginManager::DropFile(const wxString &fileName)
         plug;
         plug = GetNextPlugin(PluginTypeModule))
    {
-      auto module = static_cast<ModuleInterface *>
-         (mm.CreateProviderInstance(plug->GetID(), plug->GetPath()));
+      auto module = static_cast<ModuleInterface *>(
+         mm.CreateProviderInstance(plug->GetID(), plug->GetPath()).get());
       if (! module)
          continue;
 
@@ -2492,10 +2476,10 @@ bool PluginManager::ShowManager(wxWindow *parent, EffectType type)
 // Here solely for the purpose of Nyquist Workbench until
 // a better solution is devised.
 const PluginID & PluginManager::RegisterEffect(
-   EffectDefinitionInterface *effect )
+   const std::shared_ptr< EffectDefinitionInterface > &effect )
 {
    PluginDescriptor & plug = CreatePlugin(
-      PluginIds::GetEffectID(effect), effect, PluginTypeEffect);
+      PluginIds::GetEffectID(effect.get()), effect.get(), PluginTypeEffect);
 
    plug.SetEffectType(effect->GetType());
    plug.SetEffectFamily(effect->GetFamily().Internal());

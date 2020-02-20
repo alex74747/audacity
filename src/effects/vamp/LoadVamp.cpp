@@ -236,7 +236,8 @@ bool VampEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
    return bool(vp);
 }
 
-ComponentInterface *VampEffectsModule::CreateInstance(const PluginPath & path)
+std::shared_ptr< ComponentInterface > VampEffectsModule::CreateInstance(
+   const PluginPath & path )
 {
    // Acquires a resource for the application.
    int output;
@@ -245,18 +246,11 @@ ComponentInterface *VampEffectsModule::CreateInstance(const PluginPath & path)
    auto vp = FindPlugin(path, output, hasParameters);
    if (vp)
    {
-      // Safety of this depends on complementary calls to DeleteInstance on the module manager side.
-      return safenew VampEffect(std::move(vp), path, output, hasParameters);
+      return std::make_shared< VampEffect >(
+         std::move(vp), path, output, hasParameters );
    }
 
    return NULL;
-}
-
-void VampEffectsModule::DeleteInstance(ComponentInterface *instance)
-{
-   std::unique_ptr < VampEffect > {
-      dynamic_cast<VampEffect *>(instance)
-   };
 }
 
 // VampEffectsModule implementation

@@ -1328,7 +1328,8 @@ void NyqBench::OnLargeIcons(wxCommandEvent & e)
 void NyqBench::OnGo(wxCommandEvent & e)
 {
    // No need to delete...EffectManager will do it
-   mEffect = new NyquistEffect(wxT("Nyquist Effect Workbench"));
+   mEffect =
+      std::make_shared< NyquistEffect >( wxT("Nyquist Effect Workbench") );
    const PluginID & ID = EffectManager::Get().RegisterEffect(mEffect);
 
    mEffect->SetCommand(mScript->GetValue());

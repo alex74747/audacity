@@ -264,24 +264,15 @@ bool NyquistEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
    return wxFileName::FileExists(path);
 }
 
-ComponentInterface *NyquistEffectsModule::CreateInstance(const PluginPath & path)
+std::shared_ptr< ComponentInterface > NyquistEffectsModule::CreateInstance(
+   const PluginPath & path )
 {
    // Acquires a resource for the application.
-   auto effect = std::make_unique<NyquistEffect>(path);
+   auto effect = std::make_shared< NyquistEffect >( path );
    if (effect->IsOk())
-   {
-      // Safety of this depends on complementary calls to DeleteInstance on the module manager side.
-      return effect.release();
-   }
+      return effect;
 
-   return NULL;
-}
-
-void NyquistEffectsModule::DeleteInstance(ComponentInterface *instance)
-{
-   std::unique_ptr < NyquistEffect > {
-      dynamic_cast<NyquistEffect *>(instance)
-   };
+   return nullptr;
 }
 
 // ============================================================================

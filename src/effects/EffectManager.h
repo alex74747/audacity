@@ -78,7 +78,8 @@ public:
    /** (Un)Register an effect so it can be executed. */
    // Here solely for the purpose of Nyquist Workbench until
    // a better solution is devised.
-   const PluginID & RegisterEffect(Effect *f);
+   const PluginID & RegisterEffect(
+      const std::shared_ptr< Effect> &f );
    void UnregisterEffect(const PluginID & ID);
 
    TranslatableString GetEffectFamilyName(const PluginID & ID);

@@ -57,11 +57,12 @@ EffectManager::~EffectManager()
 
 // Here solely for the purpose of Nyquist Workbench until
 // a better solution is devised.
-const PluginID & EffectManager::RegisterEffect(Effect *f)
+const PluginID & EffectManager::RegisterEffect(
+   const std::shared_ptr< Effect > &f )
 {
    const PluginID & ID = PluginManager::Get().RegisterEffect(f);
 
-   mEffects[ID] = f;
+   mEffects[ID] = f.get();
 
    return ID;
 }

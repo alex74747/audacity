@@ -59,9 +59,7 @@ struct ModuleInterfaceDeleter {
    void operator ()(ModuleInterface *pInterface) const;
 };
 
-using ModuleInterfaceHandle = std::unique_ptr<
-   ModuleInterface, ModuleInterfaceDeleter
->;
+using ModuleInterfaceHandle = std::shared_ptr< ModuleInterface >;
 
 typedef std::map<wxString, ModuleInterfaceHandle> ModuleMap;
 typedef std::map<ModuleInterface *, std::unique_ptr<wxDynamicLibrary>> LibraryMap;
@@ -96,9 +94,10 @@ public:
    bool RegisterEffectPlugin(const PluginID & provider, const PluginPath & path,
                        TranslatableString &errMsg);
 
-   ModuleInterface *CreateProviderInstance(const PluginID & provider, const PluginPath & path);
-   ComponentInterface *CreateInstance(const PluginID & provider, const PluginPath & path);
-   void DeleteInstance(const PluginID & provider, ComponentInterface *instance);
+   std::shared_ptr<ModuleInterface>
+      CreateProviderInstance(const PluginID & provider, const PluginPath & path);
+   std::shared_ptr<ComponentInterface>
+      CreateInstance(const PluginID & provider, const PluginPath & path);
 
    bool IsProviderValid(const PluginID & provider, const PluginPath & path);
    bool IsPluginValid(const PluginID & provider, const PluginPath & path, bool bFast);

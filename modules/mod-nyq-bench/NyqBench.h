@@ -189,7 +189,7 @@ class NyqBench:public wxFrame
    wxFindReplaceData mFindData;
    NyqTextCtrl *mFindText;
 
-   NyquistEffect *mEffect;
+   std::shared_ptr< NyquistEffect > mEffect;
 
    wxFont mScriptFont;
    wxFont mOutputFont;

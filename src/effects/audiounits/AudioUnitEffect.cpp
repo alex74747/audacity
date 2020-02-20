@@ -377,25 +377,17 @@ bool AudioUnitEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
    return FindAudioUnit(path, name) != NULL;
 }
 
-ComponentInterface *AudioUnitEffectsModule::CreateInstance(const PluginPath & path)
+std::shared_ptr< ComponentInterface > AudioUnitEffectsModule::CreateInstance(
+   const PluginPath & path )
 {
    // Acquires a resource for the application.
    wxString name;
    AudioComponent component = FindAudioUnit(path, name);
-   if (component == NULL)
-   {
-      return NULL;
-   }
+   if ( !component )
+      return nullptr;
 
-   // Safety of this depends on complementary calls to DeleteInstance on the module manager side.
-   return safenew AudioUnitEffect(path, name, component);
-}
-
-void AudioUnitEffectsModule::DeleteInstance(ComponentInterface *instance)
-{
-   std::unique_ptr < AudioUnitEffect > {
-      dynamic_cast<AudioUnitEffect *>(instance)
-   };
+   return std::make_shared< AudioUnitEffect >(
+      path, name, component);
 }
 
 // ============================================================================
