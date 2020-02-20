@@ -1395,16 +1395,6 @@ const PluginID &PluginManagerInterface::DefaultRegistrationCallback(
    return empty;
 }
 
-const PluginID &PluginManagerInterface::AudacityCommandRegistrationCallback(
-   ModuleInterface *provider, ComponentInterface *pInterface )
-{
-   CommandDefinitionInterface * pCInterface = dynamic_cast<CommandDefinitionInterface*>(pInterface);
-   if( pCInterface )
-      return PluginManager::Get().RegisterCommand(provider, pCInterface);
-   static wxString empty;
-   return empty;
-}
-
 RegistryPath PluginManager::GetPluginEnabledSetting( const PluginID &ID )
 {
    auto pPlugin = GetPlugin( ID );

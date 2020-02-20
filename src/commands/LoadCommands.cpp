@@ -153,7 +153,7 @@ bool BuiltinCommandsModule::AutoRegisterPlugins(PluginManagerInterface & pm)
          // Uses Generic Registration, not Default.
          // Registers as TypeGeneric, not TypeEffect.
          DiscoverPluginsAtPath(path, ignoredErrMsg,
-            PluginManagerInterface::AudacityCommandRegistrationCallback);
+            PluginManagerInterface::DefaultRegistrationCallback);
       }
    }
 

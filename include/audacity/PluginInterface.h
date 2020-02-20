@@ -57,8 +57,6 @@ public:
 
    static const PluginID &DefaultRegistrationCallback(
       ModuleInterface *provider, ComponentInterface *ident );
-   static const PluginID &AudacityCommandRegistrationCallback(
-      ModuleInterface *provider, ComponentInterface *ident );
 
    //! Was the plugin registry already populated for a path (maybe from loading the config file)?
    /*!
