@@ -434,20 +434,8 @@ bool ModuleManager::DiscoverProviders()
    FileNames::FindFilesInPathList(wxT("*.so"), pathList, provList);
 #endif
 
-   PluginManager & pm = PluginManager::Get();
-
-   for (int i = 0, cnt = provList.size(); i < cnt; i++)
-   {
-      auto module = LoadModule(provList[i]).get();
-      if (module)
-      {
-         // Register the provider
-         pm.RegisterProvider(PluginIds::GetProviderID(module), module);
-
-         // Now, allow the module to auto-register children
-         module->AutoRegisterPlugins(pm);
-      }
-   }
+   for ( const auto &path : provList )
+      LoadModule(path);
 #endif
 
    return true;
@@ -455,8 +443,6 @@ bool ModuleManager::DiscoverProviders()
 
 void ModuleManager::InitializeBuiltins()
 {
-   PluginManager & pm = PluginManager::Get();
-
    for (auto moduleMain : builtinModuleList())
    {
       ModuleInterfaceHandle module {
@@ -468,19 +454,22 @@ void ModuleManager::InitializeBuiltins()
          // Register the provider
          ModuleInterface *pInterface = module.get();
          auto id = PluginIds::GetProviderID(pInterface);
-         pm.RegisterProvider(id, pInterface);
 
          // Need to remember it 
          mDynModules[id] = module;
-
-         // Allow the module to auto-register children
-         pInterface->AutoRegisterPlugins(pm);
       }
       else
       {
          // Don't leak!  Destructor of module does that.
       }
    }
+}
+
+void ModuleManager::ForEachProvider( const ProviderCallback &callback )
+{
+   for ( const auto &pair : mDynModules )
+      if ( pair.second )
+         callback( pair.first, *pair.second );
 }
 
 void ModuleInterfaceDeleter::operator() (ModuleInterface *pInterface) const

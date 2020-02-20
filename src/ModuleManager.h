@@ -12,7 +12,8 @@
 #ifndef __AUDACITY_MODULEMANAGER_H__
 #define __AUDACITY_MODULEMANAGER_H__
 
-#include <memory>
+#include "MemoryX.h"
+#include <functional>
 #include <map>
 #include <vector>
 
@@ -89,6 +90,10 @@ public:
    // PluginManager use
    // Can be called before Initialize()
    bool DiscoverProviders();
+
+   using ProviderCallback =
+      std::function< void( const PluginID &id, ModuleInterface &module ) >;
+   void ForEachProvider( const ProviderCallback &callback );
 
    PluginPaths FindPluginsForProvider(const PluginID & provider, const PluginPath & path);
    bool RegisterEffectPlugin(const PluginID & provider, const PluginPath & path,

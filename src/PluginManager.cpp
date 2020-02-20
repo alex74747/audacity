@@ -1759,8 +1759,14 @@ void PluginManager::Initialize()
    // And force load of setting to verify it's accessible
    GetSettings();
 
-   // Then look for providers (they may autoregister plugins)
    ModuleManager::Get().DiscoverProviders();
+
+   ModuleManager::Get().ForEachProvider(
+      [this]( const PluginID &id, ModuleInterface &module ){
+         RegisterProvider(id, &module);
+         // Allow the module to auto-register children
+         module.AutoRegisterPlugins(*this);
+      } );
 
    // And finally check for updates
 #ifndef EXPERIMENTAL_EFFECT_MANAGEMENT
