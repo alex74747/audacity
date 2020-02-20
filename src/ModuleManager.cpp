@@ -33,8 +33,6 @@ i.e. an alternative to the usual interface, for Audacity.
 #include "MemoryX.h"
 #include "PluginIds.h"
 
-#include "audacity/PluginInterface.h"
-
 #ifdef EXPERIMENTAL_MODULE_PREFS
 #include "Prefs.h"
 #include "ModuleSettings.h"
@@ -480,17 +478,13 @@ void ModuleInterfaceDeleter::operator() (ModuleInterface *pInterface) const
    }
 }
 
-bool ModuleManager::RegisterEffectPlugin(const PluginID & providerID, const PluginPath & path, TranslatableString &errMsg)
+ModuleInterface *
+ModuleManager::FindProviderInstance( const PluginID & providerID )
 {
-   errMsg = {};
-   if (mDynModules.find(providerID) == mDynModules.end())
-   {
-      return false;
-   }
-
-   auto nFound = mDynModules[providerID]->DiscoverPluginsAtPath(path, errMsg, PluginManagerInterface::DefaultRegistrationCallback);
-
-   return nFound > 0;
+   auto iter = mDynModules.find(providerID);
+   if ( iter == mDynModules.end() )
+      return nullptr;
+   return iter->second.get();
 }
 
 std::shared_ptr<ModuleInterface>

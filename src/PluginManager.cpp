@@ -1023,8 +1023,12 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
             for (size_t j = 0, cntj = item.plugs.size(); j < cntj; j++)
             {
                TranslatableString errMsg;
-               if (mm.RegisterEffectPlugin(item.plugs[j]->GetProviderID(), path,
-                                     errMsg))
+               auto provider =
+                  mm.FindProviderInstance( item.plugs[j]->GetProviderID() );
+               if (provider &&
+                   provider->DiscoverPluginsAtPath(
+                     path, errMsg,
+                     PluginManagerInterface::DefaultRegistrationCallback) )
                {
                   for (size_t k = 0, cntk = item.plugs.size(); k < cntk; k++)
                   {

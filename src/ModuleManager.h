@@ -95,9 +95,7 @@ public:
       std::function< void( const PluginID &id, ModuleInterface &module ) >;
    void ForEachProvider( const ProviderCallback &callback );
 
-   bool RegisterEffectPlugin(const PluginID & provider, const PluginPath & path,
-                       TranslatableString &errMsg);
-
+   ModuleInterface *FindProviderInstance( const PluginID & providerID );
    std::shared_ptr<ModuleInterface>
       CreateProviderInstance(const PluginID & provider, const PluginPath & path);
    std::shared_ptr<ComponentInterface>
