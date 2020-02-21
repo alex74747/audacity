@@ -1811,10 +1811,7 @@ bool PluginManager::DropFile(const wxString &fileName)
    auto &mm = ModuleManager::Get();
    const wxFileName src{ fileName };
 
-   for (const PluginDescriptor *plug = GetFirstPlugin(PluginTypeModule);
-        plug;
-        plug = GetNextPlugin(PluginTypeModule))
-   {
+   for ( auto plug : Range( PluginTypeModule ) ) {
       auto module = static_cast<ModuleInterface *>(
          mm.CreateProviderInstance(plug->GetID(), plug->GetPath()).get());
       if (! module)
@@ -2542,93 +2539,42 @@ const PluginDescriptor *PluginManager::GetPlugin(const PluginID & ID)
    return &mPlugins[ID];
 }
 
-const PluginDescriptor *PluginManager::GetFirstPlugin(int type)
+auto PluginManager::Iterator::operator ++() -> Iterator &
 {
-   for (mPluginsIter = mPlugins.begin(); mPluginsIter != mPlugins.end(); ++mPluginsIter)
-   {
-      PluginDescriptor & plug = mPluginsIter->second;
-      PluginType plugType = plug.GetPluginType();
-      if( plug.IsValid() && plug.IsEnabled() &&  ((plugType & type) != 0))
-      {
-         bool familyEnabled = true;
-         if( (plugType & PluginTypeEffect) != 0) {
-            // This preference may be written by EffectsPrefs
-            auto setting = GetPluginEnabledSetting( plug );
-            familyEnabled = setting.empty()
-               ? true
-               : gPrefs->Read( setting, true );
-         }
-         if (familyEnabled)
-            return &mPluginsIter->second;
-      }
-   }
-
-   return NULL;
+   if ( mIter != mEnd ) do
+      ++mIter;
+   while( !Ok() );
+   return *this;
 }
 
-const PluginDescriptor *PluginManager::GetNextPlugin(int type)
+auto PluginManager::Iterator::operator *() const -> PluginDescriptor *
 {
-   while (++mPluginsIter != mPlugins.end())
-   {
-      PluginDescriptor & plug = mPluginsIter->second;
-      PluginType plugType = plug.GetPluginType();
-      if( plug.IsValid() && plug.IsEnabled() &&  ((plugType & type) != 0))
-      {
-         bool familyEnabled = true;
-         if( (plugType & PluginTypeEffect) != 0) {
-            // This preference may be written by EffectsPrefs
-            auto setting = GetPluginEnabledSetting( plug );
-            familyEnabled = setting.empty()
-               ? true
-               : gPrefs->Read( setting, true );
-         }
-         if (familyEnabled)
-            return &mPluginsIter->second;
-      }
-   }
-
-   return NULL;
+   if ( mIter == mEnd )
+      return nullptr;
+   return &mIter->second;
 }
 
-const PluginDescriptor *PluginManager::GetFirstPluginForEffectType(EffectType type)
+bool PluginManager::Iterator::Ok() const
 {
-   for (mPluginsIter = mPlugins.begin(); mPluginsIter != mPlugins.end(); ++mPluginsIter)
+   if ( mIter == mEnd )
+      return true;
+
+   bool ok = false;
+   PluginDescriptor & plug = mIter->second;
+   PluginType plugType = plug.GetPluginType();
+   if( plug.IsValid() && plug.IsEnabled() && (plugType & mType) )
    {
-      PluginDescriptor & plug = mPluginsIter->second;
-
-      bool familyEnabled;
-      // This preference may be written by EffectsPrefs
-      auto setting = GetPluginEnabledSetting( plug );
-      familyEnabled = setting.empty()
-         ? true
-         : gPrefs->Read( setting, true );
-      if (plug.IsValid() && plug.IsEnabled() && plug.GetEffectType() == type && familyEnabled)
-      {
-         return &plug;
+      if( (plugType & PluginTypeEffect) ) {
+         // This preference may be written by EffectsPrefs
+         auto setting = mManager.GetPluginEnabledSetting( plug );
+         ok =
+            ( setting.empty() || gPrefs->Read( setting, true ) ) &&
+            ( mEffectType == 0 || plug.GetEffectType() == mEffectType );
       }
+      else
+         ok = ( mEffectType == EffectTypeNone );
    }
-
-   return NULL;
-}
-
-const PluginDescriptor *PluginManager::GetNextPluginForEffectType(EffectType type)
-{
-   while (++mPluginsIter != mPlugins.end())
-   {
-      PluginDescriptor & plug = mPluginsIter->second;
-      bool familyEnabled;
-      // This preference may be written by EffectsPrefs
-      auto setting = GetPluginEnabledSetting( plug );
-      familyEnabled = setting.empty()
-         ? true
-         : gPrefs->Read( setting, true );
-      if (plug.IsValid() && plug.IsEnabled() && plug.GetEffectType() == type && familyEnabled)
-      {
-         return &plug;
-      }
-   }
-
-   return NULL;
+   return ok;
 }
 
 bool PluginManager::IsPluginEnabled(const PluginID & ID)

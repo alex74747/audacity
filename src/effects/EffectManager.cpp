@@ -828,15 +828,12 @@ const PluginID & EffectManager::GetEffectByIdentifier(const CommandID & strTarge
 
    PluginManager & pm = PluginManager::Get();
    // Effects OR Generic commands...
-   const PluginDescriptor *plug = pm.GetFirstPlugin(PluginTypeEffect | PluginTypeAudacityCommand);
-   while (plug)
-   {
+   for ( auto plug : pm.Range(PluginTypeEffect | PluginTypeAudacityCommand) ) {
       if (GetCommandIdentifier(plug->GetID()) == strTarget)
       {
          return plug->GetID();
       }
-      plug = pm.GetNextPlugin(PluginTypeEffect | PluginTypeAudacityCommand);
    }
-   return empty;;
+   return empty;
 }
 

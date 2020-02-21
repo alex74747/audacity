@@ -138,9 +138,7 @@ static const std::vector< Entry > &GetModuleData()
    struct ModuleData : public std::vector< Entry > {
       ModuleData() {
          auto &pm = PluginManager::Get();
-         for (auto plug = pm.GetFirstPlugin(PluginTypeModule);
-              plug;
-              plug = pm.GetNextPlugin(PluginTypeModule)) {
+         for ( auto plug : pm.Range(PluginTypeModule) ) {
             auto internal = plug->GetEffectFamily();
             if ( internal.empty() )
                continue;

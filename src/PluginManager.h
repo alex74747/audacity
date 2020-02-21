@@ -23,6 +23,7 @@
 
 class wxArrayString;
 class FileConfig;
+enum EffectType : int;
 enum PluginType : unsigned char;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -233,11 +234,43 @@ public:
    int GetPluginCount(PluginType type);
    const PluginDescriptor *GetPlugin(const PluginID & ID);
 
-   const PluginDescriptor *GetFirstPlugin(int type); // possible or of several PlugInTypes.
-   const PluginDescriptor *GetNextPlugin( int type);
+   class Iterator {
+   public:
+      Iterator &operator ++();
+      PluginDescriptor *operator *() const;
+      bool operator ==( const Iterator &other ) const
+         { return mIter == other.mIter && mType == other.mType; }
+      bool operator !=( const Iterator &other ) const
+         { return !( *this == other ); }
 
-   const PluginDescriptor *GetFirstPluginForEffectType(EffectType type);
-   const PluginDescriptor *GetNextPluginForEffectType(EffectType type);
+   private:
+      friend PluginManager;
+      Iterator( PluginManager &manager,
+         PluginMap::iterator iter, PluginMap::iterator end,
+         unsigned type, EffectType effectType )
+         : mManager{ manager }, mIter{ iter }, mEnd{ end }, mType{ type }
+         , mEffectType{ effectType }
+      {
+         while ( !Ok() )
+            ++mIter;
+      }
+      bool Ok() const;
+   
+      PluginManager &mManager;
+      PluginMap::iterator mIter, mEnd;
+      unsigned mType;
+      EffectType mEffectType;
+   };
+
+   // type can be a bitwise or of values from enum PluginType
+   IteratorRange< Iterator > Range( unsigned type )
+   { return {
+      { *this, mPlugins.begin(), mPlugins.end(), type, (EffectType)0 },
+      { *this, mPlugins.end(),   mPlugins.end(), type, (EffectType)0 } }; }
+   IteratorRange< Iterator > Range( EffectType effectType )
+   { return {
+      { *this, mPlugins.begin(), mPlugins.end(), ~0u, effectType },
+      { *this, mPlugins.end(),   mPlugins.end(), ~0u, effectType } }; }
 
    bool IsPluginEnabled(const PluginID & ID);
    void EnablePlugin(const PluginID & ID, bool enable);
@@ -307,7 +340,6 @@ private:
    int mCurrentIndex;
 
    PluginMap mPlugins;
-   PluginMap::iterator mPluginsIter;
 
    std::vector<PluginID> *mCollectedIds{};
    std::vector<wxString> *mCollectedNames{};

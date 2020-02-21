@@ -309,9 +309,7 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
    PluginManager & pm = PluginManager::Get();
    EffectManager & em = EffectManager::Get();
    {
-      const PluginDescriptor *plug = pm.GetFirstPlugin(PluginTypeEffect|PluginTypeAudacityCommand);
-      while (plug)
-      {
+      for ( auto plug : pm.Range(PluginTypeEffect|PluginTypeAudacityCommand) ) {
          auto command = em.GetCommandIdentifier(plug->GetID());
          if (!command.empty())
             commands.push_back( {
@@ -319,7 +317,6 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
                plug->GetPluginType() == PluginTypeEffect ?
                   XO("Effect") : XO("Menu Command (With Parameters)")
             } );
-         plug = pm.GetNextPlugin(PluginTypeEffect|PluginTypeAudacityCommand);
       }
    }
 
@@ -611,16 +608,13 @@ bool MacroCommands::HandleTextualCommand( CommandManager &commandManager,
    // instead we only try the effects.
    PluginManager & pm = PluginManager::Get();
    EffectManager & em = EffectManager::Get();
-   const PluginDescriptor *plug = pm.GetFirstPlugin(PluginTypeEffect);
-   while (plug)
-   {
+   for ( auto plug : pm.Range(PluginTypeEffect) ) {
       if (em.GetCommandIdentifier(plug->GetID()) == Str)
       {
          return EffectUI::DoEffect(
             plug->GetID(), context,
             EffectManager::kConfigured);
       }
-      plug = pm.GetNextPlugin(PluginTypeEffect);
    }
 
    return false;

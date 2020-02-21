@@ -51,7 +51,7 @@
 
 class ShuttleGui;
 
-typedef enum EffectType : int
+enum EffectType : int
 {
    EffectTypeNone,
    EffectTypeHidden,
@@ -59,7 +59,7 @@ typedef enum EffectType : int
    EffectTypeProcess,
    EffectTypeAnalyze,
    EffectTypeTool,
-} EffectType;
+};
 
 
 /*************************************************************************************//**
