@@ -443,11 +443,6 @@ void EffectToneGen::PopulateOrExchange(ShuttleGui & S)
 
 bool EffectToneGen::TransferDataToWindow()
 {
-   if (!mUIParent->TransferDataToWindow())
-   {
-      return false;
-   }
-
    mToneDurationT->SetValue(GetDuration());
 
    return true;
@@ -455,11 +450,6 @@ bool EffectToneGen::TransferDataToWindow()
 
 bool EffectToneGen::TransferDataFromWindow()
 {
-   if (!mUIParent->Validate() || !mUIParent->TransferDataFromWindow())
-   {
-      return false;
-   }
-
    if (!mChirp)
    {
       mFrequency[1] = mFrequency[0];

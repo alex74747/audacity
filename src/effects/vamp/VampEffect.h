@@ -72,7 +72,6 @@ public:
    void End() override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool TransferDataToWindow() override;
-   bool TransferDataFromWindow() override;
 
 private:
    // VampEffect implementation

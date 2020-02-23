@@ -522,10 +522,8 @@ bool EffectEqualization::LoadFactoryPreset(int id)
    S.SetForWriting( &eap );
    DefineParams( S );
 
-   if (mUIDialog)
-   {
-      TransferDataToWindow();
-   }
+   if (mUIParent)
+      mUIParent->TransferDataToWindow();
 
    return true;
 }
@@ -1300,7 +1298,7 @@ bool EffectEqualization::TransferDataToWindow()
    if (!mDrawMode)
       UpdateGraphic();
 
-   TransferDataFromWindow();
+   mUIParent->TransferDataFromWindow();
 
    mUIParent->Layout();
    wxGetTopLevelParent(mUIParent)->Layout();
@@ -2946,18 +2944,21 @@ void EffectEqualization::OnGraphicMode(wxCommandEvent & WXUNUSED(event))
 
 void EffectEqualization::OnSliderM(wxCommandEvent & WXUNUSED(event))
 {
-   TransferDataFromWindow();
+   if ( mUIParent )
+      mUIParent->TransferDataFromWindow();
    ForceRecalc();
 }
 
 void EffectEqualization::OnSliderDBMIN(wxCommandEvent & WXUNUSED(event))
 {
-   TransferDataFromWindow();
+   if ( mUIParent )
+      mUIParent->TransferDataFromWindow();
 }
 
 void EffectEqualization::OnSliderDBMAX(wxCommandEvent & WXUNUSED(event))
 {
-   TransferDataFromWindow();
+   if ( mUIParent )
+      mUIParent->TransferDataFromWindow();
 }
 
 //

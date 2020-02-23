@@ -401,21 +401,13 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
 
 bool EffectChangeSpeed::TransferDataToWindow()
 {
-   // Update Approximate change value from the exact
-   Update_Text_PercentChange();
-
-   if (!mUIParent->TransferDataToWindow())
-   {
-      return false;
-   }
-
    if (mFromVinyl == kVinyl_NA)
    {
       mFromVinyl = kVinyl_33AndAThird;
    }
 
-   Update_Text_PercentChange();
-   Update_Text_Multiplier();
+   UpdateApproximatePercentChange();
+   UpdateMultiplier();
    Update_Slider_PercentChange();
    Update_TimeCtrl_ToLength();
 
@@ -436,11 +428,6 @@ bool EffectChangeSpeed::TransferDataToWindow()
 
 bool EffectChangeSpeed::TransferDataFromWindow()
 {
-   if (!mUIParent->Validate() || !mUIParent->TransferDataFromWindow())
-   {
-      return false;
-   }
-
    SetConfig(GetDefinition(), PluginSettings::Private,
       GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
    SetConfig(GetDefinition(), PluginSettings::Private,
@@ -692,17 +679,28 @@ void EffectChangeSpeed::OnTimeCtrlUpdate(wxCommandEvent & evt)
 
 // helper functions
 
+// Update Approximate change value from the exact
+void EffectChangeSpeed::UpdateApproximatePercentChange()
+{
+   m_ApproximatePercentChange = m_PercentChange;
+}
+
 void EffectChangeSpeed::Update_Text_PercentChange()
 // Update Text Percent control from percent change.
 {
-   m_ApproximatePercentChange = m_PercentChange;
+   UpdateApproximatePercentChange();
    mpTextCtrl_PercentChange->GetValidator()->TransferToWindow();
 }
 
-void EffectChangeSpeed::Update_Text_Multiplier()
 // Update Multiplier control from percent change.
+void EffectChangeSpeed::UpdateMultiplier()
 {
    mMultiplier =  1 + (m_PercentChange) / 100.0;
+}
+
+void EffectChangeSpeed::Update_Text_Multiplier()
+{
+   UpdateMultiplier();
    mpTextCtrl_Multiplier->GetValidator()->TransferToWindow();
 }
 

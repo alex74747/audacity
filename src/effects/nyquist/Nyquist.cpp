@@ -1078,8 +1078,6 @@ bool NyquistEffect::EnablesDebug()
 
 bool NyquistEffect::TransferDataToWindow()
 {
-   mUIParent->TransferDataToWindow();
-
    bool success;
    if (mIsPrompt)
    {
@@ -1100,11 +1098,6 @@ bool NyquistEffect::TransferDataToWindow()
 
 bool NyquistEffect::TransferDataFromWindow()
 {
-   if (!mUIParent->Validate() || !mUIParent->TransferDataFromWindow())
-   {
-      return false;
-   }
-
    if (mIsPrompt)
    {
       return TransferDataFromPromptWindow();

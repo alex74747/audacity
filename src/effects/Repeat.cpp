@@ -191,11 +191,6 @@ bool EffectRepeat::TransferDataToWindow()
 
 bool EffectRepeat::TransferDataFromWindow()
 {
-   if (!mUIParent->Validate())
-   {
-      return false;
-   }
-
    long l;
 
    mRepeatCount->GetValue().ToLong(&l);
