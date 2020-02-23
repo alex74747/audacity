@@ -359,7 +359,13 @@ Identifier ChoiceSetting::Read() const
    return ReadWithDefault( defaultValue );
 }
 
-Identifier ChoiceSetting::ReadWithDefault( const Identifier &defaultValue ) const
+int ChoiceSetting::ReadIndex() const
+{
+   const auto &defaultValue = GetDefault();
+   return ReadIndexWithDefault( defaultValue );
+}
+
+int ChoiceSetting::ReadIndexWithDefault( const Identifier &defaultValue ) const
 {
    wxString value;
    if ( !gPrefs->Read( GetPath(), &value, defaultValue.GET()) )
@@ -368,12 +374,22 @@ Identifier ChoiceSetting::ReadWithDefault( const Identifier &defaultValue ) cons
          mMigrated = true;
       }
 
-   // Remap to default if the string is not known -- this avoids surprises
-   // in case we try to interpret config files from future versions
    auto index = Find( value );
    if ( index >= mSymbols.size() )
+      return -1;
+   else
+      return index;
+}
+
+Identifier ChoiceSetting::ReadWithDefault( const Identifier &defaultValue ) const
+{
+   // Remap to default if the string is not known -- this avoids surprises
+   // in case we try to interpret config files from future versions
+   auto index = ReadIndexWithDefault( defaultValue );
+   if ( index == -1 )
       return defaultValue;
-   return value;
+   else
+     return GetSymbols()[ index ].Internal();
 }
 
 size_t ChoiceSetting::Find( const Identifier &value ) const
@@ -400,6 +416,16 @@ bool ChoiceSetting::Write( const Identifier &value )
    return result;
 }
 
+bool ChoiceSetting::WriteIndex( size_t index )
+{
+   if (index >= mSymbols.size())
+      return false;
+
+   auto result = gPrefs->Write( GetPath(), mSymbols[ index ].Internal() );
+   mMigrated = true;
+   return result;
+}
+
 const Identifier LabelSetting::GetDefault() const
 {
    if ( mDefaultSymbol >= 0 && mDefaultSymbol < (long)mSymbols.size() )
@@ -413,7 +439,13 @@ Identifier LabelSetting::Read() const
    return ReadWithDefault( defaultValue );
 }
 
-Identifier LabelSetting::ReadWithDefault( const Identifier &defaultValue ) const
+int LabelSetting::ReadIndex() const
+{
+   const auto &defaultValue = GetDefault();
+   return ReadIndexWithDefault( defaultValue );
+}
+
+int LabelSetting::ReadIndexWithDefault( const Identifier &defaultValue ) const
 {
    wxString value;
    if ( !gPrefs->Read( GetPath(), &value, defaultValue.GET()) )
@@ -422,12 +454,22 @@ Identifier LabelSetting::ReadWithDefault( const Identifier &defaultValue ) const
          mMigrated = true;
       }
 
-   // Remap to default if the string is not known -- this avoids surprises
-   // in case we try to interpret config files from future versions
    auto index = Find( value );
    if ( index >= mSymbols.size() )
+      return -1;
+   else
+      return index;
+}
+
+Identifier LabelSetting::ReadWithDefault( const Identifier &defaultValue ) const
+{
+   // Remap to default if the string is not known -- this avoids surprises
+   // in case we try to interpret config files from future versions
+   auto index = ReadIndexWithDefault( defaultValue );
+   if ( index == -1 )
       return defaultValue;
-   return value;
+   else
+     return GetSymbols()[ index ].Internal();
 }
 
 size_t LabelSetting::Find( const Identifier &value ) const
@@ -450,6 +492,16 @@ bool LabelSetting::Write( const Identifier &value )
       return false;
 
    auto result = gPrefs->Write( GetPath(), value );
+   mMigrated = true;
+   return result;
+}
+
+bool LabelSetting::WriteIndex( size_t index )
+{
+   if (index >= mSymbols.size())
+      return false;
+
+   auto result = gPrefs->Write( GetPath(), mSymbols[ index ].Internal() );
    mMigrated = true;
    return result;
 }

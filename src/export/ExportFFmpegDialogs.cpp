@@ -1772,7 +1772,7 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
 {
    // A function-factory
    const auto forCodecs = [this]( std::vector<AudacityAVCodecIDValue> ids )
-      -> DialogDefinition::Item::Test {
+      -> DialogDefinition::BaseItem::Test {
       return [this, ids]{
          int sel = 0;
          //const auto sel = FindSelectedCodec();
@@ -1793,7 +1793,7 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
    
    // Another function-factory
    const auto forFormats = [this]( std::vector<const char *> formats )
-      -> DialogDefinition::Item::Test {
+      -> DialogDefinition::BaseItem::Test {
       wxArrayString strings;
       for ( const auto format : formats )
          strings.push_back( wxString::FromUTF8( format ) );
