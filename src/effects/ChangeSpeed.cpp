@@ -309,7 +309,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
          mpTextCtrl_PercentChange =
          S
             .Id(ID_PercentChange)
-            .Target( m_PercentChange,
+            .Target( m_ApproximatePercentChange,
                NumValidatorStyle::THREE_TRAILING_ZEROES, 3,
                Percentage.min, Percentage.max )
             .AddTextBox(XXO("Percent C&hange:"), L"", 12);
@@ -404,6 +404,9 @@ bool EffectChangeSpeed::TransferDataToWindow()
 {
    mbLoopDetect = true;
 
+   // Update Approximate change value from the exact
+   Update_Text_PercentChange();
+
    if (!mUIParent->TransferDataToWindow())
    {
       return false;
@@ -438,13 +441,10 @@ bool EffectChangeSpeed::TransferDataToWindow()
 
 bool EffectChangeSpeed::TransferDataFromWindow()
 {
-   // mUIParent->TransferDataFromWindow() loses some precision, so save and restore it.
-   double exactPercent = m_PercentChange;
    if (!mUIParent->Validate() || !mUIParent->TransferDataFromWindow())
    {
       return false;
    }
-   m_PercentChange = exactPercent;
 
    SetConfig(GetDefinition(), PluginSettings::Private,
       GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
@@ -599,6 +599,7 @@ void EffectChangeSpeed::OnText_PercentChange(wxCommandEvent & WXUNUSED(evt))
       return;
 
    mpTextCtrl_PercentChange->GetValidator()->TransferFromWindow();
+   m_PercentChange = m_ApproximatePercentChange;
    UpdateUI();
 
    mbLoopDetect = true;
@@ -723,6 +724,7 @@ void EffectChangeSpeed::OnTimeCtrlUpdate(wxCommandEvent & evt)
 void EffectChangeSpeed::Update_Text_PercentChange()
 // Update Text Percent control from percent change.
 {
+   m_ApproximatePercentChange = m_PercentChange;
    mpTextCtrl_PercentChange->GetValidator()->TransferToWindow();
 }
 
