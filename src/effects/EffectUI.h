@@ -151,7 +151,7 @@ private:
    void OnHelp();
    void OnDebug();
    void OnMenu();
-   void OnEnable(wxCommandEvent & evt);
+   void OnEnable();
    void OnPlay();
    void OnRewind();
    void OnFFwd();
