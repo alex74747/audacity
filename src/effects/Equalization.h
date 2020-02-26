@@ -29,7 +29,6 @@ const int kEqLegacy = kEqOptionGraphic + kEqOptionCurve;
 class wxBitmap;
 class wxBoxSizer;
 class wxButton;
-class wxCheckBox;
 class wxChoice;
 class wxListCtrl;
 class wxListEvent;
@@ -198,8 +197,8 @@ private:
    void OnCurve( wxCommandEvent & event );
    void OnManage();
    void OnInvert();
-   void OnGridOnOff( wxCommandEvent & event );
-   void OnLinFreq( wxCommandEvent & event );
+   void OnGridOnOff();
+   void OnLinFreq();
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
    void OnProcessingRadio( wxCommandEvent & event );
    void OnBench();
@@ -261,8 +260,6 @@ private:
    //wxPanel *mGraphicPanel;
    wxRadioButton *mDraw;
    wxRadioButton *mGraphic;
-   wxCheckBox *mLinFreq;
-   wxCheckBox *mGridOnOff;
    wxChoice *mInterpChoice;
    wxChoice *mCurve;
    wxButton *mManage;
