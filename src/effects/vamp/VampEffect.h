@@ -80,7 +80,6 @@ private:
 
    void UpdateFromPlugin();
 
-   void OnCheckBox(wxCommandEvent & evt);
    void OnChoice(wxCommandEvent & evt);
    void OnSlider(wxCommandEvent & evt);
    void OnTextCtrl(wxCommandEvent & evt);
@@ -105,7 +104,7 @@ private:
    ArrayOf<wxSlider *> mSliders;
    ArrayOf<wxTextCtrl *> mFields;
    ArrayOf<wxStaticText *> mLabels;
-   ArrayOf<wxCheckBox *> mToggles;
+   ArrayOf<bool> mToggles;
    ArrayOf<wxChoice *> mChoices;
    wxChoice *mProgram;
 
