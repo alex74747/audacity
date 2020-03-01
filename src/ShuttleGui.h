@@ -128,7 +128,7 @@ enum StandardButtonID : unsigned
 };
 
 namespace DialogDefinition {
-
+  
 struct ControlText{
 
    ControlText() = default;
@@ -169,160 +169,17 @@ inline ControlText Label( const TranslatableString &label )
    return { {}, {}, {}, label };
 }
 
-struct Item {
+struct BaseItem
+{
    using ActionType = std::function< void() >;
    using Test = std::function< bool() >;
 
-   Item() = default;
+   BaseItem() = default;
 
-   explicit Item(StandardButtonID id)
+   explicit BaseItem(StandardButtonID id)
    {
       mStandardButton = id;
    }
-
-   // Alternative chain-call but you can also just use the constructor
-   // This has effect only for items passed to AddStandardButtons
-   Item && StandardButton( StandardButtonID id ) &&
-   {
-      mStandardButton = id;
-      return std::move( *this );
-   }
-
-   // Factory is a class that returns a value of some subclass of wxValidator
-   // We must wrap it in another lambda to allow the return type of f to
-   // vary, and avoid the "slicing" problem.
-   // (That is, std::function<wxValidator()> would not work.)
-   template<typename Factory>
-   Item&& Validator( const Factory &f ) &&
-   {
-      mValidatorSetter = [f](wxWindow *p){ p->SetValidator(f()); };
-      return std::move(*this);
-   }
-
-   // This allows further abbreviation of the previous:
-   template<typename V, typename... Args>
-   Item&& Validator( Args&&... args ) &&
-   { return std::move(*this).Validator( [args...]{ return V( args... ); } ); }
-
-   Item&& Text( const ControlText &text ) &&
-   {
-      mText = text;
-      return std::move( *this );
-   }
-
-   Item&& Style( long style ) &&
-   {
-      miStyle = style;
-      return std::move( *this );
-   }
-
-   // Only the last item specified as focused (if more than one) will be
-   Item&& Focus( bool focused = true ) &&
-   {
-      mFocused = focused;
-      return std::move( *this );
-   }
-
-   // For buttons only
-   // Only the last item specified as default (if more than one) will be
-   Item&& Default( bool isdefault = true ) &&
-   {
-      mDefault = isdefault;
-      return std::move( *this );
-   }
-
-   // Just sets the state of the item once
-   Item&& Disable( bool disabled = true ) &&
-   {
-      mDisabled = disabled;
-      return std::move( *this );
-   }
-
-   // Specifies a predicate that is retested as needed
-   Item&& Enable( const Test &test ) &&
-   {
-      mEnableTest = test;
-      return std::move( *this );
-   }
-
-   // Specifies a predicate that is retested as needed
-   Item&& Show( const Test &test ) &&
-   {
-      mShowTest = test;
-      return std::move( *this );
-   }
-
-   // Dispatch events from the control to the dialog
-   // The template type deduction ensures consistency between the argument type
-   // and the event type.  It does not (yet) ensure correctness of the type of
-   // the handler object.
-   template< typename Tag, typename Argument, typename Handler >
-   auto ConnectRoot(
-      wxEventTypeTag<Tag> eventType,
-      void (Handler::*func)(Argument&)
-   ) &&
-        -> std::enable_if_t<
-            std::is_base_of_v<Argument, Tag>,
-            Item&& >
-   {
-      mRootConnections.push_back({
-         eventType,
-         (void(wxEvtHandler::*)(wxEvent&)) (
-            static_cast<void(wxEvtHandler::*)(Argument&)>( func )
-         )
-      });
-      return std::move( *this );
-   }
-
-   Item&& MinSize() && // set best size as min size
-   {
-      mUseBestSize = true;
-      return std::move ( *this );
-   }
-
-   Item&& MinSize( wxSize sz ) &&
-   {
-      mMinSize = sz; mHasMinSize = true;
-      return std::move ( *this );
-   }
-
-   Item&& Position( int flags ) &&
-   {
-      mWindowPositionFlags = flags;
-      return std::move( *this );
-   }
-
-   Item&& Size( wxSize size ) &&
-   {
-      mWindowSize = size;
-      return std::move( *this );
-   }
-
-   // Supply an event handler for a control; this is an alternative to using
-   // the event table macros, and removes the need to specify an id for the
-   // control.
-   // If the control has a validator, the function body can assume the value was
-   // validated and transferred from the control successfully
-   // After the body, call the dialog's TransferDataToWindow()
-   // The event type and id to bind are inferred from the control
-   Item &&Action( const ActionType &action  ) &&
-   {
-      return std::move( *this ).Action( action,
-         wxEventTypeTag<wxCommandEvent>(0)  );
-   }
-
-   // An overload for cases that there is more than one useful event type
-   // But it must specify some type whose event class is wxCommandEvent
-   Item &&Action( const ActionType &action,
-      wxEventTypeTag<wxCommandEvent> type ) &&
-   {
-      mEventType = type;
-      mAction = action;
-      return std::move( *this );
-   }
-
-   mutable wxEventTypeTag<wxCommandEvent> mEventType{ 0 };
-   ActionType mAction{};
 
    std::function< void(wxWindow*) > mValidatorSetter;
    Test mEnableTest;
@@ -330,6 +187,7 @@ struct Item {
    ControlText mText;
 
    std::vector<std::pair<wxEventType, wxObjectEventFunction>> mRootConnections;
+
 
    long miStyle{};
 
@@ -347,9 +205,164 @@ struct Item {
    bool mFocused { false };
    bool mDefault { false };
    bool mDisabled { false };
+
+   mutable wxEventTypeTag<wxCommandEvent> mEventType{ 0 };
+   ActionType mAction{};
 };
 
-using Items = std::initializer_list< Item >;
+template< typename Sink = wxEvtHandler >
+struct TypedItem : BaseItem {
+   TypedItem() = default;
+   TypedItem ( StandardButtonID id )
+   {
+      mStandardButton = id;
+   }
+
+   // Alternative chain-call but you can also just use the constructor
+   // This has effect only for items passed to AddStandardButtons
+   TypedItem && StandardButton( StandardButtonID id ) &&
+   {
+      mStandardButton = id;
+      return std::move( *this );
+   }
+
+   // Factory is a class that returns a value of some subclass of wxValidator
+   // We must wrap it in another lambda to allow the return type of f to
+   // vary, and avoid the "slicing" problem.
+   // (That is, std::function<wxValidator()> would not work.)
+   template<typename Factory>
+   TypedItem&& Validator( const Factory &f ) &&
+   {
+      mValidatorSetter = [f](wxWindow *p){ p->SetValidator(f()); };
+      return std::move(*this);
+   }
+
+   // This allows further abbreviation of the previous:
+   template<typename V, typename... Args>
+   TypedItem&& Validator( Args&&... args ) &&
+   { return std::move(*this).Validator( [args...]{ return V( args... ); } ); }
+
+   TypedItem&& Text( const ControlText &text ) &&
+   {
+      mText = text;
+      return std::move( *this );
+   }
+
+   TypedItem&& Style( long style ) &&
+   {
+      miStyle = style;
+      return std::move( *this );
+   }
+
+   // Only the last item specified as focused (if more than one) will be
+   TypedItem&& Focus( bool focused = true ) &&
+   {
+      mFocused = focused;
+      return std::move( *this );
+   }
+
+   // For buttons only
+   // Only the last item specified as default (if more than one) will be
+   TypedItem&& Default( bool isdefault = true ) &&
+   {
+      mDefault = isdefault;
+      return std::move( *this );
+   }
+
+   // Just sets the state of the item once
+   TypedItem&& Disable( bool disabled = true ) &&
+   {
+      mDisabled = disabled;
+      return std::move( *this );
+   }
+
+   // Specifies a predicate that is retested as needed
+   TypedItem&& Enable( const Test &test ) &&
+   {
+      mEnableTest = test;
+      return std::move( *this );
+   }
+
+   // Specifies a predicate that is retested as needed
+   TypedItem&& Show( const Test &test ) &&
+   {
+      mShowTest = test;
+      return std::move( *this );
+   }
+
+   // Dispatch events from the control to the dialog
+   // The template type deduction ensures consistency between the argument type
+   // and the event type.  It does not (yet) ensure correctness of the type of
+   // the handler object.
+   template< typename Tag, typename Argument, typename Handler >
+   auto ConnectRoot(
+      wxEventTypeTag<Tag> eventType,
+      void (Handler::*func)(Argument&)
+   ) &&
+        -> std::enable_if_t<
+            std::is_base_of_v<Argument, Tag>,
+            TypedItem&& >
+   {
+      mRootConnections.push_back({
+         eventType,
+         (void(wxEvtHandler::*)(wxEvent&)) (
+            static_cast<void(wxEvtHandler::*)(Argument&)>( func )
+         )
+      });
+      return std::move( *this );
+   }
+
+   TypedItem&& MinSize() && // set best size as min size
+   {
+      mUseBestSize = true;
+      return std::move ( *this );
+   }
+
+   TypedItem&& MinSize( wxSize sz ) &&
+   {
+      mMinSize = sz; mHasMinSize = true;
+      return std::move ( *this );
+   }
+
+   TypedItem&& Position( int flags ) &&
+   {
+      mWindowPositionFlags = flags;
+      return std::move( *this );
+   }
+
+   TypedItem&& Size( wxSize size ) &&
+   {
+      mWindowSize = size;
+      return std::move( *this );
+   }
+
+   // Supply an event handler for a control; this is an alternative to using
+   // the event table macros, and removes the need to specify an id for the
+   // control.
+   // If the control has a validator, the function body can assume the value was
+   // validated and transferred from the control successfully
+   // After the body, call the dialog's TransferDataToWindow()
+   // The event type and id to bind are inferred from the control
+   TypedItem &&Action( const ActionType &action  ) &&
+   {
+      return std::move( *this ).Action( action,
+         wxEventTypeTag<wxCommandEvent>(0)  );
+   }
+
+   // An overload for cases that there is more than one useful event type
+   // But it must specify some type whose event class is wxCommandEvent
+   TypedItem &&Action( const ActionType &action,
+      wxEventTypeTag<wxCommandEvent> type ) &&
+   {
+      mEventType = type;
+      mAction = action;
+      return std::move( *this );
+   }
+};
+
+using Item = TypedItem<>;
+
+using Items = std::initializer_list< BaseItem >;
 
 }
 
@@ -405,6 +418,9 @@ struct ShuttleGuiState final
    int miIdNext = 3000;
 
    wxWindow * mpParent = mpDlg;
+
+   using RadioButtonList = std::vector< wxWindowRef >;
+   std::shared_ptr< RadioButtonList > mRadioButtons;
 };
 
 class AUDACITY_DLL_API ShuttleGuiBase /* not final */
@@ -417,6 +433,8 @@ public:
       wxSize minSize,
       const std::shared_ptr< PreferenceVisitor > &pVisitor
    );
+   ShuttleGuiBase( const std::shared_ptr< ShuttleGuiState > &pState );
+   ShuttleGuiBase( ShuttleGuiBase&& );
    virtual ~ShuttleGuiBase();
    void ResetId();
 
@@ -684,10 +702,10 @@ public:
    wxSizer * GetSizer() {return mpState -> mpSizer;}
 
    static void CheckEventType(
-      const DialogDefinition::Item &item,
+      const DialogDefinition::BaseItem &item,
       std::initializer_list<wxEventType> types );
 
-   static void ApplyItem( int step, const DialogDefinition::Item &item,
+   static void ApplyItem( int step, const DialogDefinition::BaseItem &item,
       wxWindow *pWind, wxWindow *pDlg );
 
    // If none of the items is default,
@@ -777,12 +795,7 @@ private:
       const TranslatableLabel &Prompt, int style );
 
 protected:
-   DialogDefinition::Item mItem;
-
-   using RadioButtonList = std::vector< wxWindowRef >;
-   std::shared_ptr< RadioButtonList > mRadioButtons;
-
-   std::shared_ptr< PreferenceVisitor > mpVisitor;
+   DialogDefinition::BaseItem mItem;
 };
 
 // A rarely used helper function that sets a pointer
@@ -816,9 +829,13 @@ template< typename Sink = wxEvtHandler >
 class AUDACITY_DLL_API TypedShuttleGui /* not final */ : public ShuttleGuiBase
 {
 public:
-   using ItemType = DialogDefinition::Item;
+   using ItemType = DialogDefinition::TypedItem< Sink >;
    ItemType Item( StandardButtonID id = eButtonUndefined )
    { return ItemType{ id }; }
+
+   TypedShuttleGui( const std::shared_ptr< ShuttleGuiState > &pState )
+      : ShuttleGuiBase{ pState }
+   {}
 
    TypedShuttleGui(
       wxWindow * pParent, teShuttleMode ShuttleMode,
@@ -841,6 +858,12 @@ public:
 
    ~TypedShuttleGui() = default;
 
+   template< typename Sink2 >
+   TypedShuttleGui< Sink2 > Rebind()
+   {
+      return { mpState };
+   }
+
    TypedShuttleGui & Optional( bool & bVar )
    {
       mpbOptionalFlag = &bVar;
@@ -856,7 +879,7 @@ public:
    // Only the last item specified as focused (if more than one) will be
    TypedShuttleGui & Focus( bool focused = true )
    {
-      std::move( mItem ).Focus( focused );
+      GetItem().Focus( focused );
       return *this;
    }
 
@@ -864,34 +887,34 @@ public:
    // Only the last item specified as default (if more than one) will be
    TypedShuttleGui & Default( bool isdefault = true )
    {
-      std::move( mItem ).Default( isdefault );
+      GetItem().Default( isdefault );
       return *this;
    }
 
    // Just sets the state of the item once
    TypedShuttleGui &Disable( bool disabled = true )
    {
-      std::move( mItem ).Disable( disabled );
+      GetItem().Disable( disabled );
       return *this;
    }
 
    // Specifies a predicate that is retested as needed
    TypedShuttleGui &Enable( const DialogDefinition::Item::Test &test )
    {
-      std::move( mItem ).Enable( test );
+      GetItem().Enable( test );
       return *this;
    }
 
    // Specifies a predicate that is retested as needed
    TypedShuttleGui &Show( const DialogDefinition::Item::Test &test )
    {
-      std::move( mItem ).Show( test );
+      GetItem().Show( test );
       return *this;
    }
 
    TypedShuttleGui & Text( const DialogDefinition::ControlText &text )
    {
-      std::move( mItem ).Text( text );
+      GetItem().Text( text );
       return *this;
    }
 
@@ -899,7 +922,7 @@ public:
    TypedShuttleGui& Validator( const Factory &f )
    {
       if ( GetMode() == eIsCreating )
-         std::move( mItem ).Validator( f );
+         GetItem().Validator( f );
       return *this;
    }
 
@@ -908,7 +931,7 @@ public:
    TypedShuttleGui& Validator( Args&& ...args )
    {
       if ( GetMode() == eIsCreating )
-         std::move( mItem ).template Validator<V>( std::forward<Args>(args)... );
+         GetItem().template Validator<V>( std::forward<Args>(args)... );
       return *this;
    }
 
@@ -926,19 +949,19 @@ public:
             TypedShuttleGui&
         >
    {
-      std::move( mItem ).ConnectRoot( eventType, func );
+      GetItem().ConnectRoot( eventType, func );
       return *this;
    }
 
    TypedShuttleGui & Position( int flags )
    {
-      std::move( mItem ).Position( flags );
+      GetItem().Position( flags );
       return *this;
    }
 
    TypedShuttleGui & Size( wxSize size )
    {
-      std::move( mItem ).Size( size );
+      GetItem().Size( size );
       return *this;
    }
 
@@ -951,7 +974,7 @@ public:
    // The event type and id to bind are inferred from the control
    TypedShuttleGui &Action( const DialogDefinition::Item::ActionType &action )
    {
-      std::move( mItem ).Action( action );
+      GetItem().Action( action );
       return *this;
    }
 
@@ -960,7 +983,7 @@ public:
    TypedShuttleGui &Action( const DialogDefinition::Item::ActionType &action,
       wxEventTypeTag<wxCommandEvent> type )
    {
-      std::move( mItem ).Action( action, type );
+      GetItem().Action( action, type );
       return *this;
    }
 
@@ -969,18 +992,23 @@ public:
 
    TypedShuttleGui & Style( long iStyle )
    {
-      std::move( mItem ).Style( iStyle );
+      GetItem().Style( iStyle );
       return *this;
    }
 
    TypedShuttleGui &MinSize() // set best size as min size
-      { std::move( mItem ).MinSize(); return *this; }
+      { GetItem().MinSize(); return *this; }
    TypedShuttleGui &MinSize( wxSize sz )
-      { std::move( mItem ).MinSize( sz ); return *this; }
+      { GetItem().MinSize( sz ); return *this; }
 
    teShuttleMode GetMode() { return mpState -> mShuttleMode; };
 
 private:
+   ItemType &&GetItem()
+   {
+      return std::move( static_cast<ItemType&>(mItem) );
+   }
+
    inline teShuttleMode EffectiveMode( teShuttleMode inMode )
    {
       switch ( inMode ) {
