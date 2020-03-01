@@ -287,12 +287,6 @@ private:
 
    bool ReportIfBadCombination();
 
-
-   // Enables/disables controls based on format/codec combination,
-   // leaving only relevant controls enabled.
-   // Hiding the controls may have been a better idea,
-   // but it's hard to hide their text labels too
-   void EnableDisableControls(AVCodecWrapper *cdc, wxString *selfmt);
    DECLARE_EVENT_TABLE()
 };
 

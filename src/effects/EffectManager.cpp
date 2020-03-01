@@ -393,7 +393,8 @@ public:
    void SetSelected(const wxString & parms);
 
 private:
-   void SetPrefix(const TranslatableString & type, const wxString & prefix);
+   enum Type { User, Factory, Current, Defaults };
+   void SetPrefix(Type type, const wxString & prefix);
    void UpdateUI();
 
    void OnType(wxCommandEvent & evt);
@@ -402,6 +403,7 @@ private:
    void OnCancel();
 
 private:
+   std::vector< Type > mTypes;
    wxChoice *mType;
    wxListBox *mPresets;
 
@@ -445,6 +447,12 @@ EffectPresetsDialog::EffectPresetsDialog(wxWindow *parent, Effect *effect)
          mPresets =
          S
             .Style( wxLB_SINGLE | wxLB_NEEDED_SB )
+            .Enable( [this]{
+               if ( !mType )
+                  return false;
+               auto type = mTypes[ mType->GetSelection() ];
+               return type == User || type == Factory;
+            } )
             .AddListBox( {} );
       }
       S.EndTwoColumn();
@@ -461,21 +469,25 @@ EffectPresetsDialog::EffectPresetsDialog(wxWindow *parent, Effect *effect)
 
    if (mUserPresets.size() > 0)
    {
+      mTypes.push_back( User );
       mType->Append(_("User Presets"));
    }
 
    if (mFactoryPresets.size() > 0)
    {
+      mTypes.push_back( Factory );
       mType->Append(_("Factory Presets"));
    }
 
    if (HasCurrentSettings(*effect))
    {
+      mTypes.push_back( Current );
       mType->Append(_("Current Settings"));
    }
 
    if (HasFactoryDefaults(*effect))
    {
+      mTypes.push_back( Defaults );
       mType->Append(_("Factory Defaults"));
    }
 
@@ -497,34 +509,37 @@ void EffectPresetsDialog::SetSelected(const wxString & parms)
    if (preset.StartsWith(Effect::kUserPresetIdent))
    {
       preset.Replace(Effect::kUserPresetIdent, wxEmptyString, false);
-      SetPrefix(XO("User Presets"), preset);
+      SetPrefix(User, preset);
    }
    else if (preset.StartsWith(Effect::kFactoryPresetIdent))
    {
       preset.Replace(Effect::kFactoryPresetIdent, wxEmptyString, false);
-      SetPrefix(XO("Factory Presets"), preset);
+      SetPrefix(Factory, preset);
    }
    else if (preset.StartsWith(Effect::kCurrentSettingsIdent))
    {
-      SetPrefix(XO("Current Settings"), wxEmptyString);
+      SetPrefix(Current, wxEmptyString);
    }
    else if (preset.StartsWith(Effect::kFactoryDefaultsIdent))
    {
-      SetPrefix(XO("Factory Defaults"), wxEmptyString);
+      SetPrefix(Defaults, wxEmptyString);
    }
 }
 
 void EffectPresetsDialog::SetPrefix(
-   const TranslatableString & type, const wxString & prefix)
+   Type type, const wxString & prefix)
 {
-   mType->SetStringSelection(type.Translation());
+   auto index =
+      std::find( mTypes.begin(), mTypes.end(), type ) - mTypes.begin();
+   mType->SetSelection( index );
 
-   if (type == XO("User Presets"))
+   switch ( type ) {
+
+   case User:
    {
       mPresets->Clear();
       for (const auto &preset : mUserPresets)
          mPresets->Append(preset);
-      mPresets->Enable(true);
       mPresets->SetStringSelection(prefix);
       if (mPresets->GetSelection() == wxNOT_FOUND)
       {
@@ -532,7 +547,9 @@ void EffectPresetsDialog::SetPrefix(
       }
       mSelection = Effect::kUserPresetIdent + mPresets->GetStringSelection();
    }
-   else if (type == XO("Factory Presets"))
+   break;
+
+   case Factory:
    {
       mPresets->Clear();
       for (size_t i = 0, cnt = mFactoryPresets.size(); i < cnt; i++)
@@ -544,7 +561,6 @@ void EffectPresetsDialog::SetPrefix(
          }
          mPresets->Append(label);
       }
-      mPresets->Enable(true);
       mPresets->SetStringSelection(prefix);
       if (mPresets->GetSelection() == wxNOT_FOUND)
       {
@@ -552,17 +568,23 @@ void EffectPresetsDialog::SetPrefix(
       }
       mSelection = Effect::kFactoryPresetIdent + mPresets->GetStringSelection();
    }
-   else if (type == XO("Current Settings"))
+   break;
+
+   case Current:
    {
       mPresets->Clear();
-      mPresets->Enable(false);
       mSelection = Effect::kCurrentSettingsIdent;
    }
-   else if (type == XO("Factory Defaults"))
+   break;
+
+   case Defaults:
+   default:
    {
       mPresets->Clear();
-      mPresets->Enable(false);
       mSelection = Effect::kFactoryDefaultsIdent;
+   }
+   break;
+
    }
 }
 
@@ -574,9 +596,9 @@ void EffectPresetsDialog::UpdateUI()
       selected = 0;
       mType->SetSelection(selected);
    }
-   wxString type = mType->GetString(selected);
 
-   if (type == _("User Presets"))
+   switch ( mTypes[ selected ] ) {
+   case User:
    {
       selected = mPresets->GetSelection();
       if (selected == wxNOT_FOUND)
@@ -587,11 +609,12 @@ void EffectPresetsDialog::UpdateUI()
       mPresets->Clear();
       for (const auto &preset : mUserPresets)
          mPresets->Append(preset);
-      mPresets->Enable(true);
       mPresets->SetSelection(selected);
       mSelection = Effect::kUserPresetIdent + mPresets->GetString(selected);
    }
-   else if (type == _("Factory Presets"))
+   break;
+
+   case Factory:
    {
       selected = mPresets->GetSelection();
       if (selected == wxNOT_FOUND)
@@ -609,21 +632,26 @@ void EffectPresetsDialog::UpdateUI()
          }
          mPresets->Append(label);
       }
-      mPresets->Enable(true);
       mPresets->SetSelection(selected);
       mSelection = Effect::kFactoryPresetIdent + mPresets->GetString(selected);
    }
-   else if (type == _("Current Settings"))
+   break;
+
+   case Current:
    {
       mPresets->Clear();
-      mPresets->Enable(false);
       mSelection = Effect::kCurrentSettingsIdent;
    }
-   else if (type == _("Factory Defaults"))
+   break;
+
+   case Defaults:
+   default:
    {
       mPresets->Clear();
-      mPresets->Enable(false);
       mSelection = Effect::kFactoryDefaultsIdent;
+   }
+   break;
+
    }
 }
 

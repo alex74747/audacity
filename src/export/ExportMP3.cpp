@@ -241,9 +241,8 @@ public:
 
 private:
 
-   wxRadioButton *mStereo;
-   wxRadioButton *mJoint;
    wxCheckBox    *mMono;
+   bool mMonoValue = false;
    wxRadioButton *mSET;
    wxRadioButton *mVBR;
    wxRadioButton *mABR;
@@ -344,6 +343,8 @@ static EnumLabelSetting< MP3ChannelMode > MP3ChannelModeSetting{
 ///
 void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
 {
+   mMonoValue = MP3ForceMono.Read();
+
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxCENTER);
@@ -451,24 +452,13 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                      .EndNotebookPage();
                }
                
-               bool enable;
-               switch( MP3RateModeSetting.ReadEnum() ) {
-                  case MODE_SET:
-                  case MODE_VBR:
-                     enable = true;
-                     break;
-
-                  case MODE_ABR:
-                  case MODE_CBR:
-                  default:
-                     enable = false;
-                     break;
-               }
-
                /*
                mMode =
                S
-                  .Disable(!enable)
+                  .Enable( [this]{ return mSET && mVBR &&
+                     //??
+                     ( mSET->GetValue() || mVBR->GetValue() );
+                  } )
                   .TieNumberAsChoice(
                      XXO("Variable Speed:"),
                      MP3VarMode,
@@ -488,14 +478,12 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                      {
                         S.StartRadioButtonGroup(MP3ChannelModeSetting);
                         {
-                           mJoint =
                            S
-                              .Disable(MP3ForceMono.Read())
+                              .Enable( [this]{ return !mMonoValue; } )
                               .TieRadioButton();
 
-                           mStereo =
                            S
-                              .Disable(MP3ForceMono.Read())
+                              .Enable( [this]{ return !mMonoValue; } )
                               .TieRadioButton();
                         }
                         S.EndRadioButtonGroup();
@@ -563,7 +551,6 @@ int ValidateIndex( const std::vector<int> &values, int value, int defaultIndex )
 void ExportMP3Options::OnSET(wxCommandEvent& WXUNUSED(event))
 {
    mBook->SetSelection( 0 );
-   //mMode->Enable(true);
 }
 
 ///
@@ -571,7 +558,6 @@ void ExportMP3Options::OnSET(wxCommandEvent& WXUNUSED(event))
 void ExportMP3Options::OnVBR(wxCommandEvent& WXUNUSED(event))
 {
    mBook->SetSelection( 1 );
-   //mMode->Enable(true);
 }
 
 ///
@@ -579,7 +565,6 @@ void ExportMP3Options::OnVBR(wxCommandEvent& WXUNUSED(event))
 void ExportMP3Options::OnABR(wxCommandEvent& WXUNUSED(event))
 {
    mBook->SetSelection( 2 );
-   //mMode->Enable(false);
 }
 
 ///
@@ -587,7 +572,6 @@ void ExportMP3Options::OnABR(wxCommandEvent& WXUNUSED(event))
 void ExportMP3Options::OnCBR(wxCommandEvent& WXUNUSED(event))
 {
    mBook->SetSelection( 3 );
-   //mMode->Enable(false);
 }
 
 void ExportMP3Options::OnQuality(wxCommandEvent& WXUNUSED(event))
@@ -608,12 +592,9 @@ void ExportMP3Options::OnQuality(wxCommandEvent& WXUNUSED(event))
 
 void ExportMP3Options::OnMono(wxCommandEvent& /*evt*/)
 {
-   bool mono = false;
-   mono = mMono->GetValue();
-   mJoint->Enable(!mono);
-   mStereo->Enable(!mono);
+   mMonoValue = mMono->GetValue();
 
-   MP3ForceMono.Write( mono );
+   MP3ForceMono.Write( mMonoValue );
    gPrefs->Flush();
 }
 

@@ -385,9 +385,6 @@ private:
    void OnLibrary();
    void OnDefaults();
    void OnOK();
-
-   void OnListSelectionChange( wxListEvent &event );
-   DECLARE_EVENT_TABLE()
 };
 
 #endif

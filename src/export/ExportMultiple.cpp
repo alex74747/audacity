@@ -194,11 +194,7 @@ int ExportMultipleDialog::ShowModal()
    }
 
    bool bHasLabels = (mNumLabels > 0);
-   bool bHasTracks = (mNumWaveTracks > 0);
    
-   mLabel->Enable(bHasLabels && bHasTracks);
-   mTrack->Enable(bHasTracks);
-
    // If you have 2 or more tracks, then it is export by tracks.
    // If you have no labels, then it is export by tracks.
    // Otherwise it is export by labels, by default.
@@ -220,6 +216,16 @@ StringSetting ExportMultipleFormat{ "/Export/MultipleFormat", L"" };
 
 void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
 {
+   const auto firstFileEnabler = [this]{
+      return mLabel && mByName && mByNumberAndName && mFirst &&
+         mLabel->GetValue() &&
+         (mByName->GetValue() || mByNumberAndName->GetValue()) &&
+          mFirst->GetValue();
+   };
+
+   const auto byNumberEnabler =
+      [this]{ return mByNumber && mByNumber->GetValue(); };
+
    wxString name = mProject->GetProjectName();
    wxString defaultFormat = gPrefs->Read(L"/Export/Format", L"WAV");
 
@@ -354,9 +360,13 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
          S.StartPanel();
          {
             mTrack = S.Id(TrackID)
+               .Enable( [this]{ return mNumWaveTracks > 0; } )
                .AddRadioButton(XXO("Tracks"));
 
-            mLabel = S.Id(LabelID)
+            mLabel =
+            S
+               .Id(LabelID)
+               .Enable( [this]{ return mNumLabels > 0 && mNumWaveTracks > 0; } )
                .AddRadioButton(XXO("Labels"));
          }
          S.EndPanel();
@@ -372,6 +382,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             mFirst =
             S
                .Id(FirstID)
+               .Enable( [this]{ return mLabel && mLabel->GetValue(); } )
                .AddCheckBox(XXO("Include audio before first label"), false);
 
             // Row 4
@@ -379,8 +390,8 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             S.StartMultiColumn(2, wxEXPAND);
             S.SetStretchyCol(1);
             {
-               mFirstFileLabel =
                S
+                  .Enable( firstFileEnabler )
                   .AddVariableText(XO("First file name:"), false);
 
                mFirstFileName =
@@ -388,6 +399,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                   .Id(FirstFileNameID)
                   .Prop(1)
                   .Text(XO("First file name"))
+                  .Enable( firstFileEnabler )
                   .TieTextBox( {},
                               name,
                               30);
@@ -447,14 +459,15 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             S
                .AddVariableText(Verbatim("   "), false);
 
-            mPrefixLabel =
             S
+               .Enable( byNumberEnabler )
                .AddVariableText(XO("File name prefix:"), false);
 
             mPrefix =
             S
                .Id(PrefixID)
                .Text(XO("File name prefix"))
+               .Enable( byNumberEnabler )
                .TieTextBox( {},
                            name,
                            30);
@@ -490,23 +503,9 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
 
 void ExportMultipleDialog::EnableControls()
 {
-   bool enable;
-
    if (!mInitialized) {
       return;
    }
-
-   mFirst->Enable(mLabel->GetValue());
-
-   enable =  mLabel->GetValue() &&
-            (mByName->GetValue() || mByNumberAndName->GetValue()) &&
-             mFirst->GetValue();
-   mFirstFileLabel->Enable(enable);
-   mFirstFileName->Enable(enable);
-
-   enable = mByNumber->GetValue();
-   mPrefixLabel->Enable(enable);
-   mPrefix->Enable(enable);
 
    bool ok = true;
 

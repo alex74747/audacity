@@ -70,11 +70,6 @@ enum { // control IDs
    ID_AUTOEXPORT_CHECKBOX
 };
 
-enum {
-   CONTROL_GROUP_SAVE,
-   CONTROL_GROUP_EXPORT
-};
-
 // The slow timer interval is used to update the start and end times, which only show
 // time to the nearest second.  So we only need an update once a second.
 const int kSlowTimerInterval = 1000; // ms
@@ -350,11 +345,11 @@ void TimerRecordDialog::OnAutoExportPathButton_Click()
 }
 
 void TimerRecordDialog::OnAutoSaveCheckBox_Change(wxCommandEvent& WXUNUSED(event)) {
-   EnableDisableAutoControls(m_pTimerAutoSaveCheckBoxCtrl->GetValue(), CONTROL_GROUP_SAVE);
+   EnableDisableAutoControls();
 }
 
 void TimerRecordDialog::OnAutoExportCheckBox_Change(wxCommandEvent& WXUNUSED(event)) {
-   EnableDisableAutoControls(m_pTimerAutoExportCheckBoxCtrl->GetValue(), CONTROL_GROUP_EXPORT);
+   EnableDisableAutoControls();
 }
 
 void TimerRecordDialog::OnHelpButtonClick()
@@ -441,22 +436,10 @@ void TimerRecordDialog::OnOK()
    gPrefs->Flush();
 }
 
-void TimerRecordDialog::EnableDisableAutoControls(bool bEnable, int iControlGoup) {
-
-   if (iControlGoup == CONTROL_GROUP_EXPORT) {
-       m_pTimerExportPathTextCtrl->Enable( bEnable );
-       m_pTimerExportPathButtonCtrl->Enable( bEnable);
-   } else if (iControlGoup == CONTROL_GROUP_SAVE) {
-       m_pTimerSavePathTextCtrl->Enable( bEnable);
-       m_pTimerSavePathButtonCtrl->Enable(bEnable );
-   }
-
-   // Enable or disable the Choice box - if there is no Save or Export then this will be disabled
+void TimerRecordDialog::EnableDisableAutoControls() {
    if (m_pTimerAutoSaveCheckBoxCtrl->GetValue() || m_pTimerAutoExportCheckBoxCtrl->GetValue()) {
-      m_pTimerAfterCompleteChoiceCtrl->Enable();
    } else {
       m_pTimerAfterCompleteChoiceCtrl->SetSelection(POST_TIMER_RECORD_NOTHING);
-      m_pTimerAfterCompleteChoiceCtrl->Disable();
    }
 }
 
@@ -738,6 +721,13 @@ wxTextCtrlWrapper * TimerRecordDialog::NewPathControl(
 
 void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
 {
+   const auto saveEnabler = [this]{ return m_pTimerAutoSaveCheckBoxCtrl &&
+      m_pTimerAutoSaveCheckBoxCtrl->GetValue(); };
+   const auto exportEnabler = [this]{ return m_pTimerAutoExportCheckBoxCtrl &&
+      m_pTimerAutoExportCheckBoxCtrl->GetValue(); };
+   const auto eitherEnabler = [saveEnabler, exportEnabler]{ return
+      saveEnabler() || exportEnabler(); };
+
    bool bAutoSave = AutoSave.Read();
    bool bAutoExport = AutoExport.Read();
    int iPostTimerRecordAction = PostAction.Read();
@@ -876,8 +866,11 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
                S
                   .AddWindow(m_pTimerSavePathTextCtrl);
 
-               m_pTimerSavePathButtonCtrl =
                S
+                  .Enable( saveEnabler )
+                  .AddWindow(m_pTimerSavePathTextCtrl);
+               S
+                  .Enable( saveEnabler )
                   .Action( [this]{ OnAutoSavePathButton_Click(); } )
                   .AddButton(XXO("Select..."));
             }
@@ -905,8 +898,12 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
                S
                   .AddWindow(m_pTimerExportPathTextCtrl);
 
-               m_pTimerExportPathButtonCtrl =
+               S.AddWindow(m_pTimerExportPathTextCtrl);
                S
+                  .Enable( exportEnabler )
+                  .AddWindow(m_pTimerExportPathTextCtrl);
+               S
+                  .Enable( exportEnabler )
                   .Action( [this]{ OnAutoExportPathButton_Click(); } )
                   .AddButton(XXO("Select..."));
             }
@@ -919,9 +916,11 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
             S.StartMultiColumn(1, wxEXPAND);
             {
                S.SetStretchyCol( 0 );
+
                m_pTimerAfterCompleteChoiceCtrl =
                S
-                  .AddChoice( XXO("After Recording completes:"),
+                  .Enable( eitherEnabler )
+                  .AddChoice(XXO("After Recording completes:"),
                      {
                         XO("Do nothing") ,
                         XO("Exit Audacity") ,
@@ -953,8 +952,7 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
    SetMinSize(GetSize());
    Center();
 
-   EnableDisableAutoControls(bAutoSave, CONTROL_GROUP_SAVE);
-   EnableDisableAutoControls(bAutoExport, CONTROL_GROUP_EXPORT);
+   EnableDisableAutoControls();
 }
 
 bool TimerRecordDialog::TransferDataFromWindow()

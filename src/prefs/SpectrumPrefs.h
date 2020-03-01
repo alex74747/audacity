@@ -62,10 +62,7 @@ class SpectrumPrefs final : public PrefsPanel
    void OnControl(wxCommandEvent &event);
    void OnWindowSize(wxCommandEvent &event);
    void OnDefaults(wxCommandEvent&);
-   void OnAlgorithm(wxCommandEvent &);
    DECLARE_EVENT_TABLE()
-
-   void EnableDisableSTFTOnlyControls();
 
    AudacityProject *mProject{};
 
@@ -82,7 +79,6 @@ class SpectrumPrefs final : public PrefsPanel
     Zero-padding factor for spectrograms can smooth the display of
     spectrograms by interpolating in frequency domain. */
    int mZeroPaddingChoice;
-   wxChoice *mZeroPaddingChoiceCtrl;
    TranslatableStrings mZeroPaddingChoices;
 
    TranslatableStrings mTypeChoices;

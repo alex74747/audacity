@@ -3395,13 +3395,6 @@ void EqualizationPanel::OnCaptureLost(wxMouseCaptureLostEvent & WXUNUSED(event))
 // Some things that deal with 'unnamed' curves still use, for example, 'mCustomBackup' as variable names.
 /// Constructor
 
-BEGIN_EVENT_TABLE(EditCurvesDialog, wxDialogWrapper)
-   EVT_LIST_ITEM_SELECTED(CurvesListID,
-                          EditCurvesDialog::OnListSelectionChange)
-   EVT_LIST_ITEM_DESELECTED(CurvesListID,
-                          EditCurvesDialog::OnListSelectionChange)
-END_EVENT_TABLE()
-
 EditCurvesDialog::EditCurvesDialog(
    wxWindow * parent, EffectEqualization * effect)
    : wxDialogWrapper(parent, wxID_ANY, XO("Manage Curves List"),
@@ -3435,6 +3428,9 @@ void EditCurvesDialog::Populate()
 /// Defines the dialog and does data exchange with it.
 void EditCurvesDialog::PopulateOrExchange(ShuttleGui & S)
 {
+   const auto enabler = [this]{ return mList &&
+      mList->GetSelectedItemCount() > 0; };
+
    S.StartHorizontalLay(wxEXPAND);
    {
       S.StartStatic(XO("&Curves"), 1);
@@ -3451,18 +3447,22 @@ void EditCurvesDialog::PopulateOrExchange(ShuttleGui & S)
       S.StartVerticalLay(0);
       {
          S
+            .Enable( enabler )
             .Action( [this]{ OnUp(); } )
             .AddButton(XXO("Move &Up"), wxALIGN_LEFT);
 
          S
+            .Enable( enabler )
             .Action( [this]{ OnDown(); } )
             .AddButton(XXO("Move &Down"), wxALIGN_LEFT);
 
          S
+            .Enable( enabler )
             .Action( [this]{ OnRename(); } )
             .AddButton(XXO("&Rename..."), wxALIGN_LEFT);
 
          S
+            .Enable( enabler )
             .Action( [this]{ OnDelete(); } )
             .AddButton(XXO("D&elete..."), wxALIGN_LEFT);
 
@@ -3913,17 +3913,3 @@ void EditCurvesDialog::OnOK()
    mEffect->setCurve(item);
    EndModal(true);
 }
-
-void EditCurvesDialog::OnListSelectionChange( wxListEvent & )
-{
-   const bool enable = mList->GetSelectedItemCount() > 0;
-   static const int ids[] = {
-      UpButtonID,
-      DownButtonID,
-      RenameButtonID,
-      DeleteButtonID,
-   };
-   for (auto id : ids)
-      FindWindowById(id, this)->Enable(enable);
-}
-

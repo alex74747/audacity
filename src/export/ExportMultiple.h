@@ -140,7 +140,6 @@ private:
    wxStaticText  *mLabelLabel;   /**< description text for mLabel */
 
    wxCheckBox    *mFirst;  /**< Check box to export audio before first label */
-   wxStaticText  *mFirstFileLabel;  /**< description text for mFirstFileName */
    wxTextCtrl    *mFirstFileName;   /**< Name to use for exporting audio before
                                       the first label in the file */
 
@@ -151,7 +150,6 @@ private:
    wxRadioButton *mByName;    /**< button to choose naming exported file from label text */
    wxRadioButton *mByNumber;  /**< button to choose numbering exported files */
 
-   wxStaticText  *mPrefixLabel;
    wxTextCtrl    *mPrefix;
 
    wxCheckBox    *mOverwrite;
