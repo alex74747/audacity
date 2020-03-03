@@ -2189,6 +2189,13 @@ void ShuttleGuiBase::ApplyItem( int step, const DialogDefinition::Item &item,
       if (item.mFocused)
          pWind->SetFocus();
 
+      if (item.mDefault) {
+         if ( auto pButton = dynamic_cast< wxButton *>( pWind ) )
+            pButton->SetDefault();
+         else
+            wxASSERT( false );
+      }
+
       if (item.mDisabled)
          pWind->Enable( false );
 

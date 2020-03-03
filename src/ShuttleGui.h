@@ -179,6 +179,14 @@ struct Item {
       return std::move( *this );
    }
 
+   // For buttons only
+   // Only the last item specified as default (if more than one) will be
+   Item&& Default( bool isdefault = true ) &&
+   {
+      mDefault = isdefault;
+      return std::move( *this );
+   }
+
    Item&& Disable( bool disabled = true ) &&
    {
       mDisabled = disabled;
@@ -276,6 +284,7 @@ struct Item {
    bool mUseBestSize{ false };
 
    bool mFocused { false };
+   bool mDefault { false };
    bool mDisabled { false };
 };
 
@@ -765,6 +774,15 @@ public:
       return *this;
    }
 
+   // For buttons only
+   // Only the last item specified as default (if more than one) will be
+   ShuttleGui & Default( bool isdefault = true )
+   {
+      std::move( mItem ).Default( isdefault );
+      return *this;
+   }
+
+   // Just sets the state of the item once
    ShuttleGui &Disable( bool disabled = true )
    {
       std::move( mItem ).Disable( disabled );
