@@ -17,6 +17,7 @@
 
 #include "Identifier.h"
 
+#include <initializer_list>
 #include <vector>
 #include <wx/slider.h> // to inherit
 #include <wx/listbase.h> // for wxLIST_FORMAT_LEFT
@@ -109,6 +110,7 @@ using wxSliderWrapper = wxSlider;
 // AddStandardButton defs...should probably move to widgets subdir
 enum StandardButtonID : unsigned
 {
+   eButtonUndefined = 0,
    eOkButton      = 0x0001,
    eCancelButton  = 0x0002,
    eYesButton     = 0x0004,
@@ -125,9 +127,22 @@ enum StandardButtonID : unsigned
 namespace DialogDefinition {
 
 struct Item {
+   using ActionType = std::function< void() >;
+
    Item() = default;
 
-   using ActionType = std::function< void() >;
+   explicit Item(StandardButtonID id)
+   {
+      mStandardButton = id;
+   }
+
+   // Alternative chain-call but you can also just use the constructor
+   // This has effect only for items passed to AddStandardButtons
+   Item && StandardButton( StandardButtonID id ) &&
+   {
+      mStandardButton = id;
+      return std::move( *this );
+   }
 
    // Factory is a class that returns a value of some subclass of wxValidator
    // We must wrap it in another lambda to allow the return type of f to
@@ -277,6 +292,8 @@ struct Item {
    // Applies to windows, not to subsizers
    int mWindowPositionFlags{ 0 };
 
+   StandardButtonID mStandardButton{ eButtonUndefined };
+
    wxSize mWindowSize{};
 
    wxSize mMinSize{ -1, -1 };
@@ -287,6 +304,8 @@ struct Item {
    bool mDefault { false };
    bool mDisabled { false };
 };
+
+using Items = std::initializer_list< Item >;
 
 }
 
@@ -616,15 +635,18 @@ public:
    static void ApplyItem( int step, const DialogDefinition::Item &item,
       wxWindow *pWind, wxWindow *pDlg );
 
-   // The first of these buttons, if any, that is included will be default:
+   // If none of the items is default,
+   // then the first of these buttons, if any, that is included will be default:
    // Apply, Yes, OK
    // The buttons shown are the union of those given simply as a bit flag,
    // or else specified as an Item with its StandardButton specified.
-   // There should be no other items.
    // The positioning of the items is determined in the function, independently
    // of the sequence of the items
    void AddStandardButtons(
-      long buttons = eOkButton | eCancelButton, wxWindow *extra = NULL );
+      long buttons = eOkButton | eCancelButton,
+      DialogDefinition::Items items = {},
+      wxWindow *extra = nullptr,
+      DialogDefinition::Item extraItem = {});
 
    wxSizerItem * AddSpace( int width, int height, int prop = 0 );
    wxSizerItem * AddSpace( int size ) { return AddSpace( size, size ); };
@@ -734,6 +756,10 @@ enum
 class AUDACITY_DLL_API ShuttleGui /* not final */ : public ShuttleGuiBase
 {
 public:
+   using ItemType = DialogDefinition::Item;
+   ItemType Item( StandardButtonID id = eButtonUndefined )
+   { return ItemType{ id }; }
+
    ShuttleGui(
       wxWindow * pParent, teShuttleMode ShuttleMode,
       bool vertical = true, // Choose layout direction of topmost level sizer

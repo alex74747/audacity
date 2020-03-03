@@ -197,7 +197,9 @@ ScoreAlignDialog::ScoreAlignDialog(ScoreAlignParams &params)
    mDefaultButton = safenew wxButton(this, ID_DEFAULT, _("Use Defaults"));
    mDefaultButton->SetName(_("Restore Defaults"));
 
-   S.AddStandardButtons(eOkButton | eCancelButton, mDefaultButton);
+   S
+      .AddStandardButtons(eOkButton | eCancelButton, {}, mDefaultButton);
+
    S.EndVerticalLay();
    Layout();
    Fit();

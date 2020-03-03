@@ -1005,7 +1005,8 @@ bool EffectUIHost::Initialize()
          if (mEffect.EnablesDebug())
             buttons |= eDebugButton;
 
-         S.AddStandardButtons(buttons, bar);
+         S
+            .AddStandardButtons(buttons, {}, bar);
       }
       S.EndPanel();
    }

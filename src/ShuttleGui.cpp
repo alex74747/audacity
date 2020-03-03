@@ -2318,9 +2318,18 @@ void SetIfCreated( wxStaticText *&Var, wxStaticText * Val )
 #endif
 
 static
-std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wxWindow *extra)
+std::unique_ptr<wxSizer> CreateStdButtonSizer(
+   wxWindow *pDlg, wxWindow *parent,
+   long buttons, DialogDefinition::Items items, wxWindow *extra,
+   DialogDefinition::Item extraItem )
 {
    wxASSERT(parent != NULL); // To justify safenew
+
+   for ( const auto &item : items )
+      buttons |= item.mStandardButton;
+
+   bool givenDefault = std::any_of( items.begin(), items.end(),
+      std::mem_fn( &DialogDefinition::Item::mDefault ) );
 
    int margin;
    {
@@ -2347,40 +2356,71 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
       return result;
    };
 
+   auto addButton =
+   [&]( StandardButtonID id, wxButton *pButton, int insertAt = 0 ) {
+      // Find any matching item
+      auto pred = [id]( decltype( *items.begin() ) &item ){
+         return item.mStandardButton == id; };
+      auto end = items.end(),
+         iter = std::find_if( items.begin(), end, pred );
+      // If found, it should be unique
+      wxASSERT( iter == end ||
+         end == std::find_if( iter + 1, end, pred ) );
+
+      if (iter != end)
+         ShuttleGuiBase::ApplyItem( 0, *iter, pButton, pDlg );
+      if ( insertAt == 0 )
+         bs->AddButton( pButton );
+      else if ( insertAt == -1 )
+         bs->Add( pButton, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
+      else
+         bs->Insert( insertAt,
+            pButton, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
+      if (iter != end) {
+         ShuttleGuiBase::CheckEventType( *iter, { wxEVT_BUTTON } );
+         ShuttleGuiBase::ApplyItem( 1, *iter, pButton, pDlg );
+      }
+   };
+
    if( buttons & eOkButton )
    {
       b = makeButton( wxID_OK );
-      b->SetDefault();
-      bs->AddButton( b );
+      if( !givenDefault )
+         b->SetDefault();
+      addButton( eOkButton, b );
    }
 
    if( buttons & eCancelButton )
    {
-      bs->AddButton( makeButton( wxID_CANCEL ) );
+      addButton( eCancelButton, makeButton( wxID_CANCEL ) );
    }
 
    if( buttons & eYesButton )
    {
       b = makeButton( wxID_YES );
-      b->SetDefault();
-      bs->AddButton( b );
+      if( !givenDefault )
+         b->SetDefault();
+      addButton( eYesButton, b );
    }
 
    if( buttons & eNoButton )
    {
-      bs->AddButton( makeButton( wxID_NO ) );
+      addButton( eNoButton, makeButton( wxID_NO ) );
    }
 
    if( buttons & eApplyButton )
    {
       b = makeButton( wxID_APPLY );
       b->SetDefault();
-      bs->AddButton( b );
+      if( !givenDefault )
+         b->SetDefault();
+      addButton( eApplyButton, b );
    }
 
    if( buttons & eCloseButton )
    {
-      bs->AddButton( makeButton( wxID_CANCEL, XO("&Close").Translation() ) );
+      addButton( eCloseButton,
+         makeButton( wxID_CANCEL, XO("&Close").Translation() ) );
    }
 
 #if defined(__WXMSW__)
@@ -2393,33 +2433,37 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
       b->SetToolTip( XO("Help").Translation() );
       b->SetLabel(XO("Help").Translation());       // for screen readers
       b->SetName( b->GetLabel() );
-      bs->AddButton( b );
+      addButton( eHelpButton, b );
    }
 #endif
 
    if (buttons & ePreviewButton)
    {
-      bs->Add( makeButton( ePreviewID, XO("&Preview").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+      addButton( ePreviewButton,
+         makeButton( ePreviewID, XO("&Preview").Translation() ),
+         -1 );
    }
-   if (buttons & ePreviewDryButton)
-   {
-      bs->Add( makeButton( ePreviewDryID, XO("Dry Previe&w").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+   if (buttons & ePreviewDryButton) {
+      addButton( ePreviewDryButton,
+         makeButton( ePreviewDryID, XO("Dry Previe&w").Translation() ),
+         -1 );
       bs->Add( 20, 0 );
    }
 
    if( buttons & eSettingsButton )
    {
-      bs->Add( makeButton( eSettingsID, XO("&Settings").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+      addButton( eSettingsButton,
+         makeButton( eSettingsID, XO("&Settings").Translation() ),
+         -1 );
       bs->Add( 20, 0 );
    }
 
    if( extra )
    {
+      ShuttleGuiBase::ApplyItem( 0, extraItem, extra, pDlg );
       bs->Add( extra, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
       bs->Add( 40, 0 );
+      ShuttleGuiBase::ApplyItem( 1, extraItem, extra, pDlg );
    }
 
    bs->AddStretchSpacer();
@@ -2441,10 +2485,12 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
    }
 
    // Add any buttons that need to cuddle up to the right hand cluster
+   // Add any buttons that need to cuddle up to the right hand cluster
    if( buttons & eDebugButton )
    {
-      b = makeButton( eDebugID, XO("Debu&g").Translation() );
-      bs->Insert( ++lastLastSpacer, b, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
+      addButton( eDebugButton,
+         makeButton( eDebugID, XO("Debu&g").Translation() ),
+         ++lastLastSpacer );
    }
 
 #if !defined(__WXMSW__)
@@ -2468,7 +2514,6 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
    }
 #endif
 
-
    auto s = std::make_unique<wxBoxSizer>( wxVERTICAL );
    s->Add( bs.release(), 1, wxEXPAND | wxALL, 7 );
    s->Add( 0, 3 );   // a little extra space
@@ -2476,7 +2521,9 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
    return std::unique_ptr<wxSizer>{ s.release() };
 }
 
-void ShuttleGuiBase::AddStandardButtons(long buttons, wxWindow *extra)
+void ShuttleGuiBase::AddStandardButtons(
+   long buttons, DialogDefinition::Items items, wxWindow *extra,
+   DialogDefinition::Item extraItem )
 {
    if( mpState -> mShuttleMode != eIsCreating )
       return;
@@ -2484,7 +2531,9 @@ void ShuttleGuiBase::AddStandardButtons(long buttons, wxWindow *extra)
    StartVerticalLay( false );
 
    miSizerProp = false;
-   mpSubSizer = CreateStdButtonSizer( mpState -> mpParent, buttons, extra );
+   mpSubSizer = CreateStdButtonSizer(
+      mpState -> mpDlg, mpState -> mpParent,
+      buttons, items, extra, extraItem );
    UpdateSizers();
    mpState -> PopSizer();
 

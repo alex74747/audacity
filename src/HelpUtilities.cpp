@@ -24,7 +24,7 @@ Paul Licameli split from HelpMenus.cpp
 void ShowDiagnostics(
    AudacityProject &project, const wxString &info,
    const TranslatableString &description, const wxString &defaultPath,
-   bool fixedWidth)
+   bool fixedWidth = false)
 {
    auto &window = GetProjectFrame( project );
    wxDialogWrapper dlg( &window, wxID_ANY, description);
@@ -39,7 +39,8 @@ void ShowDiagnostics(
          .AddTextWindow("");
 
       wxButton *save = safenew wxButton(S.GetParent(), wxID_OK, _("&Save"));
-      S.AddStandardButtons(eCancelButton, save);
+      S
+         .AddStandardButtons(eCancelButton, {}, save);
    }
    S.EndVerticalLay();
 
