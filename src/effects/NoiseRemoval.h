@@ -149,7 +149,7 @@ private:
    // handlers
    void OnGetProfile( wxCommandEvent &event );
    void OnKeepNoise( wxCommandEvent &event );
-   void OnPreview(wxCommandEvent &event) override;
+   void OnPreview(wxCommandEvent &event);
    void OnRemoveNoise( wxCommandEvent &event );
    void OnCancel( wxCommandEvent &event );
 
