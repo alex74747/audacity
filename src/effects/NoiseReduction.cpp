@@ -390,7 +390,7 @@ private:
 #ifdef ADVANCED_SETTINGS
    void OnMethodChoice(wxCommandEvent &);
 #endif
-   void OnPreview(wxCommandEvent &event) override;
+   void OnPreview(wxCommandEvent &event);
    void OnReduceNoise( wxCommandEvent &event );
    void OnCancel( wxCommandEvent &event );
    void OnHelp( wxCommandEvent &event );
@@ -1562,7 +1562,7 @@ EffectNoiseReduction::Dialog::Dialog
 (EffectNoiseReduction *effect,
  EffectNoiseReduction::Settings *settings,
  wxWindow *parent, bool bHasProfile, bool bAllowTwiddleSettings)
-   : EffectDialog( parent, XO("Noise Reduction"), EffectTypeProcess,wxDEFAULT_DIALOG_STYLE, eHelpButton )
+   : EffectDialog( parent, XO("Noise Reduction"), wxDEFAULT_DIALOG_STYLE )
    , m_pEffect(effect)
    , m_pSettings(settings) // point to
    , mTempSettings(*settings)  // copy
@@ -1841,6 +1841,10 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
    }
    S.EndStatic();
 #endif
+
+   S
+      .AddStandardButtons(
+         eOkButton | eCancelButton | ePreviewButton| eHelpButton );
 }
 
 bool EffectNoiseReduction::Dialog::TransferDataToWindow()
