@@ -265,6 +265,7 @@ public:
    virtual bool IsGraphicalUI() = 0;
 
    //! Adds controls to a panel that is given as the parent window of `S`
+   /*! Used only to create the dialog, not to shuttle values: */
    virtual bool PopulateUI(ShuttleGui &S) = 0;
 
    virtual bool ValidateUI() = 0;
