@@ -65,7 +65,8 @@ void SetProjectCommand::PopulateOrExchange(ShuttleGui & S)
          .TieTextBox(         XXO("Rate:"),     mRate );
 
       S
-         .TieCheckBox( XXO("Resize:"), bHasSizing    );
+         .Target( bHasSizing )
+         .AddCheckBox( XXO("Resize:") );
 
       S.AddSpace(0,0);
    }

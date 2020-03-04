@@ -850,7 +850,8 @@ void VSTEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
             S.StartHorizontalLay(wxALIGN_LEFT);
             {
                S
-                  .TieCheckBox(XXO("Enable &compensation"), mUseLatency);
+                  .Target( mUseLatency )
+                  .AddCheckBox( XXO("Enable &compensation") );
             }
             S.EndHorizontalLay();
          }
@@ -864,8 +865,10 @@ void VSTEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
 " A basic text-only method is also available. "
 " Reopen the effect for this to take effect."),
                   false, 0, 650);
+
             S
-               .TieCheckBox(XXO("Enable &graphical interface"), mUseGUI);
+               .Target(mUseGUI)
+               .AddCheckBox( XXO("Enable &graphical interface") );
          }
          S.EndStatic();
       }
