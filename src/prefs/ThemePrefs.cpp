@@ -233,6 +233,7 @@ void ThemePrefs::ApplyUpdatedImages()
 /// Update the preferences stored on disk.
 bool ThemePrefs::Commit()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

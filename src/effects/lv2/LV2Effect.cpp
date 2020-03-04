@@ -325,6 +325,7 @@ void LV2EffectSettingsDialog::OnOk()
       return;
    }
 
+   wxDialog::TransferDataFromWindow();
    ShuttleGui S(this, eIsGettingFromDialog);
    PopulateOrExchange(S);
 

@@ -225,6 +225,7 @@ void ExportFFmpegAC3Options::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportFFmpegAC3Options::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
@@ -283,6 +284,7 @@ void ExportFFmpegAACOptions::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportFFmpegAACOptions::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
@@ -372,6 +374,7 @@ void ExportFFmpegAMRNBOptions::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportFFmpegAMRNBOptions::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
@@ -727,6 +730,7 @@ void ExportFFmpegWMAOptions::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportFFmpegWMAOptions::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
@@ -2649,6 +2653,7 @@ void ExportFFmpegOptions::OnOK()
        FFmpegFormat.Write( mFormatList->GetString( selfmt ) );
    gPrefs->Flush();
 
+   wxDialog::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

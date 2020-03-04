@@ -221,6 +221,7 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
 
 bool EffectsPrefs::Commit()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

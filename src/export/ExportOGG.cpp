@@ -99,6 +99,7 @@ void ExportOGGOptions::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportOGGOptions::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

@@ -157,6 +157,7 @@ void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportCLOptions::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

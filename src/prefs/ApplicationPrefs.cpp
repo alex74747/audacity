@@ -105,6 +105,7 @@ void ApplicationPrefs::PopulateOrExchange(ShuttleGui & S)
 
 bool ApplicationPrefs::Commit()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 

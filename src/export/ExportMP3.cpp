@@ -510,6 +510,7 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
 ///
 bool ExportMP3Options::TransferDataFromWindow()
 {
+   wxPanel::TransferDataFromWindow();
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
