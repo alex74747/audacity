@@ -50,7 +50,6 @@ public:
    virtual ~ExportFLACOptions();
 
    void PopulateOrExchange(ShuttleGui & S);
-   bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 };
 
@@ -135,13 +134,6 @@ void ExportFLACOptions::PopulateOrExchange(ShuttleGui & S)
    S.EndVerticalLay();
 
    return;
-}
-
-///
-///
-bool ExportFLACOptions::TransferDataToWindow()
-{
-   return true;
 }
 
 ///
