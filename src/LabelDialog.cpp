@@ -303,6 +303,8 @@ void LabelDialog::OnHelp()
 
 bool LabelDialog::TransferDataToWindow()
 {
+   wxDialogWrapper::TransferDataToWindow();
+
    int cnt = mData.size();
    int i;
 
@@ -385,6 +387,8 @@ bool LabelDialog::Show(bool show)
 
 bool LabelDialog::TransferDataFromWindow()
 {
+   wxDialogWrapper::TransferDataFromWindow();
+
    int cnt = mData.size();
    int i;
    int tndx = 0;

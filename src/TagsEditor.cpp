@@ -400,6 +400,8 @@ void TagsEditorDialog::OnHelp()
 
 bool TagsEditorDialog::TransferDataFromWindow()
 {
+   wxDialogWrapper::TransferDataFromWindow();
+
    int i, cnt = mGrid->GetNumberRows();
 
    if (mGrid->IsCellEditControlShown()) {
@@ -454,6 +456,8 @@ bool TagsEditorDialog::TransferDataFromWindow()
 
 bool TagsEditorDialog::TransferDataToWindow()
 {
+   wxDialogWrapper::TransferDataToWindow();
+
    size_t i;
    TagMap popTagMap;
 

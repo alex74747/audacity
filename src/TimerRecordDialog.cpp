@@ -957,6 +957,8 @@ void TimerRecordDialog::PopulateOrExchange(ShuttleGui& S)
 
 bool TimerRecordDialog::TransferDataFromWindow()
 {
+   auto result = wxDialogWrapper::TransferDataFromWindow();
+
    double dTime;
    long hr;
    long min;
@@ -994,7 +996,7 @@ bool TimerRecordDialog::TransferDataFromWindow()
    AutoExport.Write( m_bAutoExportEnabled );
    PostAction.Write( iPostRecordAction );
 
-   return wxDialogWrapper::TransferDataFromWindow();
+   return result;
 }
 
 // Update m_TimeSpan_Duration and ctrl based on m_DateTime_Start and m_DateTime_End.
