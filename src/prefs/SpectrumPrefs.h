@@ -83,8 +83,6 @@ class SpectrumPrefs final : public PrefsPanel
 
    TranslatableStrings mTypeChoices;
 
-   wxChoice *mAlgorithmChoice;
-
 
 #ifdef EXPERIMENTAL_FIND_NOTES
    wxTextCtrl *mFindNotesMinA;

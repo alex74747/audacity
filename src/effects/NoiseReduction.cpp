@@ -1161,10 +1161,6 @@ enum {
    ID_RADIOBUTTON_RESIDUE,
 #endif
 
-#ifdef ADVANCED_SETTINGS
-   ID_CHOICE_METHOD,
-#endif
-
    // Slider/text pairs
    ID_GAIN_SLIDER,
    ID_GAIN_TEXT,
@@ -1296,9 +1292,7 @@ const ControlInfo *controlInfo() {
          0.0, 24.0, 48, L"%.2f", false,
          XXO("&Sensitivity:"), XO("Sensitivity"),
          []( EffectNoiseReduction::Dialog &dlg ) {
-            const auto pChoice = static_cast<wxChoice*>(
-               wxWindow::FindWindowById(ID_CHOICE_METHOD, &dlg));
-            return pChoice->GetSelection() != DM_OLD_METHOD;
+            return dlg.GetTempSettings().mMethod != DM_OLD_METHOD;
          } ),
 
 #ifdef ATTACK_AND_RELEASE
@@ -1323,9 +1317,7 @@ const ControlInfo *controlInfo() {
          -20.0, 20.0, 4000, L"%.2f", false,
          XXO("Sensiti&vity (dB):"), XO("Old Sensitivity"),
          []( EffectNoiseReduction::Dialog &dlg ) {
-            const auto pChoice = static_cast<wxChoice*>(
-               wxWindow::FindWindowById(ID_CHOICE_METHOD, &dlg));
-            return pChoice->GetSelection() == DM_OLD_METHOD;
+            return dlg.GetTempSettings().mMethod == DM_OLD_METHOD;
          } ),
          // add here
 #endif
@@ -1537,59 +1529,59 @@ void EffectNoiseReduction::Dialog::PopulateOrExchange(ShuttleGui & S)
    {
       S.StartMultiColumn(2);
       {
-         S.TieChoice(XXO("&Window types:"),
-            mTempSettings.mWindowTypes,
-            []{
-               TranslatableStrings windowTypeChoices;
-               for (size_t ii = 0; ii < WT_N_WINDOW_TYPES; ++ii)
-                  windowTypeChoices.push_back(windowTypesInfo[ii].name);
-               return windowTypeChoices;
-            }()
-         );
+         S
+            .Target( mTempSettings.mWindowTypes )
+            .AddChoice(XXO("&Window types:"),
+               []{
+                  TranslatableStrings windowTypeChoices;
+                  for (size_t ii = 0; ii < WT_N_WINDOW_TYPES; ++ii)
+                     windowTypeChoices.push_back(windowTypesInfo[ii].name);
+                  return windowTypeChoices;
+               }() );
 
-         S.TieChoice(XXO("Window si&ze:"),
-            mTempSettings.mWindowSizeChoice,
-            {
-               XO("8") ,
-               XO("16") ,
-               XO("32") ,
-               XO("64") ,
-               XO("128") ,
-               XO("256") ,
-               XO("512") ,
-               XO("1024") ,
-               XO("2048 (default)") ,
-               XO("4096") ,
-               XO("8192") ,
-               XO("16384") ,
-            }
-         );
+         S
+            .Target( mTempSettings.mWindowSizeChoice )
+            .AddChoice(XXO("Window si&ze:"),
+               {
+                  XO("8") ,
+                  XO("16") ,
+                  XO("32") ,
+                  XO("64") ,
+                  XO("128") ,
+                  XO("256") ,
+                  XO("512") ,
+                  XO("1024") ,
+                  XO("2048 (default)") ,
+                  XO("4096") ,
+                  XO("8192") ,
+                  XO("16384") ,
+               } );
 
-         S.TieChoice(XXO("S&teps per window:"),
-            mTempSettings.mStepsPerWindowChoice,
-            {
-               XO("2") ,
-               XO("4 (default)") ,
-               XO("8") ,
-               XO("16") ,
-               XO("32") ,
-               XO("64") ,
-            }
-         );
+         S
+            .Target( mTempSettings.mStepsPerWindowChoice )
+            .AddChoice(XXO("S&teps per window:"),
+               {
+                  XO("2") ,
+                  XO("4 (default)") ,
+                  XO("8") ,
+                  XO("16") ,
+                  XO("32") ,
+                  XO("64") ,
+               } );
 
-         S.Id(ID_CHOICE_METHOD)
-         .TieChoice(XXO("Discrimination &method:"),
-            mTempSettings.mMethod,
-            []{
-               TranslatableStrings methodChoices;
-               auto nn = DM_N_METHODS;
-#ifndef OLD_METHOD_AVAILABLE
-               --nn;
-#endif
-               for (auto ii = 0; ii < nn; ++ii)
-                  methodChoices.push_back(discriminationMethodInfo[ii].name);
-               return methodChoices;
-            }());
+         S
+            .Target( mTempSettings.mMethod )
+            .AddChoice(XXO("Discrimination &method:"),
+               []{
+                  TranslatableStrings methodChoices;
+                  auto nn = DM_N_METHODS;
+   #ifndef OLD_METHOD_AVAILABLE
+                  --nn;
+   #endif
+                  for (auto ii = 0; ii < nn; ++ii)
+                     methodChoices.push_back(discriminationMethodInfo[ii].name);
+                  return methodChoices;
+               }());
       }
       S.EndMultiColumn();
 
