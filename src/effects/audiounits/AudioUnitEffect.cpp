@@ -510,8 +510,18 @@ private:
    EffectDefinitionInterface &mEffect;
 
    bool mUseLatency;
-   TranslatableString mUIType;
+   int mUITypeIndex;
 };
+
+namespace {
+   TranslatableStrings UITypeChoices{
+      XO("Full"),
+      XO("Generic"),
+#if defined(HAVE_AUDIOUNIT_BASIC_SUPPORT)
+      XO("Basic")
+#endif
+   };
+}
 
 AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent,
    EffectHostInterface &host, EffectDefinitionInterface &effect)
@@ -528,7 +538,12 @@ AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent,
       L"UIType", uiType, L"Full");
 
    // Get the localization of the string for display to the user
-   mUIType = TranslatableString{ uiType, {} };
+   auto begin = UITypeChoices.begin(), end = UITypeChoices.end(),
+      iter = std::find_if( begin, end,
+         [&]( const TranslatableString &string ){
+            return string.MSGID().GET() == uiType;
+         } );
+   mUITypeIndex = iter - begin;
 
    ShuttleGui S(this, eIsCreating);
    PopulateOrExchange(S);
@@ -582,14 +597,8 @@ void AudioUnitEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
             {
                S
                   .TieChoice(XXO("Select &interface"),
-                     mUIType,
-                     {
-                        XO("Full"),
-                        XO("Generic"),
-#if defined(HAVE_AUDIOUNIT_BASIC_SUPPORT)
-                        XO("Basic")
-#endif
-                     });
+                     mUITypeIndex,
+                     UITypeChoices );
             }
             S.EndHorizontalLay();
          }
@@ -620,7 +629,7 @@ void AudioUnitEffectOptionsDialog::OnOk()
    PopulateOrExchange(S);
 
    // un-translate the type
-   auto uiType = mUIType.MSGID().GET();
+   auto uiType = UITypeChoices[ mUITypeIndex ].MSGID().GET();
 
    SetConfig(mEffect, PluginSettings::Shared, L"Options",
       L"UseLatency", mUseLatency);
