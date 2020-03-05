@@ -1139,7 +1139,6 @@ public:
    { return mpState -> mpValidationState; }
 
 //-- Add functions.  These only add a widget or 2.
-   void HandleOptionality(const TranslatableLabel &Prompt);
    void AddPrompt(const TranslatableLabel &Prompt, int wrapWidth = 0);
    void AddUnits(const TranslatableString &Units, int wrapWidth = 0);
    void AddTitle(const TranslatableString &Title, int wrapWidth = 0);
@@ -1465,8 +1464,6 @@ protected:
    // Proportion set by user rather than default.
    int miPropSetByUser = -1;
 
-   bool * mpbOptionalFlag = nullptr;
-
    std::unique_ptr<wxSizer> mpSubSizer;
    wxWindow * mpWind = nullptr;
 
@@ -1570,7 +1567,7 @@ public:
 
    TypedShuttleGui & Optional( bool & bVar )
    {
-      mpbOptionalFlag = &bVar;
+      Target( bVar ).AddCheckBox( {} );
       return *this;
    }
 
