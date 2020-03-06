@@ -195,205 +195,108 @@ bool GetInfoCommand::SendMenus(const CommandContext &context)
    return true;
 }
 
-#include "Prefs.h"
-
 namespace {
 
 /**************************************************************************//**
 \brief Shuttle that retrieves a JSON format definition of a command's parameters.
 ********************************************************************************/
-class ShuttleGuiGetDefinition : public ShuttleGui, public CommandMessageTargetDecorator
+struct Collector final : PreferenceVisitor, CommandMessageTargetDecorator
 {
-public:
-   ShuttleGuiGetDefinition(wxWindow * pParent,CommandMessageTarget & target );
-   virtual ~ShuttleGuiGetDefinition();
+   Collector( CommandMessageTarget & target );
+   virtual ~Collector();
 
-   wxCheckBox * TieCheckBox(
-      const TranslatableString &Prompt,
-      const BoolSetting &Setting) override;
-   wxCheckBox * TieCheckBoxOnRight(
-      const TranslatableString &Prompt,
-      const BoolSetting &Setting) override;
-
-   wxChoice *TieChoice(
-      const TranslatableString &Prompt,
-      const ChoiceSetting &choiceSetting ) override;
-
-   wxChoice * TieNumberAsChoice(
-      const TranslatableString &Prompt,
-      const IntSetting &Setting,
-      const TranslatableStrings & Choices,
-      const std::vector<int> * pInternalChoices, int iNoMatchSelector ) override;
-
-   wxTextCtrl * TieTextBox(
-      const TranslatableString &Prompt,
-      const StringSetting &Setting,
-      const int nChars) override;
-   wxTextCtrl * TieIntegerTextBox(
-      const TranslatableString & Prompt,
-      const IntSetting &Setting,
-      const int nChars) override;
-   wxTextCtrl * TieNumericTextBox(
-      const TranslatableString & Prompt,
-      const DoubleSetting &Setting,
-      const int nChars) override;
-   wxSlider * TieSlider(
-      const TranslatableString & Prompt,
-      const IntSetting &Setting,
-      const int max,
-      const int min = 0) override;
-   wxSpinCtrl * TieSpinCtrl(
-      const TranslatableString &Prompt,
-      const IntSetting &Setting,
-      const int max,
-      const int min) override;
+   void Visit(
+      const wxString &Prompt,
+      const Setting<bool> &Setting) override;
+   
+   void Visit(
+      const wxString &Prompt,
+      const Setting<int> &Setting) override;
+   
+   void Visit(
+      const wxString &Prompt,
+      const Setting<double> &Setting) override;
+   
+   void Visit(
+      const wxString &Prompt,
+      const Setting<wxString> &Setting) override;
+   
+   void Visit(
+      const wxString &Prompt,
+      const ChoiceSetting &Setting) override;
 };
 
-ShuttleGuiGetDefinition::ShuttleGuiGetDefinition(
-   wxWindow * pParent,CommandMessageTarget & target )
-: ShuttleGui( pParent, eIsGettingMetadata ),
-  CommandMessageTargetDecorator( target )
+Collector::Collector( CommandMessageTarget & target )
+: CommandMessageTargetDecorator( target )
 {
 
 }
-ShuttleGuiGetDefinition::~ShuttleGuiGetDefinition(void)
-{
-}
+Collector::~Collector(void) = default;
 
-wxCheckBox * ShuttleGuiGetDefinition::TieCheckBox(
-   const TranslatableString &Prompt,
-   const BoolSetting &Setting)
+void Collector::Visit(
+   const wxString &Prompt,
+   const Setting<bool> &Setting)
 {
    StartStruct();
    AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
+   AddItem( Prompt, "prompt" );
    AddItem( "bool", "type" );
    AddBool( Setting.GetDefault(), "default"  );
    EndStruct();
-   return ShuttleGui::TieCheckBox( Prompt, Setting );
 }
 
-wxCheckBox * ShuttleGuiGetDefinition::TieCheckBoxOnRight(
-   const TranslatableString &Prompt,
-   const BoolSetting &Setting)
+void Collector::Visit(
+   const wxString &Prompt,
+   const ChoiceSetting &Setting)
 {
    StartStruct();
-   AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
-   AddItem( "bool", "type" );
-   AddBool( Setting.GetDefault(), "default"  );
-   EndStruct();
-   return ShuttleGui::TieCheckBoxOnRight( Prompt, Setting );
-}
-
-wxChoice * ShuttleGuiGetDefinition::TieChoice(
-   const TranslatableString &Prompt,
-   const ChoiceSetting &choiceSetting  )
-{
-   StartStruct();
-   AddItem( choiceSetting.Key(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
+   AddItem( Setting.Key(), "id" );
+   AddItem( Prompt, "prompt" );
    AddItem( "enum", "type" );
-   AddItem( choiceSetting.Default().Internal(), "default"  );
+   AddItem( Setting.Default().Internal(), "default"  );
    StartField( "enum" );
    StartArray();
-   for ( const auto &choice : choiceSetting.GetSymbols().GetInternals() )
+   for ( const auto &choice : Setting.GetSymbols().GetInternals() )
       AddItem( choice );
    EndArray();
    EndField();
    EndStruct();
-   return ShuttleGui::TieChoice( Prompt, choiceSetting );
 }
 
-wxChoice * ShuttleGuiGetDefinition::TieNumberAsChoice(
-   const TranslatableString &Prompt,
-   const IntSetting &Setting,
-   const TranslatableStrings & Choices,
-   const std::vector<int> * pInternalChoices, int iNoMatchSelector)
-{
-   // Come here for controls that present non-exhaustive choices among some
-   //  numbers, with an associated control that allows arbitrary entry of an
-   // "Other..."
-   StartStruct();
-   AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
-   AddItem( "number", "type" ); // not "enum" !
-   AddItem( Setting.GetDefault(), "default"  );
-   EndStruct();
-   return ShuttleGui::TieNumberAsChoice(
-      Prompt, Setting, Choices, pInternalChoices, iNoMatchSelector );
-}
-
-wxTextCtrl * ShuttleGuiGetDefinition::TieTextBox(
-   const TranslatableString &Prompt,
-   const StringSetting &Setting,
-   const int nChars)
+void Collector::Visit(
+   const wxString &Prompt,
+   const Setting<wxString> &Setting)
 {
    StartStruct();
    AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
+   AddItem( Prompt, "prompt" );
    AddItem( "string", "type" );
    AddItem( Setting.GetDefault(), "default"  );
    EndStruct();
-   return ShuttleGui::TieTextBox( Prompt, Setting, nChars );
 }
 
-wxTextCtrl * ShuttleGuiGetDefinition::TieIntegerTextBox(
-   const TranslatableString & Prompt,
-   const IntSetting &Setting,
-   const int nChars)
+void Collector::Visit(
+   const wxString &Prompt,
+   const Setting<int> &Setting)
 {
    StartStruct();
    AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
+   AddItem( Prompt, "prompt" );
    AddItem( "number", "type" );
-   AddItem( Setting.GetDefault(), "default"  );
+   AddBool( Setting.GetDefault(), "default"  );
    EndStruct();
-   return ShuttleGui::TieIntegerTextBox( Prompt, Setting, nChars );
 }
 
-wxTextCtrl * ShuttleGuiGetDefinition::TieNumericTextBox(
-   const TranslatableString & Prompt,
-   const DoubleSetting &Setting,
-   const int nChars)
+void Collector::Visit(
+   const wxString &Prompt,
+   const Setting<double> &Setting)
 {
    StartStruct();
    AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
+   AddItem( Prompt, "prompt" );
    AddItem( "number", "type" );
    AddItem( Setting.GetDefault(), "default"  );
    EndStruct();
-   return ShuttleGui::TieNumericTextBox( Prompt, Setting, nChars );
-}
-
-wxSlider * ShuttleGuiGetDefinition::TieSlider(
-   const TranslatableString & Prompt,
-   const IntSetting &Setting,
-   const int max,
-   const int min) 
-{
-   StartStruct();
-   AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
-   AddItem( "number", "type" );
-   AddItem( Setting.GetDefault(), "default"  );
-   EndStruct();
-   return ShuttleGui::TieSlider( Prompt, Setting, max, min );
-}
-
-wxSpinCtrl * ShuttleGuiGetDefinition::TieSpinCtrl(
-   const TranslatableString &Prompt,
-   const IntSetting &Setting,
-   const int max,
-   const int min) 
-{
-   StartStruct();
-   AddItem( Setting.GetPath(), "id" );
-   AddItem( Prompt.Translation(), "prompt" );
-   AddItem( "number", "type" );
-   AddItem( Setting.GetDefault(), "default"  );
-   EndStruct();
-   return ShuttleGui::TieSpinCtrl( Prompt, Setting, max, min );
 }
 
 }
@@ -401,12 +304,16 @@ wxSpinCtrl * ShuttleGuiGetDefinition::TieSpinCtrl(
 bool GetInfoCommand::SendPreferences(const CommandContext &context)
 {
    context.StartArray();
+
+   auto pCollector =
+      std::make_shared< Collector >( *((context.pOutput)->mStatusTarget) );
+
+   // Do dialog construction just so that the hooks in the collector execute.
+   // The dialog is then destroyed and never shown.
    auto pWin = &GetProjectFrame( context.project );
-   GlobalPrefsDialog dialog( pWin, &context.project );
-   // wxCommandEvent Evt;
-   //dialog.Show();
-   ShuttleGuiGetDefinition S(pWin, *((context.pOutput)->mStatusTarget) );
-    dialog.ShuttleAll( S );
+   GlobalPrefsDialog dialog(
+      pWin, &context.project, PrefsPanel::DefaultFactories(), pCollector );
+
    context.EndArray();
    return true;
 }
