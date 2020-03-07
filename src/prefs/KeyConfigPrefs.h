@@ -42,6 +42,7 @@ public:
    void Cancel() override;
    ManualPageID HelpPageName() override;
    void PopulateOrExchange(ShuttleGui & S) override;
+   bool TransferDataToWindow() override;
 
 private:
    void Populate();
