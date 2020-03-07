@@ -952,8 +952,7 @@ void Scrubber::UpdatePrefs()
 
 void Scrubber::OnToggleScrubRuler(const CommandContext&)
 {
-   mShowScrubbing = !mShowScrubbing;
-   QuickPlayScrubbingEnabled.Write(mShowScrubbing);
+   mShowScrubbing = QuickPlayScrubbingEnabled.Toggle();
    gPrefs->Flush();
    const auto toolbar =
       ToolManager::Get( *mProject ).GetToolBar( ScrubbingBarID );

@@ -1196,7 +1196,8 @@ std::vector<UIHandlePtr> AdornedRulerPanel::ScrubbingCell::HitTest(
    return results;
 }
 
-namespace{
+namespace {
+
 AttachedWindows::RegisteredFactory sKey{
 []( AudacityProject &project ) -> wxWeakRef< wxWindow > {
    auto &viewInfo = ViewInfo::Get( project );
@@ -1209,6 +1210,7 @@ AttachedWindows::RegisteredFactory sKey{
       &viewInfo );
 }
 };
+
 }
 
 AdornedRulerPanel &AdornedRulerPanel::Get( AudacityProject &project )
@@ -1229,6 +1231,13 @@ void AdornedRulerPanel::Destroy( AudacityProject &project )
       pPanel->wxWindow::Destroy();
       GetAttachedWindows(project).Assign( sKey, nullptr );
    }
+}
+
+namespace{
+   BoolSetting QuickPlayDragSelection{
+      L"/QuickPlay/DragSelection",             false };
+   BoolSetting QuickPlayEnabled{
+      L"/QuickPlay/QuickPlayEnabled",          true };
 }
 
 AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
@@ -1270,7 +1279,7 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
    mIsRecording = false;
 
    mTimelineToolTip = QuickPlayToolTips.Read();
-   mPlayRegionDragsSelection = (gPrefs->Read(L"/QuickPlay/DragSelection", 0L) == 1)? true : false; 
+   mPlayRegionDragsSelection = QuickPlayDragSelection.Read();
 
 #if wxUSE_TOOLTIPS
    wxToolTip::Enable(true);
@@ -2262,8 +2271,7 @@ void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
 
 void AdornedRulerPanel::OnSyncSelToQuickPlay()
 {
-   mPlayRegionDragsSelection = (mPlayRegionDragsSelection)? false : true;
-   gPrefs->Write(L"/QuickPlay/DragSelection", mPlayRegionDragsSelection);
+   mPlayRegionDragsSelection = QuickPlayDragSelection.Toggle();
    gPrefs->Flush();
 }
 
@@ -2295,7 +2303,7 @@ void AdornedRulerPanel::HandleSnapping(size_t index)
 #if 0
 void AdornedRulerPanel::OnTimelineToolTips()
 {
-   mTimelineToolTips = QuickPlayToolTips.Toggle();
+   mTimelineToolTip = QuickPlayToolTips.Toggle();
    gPrefs->Flush();
 }
 #endif
