@@ -81,7 +81,6 @@ ThemePrefs::ThemePrefs(wxWindow * parent, wxWindowID winid)
  themes. */
 :  PrefsPanel(parent, winid, XO("Theme"))
 {
-   Populate();
 }
 
 ThemePrefs::~ThemePrefs(void)
@@ -101,20 +100,6 @@ TranslatableString ThemePrefs::GetDescription()
 ManualPageID ThemePrefs::HelpPageName()
 {
    return "Theme_Preferences";
-}
-
-/// Creates the dialog and its contents.
-void ThemePrefs::Populate()
-{
-   // First any pre-processing for constructing the GUI.
-
-   //------------------------- Main section --------------------
-   // Now construct the GUI itself.
-   // Use 'eIsCreatingFromPrefs' so that the GUI is
-   // initialised with values from gPrefs.
-   ShuttleGui S(this, eIsCreatingFromPrefs);
-   PopulateOrExchange(S);
-   // ----------------------- End of main section --------------
 }
 
 /// Create the dialog contents, or exchange data with it.

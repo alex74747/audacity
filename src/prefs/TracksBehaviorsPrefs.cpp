@@ -26,7 +26,6 @@ TracksBehaviorsPrefs::TracksBehaviorsPrefs(wxWindow * parent, wxWindowID winid)
 /* i18n-hint: i.e. the behaviors of tracks */
 :  PrefsPanel(parent, winid, XO("Tracks Behaviors"))
 {
-   Populate();
 }
 
 TracksBehaviorsPrefs::~TracksBehaviorsPrefs()
@@ -46,15 +45,6 @@ TranslatableString TracksBehaviorsPrefs::GetDescription()
 ManualPageID TracksBehaviorsPrefs::HelpPageName()
 {
    return "Tracks_Behaviors_Preferences";
-}
-
-void TracksBehaviorsPrefs::Populate()
-{
-   //------------------------- Main section --------------------
-   // Now construct the GUI itself.
-   ShuttleGui S(this, eIsCreatingFromPrefs);
-   PopulateOrExchange(S);
-   // ----------------------- End of main section --------------
 }
 
 ChoiceSetting TracksBehaviorsSolo{

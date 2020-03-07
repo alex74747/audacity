@@ -34,7 +34,6 @@ class AUDACITY_DLL_API TracksBehaviorsPrefs final : public PrefsPanel
    ManualPageID HelpPageName() override;
 
  private:
-   void Populate();
    void PopulateOrExchange(ShuttleGui & S) override;
 };
 

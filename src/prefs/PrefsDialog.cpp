@@ -489,6 +489,7 @@ PrefsDialog::PrefsDialog(
                   const auto panel = factory(mCategories, wxID_ANY, pProject);
                   ShuttleGui S2(
                      panel, eIsCreatingFromPrefs, true, { 250, 100 }, pVisitor );
+                  panel->PopulateOrExchange( S2 );
                   wxWindow *const w = panel;
                   if (stack.empty())
                      // Parameters are: AddPage(page, name, IsSelected, imageId).
@@ -518,6 +519,8 @@ PrefsDialog::PrefsDialog(
          const auto &node = factories[0];
          const auto &factory = node.factory;
          mUniquePage = factory(S.GetParent(), wxID_ANY, pProject);
+         ShuttleGui S2(mUniquePage, eIsCreatingFromPrefs);
+         mUniquePage->PopulateOrExchange( S2 );
          wxWindow * uniquePageWindow =
          S
             .Prop(1)
