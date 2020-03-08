@@ -68,6 +68,7 @@
 
 #include "../prefs/RecordingPrefs.h"
 #include "../tracks/ui/Scrubbing.h"
+#include "../prefs/RecordingPrefs.h"
 #include "../toolbars/ToolManager.h"
 
 IMPLEMENT_CLASS(ControlToolBar, ToolBar);
