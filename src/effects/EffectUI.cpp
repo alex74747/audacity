@@ -699,11 +699,7 @@ EVT_BUTTON(wxID_APPLY, EffectUIHost::OnApply)
 EVT_BUTTON(wxID_CANCEL, EffectUIHost::OnCancel)
 EVT_BUTTON(wxID_HELP, EffectUIHost::OnHelp)
 EVT_BUTTON(eDebugID, EffectUIHost::OnDebug)
-EVT_BUTTON(kMenuID, EffectUIHost::OnMenu)
 EVT_CHECKBOX(kEnableID, EffectUIHost::OnEnable)
-EVT_BUTTON(kPlayID, EffectUIHost::OnPlay)
-EVT_BUTTON(kRewindID, EffectUIHost::OnRewind)
-EVT_BUTTON(kFFwdID, EffectUIHost::OnFFwd)
 END_EVENT_TABLE()
 
 EffectUIHost::EffectUIHost(wxWindow *parent,
@@ -821,6 +817,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
          S
             .Id( kMenuID )
             .Text({ {}, {}, XO("Manage presets and options") })
+            .Action( [this]{ OnMenu(); } )
             .AddButton( XXO("&Manage"), wxALIGN_CENTER | wxTOP | wxBOTTOM );
       }
       else
@@ -829,6 +826,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
          S
             .Id( kMenuID )
             .Text({ XO("&Manage"), {}, XO("Manage presets and options") })
+            .Action( [this]{ OnMenu(); } )
             .AddBitmapButton( CreateBitmap(effect_menu_xpm, true, true) );
          mMenuBtn->SetBitmapPressed(CreateBitmap(effect_menu_xpm, false, true));
       }
@@ -845,6 +843,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kPlayID )
                   .Text({ {}, {}, XO("Start and stop playback") })
+                  .Action( [this]{ OnPlay(); } )
                   .AddButton( XXO("Start &Playback"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -856,6 +855,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kPlayID )
                   .Text({ {}, {}, XO("Preview effect") })
+                  .Action( [this]{ OnPlay(); } )
                   .AddButton( XXO("&Preview"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -870,6 +870,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
             mPlayBtn =
             S
                .Id( kPlayID )
+               .Action( [this]{ OnPlay(); } )
                .AddBitmapButton( mPlayBM );
 
             mPlayBtn->SetBitmapDisabled(mPlayDisabledBM);
@@ -893,6 +894,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kRewindID )
                   .Text({ {}, {}, XO("Skip backward") })
+                  .Action( [this]{ OnRewind(); } )
                   .AddButton( XXO("Skip &Backward"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -902,6 +904,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kRewindID )
                   .Text({ XO("Skip &Backward"), {}, XO("Skip backward") })
+                  .Action( [this]{ OnRewind(); } )
                   .AddBitmapButton( CreateBitmap(
                      effect_rewind_xpm, true, true) );
 
@@ -916,6 +919,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kFFwdID )
                   .Text({ {}, {}, XO("Skip forward") })
+                  .Action( [this]{ OnFFwd(); } )
                   .AddButton( XXO("Skip &Forward"),
                      wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -925,6 +929,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                S
                   .Id( kFFwdID )
                   .Text({ XO("Skip &Forward"), {}, XO("Skip forward") })
+                  .Action( [this]{ OnFFwd(); } )
                   .AddBitmapButton( CreateBitmap(
                      effect_ffwd_xpm, true, true) );
 
@@ -1193,7 +1198,7 @@ void EffectUIHost::OnDebug(wxCommandEvent & evt)
    OnApply(evt);
 }
 
-void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
+void EffectUIHost::OnMenu()
 {
    BasicMenu::Handle menu{ BasicMenu::FreshMenu };
 //   menu.GetWxMenu()->Bind(wxEVT_MENU, [](auto&){}, kUserPresetsDummyID);
@@ -1327,7 +1332,7 @@ void EffectUIHost::OnEnable(wxCommandEvent & WXUNUSED(evt))
    UpdateControls();
 }
 
-void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
+void EffectUIHost::OnPlay()
 {
    if (!mSupportsRealtime)
    {
@@ -1378,7 +1383,7 @@ void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void EffectUIHost::OnRewind(wxCommandEvent & WXUNUSED(evt))
+void EffectUIHost::OnRewind()
 {
    if (mPlaying)
    {
@@ -1399,7 +1404,7 @@ void EffectUIHost::OnRewind(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void EffectUIHost::OnFFwd(wxCommandEvent & WXUNUSED(evt))
+void EffectUIHost::OnFFwd()
 {
    if (mPlaying)
    {

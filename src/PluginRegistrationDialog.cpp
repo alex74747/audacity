@@ -351,10 +351,6 @@ enum
    ID_ShowDisabled,
    ID_ShowNew,
    ID_List,
-   ID_ClearAll,
-   ID_SelectAll,
-   ID_Enable,
-   ID_Disable,
 };
 
 enum
@@ -370,10 +366,6 @@ BEGIN_EVENT_TABLE(PluginRegistrationDialog, wxDialogWrapper)
    EVT_LIST_COL_CLICK(ID_List, PluginRegistrationDialog::OnSort)
    EVT_BUTTON(wxID_OK, PluginRegistrationDialog::OnOK)
    EVT_BUTTON(wxID_CANCEL, PluginRegistrationDialog::OnCancel)
-   EVT_BUTTON(ID_ClearAll, PluginRegistrationDialog::OnClearAll)
-   EVT_BUTTON(ID_SelectAll, PluginRegistrationDialog::OnSelectAll)
-   EVT_BUTTON(ID_Enable, PluginRegistrationDialog::OnEnable)
-   EVT_BUTTON(ID_Disable, PluginRegistrationDialog::OnDisable)
    EVT_RADIOBUTTON(ID_ShowAll, PluginRegistrationDialog::OnChangedVisibility)
    EVT_RADIOBUTTON(ID_ShowEnabled, PluginRegistrationDialog::OnChangedVisibility)
    EVT_RADIOBUTTON(ID_ShowDisabled, PluginRegistrationDialog::OnChangedVisibility)
@@ -516,11 +508,11 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
          S.StartHorizontalLay(wxALIGN_LEFT | wxEXPAND, 0);
          {
             S
-               .Id(ID_SelectAll)
+               .Action([this]{ OnSelectAll(); })
                .AddButton(XXO("&Select All"));
 
             S
-               .Id(ID_ClearAll)
+               .Action([this]{ OnClearAll(); })
                .AddButton(XXO("C&lear All"));
 
             S.StartHorizontalLay(wxALIGN_CENTER);
@@ -530,11 +522,11 @@ void PluginRegistrationDialog::PopulateOrExchange(ShuttleGui &S)
             S.EndHorizontalLay();
 
             S
-               .Id(ID_Enable)
+               .Action([this]{ OnEnable(); })
                .AddButton(XXO("&Enable"));
 
             S
-               .Id(ID_Disable)
+               .Action([this]{ OnDisable(); })
                .AddButton(XXO("&Disable"));
          }
          S.EndHorizontalLay();
@@ -844,7 +836,7 @@ void PluginRegistrationDialog::OnListChar(wxKeyEvent & evt)
    }
 }
 
-void PluginRegistrationDialog::OnSelectAll(wxCommandEvent & WXUNUSED(evt))
+void PluginRegistrationDialog::OnSelectAll()
 {
    for (int i = 0, cnt = mEffects->GetItemCount(); i < cnt; i++)
    {
@@ -852,7 +844,7 @@ void PluginRegistrationDialog::OnSelectAll(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void PluginRegistrationDialog::OnClearAll(wxCommandEvent & WXUNUSED(evt))
+void PluginRegistrationDialog::OnClearAll()
 {
    for (int i = 0, cnt = mEffects->GetItemCount(); i < cnt; i++)
    {
@@ -860,7 +852,7 @@ void PluginRegistrationDialog::OnClearAll(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void PluginRegistrationDialog::OnEnable(wxCommandEvent & WXUNUSED(evt))
+void PluginRegistrationDialog::OnEnable()
 {
    std::vector<long> items;
 
@@ -879,7 +871,7 @@ void PluginRegistrationDialog::OnEnable(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void PluginRegistrationDialog::OnDisable(wxCommandEvent & WXUNUSED(evt))
+void PluginRegistrationDialog::OnDisable()
 {
    std::vector<long> items;
 

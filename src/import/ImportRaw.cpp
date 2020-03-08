@@ -63,7 +63,6 @@ class ImportRawDialog final : public wxDialogWrapper {
 
    void OnOK(wxCommandEvent & event);
    void OnCancel(wxCommandEvent & event);
-   void OnPlay(wxCommandEvent & event);
    void OnDetect(wxCommandEvent & event);
    void OnChoice(wxCommandEvent & event);
 
@@ -288,14 +287,12 @@ static int getEndianChoice(int sfFormat) {
 
 enum {
    ChoiceID = 9000,
-   PlayID,
    DetectID,
 };
 
 BEGIN_EVENT_TABLE(ImportRawDialog, wxDialogWrapper)
    EVT_BUTTON(wxID_OK, ImportRawDialog::OnOK)
    EVT_BUTTON(wxID_CANCEL, ImportRawDialog::OnCancel)
-   EVT_BUTTON(PlayID, ImportRawDialog::OnPlay)
    EVT_BUTTON(DetectID, ImportRawDialog::OnDetect)
    EVT_CHOICE(ChoiceID, ImportRawDialog::OnChoice)
 END_EVENT_TABLE()
@@ -498,10 +495,6 @@ void ImportRawDialog::OnOK(wxCommandEvent & WXUNUSED(event))
 void ImportRawDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
 {
    EndModal(false);
-}
-
-void ImportRawDialog::OnPlay(wxCommandEvent & WXUNUSED(event))
-{
 }
 
 void ImportRawDialog::OnDetect(wxCommandEvent & event)

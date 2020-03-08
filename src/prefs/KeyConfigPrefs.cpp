@@ -56,13 +56,8 @@ KeyConfigPrefs and MousePrefs use.
 //
 // KeyConfigPrefs
 //
-#define AssignDefaultsButtonID  17001
 #define CurrentComboID          17002
-#define SetButtonID             17003
-#define ClearButtonID           17004
 #define CommandsListID          17005
-#define ExportButtonID          17006
-#define ImportButtonID          17007
 #define FilterID                17008
 #define ViewByTreeID            17009
 #define ViewByNameID            17010
@@ -75,11 +70,6 @@ static NormalizedKeyString EMPTY_SHORTCUT;
 static NormalizedKeyString NO_SHORTCUT{ wxString{ (wxChar)7 } };
 
 BEGIN_EVENT_TABLE(KeyConfigPrefs, PrefsPanel)
-   EVT_BUTTON(AssignDefaultsButtonID, KeyConfigPrefs::OnDefaults)
-   EVT_BUTTON(SetButtonID, KeyConfigPrefs::OnSet)
-   EVT_BUTTON(ClearButtonID, KeyConfigPrefs::OnClear)
-   EVT_BUTTON(ExportButtonID, KeyConfigPrefs::OnExport)
-   EVT_BUTTON(ImportButtonID, KeyConfigPrefs::OnImport)
    EVT_LISTBOX(CommandsListID, KeyConfigPrefs::OnSelected)
    EVT_RADIOBUTTON(ViewByTreeID, KeyConfigPrefs::OnViewBy)
    EVT_RADIOBUTTON(ViewByNameID, KeyConfigPrefs::OnViewBy)
@@ -322,13 +312,13 @@ void KeyConfigPrefs::PopulateOrExchange(ShuttleGui & S)
 
          mSet =
          S
-            .Id(SetButtonID)
+            .Action( [this]{ OnSet(); } )
             /* i18n-hint: (verb)*/
             .AddButton(XXO("&Set"));
 
          mClear =
          S
-            .Id(ClearButtonID)
+            .Action( [this]{ OnClear(); } )
             /* i18n-hint: (verb)*/
             .AddButton(XXO("Cl&ear"));
       }
@@ -342,15 +332,15 @@ void KeyConfigPrefs::PopulateOrExchange(ShuttleGui & S)
       S.StartThreeColumn();
       {
          S
-            .Id(ImportButtonID)
+            .Action( [this]{ OnImport(); } )
             .AddButton(XXO("&Import..."));
 
          S
-            .Id(ExportButtonID)
+            .Action( [this]{ OnExport(); } )
             .AddButton(XXO("&Export..."));
 
          S
-            .Id(AssignDefaultsButtonID)
+            .Action( [this]{ OnDefaults(); } )
             .AddButton(XXO("&Defaults"));
       }
       S.EndThreeColumn();
@@ -527,7 +517,7 @@ void KeyConfigPrefs::OnShow(wxShowEvent & event)
    }
 }
 
-void KeyConfigPrefs::OnImport(wxCommandEvent & WXUNUSED(event))
+void KeyConfigPrefs::OnImport()
 {
    wxString file = L"Audacity-keys.xml";
 
@@ -606,7 +596,7 @@ void KeyConfigPrefs::OnImport(wxCommandEvent & WXUNUSED(event))
    AudacityMessageBox(message, XO("Loading Keyboard Shortcuts"), wxOK | wxCENTRE);
 }
 
-void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
+void KeyConfigPrefs::OnExport()
 {
    wxString file = L"Audacity-keys.xml";
 
@@ -634,7 +624,7 @@ void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
 
 // There currently is only one clickable AButton
 // so we just do what it needs.
-void KeyConfigPrefs::OnDefaults(wxCommandEvent & WXUNUSED(event))
+void KeyConfigPrefs::OnDefaults()
 {
    BasicMenu::Handle menu( BasicMenu::FreshMenu );
    menu.Append( XXO("Standard"), [this]{ OnImportDefaults(1); } );
@@ -800,7 +790,7 @@ void KeyConfigPrefs::SetKeyForSelected(const NormalizedKeyString & key)
 }
 
 
-void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
+void KeyConfigPrefs::OnSet()
 {
    if (mCommandSelected == wxNOT_FOUND) {
       AudacityMessageBox(
@@ -877,7 +867,7 @@ void KeyConfigPrefs::OnSet(wxCommandEvent & WXUNUSED(event))
    SetKeyForSelected(enteredKey);
 }
 
-void KeyConfigPrefs::OnClear(wxCommandEvent& WXUNUSED(event))
+void KeyConfigPrefs::OnClear()
 {
    mKey->Clear();
 

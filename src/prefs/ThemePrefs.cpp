@@ -40,24 +40,6 @@ Provides:
 
 wxDEFINE_EVENT(EVT_THEME_CHANGE, wxCommandEvent);
 
-enum eThemePrefsIds {
-   idLoadThemeCache=7000,
-   idSaveThemeCache,
-   idLoadThemeComponents,
-   idSaveThemeComponents,
-   idReadThemeInternal,
-   idSaveThemeAsCode
-};
-
-BEGIN_EVENT_TABLE(ThemePrefs, PrefsPanel)
-   EVT_BUTTON(idLoadThemeCache,      ThemePrefs::OnLoadThemeCache)
-   EVT_BUTTON(idSaveThemeCache,      ThemePrefs::OnSaveThemeCache)
-   EVT_BUTTON(idLoadThemeComponents, ThemePrefs::OnLoadThemeComponents)
-   EVT_BUTTON(idSaveThemeComponents, ThemePrefs::OnSaveThemeComponents)
-   EVT_BUTTON(idReadThemeInternal,   ThemePrefs::OnReadThemeInternal)
-   EVT_BUTTON(idSaveThemeAsCode,     ThemePrefs::OnSaveThemeAsCode)
-END_EVENT_TABLE()
-
 static bool ConfirmSave()
 {
    if (!GUIBlendThemes.Read())
@@ -136,11 +118,11 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
       S.StartHorizontalLay(wxALIGN_LEFT);
       {
          S
-            .Id(idSaveThemeCache)
+            .Action( [this]{ OnSaveThemeCache(); } )
             .AddButton(XXO("Save Theme Cache"));
 
          S
-            .Id(idLoadThemeCache)
+            .Action( [this]{ OnLoadThemeCache(); } )
             .AddButton(XXO("Load Theme Cache"));
 
          // This next button is only provided in Debug mode.
@@ -148,12 +130,12 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
          // and who wish to generate NEW *ThemeAsCeeCode.h and compile them in.
 #ifdef _DEBUG
          S
-            .Id(idSaveThemeAsCode)
+            .Action( [this]{ OnSaveThemeAsCode(); } )
             .AddButton( VerbatimLabel("Output Sourcery") );
 #endif
 
          S
-            .Id(idReadThemeInternal)
+            .Action( [this]{ OnReadThemeInternal(); } )
             .AddButton(XXO("&Defaults"));
       }
       S.EndHorizontalLay();
@@ -173,11 +155,11 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
       S.StartHorizontalLay(wxALIGN_LEFT);
       {
          S
-            .Id(idSaveThemeComponents)
+            .Action( [this]{ OnSaveThemeComponents(); } )
             .AddButton( XXO("Save Files"));
 
          S
-            .Id(idLoadThemeComponents)
+            .Action( [this]{ OnLoadThemeComponents(); } )
             .AddButton( XXO("Load Files"));
       }
       S.EndHorizontalLay();
@@ -188,7 +170,7 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
 }
 
 /// Load Theme from multiple png files.
-void ThemePrefs::OnLoadThemeComponents(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnLoadThemeComponents()
 {
    wxBusyCursor busy;
    theTheme.LoadThemeComponents();
@@ -196,7 +178,7 @@ void ThemePrefs::OnLoadThemeComponents(wxCommandEvent & WXUNUSED(event))
 }
 
 /// Save Theme to multiple png files.
-void ThemePrefs::OnSaveThemeComponents(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnSaveThemeComponents()
 {
    if (!ConfirmSave())
       return;
@@ -205,7 +187,7 @@ void ThemePrefs::OnSaveThemeComponents(wxCommandEvent & WXUNUSED(event))
 }
 
 /// Load Theme from single png file.
-void ThemePrefs::OnLoadThemeCache(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnLoadThemeCache()
 {
    wxBusyCursor busy;
    theTheme.SwitchTheme({});
@@ -213,7 +195,7 @@ void ThemePrefs::OnLoadThemeCache(wxCommandEvent & WXUNUSED(event))
 }
 
 /// Save Themes, each to a single png file.
-void ThemePrefs::OnSaveThemeCache(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnSaveThemeCache()
 {
    if (!ConfirmSave())
       return;
@@ -223,7 +205,7 @@ void ThemePrefs::OnSaveThemeCache(wxCommandEvent & WXUNUSED(event))
 }
 
 /// Read Theme from internal storage.
-void ThemePrefs::OnReadThemeInternal(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnReadThemeInternal()
 {
    wxBusyCursor busy;
    theTheme.SwitchTheme( theTheme.GetFallbackThemeType() );
@@ -231,7 +213,7 @@ void ThemePrefs::OnReadThemeInternal(wxCommandEvent & WXUNUSED(event))
 }
 
 /// Save Theme as C source code.
-void ThemePrefs::OnSaveThemeAsCode(wxCommandEvent & WXUNUSED(event))
+void ThemePrefs::OnSaveThemeAsCode()
 {
    if (!ConfirmSave())
       return;

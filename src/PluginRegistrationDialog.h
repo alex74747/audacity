@@ -56,10 +56,10 @@ private:
    void OnListChar(wxKeyEvent & evt);
    void OnOK(wxCommandEvent & evt);
    void OnCancel(wxCommandEvent & evt);
-   void OnSelectAll(wxCommandEvent & evt);
-   void OnClearAll(wxCommandEvent & evt);
-   void OnEnable(wxCommandEvent & evt);
-   void OnDisable(wxCommandEvent & evt);
+   void OnSelectAll();
+   void OnClearAll();
+   void OnEnable();
+   void OnDisable();
 
 private:
    EffectType mType;

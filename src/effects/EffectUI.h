@@ -150,11 +150,11 @@ private:
    void OnCancel(wxCommandEvent & evt);
    void OnHelp(wxCommandEvent & evt);
    void OnDebug(wxCommandEvent & evt);
-   void OnMenu(wxCommandEvent & evt);
+   void OnMenu();
    void OnEnable(wxCommandEvent & evt);
-   void OnPlay(wxCommandEvent & evt);
-   void OnRewind(wxCommandEvent & evt);
-   void OnFFwd(wxCommandEvent & evt);
+   void OnPlay();
+   void OnRewind();
+   void OnFFwd();
    void OnPlayback(AudioIOEvent);
    void OnCapture(AudioIOEvent);
    void OnUserPreset(size_t preset);

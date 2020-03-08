@@ -112,7 +112,6 @@ wxEND_EVENT_TABLE()
 enum
 {
    TempTextID = 1000,
-   TempButtonID,
 
    TextsStart = 1010,
    OpenTextID,
@@ -121,20 +120,19 @@ enum
    ExportTextID,
    MacrosTextID,
    TextsEnd,
+};
 
-   ButtonsStart = 1020,
-   OpenButtonID,
-   SaveButtonID,
-   ImportButtonID,
-   ExportButtonID,
-   MacrosButtonID,
-   ButtonsEnd
+// Values identify button-text control pairs
+enum {
+   OpenCommand,
+   SaveCommand,
+   ImportCommand,
+   ExportCommand,
+   MacrosCommand,
 };
 
 BEGIN_EVENT_TABLE(DirectoriesPrefs, PrefsPanel)
    EVT_TEXT(TempTextID, DirectoriesPrefs::OnTempText)
-   EVT_BUTTON(TempButtonID, DirectoriesPrefs::OnTempBrowse)
-   EVT_COMMAND_RANGE(ButtonsStart, ButtonsEnd, wxEVT_BUTTON, DirectoriesPrefs::OnBrowse)
 END_EVENT_TABLE()
 
 DirectoriesPrefs::DirectoriesPrefs(wxWindow * parent, wxWindowID winid)
@@ -193,7 +191,9 @@ void DirectoriesPrefs::PopulateOrExchange(ShuttleGui &S)
                                       {PreferenceKey(Operation::Open, PathType::User),
                                        L""},
                                       30);
-         S.Id(OpenButtonID).AddButton(XXO("&Browse..."));
+         S
+            .Action([this]{ OnBrowse(OpenCommand); })
+            .AddButton(XXO("&Browse..."));
 
          S.Id(SaveTextID);
          mSaveText = S.TieTextBox(XXO("S&ave:"),
@@ -202,30 +202,37 @@ void DirectoriesPrefs::PopulateOrExchange(ShuttleGui &S)
                                       30);
          if( mSaveText )
             mSaveText->SetValidator(FilesystemValidator(XO("Projects cannot be saved to FAT drives.")));
-         S.Id(SaveButtonID).AddButton(XXO("B&rowse..."));
+
+         S
+            .Action([this]{ OnBrowse(SaveCommand); })
+            .AddButton(XXO("B&rowse..."));
 
          S.Id(ImportTextID);
          mImportText = S.TieTextBox(XXO("&Import:"),
                                     {PreferenceKey(Operation::Import, PathType::User),
                                      L""},
                                     30);
-         S.Id(ImportButtonID).AddButton(XXO("Br&owse..."));
+         S
+            .Action([this]{ OnBrowse(ImportCommand); })
+            .AddButton(XXO("Br&owse..."));
 
          S.Id(ExportTextID);
          mExportText = S.TieTextBox(XXO("&Export:"),
                                     {PreferenceKey(Operation::Export, PathType::User),
                                      L""},
                                     30);
-         S.Id(ExportButtonID).AddButton(XXO("Bro&wse..."));
+         S
+            .Action([this]{ OnBrowse(ExportCommand); })
+            .AddButton(XXO("Bro&wse..."));
 
          S.Id(MacrosTextID);
          mMacrosText = S.TieTextBox(XXO("&Macro output:"),
                                     {PreferenceKey(Operation::MacrosOut, PathType::User),
                                      L""},
                                     30);
-         S.Id(MacrosButtonID).AddButton(XXO("Bro&wse..."));
-
-
+         S
+            .Action([this]{ OnBrowse(MacrosCommand); })
+            .AddButton(XXO("Bro&wse..."));
       }
       S.EndMultiColumn();
    }
@@ -244,7 +251,9 @@ void DirectoriesPrefs::PopulateOrExchange(ShuttleGui &S)
                                   30);
          if( mTempText )
             mTempText->SetValidator(FilesystemValidator(XO("Temporary files directory cannot be on a FAT drive.")));
-         S.Id(TempButtonID).AddButton(XXO("Brow&se..."));
+         S
+            .Action([this]{ OnTempBrowse(); })
+            .AddButton(XXO("Brow&se..."));
 
          mFreeSpace = S
             .AddReadOnlyText(XXO("&Free Space:"), "");
@@ -256,7 +265,7 @@ void DirectoriesPrefs::PopulateOrExchange(ShuttleGui &S)
    S.EndScroller();
 }
 
-void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
+void DirectoriesPrefs::OnTempBrowse()
 {
    wxString oldTemp = gPrefs->Read(PreferenceKey(Operation::Open, PathType::_None),
                                    DefaultTempDir());
@@ -317,6 +326,7 @@ void DirectoriesPrefs::OnTempBrowse(wxCommandEvent &evt)
       }
 
       mTempText->SetValue(tmpDirPath.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR));
+      wxCommandEvent evt;
       OnTempText(evt);
    }
 }
@@ -340,10 +350,9 @@ void DirectoriesPrefs::OnTempText(wxCommandEvent & WXUNUSED(evt))
    }
 }
 
-void DirectoriesPrefs::OnBrowse(wxCommandEvent &evt)
+void DirectoriesPrefs::OnBrowse(int button)
 {
-   long id = evt.GetId() - ButtonsStart;
-   wxTextCtrl *tc = (wxTextCtrl *) FindWindow(id + TextsStart);
+   wxTextCtrl *tc = (wxTextCtrl *) FindWindow(button + TextsStart);
 
    wxString location = tc->GetValue();
 
@@ -357,7 +366,7 @@ void DirectoriesPrefs::OnBrowse(wxCommandEvent &evt)
       return;
    }
 
-   if (evt.GetId() == SaveButtonID)
+   if (button == SaveCommand)
    {
       if (FATFilesystemDenied(dlog.GetPath(),
                               XO("Projects cannot be saved to FAT drives.")))

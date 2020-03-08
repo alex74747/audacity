@@ -178,27 +178,11 @@ labelmap[] =
 #define STATICCNT WXSIZEOF(labelmap)
 
 enum {
-   ClearID = 10000,
-   EditID,
-   ResetID,
-   LoadID,
-   SaveID,
-   SaveDefaultsID,
-   AddID,
-   RemoveID,
-   DontShowID
+   DontShowID = 10000
 };
 
 BEGIN_EVENT_TABLE(TagsEditorDialog, wxDialogWrapper)
    EVT_GRID_CELL_CHANGED(TagsEditorDialog::OnChange)
-   EVT_BUTTON(EditID, TagsEditorDialog::OnEdit)
-   EVT_BUTTON(ResetID, TagsEditorDialog::OnReset)
-   EVT_BUTTON(ClearID, TagsEditorDialog::OnClear)
-   EVT_BUTTON(LoadID, TagsEditorDialog::OnLoad)
-   EVT_BUTTON(SaveID, TagsEditorDialog::OnSave)
-   EVT_BUTTON(SaveDefaultsID, TagsEditorDialog::OnSaveDefaults)
-   EVT_BUTTON(AddID, TagsEditorDialog::OnAdd)
-   EVT_BUTTON(RemoveID, TagsEditorDialog::OnRemove)
    EVT_BUTTON(wxID_HELP, TagsEditorDialog::OnHelp)
    EVT_BUTTON(wxID_CANCEL, TagsEditorDialog::OnCancel)
    EVT_BUTTON(wxID_OK, TagsEditorDialog::OnOk)
@@ -330,18 +314,18 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(4, wxALIGN_CENTER);
       {
          S
-            .Id(AddID)
+            .Action( [this]{ OnAdd(); } )
             .AddButton(XXO("&Add"));
 
          S
-            .Id(RemoveID)
+            .Action( [this]{ OnRemove(); } )
             .AddButton(XXO("&Remove"));
 
          S
             .AddTitle( {} );
 
          S
-            .Id(ClearID)
+            .Action( [this]{ OnClear(); } )
             .AddButton(XXO("Cl&ear"));
       }
       S.EndMultiColumn();
@@ -353,11 +337,11 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
             S.StartMultiColumn(4, wxALIGN_CENTER);
             {
                S
-                  .Id(EditID)
+                  .Action( [this]{ OnEdit(); } )
                   .AddButton(XXO("E&dit..."));
 
                S
-                  .Id(ResetID)
+                  .Action( [this]{ OnReset(); } )
                   .AddButton(XXO("Rese&t..."));
             }
             S.EndMultiColumn();
@@ -370,18 +354,15 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
             S.StartMultiColumn(4, wxALIGN_CENTER);
             {
                S
-                  .Id(LoadID)
+                  .Action( [this]{ OnLoad(); } )
                   .AddButton(XXO("&Load..."));
 
                S
-                  .Id(SaveID)
+                  .Action( [this]{ OnSave(); } )
                   .AddButton(XXO("&Save..."));
 
                S
-                  .AddTitle( {} );
-
-               S
-                  .Id(SaveDefaultsID)
+                  .Action( [this]{ OnSaveDefaults(); } )
                   .AddButton(XXO("Set De&fault"));
             }
             S.EndMultiColumn();
@@ -569,7 +550,7 @@ void TagsEditorDialog::OnChange(wxGridEvent & event)
    return;
 }
 
-void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnEdit()
 {
    if (mGrid->IsCellEditControlShown()) {
       mGrid->SaveEditControlValue();
@@ -625,7 +606,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
    PopulateGenres();
 }
 
-void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnReset()
 {
    int id = AudacityMessageBox(
       XO("Are you sure you want to reset the genre list to defaults?"),
@@ -670,14 +651,14 @@ void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
    PopulateGenres();
 }
 
-void TagsEditorDialog::OnClear(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnClear()
 {
    mLocal.Clear();
 
    TransferDataToWindow();
 }
 
-void TagsEditorDialog::OnLoad(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnLoad()
 {
    wxString fn;
 
@@ -732,7 +713,7 @@ void TagsEditorDialog::OnLoad(wxCommandEvent & WXUNUSED(event))
    return;
 }
 
-void TagsEditorDialog::OnSave(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnSave()
 {
    wxString fn;
 
@@ -791,7 +772,7 @@ void TagsEditorDialog::OnSave(wxCommandEvent & WXUNUSED(event))
    } );
 }
 
-void TagsEditorDialog::OnSaveDefaults(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnSaveDefaults()
 {
    // Refresh tags
    TransferDataFromWindow();
@@ -832,12 +813,12 @@ void TagsEditorDialog::OnSaveDefaults(wxCommandEvent & WXUNUSED(event))
    }
 }
 
-void TagsEditorDialog::OnAdd(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnAdd()
 {
    mGrid->AppendRows();
 }
 
-void TagsEditorDialog::OnRemove(wxCommandEvent & WXUNUSED(event))
+void TagsEditorDialog::OnRemove()
 {
    size_t row = mGrid->GetGridCursorRow();
 
@@ -977,4 +958,3 @@ bool TagsEditorDialog::IsWindowRectValid(const wxRect *windowRect) const
 
    return true;
 }
-

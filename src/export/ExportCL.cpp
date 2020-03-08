@@ -63,20 +63,12 @@ public:
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 
-   void OnBrowse(wxCommandEvent & event);
+   void OnBrowse();
 
 private:
    wxComboBox *mCmd;
    FileHistory mHistory;
-
-   DECLARE_EVENT_TABLE()
 };
-
-#define ID_BROWSE 5000
-
-BEGIN_EVENT_TABLE(ExportCLOptions, wxPanelWrapper)
-   EVT_BUTTON(ID_BROWSE, ExportCLOptions::OnBrowse)
-END_EVENT_TABLE()
 
 ///
 ///
@@ -136,8 +128,9 @@ void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
                               cmds);
 
             S
-               .Id(ID_BROWSE)
-               .AddButton(XXO("Browse..."), wxALIGN_CENTER_VERTICAL);
+               .Action( [this]{ OnBrowse(); } )
+               .AddButton(XXO("Browse..."),
+                                      wxALIGN_CENTER_VERTICAL);
 
             S.AddFixedText( {} );
 
@@ -188,7 +181,7 @@ bool ExportCLOptions::TransferDataFromWindow()
 
 ///
 ///
-void ExportCLOptions::OnBrowse(wxCommandEvent& WXUNUSED(event))
+void ExportCLOptions::OnBrowse()
 {
    wxString path;
    FileExtension ext;

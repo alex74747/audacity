@@ -621,9 +621,6 @@ void ExportMP3Options::OnMono(wxCommandEvent& /*evt*/)
 // FindDialog
 //----------------------------------------------------------------------------
 
-#define ID_BROWSE 5000
-#define ID_DLOAD  5001
-
 class FindDialog final : public wxDialogWrapper
 {
 public:
@@ -682,7 +679,7 @@ public:
             }
 
             S
-               .Id(ID_BROWSE)
+               .Action( [this]{ OnBrowse(); } )
                .AddButton(XXO("Browse..."), wxALIGN_RIGHT);
 
             S
@@ -691,8 +688,8 @@ public:
                   XO("To get a free copy of LAME, click here -->"), true);
 
             S
-               .Id(ID_DLOAD)
                /* i18n-hint: (verb)*/
+               .Action( [this]{ OnDownload(); } )
                .AddButton(XXO("Download"), wxALIGN_RIGHT);
          }
          S.EndMultiColumn();
@@ -710,7 +707,7 @@ public:
       return;
    }
 
-   void OnBrowse(wxCommandEvent & WXUNUSED(event))
+   void OnBrowse()
    {
       /* i18n-hint: It's asking for the location of a file, for
        * example, "Where is lame_enc.dll?" - you could translate
@@ -731,7 +728,7 @@ public:
       }
    }
 
-   void OnDownload(wxCommandEvent & WXUNUSED(event))
+   void OnDownload()
    {
       HelpSystem::ShowHelp(this, L"FAQ:Installing_the_LAME_MP3_Encoder");
    }
@@ -754,16 +751,7 @@ private:
 #endif // DISABLE_DYNAMIC_LOADING_LAME
 
    wxTextCtrl *mPathText;
-
-   DECLARE_EVENT_TABLE()
 };
-
-#ifndef DISABLE_DYNAMIC_LOADING_LAME
-BEGIN_EVENT_TABLE(FindDialog, wxDialogWrapper)
-   EVT_BUTTON(ID_BROWSE, FindDialog::OnBrowse)
-   EVT_BUTTON(ID_DLOAD,  FindDialog::OnDownload)
-END_EVENT_TABLE()
-#endif // DISABLE_DYNAMIC_LOADING_LAME
 
 //----------------------------------------------------------------------------
 // MP3Exporter

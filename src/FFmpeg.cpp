@@ -105,9 +105,6 @@ class FFmpegNotFoundDialog;
 // FindFFmpegDialog
 //----------------------------------------------------------------------------
 
-#define ID_FFMPEG_BROWSE 5000
-#define ID_FFMPEG_DLOAD  5001
-
 /// Allows user to locate libav* libraries
 class FindFFmpegDialog final : public wxDialogWrapper
 {
@@ -160,10 +157,15 @@ public:
                mPathText = S.AddTextBox({}, mFullPath.GetFullPath(), 0);
             }
 
-            S.Id(ID_FFMPEG_BROWSE).AddButton(XXO("Browse..."), wxALIGN_RIGHT);
-            S.AddVariableText(
-               XO("To get a free copy of FFmpeg, click here -->"), true);
-            S.Id(ID_FFMPEG_DLOAD).AddButton(XXO("Download"), wxALIGN_RIGHT);
+            S
+               .Action( [this]{ OnBrowse(); } )
+               .AddButton(XXO("Browse..."), wxALIGN_RIGHT);
+            S
+               .AddVariableText(
+                  XO("To get a free copy of FFmpeg, click here -->"), true);
+            S
+               .Action( [this]{ OnDownload(); } )
+               .AddButton(XXO("Download"), wxALIGN_RIGHT);
          }
          S.EndMultiColumn();
 
@@ -180,7 +182,7 @@ public:
       return;
    }
 
-   void OnBrowse(wxCommandEvent & WXUNUSED(event))
+   void OnBrowse()
    {
       static const FileNames::FileTypes types = {
 #   if defined(__WXMSW__)
@@ -218,7 +220,7 @@ public:
       }
    }
 
-   void OnDownload(wxCommandEvent & WXUNUSED(event))
+   void OnDownload()
    {
       HelpSystem::ShowHelp(this, L"FAQ:Installing_the_FFmpeg_Import_Export_Library");
    }
@@ -244,14 +246,7 @@ private:
    wxFileName mFullPath;
 
    wxTextCtrl *mPathText;
-
-   DECLARE_EVENT_TABLE()
 };
-
-BEGIN_EVENT_TABLE(FindFFmpegDialog, wxDialogWrapper)
-   EVT_BUTTON(ID_FFMPEG_BROWSE, FindFFmpegDialog::OnBrowse)
-   EVT_BUTTON(ID_FFMPEG_DLOAD,  FindFFmpegDialog::OnDownload)
-END_EVENT_TABLE()
 
 
 //----------------------------------------------------------------------------

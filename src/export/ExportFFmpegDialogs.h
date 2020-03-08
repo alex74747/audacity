@@ -182,13 +182,11 @@ public:
    bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 
-   void OnOpen(wxCommandEvent & evt);
+   void OnOpen();
 
 private:
    wxTextCtrl *mFormat;
    wxTextCtrl *mCodec;
-
-   DECLARE_EVENT_TABLE()
 };
 
 /// Entry for the Applicability table
@@ -216,13 +214,13 @@ public:
    void DoOnFormatList();
    void OnCodecList(wxCommandEvent& event);
    void DoOnCodecList();
-   void OnAllFormats(wxCommandEvent& event);
-   void OnAllCodecs(wxCommandEvent& event);
-   void OnSavePreset(wxCommandEvent& event);
-   void OnLoadPreset(wxCommandEvent& event);
-   void OnDeletePreset(wxCommandEvent& event);
-   void OnImportPresets(wxCommandEvent& event);
-   void OnExportPresets(wxCommandEvent& event);
+   void OnAllFormats();
+   void OnAllCodecs();
+   void OnSavePreset();
+   void OnLoadPreset();
+   void OnDeletePreset();
+   void OnImportPresets();
+   void OnExportPresets();
    bool SavePreset( bool bCheckForOverwrite);
 
 

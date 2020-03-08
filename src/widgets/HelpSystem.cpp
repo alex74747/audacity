@@ -157,7 +157,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
 
    // Bug 1412 workaround for 'extra window'.  Hide the 'fake' window.
    pFrame->SetTransparent(0);
-   ShuttleGui S( pWnd, eIsCreating );
+   ShuttleGui S{ pWnd, eIsCreating };
 
    S
       .Style( wxNO_BORDER | wxTAB_TRAVERSAL )
@@ -173,6 +173,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
             .Text({ {}, {}, XO("Backwards" ) })
 #endif
             /* i18n-hint arrowhead meaning backward movement */
+            .Action( [pWnd]{ pWnd->OnForward(); } )
             .AddButton( XXO("<") );
 
          S
@@ -182,6 +183,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
             .Text({ {}, {}, XO("Forwards" ) })
 #endif
             /* i18n-hint arrowhead meaning forward movement */
+            .Action( [pWnd]{ pWnd->OnBackward(); } )
             .AddButton( XXO(">") );
       }
       S.EndHorizontalLay();
@@ -205,6 +207,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
 
       S
          .Id( wxID_CANCEL )
+         .Action( [pWnd]{ pWnd->OnClose(); } )
          .AddButton( XXO("Close"), wxALIGN_CENTER, true );
    }
    S.EndPanel();
@@ -437,9 +440,6 @@ void HelpSystem::ShowHelp(wxWindow *parent,
 #include <wx/uri.h>
 
 BEGIN_EVENT_TABLE(BrowserDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_FORWARD,  BrowserDialog::OnForward)
-   EVT_BUTTON(wxID_BACKWARD, BrowserDialog::OnBackward)
-   EVT_BUTTON(wxID_CANCEL,   BrowserDialog::OnClose)
    EVT_KEY_DOWN(BrowserDialog::OnKeyDown)
 END_EVENT_TABLE()
 
@@ -463,19 +463,19 @@ BrowserDialog::BrowserDialog(wxWindow *pParent, const TranslatableString &title)
    SetSize(wxDefaultPosition.x, wxDefaultPosition.y, width, height, wxSIZE_AUTO);
 }
 
-void BrowserDialog::OnForward(wxCommandEvent & WXUNUSED(event))
+void BrowserDialog::OnForward()
 {
    mpHtml->HistoryForward();
    UpdateButtons();
 }
 
-void BrowserDialog::OnBackward(wxCommandEvent & WXUNUSED(event))
+void BrowserDialog::OnBackward()
 {
    mpHtml->HistoryBack();
    UpdateButtons();
 }
 
-void BrowserDialog::OnClose(wxCommandEvent & WXUNUSED(event))
+void BrowserDialog::OnClose()
 {
    if (IsModal() && !mDismissed)
    {
