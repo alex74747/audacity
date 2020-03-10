@@ -124,6 +124,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 
 #include "effects/RealtimeEffectManager.h"
 #include "QualitySettings.h"
+#include "prefs/RecordingSettings.h"
 #include "widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
 
@@ -2105,7 +2106,8 @@ double AudioIO::AILAGetLastDecisionTime() {
 void AudioIO::AILAProcess(double maxPeak) {
    const auto proj = mOwningProject.lock();
    if (proj && mAILAActive) {
-      if (mInputMeter && mInputMeter->IsClipping()) {
+      auto pInputMeter = mInputMeter.lock();
+      if (pInputMeter && pInputMeter->IsClipping()) {
          mAILAClipped = true;
          wxPrintf("clipped");
       }
@@ -2120,7 +2122,7 @@ void AudioIO::AILAProcess(double maxPeak) {
          };
 
          putchar('\n');
-         mAILAMax = mInputMeter ? ToLinearIfDB(mAILAMax, mInputMeter->GetDBRange()) : 0.0;
+         mAILAMax = pInputMeter ? ToLinearIfDB(mAILAMax, pInputMeter->GetDBRange()) : 0.0;
          double iv = (double) Px_GetInputVolume(mPortMixer);
          unsigned short changetype = 0; //0 - no change, 1 - increase change, 2 - decrease change
          wxPrintf("mAILAAnalysisCounter:%d\n", mAILAAnalysisCounter);

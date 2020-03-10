@@ -17,11 +17,12 @@
 #include "Equalization48x.h"
 
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
-#include "../Project.h"
+#include "Project.h"
 #include "Equalization.h"
+#include "../SyncLock.h"
 #include "../WaveClip.h"
 #include "../WaveTrack.h"
-#include "../float_cast.h"
+#include "float_cast.h"
 #include <vector>
 
 #include <wx/setup.h> // for wxUSE_* macros
@@ -146,6 +147,8 @@ MathCaps *EffectEqualization48x::GetMathCaps()
 
 void * malloc_simd(const size_t size)
 {
+   return nullptr;
+#if 0
 #if defined WIN32           // WIN32
     return _aligned_malloc(size, 16);
 #elif defined __linux__     // Linux
@@ -154,6 +157,7 @@ void * malloc_simd(const size_t size)
     return malloc(size);
 #else                       // other (use valloc for page-aligned memory)
     return valloc(size);
+#endif
 #endif
 }
 
@@ -343,7 +347,8 @@ bool EffectEqualization48x::TrackCompare()
       mEffectEqualization->inputTracks()->Any< const WaveTrack >()) {
 
       // Include selected tracks, plus sync-lock selected tracks
-      if (aTrack->GetSelected() || aTrack->IsSyncLockSelected())
+      if (aTrack->GetSelected() ||
+          SyncLock::IsSyncLockSelected(aTrack))
       {
          auto o = mEffectEqualization->mFactory->DuplicateWaveTrack( *aTrack );
          SecondIMap.push_back(aTrack);
@@ -528,8 +533,8 @@ bool EffectEqualization48x::ProcessTail(WaveTrack * t, WaveTrack * output, sampl
       double clipStartT;
       double clipEndT;
 
-      clipStartT = clip->GetStartTime();
-      clipEndT = clip->GetEndTime();
+      clipStartT = clip->GetPlayStartTime();
+      clipEndT = clip->GetPlayEndTime();
       if( clipEndT <= startT )
          continue;   // clip is not within selection
       if( clipStartT >= startT + lenT )

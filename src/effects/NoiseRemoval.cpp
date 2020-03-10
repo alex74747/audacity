@@ -41,13 +41,13 @@
 
 #include "NoiseRemoval.h"
 
-#if !defined(EXPERIMENTAL_NOISE_REDUCTION)
+#if 1//!defined(EXPERIMENTAL_NOISE_REDUCTION)
 
 #include "LoadEffects.h"
 
 #include "../WaveTrack.h"
-#include "../Prefs.h"
-#include "../FileNames.h"
+#include "Prefs.h"
+#include "FileNames.h"
 #include "../ShuttleGui.h"
 
 #include <math.h>
@@ -73,7 +73,7 @@
 #include <wx/valtext.h>
 
 
-#include "../PlatformCompatibility.h"
+#include "PlatformCompatibility.h"
 
 const ComponentInterfaceSymbol EffectNoiseRemoval::Symbol
 { XO("Noise Removal") };

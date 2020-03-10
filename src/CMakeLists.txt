@@ -214,6 +214,8 @@ list( APPEND SOURCES
       ProjectWindow.h
       ProjectWindowBase.cpp
       ProjectWindowBase.h
+      RealFFTf48x.cpp
+      RealFFTf48x.h
       RefreshCode.h
       ProjectWindows.cpp
       ProjectWindows.h
@@ -698,6 +700,8 @@ list( APPEND SOURCES
       prefs/QualityPrefs.h
       prefs/RecordingPrefs.cpp
       prefs/RecordingPrefs.h
+      prefs/RecordingSettings.cpp
+      prefs/RecordingSettings.h
       prefs/SpectrogramSettings.cpp
       prefs/SpectrogramSettings.h
       prefs/SpectrumPrefs.cpp

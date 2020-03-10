@@ -27,6 +27,7 @@
 #include <algorithm>
 
 #include "Decibels.h"
+#include "../prefs/RecordingSettings.h"
 #include "Prefs.h"
 #include "../ShuttleGui.h"
 

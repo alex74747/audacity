@@ -344,6 +344,7 @@ void TracksPrefs::PopulateOrExchange(ShuttleGui & S)
 
       S.StartMultiColumn(2);
       {
+#define SHOW_PINNED_POSITION_IN_PREFS
 #ifdef SHOW_PINNED_POSITION_IN_PREFS
          S.TieNumericTextBox(
             XXO("Pinned &head position"),

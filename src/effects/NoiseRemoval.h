@@ -14,7 +14,7 @@
 
 
 
-#if !defined(EXPERIMENTAL_NOISE_REDUCTION)
+#if 1//!defined(EXPERIMENTAL_NOISE_REDUCTION)
 
 #include "Effect.h"
 #include "EffectUI.h"
@@ -29,7 +29,8 @@ class WaveTrack;
 class wxRadioButton;
 class wxTextCtrl;
 
-#include "../RealFFTf.h"
+#include "RealFFTf.h"
+#include "SampleFormat.h"
 
 class EffectNoiseRemoval final : public Effect
 {

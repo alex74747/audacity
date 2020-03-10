@@ -20,6 +20,7 @@
 #include "PluginManager.h"
 #include "../ProjectHistory.h"
 #include "../ProjectWindowBase.h"
+#include "../ProjectWindows.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
@@ -37,6 +38,7 @@ static PluginID GetID(Effect &effect)
 #include <wx/defs.h>
 #include <wx/bmpbuttn.h>
 #include <wx/button.h>
+#include <wx/dcmemory.h>
 #include <wx/frame.h>
 #include <wx/image.h>
 #include <wx/imaglist.h>
@@ -48,8 +50,8 @@ static PluginID GetID(Effect &effect)
 #include <wx/tglbtn.h>
 
 #include "../commands/CommandContext.h"
-#include "../Prefs.h"
-#include "../Project.h"
+#include "Prefs.h"
+#include "Project.h"
 #include "../widgets/wxPanelWrapper.h"
 
 #include "../../images/EffectRack/EffectRack.h"
@@ -579,7 +581,7 @@ void EffectRack::UpdateActive()
 
 namespace
 {
-AudacityProject::AttachedWindows::RegisteredFactory sKey{
+AttachedWindows::RegisteredFactory sKey{
    []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
       auto result = safenew EffectRack( parent );
       result->CenterOnParent();
@@ -590,7 +592,7 @@ AudacityProject::AttachedWindows::RegisteredFactory sKey{
 
 EffectRack &EffectRack::Get( AudacityProject &project )
 {
-   return project.AttachedWindows::Get< EffectRack >( sKey );
+   return GetAttachedWindows(project).Get< EffectRack >( sKey );
 }
 
 #endif

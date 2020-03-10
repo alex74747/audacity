@@ -306,7 +306,8 @@ EffectEqualization::EffectEqualization(int Options)
 
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
    bool useSSE;
-   GetPrivateConfig(GetCurrentSettingsGroup(), wxT("/SSE/GUI"), useSSE, false);
+   GetConfig(GetDefinition(), PluginSettings::Private,
+      GetCurrentSettingsGroup(), wxT("/SSE/GUI"), useSSE, false);
    if(useSSE && !mEffectEqualization48x)
       mEffectEqualization48x = std::make_unique<EffectEqualization48x>();
    else if(!useSSE)
