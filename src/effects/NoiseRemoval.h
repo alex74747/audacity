@@ -167,8 +167,6 @@ private:
    EffectNoiseRemoval * m_pEffect;
 
    wxButton * m_pButton_GetProfile;
-   wxButton * m_pButton_Preview;
-   wxButton * m_pButton_RemoveNoise;
 
    wxRadioButton *mKeepSignal;
    wxRadioButton *mKeepNoise;
@@ -189,6 +187,8 @@ private:
    double      mTime;
 
    bool        mbLeaveNoise;
+   bool        mbHasProfile;
+   bool        mbAllowTwiddleSettings;
 
 private:
    DECLARE_EVENT_TABLE()

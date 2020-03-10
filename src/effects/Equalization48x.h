@@ -16,6 +16,8 @@ Intrinsics (SSE/AVX) and Threaded Equalization
 #include "MemoryX.h"
 #include "SampleCount.h"
 
+#include "SampleCount.h"
+
 #include <wx/thread.h> // to inherit
 #include <audacity/Types.h>
 class WaveTrack;

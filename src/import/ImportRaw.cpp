@@ -536,7 +536,6 @@ void ImportRawDialog::OnChoice(wxCommandEvent & WXUNUSED(event))
    info.channels = mChannelChoice->GetSelection() + 1;
    info.samplerate = 44100;
 
-   //mOK = (wxButton *)wxWindow::FindWindowById(wxID_OK, this);
    if (sf_format_check(&info)) {
       mOK->Enable(true);
       return;

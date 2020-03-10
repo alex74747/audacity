@@ -168,17 +168,11 @@ int EffectNoiseRemoval::ShowHostInterface(
    dlog.mbLeaveNoise = mbLeaveNoise;
    dlog.mKeepSignal->SetValue(!mbLeaveNoise);
    dlog.mKeepNoise->SetValue(mbLeaveNoise);
+   dlog.mbHasProfile = mHasProfile;
 
    // We may want to twiddle the levels if we are setting
    // from an automation dialog
-   bool bAllowTwiddleSettings = forceModal;
-
-   if (mHasProfile || bAllowTwiddleSettings) {
-      dlog.m_pButton_Preview->Enable(GetNumWaveTracks() != 0);
-   } else {
-      dlog.m_pButton_Preview->Enable(false);
-      dlog.m_pButton_RemoveNoise->Enable(false);
-   }
+   dlog.mbAllowTwiddleSettings = forceModal;
 
    dlog.TransferDataToWindow();
    dlog.mKeepNoise->SetValue(dlog.mbLeaveNoise);
@@ -648,15 +642,8 @@ NoiseRemovalDialog::NoiseRemovalDialog(EffectNoiseRemoval * effect,
 
    // NULL out the control members until the controls are created.
    m_pButton_GetProfile = NULL;
-   m_pButton_Preview = NULL;
-   m_pButton_RemoveNoise = NULL;
 
    Init();
-
-   m_pButton_Preview =
-      (wxButton *)wxWindow::FindWindowById(ID_EFFECT_PREVIEW, this);
-   m_pButton_RemoveNoise =
-      (wxButton *)wxWindow::FindWindowById(wxID_OK, this);
 }
 
 void NoiseRemovalDialog::OnGetProfile()
@@ -838,7 +825,12 @@ void NoiseRemovalDialog::PopulateOrExchange(ShuttleGui & S)
    S.EndStatic();
 
    S
-      .AddStandardButtons( eOkButton | eCancelButton | ePreviewButton );
+      .AddStandardButtons( eCancelButton, {
+         S.Item( ePreviewButton )
+            .Disable( !mbHasProfile || mbAllowTwiddleSettings ),
+         S.Item( eOkButton )
+            .Disable( !mbHasProfile && !mbAllowTwiddleSettings )
+      } );
 }
 
 bool NoiseRemovalDialog::TransferDataToWindow()

@@ -42,7 +42,10 @@ void ShowDiagnostics(
 
       wxButton *save = safenew wxButton(S.GetParent(), wxID_OK, _("&Save"));
       S
-         .AddStandardButtons(eCancelButton, {}, save);
+         .AddStandardButtons( eCancelButton, {
+            S.Item( eOkButton )
+         },
+         save );
    }
    S.EndVerticalLay();
 
