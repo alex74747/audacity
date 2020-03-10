@@ -3396,7 +3396,6 @@ void EqualizationPanel::OnCaptureLost(wxMouseCaptureLostEvent & WXUNUSED(event))
 /// Constructor
 
 BEGIN_EVENT_TABLE(EditCurvesDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, EditCurvesDialog::OnOK)
    EVT_LIST_ITEM_SELECTED(CurvesListID,
                           EditCurvesDialog::OnListSelectionChange)
    EVT_LIST_ITEM_DESELECTED(CurvesListID,
@@ -3486,7 +3485,9 @@ void EditCurvesDialog::PopulateOrExchange(ShuttleGui & S)
       S.EndVerticalLay();
    }
    S.EndHorizontalLay();
-   S.AddStandardButtons();
+   S.AddStandardButtons( eCancelButton, {
+      S.Item( eOkButton ).Action( [this]{ OnOK(); } )
+   } );
    S.StartStatic(XO("Help"));
    S.AddConstTextBox( {}, XO("Rename 'unnamed' to save a new entry.\n'OK' saves all changes, 'Cancel' doesn't."));
    S.EndStatic();
@@ -3890,7 +3891,7 @@ void EditCurvesDialog::OnDefaults()
    PopulateList(0);  // update the EditCurvesDialog dialog
 }
 
-void EditCurvesDialog::OnOK(wxCommandEvent & WXUNUSED(event))
+void EditCurvesDialog::OnOK()
 {
    // Make a backup of the current curves
    wxString backupPlace = wxFileName( FileNames::DataDir(), L"EQBackup.xml" ).GetFullPath();

@@ -504,7 +504,7 @@ public:
 
    void PopulateOrExchange(ShuttleGui & S);
 
-   void OnOk(wxCommandEvent & evt);
+   void OnOk();
 
 private:
    EffectHostInterface &mHost;
@@ -512,13 +512,7 @@ private:
 
    bool mUseLatency;
    TranslatableString mUIType;
-
-   DECLARE_EVENT_TABLE()
 };
-
-BEGIN_EVENT_TABLE(AudioUnitEffectOptionsDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, AudioUnitEffectOptionsDialog::OnOk)
-END_EVENT_TABLE()
 
 AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent,
    EffectHostInterface &host, EffectDefinitionInterface &effect)
@@ -547,7 +541,6 @@ AudioUnitEffectOptionsDialog::~AudioUnitEffectOptionsDialog()
 
 void AudioUnitEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
 {
-   
    S.SetBorder(5);
    S.StartHorizontalLay(wxEXPAND, 1);
    {
@@ -607,14 +600,16 @@ void AudioUnitEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
    }
    S.EndHorizontalLay();
 
-   S.AddStandardButtons();
+   S.AddStandardButtons( 0, {
+      S.Item( eOkButton ).Action( [this]{ OnOk(); } )
+   });
 
    Layout();
    Fit();
    Center();
 }
 
-void AudioUnitEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
+void AudioUnitEffectOptionsDialog::OnOk()
 {
    if (!Validate())
    {
@@ -651,20 +646,14 @@ public:
    bool HasPresets();
    TranslatableString Import(const wxString & path, const wxString & name);
 
-   void OnOk(wxCommandEvent & evt);
+   void OnOk();
 
 private:
    wxWindow *mParent;
    AudioUnitEffect *mEffect;
 
    wxListCtrl *mList;
-
-   DECLARE_EVENT_TABLE()
 };
-
-BEGIN_EVENT_TABLE(AudioUnitEffectImportDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, AudioUnitEffectImportDialog::OnOk)
-END_EVENT_TABLE()
 
 AudioUnitEffectImportDialog::AudioUnitEffectImportDialog(wxWindow * parent, AudioUnitEffect *effect)
 :  wxDialogWrapper(parent, wxID_ANY, XO("Import Audio Unit Presets"))
@@ -700,7 +689,9 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    }
    S.EndHorizontalLay();
 
-   S.AddStandardButtons();
+   S.AddStandardButtons( 0, {
+      S.Item( eOkButton ).Action( [this]{ OnOk(); } )
+   });
 
    FilePaths presets;
    wxFileName fn;
@@ -798,10 +789,8 @@ TranslatableString AudioUnitEffectImportDialog::Import(
    return {};
 }
 
-void AudioUnitEffectImportDialog::OnOk(wxCommandEvent & evt)
+void AudioUnitEffectImportDialog::OnOk()
 {
-   evt.Skip();
-   
    // Import all selected presets
    long sel = -1;
    while ((sel = mList->GetNextItem(sel, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) >= 0)

@@ -54,8 +54,8 @@ private:
    void OnSort(wxListEvent & evt);
    void DoSort( int col );
    void OnListChar(wxKeyEvent & evt);
-   void OnOK(wxCommandEvent & evt);
-   void OnCancel(wxCommandEvent & evt);
+   void OnOK();
+   void OnCancel();
    void OnSelectAll();
    void OnClearAll();
    void OnEnable();

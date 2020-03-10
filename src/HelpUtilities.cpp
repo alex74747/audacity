@@ -40,12 +40,11 @@ void ShowDiagnostics(
          .Style(wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH)
          .AddTextWindow("");
 
-      wxButton *save = safenew wxButton(S.GetParent(), wxID_OK, _("&Save"));
       S
          .AddStandardButtons( eCancelButton, {
-            S.Item( eOkButton )
-         },
-         save );
+               S.Item( eOkButton )
+            },
+            safenew wxButton(S.GetParent(), wxID_OK, _("&Save")) );
    }
    S.EndVerticalLay();
 

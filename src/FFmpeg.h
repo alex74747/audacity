@@ -61,13 +61,11 @@ public:
 
    void PopulateOrExchange(ShuttleGui & S);
 
-   void OnOk(wxCommandEvent & WXUNUSED(event));
+   void OnOk();
 
 private:
 
    wxCheckBox *mDontShow;
-
-   DECLARE_EVENT_TABLE()
 };
 
 extern BoolSetting FFmpegNotFoundDontShow;

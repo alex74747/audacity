@@ -401,19 +401,13 @@ public:
 
    void PopulateOrExchange(ShuttleGui & S);
 
-   void OnOk(wxCommandEvent & evt);
+   void OnOk();
 
 private:
    EffectHostInterface &mHost;
    EffectDefinitionInterface &mEffect;
    bool mUseLatency;
-
-   DECLARE_EVENT_TABLE()
 };
-
-BEGIN_EVENT_TABLE(LadspaEffectOptionsDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, LadspaEffectOptionsDialog::OnOk)
-END_EVENT_TABLE()
 
 LadspaEffectOptionsDialog::LadspaEffectOptionsDialog(wxWindow * parent,
    EffectHostInterface &host, EffectDefinitionInterface &effect)
@@ -464,14 +458,16 @@ void LadspaEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
    }
    S.EndHorizontalLay();
 
-   S.AddStandardButtons();
+   S.AddStandardButtons( eCancelButton, {
+      S.Item( eOkButton ).Action( [this]{ OnOk(); } )
+   });
 
    Layout();
    Fit();
    Center();
 }
 
-void LadspaEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
+void LadspaEffectOptionsDialog::OnOk()
 {
    if (!Validate())
    {

@@ -695,10 +695,6 @@ EVT_INIT_DIALOG(EffectUIHost::OnInitDialog)
 EVT_ERASE_BACKGROUND(EffectUIHost::OnErase)
 EVT_PAINT(EffectUIHost::OnPaint)
 EVT_CLOSE(EffectUIHost::OnClose)
-EVT_BUTTON(wxID_APPLY, EffectUIHost::OnApply)
-EVT_BUTTON(wxID_CANCEL, EffectUIHost::OnCancel)
-EVT_BUTTON(wxID_HELP, EffectUIHost::OnHelp)
-EVT_BUTTON(eDebugID, EffectUIHost::OnDebug)
 EVT_CHECKBOX(kEnableID, EffectUIHost::OnEnable)
 END_EVENT_TABLE()
 
@@ -968,7 +964,7 @@ bool EffectUIHost::Initialize()
    // Build a "host" dialog, framing a panel that the client fills in.
    // The frame includes buttons to preview, apply, load and save presets, etc.
    EffectPanel *w {};
-   ShuttleGui S{ this, eIsCreating };
+   ShuttleGui S(this, eIsCreating);
    {
       S.StartHorizontalLay( wxEXPAND );
       {
@@ -998,13 +994,12 @@ bool EffectUIHost::Initialize()
       {
          const auto bar = BuildButtonBar( S.GetParent() );
 
-         long buttons;
+         bool help = true;
          if ( mEffect.ManualPage().empty() && mEffect.HelpPage().empty()) {
-            buttons = eApplyButton | eCloseButton;
             this->SetAcceleratorTable(wxNullAcceleratorTable);
+            help = false;
          }
          else {
-            buttons = eApplyButton | eCloseButton | eHelpButton;
             wxAcceleratorEntry entries[1];
 #if defined(__WXMAC__)
             // Is there a standard shortcut on Mac?
@@ -1015,11 +1010,17 @@ bool EffectUIHost::Initialize()
             this->SetAcceleratorTable(accel);
          }
 
-         if (mEffect.EnablesDebug())
-            buttons |= eDebugButton;
-
          S
-            .AddStandardButtons(buttons, {}, bar);
+            .AddStandardButtons(0, {
+               S.Item( eApplyButton ).Action( [this]{ OnApply(wxID_APPLY); } ),
+               S.Item( eCloseButton ).Action( [this]{ OnCancel(); } ),
+               (help
+                ? S.Item( eHelpButton ).Action( [this]{ OnHelp(); } )
+                : S.Item()),
+               (mEffect.EnablesDebug()
+                ? S.Item( eDebugButton ).Action( [this]{ OnDebug(); } )
+                : S.Item())
+            }, bar);
       }
       S.EndPanel();
    }
@@ -1097,7 +1098,7 @@ void EffectUIHost::OnClose(wxCloseEvent & WXUNUSED(evt))
 #endif
 }
 
-void EffectUIHost::OnApply(wxCommandEvent & evt)
+void EffectUIHost::OnApply(int evtID)
 {
    auto &project = *mProject;
 
@@ -1142,7 +1143,7 @@ void EffectUIHost::OnApply(wxCommandEvent & evt)
    {
       mDismissed = true;
       
-      EndModal(evt.GetId());
+      EndModal(evtID);
       
       Close();
       
@@ -1174,13 +1175,13 @@ void EffectUIHost::DoCancel()
    }
 }
 
-void EffectUIHost::OnCancel(wxCommandEvent & WXUNUSED(evt))
+void EffectUIHost::OnCancel()
 {
    DoCancel();
    Close();
 }
 
-void EffectUIHost::OnHelp(wxCommandEvent & WXUNUSED(event))
+void EffectUIHost::OnHelp()
 {
    if (mEffect.GetFamily() == NYQUISTEFFECTS_FAMILY && (mEffect.ManualPage().empty())) {
       // Old ShowHelp required when there is no on-line manual.
@@ -1193,9 +1194,9 @@ void EffectUIHost::OnHelp(wxCommandEvent & WXUNUSED(event))
    }
 }
 
-void EffectUIHost::OnDebug(wxCommandEvent & evt)
+void EffectUIHost::OnDebug()
 {
-   OnApply(evt);
+   OnApply(eDebugID);
 }
 
 void EffectUIHost::OnMenu()

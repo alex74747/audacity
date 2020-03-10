@@ -38,8 +38,6 @@
 
 BEGIN_EVENT_TABLE(ErrorDialog, wxDialogWrapper)
    EVT_COLLAPSIBLEPANE_CHANGED( wxID_ANY, ErrorDialog::OnPane )
-   EVT_BUTTON( wxID_OK, ErrorDialog::OnOk)
-   EVT_BUTTON( wxID_HELP, ErrorDialog::OnHelp)
 END_EVENT_TABLE()
 
 ErrorDialog::ErrorDialog(
@@ -58,7 +56,6 @@ ErrorDialog::ErrorDialog(
    long buttonMask;
 
    // only add the help button if we have a URL
-   buttonMask = (helpPage.empty()) ? eOkButton : (eHelpButton | eOkButton);
    dhelpPage = helpPage;
    dClose = Close;
    dModal = modal;
@@ -110,7 +107,12 @@ ErrorDialog::ErrorDialog(
    S
       .SetBorder(2);
    S
-      .AddStandardButtons(buttonMask);
+      .AddStandardButtons( 0, {
+         S.Item( eOkButton ).Action( [this]{ OnOk(); } ),
+         helpPage.empty()
+            ? S.Item()
+            : S.Item( eHelpButton ).Action( [this]{ OnHelp(); } )
+      });
 
    Layout();
    GetSizer()->Fit(this);
@@ -126,7 +128,7 @@ void ErrorDialog::OnPane(wxCollapsiblePaneEvent & event)
    }
 }
 
-void ErrorDialog::OnOk(wxCommandEvent & WXUNUSED(event))
+void ErrorDialog::OnOk()
 {
    if (dModal)
       EndModal(true);
@@ -134,7 +136,7 @@ void ErrorDialog::OnOk(wxCommandEvent & WXUNUSED(event))
       Destroy();
 }
 
-void ErrorDialog::OnHelp(wxCommandEvent & WXUNUSED(event))
+void ErrorDialog::OnHelp()
 {
    const auto &str = dhelpPage.GET();
    if( str.StartsWith(L"innerlink:") )

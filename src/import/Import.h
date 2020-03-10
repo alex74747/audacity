@@ -204,11 +204,8 @@ private:
    wxListBox *StreamList;
 
 private:
-   void OnOk( wxCommandEvent &event );
-   void OnCancel( wxCommandEvent &event );
-
-private:
-   DECLARE_EVENT_TABLE()
+   void OnOk();
+   void OnCancel();
 };
 
 extern AUDACITY_DLL_API BoolSetting NewImportingSession;

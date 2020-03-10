@@ -61,9 +61,10 @@ class ImportRawDialog final : public wxDialogWrapper {
    ImportRawDialog(wxWindow * parent, const wxString & fileName);
    ~ImportRawDialog();
 
-   void OnOK(wxCommandEvent & event);
-   void OnCancel(wxCommandEvent & event);
-   void OnDetect(wxCommandEvent & event);
+   void OnOK();
+   void OnCancel();
+   void OnDetect();
+   void OnChoice();
    void OnChoice(wxCommandEvent & event);
 
    // in and out
@@ -287,13 +288,9 @@ static int getEndianChoice(int sfFormat) {
 
 enum {
    ChoiceID = 9000,
-   DetectID,
 };
 
 BEGIN_EVENT_TABLE(ImportRawDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, ImportRawDialog::OnOK)
-   EVT_BUTTON(wxID_CANCEL, ImportRawDialog::OnCancel)
-   EVT_BUTTON(DetectID, ImportRawDialog::OnDetect)
    EVT_CHOICE(ChoiceID, ImportRawDialog::OnChoice)
 END_EVENT_TABLE()
 
@@ -436,13 +433,18 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
       S.StartTwoColumn();
       {
          /* i18n-hint: Guess format of raw file */
-         S.Id(DetectID).AddButton(XXO("Detect"));
+         S
+            .Action( [this]{ OnDetect(); } )
+            .AddButton(XXO("Detect"));
 
          //
          // Preview Pane goes here
          //
 
-         S.AddStandardButtons();
+         S.AddStandardButtons( 0, {
+            S.Item( eOkButton ).Action( [this]{ OnOK(); } ),
+            S.Item( eCancelButton ).Action( [this]{ OnCancel(); } )
+         } );
       }
       S.EndTwoColumn();
 
@@ -463,7 +465,7 @@ ImportRawDialog::~ImportRawDialog()
 {
 }
 
-void ImportRawDialog::OnOK(wxCommandEvent & WXUNUSED(event))
+void ImportRawDialog::OnOK()
 {
    long l;
 
@@ -492,12 +494,12 @@ void ImportRawDialog::OnOK(wxCommandEvent & WXUNUSED(event))
    EndModal(true);
 }
 
-void ImportRawDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
+void ImportRawDialog::OnCancel()
 {
    EndModal(false);
 }
 
-void ImportRawDialog::OnDetect(wxCommandEvent & event)
+void ImportRawDialog::OnDetect()
 {
    try {
       // Yes, FormatClassifier currently handles filenames in UTF8 format only, that's a TODO ...
@@ -520,10 +522,15 @@ void ImportRawDialog::OnDetect(wxCommandEvent & event)
    mEndianChoice->SetSelection(endian);
    mChannelChoice->SetSelection(mChannels - 1);
 
-   OnChoice(event);
+   OnChoice();
 }
 
 void ImportRawDialog::OnChoice(wxCommandEvent & WXUNUSED(event))
+{
+   OnChoice();
+}
+
+void ImportRawDialog::OnChoice()
 {
    SF_INFO info;
 

@@ -74,8 +74,8 @@ private:
 
    void OnTimeText_Duration(wxCommandEvent & event);
 
-   void OnOK(wxCommandEvent& event);
-   void OnHelpButtonClick(wxCommandEvent& event);
+   void OnOK();
+   void OnHelpButtonClick();
 
    TranslatableString GetDisplayDate(wxDateTime & dt);
    void PopulateOrExchange(ShuttleGui& S);

@@ -282,7 +282,9 @@ to download or locate the FFmpeg libraries."
             FFmpegNotFoundDontShow.Read() );
 
       S
-         .AddStandardButtons(eOkButton);
+         .AddStandardButtons( 0, {
+            S.Item( eOkButton ).Action( [this]{ OnOk(); } )
+         });
    }
    S.EndVerticalLay();
 
@@ -294,7 +296,7 @@ to download or locate the FFmpeg libraries."
    return;
 }
 
-void FFmpegNotFoundDialog::OnOk(wxCommandEvent & WXUNUSED(event))
+void FFmpegNotFoundDialog::OnOk()
 {
    if (mDontShow->GetValue())
    {
@@ -303,10 +305,6 @@ void FFmpegNotFoundDialog::OnOk(wxCommandEvent & WXUNUSED(event))
    }
    this->EndModal(0);
 }
-
-BEGIN_EVENT_TABLE(FFmpegNotFoundDialog, wxDialogWrapper)
-   EVT_BUTTON(wxID_OK, FFmpegNotFoundDialog::OnOk)
-END_EVENT_TABLE()
 
 bool FindFFmpegLibs(wxWindow* parent)
 {
