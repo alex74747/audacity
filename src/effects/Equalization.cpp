@@ -120,7 +120,6 @@ enum
    ID_Mode,
    ID_Draw,
    ID_Graphic,
-   ID_Interp,
    ID_Curve,
    ID_Delete,
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
@@ -214,8 +213,6 @@ BEGIN_EVENT_TABLE(EffectEqualization, wxEvtHandler)
                      ID_Slider + NUMBER_OF_BANDS - 1,
                      wxEVT_COMMAND_SLIDER_UPDATED,
                      EffectEqualization::OnSlider)
-   EVT_CHOICE( ID_Interp, EffectEqualization::OnInterp )
-
    EVT_CHOICE( ID_Curve, EffectEqualization::OnCurve )
 
    EVT_RADIOBUTTON(ID_Draw, EffectEqualization::OnDrawMode)
@@ -1000,15 +997,16 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
             {
                szrI = S.GetSizer();
 
-               mInterpChoice =
+               auto interpChoice =
                S
-                  .Id(ID_Interp)
                   .Text(XO("Interpolation type"))
+                  .Target( mInterp )
+                  .Action( [this]{ OnInterp(); } )
                   .AddChoice( {},
                      Msgids(kInterpStrings, nInterpolations), 0 );
 #if wxUSE_ACCESSIBILITY
                // so that name can be set on a standard control
-               mInterpChoice->SetAccessible(safenew WindowAccessible(mInterpChoice));
+               interpChoice->SetAccessible(safenew WindowAccessible(interpChoice));
 #endif
             }
             S.EndHorizontalLay();
@@ -1265,9 +1263,6 @@ bool EffectEqualization::TransferDataToWindow()
 
    // Reload the curve names
    UpdateCurves();
-
-   // Set graphic interpolation mode
-   mInterpChoice->SetSelection(mInterp);
 
    // Override draw mode, if we're not displaying the radio buttons.
    if( mOptions == kEqOptionCurve)
@@ -2909,7 +2904,7 @@ void EffectEqualization::OnSlider(wxCommandEvent & event)
    EnvelopeUpdated();
 }
 
-void EffectEqualization::OnInterp(wxCommandEvent & WXUNUSED(event))
+void EffectEqualization::OnInterp()
 {
    bool bIsGraphic = !mDrawMode;
    if (bIsGraphic)
@@ -2917,7 +2912,6 @@ void EffectEqualization::OnInterp(wxCommandEvent & WXUNUSED(event))
       GraphicEQ(mLogEnvelope.get());
       EnvelopeUpdated();
    }
-   mInterp = mInterpChoice->GetSelection();
 }
 
 void EffectEqualization::OnDrawMode(wxCommandEvent & WXUNUSED(event))

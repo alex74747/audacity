@@ -572,6 +572,27 @@ private:
    SettingType &mSetting;
 };
 
+class LabelSettingAdaptor
+   : public Adaptor< int >
+{
+public:
+   using SettingType = LabelSetting;
+
+   explicit LabelSettingAdaptor( LabelSetting &setting )
+      : mSetting{ setting }
+   {}
+
+   ~LabelSettingAdaptor() override;
+
+   SettingType &GetSetting() { return mSetting; }
+
+   bool Get( TargetType &target ) const override;
+   bool Set( const TargetType &value ) override;
+
+private:
+   SettingType &mSetting;
+};
+
 template< typename Target > struct AdaptorFor{};
 
 template<> struct AdaptorFor< bool >
@@ -595,8 +616,12 @@ template<> struct AdaptorFor< StringSetting >
    { using type = SettingAdaptor< wxString >; };
 template<> struct AdaptorFor< ChoiceSetting >
    { using type = ChoiceSettingAdaptor; };
+template<> struct AdaptorFor< LabelSetting >
+   { using type = LabelSettingAdaptor; };
 template< typename Enum > struct AdaptorFor< EnumSetting< Enum > >
    { using type = ChoiceSettingAdaptor; };
+template< typename Enum > struct AdaptorFor< EnumLabelSetting< Enum > >
+   { using type = LabelSettingAdaptor; };
 
 template< typename Target >
 class AdaptingValidatorBase

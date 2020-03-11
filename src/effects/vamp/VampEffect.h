@@ -22,7 +22,6 @@
 
 class wxStaticText;
 class wxSlider;
-class wxChoice;
 class wxCheckBox;
 class wxTextCtrl;
 class LabelTrack;
@@ -80,7 +79,6 @@ private:
 
    void UpdateFromPlugin();
 
-   void OnChoice(wxCommandEvent & evt);
    void OnSlider(wxCommandEvent & evt);
    void OnTextCtrl(wxCommandEvent & evt);
 
@@ -105,8 +103,8 @@ private:
    ArrayOf<wxTextCtrl *> mFields;
    ArrayOf<wxStaticText *> mLabels;
    ArrayOf<bool> mToggles;
-   ArrayOf<wxChoice *> mChoices;
-   wxChoice *mProgram;
+   std::vector<int> mChosen;
+   int mChosenProgram = 0;
 
    DECLARE_EVENT_TABLE()
 };

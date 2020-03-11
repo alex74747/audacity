@@ -73,9 +73,6 @@ ManualPageID WaveformPrefs::HelpPageName()
 
 enum {
    ID_DEFAULTS = 10001,
-
-   ID_SCALE,
-   ID_RANGE,
 };
 
 void WaveformPrefs::Populate()
@@ -109,17 +106,17 @@ void WaveformPrefs::PopulateOrExchange(ShuttleGui & S)
          S.StartTwoColumn();
          {
             S
-               .Id(ID_SCALE)
                .Target( mTempSettings.scaleType )
+               .Action( [this]{ OnControl(); } )
                .AddChoice(XXO("S&cale:"),
                   Msgids( WaveformSettings::GetScaleNames() ) );
 
             S
-               .Id(ID_RANGE)
                .Enable( [this]{ return
                   mTempSettings.scaleType ==
                      WaveformSettings::stLogarithmic; } )
                .Target( mTempSettings.dBRange )
+               .Action( [this]{ OnControl(); } )
                .AddChoice(XXO("Waveform dB &range:"),
                   mRangeChoices);
          }
@@ -212,7 +209,7 @@ bool WaveformPrefs::ShowsPreviewButton()
    return true;
 }
 
-void WaveformPrefs::OnControl(wxCommandEvent&)
+void WaveformPrefs::OnControl()
 {
    // Common routine for most controls
    // If any per-track setting is changed, break the association with defaults
@@ -238,9 +235,6 @@ void WaveformPrefs::OnDefaults(wxCommandEvent &)
 }
 
 BEGIN_EVENT_TABLE(WaveformPrefs, PrefsPanel)
-
-EVT_CHOICE(ID_SCALE, WaveformPrefs::OnControl)
-EVT_CHOICE(ID_RANGE, WaveformPrefs::OnControl)
 
 EVT_CHECKBOX(ID_DEFAULTS, WaveformPrefs::OnDefaults)
 END_EVENT_TABLE()

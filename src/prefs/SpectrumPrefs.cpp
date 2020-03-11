@@ -89,11 +89,7 @@ ManualPageID SpectrumPrefs::HelpPageName()
 }
 
 enum {
-   ID_WINDOW_SIZE = 10001,
-   ID_WINDOW_TYPE,
-   ID_PADDING_SIZE,
-   ID_SCALE,
-   ID_ALGORITHM,
+   ID_PADDING_SIZE = 10001,
    ID_MINIMUM,
    ID_MAXIMUM,
    ID_GAIN,
@@ -188,7 +184,6 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
             S.SetStretchyCol( 1 );
 
             S
-               .Id(ID_SCALE)
                .Target( mTempSettings.scaleType )
                .AddChoice(XXO("S&cale:"),
                   Msgids( SpectrogramSettings::GetScaleNames() ) );
@@ -256,14 +251,14 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(2);
       {
          S
-            .Id(ID_ALGORITHM)
             .Target( mTempSettings.algorithm )
+            .Action( [this]{ DoControl(); } )
             .AddChoice(XXO("A&lgorithm:"),
                SpectrogramSettings::GetAlgorithmNames() );
 
          S
-            .Id(ID_WINDOW_SIZE)
             .Target( mTempSettings.windowSize )
+            .Action( [this]{ OnWindowSize(); } )
             .AddChoice(XXO("Window &size:"),
                {
                   XO("8 - most wideband"),
@@ -282,8 +277,8 @@ void SpectrumPrefs::PopulateOrExchange(ShuttleGui & S)
                } );
 
          S
-            .Id(ID_WINDOW_TYPE)
             .Target( mTempSettings.windowType )
+            .Action( [this]{ DoControl(); } )
             .AddChoice(XXO("Window &type:"),
                mTypeChoices);
 
@@ -531,6 +526,11 @@ bool SpectrumPrefs::ShowsPreviewButton()
 
 void SpectrumPrefs::OnControl(wxCommandEvent&)
 {
+   DoControl();
+}
+
+void SpectrumPrefs::DoControl()
+{
    // Common routine for most controls
    // If any per-track setting is changed, break the association with defaults
    // Skip this, and View Settings... will be able to change defaults instead
@@ -542,18 +542,16 @@ void SpectrumPrefs::OnControl(wxCommandEvent&)
    }
 }
 
-void SpectrumPrefs::OnWindowSize(wxCommandEvent &evt)
+void SpectrumPrefs::OnWindowSize()
 {
    // Restrict choice of zero padding, so that product of window
    // size and padding may not exceed the largest window size.
-   wxChoice *const pWindowSizeControl =
-      static_cast<wxChoice*>(wxWindow::FindWindowById(ID_WINDOW_SIZE, this));
    size_t windowSize = 1 <<
-      (pWindowSizeControl->GetSelection() + SpectrogramSettings::LogMinWindowSize);
+      (mTempSettings.windowSize + SpectrogramSettings::LogMinWindowSize);
    PopulatePaddingChoices(windowSize);
 
    // Do the common part
-   OnControl(evt);
+   DoControl();
 }
 
 void SpectrumPrefs::OnDefaults(wxCommandEvent &)
@@ -569,14 +567,9 @@ void SpectrumPrefs::OnDefaults(wxCommandEvent &)
 }
 
 BEGIN_EVENT_TABLE(SpectrumPrefs, PrefsPanel)
-   EVT_CHOICE(ID_WINDOW_SIZE, SpectrumPrefs::OnWindowSize)
    EVT_CHECKBOX(ID_DEFAULTS, SpectrumPrefs::OnDefaults)
-   EVT_CHOICE(ID_ALGORITHM, SpectrumPrefs::OnControl)
 
    // Several controls with common routine that unchecks the default box
-   EVT_CHOICE(ID_WINDOW_TYPE, SpectrumPrefs::OnControl)
-   EVT_CHOICE(ID_PADDING_SIZE, SpectrumPrefs::OnControl)
-   EVT_CHOICE(ID_SCALE, SpectrumPrefs::OnControl)
    EVT_TEXT(ID_MINIMUM, SpectrumPrefs::OnControl)
    EVT_TEXT(ID_MAXIMUM, SpectrumPrefs::OnControl)
    EVT_TEXT(ID_GAIN, SpectrumPrefs::OnControl)
