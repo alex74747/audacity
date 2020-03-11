@@ -121,10 +121,8 @@ void QuickFixDialog::AddStuck( ShuttleGui & S, bool & bBool,
 
    S
       .Id( id )
-      .AddButton( XXO("Fix") )
-         ->Bind( wxEVT_BUTTON, [this, prefSetter, id](wxCommandEvent&){
-            OnFix( prefSetter, id );
-         } );
+      .Action([this, prefSetter, id]{ OnFix( prefSetter, id ); })
+      .AddButton( XXO("Fix") );
 
    {
      // Replace standard Help button with smaller icon button.
@@ -132,10 +130,9 @@ void QuickFixDialog::AddStuck( ShuttleGui & S, bool & bBool,
       auto b = safenew wxBitmapButton(S.GetParent(), HelpButtonID+mItem, theTheme.Bitmap( bmpHelpIcon ));
       b->SetToolTip( _("Help") );
       b->SetLabel(_("Help"));       // for screen readers
-      b->Bind( wxEVT_BUTTON, [this, Help](const wxCommandEvent&){
-         OnHelp( Help );
-      } );
-      S.AddWindow( b );
+      S
+         .Action([this, Help]{ OnHelp( Help ); })
+         .AddWindow( b );
    }
 }
 
