@@ -259,7 +259,7 @@ public:
    bool Validate() override;
 
    // NEW virtuals:
-   virtual void PopulateOrExchange(ShuttleGui & S);
+   virtual void PopulateOrExchange(ShuttleGui & S) = 0;
 
 private:
    wxDECLARE_NO_COPY_CLASS(EffectDialog);
