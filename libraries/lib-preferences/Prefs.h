@@ -722,4 +722,17 @@ struct PREFERENCES_API PreferenceInitializer {
 // Special extra-sticky settings
 extern PREFERENCES_API BoolSetting DefaultUpdatesCheckingFlag;
 
+extern PREFERENCES_API BoolSetting
+     WarningsCopyOrEditUncompressedDataAsk
+   , WarningsCopyOrEditUncompressedDataFirstAsk // not in the dialog
+   , WarningsDiskSpaceWarning
+   , WarningsDropoutDetected // in RecordingPrefs dialog
+   , WarningsEmptyCanBeDirty
+   , WarningsFirstProjectSave
+   , WarningsMissingExtension
+   , WarningsMixMono
+   , WarningsMixStereo
+   , WarningsMixUnknownChannels
+;
+
 #endif

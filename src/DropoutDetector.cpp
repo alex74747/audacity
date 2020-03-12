@@ -49,7 +49,7 @@ static AudacityProject::AttachedObjects::RegisteredFactory sKey {
          // entering StopStream() recursively
          auto &window = GetProjectFrame( project );
          wxTheApp->CallAfter( [&window] {
-            ShowWarningDialog(&window, L"DropoutDetected", XO("\
+            ShowWarningDialog(&window, WarningsDropoutDetected, XO("\
 Recorded audio was lost at the labeled locations. Possible causes:\n\
 \n\
 Other applications are competing with Audacity for processor time\n\
