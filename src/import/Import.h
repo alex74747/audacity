@@ -23,6 +23,7 @@
 class wxArrayString;
 class wxListBox;
 class AudacityProject;
+class BoolSetting;
 class Tags;
 class WaveTrackFactory;
 class Track;
@@ -211,5 +212,6 @@ private:
 };
 
 extern AUDACITY_DLL_API BoolSetting NewImportingSession;
+extern BoolSetting ExtendedImportUsersSelectionOverrides;
 
 #endif

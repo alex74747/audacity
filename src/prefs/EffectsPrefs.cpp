@@ -187,13 +187,7 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
 
          S
             .TieIntegerTextBox(XXO("&Maximum effects per group (0 to disable):"),
-                             {L"/Effects/MaxPerGroup",
-#if defined(__WXGTK__)
-                              15
-#else
-                              0
-#endif
-                             },
+                             EffectsMaxPerGroup,
                              5);
       }
       S.EndMultiColumn();
@@ -204,12 +198,12 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Plugin Options"));
    {
       S
-         .TieCheckBox(XXO("Check for updated plugins when Audacity starts"),
-            {L"/Plugins/CheckForUpdates", true});
+         .TieCheckBox( XXO("Check for updated plugins when Audacity starts"),
+            PluginsCheckForUpdates );
 
       S
-         .TieCheckBox(XXO("Rescan plugins next time Audacity is started"),
-            {L"/Plugins/Rescan", false});
+         .TieCheckBox (XXO("Rescan plugins next time Audacity is started"),
+            PluginsRescan );
    }
    S.EndStatic();
 #endif
@@ -218,7 +212,7 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Instruction Set"));
    {
       S
-         .TieCheckBox(XXO("&Use SSE/SSE2/.../AVX"), {L"/SSE/GUI", true});
+         .TieCheckBox( XXO("&Use SSE/SSE2/.../AVX"), SSEGUI );
    }
    S.EndStatic();
 #endif
@@ -242,3 +236,18 @@ PrefsPanel::Registration sAttachment{ "Effects",
    }
 };
 }
+
+BoolSetting PluginsCheckForUpdates{ L"/Plugins/CheckForUpdates", true };
+BoolSetting PluginsRescan{ L"/Plugins/Rescan", false };
+
+BoolSetting SSEGUI{ L"/SSE/GUI", true };
+
+IntSetting EffectsMaxPerGroup{
+   L"/Effects/MaxPerGroup",
+#if defined(__WXGTK__)
+   15
+#else
+   0
+#endif
+};
+

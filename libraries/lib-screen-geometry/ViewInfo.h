@@ -248,5 +248,10 @@ private:
    struct ProjectFileIORegistration;
 };
 
-extern SCREEN_GEOMETRY_API BoolSetting ScrollingPreference;
+extern SCREEN_GEOMETRY_API BoolSetting
+     ScrollingPreference
+   , TracksAutoScroll
+   , TracksBehaviorsAdjustSelectionEdges
+;
+
 #endif

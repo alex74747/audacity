@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <limits>
+#include <optional>
 
 /*
  * ArrayOf<X>

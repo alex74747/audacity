@@ -295,8 +295,7 @@ void OnTimerRecord(const CommandContext &context)
       // Allow recording to start at current cursor position.
       #if 0
       // Timer Record should not record into a selection.
-      bool bPreferNewTrack;
-      gPrefs->Read("/GUI/PreferNewTrackRecord",&bPreferNewTrack, false);
+      auto bPreferNewTrack = RecordingPreferNewTrack.Read();
       if (bPreferNewTrack) {
          window.Rewind(false);
       } else {
@@ -402,8 +401,7 @@ void OnPunchAndRoll(const CommandContext &context)
    // taken.
    PRCrossfadeData crossfadeData;
    const double crossFadeDuration = std::max(0.0,
-      gPrefs->Read(AUDIO_ROLL_CROSSFADE_KEY, DEFAULT_ROLL_CROSSFADE_MS)
-         / 1000.0
+      AudioIOCrossfade.Read() / 1000.0
    );
 
    // The test for t1 == 0.0 stops punch and roll deleting everything where the
@@ -478,8 +476,7 @@ void OnPunchAndRoll(const CommandContext &context)
    // Try to start recording
    auto options = DefaultPlayOptions( project );
    options.rate = rateOfSelected;
-   options.preRoll = std::max(0L,
-      gPrefs->Read(AUDIO_PRE_ROLL_KEY, DEFAULT_PRE_ROLL_SECONDS));
+   options.preRoll = std::max(0.0, AudioIOPreRoll.Read());
    options.pCrossfadeData = &crossfadeData;
    bool success = ProjectAudioManager::Get( project ).DoRecord(project,
       transportTracks,
@@ -547,9 +544,7 @@ void OnSoundActivated(const CommandContext &context)
 
 void OnToggleSoundActivated(const CommandContext &WXUNUSED(context) )
 {
-   bool pause;
-   gPrefs->Read(L"/AudioIO/SoundActivatedRecord", &pause, false);
-   gPrefs->Write(L"/AudioIO/SoundActivatedRecord", !pause);
+   AudioIOSoundActivatedRecord.Toggle();
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -561,22 +556,14 @@ void OnTogglePinnedHead(const CommandContext &context)
 
 void OnTogglePlayRecording(const CommandContext &WXUNUSED(context) )
 {
-   bool Duplex;
-#ifdef EXPERIMENTAL_DA
-   gPrefs->Read(L"/AudioIO/Duplex", &Duplex, false);
-#else
-   gPrefs->Read(L"/AudioIO/Duplex", &Duplex, true);
-#endif
-   gPrefs->Write(L"/AudioIO/Duplex", !Duplex);
+   AudioIODuplex.Toggle();
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
 
 void OnToggleSWPlaythrough(const CommandContext &WXUNUSED(context) )
 {
-   bool SWPlaythrough;
-   gPrefs->Read(L"/AudioIO/SWPlaythrough", &SWPlaythrough, false);
-   gPrefs->Write(L"/AudioIO/SWPlaythrough", !SWPlaythrough);
+   AudioIOSWPlaythrough.Toggle();
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -585,10 +572,7 @@ void OnToggleSWPlaythrough(const CommandContext &WXUNUSED(context) )
 void OnToggleAutomatedInputLevelAdjustment(
    const CommandContext &WXUNUSED(context) )
 {
-   bool AVEnabled;
-   gPrefs->Read(
-      L"/AudioIO/AutomatedInputLevelAdjustment", &AVEnabled, false);
-   gPrefs->Write(L"/AudioIO/AutomatedInputLevelAdjustment", !AVEnabled);
+   AudioIOAutomatedInputLevelAdjustment.Toggle();
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -679,8 +663,7 @@ void OnPlayBeforeSelectionStart(const CommandContext &context)
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t0 = selectedRegion.t0();
-   double beforeLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
+   auto beforeLen = AudioIOCutPreviewBeforeLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -701,8 +684,7 @@ void OnPlayAfterSelectionStart(const CommandContext &context)
 
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
-   double afterLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
+   auto afterLen = AudioIOCutPreviewAfterLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -728,8 +710,7 @@ void OnPlayBeforeSelectionEnd(const CommandContext &context)
 
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
+   auto beforeLen = AudioIOCutPreviewBeforeLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -754,8 +735,7 @@ void OnPlayAfterSelectionEnd(const CommandContext &context)
    const auto &selectedRegion = viewInfo.selectedRegion;
 
    double t1 = selectedRegion.t1();
-   double afterLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
+   auto afterLen = AudioIOCutPreviewAfterLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -777,10 +757,8 @@ void OnPlayBeforeAndAfterSelectionStart
 
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
-   double afterLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
+   auto beforeLen = AudioIOCutPreviewBeforeLen.Read();
+   auto afterLen = AudioIOCutPreviewAfterLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -807,10 +785,8 @@ void OnPlayBeforeAndAfterSelectionEnd
 
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
-   double beforeLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
-   double afterLen;
-   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
+   auto beforeLen = AudioIOCutPreviewBeforeLen.Read();
+   auto afterLen = AudioIOCutPreviewAfterLen.Read();
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -982,7 +958,7 @@ BaseItemSharedPtr TransportMenu()
                // and gets the prime position.
                // We supply the name for the 'other one' here.
                // It should be bound to Shift+R
-               (gPrefs->ReadBool("/GUI/PreferNewTrackRecord", false)
+               (RecordingPreferNewTrack.Read()
                 ? XXO("&Append Record") : XXO("Record &New Track")),
                FN(OnRecord2ndChoice), CanStopFlags,
                L"Shift+R",
@@ -1043,7 +1019,7 @@ BaseItemSharedPtr TransportMenu()
                   XXO("Sound A&ctivated Recording (on/off)"),
                   FN(OnToggleSoundActivated),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest(L"/AudioIO/SoundActivatedRecord", false) )
+                  Options{}.CheckTest(AudioIOSoundActivatedRecord) )
             ),
 
             Section( "",
@@ -1058,17 +1034,11 @@ BaseItemSharedPtr TransportMenu()
                Command( L"Overdub", XXO("&Overdub (on/off)"),
                   FN(OnTogglePlayRecording),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest( L"/AudioIO/Duplex",
-#ifdef EXPERIMENTAL_DA
-                     false
-#else
-                     true
-#endif
-                  ) ),
+                  Options{}.CheckTest( AudioIODuplex ) ),
                Command( L"SWPlaythrough", XXO("So&ftware Playthrough (on/off)"),
                   FN(OnToggleSWPlaythrough),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest( L"/AudioIO/SWPlaythrough", false ) )
+                  Options{}.CheckTest( AudioIOSWPlaythrough ) )
 
 
       #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
@@ -1077,8 +1047,7 @@ BaseItemSharedPtr TransportMenu()
                   XXO("A&utomated Recording Level Adjustment (on/off)"),
                   FN(OnToggleAutomatedInputLevelAdjustment),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest(
-                     L"/AudioIO/AutomatedInputLevelAdjustment", false ) )
+                  Options{}.CheckTest( AudioIOAutomatedInputLevelAdjustment ) )
       #endif
             )
          )

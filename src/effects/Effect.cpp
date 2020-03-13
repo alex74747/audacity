@@ -1374,7 +1374,7 @@ bool Effect::ProcessTrack(int count,
    if (isGenerator)
    {
       if (mIsPreview) {
-         gPrefs->Read(L"/AudioIO/EffectsPreviewLen", &genDur, 6.0);
+         genDur = AudioIOEffectsPreviewLen.Read();
          genDur = std::min(mDuration, CalcPreviewInputLength(genDur));
       }
       else {
@@ -2068,8 +2068,7 @@ void Effect::Preview(bool dryOnly)
    bool isGenerator = GetType() == EffectTypeGenerate;
 
    // Mix a few seconds of audio from all of the tracks
-   double previewLen;
-   gPrefs->Read(L"/AudioIO/EffectsPreviewLen", &previewLen, 6.0);
+   auto previewLen = AudioIOEffectsPreviewLen.Read();
 
    const double rate = mProjectRate;
 

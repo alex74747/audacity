@@ -233,3 +233,8 @@ PrefsPanel::Registration sAttachment{ "Library",
 };
 }
 #endif
+
+#ifdef EXPERIMENTAL_OD_FFMPEG
+BoolSetting LibraryFFmpegOnDemand{L"/Library/FFmpegOnDemand", false};
+#endif
+

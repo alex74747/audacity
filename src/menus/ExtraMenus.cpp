@@ -5,6 +5,7 @@
 #include "ProjectWindows.h"
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
+#include "../prefs/GUIPrefs.h"
 #include "../toolbars/MixerToolBar.h"
 #include "../toolbars/DeviceToolBar.h"
 
@@ -158,7 +159,7 @@ BaseItemSharedPtr ExtraMenu()
    ) };
 
    static const auto pred =
-      []{ return gPrefs->ReadBool(L"/GUI/ShowExtraMenus", false); };
+      []{ return GUIShowExtraMenus.Read(); };
    static BaseItemSharedPtr menu{
       ConditionalItems( L"Optional",
          pred, Menu( L"Extra", XXO("Ext&ra"), extraItems ) )

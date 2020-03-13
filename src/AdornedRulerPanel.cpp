@@ -47,6 +47,7 @@
 #include "TrackPanelMouseEvent.h"
 #include "UIHandle.h"
 #include "ViewInfo.h"
+#include "prefs/GUIPrefs.h"
 #include "prefs/TracksPrefs.h"
 #include "prefs/ThemePrefs.h"
 #include "toolbars/ToolBar.h"
@@ -1268,7 +1269,7 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
 
    mIsRecording = false;
 
-   mTimelineToolTip = !!gPrefs->Read(L"/QuickPlay/ToolTips", 1L);
+   mTimelineToolTip = QuickPlayToolTips.Read();
    mPlayRegionDragsSelection = (gPrefs->Read(L"/QuickPlay/DragSelection", 0L) == 1)? true : false; 
 
 #if wxUSE_TOOLTIPS
@@ -1314,7 +1315,7 @@ void AdornedRulerPanel::UpdatePrefs()
    // Update button texts for language change
    UpdateButtonStates();
 
-   mTimelineToolTip = !!gPrefs->Read(L"/QuickPlay/ToolTips", 1L);
+   mTimelineToolTip = QuickPlayToolTips.Read();
 
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
 #ifdef EXPERIMENTAL_TWO_TONE_TIME_RULER
@@ -2294,18 +2295,14 @@ void AdornedRulerPanel::HandleSnapping(size_t index)
 #if 0
 void AdornedRulerPanel::OnTimelineToolTips()
 {
-   mTimelineToolTip = (mTimelineToolTip)? false : true;
-   gPrefs->Write(L"/QuickPlay/ToolTips", mTimelineToolTip);
+   mTimelineToolTips = QuickPlayToolTips.Toggle();
    gPrefs->Flush();
 }
 #endif
 
 void AdornedRulerPanel::OnAutoScroll()
 {
-   if (mViewInfo->bUpdateTrackIndicator)
-      gPrefs->Write(L"/GUI/A utoScroll", false);
-   else
-      gPrefs->Write(L"/GUI/AutoScroll", true);
+   TracksAutoScroll.Write( !mViewInfo->bUpdateTrackIndicator );
 
    gPrefs->Flush();
 

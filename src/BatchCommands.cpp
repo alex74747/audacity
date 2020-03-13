@@ -52,6 +52,8 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 #include "commands/CommandContext.h"
 #include "commands/CommandDispatch.h"
 
+#include "prefs/BatchPrefs.h"
+
 MacroCommands::MacroCommands( AudacityProject &project )
 : mProject{ project }
 , mExporter{ project }
@@ -827,8 +829,7 @@ void MacroCommands::ResetMacro()
 bool MacroCommands::ReportAndSkip(
    const TranslatableString & friendlyCommand, const wxString & params)
 {
-   int bDebug;
-   gPrefs->Read(L"/Batch/Debug", &bDebug, false);
+   auto bDebug = BatchDebug.Read();
    if( bDebug == 0 )
       return false;
 

@@ -35,6 +35,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "../../../../prefs/SpectrogramSettings.h"
 #include "../../../../ProjectSettings.h"
 #include "SampleTrackCache.h"
+#include "../../../../prefs/TracksPrefs.h"
 
 #include <wx/dcmemory.h>
 #include <wx/graphics.h>
@@ -191,8 +192,7 @@ void SpectrumView::DoSetMinimized( bool minimized )
    auto wt = static_cast<WaveTrack*>( FindTrack().get() );
 
 #ifdef EXPERIMENTAL_HALF_WAVE
-   bool bHalfWave;
-   gPrefs->Read(L"/GUI/CollapseToHalfWave", &bHalfWave, false);
+   auto bHalfWave = TracksCollapseToHalfWave.Read();
    if( bHalfWave && minimized)
    {
       // It is all right to set the top of scale to a huge number,

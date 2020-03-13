@@ -628,7 +628,7 @@ public:
    bool WriteEnum( Enum value )
    { return WriteInt( static_cast<int>( value ) ); }
 
-};
+}; 
 
 /// Adapts EnumSettingBase to a particular enumeration type
 template< typename Enum >
@@ -725,7 +725,6 @@ extern PREFERENCES_API BoolSetting DefaultUpdatesCheckingFlag;
 extern PREFERENCES_API BoolSetting
      WarningsCopyOrEditUncompressedDataAsk
    , WarningsCopyOrEditUncompressedDataFirstAsk // not in the dialog
-   , WarningsDiskSpaceWarning
    , WarningsDropoutDetected // in RecordingPrefs dialog
    , WarningsEmptyCanBeDirty
    , WarningsFirstProjectSave

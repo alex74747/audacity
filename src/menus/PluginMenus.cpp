@@ -26,6 +26,7 @@
 #include "../effects/RealtimeEffectManager.h"
 #include "../prefs/EffectsPrefs.h"
 #include "../prefs/PrefsDialog.h"
+#include "../prefs/RecordingPrefs.h"
 #include "../widgets/AudacityMessageBox.h"
 
 #include <wx/log.h>
@@ -410,7 +411,7 @@ void OnResetConfig(const CommandContext &context)
    // - Stop playback/recording and unapply pause.
    // - Set Zoom sensibly.
    gPrefs->Write("/GUI/SyncLockTracks", 0);
-   gPrefs->Write("/AudioIO/SoundActivatedRecord", 0);
+   AudioIOSoundActivatedRecord.Write(0);
    gPrefs->Write("/SelectionToolbarMode", 0);
    gPrefs->Flush();
    DoReloadPreferences(project);
@@ -697,13 +698,8 @@ void AddEffectMenuItemGroup(
    bool isDefault)
 {
    const int namesCnt = (int) names.size();
-   int perGroup;
 
-#if defined(__WXGTK__)
-   gPrefs->Read(L"/Effects/MaxPerGroup", &perGroup, 15);
-#else
-   gPrefs->Read(L"/Effects/MaxPerGroup", &perGroup, 0);
-#endif
+   auto perGroup = EffectsMaxPerGroup.Read();
 
    int groupCnt = namesCnt;
    for (int i = 0; i < namesCnt; i++)

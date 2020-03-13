@@ -677,8 +677,6 @@ BoolSetting
       L"/Warnings/CopyOrEditUncompressedDataAsk",      true }
 ,  WarningsCopyOrEditUncompressedDataFirstAsk{
       L"/Warnings/CopyOrEditUncompressedDataFirstAsk", true }
-,  WarningsDiskSpaceWarning{
-      L"/Warnings/DiskSpaceWarning",                   true }
 ,  WarningsDropoutDetected{
       L"/Warnings/DropoutDetected",                    true }
 

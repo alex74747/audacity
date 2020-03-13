@@ -260,8 +260,7 @@ ViewInfo::ViewInfo(double start, double screenDuration, double pixelsPerSecond)
 void ViewInfo::UpdateSelectedPrefs( int id )
 {
    if (id == UpdateScrollPrefsID())
-      gPrefs->Read(L"/GUI/AutoScroll", &bUpdateTrackIndicator,
-                   true);
+      bUpdateTrackIndicator = TracksAutoScroll.Read();
    ZoomInfo::UpdateSelectedPrefs( id );
 }
 
@@ -271,8 +270,7 @@ void ViewInfo::UpdatePrefs()
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
    bScrollBeyondZero = ScrollingPreference.Read();
 #endif
-   gPrefs->Read(L"/GUI/AdjustSelectionEdges", &bAdjustSelectionEdges,
-      true);
+   bAdjustSelectionEdges = TracksBehaviorsAdjustSelectionEdges.Read();
 
    UpdateSelectedPrefs( UpdateScrollPrefsID() );
 }
@@ -335,4 +333,9 @@ static ProjectFileIORegistry::AttributeWriterEntry entry {
 }
 };
 
-BoolSetting ScrollingPreference{ L"/GUI/ScrollBeyondZero", false };
+BoolSetting ScrollingPreference{
+   L"/GUI/ScrollBeyondZero", false };
+BoolSetting TracksAutoScroll{
+   L"/GUI/AutoScroll",                true };
+BoolSetting TracksBehaviorsAdjustSelectionEdges{
+   L"/GUI/AdjustSelectionEdges",    true  };

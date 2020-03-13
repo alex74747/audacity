@@ -67,30 +67,31 @@ void TracksBehaviorsPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       S
          .TieCheckBox(XXO("&Select all audio, if selection required"),
-            {L"/GUI/SelectAllOnNone", false});
+            TracksBehaviorsSelectAllOnNone);
 
       /* i18n-hint: Cut-lines are lines that can expand to show the cut audio.*/
       S
          .TieCheckBox(XXO("Enable cut &lines"),
-                    {L"/GUI/EnableCutLines",
-                     false});
+            TracksBehaviorsCutLines);
+
       S
          .TieCheckBox(XXO("Enable &dragging selection edges"),
-                    {L"/GUI/AdjustSelectionEdges",
-                     true});
+            TracksBehaviorsAdjustSelectionEdges);
+
       S
          .TieCheckBox(XXO("Editing a clip can &move other clips"),
             EditClipsCanMove);
-                    {L"/GUI/CircularTrackNavigation",
-                     false});
+      S
+         .TieCheckBox(XXO("\"Move track focus\" c&ycles repeatedly through tracks"),
+            TracksBehaviorsCircularNavigation);
+
       S
          .TieCheckBox(XXO("&Type to create a label"),
-                    {L"/GUI/TypeToCreateLabel",
-                     false});
+            TracksBehaviorsTypeToCreateLabel);
+
       S
          .TieCheckBox(XXO("Use dialog for the &name of a new label"),
-                    {L"/GUI/DialogForNameNewLabel",
-                     false});
+            TracksBehaviorsDialogForNameNewLabel);
 
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
       S
@@ -100,7 +101,7 @@ void TracksBehaviorsPrefs::PopulateOrExchange(ShuttleGui & S)
 
       S
          .TieCheckBox(XXO("Advanced &vertical zooming"),
-            {L"/GUI/VerticalZooming", false});
+            TracksBehaviorsAdvancedVerticalZooming);
 
       S.AddSpace(10);
 
@@ -135,3 +136,18 @@ PrefsPanel::Registration sAttachment{ "TracksBehaviors",
    { "Tracks" }
 };
 }
+
+BoolSetting TracksBehaviorsCircularNavigation{
+   L"/GUI/CircularTrackNavigation", false };
+BoolSetting TracksBehaviorsCutLines{
+   L"/GUI/EnableCutLines",          false };
+BoolSetting TracksBehaviorsDialogForNameNewLabel{
+   L"/GUI/DialogForNameNewLabel",   false };
+BoolSetting TracksBehaviorsSelectAllOnNone{
+   L"/GUI/SelectAllOnNone",         false };
+BoolSetting TracksBehaviorsSyncLockTracks{
+   L"/GUI/SyncLockTracks",          false  };
+BoolSetting TracksBehaviorsTypeToCreateLabel{
+   L"/GUI/TypeToCreateLabel",       false };
+BoolSetting TracksBehaviorsAdvancedVerticalZooming{
+   L"/GUI/VerticalZooming",         false };

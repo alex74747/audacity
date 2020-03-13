@@ -108,6 +108,11 @@ ExportCLOptions::~ExportCLOptions()
    TransferDataFromWindow();
 }
 
+namespace {
+BoolSetting ExternalProgramShowOutput{
+   L"/FileFormats/ExternalProgramShowOutput", false};
+}
+
 ///
 ///
 void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
@@ -138,7 +143,7 @@ void ExportCLOptions::PopulateOrExchange(ShuttleGui & S)
 
             S
                .TieCheckBox(XXO("Show output"),
-                  {L"/FileFormats/ExternalProgramShowOutput", false});
+                  ExternalProgramShowOutput );
          }
          S.EndMultiColumn();
       }
@@ -803,7 +808,8 @@ bool ExportCL::CheckFileName(wxFileName &filename, int WXUNUSED(format))
 void ExportCL::GetSettings()
 {
    // Retrieve settings
-   gPrefs->Read(L"/FileFormats/ExternalProgramShowOutput", &mShow, false);
+   // Retrieve settings
+   mShow = ExternalProgramShowOutput.Read();
    mCmd = gPrefs->Read(L"/FileFormats/ExternalProgramExportCommand", L"lame - \"%f.mp3\"");
 }
 

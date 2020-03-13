@@ -12,6 +12,7 @@
 
 #include "SelectFile.h"
 #include "ShuttleGui.h"
+#include "prefs/ImportExportPrefs.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/Grid.h"
 #include "widgets/HelpSystem.h"
@@ -282,14 +283,14 @@ TagsEditorDialog::~TagsEditorDialog()
 
 void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
 {
-   bool bShow;
-   gPrefs->Read(L"/AudioFiles/ShowId3Dialog", &bShow, true );
+   bool bShow = ImportExportShowId3Dialog.Read();
 
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxALIGN_LEFT, 0);
       {
-         S.AddUnits(XO("Use arrow keys (or ENTER key after editing) to navigate fields."));
+         S
+            .AddUnits(XO("Use arrow keys (or ENTER key after editing) to navigate fields."));
       }
       S.EndHorizontalLay();
 
@@ -321,16 +322,27 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
          mGrid->SetColSize(0, tc.GetSize().x);
          mGrid->SetColMinimalWidth(0, tc.GetSize().x);
       }
-      S.Prop(1)
+      S
+         .Prop(1)
          .Position(wxEXPAND | wxALL)
          .AddWindow(mGrid);
 
       S.StartMultiColumn(4, wxALIGN_CENTER);
       {
-         S.Id(AddID).AddButton(XXO("&Add"));
-         S.Id(RemoveID).AddButton(XXO("&Remove"));
-         S.AddTitle( {} );
-         S.Id(ClearID).AddButton(XXO("Cl&ear"));
+         S
+            .Id(AddID)
+            .AddButton(XXO("&Add"));
+
+         S
+            .Id(RemoveID)
+            .AddButton(XXO("&Remove"));
+
+         S
+            .AddTitle( {} );
+
+         S
+            .Id(ClearID)
+            .AddButton(XXO("Cl&ear"));
       }
       S.EndMultiColumn();
 
@@ -340,41 +352,62 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
          {
             S.StartMultiColumn(4, wxALIGN_CENTER);
             {
-               S.Id(EditID).AddButton(XXO("E&dit..."));
-               S.Id(ResetID).AddButton(XXO("Rese&t..."));
+               S
+                  .Id(EditID)
+                  .AddButton(XXO("E&dit..."));
+
+               S
+                  .Id(ResetID)
+                  .AddButton(XXO("Rese&t..."));
             }
             S.EndMultiColumn();
          }
          S.EndStatic();
-         S.StartStatic(XO("Template"));
+
+         S
+            .StartStatic(XO("Template"));
          {
             S.StartMultiColumn(4, wxALIGN_CENTER);
             {
-               S.Id(LoadID).AddButton(XXO("&Load..."));
-               S.Id(SaveID).AddButton(XXO("&Save..."));
-               S.AddTitle( {} );
-               S.Id(SaveDefaultsID).AddButton(XXO("Set De&fault"));
+               S
+                  .Id(LoadID)
+                  .AddButton(XXO("&Load..."));
+
+               S
+                  .Id(SaveID)
+                  .AddButton(XXO("&Save..."));
+
+               S
+                  .AddTitle( {} );
+
+               S
+                  .Id(SaveDefaultsID)
+                  .AddButton(XXO("Set De&fault"));
             }
             S.EndMultiColumn();
          }
          S.EndStatic();
       }
       S.EndHorizontalLay();
+
       S.StartHorizontalLay(wxALIGN_LEFT, 0);
       {
-         S.Id( DontShowID ).AddCheckBox( XXO("Don't show this when exporting audio"), !bShow );
+         S
+            .Id( DontShowID )
+            .AddCheckBox( XXO("Don't show this when exporting audio"), !bShow );
       }
       S.EndHorizontalLay();
    }
    S.EndVerticalLay();
 
-   S.AddStandardButtons(eOkButton | eCancelButton | eHelpButton);
+   S
+      .AddStandardButtons(eOkButton | eCancelButton | eHelpButton);
 }
 
 void TagsEditorDialog::OnDontShow( wxCommandEvent & Evt )
 {
    bool bShow = !Evt.IsChecked();
-   gPrefs->Write(L"/AudioFiles/ShowId3Dialog", bShow );
+   ImportExportShowId3Dialog.Write( bShow );
    gPrefs->Flush();
 }
 
@@ -553,11 +586,14 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
 
    S.StartVerticalLay(true);
    {
-      tc = S.AddTextWindow(L"");
+      tc =
+      S
+         .AddTextWindow(L"");
    }
    S.EndVerticalLay();
 
-   S.AddStandardButtons();
+   S
+      .AddStandardButtons();
 
    wxArrayString g;
    int cnt = mLocal.GetNumUserGenres();
@@ -941,3 +977,4 @@ bool TagsEditorDialog::IsWindowRectValid(const wxRect *windowRect) const
 
    return true;
 }
+

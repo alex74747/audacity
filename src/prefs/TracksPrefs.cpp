@@ -26,32 +26,11 @@
 
 #include "Prefs.h"
 #include "../ShuttleGui.h"
+#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
+#include "ViewInfo.h"
 #include "../WaveTrack.h"
 
 int TracksPrefs::iPreferencePinned = -1;
-
-namespace {
-   const wxChar *PinnedHeadPreferenceKey()
-   {
-      return L"/AudioIO/PinnedHead";
-   }
-
-   bool PinnedHeadPreferenceDefault()
-   {
-      return false;
-   }
-   
-   const wxChar *PinnedHeadPositionPreferenceKey()
-   {
-      return L"/AudioIO/PinnedHeadPosition";
-   }
-
-   double PinnedHeadPositionPreferenceDefault()
-   {
-      return 0.5;
-   }
-}
-
 
 namespace {
    const auto waveformScaleKey = L"/GUI/DefaultWaveformScaleChoice";
@@ -304,27 +283,27 @@ void TracksPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       S
          .TieCheckBox(XXO("Auto-&fit track height"),
-            {L"/GUI/TracksFitVerticallyZoomed", false});
+            TracksFitVerticallyZoomed);
 
       S
          .TieCheckBox(XXO("Sho&w track name as overlay"),
-            {L"/GUI/ShowTrackNameInWaveform", false});
+            TracksShowName);
 
 #ifdef EXPERIMENTAL_HALF_WAVE
       S
          .TieCheckBox(XXO("Use &half-wave display when collapsed"),
-            {L"/GUI/CollapseToHalfWave", false});
+            TracksCollapseToHalfWave);
 #endif
 
 #ifdef SHOW_PINNED_UNPINNED_IN_PREFS
       S
          .TieCheckBox(XXO("&Pinned Recording/Playback head"),
-            {PinnedHeadPreferenceKey(), PinnedHeadPreferenceDefault()});
+            AudioIOPinnedHead);
 #endif
 
       S
          .TieCheckBox(XXO("A&uto-scroll if head unpinned"),
-            {L"/GUI/AutoScroll", true});
+            TracksAutoScroll);
 
       S.AddSpace(10);
 
@@ -335,8 +314,7 @@ void TracksPrefs::PopulateOrExchange(ShuttleGui & S)
          S
             .TieNumericTextBox(
                XXO("Pinned &head position"),
-               {PinnedHeadPositionPreferenceKey(),
-                PinnedHeadPositionPreferenceDefault()},
+               AudioIOPinnedHeadPosition,
                30 );
 #endif
 
@@ -378,7 +356,7 @@ bool TracksPrefs::GetPinnedHeadPreference()
    // Correct solution would be to re-write wxFileConfig to be efficient.
    if( iPreferencePinned >= 0 )
       return iPreferencePinned == 1;
-   bool bResult = gPrefs->ReadBool(PinnedHeadPreferenceKey(), PinnedHeadPreferenceDefault());
+   auto bResult = AudioIOPinnedHead.Read();
    iPreferencePinned = bResult ? 1: 0;
    return bResult;
 }
@@ -386,23 +364,21 @@ bool TracksPrefs::GetPinnedHeadPreference()
 void TracksPrefs::SetPinnedHeadPreference(bool value, bool flush)
 {
    iPreferencePinned = value ? 1 :0;
-   gPrefs->Write(PinnedHeadPreferenceKey(), value);
+   AudioIOPinnedHead.Write( value );
    if(flush)
       gPrefs->Flush();
 }
 
 double TracksPrefs::GetPinnedHeadPositionPreference()
 {
-   auto value = gPrefs->ReadDouble(
-      PinnedHeadPositionPreferenceKey(),
-      PinnedHeadPositionPreferenceDefault());
+   auto value = AudioIOPinnedHeadPosition.Read();
    return std::max(0.0, std::min(1.0, value));
 }
 
 void TracksPrefs::SetPinnedHeadPositionPreference(double value, bool flush)
 {
    value = std::max(0.0, std::min(1.0, value));
-   gPrefs->Write(PinnedHeadPositionPreferenceKey(), value);
+   AudioIOPinnedHeadPosition.Write( value );
    if(flush)
       gPrefs->Flush();
 }
@@ -434,3 +410,15 @@ PrefsPanel::Registration sAttachment{ "Tracks",
    }
 };
 }
+
+BoolSetting AudioIOPinnedHead{
+   L"/AudioIO/PinnedHead",                       false };
+DoubleSetting AudioIOPinnedHeadPosition{
+   L"/AudioIO/PinnedHeadPosition",               0.5 };
+
+BoolSetting TracksCollapseToHalfWave{
+   L"/GUI/CollapseToHalfWave",        false };
+BoolSetting TracksFitVerticallyZoomed{
+   L"/GUI/TracksFitVerticallyZoomed", false };
+BoolSetting TracksShowName{
+   L"/GUI/ShowTrackNameInWaveform",   false };

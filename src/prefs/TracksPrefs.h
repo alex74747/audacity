@@ -20,7 +20,9 @@
 #include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 #include "WaveformSettings.h" // for ScaleTypeValues
 
+class BoolSetting;
 class ShuttleGui;
+class StringSetting;
 
 #define TRACKS_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Tracks") }
 
@@ -52,5 +54,14 @@ class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
 
    static int iPreferencePinned;
 };
+
+extern BoolSetting AudioIOPinnedHead;
+extern DoubleSetting AudioIOPinnedHeadPosition; // a fraction in [ 0, 1 ]
+
+extern BoolSetting
+     TracksCollapseToHalfWave
+   , TracksFitVerticallyZoomed
+   , TracksShowName
+;
 
 #endif

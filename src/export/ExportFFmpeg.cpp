@@ -438,7 +438,8 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
    {
    case FMT_M4A:
    {
-      int q = gPrefs->Read(L"/FileFormats/AACQuality",-99999);
+      int q =
+         AACQuality.ReadWithDefault( -99999 ); // Not the same as in the dialog?
       mEncAudioCodecCtx->SetGlobalQuality(q);
 
       q = wxClip( q, 98 * mChannels, 160 * mChannels );
@@ -450,7 +451,8 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
       break;
    }
    case FMT_AC3:
-      mEncAudioCodecCtx->SetBitRate(gPrefs->Read(L"/FileFormats/AC3BitRate", 192000));
+      mEncAudioCodecCtx->SetBitRate(
+         AC3BitRate.ReadWithDefault( 192000 ));
       if (!CheckSampleRate(
              mSampleRate, ExportFFmpegAC3Options::iAC3SampleRates[0],
              ExportFFmpegAC3Options::iAC3SampleRates[2],
@@ -465,7 +467,7 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
       break;
    case FMT_AMRNB:
       mSampleRate = 8000;
-      mEncAudioCodecCtx->SetBitRate(gPrefs->Read(L"/FileFormats/AMRNBBitRate", 12200));
+      mEncAudioCodecCtx->SetBitRate(AMRNBBitRate.Read());
       break;
    case FMT_OPUS:
       options.Set("b", gPrefs->Read(L"/FileFormats/OPUSBitRate", L"128000"), 0);
@@ -477,7 +479,7 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
       options.Set("mapping_family", mChannels <= 2 ? "0" : "255", 0);
       break;
    case FMT_WMA2:
-      mEncAudioCodecCtx->SetBitRate(gPrefs->Read(L"/FileFormats/WMABitRate", 198000));
+      mEncAudioCodecCtx->SetBitRate(WMABitRate.Read());
       if (!CheckSampleRate(
              mSampleRate, ExportFFmpegWMAOptions::iWMASampleRates[0],
              ExportFFmpegWMAOptions::iWMASampleRates[4],
@@ -494,67 +496,53 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
    {
       AVDictionaryWrapper streamMetadata = mEncAudioStream->GetMetadata();
       streamMetadata.Set(
-         "language",
-         gPrefs->Read(L"/FileFormats/FFmpegLanguage", L""), 0);
+         "language", FFmpegLanguage.Read());
 
       mEncAudioStream->SetMetadata(streamMetadata);
 
-      mEncAudioCodecCtx->SetSampleRate(
-         gPrefs->Read(L"/FileFormats/FFmpegSampleRate", (long)0));
+      mEncAudioCodecCtx->SetSampleRate(FFmpegSampleRate.Read());
 
       if (mEncAudioCodecCtx->GetSampleRate() != 0)
          mSampleRate = mEncAudioCodecCtx->GetSampleRate();
 
-      mEncAudioCodecCtx->SetBitRate(
-         gPrefs->Read(L"/FileFormats/FFmpegBitRate", (long)0));
+      mEncAudioCodecCtx->SetBitRate(FFmpegBitRate.Read());
 
-      mEncAudioCodecCtx->SetCodecTagFourCC(
-         gPrefs->Read(L"/FileFormats/FFmpegTag", L"")
-            .mb_str(wxConvUTF8));
+      mEncAudioCodecCtx->SetCodecTagFourCC(FFmpegTag.Read());
 
-      mEncAudioCodecCtx->SetGlobalQuality(
-         gPrefs->Read(L"/FileFormats/FFmpegQuality", (long)-99999));
+      mEncAudioCodecCtx->SetGlobalQuality(FFmpegQuality.ReadWithDefault(-99999));
       mEncAudioCodecCtx->SetCutoff(
          gPrefs->Read(L"/FileFormats/FFmpegCutOff", (long)0));
       mEncAudioCodecCtx->SetFlags2(0);
 
-      if (gPrefs->Read(L"/FileFormats/FFmpegBitReservoir", true))
+      if (FFmpegBitReservoir.Read())
          options.Set("reservoir", "1", 0);
 
-      if (gPrefs->Read(L"/FileFormats/FFmpegVariableBlockLen", true))
+      if (FFmpegVariableBlockLen.Read())
          mEncAudioCodecCtx->SetFlags2(
             mEncAudioCodecCtx->GetFlags2() | 0x0004); // WMA only?
 
-      mEncAudioCodecCtx->SetCompressionLevel(
-         gPrefs->Read(L"/FileFormats/FFmpegCompLevel", -1));
-      mEncAudioCodecCtx->SetFrameSize(
-         gPrefs->Read(L"/FileFormats/FFmpegFrameSize", (long)0));
+      mEncAudioCodecCtx->SetCompressionLevel(FFmpegCompLevel
+         .ReadWithDefault(-1));
+      mEncAudioCodecCtx->SetFrameSize(FFmpegFrameSize.Read());
 
       // FIXME The list of supported options for the selected encoder should be
       // extracted instead of a few hardcoded
       options.Set(
-         "lpc_coeff_precision",
-         gPrefs->Read(L"/FileFormats/FFmpegLPCCoefPrec", (long)0));
+         "lpc_coeff_precision", FFmpegLPCCoefPrec.Read());
       options.Set(
-         "min_prediction_order",
-         gPrefs->Read(L"/FileFormats/FFmpegMinPredOrder", (long)-1));
+         "min_prediction_order", FFmpegMinPredOrder.Read());
       options.Set(
-         "max_prediction_order",
-         gPrefs->Read(L"/FileFormats/FFmpegMaxPredOrder", (long)-1));
+         "max_prediction_order", FFmpegMaxPredOrder.Read());
       options.Set(
-         "min_partition_order",
-         gPrefs->Read(L"/FileFormats/FFmpegMinPartOrder", (long)-1));
+         "min_partition_order", FFmpegMinPartOrder.Read());
       options.Set(
-         "max_partition_order",
-         gPrefs->Read(L"/FileFormats/FFmpegMaxPartOrder", (long)-1));
+         "max_partition_order", FFmpegMaxPartOrder.Read());
       options.Set(
          "prediction_order_method",
-         gPrefs->Read(L"/FileFormats/FFmpegPredOrderMethod", (long)0));
-      options.Set(
-         "muxrate", gPrefs->Read(L"/FileFormats/FFmpegMuxRate", (long)0));
+         FFmpegPredictionOrderMethod.ReadWithDefault(0));
+      options.Set("muxrate", FFmpegMuxRate.Read());
 
-      mEncFormatCtx->SetPacketSize(
-         gPrefs->Read(L"/FileFormats/FFmpegPacketSize", (long)0));
+      mEncFormatCtx->SetPacketSize(FFmpegPacketSize.Read());
 
       codec = mFFmpeg->CreateEncoder(FFmpegCodec.Read());
 

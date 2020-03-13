@@ -26,6 +26,8 @@ other settings.
 
 #include "MidiIOPrefs.h"
 
+#include "AudioIOBase.h"
+
 #ifdef EXPERIMENTAL_MIDI_OUT
 
 #include <wx/defs.h>

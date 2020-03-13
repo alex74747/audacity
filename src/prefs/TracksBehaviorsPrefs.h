@@ -37,6 +37,16 @@ class AUDACITY_DLL_API TracksBehaviorsPrefs final : public PrefsPanel
    void PopulateOrExchange(ShuttleGui & S) override;
 };
 
+extern AUDACITY_DLL_API BoolSetting
+     TracksBehaviorsAdvancedVerticalZooming
+   , TracksBehaviorsCircularNavigation
+   , TracksBehaviorsCutLines
+   , TracksBehaviorsDialogForNameNewLabel
+   , TracksBehaviorsSelectAllOnNone
+   , TracksBehaviorsSyncLockTracks
+   , TracksBehaviorsTypeToCreateLabel
+;
+
 extern AUDACITY_DLL_API ChoiceSetting TracksBehaviorsSolo;
 
 #endif

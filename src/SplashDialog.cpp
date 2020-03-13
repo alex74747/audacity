@@ -38,6 +38,7 @@ most commonly asked questions about Audacity.
 
 #include "AllThemeResources.h"
 #include "Prefs.h"
+#include "prefs/GUIPrefs.h"
 #include "HelpText.h"
 
 // DA: Logo for Splash Dialog (welcome dialog)
@@ -128,8 +129,7 @@ void SplashDialog::OnChar(wxMouseEvent &event)
 
 void SplashDialog::Populate( ShuttleGui & S )
 {
-   bool bShow;
-   gPrefs->Read(L"/GUI/ShowSplashScreen", &bShow, true );
+   auto bShow = GUIShowSplashScreen.Read();
    S.StartVerticalLay(1);
 
    //v For now, change to AudacityLogoWithName via old-fashioned ways, not Theme.
@@ -201,7 +201,7 @@ SplashDialog::~SplashDialog()
 void SplashDialog::OnDontShow( wxCommandEvent & Evt )
 {
    bool bShow = !Evt.IsChecked();
-   gPrefs->Write(L"/GUI/ShowSplashScreen", bShow );
+   GUIShowSplashScreen.Write( bShow );
    gPrefs->Flush();
 }
 

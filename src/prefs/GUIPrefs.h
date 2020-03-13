@@ -17,6 +17,7 @@
 
 #include "PrefsPanel.h"
 
+class BoolSetting;
 class ChoiceSetting;
 class ShuttleGui;
 
@@ -55,8 +56,26 @@ int ShowClippingPrefsID();
 AUDACITY_DLL_API
 int ShowTrackNameInWaveformPrefsID();
 
+extern AUDACITY_DLL_API BoolSetting
+     GUIBeepOnCompletion
+   , GUIRetainLabels
+   , GUIRtlWorkaround
+   , GUIShowExtraMenus
+   , GUIShowMac
+   , GUIShowSplashScreen
+;
+
 extern AUDACITY_DLL_API ChoiceSetting
      GUIManualLocation
 ;
+
+extern AUDACITY_DLL_API BoolSetting
+     QuickPlayScrubbingEnabled
+   , QuickPlayToolTips
+;
+
+// Right to left languages fail in many wx3 dialogs with missing buttons.
+// The workaround is to use LTR in those dialogs.
+void RTL_WORKAROUND( wxWindow *pWnd );
 
 #endif

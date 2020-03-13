@@ -26,6 +26,8 @@ typedef void PaStream;
 typedef void PxMixer;
 #endif
 
+#include "Prefs.h"
+
 class AudioIOBase;
 
 class AudacityProject;
@@ -321,6 +323,16 @@ protected:
 };
 
 #include "Prefs.h"
+
+extern AUDIO_DEVICES_API BoolSetting AudioIOMicrofades;
+
+extern AUDIO_DEVICES_API DoubleSetting AudioIOCutPreviewBeforeLen; // seconds
+extern AUDIO_DEVICES_API DoubleSetting AudioIOCutPreviewAfterLen; // seconds
+extern AUDIO_DEVICES_API DoubleSetting AudioIOEffectsPreviewLen; // seconds
+extern AUDIO_DEVICES_API DoubleSetting AudioIOSeekLongPeriod; // seconds
+extern AUDIO_DEVICES_API DoubleSetting AudioIOSeekShortPeriod; // seconds
+extern AUDIO_DEVICES_API BoolSetting AudioIOUnpinnedScrubbing;
+extern AUDIO_DEVICES_API BoolSetting AudioIOVariSpeedPlay;
 
 extern AUDIO_DEVICES_API StringSetting AudioIOHost;
 extern AUDIO_DEVICES_API DoubleSetting AudioIOLatencyCorrection;

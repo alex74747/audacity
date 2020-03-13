@@ -35,7 +35,6 @@
 
 #include "CommonCommandFlags.h"
 #include "KeyboardCapture.h"
-#include "prefs/GUISettings.h" // for RTL_WORKAROUND
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
@@ -51,6 +50,7 @@
 #include "UndoManager.h"
 #include "WaveTrack.h"
 
+#include "prefs/GUIPrefs.h"
 #include "widgets/AButton.h"
 #include "widgets/MeterPanel.h"
 #include "widgets/auStaticText.h"

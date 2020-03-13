@@ -66,6 +66,8 @@ struct AudioIOEvent {
    bool on;
 };
 
+#define MAX_MIDI_BUFFER_SIZE 5000
+
 struct TransportTracks {
    WaveTrackArray playbackTracks;
    WaveTrackArray captureTracks;

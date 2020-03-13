@@ -68,6 +68,7 @@
 #include "../widgets/AButton.h"
 #include "FileNames.h"
 
+#include "../prefs/RecordingPrefs.h"
 #include "../tracks/ui/Scrubbing.h"
 #include "../toolbars/ToolManager.h"
 
@@ -213,7 +214,7 @@ void ControlToolBar::Populate()
       ID_RECORD_BUTTON, false, XO("Record"), [this]{ OnRecord(); }) ;
 
    bool bPreferNewTrack;
-   gPrefs->Read("/GUI/PreferNewTrackRecord",&bPreferNewTrack, false);
+   bPreferNewTrack = RecordingPreferNewTrack.Read();
    if( !bPreferNewTrack )
       MakeAlternateImages(*mRecord, 1, bmpRecordBelow, bmpRecordBelow,
          bmpRecordBelowDisabled);
@@ -284,8 +285,7 @@ void ControlToolBar::RegenerateTooltips()
             break;
          case ID_RECORD_BUTTON:
             // With shift
-            {  bool bPreferNewTrack;
-               gPrefs->Read("/GUI/PreferNewTrackRecord",&bPreferNewTrack, false);
+            {  bool bPreferNewTrack = RecordingPreferNewTrack.Read();
                // For the shortcut tooltip.
                commands.push_back( {
                   L"Record2ndChoice",
@@ -319,7 +319,6 @@ void ControlToolBar::RegenerateTooltips()
 void ControlToolBar::UpdatePrefs()
 {
    bool updated = false;
-   bool active;
 
    wxString strLocale = gPrefs->Read(L"/Locale/Language", L"");
    if (mStrLocale != strLocale)
@@ -778,12 +777,7 @@ void ControlToolBar::StartScrolling()
          // Display a fixed recording head while scrolling the waves continuously.
          // If you overdub, you may want to anticipate some context in existing tracks,
          // so center the head.  If not, put it rightmost to display as much wave as we can.
-         bool duplex;
-#ifdef EXPERIMENTAL_DA
-         gPrefs->Read(L"/AudioIO/Duplex", &duplex, false);
-#else
-         gPrefs->Read(L"/AudioIO/Duplex", &duplex, true);
-#endif
+         auto duplex = AudioIODuplex.Read();
          if (duplex) {
             // See if there is really anything being overdubbed
             if (gAudioIO->GetNumPlaybackChannels() == 0)

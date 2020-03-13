@@ -78,25 +78,19 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
       // Start wording of options with a verb, if possible.
       S
          .TieCheckBox(XXO("Play &other tracks while recording (overdub)"),
-            {L"/AudioIO/Duplex",
-#ifdef EXPERIMENTAL_DA
-             false
-#else
-             true
-#endif
-            });
+            AudioIODuplex);
 
 //#if defined(__WXMAC__)
 // Bug 388.  Feature not supported on any Mac Hardware.
 #if 0
       S
          .TieCheckBox(XO("Use &hardware to play other tracks"),
-            {L"/AudioIO/Playthrough", false});
+            AudioIOPlaythrough);
 #endif
 
       S
          .TieCheckBox(XXO("&Software playthrough of input"),
-            {L"/AudioIO/SWPlaythrough", false});
+            AudioIOSWPlaythrough);
 
 #if !defined(__WXMAC__)
       //S
@@ -105,12 +99,12 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
 
        S
          .TieCheckBox(XXO("Record on a new track"),
-            {L"/GUI/PreferNewTrackRecord", false});
+            RecordingPreferNewTrack);
 
 /* i18n-hint: Dropout is a loss of a short sequence audio sample data from the recording */
        S
          .TieCheckBox(XXO("Detect dropouts"),
-            {WarningDialogKey(L"DropoutDetected"), true});
+            WarningsDropoutDetected);
    }
    S.EndStatic();
 
@@ -119,7 +113,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       S
          .TieCheckBox(XXO("&Enable"),
-            {L"/AudioIO/SoundActivatedRecord", false});
+            AudioIOSoundActivatedRecord);
 
       S.StartMultiColumn(2, wxEXPAND);
       {
@@ -127,7 +121,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
 
          S
             .TieSlider(XXO("Le&vel (dB):"),
-               {L"/AudioIO/SilenceLevel", -50},
+               AudioIOSilenceLevel,
                0, -DecibelScaleCutoff.Read());
       }
       S.EndMultiColumn();
@@ -159,8 +153,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
                .Text(XO("Custom name text"))
                .Disable(!mUseCustomTrackName)
                .TieTextBox( {},
-                  {L"/GUI/TrackNames/RecodingTrackName",
-                   _("Recorded_Audio")},
+                  RecordingTrackName,
                   30);
          }
 
@@ -173,15 +166,15 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
          {
             S
                .TieCheckBox(XXO("&Track Number"),
-                  {L"/GUI/TrackNames/TrackNumber", false});
+                  RecordingTrackNumber);
 
             S
                .TieCheckBox(XXO("System &Date"),
-                  {L"/GUI/TrackNames/DateStamp", false});
+                  RecordingDateStamp);
 
             S
                .TieCheckBox(XXO("System T&ime"),
-                  {L"/GUI/TrackNames/TimeStamp", false});
+                  RecordingTimeStamp);
          }
          S.EndMultiColumn();
       }
@@ -195,7 +188,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
       {
          S
             .TieCheckBox(XXO("Enable Automated Recording Level Adjustment."),
-               {L"/AudioIO/AutomatedInputLevelAdjustment", false});
+               AudioIOAutomatedInputLevelAdjustment);
 
          S.StartMultiColumn(2, wxEXPAND);
          {
@@ -204,15 +197,13 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
             S
                /* i18n-hint: Desired maximum (peak) volume for sound */
                .TieSlider(XXO("Target Peak:"),
-                  {L"/AudioIO/TargetPeak",
-                   AILA_DEF_TARGET_PEAK},
+                  AudioIOTargetPeak,
                   100,
                   0);
 
             S
                .TieSlider(XXO("Within:"),
-                  {L"/AudioIO/DeltaPeakVolume",
-                   AILA_DEF_DELTA_PEAK},
+                  AudioIODeltaPeakVolume,
                   100,
                   0);
          }
@@ -222,8 +213,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
          {
             S
                .TieIntegerTextBox(XXO("Analysis Time:"),
-                  {L"/AudioIO/AnalysisTime",
-                   AILA_DEF_ANALYSIS_TIME},
+                  AudioIOAnalysisTime,
                   9);
    
             S
@@ -231,8 +221,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
 
             S
                .TieIntegerTextBox(XXO("Number of consecutive analysis:"),
-                  {L"/AudioIO/NumberAnalysis",
-                   AILA_DEF_NUMBER_ANALYSIS},
+                  AudioIONumberAnalysis,
                   2);
 
             S
@@ -252,8 +241,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
             S
                .Text({ {}, XO("seconds") })
                .TieNumericTextBox(XXO("Pre-ro&ll:"),
-                  {AUDIO_PRE_ROLL_KEY,
-                   DEFAULT_PRE_ROLL_SECONDS},
+                  AudioIOPreRoll,
                   9);
 
             S
@@ -264,8 +252,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
             S
                .Text({ {}, XO("milliseconds") })
                .TieNumericTextBox(XXO("Cross&fade:"),
-                  {AUDIO_ROLL_CROSSFADE_KEY,
-                   DEFAULT_ROLL_CROSSFADE_MS},
+                  AudioIOCrossfade,
                   9);
 
             S
@@ -288,22 +275,18 @@ bool RecordingPrefs::Commit()
       AudioIOLatencyDuration.Reset();
 
    #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
-      double targetpeak, deltapeak;
-      gPrefs->Read(L"/AudioIO/TargetPeak",  &targetpeak);
-      gPrefs->Read(L"/AudioIO/DeltaPeakVolume", &deltapeak);
+      double targetpeak =  AudioIOTargetPeak.Read();
+      double deltapeak = AudioIODeltaPeakVolume.Read();
       if (targetpeak + deltapeak > 100.0 || targetpeak - deltapeak < 0.0)
-      {
-         gPrefs->Write(L"/AudioIO/DeltaPeakVolume", min(100.0 - targetpeak, targetpeak));
-      }
+         AudioIODeltaPeakVolume.Write( min(100 - targetpeak, targetpeak ) );
 
-      int value;
-      gPrefs->Read(L"/AudioIO/AnalysisTime", &value);
+      auto value = AudioIOAnalysisTime.Read();
       if (value <= 0)
-         gPrefs->Write(L"/AudioIO/AnalysisTime", AILA_DEF_ANALYSIS_TIME);
+         AudioIOAnalysisTime.Reset();
 
-      gPrefs->Read(L"/AudioIO/NumberAnalysis", &value);
+      value = AudioIONumberAnalysis.Read();
       if (value < 0)
-         gPrefs->Write(L"/AudioIO/NumberAnalysis", AILA_DEF_NUMBER_ANALYSIS);
+         AudioIONumberAnalysis.Reset();
    #endif
    return true;
 }
@@ -323,3 +306,56 @@ PrefsPanel::Registration sAttachment{ "Recording",
    }
 };
 }
+
+BoolSetting AudioIODuplex {
+   L"/AudioIO/Duplex",
+#ifdef EXPERIMENTAL_DA
+                                                     false
+#else
+                                                     true
+#endif
+};
+
+BoolSetting RecordingDateStamp{
+   L"/GUI/TrackNames/DateStamp",           false };
+
+BoolSetting RecordingPreferNewTrack{
+   L"/GUI/PreferNewTrackRecord",           false };
+BoolSetting RecordingTimeStamp{
+   L"/GUI/TrackNames/TimeStamp",           false };
+StringSetting RecordingTrackName{
+   L"/GUI/TrackNames/RecodingTrackName", // sic, don't change, be compatible
+   // Default value depends on current language preference
+   [] { return XO("Recorded_Audio").Translation(); }
+};
+BoolSetting RecordingTrackNumber{
+   L"/GUI/TrackNames/TrackNumber",         false };
+//BoolSetting AudioIOPlaythrough{
+// L"/AudioIO/Playthrough",                      false };
+
+DoubleSetting AudioIOCrossfade{
+   L"/AudioIO/Crossfade",                        10.0 };
+DoubleSetting AudioIOPreRoll{
+   L"/AudioIO/PreRoll",                          5.0 };
+
+IntSetting AudioIOSilenceLevel{
+   L"/AudioIO/SilenceLevel",                     -50 };
+
+BoolSetting AudioIOSoundActivatedRecord{
+   L"/AudioIO/SoundActivatedRecord",             false };
+BoolSetting AudioIOSWPlaythrough{
+   L"/AudioIO/SWPlaythrough",                    false };
+
+#ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
+BoolSetting AudioIOAutomatedInputLevelAdjustment{
+   L"/AudioIO/AutomatedInputLevelAdjustment",    false };
+IntSetting AudioIODeltaPeakVolume{
+   L"/AudioIO/DeltaPeak",                        2 };
+IntSetting AudioIOTargetPeak{
+   L"/AudioIO/TargetPeak",                       92 };
+
+IntSetting AudioIOAnalysisTime{
+   L"/AudioIO/AnalysisTime",                     1000 };
+IntSetting AudioIONumberAnalysis{
+   L"/AudioIO/NumberAnalysis",                   5 };
+#endif
