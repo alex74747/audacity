@@ -74,10 +74,11 @@ void ApplicationPrefs::PopulateOrExchange(ShuttleGui & S)
    /* i18n-hint: Title for the update notifications panel in the preferences dialog. */
    S.StartStatic(XO("Update notifications"));
    {
-      S.TieCheckBox(
-         /* i18n-hint: Check-box title that configures periodic updates checking. */
-         XXC("&Check for updates", "application preferences"),
-         DefaultUpdatesCheckingFlag);
+      S
+         .Target(DefaultUpdatesCheckingFlag)
+         .AddCheckBox(
+            /* i18n-hint: Check-box title that configures periodic updates checking. */
+            XXC("&Check for updates", "application preferences"));
 
       S.StartVerticalLay();
       {

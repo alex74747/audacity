@@ -383,8 +383,9 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                   .Prop(1)
                   .Text(XO("First file name"))
                   .Enable( firstFileEnabler )
-                  .TieTextBox( {},
-                              name,
+                  .Target( name )
+                  .AddTextBox( {},
+                              {},
                               30);
             }
             S.EndMultiColumn();
@@ -451,8 +452,9 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                .Id(PrefixID)
                .Text(XO("File name prefix"))
                .Enable( byNumberEnabler )
-               .TieTextBox( {},
-                           name,
+               .Target( name )
+               .AddTextBox( {},
+                           {},
                            30);
          }
          S.EndMultiColumn();

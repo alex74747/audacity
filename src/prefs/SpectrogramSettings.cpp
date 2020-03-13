@@ -387,7 +387,7 @@ void SpectrogramSettings::SavePrefs()
 
    SpectrumWindowFunction.Write(windowType);
 
-   colorSchemeSetting.WriteEnum(colorScheme);
+   colorSchemeSetting.WriteEnum(static_cast<ColorScheme>(colorScheme));
 
    SpectrumScale.Write(static_cast<int>(scaleType));
 

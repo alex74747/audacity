@@ -150,10 +150,12 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
                } );
 
          S
-            .TieChoice( XXO("Location of &Manual:"), GUIManualLocation);
+            .Target( GUIManualLocation )
+            .AddChoice( XXO("Location of &Manual:") );
 
          S
-            .TieChoice( XXO("Th&eme:"), GUITheme());
+            .Target( GUITheme() )
+            .AddChoice( XXO("Th&eme:") );
 
          S
             .TieChoice( XXO("Meter dB &range:"),
