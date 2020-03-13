@@ -23,6 +23,7 @@
 
 class wxArrayString;
 class FileConfig;
+class BoolSetting;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -175,8 +176,8 @@ class MODULE_MANAGER_API PluginManager final : public PluginManagerInterface
 {
 public:
 
-   RegistryPath GetPluginEnabledSetting( const PluginID &ID ) const;
-   RegistryPath GetPluginEnabledSetting( const PluginDescriptor &desc ) const;
+   BoolSetting *GetPluginEnabledSetting( const PluginID &ID ) const;
+   BoolSetting *GetPluginEnabledSetting( const PluginDescriptor &desc ) const;
 
    // PluginManagerInterface implementation
 

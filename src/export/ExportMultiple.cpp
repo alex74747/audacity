@@ -88,7 +88,6 @@ enum {
    ByNameID,
    ByNumberID,
    PrefixID,
-   OverwriteID
 };
 
 //
@@ -465,11 +464,9 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
    S.SetBorder(5);
    S.StartHorizontalLay(wxEXPAND, false);
    {
-      mOverwrite =
       S
-         .Id(OverwriteID)
-         .TieCheckBox( XXO("Overwrite existing files"),
-            OverwriteExisting );
+         .Target( OverwriteExisting )
+         .AddCheckBox( XXO("Overwrite existing files") );
    }
    S.EndHorizontalLay();
 
@@ -1060,7 +1057,7 @@ ProgressResult ExportMultipleDialog::DoExport(std::unique_ptr<ProgressDialog> &p
       wxLogDebug(L"Whole Project");
 
    wxFileName backup;
-   if (mOverwrite->GetValue()) {
+   if (OverwriteExisting.Read()) {
       name = inName;
       backup.Assign(name);
 

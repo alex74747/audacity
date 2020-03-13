@@ -118,7 +118,7 @@ const std::map< wxString, TranslatableLabel > SuggestedPrompts{
 // Collect needed prompts and settings paths, at most once, on demand
 struct Entry {
    TranslatableLabel prompt;
-   wxString setting;
+   BoolSetting *pSetting;
 };
 static const std::vector< Entry > &GetModuleData()
 {
@@ -128,6 +128,10 @@ static const std::vector< Entry > &GetModuleData()
          for (auto &plug : pm.PluginsOfType(PluginTypeModule)) {
             auto internal = plug.GetEffectFamily();
             if ( internal.empty() )
+               continue;
+
+            auto pSetting = pm.GetPluginEnabledSetting( plug );
+            if ( !pSetting )
                continue;
 
             TranslatableLabel prompt;
@@ -143,14 +147,12 @@ static const std::vector< Entry > &GetModuleData()
             else
                prompt = iter->second;
 
-            auto setting = pm.GetPluginEnabledSetting( plug );
-
-            push_back( { prompt, setting } );
+            push_back( { prompt, pSetting } );
          }
          // Guarantee some determinate ordering
          std::sort( begin(), end(),
             []( const Entry &a, const Entry &b ){
-               return a.setting < b.setting;
+               return a.pSetting->GetPath() < b.pSetting->GetPath();
             }
          );
       }
@@ -171,7 +173,8 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
       for ( const auto &entry : GetModuleData() )
       {
          S
-            .TieCheckBox( entry.prompt, {entry.setting, true} );
+            .Target( *entry.pSetting )
+            .AddCheckBox( entry.prompt );
       }
    }
    S.EndStatic();
@@ -186,9 +189,9 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
             .TieChoice( XXO("S&ort or Group:"), EffectsGroupBy);
 
          S
-            .TieIntegerTextBox(XXO("&Maximum effects per group (0 to disable):"),
-                             EffectsMaxPerGroup,
-                             5);
+            .Target( EffectsMaxPerGroup )
+            .AddTextBox(XXO("&Maximum effects per group (0 to disable):"),
+               {}, 5);
       }
       S.EndMultiColumn();
    }
@@ -198,12 +201,12 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Plugin Options"));
    {
       S
-         .TieCheckBox( XXO("Check for updated plugins when Audacity starts"),
-            PluginsCheckForUpdates );
+         .Target( PluginsCheckForUpdates )
+         .AddCheckBox( XXO("Check for updated plugins when Audacity starts") );
 
       S
-         .TieCheckBox (XXO("Rescan plugins next time Audacity is started"),
-            PluginsRescan );
+         .Target( PluginsRescan )
+         .AddCheckBox( XXO("Rescan plugins next time Audacity is started") );
    }
    S.EndStatic();
 #endif
@@ -212,7 +215,8 @@ void EffectsPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Instruction Set"));
    {
       S
-         .TieCheckBox( XXO("&Use SSE/SSE2/.../AVX"), SSEGUI );
+         .Target( SSEGUI )
+         .AddCheckBox( XXO("&Use SSE/SSE2/.../AVX") );
    }
    S.EndStatic();
 #endif

@@ -143,8 +143,6 @@ private:
 
    wxTextCtrl    *mPrefix;
 
-   wxCheckBox    *mOverwrite;
-
    wxButton      *mCancel;
 
    wxSimplebook   *mBook;

@@ -348,15 +348,22 @@ const PluginID &PluginManagerInterface::AudacityCommandRegistrationCallback(
    return empty;
 }
 
-RegistryPath PluginManager::GetPluginEnabledSetting( const PluginID &ID ) const
+BoolSetting *PluginManager::GetPluginEnabledSetting( const PluginID &ID ) const
 {
    auto pPlugin = GetPlugin( ID );
    if ( pPlugin )
       return GetPluginEnabledSetting( *pPlugin );
-   return {};
+   return nullptr;
 }
 
-RegistryPath PluginManager::GetPluginEnabledSetting(
+namespace{
+
+// Static map holds Settings objects at stable addresses
+std::map< wxString, BoolSetting > sEnabledSettings;
+
+}
+
+BoolSetting *PluginManager::GetPluginEnabledSetting(
    const PluginDescriptor &desc ) const
 {
    switch ( desc.GetPluginType() ) {
@@ -365,9 +372,10 @@ RegistryPath PluginManager::GetPluginEnabledSetting(
          // RegisterPlugin() for the module
          auto family = desc.GetEffectFamily();
          if ( family.empty() ) // as for built-in effect and command modules
-            return {};
+            return nullptr;
          else
-            return L'/' + family + L"/Enable";
+            // Assume the entry was already made by RegisterPlugin
+            return &sEnabledSettings.find( family )->second;
       }
       case PluginTypeEffect:
          // do NOT use GetEffectFamily() for this descriptor, but instead,
@@ -375,7 +383,7 @@ RegistryPath PluginManager::GetPluginEnabledSetting(
          // be different (may be empty)
          return GetPluginEnabledSetting( desc.GetProviderID() );
       default:
-         return {};
+         return nullptr;
    }
 }
 
@@ -396,7 +404,16 @@ bool PluginManager::IsPluginRegistered(
 const PluginID & PluginManager::RegisterPlugin(ModuleInterface *module)
 {
    PluginDescriptor & plug = CreatePlugin(GetID(module), module, PluginTypeModule);
-   plug.SetEffectFamily(module->GetOptionalFamilySymbol().Internal());
+
+   // Record the optional family name
+   auto family = module->GetOptionalFamilySymbol().Internal();
+   plug.SetEffectFamily(family);
+
+   if ( !family.empty() ) {
+      // Create a BoolSetting object
+      auto path = L'/' + family + L"/Enable";
+      sEnabledSettings.emplace( family, BoolSetting{ path, true } );
+   }
 
    plug.SetEnabled(true);
    plug.SetValid(true);
@@ -1355,8 +1372,8 @@ void PluginManager::Iterator::Advance(bool incrementing)
          (mEffectType == EffectTypeNone || plug.GetEffectType() == mEffectType)) {
          if (!all && (plugType & PluginTypeEffect)) {
             // This preference may be written by EffectsPrefs
-            auto setting = mPm.GetPluginEnabledSetting( plug );
-            if (!(setting.empty() || gPrefs->Read( setting, true )))
+            auto pSetting = mPm.GetPluginEnabledSetting( plug );
+            if (pSetting && !pSetting->Read())
                continue;
          }
          // Pause iteration at this match
@@ -1391,7 +1408,7 @@ auto PluginManager::Iterator::operator ++() -> Iterator &
 {
    Advance(true);
    return *this;
-}
+ }
 
 bool PluginManager::IsPluginEnabled(const PluginID & ID)
 {
