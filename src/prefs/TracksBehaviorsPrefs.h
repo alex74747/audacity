@@ -16,6 +16,7 @@
 
 #include "PrefsPanel.h"
 
+class BoolSetting;
 class ChoiceSetting;
 class ShuttleGui;
 

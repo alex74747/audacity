@@ -45,6 +45,7 @@ of sample block storage.
 
 #include "FileNames.h"
 #include "SelectFile.h"
+#include "prefs/TracksBehaviorsPrefs.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/wxPanelWrapper.h"
 
@@ -354,10 +355,8 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
       return;
    }
 
-   bool editClipCanMove = true;
-   gPrefs->Read(wxT("/GUI/EditClipCanMove"), &editClipCanMove);
-   gPrefs->Write(wxT("/GUI/EditClipCanMove"), false);
-   gPrefs->Flush();
+   SettingScope scope;
+   EditClipsCanMove.Write( false );
 
    // Remember the old blocksize, so that we can restore it later.
    auto oldBlockSize = Sequence::GetMaxDiskBlockSize();
@@ -365,8 +364,6 @@ void BenchmarkDialog::OnRun( wxCommandEvent & WXUNUSED(event))
 
    const auto cleanup = finally( [&] {
       Sequence::SetMaxDiskBlockSize(oldBlockSize);
-      gPrefs->Write(wxT("/GUI/EditClipCanMove"), editClipCanMove);
-      gPrefs->Flush();
    } );
 
    wxBusyCursor busy;
