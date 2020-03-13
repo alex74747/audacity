@@ -43,9 +43,7 @@ other settings.
 #include "../widgets/AudacityMessageBox.h"
 
 enum {
-   HostID = 10000,
-   PlayID,
-   RecordID,
+   PlayID = 10000,
    ChannelsID
 };
 
@@ -125,7 +123,6 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
       {
          mHost =
          S
-            .Id(HostID)
             .Target( Choice( MidiIOHost, Verbatim( hostLabels ) ) )
             .Action( [this]{ OnHost(); } )
             /* i18n-hint: (noun) */
@@ -162,10 +159,10 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
    {
       S.StartMultiColumn(2);
       {
-         mRecord
+         mRecord =
          S
-            .Id(RecordID);
-            .AddChoice(XO("De&vice:"), {} );
+            // .Action( [this]{ OnDevice(); } )
+            .AddChoice(XO("De&vice:") );
 
          /*
          mChannels =
