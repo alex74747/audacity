@@ -107,11 +107,7 @@ BEGIN_EVENT_TABLE(MouseEvtHandler, wxEvtHandler)
    EVT_LEFT_DCLICK(MouseEvtHandler::OnMouse)
 END_EVENT_TABLE()
 
-ExportMultipleDialog::ExportMultipleDialog(AudacityProject *project)
-: wxDialogWrapper( &GetProjectFrame( *project ),
-   wxID_ANY, XO("Export Multiple") )
-, mExporter{ *project }
-, mRadioSetting{
+static LabelSetting radioSetting{
    L"/Export/TrackNameWithOrWithoutNumbers",
    {
       { L"labelTrack", XXO("Using Label/Track Name") },
@@ -119,7 +115,12 @@ ExportMultipleDialog::ExportMultipleDialog(AudacityProject *project)
       { L"numberAfter", XXO("Numbering after File name prefix") },
    },
    0 // labelTrack
-}
+};
+
+ExportMultipleDialog::ExportMultipleDialog(AudacityProject *project)
+: wxDialogWrapper( &GetProjectFrame( *project ),
+   wxID_ANY, XO("Export Multiple") )
+, mExporter{ *project }
 , mSelectionState{ SelectionState::Get( *project ) }
 {
    SetName();
@@ -407,7 +408,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
          S.StartPanel();
          {
             S
-               .StartRadioButtonGroup( mRadioSetting );
+               .StartRadioButtonGroup( radioSetting );
             {
                mByName =
                S
