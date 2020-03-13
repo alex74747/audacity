@@ -52,7 +52,6 @@
 
 #include "../WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
-#include "../widgets/valnum.h"
 
 #include <algorithm>
 #include <vector>
@@ -67,7 +66,6 @@
 #include <wx/choice.h>
 #include <wx/radiobut.h>
 #include <wx/slider.h>
-#include <wx/valtext.h>
 #include <wx/textctrl.h>
 
 // SPECTRAL_SELECTION not to affect this effect for now, as there might be no indication that it does.
@@ -1226,10 +1224,9 @@ struct ControlInfo {
       wxTextCtrl *const text =
       S
          .Id(id + 1)
-         .Validator<FloatingPointValidator<double>>(
-            formatAsInt ? 0 : 2,
-            &target,
+         .Target( target,
             NumValidatorStyle::DEFAULT,
+            formatAsInt ? 0 : 2,
             valueMin, valueMax )
          .Enable( fn )
          .AddTextBox(textBoxCaption, L"", 0);

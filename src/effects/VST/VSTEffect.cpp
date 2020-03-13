@@ -83,7 +83,6 @@
 #include "../../SelectFile.h"
 #include "../../ShuttleGui.h"
 #include "../../effects/Effect.h"
-#include "../../widgets/valnum.h"
 #include "../../widgets/AudacityMessageBox.h"
 #include "../../widgets/NumericTextCtrl.h"
 #include "XMLFileReader.h"
@@ -826,8 +825,8 @@ void VSTEffectOptionsDialog::PopulateOrExchange(ShuttleGui & S)
                wxTextCtrl *t;
                t =
                S
-                  .Validator<IntegerValidator<int>>(
-                     &mBufferSize, NumValidatorStyle::DEFAULT, 8, 1048576 * 1)
+                  .Target( mBufferSize,
+                     NumValidatorStyle::DEFAULT, 8, 1048576 * 1)
                   .MinSize( { 100, -1 } )
                   .TieNumericTextBox(XXO("&Buffer Size (8 to 1048576 samples):"),
                                        mBufferSize,

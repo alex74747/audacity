@@ -72,7 +72,6 @@
 #include "../prefs/GUIPrefs.h"
 
 #include "AllThemeResources.h"
-#include "../widgets/valnum.h"
 #include "wxWidgetsWindowPlacement.h"
 
 #if wxUSE_ACCESSIBILITY
@@ -1998,8 +1997,8 @@ void MeterPanel::OnPreferences()
             rate =
             S
                .Text(XO("Meter refresh rate per second [1-100]"))
-               .Validator<IntegerValidator<long>>(
-                  &mMeterRefreshRate, NumValidatorStyle::DEFAULT,
+               .Target( mMeterRefreshRate,
+                  NumValidatorStyle::DEFAULT,
                   MIN_REFRESH_RATE, MAX_REFRESH_RATE)
                .AddTextBox(XXO("Meter refresh rate per second [1-100]: "),
                                 wxString::Format(L"%d", meterRefreshRate),

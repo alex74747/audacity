@@ -21,6 +21,7 @@
 
 #include <wx/choice.h>
 #include <wx/slider.h>
+#include <wx/textctrl.h>
 
 #include "../LabelTrack.h"
 #include "Prefs.h"
@@ -28,7 +29,6 @@
 #include "../ShuttleGui.h"
 #include "../SyncLock.h"
 #include "../widgets/NumericTextCtrl.h"
-#include "../widgets/valnum.h"
 
 #include "TimeWarper.h"
 #include "../WaveClip.h"
@@ -301,17 +301,16 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
          mpTextCtrl_Multiplier =
          S
             .Id(ID_Multiplier)
-            .Validator<FloatingPointValidator<double>>(
-               3, &mMultiplier,
-               NumValidatorStyle::THREE_TRAILING_ZEROES,
-               Percentage.min / 100.0, ((Percentage.max / 100.0) + 1) )
+            .Target( mMultiplier,
+               NumValidatorStyle::THREE_TRAILING_ZEROES, 3,
+               Percentage.min / 100.0, ((Percentage.min / 100.0) + 1) )
             .AddTextBox(XXO("&Speed Multiplier:"), L"", 12);
 
          mpTextCtrl_PercentChange =
-         S.Id(ID_PercentChange)
-            .Validator<FloatingPointValidator<double>>(
-               3, &m_PercentChange,
-               NumValidatorStyle::THREE_TRAILING_ZEROES,
+         S
+            .Id(ID_PercentChange)
+            .Target( m_PercentChange,
+               NumValidatorStyle::THREE_TRAILING_ZEROES, 3,
                Percentage.min, Percentage.max )
             .AddTextBox(XXO("Percent C&hange:"), L"", 12);
       }
