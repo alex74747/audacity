@@ -59,9 +59,6 @@ KeyConfigPrefs and MousePrefs use.
 #define CurrentComboID          17002
 #define CommandsListID          17005
 #define FilterID                17008
-#define ViewByTreeID            17009
-#define ViewByNameID            17010
-#define ViewByKeyID             17011
 #define FilterTimerID           17012
 
 // EMPTY_SHORTCUT means "user chose to have no shortcut"
@@ -71,9 +68,6 @@ static NormalizedKeyString NO_SHORTCUT{ wxString{ (wxChar)7 } };
 
 BEGIN_EVENT_TABLE(KeyConfigPrefs, PrefsPanel)
    EVT_LISTBOX(CommandsListID, KeyConfigPrefs::OnSelected)
-   EVT_RADIOBUTTON(ViewByTreeID, KeyConfigPrefs::OnViewBy)
-   EVT_RADIOBUTTON(ViewByNameID, KeyConfigPrefs::OnViewBy)
-   EVT_RADIOBUTTON(ViewByKeyID, KeyConfigPrefs::OnViewBy)
    EVT_TIMER(FilterTimerID, KeyConfigPrefs::OnFilterTimer)
 END_EVENT_TABLE()
 
@@ -160,19 +154,17 @@ bool KeyConfigPrefs::TransferDataToWindow()
    // Instead sort when we do SetView later in this function.
    RefreshBindings(false);
 
-   if (mViewByTree->GetValue()) {
-      mViewType = ViewByTree;
-   }
-   else if (mViewByName->GetValue()) {
-      mViewType = ViewByName;
-   }
-   else if (mViewByKey->GetValue()) {
-      mViewType = ViewByKey;
-      mFilterLabel->SetLabel(_("&Hotkey:"));
-      mFilter->SetName(wxStripMenuCodes(mFilterLabel->GetLabel()));
+   auto viewType = static_cast< ViewByType >( radioSetting.ReadIndex() );
+   switch ( viewType ) {
+      case ViewByKey:
+         mFilterLabel->SetLabel(_("&Hotkey:"));
+         mFilter->SetName(wxStripMenuCodes(mFilterLabel->GetLabel()));
+         break;
+      default:
+         break;
    }
 
-   mView->SetView(mViewType);
+   mView->SetView( viewType );
    return true;
 }
 
@@ -200,31 +192,29 @@ void KeyConfigPrefs::PopulateOrExchange(ShuttleGui & S)
             S.StartHorizontalLay();
             {
                S
+                  .Action( [this]{ OnViewBy(); } )
                   .StartRadioButtonGroup( radioSetting );
                {
-                  mViewByTree =
+                  wxRadioButton *pButton1 =
                   S
-                     .Id(ViewByTreeID)
                      .Text(XO("View by tree"))
                      .TieRadioButton();
          
-                  mViewByName =
+                  wxRadioButton *pButton2 =
                   S
-                     .Id(ViewByNameID)
                      .Text(XO("View by name"))
                      .TieRadioButton();
          
-                  mViewByKey =
+                  wxRadioButton *pButton3 =
                   S
-                     .Id(ViewByKeyID)
                      .Text(XO("View by key"))
                      .TieRadioButton();
 
 #if !defined(__WXMAC__) && wxUSE_ACCESSIBILITY
                   // so that name can be set on a standard control
-                  if (mViewByTree) mViewByTree->SetAccessible(safenew WindowAccessible(mViewByTree));
-                  if (mViewByName) mViewByName->SetAccessible(safenew WindowAccessible(mViewByName));
-                  if (mViewByKey) mViewByKey->SetAccessible(safenew WindowAccessible(mViewByKey));
+                  for ( auto pButton : { pButton1, pButton2, pButton3 } )
+                     if (pButton)
+                        pButton->SetAccessible(safenew WindowAccessible(pButton));
 #endif
                }
                S
@@ -736,7 +726,7 @@ void KeyConfigPrefs::OnFilterKeyDown(wxKeyEvent & e)
       return;
    }
 
-   if (mViewType == ViewByKey) {
+   if (radioSetting.ReadIndex() == ViewByKey) {
       auto key = KeyEventToKeyString(e).Display();
       t->SetValue(key.GET());
 
@@ -761,7 +751,7 @@ void KeyConfigPrefs::OnFilterKeyDown(wxKeyEvent & e)
 
 void KeyConfigPrefs::OnFilterChar(wxEvent & e)
 {
-   if (mViewType != ViewByKey)
+   if (radioSetting.ReadIndex() != ViewByKey)
    {
       e.Skip();
    }
@@ -897,27 +887,25 @@ void KeyConfigPrefs::OnSelected(wxCommandEvent & WXUNUSED(e))
       mKey->AppendText(mView->GetKey(mCommandSelected).Display().GET());
 }
 
-void KeyConfigPrefs::OnViewBy(wxCommandEvent & e)
+void KeyConfigPrefs::OnViewBy()
 {
-   switch (e.GetId())
+   auto viewType = static_cast< ViewByType >( radioSetting.ReadIndex() );
+   switch ( viewType )
    {
-      case ViewByTreeID:
-         mViewType = ViewByTree;
+      case ViewByTree:
          mFilterLabel->SetLabel(_("Searc&h:"));
       break;
 
-      case ViewByNameID:
-         mViewType = ViewByName;
+      case ViewByName:
          mFilterLabel->SetLabel(_("Searc&h:"));
       break;
 
-      case ViewByKeyID:
-         mViewType = ViewByKey;
+      case ViewByKey:
          mFilterLabel->SetLabel(_("&Hotkey:"));
       break;
    }
 
-   mView->SetView(mViewType);
+   mView->SetView(viewType);
    mFilter->SetName(wxStripMenuCodes(mFilterLabel->GetLabel()));
 }
 
