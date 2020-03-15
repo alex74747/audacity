@@ -1190,6 +1190,7 @@ void ShuttleGuiBase::AddRadioButton(
 {
    wxASSERT( mRadioCount >= 0); // Did you remember to use StartRadioButtonGroup() ?
    DoAddRadioButton( Prompt, (mRadioCount++ == 0) ? wxRB_GROUP : 0 );
+   mItem = mRadioItem;
 }
 
 #ifdef __WXMAC__
@@ -2211,6 +2212,8 @@ void ShuttleGuiBase::TieRadioButton()
       wxASSERT( false );
       break;
    }
+
+   mItem = mRadioItem;
 }
 
 /// Call this before AddRadioButton calls.
@@ -2219,10 +2222,11 @@ void ShuttleGuiBase::StartRadioButtonGroup()
    mpState -> mRadioButtons =
       std::make_shared< ShuttleGuiState::RadioButtonList >();
    mRadioCount = 0;
+   mRadioItem = mItem;
 }
 
 /// Call this before any TieRadioButton calls.
-void ShuttleGuiBase::StartRadioButtonGroup( const LabelSetting &Setting )
+void ShuttleGuiBase::StartRadioButtonGroup( LabelSetting &Setting )
 {
    mRadioLabels = Setting.GetLabels();
    mRadioValues = Setting.GetValues();
@@ -2232,10 +2236,15 @@ void ShuttleGuiBase::StartRadioButtonGroup( const LabelSetting &Setting )
    mRadioValue.emplace( mRadioValueString );
 
    // Now actually start the radio button group.
-   mRadioSettingName = Setting.GetPath();
+   mpRadioSetting = &Setting;
    mRadioCount = 0;
    if ( mpState -> mShuttleMode == eIsCreating )
       DoDataShuttle( Setting.GetPath(), *mRadioValue );
+
+   mpState -> mRadioButtons =
+      std::make_shared< DialogDefinition::IntValidator::RadioButtonList >();
+
+   mRadioItem = mItem;
 }
 
 /// Call this after any TieRadioButton calls.
@@ -2247,14 +2256,15 @@ void ShuttleGuiBase::EndRadioButtonGroup()
       mRadioCount == mpState -> mRadioButtons->size() );
 
    if( mpState -> mShuttleMode == eIsGettingFromDialog )
-      DoDataShuttle( mRadioSettingName, *mRadioValue );
+      DoDataShuttle( mpRadioSetting->GetPath(), *mRadioValue );
    mRadioValue.reset();// Clear it out...
-   mRadioSettingName = L"";
+   mpRadioSetting = nullptr;
    mRadioCount = -1; // So we detect a problem.
    mRadioLabels.clear();
    mRadioValues.clear();
    mRadioValueString.clear();
-   mpState->mRadioButtons.reset();
+   mpState -> mRadioButtons.reset();
+   mRadioItem = {};
 }
 
 //-----------------------------------------------------------------------//
