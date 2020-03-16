@@ -68,7 +68,6 @@ const int nMaxNestedSizers = 20;
 enum teShuttleMode
 {
    eIsCreating,
-   eIsSettingToDialog,
 };
 
 class wxListCtrl;

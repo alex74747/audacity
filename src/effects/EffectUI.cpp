@@ -2031,9 +2031,6 @@ void EffectDialog::Init()
 bool EffectDialog::TransferDataToWindow()
 {
    wxDialog::TransferDataToWindow();
-   ShuttleGui S(this, eIsSettingToDialog);
-   PopulateOrExchange(S);
-
    return true;
 }
 
