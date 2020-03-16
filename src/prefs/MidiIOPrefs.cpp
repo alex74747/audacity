@@ -246,8 +246,6 @@ void MidiIOPrefs::OnHost()
 bool MidiIOPrefs::Commit()
 {
    wxPanel::TransferDataFromWindow();
-   ShuttleGui S(this, eIsSavingToPrefs);
-   PopulateOrExchange(S);
 
    const PmDeviceInfo *info;
 

@@ -892,8 +892,6 @@ void VSTEffectOptionsDialog::OnOk()
    }
 
    wxDialog::TransferDataFromWindow();
-   ShuttleGui S(this, eIsGettingFromDialog);
-   PopulateOrExchange(S);
 
    SetConfig(mEffect, PluginSettings::Shared, L"Options",
       L"BufferSize", mBufferSize);

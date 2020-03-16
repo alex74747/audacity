@@ -325,8 +325,6 @@ void LV2EffectSettingsDialog::OnOk()
    }
 
    wxDialog::TransferDataFromWindow();
-   ShuttleGui S(this, eIsGettingFromDialog);
-   PopulateOrExchange(S);
 
    SetConfig(mEffect, PluginSettings::Shared, L"Settings",
       L"BufferSize", mBufferSize);

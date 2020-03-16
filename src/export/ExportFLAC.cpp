@@ -142,8 +142,6 @@ void ExportFLACOptions::PopulateOrExchange(ShuttleGui & S)
 bool ExportFLACOptions::TransferDataFromWindow()
 {
    wxPanel::TransferDataFromWindow();
-   ShuttleGui S(this, eIsSavingToPrefs);
-   PopulateOrExchange(S);
 
    gPrefs->Flush();
 
