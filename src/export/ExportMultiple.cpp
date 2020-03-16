@@ -126,7 +126,7 @@ ExportMultipleDialog::ExportMultipleDialog(AudacityProject *project)
    bool bHasLabels = (mNumLabels > 0);
    mPreferByLabels = bHasLabels && (mNumWaveTracks < 2);
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
 
    PopulateOrExchange(S);
 
@@ -294,7 +294,6 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                // .Action( [this]{ OnOptions )
                .StartSimplebook();
 
-            if (S.GetMode() == eIsCreating)
             {
                for (const auto &pPlugin : mPlugins)
                {

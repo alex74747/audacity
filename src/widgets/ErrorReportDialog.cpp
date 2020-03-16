@@ -83,7 +83,7 @@ ErrorReportDialog::ErrorReportDialog(
 
    mReport = std::make_unique<audacity::sentry::Report> (ex);
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
 
    const wxFont headingFont = wxFont(wxFontInfo(12).Bold());
    const wxFont textFont = wxFont(wxFontInfo(10));
@@ -169,7 +169,7 @@ ErrorReportDialog::ErrorReportDialog(
             S.Prop(1);
             S.AddWindow(pane);
 
-            ShuttleGui SI(pane->GetPane(), eIsCreating);
+            ShuttleGui SI{ pane->GetPane() };
 
             SI.StartVerticalLay();
             {

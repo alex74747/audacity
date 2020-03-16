@@ -72,7 +72,7 @@ LangChoiceDialog::LangChoiceDialog(wxWindow * parent,
    mLang = make_iterator_range( mLangCodes )
       .index( Languages::GetSystemLanguageCode(paths) );
 
-   ShuttleGui S(this, eIsCreating);
+    ShuttleGui S{ this };
 
    S.StartVerticalLay(false);
    {

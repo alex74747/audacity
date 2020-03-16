@@ -545,7 +545,7 @@ AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent,
          } );
    mUITypeIndex = iter - begin;
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 }
 
@@ -666,7 +666,7 @@ AudioUnitEffectImportDialog::AudioUnitEffectImportDialog(wxWindow * parent, Audi
 {
    mEffect = effect;
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 }
 

@@ -31,7 +31,7 @@ NoUpdatesAvailableDialog::NoUpdatesAvailableDialog(wxWindow* parent)
     : wxDialogWrapper(
          parent, -1, XO("Check for Updates"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this };
 
    S.SetBorder(8);
 

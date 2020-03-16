@@ -299,7 +299,7 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
    wxString windowTitle = XO("%s: %s").Format(GetTitle(), wfn.GetFullName()).Translation();
    wxDialog::SetTitle(windowTitle);
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    TranslatableStrings encodings;
 
    int num = sf_num_encodings();

@@ -117,7 +117,7 @@ public:
    {
       SetName();
 
-      ShuttleGui S(this, eIsCreating);
+      ShuttleGui S(this);
       PopulateOrExchange(S);
    }
 
@@ -257,7 +257,7 @@ FFmpegNotFoundDialog::FFmpegNotFoundDialog(wxWindow *parent)
    :  wxDialogWrapper(parent, wxID_ANY, XO("FFmpeg not found"))
 {
    SetName();
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 }
 

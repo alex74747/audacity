@@ -221,7 +221,7 @@ LV2EffectSettingsDialog::LV2EffectSettingsDialog(
    GetConfig(mEffect, PluginSettings::Shared, L"Settings",
       L"UseGUI", mUseGUI, true);
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 }
 

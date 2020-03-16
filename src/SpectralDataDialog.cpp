@@ -163,7 +163,7 @@ SpectralDataDialog::SpectralDataDialog(AudacityProject &parent)
    SetName();
    //------------------------- Main section --------------------
    // Construct the GUI.
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this };
    Populate(S);
    CentreOnParent();
 
@@ -301,7 +301,7 @@ void SpectralDataDialog::UpdatePrefs()
    DestroyChildren();
 
    SetTitle(Title);
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this };
    Populate(S);
    DoToolChanged();
 

@@ -963,7 +963,7 @@ void Exporter::CreateUserPaneCallback(wxWindow *parent, wxUIntPtr userdata)
 
 void Exporter::CreateUserPane(wxWindow *parent)
 {
-   ShuttleGui S{ parent, eIsCreating };
+   ShuttleGui S{ parent };
 
    S.StartStatic(XO("Format Options"), 1);
    {
@@ -1411,7 +1411,7 @@ ExportMixerDialog::ExportMixerDialog( const TrackList *tracks, bool selectedOnly
    auto label = XO("Output Channels: %2d")
       .Format( mMixerSpec->GetNumChannels() );
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this };
    {
       S.SetBorder( 5 );
 

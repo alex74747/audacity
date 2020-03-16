@@ -206,7 +206,7 @@ TagsEditorDialog::TagsEditorDialog(wxWindow * parent,
    mLocal = *mTags;
 
    // Build, size, and position the dialog
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 
    TransferDataToWindow();
@@ -568,7 +568,7 @@ void TagsEditorDialog::OnEdit()
    dlg.SetName();
    wxTextCtrl *tc;
 
-   ShuttleGui S(&dlg, eIsCreating);
+   ShuttleGui S(&dlg);
 
    S.StartVerticalLay(true);
    {

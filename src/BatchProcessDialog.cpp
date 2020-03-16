@@ -98,7 +98,7 @@ ApplyMacroDialog::~ApplyMacroDialog()
 void ApplyMacroDialog::Populate()
 {
    //------------------------- Main section --------------------
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
    // ----------------------- End of main section --------------
    // Get and validate the currently active macro
@@ -276,7 +276,7 @@ void ApplyMacroDialog::ApplyMacroToProject( int iMacro, bool bHasGui )
 #ifdef OPTIONAL_ACTIVITY_WINDOW
    wxDialogWrapper activityWin( this, wxID_ANY, GetTitle());
    activityWin.SetName();
-   ShuttleGui S(&activityWin, eIsCreating);
+   ShuttleGui S(&activityWin);
 
    S.StartHorizontalLay(wxCENTER, false);
    {
@@ -386,7 +386,7 @@ void ApplyMacroDialog::OnApplyToFiles()
       wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER
       );
    activityWin.SetName();
-   ShuttleGui S(&activityWin, eIsCreating);
+   ShuttleGui S(&activityWin);
 
    wxListCtrl * fileList = NULL;
 
@@ -569,7 +569,7 @@ MacrosWindow::~MacrosWindow()
 void MacrosWindow::Populate()
 {
    //------------------------- Main section --------------------
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
    // ----------------------- End of main section --------------
 

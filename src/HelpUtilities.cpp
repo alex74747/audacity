@@ -30,7 +30,7 @@ void ShowDiagnostics(
    auto &window = GetProjectFrame( project );
    wxDialogWrapper dlg( &window, wxID_ANY, description);
    dlg.SetName();
-   ShuttleGui S(&dlg, eIsCreating);
+   ShuttleGui S(&dlg);
 
    wxTextCtrl *text;
    S.StartVerticalLay();

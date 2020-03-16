@@ -50,7 +50,7 @@ UpdateNoticeDialog::UpdateNoticeDialog(wxWindow* parent)
          parent, -1, XO("App updates"), wxDefaultPosition, wxDefaultSize,
          wxCAPTION | wxCLOSE_BOX)
 {
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
 
    S.StartVerticalLay();
    {

@@ -25,7 +25,7 @@ UnwritableLocationErrorDialog::UnwritableLocationErrorDialog(wxWindow* parent, c
     : wxDialogWrapper(
          parent, -1, XO("Error"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this };
 
    S.SetBorder(8);
 

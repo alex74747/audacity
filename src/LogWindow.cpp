@@ -104,7 +104,7 @@ void LogWindow::Show(bool show)
    }
 
    // Log text
-   ShuttleGui S(frame.get(), eIsCreating);
+   ShuttleGui S{ frame.get() };
 
    S.Style(wxNO_BORDER | wxTAB_TRAVERSAL).Prop(true).StartPanel();
    {

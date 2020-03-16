@@ -793,7 +793,7 @@ VSTEffectOptionsDialog::VSTEffectOptionsDialog(wxWindow * parent,
    GetConfig(mEffect, PluginSettings::Shared, L"Options",
       L"UseGUI", mUseGUI, true);
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 }
 

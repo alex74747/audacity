@@ -155,7 +155,7 @@ void BenchmarkDialog::MakeBenchmarkDialog()
 {
    auto options = DialogDefinition::StringValidator::Options{}.Numeric();
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
 
    // Strings don't need to be translated because this class doesn't
    // ever get used in a stable release.

@@ -159,7 +159,7 @@ TimerRecordDialog::TimerRecordDialog(
    // Do we allow the user to change the Automatic Save file?
    m_bProjectAlreadySaved = bAlreadySaved;
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    this->PopulateOrExchange(S);
 
    // Set initial focus to "1" of "01h" in Duration NumericTextCtrl,

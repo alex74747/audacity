@@ -729,7 +729,7 @@ void EffectEqualization::PopulateOrExchange(ShuttleGui & S)
    using namespace DialogDefinition;
    static const auto negate = std::logical_not<bool>{};
 
-   if ( (S.GetMode() == eIsCreating ) && !IsBatchProcessing() )
+   if ( !IsBatchProcessing() )
       LoadUserPreset(GetCurrentSettingsGroup());
 
    //LoadCurves();
@@ -3314,7 +3314,7 @@ EditCurvesDialog::~EditCurvesDialog()
 void EditCurvesDialog::Populate()
 {
    //------------------------- Main section --------------------
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
    // ----------------------- End of main section --------------
 }

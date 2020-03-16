@@ -86,7 +86,7 @@ QuickFixDialog::QuickFixDialog(wxWindow * pParent, AudacityProject &project) :
    mbInSnapTo = gPrefs->Read(L"/SnapTo", SNAP_OFF) !=0;
    mbSoundActivated = AudioIOSoundActivatedRecord.Read();
 
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
    PopulateOrExchange(S);
 
    Fit();

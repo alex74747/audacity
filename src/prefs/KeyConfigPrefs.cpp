@@ -122,7 +122,7 @@ ManualPageID KeyConfigPrefs::HelpPageName()
 
 void KeyConfigPrefs::Populate()
 {
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S(this);
 
    if (!mProject) {
       S.StartVerticalLay(true);
