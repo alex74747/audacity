@@ -253,7 +253,7 @@ void Collector::Visit(
    AddItem( Setting.Key(), "id" );
    AddItem( Prompt, "prompt" );
    AddItem( "enum", "type" );
-   AddItem( Setting.Default().Internal(), "default"  );
+   AddItem( Setting.GetDefault().GET(), "default"  );
    StartField( "enum" );
    StartArray();
    for ( const auto &choice : Setting.GetSymbols().GetInternals() )

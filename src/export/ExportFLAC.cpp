@@ -258,7 +258,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
    auto updateResult = ProgressResult::Success;
 
    long levelPref;
-   FLACLevel.Read().ToLong( &levelPref );
+   FLACLevel.Read().GET().ToLong( &levelPref );
 
    auto bitDepthPref = FLACBitDepth.Read();
 
