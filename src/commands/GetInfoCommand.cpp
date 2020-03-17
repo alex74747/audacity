@@ -256,7 +256,7 @@ void Collector::Visit(
    AddItem( Setting.GetDefault().GET(), "default"  );
    StartField( "enum" );
    StartArray();
-   for ( const auto &choice : Setting.GetSymbols().GetInternals() )
+   for ( const auto &choice : Setting.GetValues() )
       AddItem( choice.GET() );
    EndArray();
    EndField();

@@ -1528,13 +1528,15 @@ wxRadioButton * ShuttleGuiBase::TieRadioButton()
 {
    wxASSERT( mRadioCount >= 0); // Did you remember to use StartRadioButtonGroup() ?
 
-   EnumValueSymbol symbol;
-   if (mRadioCount >= 0 && mRadioCount < (int)mRadioSymbols.size() )
-      symbol = mRadioSymbols[ mRadioCount ];
+   TranslatableString label;
+   wxString Temp;
+   if (mRadioCount >= 0 && mRadioCount < (int)mRadioLabels.size() ) {
+      label = mRadioLabels[ mRadioCount ];
+      Temp = mRadioValues[ mRadioCount ].GET();
+   }
 
    // In what follows, WrappedRef is used in read only mode, but we
    // don't have a 'read-only' version, so we copy to deal with the constness.
-   auto Temp = symbol.Internal();
    wxASSERT( !Temp.empty() ); // More buttons than values?
 
    WrappedType WrappedRef( Temp );
@@ -1548,7 +1550,7 @@ wxRadioButton * ShuttleGuiBase::TieRadioButton()
    {
    case eIsCreating:
       {
-         const auto &Prompt = symbol.Translation();
+         const auto &Prompt = label.Translation();
 
          mpWind = pRadioButton = safenew wxRadioButton(GetParent(), miId, Prompt,
             wxDefaultPosition, mItem.mWindowSize,
@@ -1591,7 +1593,8 @@ void ShuttleGuiBase::StartRadioButtonGroup()
 /// Call this before any TieRadioButton calls.
 void ShuttleGuiBase::StartRadioButtonGroup( const ChoiceSetting &Setting )
 {
-   mRadioSymbols = Setting.GetSymbols();
+   mRadioLabels = Setting.GetLabels();
+   mRadioValues = Setting.GetValues();
 
    // Configure the generic type mechanism to use OUR string.
    mRadioValueString = Setting.GetDefault().GET();
@@ -1617,7 +1620,9 @@ void ShuttleGuiBase::EndRadioButtonGroup()
    mRadioValue.reset();// Clear it out...
    mRadioSettingName = wxT("");
    mRadioCount = -1; // So we detect a problem.
-   mRadioSymbols = {};
+   mRadioLabels.clear();
+   mRadioValues.clear();
+   mRadioValueString.clear();
    mRadioButtons.reset();
 }
 
@@ -2005,11 +2010,14 @@ wxChoice *ShuttleGuiBase::DoTieChoice(
    // Do this to force any needed migrations first
    choiceSetting.Read();
 
-   const auto &symbols = choiceSetting.GetSymbols();
    const auto &SettingName = choiceSetting.Key();
    const auto &Default = choiceSetting.GetDefault();
-   const auto &Choices = symbols.GetMsgids();
-   const auto &InternalChoices = symbols.GetInternals();
+
+   // uh oh
+   TranslatableStrings Choices;
+   for ( const auto &msgid : choiceSetting.GetLabels() )
+      Choices.push_back( msgid.Stripped() );
+   const auto &InternalChoices = choiceSetting.GetValues();
 
    wxChoice * pChoice=(wxChoice*)NULL;
 
@@ -2042,7 +2050,7 @@ wxChoice * ShuttleGuiBase::TieNumberAsChoice(
    const TranslatableString &Prompt,
    const IntSetting & Setting,
    const TranslatableStrings & Choices,
-   const std::vector<int> * pInternalChoices,
+   const std::vector< int > * pInternalChoices,
    int iNoMatchSelector)
 {
    if ( mpVisitor )
