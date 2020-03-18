@@ -20,10 +20,6 @@
 #include "../Effect.h"
 #include "SampleFormat.h"
 
-class wxStaticText;
-class wxSlider;
-class wxCheckBox;
-class wxTextCtrl;
 class LabelTrack;
 
 using Floats = ArrayOf<float>;
@@ -79,8 +75,8 @@ private:
 
    void UpdateFromPlugin();
 
-   void OnSlider(wxCommandEvent & evt);
-   void OnTextCtrl(wxCommandEvent & evt);
+   void OnSlider( int p );
+   void OnTextCtrl( int p );
 
 private:
    std::unique_ptr<Vamp::Plugin> mPlugin;
@@ -99,14 +95,10 @@ private:
 
    Doubles mValues;
 
-   ArrayOf<wxSlider *> mSliders;
-   ArrayOf<wxTextCtrl *> mFields;
-   ArrayOf<wxStaticText *> mLabels;
+   std::vector<int> mSliders;
    ArrayOf<bool> mToggles;
    std::vector<int> mChosen;
    int mChosenProgram = 0;
-
-   DECLARE_EVENT_TABLE()
 };
 
 #endif

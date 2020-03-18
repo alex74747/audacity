@@ -21,12 +21,9 @@
 
 class wxButton;
 class wxSizer;
-class wxSlider;
 
 class Envelope;
 class WaveTrack;
-
-class wxTextCtrl;
 
 #include "RealFFTf.h"
 #include "SampleFormat.h"
@@ -141,7 +138,6 @@ public:
                                    bool set_sizer = true);
 
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool TransferDataToWindow() override;
    bool TransferDataFromWindow() override;
 
 private:
@@ -151,30 +147,11 @@ private:
    void OnRemoveNoise();
    void OnCancel();
 
-   void OnSensitivityText(wxCommandEvent & event);
-   void OnGainText(wxCommandEvent & event);
-   void OnFreqText(wxCommandEvent & event);
-   void OnTimeText(wxCommandEvent & event);
-   void OnSensitivitySlider(wxCommandEvent & event);
-   void OnGainSlider(wxCommandEvent & event);
-   void OnFreqSlider(wxCommandEvent & event);
-   void OnTimeSlider(wxCommandEvent & event);
-
  public:
 
    EffectNoiseRemoval * m_pEffect;
 
    wxButton * m_pButton_GetProfile;
-
-   wxSlider   *mSensitivityS;
-   wxSlider   *mGainS;
-   wxSlider   *mFreqS;
-   wxSlider   *mTimeS;
-
-   wxTextCtrl *mSensitivityT;
-   wxTextCtrl *mGainT;
-   wxTextCtrl *mFreqT;
-   wxTextCtrl *mTimeT;
 
    double      mSensitivity;
    double      mGain;
@@ -184,10 +161,6 @@ private:
    int         mbLeaveNoise;
    bool        mbHasProfile;
    bool        mbAllowTwiddleSettings;
-
-private:
-   DECLARE_EVENT_TABLE()
-
 };
 
 #endif

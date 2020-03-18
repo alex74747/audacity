@@ -24,10 +24,6 @@
 #include <limits>
 #include <math.h>
 
-#include <wx/checkbox.h>
-#include <wx/choice.h>
-#include <wx/textctrl.h>
-
 #include "AudioIOBase.h"
 #include "Prefs.h"
 #include "Project.h"
@@ -132,10 +128,6 @@ const ComponentInterfaceSymbol EffectTruncSilence::Symbol
 { XO("Truncate Silence") };
 
 namespace{ BuiltinEffectsModule::Registration< EffectTruncSilence > reg; }
-
-BEGIN_EVENT_TABLE(EffectTruncSilence, wxEvtHandler)
-   EVT_TEXT(wxID_ANY, EffectTruncSilence::OnControlChange)
-END_EVENT_TABLE()
 
 EffectTruncSilence::EffectTruncSilence()
 {
@@ -768,7 +760,6 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
       S.StartMultiColumn(3, wxALIGN_CENTER_HORIZONTAL);
       {
          // Threshold
-         mThresholdText =
          S
             .Target( mThresholdDB,
                NumValidatorStyle::NO_TRAILING_ZEROES, 3,
@@ -779,7 +770,6 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
          S.AddUnits(XO("dB"));
 
          // Ignored silence
-         mInitialAllowedSilenceT =
          S
             .Target( mInitialAllowedSilence,
                NumValidatorStyle::NO_TRAILING_ZEROES, 3,
@@ -802,7 +792,6 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
          S
             .Target( mActionIndex )
             .MinSize( { -1, -1 } )
-            .Action( [this]{ DoControlChange(); } )
             .AddChoice( {}, actionChoices );
       }
       S.EndHorizontalLay();
@@ -834,20 +823,13 @@ void EffectTruncSilence::PopulateOrExchange(ShuttleGui & S)
 
       S.StartMultiColumn(2, wxALIGN_CENTER_HORIZONTAL);
       {
-         mIndependent =
          S
-            .AddCheckBox(XXO("Trunc&ate tracks independently"), mbIndependent);
+            .Target( mbIndependent )
+            .AddCheckBox( XXO("Trunc&ate tracks independently") );
       }
       S.EndMultiColumn();
    }
    S.EndStatic();
-}
-
-bool EffectTruncSilence::TransferDataFromWindow()
-{
-   mbIndependent = mIndependent->IsChecked();
-
-   return true;
 }
 
 // EffectTruncSilence implementation
@@ -1000,15 +982,3 @@ void EffectTruncSilence::BlendFrames(float* buffer, int blendFrameCount, int lef
 }
 */
 
-void EffectTruncSilence::OnControlChange(wxCommandEvent & WXUNUSED(evt))
-{
-   DoControlChange();
-}
-
-void EffectTruncSilence::DoControlChange()
-{
-   if (!EnableApply(mUIParent->TransferDataFromWindow()))
-   {
-      return;
-   }
-}

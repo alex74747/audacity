@@ -67,7 +67,9 @@ public:
 
         S.StartMultiColumn(2, wxALIGN_CENTER);
         {
-            S.TieTextBox(XXO("Name:"), mName, 60);
+            S
+              .Target(mName)
+              .AddTextBox(XXO("Name:"), {}, 60);
         }
         S.EndMultiColumn();
     }

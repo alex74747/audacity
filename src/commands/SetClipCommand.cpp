@@ -84,7 +84,8 @@ void SetClipCommand::PopulateOrExchange(ShuttleGui & S)
 
       S
          .Optional( bHasName        )
-         .TieTextBox(         XXO("Name:"),          mName );
+         .Target( mName )
+         .AddTextBox(         XXO("Name:") );
    }
    S.EndMultiColumn();
 }
