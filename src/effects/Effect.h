@@ -39,6 +39,9 @@ class wxWindow;
 
 class wxArrayString;
 class ShuttleGui;
+namespace DialogDefinition{
+   template< typename Target > class Adaptor;
+}
 class AudacityCommand;
 
 #define BUILTIN_EFFECT_PREFIX L"Built-in Effect: "
@@ -181,6 +184,10 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    NumericFormatSymbol GetDurationFormat() override;
    virtual NumericFormatSymbol GetSelectionFormat() /* not override? */; // time format in Selection toolbar
    void SetDuration(double duration) override;
+
+   // For use in constructing dialogs: make an adaptor that calls GetDuration()
+   // and SetDuration()
+   std::shared_ptr< DialogDefinition::Adaptor< double > > DurationTarget();
 
    RegistryPath GetUserPresetsGroup(const RegistryPath & name) override;
    RegistryPath GetCurrentSettingsGroup() override;
