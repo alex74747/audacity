@@ -295,6 +295,23 @@ wxWindow* ShuttleGuiBase::AddWindow(wxWindow* pWindow, int PositionFlags)
    return pWindow;
 }
 
+NumericTextCtrl * ShuttleGuiBase::AddNumericTextCtrl(NumericConverter::Type type,
+      const NumericFormatSymbol &formatName,
+      double value,
+      double sampleRate,
+      const NumericTextCtrl::Options &options,
+      const wxPoint &pos,
+      const wxSize &size )
+{
+   UseUpId();
+   NumericTextCtrl * pCtrl = nullptr;
+   mpWind = pCtrl = safenew NumericTextCtrl( GetParent(), miId,
+      type, formatName, value, sampleRate, options, pos, size );
+   CheckEventType( mItem, {wxEVT_TEXT} );
+   UpdateSizers();
+   return pCtrl;
+}
+
 wxCheckBox * ShuttleGuiBase::AddCheckBox( const TranslatableLabel &Prompt, bool Selected)
 {
    HandleOptionality( Prompt );
