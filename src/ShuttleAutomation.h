@@ -55,6 +55,7 @@ public:
       const EnumValueSymbol strings[], size_t nStrings ) override;
 };
 
+
 /**************************************************************************//**
 \brief Shuttle that sets parameters to their default values.
 ********************************************************************************/
