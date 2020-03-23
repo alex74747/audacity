@@ -103,7 +103,7 @@ bool EffectRepeat::GetAutomationParameters(CommandParameters & parms)
 
 bool EffectRepeat::SetAutomationParameters(CommandParameters & parms)
 {
-   ReadAndVerifyInt(Count);
+   ReadParam(Count);
 
    repeatCount = Count;
 
