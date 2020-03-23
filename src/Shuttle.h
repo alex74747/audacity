@@ -12,6 +12,7 @@
 #define __AUDACITY_SHUTTLE__
 
 #include "ComponentInterfaceSymbol.h"
+#include "EffectAutomationParameters.h" // for CommandParameters
 
 class ComponentInterfaceSymbol;
 class WrappedType;
