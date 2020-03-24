@@ -13,6 +13,7 @@
 #define __AUDACITY_EFFECT_REVERB__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class wxCheckBox;
 class wxSlider;
@@ -52,8 +53,6 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
    RegistryPaths GetFactoryPresets() override;
    bool LoadFactoryPreset(int id) override;
 
@@ -64,7 +63,6 @@ public:
    bool ProcessInitialize(sampleCount totalLen, ChannelNames chanMap = NULL) override;
    bool ProcessFinalize() override;
    size_t ProcessBlock(float **inBlock, float **outBlock, size_t blockLen) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -120,6 +118,8 @@ private:
 
    wxCheckBox  *mWetOnlyC;
 
+   CapturedParameters mParameters;
+   CapturedParameters &Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 

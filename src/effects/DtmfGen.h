@@ -15,6 +15,7 @@
 #define __AUDACITY_EFFECT_DTMF__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class wxSlider;
 class wxStaticText;
@@ -39,15 +40,12 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
 
    // EffectProcessor implementation
 
    unsigned GetAudioOutCount() override;
    bool ProcessInitialize(sampleCount totalLen, ChannelNames chanMap = NULL) override;
    size_t ProcessBlock(float **inBlock, float **outBlock, size_t blockLen) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -97,6 +95,8 @@ private:
    wxStaticText *mDtmfSilenceT;
    wxStaticText *mDtmfDutyT;
 
+   CapturedParameters mParameters;
+   CapturedParameters &Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 

@@ -14,6 +14,7 @@
 #define __AUDACITY_EFFECT_NOISE__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class NumericTextCtrl;
 class ShuttleGui;
@@ -35,14 +36,11 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
 
    // EffectProcessor implementation
 
    unsigned GetAudioOutCount() override;
    size_t ProcessBlock(float **inBlock, float **outBlock, size_t blockLen) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -61,6 +59,9 @@ private:
    float y, z, buf0, buf1, buf2, buf3, buf4, buf5, buf6;
 
    NumericTextCtrl *mNoiseDurationT;
+
+   CapturedParameters mParameters;
+   CapturedParameters &Parameters() override { return mParameters; }
 };
 
 #endif

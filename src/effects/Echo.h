@@ -13,6 +13,7 @@
 #define __AUDACITY_EFFECT_ECHO__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class ShuttleGui;
 
@@ -35,8 +36,6 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
 
    // EffectProcessor implementation
 
@@ -45,7 +44,6 @@ public:
    bool ProcessInitialize(sampleCount totalLen, ChannelNames chanMap = NULL) override;
    bool ProcessFinalize() override;
    size_t ProcessBlock(float **inBlock, float **outBlock, size_t blockLen) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
    void PopulateOrExchange(ShuttleGui & S) override;
@@ -61,6 +59,9 @@ private:
    Floats history;
    size_t histPos;
    size_t histLen;
+
+   CapturedParameters mParameters;
+   CapturedParameters& Parameters() override { return mParameters; }
 };
 
 #endif // __AUDACITY_EFFECT_ECHO__

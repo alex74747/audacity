@@ -14,6 +14,7 @@
 
 #include "Effect.h"
 #include "Biquad.h"
+#include "../ShuttleAutomation.h"
 
 class wxCheckBox;
 class wxStaticText;
@@ -37,12 +38,6 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
-
-   // EffectProcessor implementation
-
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -87,7 +82,8 @@ private:
    wxCheckBox *mStereoIndCheckBox;
    bool mCreating;
 
-
+   CapturedParameters mParameters;
+   CapturedParameters& Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 

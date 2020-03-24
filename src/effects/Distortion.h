@@ -14,6 +14,7 @@
 #include <queue>
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class wxSlider;
 class wxSimplebook;
@@ -101,8 +102,6 @@ public:
 
    EffectType GetType() override;
    bool SupportsRealtime() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
    RegistryPaths GetFactoryPresets() override;
    bool LoadFactoryPreset(int id) override;
 
@@ -119,7 +118,6 @@ public:
                                float **inbuf,
                                float **outbuf,
                                size_t numSamples) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -217,6 +215,8 @@ private:
    Params mPageParams[ nTableTypes ];
    Controls mControls[ nTableTypes ];
 
+   CapturedParameters mParameters;
+   CapturedParameters &Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 

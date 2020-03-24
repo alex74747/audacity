@@ -17,6 +17,7 @@
 #define __AUDACITY_EFFECT_WAHWAH__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class wxSlider;
 class wxTextCtrl;
@@ -54,8 +55,6 @@ public:
 
    EffectType GetType() override;
    bool SupportsRealtime() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
 
    // EffectProcessor implementation
 
@@ -70,7 +69,6 @@ public:
                                        float **inbuf,
                                        float **outbuf,
                                        size_t numSamples) override;
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -135,6 +133,8 @@ private:
    wxSlider *mFreqOfsS;
    wxSlider *mOutGainS;
 
+   CapturedParameters mParameters;
+   CapturedParameters& Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 

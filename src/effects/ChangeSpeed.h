@@ -14,6 +14,7 @@
 #define __AUDACITY_EFFECT_CHANGESPEED__
 
 #include "Effect.h"
+#include "../ShuttleAutomation.h"
 
 class wxSlider;
 class wxChoice;
@@ -38,13 +39,9 @@ public:
    // EffectDefinitionInterface implementation
 
    EffectType GetType() override;
-   bool GetAutomationParameters(CommandParameters & parms) override;
-   bool SetAutomationParameters(CommandParameters & parms) override;
    bool LoadFactoryDefaults() override;
 
    // EffectProcessor implementation
-
-   bool DefineParams( ShuttleParams & S ) override;
 
    // Effect implementation
 
@@ -113,6 +110,8 @@ private:
    double   mToLength;        // target length of selection
    NumericFormatSymbol mFormat;          // time control format
 
+   CapturedParameters mParameters;
+   CapturedParameters &Parameters() override { return mParameters; }
    DECLARE_EVENT_TABLE()
 };
 
