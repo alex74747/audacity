@@ -12,7 +12,7 @@
 \brief Main class to control the export function.
 
 *//****************************************************************//**
-
+ 
 \class ExportType
 \brief Container for information about supported export types.
 
@@ -1033,7 +1033,7 @@ void Exporter::OnFilterChanged(wxFileCtrlEvent & evt)
 
       if (index < fileTypes.size())
       {
-         mDialog->SetFileExtension(fileTypes[index].extensions[0].Lower());
+         mDialog->SetFileExtension(fileTypes[index].extensions[0].GET().Lower());
       }
    }
 #endif
