@@ -47,6 +47,7 @@ class AudacityCommand;
 namespace BasicUI { class ProgressDialog; }
 
 class AudacityProject;
+class CapturedParameters;
 class LabelTrack;
 class NotifyingSelectedRegion;
 class SelectedRegion;
@@ -90,6 +91,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    // ComponentInterface implementation
 
    PluginPath GetPath() override;
+   bool DefineParams( ShuttleParams & ) override;
 
    ComponentInterfaceSymbol GetSymbol() override;
 
@@ -134,6 +136,11 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    size_t SetBlockSize(size_t maxBlockSize) override;
    size_t GetBlockSize() const override;
 
+   // If this is overridden and returns nonempty,
+   // then DefineParams(), GetAutomationParameters(), and SetAutomationParameters()
+   // are defined by default by the return value.
+   virtual const CapturedParameters &Parameters();
+
    bool ProcessInitialize(sampleCount totalLen, ChannelNames chanMap = NULL) override;
    bool ProcessFinalize() override;
    size_t ProcessBlock(float **inBlock, float **outBlock, size_t blockLen) override;
@@ -152,7 +159,6 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
 
    int ShowClientInterface(
       wxWindow &parent, wxDialog &dialog, bool forceModal = false) override;
-
 
    // EffectUIClientInterface implementation
 
