@@ -294,7 +294,7 @@ struct Item {
 
    StandardButtonID mStandardButton{ eButtonUndefined };
 
-   wxSize mWindowSize{};
+   wxSize mWindowSize = wxDefaultSize;
 
    wxSize mMinSize{ -1, -1 };
    bool mHasMinSize{ false };
@@ -383,7 +383,9 @@ public:
    void AddTitle(const TranslatableString &Prompt, int wrapWidth = 0);
    wxWindow * AddWindow(wxWindow* pWindow, int PositionFlags = wxALIGN_CENTRE);
    wxSlider * AddSlider(
-      const TranslatableString &Prompt, int pos, int Max, int Min = 0);
+      const TranslatableString &Prompt, int pos, int Max, int Min = 0,
+      // Pass -1 to mean unspecified:
+      int lineSize = -1, int pageSize = -1 );
    wxSlider * AddVSlider(const TranslatableString &Prompt, int pos, int Max);
    wxSpinCtrl * AddSpinCtrl(const TranslatableString &Prompt,
       int Value, int Max, int Min);
