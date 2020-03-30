@@ -18,6 +18,7 @@
 #include <vamp-hostsdk/PluginLoader.h>
 
 #include "../Effect.h"
+#include "SampleFormat.h"
 
 class wxStaticText;
 class wxSlider;
@@ -100,7 +101,7 @@ private:
 
    Vamp::Plugin::ParameterList mParameters;
 
-   Floats mValues;
+   Doubles mValues;
 
    ArrayOf<wxSlider *> mSliders;
    ArrayOf<wxTextCtrl *> mFields;
