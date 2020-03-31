@@ -132,7 +132,7 @@ void LabelTrackMenuTable::OnSetFont()
 
          lb->SetSelection( make_iterator_range( facenames ).index( facename ));
          S
-            .Name(XO("Face name"))
+            .Text(XO("Face name"))
             .Position(  wxALIGN_LEFT | wxEXPAND | wxALL )
             .AddWindow(lb);
 
@@ -147,7 +147,7 @@ void LabelTrackMenuTable::OnSetFont()
             wxSP_ARROW_KEYS,
             8, 48, fontsize);
          S
-            .Name(XO("Face size"))
+            .Text(XO("Face size"))
             .Position( wxALIGN_LEFT | wxALL )
             .AddWindow(sc);
       }

@@ -344,7 +344,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
       {
          mpSlider_PercentChange =
          S.Id(ID_PercentChange)
-            .Name(XO("Percent Change"))
+            .Text(XO("Percent Change"))
             .Style(wxSL_HORIZONTAL)
             .AddSlider( {}, 0, (int)kSliderMax, (int)MIN_Percentage);
       }
@@ -364,7 +364,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
             /* i18n-hint: changing speed of audio "from" one value "to" another
              "rpm" means "revolutions per minute" as on a vinyl record turntable
              */
-            .Name(XO("From rpm"))
+            .Text(XO("From rpm"))
             .MinSize( { 100, -1 } )
             /* i18n-hint: changing speed of audio "from" one value "to" another */
             .AddChoice(XXC("&from", "change speed"), kVinylStrings);
@@ -375,7 +375,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
             /* i18n-hint: changing speed of audio "from" one value "to" another
              "rpm" means "revolutions per minute" as on a vinyl record turntable
              */
-            .Name(XO("To rpm"))
+            .Text(XO("To rpm"))
             .MinSize( { 100, -1 } )
             /* i18n-hint: changing speed of audio "from" one value "to" another */
             .AddChoice(XXC("&to", "change speed"), kVinylStrings);
@@ -401,9 +401,9 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
                                   .MenuEnabled(false));
 
             S
-               .ToolTip(XO("Current length of selection."))
+//?               .ToolTip(XO("Current length of selection."))
                /* i18n-hint: changing speed of audio "from" one value "to" another */
-               .Name(XC("from", "change speed"))
+               .Text(XC("from", "change speed"))
                .Position(wxALIGN_LEFT)
                .AddWindow(mpFromLengthCtrl);
 
@@ -418,7 +418,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
 
             /* i18n-hint: changing speed of audio "from" one value "to" another */
             S
-               .Name(XC("to", "change speed"))
+               .Text(XC("to", "change speed"))
                .Position(wxALIGN_LEFT)
                .AddWindow(mpToLengthCtrl);
          }

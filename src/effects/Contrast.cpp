@@ -268,7 +268,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
                          options);
          }
          S
-            .Name(XO("Foreground start time"))
+            .Text(XO("Foreground start time"))
             .AddWindow(mForegroundStartT);
 
          if (S.GetMode() == eIsCreating)
@@ -282,7 +282,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
                          options);
          }
          S
-            .Name(XO("Foreground end time"))
+            .Text(XO("Foreground end time"))
             .AddWindow(mForegroundEndT);
 
          m_pButton_UseCurrentF =
@@ -312,7 +312,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
                          options);
          }
          S
-            .Name(XO("Background start time"))
+            .Text(XO("Background start time"))
             .AddWindow(mBackgroundStartT);
 
          if (S.GetMode() == eIsCreating)
@@ -326,7 +326,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
                          options);
          }
          S
-            .Name(XO("Background end time"))
+            .Text(XO("Background end time"))
             .AddWindow(mBackgroundEndT);
 
          m_pButton_UseCurrentB =
@@ -357,7 +357,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
          mPassFailText =
          S
             .Id(ID_RESULTS_TEXT)
-            .Name(label)
+            .Text(label)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
             .AddTextBox( {}, L"", 50);
@@ -374,7 +374,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
          mDiffText =
          S
             .Id(ID_RESULTSDB_TEXT)
-            .Name(label)
+            .Text(label)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
             .AddTextBox( {}, L"", 50);

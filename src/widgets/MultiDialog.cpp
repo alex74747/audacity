@@ -122,7 +122,7 @@ MultiDialog::MultiDialog(wxWindow * pParent,
             1, wxRA_SPECIFY_COLS);
          mRadioBox->SetSelection(0);
          S.Prop( 1 )
-            .Name( boxMsg )
+            .Text( boxMsg )
             .Position(wxEXPAND | wxALL)
             .AddWindow( mRadioBox );
 

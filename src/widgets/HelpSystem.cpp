@@ -170,7 +170,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
             .Id( wxID_BACKWARD )
             .Disable()
 #if wxUSE_TOOLTIPS
-            .ToolTip( XO("Backwards" ) )
+            .Text({ {}, {}, XO("Backwards" ) })
 #endif
             /* i18n-hint arrowhead meaning backward movement */
             .AddButton( XXO("<") );
@@ -179,7 +179,7 @@ void HelpSystem::ShowHtmlText(wxWindow *pParent,
             .Id( wxID_FORWARD  )
             .Disable()
 #if wxUSE_TOOLTIPS
-            .ToolTip( XO("Forwards" ) )
+            .Text({ {}, {}, XO("Forwards" ) })
 #endif
             /* i18n-hint arrowhead meaning forward movement */
             .AddButton( XXO(">") );

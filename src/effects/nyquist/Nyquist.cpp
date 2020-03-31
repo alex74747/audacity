@@ -2878,7 +2878,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                   S
                      .Id(ID_Text + i)
                      .Validator<wxGenericValidator>(&ctrl.valStr)
-                     .Name( prompt.Stripped() )
+                     .Text( prompt.Stripped() )
                      .AddTextBox( {}, L"", 50);
                }
                else if (ctrl.type == NYQ_CTRL_CHOICE)
@@ -2908,7 +2908,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                                      options);
 
                   S
-                     .Name( prompt.Stripped() )
+                     .Text( prompt.Stripped() )
                      .Position(wxALIGN_LEFT | wxALL)
                      .AddWindow(time);
                }
@@ -2928,7 +2928,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
                   wxTextCtrl *item =
                   S
                      .Id(ID_Text+i)
-                     .Name( prompt.Stripped() )
+                     .Text( prompt.Stripped() )
                      .AddTextBox( {}, L"", 40);
                   item->SetValidator(wxGenericValidator(&ctrl.valStr));
 
@@ -2973,7 +2973,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
 
                   wxTextCtrl *item =
                   S
-                     .Name( prompt.Stripped() )
+                     .Text( prompt.Stripped() )
                      .AddTextBox( {}, L"",
                         (ctrl.type == NYQ_CTRL_INT_TEXT ||
                          ctrl.type == NYQ_CTRL_FLOAT_TEXT) ? 25 : 12);

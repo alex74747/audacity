@@ -214,7 +214,7 @@ void SpectralDataDialog::Populate(ShuttleGui & S)
       S.AddVariableText(XO("Brush radius"));
       S.Id(ID_SLIDER_BRUSH_SIZE)
             .Style(wxSL_HORIZONTAL)
-            .Name(XO("Custom brush size"))
+            .Text(XO("Custom brush size"))
             .AddSlider( {}, 5, 10, 1);
 
       S.AddWindow(safenew wxStaticLine{ S.GetParent() });

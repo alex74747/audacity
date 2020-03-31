@@ -819,7 +819,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
          mMenuBtn =
          S
             .Id( kMenuID )
-            .ToolTip(XO("Manage presets and options"))
+            .Text({ {}, {}, XO("Manage presets and options") })
             .AddButton( XXO("&Manage"), wxALIGN_CENTER | wxTOP | wxBOTTOM );
       }
       else
@@ -827,8 +827,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
          mMenuBtn =
          S
             .Id( kMenuID )
-            .ToolTip(XO("Manage presets and options"))
-            .Name(XO("&Manage"))
+            .Text({ XO("&Manage"), {}, XO("Manage presets and options") })
             .AddBitmapButton( CreateBitmap(effect_menu_xpm, true, true) );
          mMenuBtn->SetBitmapPressed(CreateBitmap(effect_menu_xpm, false, true));
       }
@@ -844,7 +843,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mPlayToggleBtn =
                S
                   .Id( kPlayID )
-                  .ToolTip(XO("Start and stop playback"))
+                  .Text({ {}, {}, XO("Start and stop playback") })
                   .AddButton( XXO("Start &Playback"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -855,7 +854,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mPlayToggleBtn =
                S
                   .Id( kPlayID )
-                  .ToolTip(XO("Preview effect"))
+                  .Text({ {}, {}, XO("Preview effect") })
                   .AddButton( XXO("&Preview"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -892,7 +891,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mRewindBtn =
                S
                   .Id( kRewindID )
-                  .ToolTip(XO("Skip backward"))
+                  .Text({ {}, {}, XO("Skip backward") })
                   .AddButton( XXO("Skip &Backward"),
                               wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -901,8 +900,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mRewindBtn =
                S
                   .Id( kRewindID )
-                  .ToolTip(XO("Skip backward"))
-                  .Name(XO("Skip &Backward"))
+                  .Text({ XO("Skip &Backward"), {}, XO("Skip backward") })
                   .AddBitmapButton( CreateBitmap(
                      effect_rewind_xpm, true, true) );
 
@@ -916,7 +914,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mFFwdBtn =
                S
                   .Id( kFFwdID )
-                  .ToolTip(XO("Skip forward"))
+                  .Text({ {}, {}, XO("Skip forward") })
                   .AddButton( XXO("Skip &Forward"),
                      wxALIGN_CENTER | wxTOP | wxBOTTOM );
             }
@@ -925,8 +923,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                mFFwdBtn =
                S
                   .Id( kFFwdID )
-                  .ToolTip(XO("Skip forward"))
-                  .Name(XO("Skip &Forward"))
+                  .Text({ XO("Skip &Forward"), {}, XO("Skip forward") })
                   .AddBitmapButton( CreateBitmap(
                      effect_ffwd_xpm, true, true) );
 
@@ -941,7 +938,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
             S
                .Id( kEnableID )
                .Position(wxALIGN_CENTER | wxTOP | wxBOTTOM)
-               .Name(XO("Enable"))
+               .Text(XO("Enable"))
                .AddCheckBox( XXO("&Enable"), mEnabled );
             //
          }

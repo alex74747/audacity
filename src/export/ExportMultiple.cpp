@@ -388,7 +388,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                S
                   .Id(FirstFileNameID)
                   .Prop(1)
-                  .Name(XO("First file name"))
+                  .Text(XO("First file name"))
                   .TieTextBox( {},
                               name,
                               30);
@@ -455,7 +455,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
             mPrefix =
             S
                .Id(PrefixID)
-               .Name(XO("File name prefix"))
+               .Text(XO("File name prefix"))
                .TieTextBox( {},
                            name,
                            30);

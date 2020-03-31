@@ -127,6 +127,46 @@ enum StandardButtonID : unsigned
 
 namespace DialogDefinition {
 
+struct ControlText{
+
+   ControlText() = default;
+
+   // The usual, implicit constructor
+   ControlText( const TranslatableString &name )
+      : mName{ name }
+   {}
+
+   // More elaborate cases
+   ControlText( const TranslatableString &name,
+      const TranslatableString &suffix,
+      const TranslatableString &toolTip = {},
+      const TranslatableString &label = {} )
+      : mName{ name }
+      , mSuffix{ suffix }
+      , mToolTip{ toolTip }
+      , mLabel{ mLabel }
+   {}
+
+   // Menu codes in the translation will be stripped
+   TranslatableString mName;
+
+   // Append a space, then the translation of the given string, to control name
+   // (not the title or label:  this affects the screen reader behavior)
+   TranslatableString mSuffix;
+
+   TranslatableString mToolTip;
+
+   // If not empty, then this is the visible label, distinct from the audible
+   // mName which is for the screen reader
+   TranslatableString mLabel;
+};
+
+// Convenience for a frequent case specifying label only
+inline ControlText Label( const TranslatableString &label )
+{
+   return { {}, {}, {}, label };
+}
+
 struct Item {
    using ActionType = std::function< void() >;
 
@@ -161,24 +201,9 @@ struct Item {
    Item&& Validator( Args&&... args ) &&
    { return std::move(*this).Validator( [args...]{ return V( args... ); } ); }
 
-   Item&& ToolTip( const TranslatableString &tip ) &&
+   Item&& Text( const ControlText &text ) &&
    {
-      mToolTip = tip;
-      return std::move( *this );
-   }
-
-   // Menu codes in the translation will be stripped
-   Item&& Name( const TranslatableString &name ) &&
-   {
-      mName = name;
-      return std::move( *this );
-   }
-
-   // Append a space, then the translation of the given string, to control name
-   // (not the title or label:  this affects the screen reader behavior)
-   Item&& NameSuffix( const TranslatableString &suffix ) &&
-   {
-      mNameSuffix = suffix;
+      mText = text;
       return std::move( *this );
    }
 
@@ -282,9 +307,7 @@ struct Item {
    ActionType mAction{};
 
    std::function< void(wxWindow*) > mValidatorSetter;
-   TranslatableString mToolTip;
-   TranslatableString mName;
-   TranslatableString mNameSuffix;
+   ControlText mText;
 
    std::vector<std::pair<wxEventType, wxObjectEventFunction>> mRootConnections;
 
@@ -820,24 +843,9 @@ public:
       return *this;
    }
 
-   ShuttleGui & ToolTip( const TranslatableString &tip )
+   ShuttleGui & Text( const DialogDefinition::ControlText &text )
    {
-      std::move( mItem ).ToolTip( tip );
-      return *this;
-   }
-
-   // Menu codes in the translation will be stripped
-   ShuttleGui & Name( const TranslatableString &name )
-   {
-      std::move( mItem ).Name( name );
-      return *this;
-   }
-
-   // Append a space, then the translation of the given string, to control name
-   // (not the title or label:  this affects the screen reader behavior)
-   ShuttleGui & NameSuffix( const TranslatableString &suffix )
-   {
-      std::move( mItem ).NameSuffix( suffix );
+      std::move( mItem ).Text( text );
       return *this;
    }
 

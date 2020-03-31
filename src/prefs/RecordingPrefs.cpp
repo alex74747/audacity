@@ -169,7 +169,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
 
             mToggleCustomName =
             S
-               .Name(XO("Custom name text"))
+               .Text(XO("Custom name text"))
                .Disable(!mUseCustomTrackName)
                .TieTextBox( {},
                   {L"/GUI/TrackNames/RecodingTrackName",
@@ -263,7 +263,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
          {
             auto w =
             S
-               .NameSuffix(XO("seconds"))
+               .Text({ {}, XO("seconds") })
                .TieNumericTextBox(XXO("Pre-ro&ll:"),
                   {AUDIO_PRE_ROLL_KEY,
                    DEFAULT_PRE_ROLL_SECONDS},
@@ -275,7 +275,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
          {
             auto w =
             S
-               .NameSuffix(XO("milliseconds"))
+               .Text({ {}, XO("milliseconds") })
                .TieNumericTextBox(XXO("Cross&fade:"),
                   {AUDIO_ROLL_CROSSFADE_KEY,
                    DEFAULT_ROLL_CROSSFADE_MS},
