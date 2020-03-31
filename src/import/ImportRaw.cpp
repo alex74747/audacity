@@ -300,6 +300,8 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
             wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
    mFileName(fileName)
 {
+   using namespace DialogDefinition;
+
    wxASSERT(0 < mChannels && mChannels <= 16);
 
    SetName();
@@ -451,7 +453,6 @@ ImportRawDialog::ImportRawDialog(wxWindow * parent, const wxString & fileName)
       // Find the OK button, and change its text to 'Import'.
       // We MUST set mOK because it is used later.
       mOK = (wxButton *)wxWindow::FindWindowById(wxID_OK, this);
-      mOK->SetLabel(_("&Import"));
    }
    S.EndVerticalLay();
 

@@ -146,7 +146,6 @@ private:
    wxCheckBox    *mOverwrite;
 
    wxButton      *mCancel;
-   wxButton      *mExport;
 
    wxSimplebook   *mBook;
 
