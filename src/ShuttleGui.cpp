@@ -547,7 +547,7 @@ wxComboBox * ShuttleGuiBase::AddCombo(
 
 
 wxRadioButton * ShuttleGuiBase::DoAddRadioButton(
-   const TranslatableString &Prompt, int style, int selector, int initValue)
+   const TranslatableString &Prompt, int style)
 {
    const auto translated = Prompt.Translation();
    /// \todo This function and the next two, suitably adapted, could be
@@ -562,20 +562,19 @@ wxRadioButton * ShuttleGuiBase::DoAddRadioButton(
    if ( style )
       pRad->SetValue( true );
    UpdateSizers();
-   pRad->SetValue( selector == initValue );
+   pRad->SetValue( style != 0 );
+
+   if ( auto pList = mRadioButtons.get() )
+      pList->push_back( pRad );
+
    return pRad;
 }
 
 wxRadioButton * ShuttleGuiBase::AddRadioButton(
-   const TranslatableString &Prompt, int selector, int initValue)
+   const TranslatableString &Prompt )
 {
-   return DoAddRadioButton( Prompt, wxRB_GROUP, selector, initValue );
-}
-
-wxRadioButton * ShuttleGuiBase::AddRadioButtonToGroup(
-   const TranslatableString &Prompt, int selector, int initValue)
-{
-   return DoAddRadioButton( Prompt, 0, selector, initValue );
+   wxASSERT( mRadioCount >= 0); // Did you remember to use StartRadioButtonGroup() ?
+   return DoAddRadioButton( Prompt, (mRadioCount++ == 0) ? wxRB_GROUP : 0 );
 }
 
 #ifdef __WXMAC__
@@ -1592,6 +1591,14 @@ wxRadioButton * ShuttleGuiBase::TieRadioButton()
    return pRadioButton;
 }
 
+/// Call this before AddRadioButton calls.
+void ShuttleGuiBase::StartRadioButtonGroup()
+{
+   mRadioButtons =
+      std::make_shared< RadioButtonList >();
+   mRadioCount = 0;
+}
+
 /// Call this before any TieRadioButton calls.
 void ShuttleGuiBase::StartRadioButtonGroup( const ChoiceSetting &Setting )
 {
@@ -1613,7 +1620,8 @@ void ShuttleGuiBase::StartRadioButtonGroup( const ChoiceSetting &Setting )
 void ShuttleGuiBase::EndRadioButtonGroup()
 {
    // too few buttons?
-   wxASSERT( mRadioCount == mRadioSymbols.size() );
+   wxASSERT( !mRadioButtons ||
+      mRadioCount == mRadioButtons->size() );
 
    if( mShuttleMode == eIsGettingFromDialog )
       DoDataShuttle( mRadioSettingName, *mRadioValue );
@@ -1621,6 +1629,7 @@ void ShuttleGuiBase::EndRadioButtonGroup()
    mRadioSettingName = wxT("");
    mRadioCount = -1; // So we detect a problem.
    mRadioSymbols = {};
+   mRadioButtons.reset();
 }
 
 //-----------------------------------------------------------------------//
