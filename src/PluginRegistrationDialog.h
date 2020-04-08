@@ -44,13 +44,12 @@ private:
 
    void Populate();
    void PopulateOrExchange(ShuttleGui & S);
-   void RegenerateEffectsList(int iShowWhat);
+   void RegenerateEffectsList();
    void SetState(int i, bool toggle, bool state = true);
 
    static int wxCALLBACK SortCompare(wxIntPtr item1, wxIntPtr item2, wxIntPtr sortData);
    int SortCompare(ItemData *item1, ItemData *item2);
 
-   void OnChangedVisibility(wxCommandEvent & evt);
    void OnSort(wxListEvent & evt);
    void DoSort( int col );
    void OnListChar(wxKeyEvent & evt);
@@ -63,7 +62,10 @@ private:
 
 private:
    EffectType mType;
-   int mFilter;
+
+   // in correspondence with the sequence of radio buttons
+   enum { ID_ShowAll, ID_ShowEnabled, ID_ShowDisabled, ID_ShowNew, };
+   int mFilter = ID_ShowAll;
 
    wxArrayString mStates;
    ItemDataMap mItems;

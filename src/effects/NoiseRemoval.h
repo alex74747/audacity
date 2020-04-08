@@ -26,7 +26,6 @@ class wxSlider;
 class Envelope;
 class WaveTrack;
 
-class wxRadioButton;
 class wxTextCtrl;
 
 #include "RealFFTf.h"
@@ -148,7 +147,6 @@ public:
 private:
    // handlers
    void OnGetProfile();
-   void OnKeepNoise( wxCommandEvent &event );
    void OnPreview();
    void OnRemoveNoise();
    void OnCancel();
@@ -168,9 +166,6 @@ private:
 
    wxButton * m_pButton_GetProfile;
 
-   wxRadioButton *mKeepSignal;
-   wxRadioButton *mKeepNoise;
-
    wxSlider   *mSensitivityS;
    wxSlider   *mGainS;
    wxSlider   *mFreqS;
@@ -186,7 +181,7 @@ private:
    double      mFreq;
    double      mTime;
 
-   bool        mbLeaveNoise;
+   int         mbLeaveNoise;
    bool        mbHasProfile;
    bool        mbAllowTwiddleSettings;
 
