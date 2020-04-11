@@ -236,7 +236,10 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
    static void IncEffectCounter(){ nEffectsDone++;};
 
  protected:
+   // Apply button is enabled only if CanApply() returns true and this function
+   // was not last called with false
    bool EnableApply(bool enable = true);
+   // Preview button may be disabled though Apply remains enabled
    bool EnablePreview(bool enable = true);
 
  public:
@@ -290,6 +293,13 @@ protected:
 
    virtual bool TransferDataToWindow() /* not override */;
    virtual bool TransferDataFromWindow() /* not override */;
+
+   bool EnabledApply();
+   bool EnabledPreview();
+
+   // Whether the apply button should be enabled for the present state of
+   // the dialog controls.  Default is always true
+   virtual bool CanApply();
 
    // No more virtuals!
 
@@ -498,6 +508,9 @@ private:
    size_t mBufferSize;
    size_t mBlockSize;
    unsigned mNumChannels;
+
+   bool mEnabledApply = false;
+   bool mEnabledPreview = false;
 
 public:
    const static wxString kUserPresetIdent;
