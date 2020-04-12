@@ -804,6 +804,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
       false /* horizontal */,
       { -1, -1 } /* minimum size */
    };
+   auto pState = S.GetValidationState();
    {
       S.SetBorder( margin );
 
@@ -831,8 +832,11 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
 
       if (!mIsBatch)
       {
-         auto playEnabler = [this]{ return mEffect.EnabledPreview(); };
-         auto FFRWEnabler = [this]{ return
+         auto playEnabler = [this, pState]{ return
+            pState->Ok() &&
+            mEffect.EnabledPreview(); };
+         auto FFRWEnabler = [this, pState]{ return
+            pState->Ok() &&
             mEffect.SupportsRealtime() && mEffect.EnabledPreview(); };
 
          if (!mIsGUI)
@@ -975,7 +979,8 @@ bool EffectUIHost::Initialize()
    // Build a "host" dialog, framing a panel that the client fills in.
    // The frame includes buttons to preview, apply, load and save presets, etc.
    EffectPanel *w {};
-   ShuttleGui S(this, eIsCreating);
+   ShuttleGui S{ this, eIsCreating };
+   auto pState = S.GetValidationState();
    {
       S.StartHorizontalLay( wxEXPAND );
       {
@@ -1024,7 +1029,8 @@ bool EffectUIHost::Initialize()
          S
             .AddStandardButtons(0, {
                S.Item( eApplyButton )
-                  .Enable( [this]{ return
+                  .Enable( [this, pState]{ return
+                     pState->Ok() &&
                      mEffect.EnabledApply(); } )
                   .Action( [this]{ OnApply(wxID_APPLY); } ),
 
