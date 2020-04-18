@@ -50,6 +50,7 @@ public:
    static constexpr int TextFrameYOffset { -1 };
    static constexpr int LabelBarHeight { 6 }; 
 
+   static IntSetting FontSize;
    static StringSetting FaceName;
 
    explicit
