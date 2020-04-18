@@ -96,7 +96,7 @@ void LabelTrackMenuTable::OnSetFont()
    FontEnumerator fontEnumerator(&facenames);
    fontEnumerator.EnumerateFacenames(wxFONTENCODING_SYSTEM, false);
 
-   wxString facename = gPrefs->Read(L"/GUI/LabelFontFacename", L"");
+   auto facename = LabelTrackView::FaceName.Read();
 
    // Correct for empty facename, or bad preference file:
    // get the name of a really existing font, to highlight by default
@@ -164,7 +164,7 @@ void LabelTrackMenuTable::OnSetFont()
    if (dlg.ShowModal() == wxID_CANCEL)
       return;
 
-   gPrefs->Write(L"/GUI/LabelFontFacename", lb->GetStringSelection());
+   LabelTrackView::FaceName.Write( lb->GetStringSelection() );
    gPrefs->Write(L"/GUI/LabelFontSize", sc->GetValue());
    gPrefs->Flush();
 

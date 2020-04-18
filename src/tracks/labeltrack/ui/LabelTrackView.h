@@ -12,6 +12,7 @@ Paul Licameli split from class LabelTrack
 #define __AUDACITY_LABEL_TRACK_VIEW__
 
 #include "../../ui/CommonTrackView.h"
+#include "Prefs.h"
 
 class LabelGlyphHandle;
 class LabelTextHandle;
@@ -48,6 +49,8 @@ public:
    static constexpr int TextFramePadding { 2 };
    static constexpr int TextFrameYOffset { -1 };
    static constexpr int LabelBarHeight { 6 }; 
+
+   static StringSetting FaceName;
 
    explicit
    LabelTrackView( const std::shared_ptr<Track> &pTrack );
