@@ -201,6 +201,7 @@ IntSetting AC3BitRate{ L"/FileFormats/AC3BitRate", 160000 };
 ///
 void ExportFFmpegAC3Options::PopulateOrExchange(ShuttleGui & S)
 {
+   using namespace DialogDefinition;
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxCENTER);
@@ -208,11 +209,9 @@ void ExportFFmpegAC3Options::PopulateOrExchange(ShuttleGui & S)
          S.StartMultiColumn(2, wxCENTER);
          {
             S
-               .TieNumberAsChoice(
-                  XXO("Bit Rate:"),
-                  AC3BitRate,
-                  AC3BitRateNames,
-                  &AC3BitRateValues );
+               .Target( NumberChoice(
+                  AC3BitRate, AC3BitRateNames, AC3BitRateValues ) )
+               .AddChoice( XXO("Bit Rate:") );
          }
          S.EndMultiColumn();
       }
@@ -348,6 +347,7 @@ IntSetting AMRNBBitRate{ L"/FileFormats/AMRNBBitRate", 12200 };
 ///
 void ExportFFmpegAMRNBOptions::PopulateOrExchange(ShuttleGui & S)
 {
+   using namespace DialogDefinition;
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxCENTER);
@@ -355,11 +355,9 @@ void ExportFFmpegAMRNBOptions::PopulateOrExchange(ShuttleGui & S)
          S.StartMultiColumn(2, wxCENTER);
          {
             S
-               .TieNumberAsChoice(
-                  XXO("Bit Rate:"),
-                  AMRNBBitRate,
-                  AMRNBBitRateNames,
-                  &AMRNBBitRateValues );
+               .Target( NumberChoice(
+                  AMRNBBitRate, AMRNBBitRateNames, AMRNBBitRateValues ) )
+               .AddChoice( XXO("Bit Rate:") );
          }
          S.EndMultiColumn();
       }
@@ -701,17 +699,17 @@ IntSetting WMABitRate{ L"/FileFormats/WMABitRate", 128000 };
 ///
 void ExportFFmpegWMAOptions::PopulateOrExchange(ShuttleGui & S)
 {
+   using namespace DialogDefinition;
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxCENTER);
       {
          S.StartMultiColumn(2, wxCENTER);
          {
-            S.TieNumberAsChoice(
-               XXO("Bit Rate:"),
-               WMABitRate,
-               WMABitRateNames,
-               &WMABitRateValues );
+            S
+               .Target( NumberChoice(
+                  WMABitRate, WMABitRateNames, WMABitRateValues ) )
+               .AddChoice( XXO("Bit Rate:") );
          }
          S.EndMultiColumn();
       }
@@ -1741,6 +1739,7 @@ static StringSetting FFmpegPreset{ L"/FileFormats/FFmpegPreset", L"" };
 ///
 void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
 {
+   using namespace DialogDefinition;
    // A function-factory
    const auto forCodecs = [this]( std::vector<AudacityAVCodecIDValue> ids )
       -> DialogDefinition::BaseItem::Test {
@@ -2017,10 +2016,9 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
                      .Text({ {}, {}, XO("Prediction Order Method\nEstimate - fastest, lower compression\nLog search - slowest, best compression\nFull search - default") })
                      .MinSize( { 100, -1 } )
                      .Enable( forFLAC )
-                     .TieNumberAsChoice(
-                        XXO("PdO Method:"),
-                        FFmpegPredictionOrderMethod,
-                        PredictionOrderMethodNames );
+                     .Target( NumberChoice(
+                        FFmpegPredictionOrderMethod, PredictionOrderMethodNames ) )
+                     .AddChoice( XXO("PdO Method:") );
 
                   S
                      .Id(FEMinPredID)

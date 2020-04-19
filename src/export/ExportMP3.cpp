@@ -225,7 +225,6 @@ public:
    void PopulateOrExchange(ShuttleGui & S);
    bool TransferDataFromWindow() override;
 
-   void OnQuality(wxCommandEvent& evt);
    void OnMono();
 
 private:
@@ -239,18 +238,7 @@ private:
    wxChoice *mSetChoice, *mVbrChoice, *mAbrChoice, *mCbrChoice;
 
    //wxChoice *mMode;
-
-   long mSetRate;
-   long mVbrRate;
-   long mAbrRate;
-   long mCbrRate;
-
-   DECLARE_EVENT_TABLE()
 };
-
-BEGIN_EVENT_TABLE(ExportMP3Options, wxPanelWrapper)
-   EVT_CHOICE(wxID_ANY,       ExportMP3Options::OnQuality)
-END_EVENT_TABLE()
 
 // Settings available for use elsewhere
 IntSetting MP3SBitrate{ L"/FileFormats/MP3SetRate", PRESET_STANDARD };
@@ -272,11 +260,6 @@ BoolSetting MP3ForceMono{ L"/FileFormats/MP3ForceMono", false };
 ExportMP3Options::ExportMP3Options(wxWindow *parent, int WXUNUSED(format))
 :  wxPanelWrapper(parent, wxID_ANY)
 {
-   mSetRate = MP3SBitrate.Read();
-   mVbrRate = MP3VBitrate.Read();
-   mAbrRate = MP3ABitrate.Read();
-   mCbrRate = MP3CBitrate.Read();
-
    ShuttleGui S(this, eIsCreatingFromPrefs);
    PopulateOrExchange(S);
 
@@ -326,6 +309,7 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
 {
    mMonoValue = MP3ForceMono.Read();
 
+   using namespace DialogDefinition;
    S.StartVerticalLay();
    {
       S.StartHorizontalLay(wxCENTER);
@@ -379,10 +363,8 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                   {
                      mSetChoice =
                      S
-                        .TieNumberAsChoice(
-                           XXO("Quality"),
-                           { MP3SBitrate, mSetRate },
-                           setRateNames );
+                        .Target( NumberChoice( MP3SBitrate, setRateNames ) )
+                        .AddChoice( XXO("Quality") );
                   }
                   S
                      .EndNotebookPage();
@@ -392,10 +374,8 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                   {
                      mVbrChoice =
                      S
-                        .TieNumberAsChoice(
-                           XXO("Quality"),
-                           { MP3VBitrate, mVbrRate },
-                           varRateNames );
+                        .Target( NumberChoice( MP3VBitrate, varRateNames ) )
+                        .AddChoice( XXO("Quality") );
                   }
                   S
                      .EndNotebookPage();
@@ -405,11 +385,9 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                   {
                      mAbrChoice =
                      S
-                        .TieNumberAsChoice(
-                           XXO("Quality"),
-                           { MP3ABitrate, mAbrRate },
-                           fixRateNames,
-                           &fixRateValues );
+                        .Target( NumberChoice( MP3ABitrate,
+                           fixRateNames, fixRateValues ) )
+                        .AddChoice( XXO("Quality") );
                   }
                   S
                      .EndNotebookPage();
@@ -419,11 +397,9 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                   {
                      mCbrChoice =
                      S
-                        .TieNumberAsChoice(
-                           XXO("Quality"),
-                           { MP3CBitrate, mCbrRate },
-                           fixRateNames,
-                           &fixRateValues );
+                        .Target( NumberChoice( MP3CBitrate,
+                           fixRateNames, fixRateValues ) )
+                        .AddChoice( XXO("Quality") );
                   }
                   S
                      .EndNotebookPage();
@@ -436,10 +412,8 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                      //??
                      ( mSET->GetValue() || mVBR->GetValue() );
                   } )
-                  .TieNumberAsChoice(
-                     XXO("Variable Speed:"),
-                     MP3VarMode,
-                     varModeNames );
+                  .Target( NumberChoice( MP3VarMode, varModeNames ) )
+                  .AddChoice( XXO("Variable Speed:") );
                */
    
                S
@@ -495,10 +469,6 @@ bool ExportMP3Options::TransferDataFromWindow()
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
-   MP3SBitrate.Write( mSetRate );
-   MP3VBitrate.Write( mVbrRate );
-   MP3ABitrate.Write( mAbrRate );
-   MP3CBitrate.Write( mCbrRate );
    gPrefs->Flush();
 
    return wxPanelWrapper::TransferDataFromWindow();
@@ -518,22 +488,6 @@ int ValidateIndex( const std::vector<int> &values, int value, int defaultIndex )
    return ( iter != finish ) ? static_cast<int>( iter - start ) : defaultIndex;
 }
 
-}
-
-void ExportMP3Options::OnQuality(wxCommandEvent& WXUNUSED(event))
-{
-   if (mSET->GetValue()) {
-      mSetRate = mSetChoice->GetSelection();
-   }
-   else if (mVBR->GetValue()) {
-      mVbrRate = mVbrChoice->GetSelection();
-   }
-   else if (mABR->GetValue()) {
-      mAbrRate = fixRateValues[ mAbrChoice->GetSelection() ];
-   }
-   else {
-      mCbrRate = fixRateValues[ mCbrChoice->GetSelection() ];
-   }
 }
 
 void ExportMP3Options::OnMono()
