@@ -316,19 +316,19 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                         .StartRadioButtonGroup(MP3RateModeSetting);
                      {
                         S
-                           .TieRadioButton();
+                           .AddRadioButton();
 
                         S
-                           .TieRadioButton();
+                           .AddRadioButton();
 
                         S
-                           .TieRadioButton();
+                           .AddRadioButton();
 
                         S
                            .TieRadioButton();
                      }
                      S
-                        .EndRadioButtonGroup();
+                        .AddRadioButton();
                   }
                   S.EndHorizontalLay();
                }
@@ -412,11 +412,11 @@ void ExportMP3Options::PopulateOrExchange(ShuttleGui & S)
                         {
                            S
                               .Enable( [this]{ return !MP3ForceMono.Read(); } )
-                              .TieRadioButton();
+                              .AddRadioButton();
 
                            S
                               .Enable( [this]{ return !MP3ForceMono.Read(); } )
-                              .TieRadioButton();
+                              .AddRadioButton();
                         }
                         S.EndRadioButtonGroup();
                      }
