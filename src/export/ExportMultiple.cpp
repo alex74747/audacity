@@ -409,7 +409,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                   .AddRadioButton();
 
                S
-                  .TieRadioButton();
+                  .AddRadioButton();
             }
             S
                .EndRadioButtonGroup();

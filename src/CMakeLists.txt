@@ -243,8 +243,6 @@ list( APPEND SOURCES
       ShuttleGetDefinition.h
       ShuttleGui.cpp
       ShuttleGui.h
-      ShuttlePrefs.cpp
-      ShuttlePrefs.h
       Snap.cpp
       Snap.h
       SoundActivatedRecord.cpp
@@ -310,8 +308,6 @@ list( APPEND SOURCES
       WaveTrack.cpp
       WaveTrack.h
       WaveTrackLocation.h
-      WrappedType.cpp
-      WrappedType.h
 
       # Commands
 
