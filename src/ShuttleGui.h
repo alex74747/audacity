@@ -1359,7 +1359,9 @@ public:
 
    // Must be called between a StartRadioButtonGroup / EndRadioButtonGroup pair,
    // and as many times as there are values in the enumeration.
-   void TieRadioButton();
+   void AddRadioButton();
+   void TieRadioButton() { AddRadioButton(); }
+
 
    wxSpinCtrl * TieSpinCtrl( const TranslatableLabel &Prompt,
       int &Value, const int max, const int min = 0 );
@@ -1799,6 +1801,20 @@ public:
       return Rebind<Sink, wxRadioButton>();
    }
 
+   TypedShuttleGui<Sink, wxRadioButton>
+   TieRadioButton(
+      const TranslatableString & Prompt )
+   {
+      return AddRadioButton( Prompt );
+   }
+
+   TypedShuttleGui<Sink, wxRadioButton>
+   TieRadioButton()
+   {
+      ShuttleGuiBase::AddRadioButton();
+      return Rebind<Sink, wxRadioButton>();
+   }
+
    // Only the last button specified as default (if more than one) will be
    // Always ORs the flags with wxALL (which affects borders):
    TypedShuttleGui<Sink, wxButton>
@@ -1955,9 +1971,9 @@ public:
    // Must be called between a StartRadioButtonGroup / EndRadioButtonGroup pair,
    // and as many times as there are values in the enumeration.
    TypedShuttleGui<Sink, wxRadioButton>
-   TieRadioButton()
+   AddRadioButton()
    {
-      ShuttleGuiBase::TieRadioButton();
+      ShuttleGuiBase::AddRadioButton();
       return Rebind<Sink, wxRadioButton>();
    }
 
