@@ -100,7 +100,6 @@ public:
    // Effect implementation
 
    bool Init() override;
-   bool CheckWhetherSkipEffect() override;
    bool Process() override;
    bool ShowInterface( wxWindow &parent,
       const EffectDialogFactory &factory, bool forceModal = false) override;
@@ -197,6 +196,8 @@ private:
    wxString ToTimeFormat(double t);
 
 private:
+
+   std::unique_ptr<NyquistEffect> mDelegate;
 
    wxString          mXlispPath;
 

@@ -1336,14 +1336,13 @@ bool Effect::DoEffect(double projectRate,
    return returnVal;
 }
 
-bool Effect::Delegate(
-   Effect &delegate, wxWindow &parent, const EffectDialogFactory &factory )
+bool Effect::Delegate( Effect &delegate )
 {
    NotifyingSelectedRegion region;
    region.setTimes( mT0, mT1 );
 
-   return delegate.DoEffect( mProjectRate, mTracks, mFactory,
-      region, &parent, factory );
+   return delegate.DoEffect(
+      mProjectRate, mTracks, mFactory, region );
 }
 
 // All legacy effects should have this overridden
