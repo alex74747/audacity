@@ -556,8 +556,7 @@ bool ExportFFmpeg::InitCodecs(AudacityProject *project)
       mEncFormatCtx->SetPacketSize(
          gPrefs->Read(L"/FileFormats/FFmpegPacketSize", (long)0));
 
-      codec = mFFmpeg->CreateEncoder(
-         gPrefs->Read(L"/FileFormats/FFmpegCodec"));
+      codec = mFFmpeg->CreateEncoder(FFmpegCodec.Read());
 
       if (!codec)
          codec = mFFmpeg->CreateEncoder(mEncFormatDesc->GetAudioCodec());
@@ -1099,7 +1098,7 @@ ProgressResult ExportFFmpeg::Export(AudacityProject *project,
 
    wxString shortname(ExportFFmpegOptions::fmts[mSubFormat].shortname);
    if (mSubFormat == FMT_OTHER)
-      shortname = gPrefs->Read(L"/FileFormats/FFmpegFormat",L"matroska");
+      shortname = FFmpegFormat.ReadWithDefault( L"matroska" );
    ret = Init(shortname.mb_str(),project, metadata, subformat);
    auto cleanup = finally ( [&] { FreeResources(); } );
 
