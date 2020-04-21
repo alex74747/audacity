@@ -38,7 +38,6 @@ GUIPrefs::GUIPrefs(wxWindow * parent, wxWindowID winid)
 /* i18n-hint: refers to Audacity's user interface settings */
 :  PrefsPanel(parent, winid, XC("Interface", "GUI"))
 {
-   Populate();
 }
 
 GUIPrefs::~GUIPrefs()
@@ -62,19 +61,10 @@ ManualPageID GUIPrefs::HelpPageName()
 
 void GUIPrefs::GetRangeChoices(
    TranslatableStrings *pChoices,
-   Identifiers *pCodes,
-   int *pDefaultRangeIndex )
+   std::vector<int> *pCodes )
 {
-   static const Identifiers sCodes = {
-      L"36" ,
-      L"48" ,
-      L"60" ,
-      L"72" ,
-      L"84" ,
-      L"96" ,
-      L"120" ,
-      L"145" ,
-   };
+   static const std::vector<int> sCodes =
+      { 36, 48, 60, 72, 84, 96, 120, 145 };
    if (pCodes)
       *pCodes = sCodes;
 
@@ -91,35 +81,6 @@ void GUIPrefs::GetRangeChoices(
 
    if (pChoices)
       *pChoices = sChoices;
-
-   if (pDefaultRangeIndex)
-      *pDefaultRangeIndex = 2; // 60 == DecibelScaleCutoff.GetDefault()
-}
-
-void GUIPrefs::Populate()
-{
-   // First any pre-processing for constructing the GUI.
-   TranslatableStrings langNames;
-   Languages::GetLanguages(
-      FileNames::AudacityPathList(), mLangCodes, langNames);
-   mLangNames = { langNames.begin(), langNames.end() };
-
-   TranslatableStrings rangeChoices;
-   GetRangeChoices(&rangeChoices, &mRangeCodes, &mDefaultRangeIndex);
-   mRangeChoices = { rangeChoices.begin(), rangeChoices.end() };
-
-#if 0
-   mLangCodes.insert( mLangCodes.end(), {
-      // only for testing...
-      "kg" ,
-      "ep" ,
-   } );
-
-   mLangNames.insert( mLangNames.end(), {
-      "Klingon" ,
-      "Esperanto" ,
-   } );
-#endif
 }
 
 ChoiceSetting GUIManualLocation{
@@ -134,6 +95,30 @@ ChoiceSetting GUIManualLocation{
 
 void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
 {
+   using namespace DialogDefinition;
+   
+   TranslatableStrings langNames;
+   Identifiers langCodes;
+   Languages::GetLanguages(
+      FileNames::AudacityPathList(), langCodes, langNames);
+
+   TranslatableStrings rangeChoices;
+   std::vector<int> rangeCodes;
+   GetRangeChoices( &rangeChoices, &rangeCodes );
+
+#if 0
+   langCodes.insert( langCodes.end(), {
+      // only for testing...
+      "kg" ,
+      "ep" ,
+   } );
+
+   langNames.insert( langNames.end(), {
+      "Klingon" ,
+      "Esperanto" ,
+   } );
+#endif
+
    S.SetBorder(2);
    S.StartScroller();
 
@@ -143,11 +128,8 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
       {
 
          S
-            .TieChoice( XXO("&Language:"),
-               {
-                  LocaleLanguage,
-                  { ByColumns, mLangNames, mLangCodes }
-               } );
+            .Target( Choice( LocaleLanguage, langNames, langCodes ) )
+            .AddChoice( XXO("&Language:") );
 
          S
             .Target( GUIManualLocation )
@@ -158,12 +140,9 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
             .AddChoice( XXO("Th&eme:") );
 
          S
-            .TieChoice( XXO("Meter dB &range:"),
-               {
-                  DecibelScaleCutoff.GetPath(),
-                  { ByColumns, mRangeChoices, mRangeCodes },
-                  mDefaultRangeIndex
-               } );
+            .Target(
+               NumberChoice( DecibelScaleCutoff, rangeChoices, rangeCodes ) )
+            .AddChoice( XXO("Meter dB &range:") );
       }
       S.EndMultiColumn();
    }
@@ -298,10 +277,6 @@ BoolSetting GUIShowMac{
    L"/GUI/ShowMac",          false };
 BoolSetting GUIShowSplashScreen{
    L"/GUI/ShowSplashScreen", true  };
-
-// A dB value as a positivie number
-IntSetting GUIdBRange{
-   L"/GUI/EnvdBRange",       60 };
 
 StringSetting LocaleLanguage{
    L"/Locale/Language",      L"" };

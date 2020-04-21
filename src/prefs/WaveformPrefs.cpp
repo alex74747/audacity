@@ -49,7 +49,6 @@ WaveformPrefs::WaveformPrefs(wxWindow * parent, wxWindowID winid,
    }
 
    mTempSettings.ConvertToEnumeratedDBRange();
-   Populate();
 }
 
 WaveformPrefs::~WaveformPrefs()
@@ -74,12 +73,6 @@ ManualPageID WaveformPrefs::HelpPageName()
 enum {
    ID_DEFAULTS = 10001,
 };
-
-void WaveformPrefs::Populate()
-{
-   // Reuse the same choices and codes as for Interface prefs
-   GUIPrefs::GetRangeChoices(&mRangeChoices, &mRangeCodes);
-}
 
 void WaveformPrefs::PopulateOrExchange(ShuttleGui & S)
 {

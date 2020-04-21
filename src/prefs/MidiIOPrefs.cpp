@@ -49,11 +49,6 @@ enum {
    ChannelsID
 };
 
-BEGIN_EVENT_TABLE(MidiIOPrefs, PrefsPanel)
-   EVT_CHOICE(HostID, MidiIOPrefs::OnHost)
-//   EVT_CHOICE(RecordID, MidiIOPrefs::OnDevice)
-END_EVENT_TABLE()
-
 MidiIOPrefs::MidiIOPrefs(wxWindow * parent, wxWindowID winid)
 /* i18n-hint: untranslatable acronym for "Musical Instrument Device Interface" */
 :  PrefsPanel(parent, winid, XO("MIDI Devices"))
@@ -82,9 +77,6 @@ ManualPageID MidiIOPrefs::HelpPageName()
 
 void MidiIOPrefs::Populate()
 {
-   // First any pre-processing for constructing the GUI.
-   GetNamesAndLabels();
-
    // Get current setting for devices
    mPlayDevice = MIDIPlaybackDevice.Read();
 #ifdef EXPERIMENTAL_MIDI_IN
@@ -95,16 +87,17 @@ void MidiIOPrefs::Populate()
 
 bool MidiIOPrefs::TransferDataToWindow()
 {
-   wxCommandEvent e;
-   OnHost(e);
+   OnHost();
    return true;
 }
 
-/// Gets the lists of names and lists of labels which are
-/// used in the choice controls.
-/// The names are what the user sees in the wxChoice.
-/// The corresponding labels are what gets stored.
-void MidiIOPrefs::GetNamesAndLabels() {
+static StringSetting MidiIOHost{ "/MidiIO/Host", L"" };
+
+void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
+   using namespace DialogDefinition;
+
+   Identifiers hostLabels;
+
    // Gather list of hosts.  Only added hosts that have devices attached.
    Pm_Terminate(); // close and open to refresh device lists
    Pm_Initialize();
@@ -113,23 +106,14 @@ void MidiIOPrefs::GetNamesAndLabels() {
       const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
       if (info->output || info->input) { //should always happen
          wxString name = wxSafeConvertMB2WX(info->interf);
-         if (!make_iterator_range(mHostNames)
-            .contains( Verbatim( name ) )) {
-            mHostNames.push_back( Verbatim( name ) );
-            mHostLabels.push_back(name);
-         }
+         if (!make_iterator_range(hostLabels)
+            .contains( name ))
+            hostLabels.push_back(name);
       }
    }
 
-   if (nDevices == 0) {
-      mHostNames.push_back(XO("No MIDI interfaces"));
-      mHostLabels.push_back(L"No MIDI interfaces");
-   }
-}
-
-static StringSetting MidiIOHost{ "/MidiIO/Host", L"" };
-
-void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
+   if (nDevices == 0)
+      hostLabels.push_back(XO("No MIDI interfaces").Translation()); //?
 
    S.SetBorder(2);
    S.StartScroller();
@@ -142,12 +126,10 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
          mHost =
          S
             .Id(HostID)
+            .Target( Choice( MidiIOHost, Verbatim( hostLabels ) ) )
+            .Action( [this]{ OnHost(); } )
             /* i18n-hint: (noun) */
-            .TieChoice( XXO("&Host:"),
-               {
-                  MidiIOHost,
-                  { ByColumns, mHostNames, mHostLabels }
-               } );
+            .AddChoice( XXO("&Host:") );
 
          S
             .AddPrompt(XXO("Using: PortMidi"));
@@ -200,12 +182,9 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
 
 }
 
-void MidiIOPrefs::OnHost(wxCommandEvent & WXUNUSED(e))
+void MidiIOPrefs::OnHost()
 {
-   Identifier itemAtIndex;
-   int index = mHost->GetCurrentSelection();
-   if (index >= 0 && index < (int)mHostNames.size())
-      itemAtIndex = mHostLabels[index];
+   Identifier itemAtIndex = MidiIOHost.Read();
    int nDevices = Pm_CountDevices();
 
    mPlay->Clear();
@@ -226,7 +205,7 @@ void MidiIOPrefs::OnHost(wxCommandEvent & WXUNUSED(e))
                                             name);
          if (info->output) {
             playnames.push_back(name);
-            index = mPlay->Append(name, (void *) info);
+            auto index = mPlay->Append(name, (void *) info);
             if (device == mPlayDevice) {
                mPlay->SetSelection(index);
             }
@@ -265,7 +244,6 @@ void MidiIOPrefs::OnHost(wxCommandEvent & WXUNUSED(e))
 #ifdef EXPERIMENTAL_MIDI_IN
    ShuttleGui::SetMinSize(mRecord, recordnames);
 #endif
-//   OnDevice(e);
 }
 
 bool MidiIOPrefs::Commit()

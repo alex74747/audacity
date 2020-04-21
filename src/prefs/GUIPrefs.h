@@ -37,18 +37,11 @@ class AUDACITY_DLL_API GUIPrefs final : public PrefsPanel
 
    static void GetRangeChoices(
       TranslatableStrings *pChoices,
-      Identifiers *pCodes,
-      int *pDefaultRangeIndex = nullptr );
+      std::vector<int> *pCodes );
 
- private:
-   void Populate();
-
-   Identifiers mLangCodes;
-   TranslatableStrings mLangNames;
-
-   Identifiers mRangeCodes;
-   TranslatableStrings mRangeChoices;
-   int mDefaultRangeIndex;
+   // If no input language given, defaults to system language.
+   // Returns the language actually used which is not lang if lang cannot be found.
+   static Identifier SetLang( const Identifier & lang );
 };
 
 AUDACITY_DLL_API
