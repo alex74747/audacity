@@ -32,6 +32,8 @@
 #include "Prefs.h"
 #include "../ShuttleGui.h"
 
+#include "GUIPrefs.h"
+
 using std::min;
 
 enum {

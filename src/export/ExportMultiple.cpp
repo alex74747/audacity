@@ -223,7 +223,9 @@ int ExportMultipleDialog::ShowModal()
 namespace {
 BoolSetting OverwriteExisting{
    L"/Export/OverwriteExisting", false};
-};
+
+StringSetting ExportMultipleFormat{ "/Export/MultipleFormat", L"" };
+}
 
 void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
 {
@@ -296,7 +298,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
                .Id(FormatID)
                .TieChoice( XXO("Format:"),
                {
-                  L"/Export/MultipleFormat",
+                  ExportMultipleFormat,
                   {
                      ByColumns,
                      visibleFormats,

@@ -55,6 +55,7 @@
 #include "AllThemeResources.h"
 #include "../AudioIO.h"
 #include "ImageManipulation.h"
+#include "../prefs/GUIPrefs.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "../ProjectAudioIO.h"
@@ -106,7 +107,7 @@ static const TranslatableString
 ControlToolBar::ControlToolBar( AudacityProject &project )
 : ToolBar(project, TransportBarID, XO("Transport"), L"Control")
 {
-   mStrLocale = gPrefs->Read(L"/Locale/Language", L"");
+   mStrLocale = LocaleLanguage.Read();
 
    mSizer = NULL;
 }
@@ -320,7 +321,7 @@ void ControlToolBar::UpdatePrefs()
 {
    bool updated = false;
 
-   wxString strLocale = gPrefs->Read(L"/Locale/Language", L"");
+   wxString strLocale = LocaleLanguage.Read();
    if (mStrLocale != strLocale)
    {
       mStrLocale = strLocale;

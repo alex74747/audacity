@@ -123,6 +123,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "TransactionScope.h"
 
 #include "effects/RealtimeEffectManager.h"
+#include "prefs/GUIPrefs.h"
 #include "QualitySettings.h"
 #include "prefs/RecordingPrefs.h"
 #include "prefs/RecordingSettings.h"

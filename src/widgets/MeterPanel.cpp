@@ -69,6 +69,8 @@
 #include "Theme.h"
 #include "wxWidgetsWindowPlacement.h"
 
+#include "../prefs/GUIPrefs.h"
+
 #include "AllThemeResources.h"
 #include "../widgets/valnum.h"
 #include "wxWidgetsWindowPlacement.h"

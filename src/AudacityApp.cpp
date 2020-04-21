@@ -78,6 +78,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "commands/AppCommandEvent.h"
 #include "widgets/ASlider.h"
 #include "FFmpeg.h"
+#include "prefs/GUIPrefs.h"
 #include "Journal.h"
 //#include "LangChoice.h"
 #include "Languages.h"
@@ -187,7 +188,7 @@ namespace {
 void PopulatePreferences()
 {
    bool resetPrefs = false;
-   Identifier langCode = gPrefs->Read(L"/Locale/Language", wxEmptyString);
+   Identifier langCode = LocaleLanguage.Read();
    bool writeLang = false;
 
    const wxFileName fn(
@@ -253,9 +254,7 @@ void PopulatePreferences()
 
    // Save the specified language
    if (writeLang)
-   {
-      gPrefs->Write(L"/Locale/Language", langCode);
-   }
+      LocaleLanguage.Write( langCode.GET() );
 
    // In AUdacity 2.1.0 support for the legacy 1.2.x preferences (depreciated since Audacity
    // 1.3.1) is dropped. As a result we can drop the import flag
