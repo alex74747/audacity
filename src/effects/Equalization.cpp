@@ -1628,7 +1628,7 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
    (void)fileName;
    (void)append;
    mCurves.clear();
-   mCurves.push_back( L"unnamed" );   // we still need a default curve to use
+   mCurves.emplace_back( L"unnamed" );   // we still need a default curve to use
 #else
    // Construct normal curve filename
    //
@@ -1696,7 +1696,7 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
    EQCurve tempUnnamed(L"tempUnnamed");
    for( curve = 0; curve < numCurves-1; curve++ )
    {
-      if( mCurves[curve].Name == _("unnamed") )
+      if( mCurves[curve] == _("unnamed") )
       {
          tempUnnamed.points = mCurves[curve].points;
          mCurves.erase(mCurves.begin() + curve);
@@ -1705,7 +1705,7 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
       }
    }
 
-   if( mCurves.back().Name != _("unnamed") )
+   if( mCurves.back() != _("unnamed") )
       mCurves.push_back( _("unnamed") );   // we always need a default curve to use
    if( append == true )
    {
@@ -1749,7 +1749,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
    mCurves.clear(); // clear now so that we can sort then add back.
 
    // Remove "unnamed" if it exists.
-   if (defaultCurves.back().Name == unnamed) {
+   if (defaultCurves.back() == unnamed) {
       defaultCurves.pop_back();
    }
    else {
@@ -1771,7 +1771,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
          tempCurve = userCurves[curveCount];
          // is the name in the default set?
          for (int defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
-            if (tempCurve.Name == mCurves[defCurveCount].Name) {
+            if (tempCurve == mCurves[defCurveCount]) {
                isCustom = false;
                break;
             }
@@ -1788,7 +1788,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
          bool isUserCurve = false;
          // Add if the curve is in the user's set (preserve user's copy)
          for (int userCurveCount = 0; userCurveCount < numUserCurves; userCurveCount++) {
-            if (userCurves[userCurveCount].Name == defaultCurves[defCurveCount].Name) {
+            if (userCurves[userCurveCount] == defaultCurves[defCurveCount]) {
                isUserCurve = true;
                mCurves.push_back(userCurves[userCurveCount]);
                break;
@@ -1804,7 +1804,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
          bool isDefaultCurve = false;
          tempCurve = userCurves[userCurveCount];
          for (int defCurveCount = 0; defCurveCount < numDefaultCurves; defCurveCount++) {
-            if (tempCurve.Name == defaultCurves[defCurveCount].Name) {
+            if (tempCurve == defaultCurves[defCurveCount]) {
                isDefaultCurve = true;
                break;
             }
@@ -1818,7 +1818,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
    userCurves.clear();
 
    // Add back old "unnamed"
-   if(userUnnamed.Name == unnamed) {
+   if(userUnnamed == unnamed) {
       mCurves.push_back( userUnnamed );   // we always need a default curve to use
    }
 
@@ -2067,11 +2067,6 @@ void EffectEqualization::setCurve(int currentCurve)
    ForceRecalc();
 }
 
-void EffectEqualization::setCurve()
-{
-   setCurve((int) mCurves.size() - 1);
-}
-
 void EffectEqualization::setCurve(const wxString &curveName)
 {
    unsigned i = 0;
@@ -2084,7 +2079,7 @@ void EffectEqualization::setCurve(const wxString &curveName)
          XO("Requested curve not found, using 'unnamed'"),
          wxOK|wxICON_ERROR,
          XO("Curve not found") );
-      setCurve();
+      setCurve((int) mCurves.size() - 1);
    }
    else
       setCurve( i );
@@ -2248,7 +2243,7 @@ bool EffectEqualization::HandleXMLTag(const std::string_view& tag, const Attribu
                {
                   if(n>0)
                      strValueTemp.Printf(L"%s (%d)",strValue,n);
-                  if(mCurves[i].Name == strValueTemp)
+                  if(mCurves[i] == strValueTemp)
                   {
                      exists = true;
                      break;
@@ -3394,12 +3389,7 @@ wxDialogWrapper(parent, wxID_ANY, XO("Manage Curves List"),
    mEffect = effect;
    mPosition = position;
    // make a copy of mEffect->mCurves here to muck about with.
-   mEditCurves.clear();
-   for (unsigned int i = 0; i < mEffect->mCurves.size(); i++)
-   {
-      mEditCurves.push_back(mEffect->mCurves[i].Name);
-      mEditCurves[i].points = mEffect->mCurves[i].points;
-   }
+   mEditCurves = mEffect->mCurves;
 
    Populate();
    SetMinSize(GetSize());
@@ -3460,7 +3450,7 @@ void EditCurvesDialog::PopulateList(int position)
 {
    mList->DeleteAllItems();
    for (unsigned int i = 0; i < mEditCurves.size(); i++)
-      mList->InsertItem(i, mEditCurves[i].Name);
+      mList->InsertItem(i, mEditCurves[i]);
    mList->SetColumnWidth(0, wxLIST_AUTOSIZE);
    int curvesWidth = mList->GetColumnWidth(0);
    mList->SetColumnWidth(0, wxLIST_AUTOSIZE_USEHEADER);
@@ -3492,13 +3482,7 @@ void EditCurvesDialog::OnUp(wxCommandEvent & WXUNUSED(event))
       state = mList->GetItemState(item-1, wxLIST_STATE_SELECTED);
       if ( state != wxLIST_STATE_SELECTED )
       { // swap this with one above but only if it isn't selected
-         EQCurve temp(L"temp");
-         temp.Name = mEditCurves[item].Name;
-         temp.points = mEditCurves[item].points;
-         mEditCurves[item].Name = mEditCurves[item-1].Name;
-         mEditCurves[item].points = mEditCurves[item-1].points;
-         mEditCurves[item-1].Name = temp.Name;
-         mEditCurves[item-1].points = temp.points;
+         std::swap( mEditCurves[item], mEditCurves[item - 1] );
          wxString sTemp = mList->GetItemText(item);
          mList->SetItem(item, 0, mList->GetItemText(item-1));
          mList->SetItem(item-1, 0, sTemp);
@@ -3522,13 +3506,7 @@ void EditCurvesDialog::OnDown(wxCommandEvent & WXUNUSED(event))
          state = mList->GetItemState(item+1, wxLIST_STATE_SELECTED);
          if ( state != wxLIST_STATE_SELECTED )
          { // swap this with one below but only if it isn't selected
-            EQCurve temp(L"temp");
-            temp.Name = mEditCurves[item].Name;
-            temp.points = mEditCurves[item].points;
-            mEditCurves[item].Name = mEditCurves[item+1].Name;
-            mEditCurves[item].points = mEditCurves[item+1].points;
-            mEditCurves[item+1].Name = temp.Name;
-            mEditCurves[item+1].points = temp.points;
+            std::swap( mEditCurves[item], mEditCurves[item + 1] );
             wxString sTemp = mList->GetItemText(item);
             mList->SetItem(item, 0, mList->GetItemText(item+1));
             mList->SetItem(item+1, 0, sTemp);
@@ -3600,8 +3578,8 @@ void EditCurvesDialog::OnRename(wxCommandEvent & WXUNUSED(event))
          // Search list of curves for a duplicate name
          for( curve = 0; curve < numCurves; curve++ )
          {
-            wxString temp = mEditCurves[ curve ].Name;
-            if( name ==  mEditCurves[ curve ].Name ) // case sensitive
+            wxString temp = mEditCurves[ curve ];
+            if( name ==  mEditCurves[ curve ] ) // case sensitive
             {
                bad = true;
                if( curve == item )  // trying to rename a curve with the same name
@@ -3814,8 +3792,7 @@ void EditCurvesDialog::OnExport( wxCommandEvent & WXUNUSED(event))
    {
       if(item != mList->GetItemCount()-1)   // not 'unnamed'
       {
-         exportCurves.push_back(mEditCurves[item].Name);
-         exportCurves[i].points = mEditCurves[item].points;
+         exportCurves.emplace_back(mEditCurves[item]);
          i++;
       }
       else
@@ -3867,12 +3844,7 @@ void EditCurvesDialog::OnOK(wxCommandEvent & WXUNUSED(event))
    wxString backupPlace = wxFileName( FileNames::DataDir(), L"EQBackup.xml" ).GetFullPath();
    mEffect->SaveCurves(backupPlace);
    // Load back into the main dialog
-   mEffect->mCurves.clear();
-   for (unsigned int i = 0; i < mEditCurves.size(); i++)
-   {
-      mEffect->mCurves.push_back(mEditCurves[i].Name);
-      mEffect->mCurves[i].points = mEditCurves[i].points;
-   }
+   mEffect->mCurves = mEditCurves;
    mEffect->SaveCurves();
    mEffect->LoadCurves();
 //   mEffect->CreateChoice();
