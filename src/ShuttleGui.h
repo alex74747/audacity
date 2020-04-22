@@ -30,11 +30,35 @@
 #include "Prefs.h"
 #include "ShuttlePrefs.h"
 #include "widgets/NumericTextCtrl.h"
-#include "widgets/valnum.h" // for IntegerValidator, FloatingPointValidator
 #include "WrappedType.h"
 #include "ComponentInterfaceSymbol.h"
 
 #include <optional>
+
+#ifndef __AUDACITY_NUM_VALIDATOR_STYLE__
+#define __AUDACITY_NUM_VALIDATOR_STYLE__
+// Bit masks used for numeric validator styles.
+enum class NumValidatorStyle : int
+{
+    DEFAULT               = 0x0,
+    THOUSANDS_SEPARATOR   = 0x1,
+    ZERO_AS_BLANK         = 0x2,
+    NO_TRAILING_ZEROES    = 0x4,
+    ONE_TRAILING_ZERO     = 0x8,
+    TWO_TRAILING_ZEROES   = 0x10,
+    THREE_TRAILING_ZEROES = 0x20
+};
+
+inline NumValidatorStyle operator | (NumValidatorStyle x, NumValidatorStyle y)
+{ return NumValidatorStyle( int(x) | int(y) ); }
+
+inline int operator & (NumValidatorStyle x, NumValidatorStyle y)
+{ return int(x) & int(y); }
+
+// Sometimes useful for specifying max and min values for validators, when they
+// must have the same precision as the validated value
+AUDACITY_DLL_API double RoundValue(int precision, double value);
+#endif
 
 class ChoiceSetting;
 class LabelSetting;
@@ -630,7 +654,7 @@ public:
 // Also book controls, to change the page.
 // For text boxes and combos, validates the characters
 class IntValidator
-   : public IntegerValidator< int >
+   : public wxValidator
    , public AdaptingValidatorBase< int >
 {
 public:
@@ -639,6 +663,8 @@ public:
    using SettingAdaptorType = SettingAdaptor< TargetType >;
 
    using RadioButtonList = std::vector< wxWindowRef >;
+
+   bool TryBefore(wxEvent& event) override;
 
    IntValidator( const std::shared_ptr< ValidationState > &pValidationState,
       const std::shared_ptr< AdaptorType > &pAdaptor,
@@ -654,6 +680,7 @@ public:
    bool TransferToWindow() override;
 
 private:
+   std::unique_ptr< wxValidator > mDelegate;
    std::shared_ptr< RadioButtonList > mRadioButtons;
 };
 
@@ -680,7 +707,7 @@ public:
 // This can shuttle to text boxes, combos, and sliders.
 // For text boxes and combos, validates the characters
 class DoubleValidator
-   : public FloatingPointValidator< double >
+   : public wxValidator
    , public AdaptingValidatorBase< double >
 {
 public:
@@ -697,11 +724,14 @@ public:
    DoubleValidator( const DoubleValidator& );
    ~DoubleValidator() override;
 
+   bool TryBefore(wxEvent& event) override;
+
    bool Validate( wxWindow *parent ) override;
    wxObject *Clone() const override;
    bool TransferFromWindow() override;
    bool TransferToWindow() override;
 private:
+   std::unique_ptr< wxValidator > mDelegate;
    // Used in case of text or combo boxes to avoid precision loss when
    // transferring the value out
    double mExactValue = 0;
