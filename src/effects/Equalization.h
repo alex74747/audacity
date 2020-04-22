@@ -188,9 +188,6 @@ private:
    void OnSize( wxSizeEvent & event );
    void OnSlider( wxCommandEvent & event );
    void OnInterp();
-   void OnSliderM( wxCommandEvent & event );
-   void OnSliderDBMAX( wxCommandEvent & event );
-   void OnSliderDBMIN( wxCommandEvent & event );
    void OnCurve();
    void OnManage();
    void OnInvert();
@@ -206,10 +203,13 @@ private:
    HFFT hFFT;
    Floats mFFTBuffer, mFilterFuncR, mFilterFuncI;
    size_t mM;
+   size_t mPrevM;
    wxString mCurveName;
    bool mLin;
-   float mdBMax;
-   float mdBMin;
+   double mdBMax;
+   double mdBMin;
+   double mPrevdBMin;
+   double mPrevdBMax;
    bool mDrawMode;
    int mInterp = 0;
    bool mDrawGrid;
@@ -258,10 +258,6 @@ private:
 
    int mUpdatedCurves;
    wxButton *mManage;
-   wxStaticText *mMText;
-   wxSlider *mMSlider;
-   wxSlider *mdBMinSlider;
-   wxSlider *mdBMaxSlider;
    wxSlider *mSliders[NUMBER_OF_BANDS];
 
 #ifdef EXPERIMENTAL_EQ_SSE_THREADED
