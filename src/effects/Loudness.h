@@ -16,7 +16,6 @@
 #include "EBUR128.h"
 #include "../ShuttleAutomation.h"
 
-class wxChoice;
 class ShuttleGui;
 
 class EffectLoudness final : public Effect

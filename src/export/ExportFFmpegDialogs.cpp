@@ -49,7 +49,6 @@
 
 #include <wx/app.h>
 #include <wx/checkbox.h>
-#include <wx/choice.h>
 #include <wx/textctrl.h>
 #include <wx/listbox.h>
 #include <wx/window.h>
@@ -911,7 +910,7 @@ void FFmpegPresets::DeletePreset(wxString &name)
    }
 }
 
-FFmpegPreset *FFmpegPresets::FindPreset(wxString &name)
+FFmpegPreset *FFmpegPresets::FindPreset(const Identifier &name)
 {
    FFmpegPresetMap::iterator iter = mPresets.find(name);
    if (iter != mPresets.end())
@@ -923,12 +922,12 @@ FFmpegPreset *FFmpegPresets::FindPreset(wxString &name)
 }
 
 // return false if overwrite was not allowed.
-bool FFmpegPresets::OverwriteIsOk( wxString &name )
+bool FFmpegPresets::OverwriteIsOk( const Identifier &name )
 {
    FFmpegPreset *preset = FindPreset(name);
    if (preset)
    {
-      auto query = XO("Overwrite preset '%s'?").Format(name);
+      auto query = XO("Overwrite preset '%s'?").Format(name.GET());
       int action = AudacityMessageBox(
          query,
          XO("Confirm Overwrite"),
@@ -939,7 +938,8 @@ bool FFmpegPresets::OverwriteIsOk( wxString &name )
 }
 
 
-bool FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
+bool FFmpegPresets::SavePreset(
+   ExportFFmpegOptions *parent, const Identifier &name)
 {
    wxString format;
    wxString codec;
@@ -1033,12 +1033,13 @@ bool FFmpegPresets::SavePreset(ExportFFmpegOptions *parent, wxString &name)
    return true;
 }
 
-void FFmpegPresets::LoadPreset(ExportFFmpegOptions *parent, wxString &name)
+void FFmpegPresets::LoadPreset(
+   ExportFFmpegOptions *parent, const Identifier &name)
 {
    FFmpegPreset *preset = FindPreset(name);
    if (!preset)
    {
-      AudacityMessageBox( XO("Preset '%s' does not exist." ).Format(name));
+      AudacityMessageBox( XO("Preset '%s' does not exist." ).Format(name.GET()));
       return;
    }
 
@@ -2366,7 +2367,7 @@ void ExportFFmpegOptions::OnSavePreset()
 // Return false if failed to save.
 bool ExportFFmpegOptions::SavePreset(bool bCheckForOverwrite)
 {
-   auto name = FFmpegPreset.Read();
+   Identifier name = FFmpegPreset.Read();
    if (name.empty())
    {
       AudacityMessageBox( XO("You can't save a preset without a name") );
@@ -2442,7 +2443,7 @@ void ExportFFmpegOptions::OnExportPresets()
       return;
 
    Identifiers presets;
-   mPresets->GetPresetList( presets);
+   mPresets->GetPresetList( presets );
    if( presets.size() < 1)
    {
       AudacityMessageBox( XO("No presets to export") );
