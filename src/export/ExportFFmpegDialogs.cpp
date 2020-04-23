@@ -54,7 +54,7 @@
 #include <wx/listbox.h>
 #include <wx/window.h>
 #include <wx/spinctrl.h>
-#include <wx/combobox.h>
+#include <wx/choice.h>
 #include <wx/stattext.h>
 
 #include "../widgets/FileDialog/FileDialog.h"
@@ -99,8 +99,6 @@
    FFMPEG_EXPORT_CTRL_ID_ENTRY(FEBitReservoirID), \
    FFMPEG_EXPORT_CTRL_ID_ENTRY(FEVariableBlockLenID), \
    FFMPEG_EXPORT_CTRL_ID_ENTRY(FELastID), \
- \
-   FFMPEG_EXPORT_CTRL_ID_ENTRY(FEPresetID), \
 
 // First the enumeration
 #define FFMPEG_EXPORT_CTRL_ID_FIRST_ENTRY(name, num)  name = num
@@ -892,7 +890,7 @@ void FFmpegPresets::ExportPresets(wxString &filename)
    } );
 }
 
-void FFmpegPresets::GetPresetList(wxArrayString &list)
+void FFmpegPresets::GetPresetList(Identifiers &list)
 {
    list.clear();
    FFmpegPresetMap::iterator iter;
@@ -1804,10 +1802,12 @@ void ExportFFmpegOptions::PopulateOrExchange(ShuttleGui & S)
       {
          S.SetStretchyCol(1);
 
-         mPresetCombo =
          S
-            .Id(FEPresetID)
-            .AddCombo(XXO("Preset:"), FFmpegPreset.Read(), mPresetNames);
+            // This setting is used only in this dialog
+            .Target( Choice( FFmpegPreset, Verbatim( Recompute(
+               [this](int){ return mPresetNames; },
+               mPresetNamesUpdated ) ) ) )
+            .AddCombo(XXO("Preset:"), {}, {});
 
          S
             .Action( [this]{ OnLoadPreset(); } )
@@ -2335,8 +2335,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(
 ///
 void ExportFFmpegOptions::OnDeletePreset()
 {
-   wxComboBox *preset = dynamic_cast<wxComboBox*>(FindWindowById(FEPresetID,this));
-   wxString presetname = preset->GetValue();
+   wxString presetname = FFmpegPreset.Read();
    if (presetname.empty())
    {
       AudacityMessageBox( XO("You can't delete a preset without name") );
@@ -2351,12 +2350,10 @@ void ExportFFmpegOptions::OnDeletePreset()
    if (action == wxNO) return;
 
    mPresets->DeletePreset(presetname);
-   long index = preset->FindString(presetname);
-   preset->SetValue(wxEmptyString);
-   preset->Delete(index);
+   FFmpegPreset.Write( {} );
    mPresetNames.erase(
-      std::find( mPresetNames.begin(), mPresetNames.end(), presetname )
-   );
+      std::find( mPresetNames.begin(), mPresetNames.end(), presetname ) );
+   ++mPresetNamesUpdated;
 }
 
 ///
@@ -2369,8 +2366,7 @@ void ExportFFmpegOptions::OnSavePreset()
 // Return false if failed to save.
 bool ExportFFmpegOptions::SavePreset(bool bCheckForOverwrite)
 {
-   wxComboBox *preset = dynamic_cast<wxComboBox*>(FindWindowById(FEPresetID,this));
-   wxString name = preset->GetValue();
+   auto name = FFmpegPreset.Read();
    if (name.empty())
    {
       AudacityMessageBox( XO("You can't save a preset without a name") );
@@ -2380,13 +2376,10 @@ bool ExportFFmpegOptions::SavePreset(bool bCheckForOverwrite)
       return false;
    if( !mPresets->SavePreset(this,name) )
       return false;
-   int index = mPresetNames.Index(name,false);
-   if (index == -1)
-   {
+   if (auto end = mPresetNames.end();
+       end == find(mPresetNames.begin(), end, name)) {
       mPresetNames.push_back(name);
-      mPresetCombo->Clear();
-      mPresetCombo->Append(mPresetNames);
-      mPresetCombo->Select(mPresetNames.Index(name,false));
+      ++mPresetNamesUpdated;
    }
    return true;
 }
@@ -2395,8 +2388,7 @@ bool ExportFFmpegOptions::SavePreset(bool bCheckForOverwrite)
 ///
 void ExportFFmpegOptions::OnLoadPreset()
 {
-   wxComboBox *preset = dynamic_cast<wxComboBox*>(FindWindowById(FEPresetID,this));
-   wxString presetname = preset->GetValue();
+   auto presetname = FFmpegPreset.Read();
 
    mShownFormatNames = mFormatNames;
    mShownFormatLongNames = mFormatLongNames;
@@ -2436,8 +2428,7 @@ void ExportFFmpegOptions::OnImportPresets()
    path = dlg.GetPath();
    mPresets->ImportPresets(path);
    mPresets->GetPresetList(mPresetNames);
-   mPresetCombo->Clear();
-   mPresetCombo->Append(mPresetNames);
+   ++mPresetNamesUpdated;
 }
 
 ///
@@ -2450,9 +2441,9 @@ void ExportFFmpegOptions::OnExportPresets()
    if( !SavePreset(!kCheckForOverwrite) )
       return;
 
-   wxArrayString presets;
+   Identifiers presets;
    mPresets->GetPresetList( presets);
-   if( presets.Count() < 1)
+   if( presets.size() < 1)
    {
       AudacityMessageBox( XO("No presets to export") );
       return;

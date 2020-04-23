@@ -38,7 +38,6 @@ Paul Licameli split from TrackPanel.cpp
 #include "Identifier.h"
 
 #include <wx/app.h>
-#include <wx/combobox.h>
 #include <wx/frame.h>
 #include <wx/sizer.h>
 
@@ -374,11 +373,10 @@ void RateMenuTable::OnRateOther()
       dlg.SetName();
       ShuttleGui S(&dlg, eIsCreating);
       wxString rate;
-      wxComboBox *cb;
 
       rate.Printf(L"%ld", lrint(pTrack->GetRate()));
 
-      wxArrayStringEx rates{
+      Identifiers rates{
          L"8000" ,
          L"11025" ,
          L"16000" ,
@@ -393,19 +391,15 @@ void RateMenuTable::OnRateOther()
          L"384000" ,
       };
 
+      using namespace DialogDefinition;
       S.StartVerticalLay(true);
       {
          S.SetBorder(10);
          S.StartHorizontalLay(wxEXPAND, false);
          {
-            cb =
             S
-               .AddCombo( XXO("New sample rate (Hz):"), rate, rates );
-#if defined(__WXMAC__)
-            // As of wxMac-2.8.12, setting manually is required
-            // to handle rates not in the list.  See: Bug #427
-            cb->SetValue(rate);
-#endif
+               .Target( Choice( rate, Verbatim( rates ) ) )
+               .AddCombo( XXO("New sample rate (Hz):"), {}, {} );
          }
          S.EndHorizontalLay();
 
@@ -423,7 +417,7 @@ void RateMenuTable::OnRateOther()
       }
 
       long lrate;
-      if (cb->GetValue().ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
+      if (rate.ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
       {
          newRate = (int)lrate;
          break;

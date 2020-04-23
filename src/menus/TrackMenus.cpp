@@ -33,8 +33,6 @@
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ProgressDialog.h"
 
-#include <wx/combobox.h>
-
 #ifdef EXPERIMENTAL_SCOREALIGN
 #include "../effects/ScoreAlignDialog.h"
 #include "audioreader.h"
@@ -645,11 +643,10 @@ void OnResample(const CommandContext &context)
       wxDialogWrapper dlg(&window, wxID_ANY, XO("Resample"));
       ShuttleGui S(&dlg, eIsCreating);
       wxString rate;
-      wxComboBox *cb;
 
       rate.Printf(L"%ld", lrint(projectRate));
 
-      wxArrayStringEx rates{
+      Identifiers rates{
          L"8000" ,
          L"11025" ,
          L"16000" ,
@@ -665,17 +662,16 @@ void OnResample(const CommandContext &context)
          L"384000" ,
       };
 
+      using namespace DialogDefinition;
       S.StartVerticalLay(true);
       {
          S.AddSpace(-1, 15);
 
          S.StartHorizontalLay(wxCENTER, false);
          {
-            cb =
             S
-               .AddCombo(XXO("New sample rate (Hz):"),
-                  rate,
-                  rates);
+               .Target( Choice( rate, Verbatim( rates ) ) )
+               .AddCombo(XXO("New sample rate (Hz):"), {}, {} );
          }
          S.EndHorizontalLay();
 
@@ -696,7 +692,7 @@ void OnResample(const CommandContext &context)
       }
 
       long lrate;
-      if (cb->GetValue().ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
+      if (rate.ToLong(&lrate) && lrate >= 1 && lrate <= 1000000)
       {
          newRate = (int)lrate;
          break;
