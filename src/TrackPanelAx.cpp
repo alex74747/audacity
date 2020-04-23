@@ -27,6 +27,8 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/window.h>
+
 #include "Project.h"
 #include "SyncLock.h"
 #include "Track.h"
