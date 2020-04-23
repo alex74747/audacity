@@ -12,8 +12,6 @@
 #include <wx/log.h>
 #include <thread>
 
-
-
 #include "portaudio.h"
 #ifdef __WXMSW__
 #include "pa_win_wasapi.h"

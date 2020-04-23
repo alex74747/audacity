@@ -59,7 +59,6 @@ and use it for toolbar and window layouts too.
 
 #include <map>
 
-#include <wx/wxprec.h>
 #include <wx/brush.h>
 #include <wx/pen.h>
 #include <wx/file.h>
