@@ -23,6 +23,8 @@ Paul Licameli
 namespace BasicUI{ class WindowPlacement; }
 
 class wxMenu; // To be removed
+class wxMenuBar;
+class wxPoint;
 
 namespace BasicMenu {
 
@@ -129,6 +131,8 @@ class AUDACITY_DLL_API Handle
    Handle( Menu *pMenu );
 
 public:
+
+   explicit Handle( wxMenu *pMenu );
 
    //! A null handle
    Handle();

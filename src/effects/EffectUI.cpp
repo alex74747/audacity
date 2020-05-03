@@ -44,6 +44,7 @@ static PluginID GetID(Effect &effect)
 #include <wx/dcmemory.h>
 #include <wx/frame.h>
 #include <wx/imaglist.h>
+#include <wx/menu.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>

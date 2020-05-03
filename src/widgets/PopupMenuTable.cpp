@@ -46,7 +46,7 @@ struct PopupMenuImpl : PopupMenu
    void Extend(PopupMenuTable *pTable);
 
    void *pUserData;
-   BasicMenu::Handle mHandle{ BasicMenu::FreshMenu };
+   BasicMenu::Handle mMenu{ BasicMenu::FreshMenu };
 };
 
 class PopupMenuBuilder : public PopupMenuVisitor {
@@ -88,8 +88,8 @@ void PopupMenuBuilder::DoEndGroup( Registry::GroupItem &item, const Path &path )
          auto subMenu = std::move( mMenus.back() );
          mMenus.pop_back();
          mMenu = mMenus.empty() ? mRoot : mMenus.back().get();
-         mMenu->mHandle.AppendSubMenu(
-            std::move(subMenu->mHandle), { pItem->caption } );
+         mMenu->mMenu.AppendSubMenu(
+            std::move( subMenu->mMenu ), pItem->caption );
       }
    }
 }
@@ -101,19 +101,19 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
    switch (pEntry->type) {
       case PopupMenuTable::Entry::Item:
       {
-         mMenu->mHandle.Append(
+         mMenu->mMenu.Append(
             caption, pEntry->callback, {}, pEntry->id );
          break;
       }
       case PopupMenuTable::Entry::RadioItem:
       {
-         mMenu->mHandle.AppendRadioItem(
+         mMenu->mMenu.AppendRadioItem(
             caption, pEntry->callback, {}, pEntry->id );
          break;
       }
       case PopupMenuTable::Entry::CheckItem:
       {
-         mMenu->mHandle.AppendCheckItem(
+         mMenu->mMenu.AppendCheckItem(
             caption, pEntry->callback, {}, pEntry->id );
          break;
       }
@@ -127,12 +127,12 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
    pEntry->handler.InitUserData( mpUserData );
 
    if ( pEntry->stateFn )
-      mMenu->mHandle.SetState( pEntry->id, pEntry->stateFn() );
+      mMenu->mMenu.SetState( pEntry->id, pEntry->stateFn() );
 }
 
 void PopupMenuBuilder::DoSeparator()
 {
-   mMenu->mHandle.AppendSeparator();
+   mMenu->mMenu.AppendSeparator();
 }
 
 PopupMenuImpl::~PopupMenuImpl()
@@ -142,7 +142,7 @@ PopupMenuImpl::~PopupMenuImpl()
 
 void PopupMenuImpl::Popup( wxWindow &window, const wxPoint &pos )
 {
-   mHandle.Popup(
+   mMenu.Popup(
       wxWidgetsWindowPlacement{ &window }, { pos.x, pos.y }
    );
 }
@@ -197,6 +197,6 @@ std::unique_ptr< PopupMenu > PopupMenuTable::BuildMenu(
    // Rebuild as needed each time.  That makes it safe in case of language change.
    auto theMenu = std::make_unique<PopupMenuImpl>( pUserData );
    ExtendMenu( *theMenu, *pTable );
-   return theMenu;	
+   return theMenu;
 }
 

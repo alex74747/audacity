@@ -355,6 +355,9 @@ public:
 private:
    BasicMenu::Item::Label
       FormatLabelForMenu(const CommandListEntry *entry) const;
+   BasicMenu::Item::Label FormatLabelForMenu(
+      const TranslatableString &translatableLabel,
+      const NormalizedKeyString &keyStr) const;
    BasicMenu::Item::Label FormatLabelWithDisabledAccel(
       const CommandListEntry *entry) const;
 

@@ -32,6 +32,7 @@
 
 #include <wx/frame.h>
 
+#include "widgets/BasicMenu.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectSettings.h"
@@ -40,6 +41,7 @@
 #include "commands/CommandManager.h"
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
+#include "widgets/wxWidgetsWindowPlacement.h"
 #include "BasicUI.h"
 #include "widgets/BasicMenu.h"
 
@@ -427,7 +429,8 @@ L"ShowTransportTB,ShowToolsTB,ShowRecordMeterTB,ShowPlayMeterTB,"
    MenuItemVisitor visitor{ project, commandManager };
    MenuManager::Visit( visitor );
 
-   std::move( menubar ).AttachTo( *ProjectFramePlacement( &project ) );
+   std::move( menubar ).AttachTo(
+      wxWidgetsWindowPlacement{ &GetProjectFrame( project ) } );
 
    mLastFlags = AlwaysEnabledFlag;
 

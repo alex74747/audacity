@@ -482,7 +482,8 @@ void CommandManager::EndMainMenu()
 ///
 /// This starts a NEW submenu, and names it according to
 /// the function's argument.
-BasicMenu::Handle CommandManager::BeginSubMenu(const BasicMenu::Item::Text & text)
+BasicMenu::Handle CommandManager::BeginSubMenu(
+   const BasicMenu::Item::Text & text)
 {
    mSubMenuList.emplace_back( text );
    mbSeparatorAllowed = false;
@@ -851,7 +852,22 @@ CommandManager::FormatLabelForMenu(
 BasicMenu::Item::Label
 CommandManager::FormatLabelForMenu(const CommandListEntry *entry) const
 {
-   return { entry->label, entry->key };
+   return FormatLabelForMenu( entry->label, entry->key );
+}
+
+BasicMenu::Item::Label CommandManager::FormatLabelForMenu(
+   const TranslatableString &translatableLabel,
+   const NormalizedKeyString &keyStr) const
+{
+   auto label = translatableLabel.Translation();
+   auto key = keyStr.GET();
+   if (!key.empty())
+   {
+      // using GET to compose menu item name for wxWidgets
+      label += L"\t" + key;
+   }
+
+   return Verbatim(label);
 }
 
 // A label that may have its accelerator disabled.

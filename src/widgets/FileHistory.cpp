@@ -55,6 +55,31 @@ FileHistory &FileHistory::Global()
    return history;
 }
 
+auto FileHistory::begin() const -> const_iterator
+{
+   return mHistory.begin();
+}
+
+auto FileHistory::end() const -> const_iterator
+{
+   return mHistory.end();
+}
+
+const FilePath &FileHistory::operator[] ( size_t ii ) const
+{
+   return mHistory[ ii ];
+}
+
+bool FileHistory::empty() const
+{
+   return mHistory.empty();
+}
+
+size_t FileHistory::size() const
+{
+   return mHistory.size();
+}
+
 // File history management
 void FileHistory::AddFileToHistory(const FilePath & file, bool update)
 {

@@ -17,11 +17,15 @@
 #include <wx/event.h>
 #include <wx/weakref.h> // member variable
 
+#include "BasicMenu.h"
 #include "Identifier.h"
 #include "wxArrayStringEx.h"
 
 class wxConfigBase;
-class wxMenu;
+
+namespace Widgets {
+   class MenuHandle;
+}
 
 //! Event emitted by the global FileHistory when its contents change
 DECLARE_EXPORTED_EVENT_TYPE(AUDACITY_DLL_API, EVT_FILE_HISTORY_CHANGE, -1);
@@ -48,11 +52,11 @@ class AUDACITY_DLL_API FileHistory
 
    // stl-style accessors
    using const_iterator = FilePaths::const_iterator;
-   const_iterator begin() const { return mHistory.begin(); }
-   const_iterator end() const { return mHistory.end(); }
-   const FilePath &operator[] ( size_t ii ) const { return mHistory[ ii ]; }
-   bool empty() const { return mHistory.empty(); }
-   size_t size() const { return mHistory.size(); }
+   const_iterator begin() const;
+   const_iterator end() const;
+   const FilePath &operator[] ( size_t ii ) const;
+   bool empty() const;
+   size_t size() const;
 
  private:
    void AddFileToHistory(const FilePath & file, bool update);

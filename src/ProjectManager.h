@@ -24,7 +24,6 @@ class wxTimerEvent;
 class AudacityProject;
 struct AudioIOStartStreamOptions;
 
-
 struct ProjectStatusEvent;
 
 enum StatusBarField : int;
@@ -179,4 +178,3 @@ private:
 };
 
 #endif
-

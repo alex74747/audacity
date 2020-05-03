@@ -22,6 +22,7 @@ channel.
 
 #include "Command.h"
 #include "CommandType.h"
+#include "../widgets/BasicMenu.h"
 
 namespace BasicMenu {
    class Handle;

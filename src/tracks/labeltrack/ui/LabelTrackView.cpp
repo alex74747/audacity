@@ -20,6 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "AColor.h"
 #include "../../../widgets/BasicMenu.h"
 #include "AllThemeResources.h"
+#include "../../../widgets/BasicMenu.h"
 #include "../../../HitTestResult.h"
 #include "Project.h"
 #include "../../../ProjectHistory.h"
