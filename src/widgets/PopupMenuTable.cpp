@@ -13,7 +13,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "widgets/BasicMenu.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
 
+#include "BasicMenu.h"
 #include "wxWidgetsWindowPlacement.h"
+#include <wx/menu.h>
 
 PopupMenuTableEntry::~PopupMenuTableEntry()
 {}
@@ -96,23 +98,24 @@ void PopupMenuBuilder::DoEndGroup( Registry::GroupItem &item, const Path &path )
 void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
 {
    auto pEntry = static_cast<PopupMenuTableEntry*>( &item );
+   const auto caption = pEntry->caption.Full();
    switch (pEntry->type) {
       case PopupMenuTable::Entry::Item:
       {
          mMenu->mHandle.Append(
-            { pEntry->caption }, {}, {}, pEntry->id );
+            caption, {}, {}, pEntry->id );
          break;
       }
       case PopupMenuTable::Entry::RadioItem:
       {
          mMenu->mHandle.AppendRadioItem(
-            { pEntry->caption }, {}, {}, pEntry->id );
+            caption, {}, {}, pEntry->id );
          break;
       }
       case PopupMenuTable::Entry::CheckItem:
       {
          mMenu->mHandle.AppendCheckItem(
-            { pEntry->caption }, {}, {}, pEntry->id );
+            caption, {}, {}, pEntry->id );
          break;
       }
       default:
@@ -124,14 +127,8 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
    // redundant
    pEntry->handler.InitUserData( mpUserData );
 
-   if ( pEntry->stateFn ) {
-      const auto state = pEntry->stateFn();
-      if ( auto pItem = mMenu->mHandle.GetWxMenu()->FindItem( pEntry->id ) ) {
-         pItem->Enable( state.enabled );
-         if ( pItem->IsCheckable() )
-            pItem->Check( state.checked );
-      }
-   }
+   if ( pEntry->stateFn )
+      mMenu->mHandle.SetState( pEntry->id, pEntry->stateFn() );
 
    mMenu->mHandle.GetWxMenu()->Bind(
       wxEVT_COMMAND_MENU_SELECTED, pEntry->func, &pEntry->handler, pEntry->id);
@@ -139,7 +136,7 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
 
 void PopupMenuBuilder::DoSeparator()
 {
-   mMenu->mHandle.GetWxMenu()->AppendSeparator();
+   mMenu->mHandle.AppendSeparator();
 }
 
 PopupMenuImpl::~PopupMenuImpl()
@@ -177,7 +174,7 @@ void PopupMenuTable::Append( Registry::BaseItemPtr pItem )
 
 void PopupMenuTable::Append(
    const Identifier &stringId, PopupMenuTableEntry::Type type, int id,
-   const TranslatableString &string, wxCommandEventFunction memFn,
+   const BasicMenu::Item::Label &string, wxCommandEventFunction memFn,
    const PopupMenuTableEntry::StateFunction &stateFn )
 {
    Append( std::make_unique<Entry>(
@@ -204,6 +201,6 @@ std::unique_ptr< PopupMenu > PopupMenuTable::BuildMenu(
    // Rebuild as needed each time.  That makes it safe in case of language change.
    auto theMenu = std::make_unique<PopupMenuImpl>( pUserData );
    ExtendMenu( *theMenu, *pTable );
-   return theMenu;
+   return theMenu;	
 }
 

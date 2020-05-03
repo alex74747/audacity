@@ -21,6 +21,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../WaveTrack.h"
 #include "../../../../../images/Cursors.h"
 
+#include <wx/window.h>
+
 bool WaveTrackVZoomHandle::IsDragZooming(int zoomStart, int zoomEnd)
 {
    const int DragThreshold = 3;// Anything over 3 pixels is a drag, else a click.
