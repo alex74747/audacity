@@ -26,6 +26,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "Prefs.h"
 
 #include <wx/event.h>
+#include <wx/window.h>
 
 namespace
 {
