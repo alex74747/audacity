@@ -154,14 +154,14 @@ private:
    void OnFFwd(wxCommandEvent & evt);
    void OnPlayback(wxCommandEvent & evt);
    void OnCapture(wxCommandEvent & evt);
-   void OnUserPreset(wxCommandEvent & evt);
-   void OnFactoryPreset(wxCommandEvent & evt);
-   void OnDeletePreset(wxCommandEvent & evt);
-   void OnSaveAs(wxCommandEvent & evt);
-   void OnImport(wxCommandEvent & evt);
-   void OnExport(wxCommandEvent & evt);
-   void OnOptions(wxCommandEvent & evt);
-   void OnDefaults(wxCommandEvent & evt);
+   void OnUserPreset(size_t preset);
+   void OnFactoryPreset(size_t preset);
+   void OnDeletePreset(size_t preset);
+   void OnSaveAs();
+   void OnImport();
+   void OnExport();
+   void OnOptions();
+   void OnDefaults();
 
    void UpdateControls();
    wxBitmap CreateBitmap(const char * const xpm[], bool up, bool pusher);

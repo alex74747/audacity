@@ -221,8 +221,8 @@ class AUDACITY_DLL_API MeterPanel final
    // Pop-up menu
    //
    void ShowMenu(const wxPoint & pos);
-   void OnMonitor(wxCommandEvent &evt);
-   void OnPreferences(wxCommandEvent &evt);
+   void OnMonitor();
+   void OnPreferences();
 
    wxString Key(const wxString & key) const;
 

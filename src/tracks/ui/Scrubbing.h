@@ -117,7 +117,7 @@ public:
    bool CanScrub() const;
 
    // For popup
-   void PopulatePopupMenu(wxMenu &menu);
+   void PopulatePopupMenu(BasicMenu::Handle &menu);
 
    void OnScrubOrSeek(bool seek);
    void OnScrub(const CommandContext&);
@@ -127,11 +127,6 @@ public:
    void OnKeyboardScrubBackwards(const CommandContext&);
    void OnKeyboardScrubForwards(const CommandContext&);
    void DoKeyboardScrub(bool backwards, bool keyUp);
-
-   // Convenience wrapper for the above
-   template<void (Scrubber::*pfn)(const CommandContext&)>
-      void Thunk(wxCommandEvent &)
-         { (this->*pfn)(*mProject); }
 
    // A string to put in the leftmost part of the status bar
    // when scrub or seek is in progress, or else empty.
@@ -176,8 +171,6 @@ private:
 #endif
 
    AudacityProject *mProject;
-
-   DECLARE_EVENT_TABLE()
 
 #ifdef USE_SCRUB_THREAD
    // Course corrections in playback are done in a helper thread, unhindered by
