@@ -14,7 +14,7 @@
 
 #include "EffectUI.h"
 
-#include "widgets/BasicMenu.h"
+#include "../widgets/BasicMenu.h"
 #include "Effect.h"
 #include "EffectManager.h"
 #include "PluginManager.h"
@@ -23,7 +23,7 @@
 #include "../ProjectWindows.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
-#include "widgets/wxWidgetsWindowPlacement.h"
+#include "../widgets/wxWidgetsWindowPlacement.h"
 
 static PluginID GetID(Effect &effect)
 {
@@ -1189,9 +1189,11 @@ void EffectUIHost::OnDebug(wxCommandEvent & evt)
 
 void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
 {
-   wxMenu menu;
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &menu = *handle.GetWxMenu();
    menu.Bind(wxEVT_MENU, [](auto&){}, kUserPresetsDummyID);
    menu.Bind(wxEVT_MENU, [](auto&){}, kDeletePresetDummyID);
+
    LoadUserPresets();
    
    if (mUserPresets.size() == 0)
@@ -1271,7 +1273,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
    
    wxWindow *btn = FindWindow(kMenuID);
    wxRect r = btn->GetRect();
-   BasicMenu::Handle{ &menu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ btn },
       { r.GetLeft(), r.GetBottom() }
    );

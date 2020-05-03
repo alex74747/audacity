@@ -60,7 +60,7 @@
 
 #include "../AudioIO.h"
 #include "AColor.h"
-#include "../widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "ImageManipulation.h"
 #include "Decibels.h"
 #include "Project.h"
@@ -70,7 +70,7 @@
 #include "Prefs.h"
 #include "../ShuttleGui.h"
 #include "Theme.h"
-#include "../widgets/wxWidgetsWindowPlacement.h"
+#include "wxWidgetsWindowPlacement.h"
 
 #include "AllThemeResources.h"
 #include "../widgets/valnum.h"
@@ -1937,7 +1937,8 @@ void MeterPanel::RestoreState(const State &state)
 
 void MeterPanel::ShowMenu(const wxPoint & pos)
 {
-   wxMenu menu;
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &menu = *handle.GetWxMenu();
    // Note: these should be kept in the same order as the enum
    if (mIsInput) {
       wxMenuItem *mi;
@@ -1952,7 +1953,7 @@ void MeterPanel::ShowMenu(const wxPoint & pos)
 
    mAccSilent = true;      // temporarily make screen readers say (close to) nothing on focus events
 
-   BasicMenu::Handle{ &menu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ this },
       { pos.x, pos.y }
    );
