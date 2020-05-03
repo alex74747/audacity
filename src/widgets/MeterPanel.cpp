@@ -47,9 +47,6 @@
 #include <wx/dialog.h>
 #include <wx/dcbuffer.h>
 #include <wx/frame.h>
-#include <wx/image.h>
-#include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/settings.h>
 #include <wx/textdlg.h>
 #include <wx/numdlg.h>
@@ -74,6 +71,7 @@
 
 #include "AllThemeResources.h"
 #include "../widgets/valnum.h"
+#include "wxWidgetsWindowPlacement.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"
@@ -264,8 +262,6 @@ const static wxChar *PrefStyles[] =
 
 enum {
    OnMeterUpdateID = 6000,
-   OnMonitorID,
-   OnPreferencesID
 };
 
 BEGIN_EVENT_TABLE(MeterPanel, MeterPanelBase)
@@ -279,8 +275,6 @@ BEGIN_EVENT_TABLE(MeterPanel, MeterPanelBase)
    EVT_ERASE_BACKGROUND(MeterPanel::OnErase)
    EVT_PAINT(MeterPanel::OnPaint)
    EVT_SIZE(MeterPanel::OnSize)
-   EVT_MENU(OnMonitorID, MeterPanel::OnMonitor)
-   EVT_MENU(OnPreferencesID, MeterPanel::OnPreferences)
 END_EVENT_TABLE()
 
 IMPLEMENT_CLASS(MeterPanel, wxPanelWrapper)
@@ -1937,23 +1931,20 @@ void MeterPanel::RestoreState(const State &state)
 
 void MeterPanel::ShowMenu(const wxPoint & pos)
 {
-   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
-   auto &menu = *handle.GetWxMenu();
+   BasicMenu::Handle menu{ BasicMenu::FreshMenu };
    // Note: these should be kept in the same order as the enum
    if (mIsInput) {
-      wxMenuItem *mi;
-      if (mMonitoring)
-         mi = menu.Append(OnMonitorID, _("Stop Monitoring"));
-      else
-         mi = menu.Append(OnMonitorID, _("Start Monitoring"));
-      mi->Enable(!mActive || mMonitoring);
+      menu.Append(
+         mMonitoring ? XXO("Stop Monitoring") : XXO("Start Monitoring"),
+         [this]{ OnMonitor(); },
+         { !mActive || mMonitoring } );
    }
 
-   menu.Append(OnPreferencesID, _("Options..."));
+   menu.Append(XXO("Options..."), [this]{ OnPreferences(); });
 
    mAccSilent = true;      // temporarily make screen readers say (close to) nothing on focus events
 
-   handle.Popup(
+   menu.Popup(
       wxWidgetsWindowPlacement{ this },
       { pos.x, pos.y }
    );
@@ -1971,12 +1962,12 @@ void MeterPanel::ShowMenu(const wxPoint & pos)
 #endif
 }
 
-void MeterPanel::OnMonitor(wxCommandEvent & WXUNUSED(event))
+void MeterPanel::OnMonitor()
 {
    StartMonitoring();
 }
 
-void MeterPanel::OnPreferences(wxCommandEvent & WXUNUSED(event))
+void MeterPanel::OnPreferences()
 {
    wxTextCtrl *rate;
    wxRadioButton *gradient;

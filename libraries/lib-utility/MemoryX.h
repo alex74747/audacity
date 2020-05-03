@@ -647,7 +647,7 @@ auto Recompute_helper(
 {
    using Values =
       decltype( std::make_tuple( Recompute_value( deps, nullptr )... ) );
-   Optional< Values > lastValues;
+   std::optional< Values > lastValues;
    // Construct a tuple of references to deps
    auto refs = std::make_tuple( Recompute_capture( deps, nullptr )... );
    return [fn, lastValues, refs] () mutable {
