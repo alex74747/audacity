@@ -22,8 +22,6 @@ Paul Licameli
 #include <wx/window.h>
 #include <optional>
 
-namespace BasicMenu {
-
 namespace {
 
 const auto JournalCode = L"PopupMenu";
@@ -200,6 +198,20 @@ void ReplayPopup( wxMenu *theMenu )
 
    // Replay did not find all as expected
    throw Journal::SyncException{};
+}
+
+}
+
+namespace BasicMenu {
+
+namespace Item {
+
+TranslatableString Label::Full() const
+{
+   return accel.empty()
+      ? main
+      : TranslatableString{ main }
+         .Join( Verbatim( accel.GET() ), L"\t" );
 }
 
 }
