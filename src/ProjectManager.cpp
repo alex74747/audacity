@@ -1112,7 +1112,7 @@ int ProjectManager::GetEstimatedRecordingMinsLeftOnDisk(long lCaptureChannels) {
    return iRecMins;
 }
 
-void ProjectManager::UseMenu(wxMenu *menu)
+void ProjectManager::UseMenu(BasicMenu::Handle menu)
 {
    FileHistoryMenus::Instance().UseMenu(menu);
 }
@@ -1120,10 +1120,9 @@ void ProjectManager::UseMenu(wxMenu *menu)
 //vvv Basically, anything from Recent Files is treated as a .aup3, until proven otherwise,
 // then it tries to Import(). Very questionable handling, imo.
 // Better, for example, to check the file type early on.
-void ProjectManager::OnMRUFile(wxCommandEvent& event) {
-   int n = event.GetId() - ID_RECENT_FIRST;
+void ProjectManager::OnMRUFile(size_t nn) {
    auto &history = FileHistory::Global();
-   const auto &fullPathStr = history[ n ];
+   const auto &fullPathStr = history[ nn ];
 
    // Try to open only if not already open.
    // Test IsAlreadyOpen() here even though AudacityProject::MRUOpen() also now checks,
@@ -1134,7 +1133,7 @@ void ProjectManager::OnMRUFile(wxCommandEvent& event) {
    // -- if open fails for some exceptional reason of resource exhaustion that
    // the user can correct, leave the file in history.
    if (!ProjectFileManager::IsAlreadyOpen(fullPathStr) && !MRUOpen(fullPathStr))
-      history.Remove(n);
+      history.Remove(nn);
 }
 
 // backend for OnMRUFile
@@ -1182,7 +1181,7 @@ bool ProjectManager::SafeMRUOpen(const wxString &fullPathStr)
    return GuardedCall< bool >( [&]{ return MRUOpen( fullPathStr ); } );
 }
 
-void ProjectManager::OnMRUClear(wxCommandEvent& WXUNUSED(event))
+void ProjectManager::OnMRUClear()
 {
    FileHistory::Global().Clear();
 }

@@ -20,6 +20,10 @@ enum {
    ID_RECENT_FIRST = 6101,
 };
 
+namespace BasicMenu {
+   class Handle;
+}
+
 class FileHistoryMenus {
 private:
    FileHistoryMenus();
@@ -29,15 +33,15 @@ public:
 
    // Make the menu reflect the contents of the global FileHistory,
    // now and also whenever the history changes.
-   void UseMenu(wxMenu *menu);
+   void UseMenu(BasicMenu::Handle menu);
    
 private:
    void OnChangedHistory(Observer::Message);
-   void NotifyMenu(wxMenu *menu);
-   std::vector< wxWeakRef< wxMenu > > mMenus;
+   void NotifyMenu(BasicMenu::Handle menu);
+   std::vector< BasicMenu::Handle > mMenus;
    Observer::Subscription mSubscription;
 
    void Compress();
-} ;
+};
 
 #endif

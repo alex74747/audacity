@@ -9,6 +9,7 @@
 **********************************************************************/
 
 
+#include "widgets/BasicMenu.h"
 #include "FileHistoryMenus.h"
 #include "ProjectManager.h" // Cycle
 
@@ -16,7 +17,7 @@
 
 #include "Internat.h"
 
-void FileHistoryMenus::UseMenu(wxMenu *menu)
+void FileHistoryMenus::UseMenu(BasicMenu::Handle menu)
 {
    Compress();
 
@@ -48,33 +49,27 @@ FileHistoryMenus &FileHistoryMenus::Instance()
 void FileHistoryMenus::OnChangedHistory(Observer::Message)
 {
    Compress();
-   for (auto pMenu : mMenus)
+   for (auto &pMenu : mMenus)
       if (pMenu)
          NotifyMenu(pMenu);
 }
 
-void FileHistoryMenus::NotifyMenu(wxMenu *menu)
+void FileHistoryMenus::NotifyMenu(BasicMenu::Handle menu)
 {
-   wxMenuItemList items = menu->GetMenuItems();
-   for (auto end = items.end(), iter = items.begin(); iter != end;)
-      menu->Destroy(*iter++);
+   menu.Clear();
 
    const auto &history = FileHistory::Global();
-   int mIDBase = ID_RECENT_CLEAR;
-   int i = 0;
+   int ii = 0;
    for (auto item : history) {
       item.Replace( "&", "&&" );
-      auto id = mIDBase + 1 + i++;
-      menu->Append(id, item);
-      menu->Bind(wxEVT_MENU, ProjectManager::OnMRUFile, id);
+      menu.Append( Verbatim( item ), [ii]{ ProjectManager::OnMRUFile(ii); } );
    }
 
-   if (history.size() > 0) {
-      menu->AppendSeparator();
-   }
-   menu->Append(mIDBase, _("&Clear"));
-   menu->Enable(mIDBase, history.size() > 0);
-   menu->Bind(wxEVT_MENU, ProjectManager::OnMRUClear, mIDBase);
+   if (history.size() > 0)
+      menu.AppendSeparator();
+
+   menu.Append( XXO("&Clear"),
+      &ProjectManager::OnMRUClear, history.size() > 0 );
 }
 
 void FileHistoryMenus::Compress()
@@ -83,7 +78,7 @@ void FileHistoryMenus::Compress()
    auto end = mMenus.end();
    mMenus.erase(
      std::remove_if( mMenus.begin(), end,
-        [](wxWeakRef<wxMenu> &pMenu){ return !pMenu; } ),
+        [](auto &pMenu){ return !pMenu; } ),
      end
    );
 }
