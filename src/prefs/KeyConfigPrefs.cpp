@@ -27,7 +27,6 @@ KeyConfigPrefs and MousePrefs use.
 #include <wx/defs.h>
 #include <wx/ffile.h>
 #include <wx/intl.h>
-#include <wx/menu.h>
 #include <wx/button.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
@@ -45,6 +44,7 @@ KeyConfigPrefs and MousePrefs use.
 
 #include "../widgets/KeyView.h"
 #include "../widgets/AudacityMessageBox.h"
+#include "../widgets/MenuHandle.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "../widgets/WindowAccessible.h"
@@ -590,12 +590,11 @@ void KeyConfigPrefs::OnExport(wxCommandEvent & WXUNUSED(event))
 // so we just do what it needs.
 void KeyConfigPrefs::OnDefaults(wxCommandEvent & WXUNUSED(event))
 {
-   wxMenu Menu;
-   Menu.Append( 1, _("Standard") );
-   Menu.Append( 2, _("Full") );
-   Menu.Bind( wxEVT_COMMAND_MENU_SELECTED, &KeyConfigPrefs::OnImportDefaults, this );
+   Widgets::MenuHandle Menu;
+   Menu.Append( XXO("Standard"), [this]{ OnImportDefaults(1); }, {}, 1 );
+   Menu.Append( XXO("Full"), [this]{ OnImportDefaults(2); }, {}, 2 );
    // Pop it up where the mouse is.
-   PopupMenu(&Menu);//, wxPoint(0, 0));
+   Menu.Popup(*this);
 }
 
 void KeyConfigPrefs::FilterKeys( std::vector<NormalizedKeyString> & arr )
@@ -609,13 +608,13 @@ void KeyConfigPrefs::FilterKeys( std::vector<NormalizedKeyString> & arr )
    }
 }
 
-void KeyConfigPrefs::OnImportDefaults(wxCommandEvent & event)
+void KeyConfigPrefs::OnImportDefaults( int id )
 {
    gPrefs->DeleteEntry(wxT("/GUI/Shortcuts/FullDefaults"));
    gPrefs->Flush();
 
    mNewKeys = mDefaultKeys;
-   if( event.GetId() == 1 )
+   if( id == 1 )
       FilterKeys( mNewKeys );
 
    for (size_t i = 0; i < mNewKeys.size(); i++) {

@@ -20,7 +20,10 @@
 #include "wxArrayStringEx.h"
 
 class wxConfigBase;
-class wxMenu;
+
+namespace Widgets {
+   class MenuHandle;
+}
 
 class AUDACITY_DLL_API FileHistory
 {
@@ -46,7 +49,7 @@ class AUDACITY_DLL_API FileHistory
 
    // Causes this menu to reflect the contents of this FileHistory, now and
    // also whenever the history changes.
-   void UseMenu(wxMenu *menu);
+   void UseMenu(Widgets::MenuHandle menu);
 
    void Load(wxConfigBase& config, const wxString & group = wxEmptyString);
    void Save(wxConfigBase& config);
@@ -61,14 +64,14 @@ class AUDACITY_DLL_API FileHistory
  private:
    void AddFileToHistory(const FilePath & file, bool update);
    void NotifyMenus();
-   void NotifyMenu(wxMenu *menu);
+   void NotifyMenu(Widgets::MenuHandle menu);
 
    void Compress();
 
    size_t mMaxFiles;
    wxWindowID mIDBase;
 
-   std::vector< wxWeakRef< wxMenu > > mMenus;
+   std::vector< Widgets::MenuHandle > mMenus;
    FilePaths mHistory;
 
    wxString mGroup;
