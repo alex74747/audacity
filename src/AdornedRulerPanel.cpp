@@ -2235,7 +2235,8 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
 {
    const auto &viewInfo = ViewInfo::Get( *GetProject() );
    const auto &playRegion = viewInfo.playRegion;
-   wxMenu rulerMenu;
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &rulerMenu = *handle.GetWxMenu();
 
    auto pDrag = rulerMenu.AppendCheckItem(OnSyncQuickPlaySelID, _("Enable dragging selection"));
    pDrag->Check(mPlayRegionDragsSelection && playRegion.Active());
@@ -2265,7 +2266,7 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
    rulerMenu.AppendCheckItem(OnTogglePinnedStateID, _("Pinned Play Head"))->
       Check(TracksPrefs::GetPinnedHeadPreference());
 
-   BasicMenu::Handle{ &rulerMenu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ this },
       { pos.x, pos.y }
    );
@@ -2277,9 +2278,10 @@ void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
    PushEventHandler(&scrubber);
    auto cleanup = finally([this]{ PopEventHandler(); });
 
-   wxMenu rulerMenu;
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &rulerMenu = *handle.GetWxMenu();
    scrubber.PopulatePopupMenu(rulerMenu);
-   BasicMenu::Handle{ &rulerMenu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ this },
       { pos.x, pos.y }
    );

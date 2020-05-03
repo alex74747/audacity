@@ -1187,9 +1187,9 @@ void EffectUIHost::OnDebug(wxCommandEvent & evt)
 
 void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
 {
-   wxMenu menu;
-   menu.Bind(wxEVT_MENU, [](auto&){}, kUserPresetsDummyID);
-   menu.Bind(wxEVT_MENU, [](auto&){}, kDeletePresetDummyID);
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &menu = *handle.GetWxMenu();
+
    LoadUserPresets();
    
    if (mUserPresets.size() == 0)
@@ -1269,7 +1269,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
    
    wxWindow *btn = FindWindow(kMenuID);
    wxRect r = btn->GetRect();
-   BasicMenu::Handle{ &menu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ btn },
       { r.GetLeft(), r.GetBottom() }
    );

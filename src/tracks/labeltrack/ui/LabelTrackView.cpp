@@ -1918,7 +1918,8 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
 
    if( parent )
    {
-      wxMenu menu;
+      BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+      auto &menu = *handle.GetWxMenu();
       menu.Bind(wxEVT_MENU,
          [this, &project]( wxCommandEvent &event ){
             OnContextMenu( project, event ); }
@@ -1960,7 +1961,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
       // So, workaround it by editing the label AFTER the popup menu is
       // closed. It's really ugly, but it works.  :-(
       mEditIndex = -1;
-      BasicMenu::Handle{ &menu }.Popup(
+      handle.Popup(
          wxWidgetsWindowPlacement{ parent },
          { x, ls->y + (mIconHeight / 2) - 1 }
       );

@@ -91,7 +91,8 @@ unsigned CommonTrackPanelCell::DoContextMenu( const wxRect &rect,
       }
    };
 
-   wxMenu menu;
+   BasicMenu::Handle handle{ BasicMenu::FreshMenu };
+   auto &menu = *handle.GetWxMenu();
    int ii = 1;
    for (const auto &item: items) {
       if ( const auto &commandID = item.symbol.Internal();
@@ -114,7 +115,7 @@ unsigned CommonTrackPanelCell::DoContextMenu( const wxRect &rect,
    BasicUI::Point point;
    if (pPoint)
       point = { pPoint->x, pPoint->y };
-   BasicMenu::Handle{ &menu }.Popup(
+   handle.Popup(
       wxWidgetsWindowPlacement{ pParent },
       point
    );
