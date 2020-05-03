@@ -33,7 +33,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../prefs/PrefsDialog.h"
 #include "../../../../prefs/ThemePrefs.h"
 #include "../../../../widgets/AudacityMessageBox.h"
-#include "widgets/ProgressDialog.h"
+#include "../../../../widgets/MenuHandle.h"
+#include "../../../../widgets/ProgressDialog.h"
 #include "UserException.h"
 #include "Identifier.h"
 

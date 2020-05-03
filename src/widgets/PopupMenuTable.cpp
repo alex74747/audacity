@@ -12,6 +12,10 @@ Paul Licameli split from TrackPanel.cpp
 #include "PopupMenuTable.h"
 #include "widgets/BasicMenu.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
+#include "MenuHandle.h"
+
+#include <wx/menu.h>
+#include <wx/window.h>
 
 PopupMenuTableEntry::~PopupMenuTableEntry()
 {}
@@ -43,6 +47,7 @@ struct PopupMenuImpl : PopupMenu, wxMenu
    void Extend(PopupMenuTable *pTable);
 
    void *pUserData;
+   Widgets::MenuHandle mMenu;
 };
 
 class PopupMenuBuilder : public PopupMenuVisitor {
@@ -84,7 +89,8 @@ void PopupMenuBuilder::DoEndGroup( Registry::GroupItem &item, const Path &path )
          auto subMenu = std::move( mMenus.back() );
          mMenus.pop_back();
          mMenu = mMenus.empty() ? mRoot : mMenus.back().get();
-         mMenu->AppendSubMenu( subMenu.release(), pItem->caption.Translation());
+         mMenu->mMenu.AppendSubMenu(
+            std::move( subMenu->mMenu ), pItem->caption );
       }
    }
 }
@@ -92,20 +98,21 @@ void PopupMenuBuilder::DoEndGroup( Registry::GroupItem &item, const Path &path )
 void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
 {
    auto pEntry = static_cast<PopupMenuTableEntry*>( &item );
+   const auto caption = pEntry->caption.FullLabel();
    switch (pEntry->type) {
       case PopupMenuTable::Entry::Item:
       {
-         mMenu->Append(pEntry->id, pEntry->caption.Translation());
+         mMenu->mMenu.Append(caption, {}, {}, pEntry->id);
          break;
       }
       case PopupMenuTable::Entry::RadioItem:
       {
-         mMenu->AppendRadioItem(pEntry->id, pEntry->caption.Translation());
+         mMenu->mMenu.AppendRadioItem(caption, {}, {}, pEntry->id);
          break;
       }
       case PopupMenuTable::Entry::CheckItem:
       {
-         mMenu->AppendCheckItem(pEntry->id, pEntry->caption.Translation());
+         mMenu->mMenu.AppendCheckItem(caption, {}, {}, pEntry->id);
          break;
       }
       default:
@@ -117,14 +124,8 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
    // redundant
    pEntry->handler.InitUserData( mpUserData );
 
-   if ( pEntry->stateFn ) {
-      const auto state = pEntry->stateFn();
-      if ( auto pItem = mMenu->FindItem( pEntry->id ) ) {
-         pItem->Enable( state.enabled );
-         if ( pItem->IsCheckable() )
-            pItem->Check( state.checked );
-      }
-   }
+   if ( pEntry->stateFn )
+      mMenu->mMenu.SetState( pEntry->id, pEntry->stateFn() );
 
    mMenu->Bind(
       wxEVT_COMMAND_MENU_SELECTED, pEntry->func, &pEntry->handler, pEntry->id);
@@ -132,7 +133,7 @@ void PopupMenuBuilder::DoVisit( Registry::SingleItem &item, const Path &path )
 
 void PopupMenuBuilder::DoSeparator()
 {
-   mMenu->AppendSeparator();
+   mMenu->mMenu.AppendSeparator();
 }
 
 PopupMenuImpl::~PopupMenuImpl()
@@ -144,7 +145,7 @@ PopupMenuImpl::~PopupMenuImpl()
 
 void PopupMenuImpl::Popup( wxWindow &window, const wxPoint &pos )
 {
-   BasicMenu::Handle{ this }.Popup(
+   BasicMenu::Handle{ &this->mMenu }.Popup(
       wxWidgetsWindowPlacement{ &window }, { pos.x, pos.y }
    );
 }
@@ -172,7 +173,7 @@ void PopupMenuTable::Append( Registry::BaseItemPtr pItem )
 
 void PopupMenuTable::Append(
    const Identifier &stringId, PopupMenuTableEntry::Type type, int id,
-   const TranslatableString &string, wxCommandEventFunction memFn,
+   const Widgets::MenuItemLabel &string, wxCommandEventFunction memFn,
    const PopupMenuTableEntry::StateFunction &stateFn )
 {
    Append( std::make_unique<Entry>(
@@ -199,6 +200,6 @@ std::unique_ptr< PopupMenu > PopupMenuTable::BuildMenu(
    // Rebuild as needed each time.  That makes it safe in case of language change.
    auto theMenu = std::make_unique<PopupMenuImpl>( pUserData );
    ExtendMenu( *theMenu, *pTable );
-   return theMenu;
+   return std::move( theMenu );
 }
 

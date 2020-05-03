@@ -56,9 +56,9 @@
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/Grabber.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
+#include "widgets/MenuHandle.h"
 
 #include <wx/dcclient.h>
-#include <wx/menu.h>
 
 using std::min;
 using std::max;
@@ -2226,35 +2226,35 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
 {
    const auto &viewInfo = ViewInfo::Get( *GetProject() );
    const auto &playRegion = viewInfo.playRegion;
-   wxMenu rulerMenu;
+   Widgets::MenuHandle rulerMenu;
 
-   auto pDrag = rulerMenu.AppendCheckItem(OnSyncQuickPlaySelID, _("Enable dragging selection"));
-   pDrag->Check(mPlayRegionDragsSelection && playRegion.Active());
-   pDrag->Enable(playRegion.Active());
+   rulerMenu.AppendCheckItem(
+      XXO("Enable dragging selection"), {},
+      { playRegion.Active(),
+        mPlayRegionDragsSelection && playRegion.Active() }, OnSyncQuickPlaySelID );
 
-   rulerMenu.AppendCheckItem(OnAutoScrollID, _("Update display while playing"))->
-      Check(mViewInfo->bUpdateTrackIndicator);
+   rulerMenu.AppendCheckItem(
+      XXO("Update display while playing"), {},
+      { true, mViewInfo->bUpdateTrackIndicator }, OnAutoScrollID );
 
-   {
-      auto item = rulerMenu.AppendCheckItem(OnTogglePlayRegionID,
-         LoopToggleText.Stripped().Translation());
-      item->Check(playRegion.Active());
-   }
+   rulerMenu.AppendCheckItem(
+      LoopToggleText, {},
+      { true, playRegion.Active() }, OnTogglePlayRegionID );
 
-   {
-      auto item = rulerMenu.Append(OnClearPlayRegionID,
-         /* i18n-hint Clear is a verb */
-         _("Clear Looping Region"));
-   }
+   rulerMenu.Append(
+      /* i18n-hint Clear is a verb */
+      XXO("Clear Looping Region"), {},
+      { }, OnClearPlayRegionID );
 
-   {
-      auto item = rulerMenu.Append(OnSetPlayRegionToSelectionID,
-         _("Set Loop To Selection"));
-   }
+   rulerMenu.Append(
+      XXO("Set Loop To Selection"), {},
+      { }, OnSetPlayRegionToSelectionID );
 
    rulerMenu.AppendSeparator();
-   rulerMenu.AppendCheckItem(OnTogglePinnedStateID, _("Pinned Play Head"))->
-      Check(TracksPrefs::GetPinnedHeadPreference());
+
+   rulerMenu.AppendCheckItem(
+      XXO("Pinned Play Head"), {},
+      { true, TracksPrefs::GetPinnedHeadPreference() }, OnTogglePinnedStateID );
 
    BasicMenu::Handle{ &rulerMenu }.Popup(
       wxWidgetsWindowPlacement{ this },
@@ -2268,7 +2268,7 @@ void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
    PushEventHandler(&scrubber);
    auto cleanup = finally([this]{ PopEventHandler(); });
 
-   wxMenu rulerMenu;
+   Widgets::MenuHandle rulerMenu;
    scrubber.PopulatePopupMenu(rulerMenu);
    BasicMenu::Handle{ &rulerMenu }.Popup(
       wxWidgetsWindowPlacement{ this },

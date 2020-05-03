@@ -15,6 +15,7 @@ Paul Licameli
 #include "BasicUIPoint.h"
 
 namespace BasicUI{ class WindowPlacement; }
+namespace Widgets{ class MenuHandle; };
 
 class wxMenu; // To be removed
 
@@ -26,7 +27,7 @@ class AUDACITY_DLL_API Handle
 {
 public:
 
-   explicit Handle( wxMenu *pMenu ) : mpMenu{ pMenu } {}
+   explicit Handle( Widgets::MenuHandle *pMenu ) : mpMenu{ pMenu } {}
 
    Handle( const Handle &other ) = delete;
    Handle &operator =( const Handle &other ) = delete;
@@ -36,7 +37,7 @@ public:
       const Point &pos = {} );
 
 private:
-   wxMenu *mpMenu;
+   Widgets::MenuHandle *mpMenu;
 };
 
 }

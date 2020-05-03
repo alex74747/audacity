@@ -176,6 +176,8 @@ different formats.
 #include "Theme.h"
 #include "wxWidgetsWindowPlacement.h"
 
+#include "MenuHandle.h"
+
 #include <algorithm>
 #include <math.h>
 #include <limits>
@@ -185,7 +187,6 @@ different formats.
 #include <wx/wx.h>
 #include <wx/dcbuffer.h>
 #include <wx/font.h>
-#include <wx/menu.h>
 #include <wx/stattext.h>
 #include <wx/tooltip.h>
 #include <wx/toplevel.h>
@@ -1752,8 +1753,7 @@ void NumericTextCtrl::OnPaint(wxPaintEvent & WXUNUSED(event))
 
 void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
 {
-   wxMenu menu;
-   int i;
+   Widgets::MenuHandle menu;
 
    if (!mMenuEnabled) {
       event.Skip();
@@ -1763,15 +1763,16 @@ void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
    SetFocus();
 
    int currentSelection = -1;
-   for (i = 0; i < GetNumBuiltins(); i++) {
-      menu.AppendRadioItem(ID_MENU + i, GetBuiltinName(i).Translation());
-      if (mFormatString == GetBuiltinFormat(i)) {
-         menu.Check(ID_MENU + i, true);
+   for (int i = 0; i < GetNumBuiltins(); i++) {
+      bool checked = (mFormatString == GetBuiltinFormat(i));
+      menu.AppendRadioItem(
+         GetBuiltinName(i).Msgid(), {},
+         { true, checked }, ID_MENU + i );
+      if ( checked )
          currentSelection = i;
-      }
    }
 
-   menu.Bind(wxEVT_MENU, [](auto&){});
+   menu.GetWxMenu()->Bind(wxEVT_MENU, [](auto&){});
    BasicMenu::Handle{ &menu }.Popup(
       wxWidgetsWindowPlacement{ this },
       { 0, 0 }
@@ -1782,8 +1783,10 @@ void NumericTextCtrl::OnContext(wxContextMenuEvent &event)
    // user happens to check the first menuitem and then is 
    // moving down the menu when the ...CTRL_UPDATED event
    // handler kicks in.
-   for (i = 0; i < GetNumBuiltins(); i++) {
-      if (menu.IsChecked(ID_MENU + i) && i != currentSelection) {
+   int i = -1;
+   for (const auto &item : menu) {
+      ++i;
+      if (item.state.checked && i != currentSelection) {
          SetFormatString(GetBuiltinFormat(i));
       
          int eventType = 0;

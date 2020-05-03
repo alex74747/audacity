@@ -21,6 +21,8 @@ Paul Licameli split from TimeTrackVZoomHandle.cpp
 #include "../../../TrackPanelMouseEvent.h"
 #include "../../../TimeTrack.h"
 
+#include <wx/window.h>
+
 TimeTrackVZoomHandle::TimeTrackVZoomHandle(
    const std::shared_ptr<TimeTrack> &pTrack, const wxRect &rect, int y)
       : mpTrack{ pTrack }

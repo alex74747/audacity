@@ -20,6 +20,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../TrackPanelMouseEvent.h"
 #include "WaveTrack.h"
 #include "../../../../../images/Cursors.h"
+#include "../../../../widgets/MenuHandle.h"
+
+#include <wx/window.h>
 
 bool WaveTrackVZoomHandle::IsDragZooming(int zoomStart, int zoomEnd)
 {
@@ -120,6 +123,7 @@ UIHandle::Result WaveTrackVZoomHandle::DoRelease(
          pTrack, rect, RefreshCode::RefreshNone, event.m_y, doZoom };
 
       auto pMenu = PopupMenuTable::BuildMenu( &table, &data );
+
       pMenu->Popup( *pParent, { event.m_x, event.m_y } );
 
       return data.result;

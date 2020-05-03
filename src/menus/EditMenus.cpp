@@ -1054,9 +1054,9 @@ BaseItemSharedPtr EditMenu()
 
          Command( wxT("Redo"), XXO("&Redo"), FN(OnRedo),
             AudioIONotBusyFlag() | RedoAvailableFlag(), redoKey ),
-            
-         Special( wxT("UndoItemsUpdateStep"),
-         [](AudacityProject &project, wxMenu&) {
+
+         Special( L"UndoItemsUpdateStep",
+         [](AudacityProject &project, const Widgets::MenuHandle&) {
             // Change names in the CommandManager as a side-effect
             ModifyUndoMenuItems(project);
          })

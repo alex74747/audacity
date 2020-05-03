@@ -20,9 +20,11 @@ tables, and automatically attaches and detaches the event handlers.
 
 class wxCommandEvent;
 
+class wxPoint;
+class wxWindow;
+
 #include <functional>
 #include <vector>
-#include <wx/menu.h> // to inherit wxMenu
 #include <memory>
 
 #include "Internat.h"
@@ -40,14 +42,14 @@ struct AUDACITY_DLL_API PopupMenuTableEntry : Registry::SingleItem
 
    Type type;
    int id;
-   TranslatableString caption;
+   Widgets::MenuItemLabel caption;
    wxCommandEventFunction func;
    PopupMenuHandler &handler;
    StateFunction stateFn;
 
    //! @pre func is not null
    PopupMenuTableEntry( const Identifier &stringId,
-      Type type_, int id_, const TranslatableString &caption_,
+      Type type_, int id_, const Widgets::MenuItemLabel &caption_,
       wxCommandEventFunction func_, PopupMenuHandler &handler_,
       StateFunction stateFn = {} )
       : SingleItem{ stringId }
@@ -196,24 +198,24 @@ protected:
    
    void Append(
       const Identifier &stringId, PopupMenuTableEntry::Type type, int id,
-      const TranslatableString &string, wxCommandEventFunction memFn,
+      const Widgets::MenuItemLabel &string, wxCommandEventFunction memFn,
       // This callback might check or disable a menu item:
       const PopupMenuTableEntry::StateFunction &stateFn );
 
    void AppendItem( const Identifier &stringId, int id,
-      const TranslatableString &string, wxCommandEventFunction memFn,
+      const Widgets::MenuItemLabel &string, wxCommandEventFunction memFn,
       // This callback might check or disable a menu item:
       const PopupMenuTableEntry::StateFunction &stateFn = {} )
    { Append( stringId, PopupMenuTableEntry::Item, id, string, memFn, stateFn ); }
 
    void AppendRadioItem( const Identifier &stringId, int id,
-      const TranslatableString &string, wxCommandEventFunction memFn,
+      const Widgets::MenuItemLabel &string, wxCommandEventFunction memFn,
       // This callback might check or disable a menu item:
       const PopupMenuTableEntry::StateFunction &stateFn = {} )
    { Append( stringId, PopupMenuTableEntry::RadioItem, id, string, memFn, stateFn ); }
 
    void AppendCheckItem( const Identifier &stringId, int id,
-      const TranslatableString &string, wxCommandEventFunction memFn,
+      const Widgets::MenuItemLabel &string, wxCommandEventFunction memFn,
       const PopupMenuTableEntry::StateFunction &stateFn = {} )
    { Append( stringId, PopupMenuTableEntry::CheckItem, id, string, memFn, stateFn ); }
 
@@ -283,7 +285,7 @@ BEGIN_POPUP_MENU(MyTable)
    AppendItem("Cut",
       OnCutSelectedTextID, XO("Cu&t"), POPUP_MENU_FN( OnCutSelectedText ),
       // optional argument:
-      [](PopupMenuHandler &handler, wxMenu &menu, int id)
+      [](PopupMenuHandler &handler, Widgets::MenuHandle &menu, int id)
       {
          auto data = static_cast<MyTable&>( handler ).pData;
          // maybe enable or disable the menu item

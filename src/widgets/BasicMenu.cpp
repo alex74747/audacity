@@ -14,6 +14,7 @@ Paul Licameli
 #include "JournalRegistry.h"
 #include "JournalEvents.h"
 #include "MemoryX.h"
+#include "MenuHandle.h"
 #include "wxWidgetsWindowPlacement.h"
 #include "wxArrayStringEx.h"
 #include <wx/eventfilter.h>
@@ -206,7 +207,7 @@ void ReplayPopup( wxMenu *theMenu )
 
 void Handle::Popup( const BasicUI::WindowPlacement &window, const Point &pos )
 {
-   wxMenu *const pMenu = mpMenu;
+   wxMenu *const pMenu = mpMenu->GetWxMenu();
    if ( !pMenu )
       return;
 

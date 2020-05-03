@@ -62,19 +62,21 @@ unsigned CommonTrackPanelCell::DoContextMenu( const wxRect &rect,
    auto &commandManager = CommandManager::Get(*pProject);
    auto flags = MenuManager::Get( *pProject ).GetUpdateFlags();
 
-   // Common dispatcher for the menu items
-   auto dispatcher = [&]( wxCommandEvent &evt ){
-      auto idx = evt.GetId() - 1;
-      if (idx >= 0 && idx < items.size()) {
-         if (auto &action = items[idx].action)
+   // Generator of callbacks, parametrized by idx
+   auto callback = [&](int idx) {
+      const MenuItem *pItem = nullptr;
+      if (idx >= 0 && idx < items.size())
+         pItem = &items[idx];
+      return [&, pItem]{
+         if (auto &action = pItem->action)
             action( context );
          else
             commandManager.HandleTextualCommand(
-               items[idx].symbol.Internal(), context, flags, false);
-      }
+               pItem->symbol.Internal(), context, flags, false);
+      };
    };
 
-   wxMenu menu;
+   Widgets::MenuHandle menu;
    int ii = 1;
    for (const auto &item: items) {
       if ( const auto &commandID = item.symbol.Internal();
@@ -85,11 +87,9 @@ unsigned CommonTrackPanelCell::DoContextMenu( const wxRect &rect,
          // menu, and as determined by keyboard preferences
          auto label =
             commandManager.FormatLabelForMenu( commandID, &item.symbol.Msgid() );
-         menu.Append( ii, label );
-         menu.Bind( wxEVT_COMMAND_MENU_SELECTED, dispatcher );
          bool enabled = item.enabled &&
             (item.action || commandManager.GetEnabled( commandID ));
-         menu.Enable( ii, enabled );
+         menu.Append( label, callback(ii), enabled, ii );
       }
       ++ii;
    }

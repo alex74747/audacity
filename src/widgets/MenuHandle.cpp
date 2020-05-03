@@ -34,6 +34,11 @@ public:
    TranslatableStrings mLabels;
 };
 
+wxMenu *MenuHandle::GetWxMenu()
+{
+   return mwMenu;
+}
+
 MenuHandle::MenuHandle( Menu *pMenu )
    : mwMenu{ pMenu }
 {}
@@ -351,6 +356,12 @@ MenuBarHandle::iterator::iterator( const MenuBarHandle *p, bool begin )
 
 MenuBarHandle::iterator::iterator( iterator && ) = default;
 
+MenuBarHandle::iterator::iterator( const iterator &other )
+: mpMenuBar{ other.mpMenuBar }
+, mpState{ std::make_unique<State>(*other.mpState) }
+{
+}
+
 MenuBarHandle::iterator::~iterator() = default;
 
 auto MenuBarHandle::iterator::operator++() -> iterator &
@@ -359,7 +370,7 @@ auto MenuBarHandle::iterator::operator++() -> iterator &
    return *this;
 }
 
-MenuBarItem MenuBarHandle::iterator::operator*()
+MenuBarItem MenuBarHandle::iterator::operator*() const
 {
    auto title = mpMenuBar->mTitles[ mpState->mIndex ];
    return { title,

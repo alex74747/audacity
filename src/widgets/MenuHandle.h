@@ -18,8 +18,7 @@ Paul Licameli
 #include <wx/weakref.h>
 
 class wxCommandEvent;
-class wxMenuItem;
-class wxMenuItemList;
+class wxMenu;
 class wxFrame;
 class wxPoint;
 class wxWindow;
@@ -118,6 +117,8 @@ class MenuHandle
    MenuHandle( Menu *pMenu );
 
 public:
+
+   wxMenu *GetWxMenu();
 
    // Default constructed with a fresh unshared menu object
    MenuHandle();
@@ -224,6 +225,8 @@ public:
    iterator begin() const;
    iterator end() const;
 
+   bool empty() const { return begin() == end(); }
+
    // Other item-level accessors and mutators
    MenuItemState GetState( MenuItemID itemid );
    // Mask can be a bitwise or of enum values defined in MenuItemState
@@ -307,8 +310,9 @@ public:
    struct iterator : ValueIterator< MenuBarItem >{
       ~iterator();
       iterator( iterator && );
+      iterator( const iterator & );
       iterator &operator ++ ();
-      MenuBarItem operator * ();
+      MenuBarItem operator * () const;
       friend bool operator == ( const iterator &x, const iterator & y );
       friend inline bool operator != ( const iterator &x, const iterator & y )
       { return !( x == y ); }

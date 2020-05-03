@@ -39,11 +39,10 @@
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
+#include "widgets/MenuHandle.h"
 
 #include <unordered_set>
 
-#include <wx/dialog.h>
-#include <wx/menu.h>
 #include <wx/windowptr.h>
 
 MenuCreator::MenuCreator()
@@ -364,7 +363,7 @@ struct MenuItemVisitor : ToolbarMenuVisitor
           dynamic_cast<SpecialItem*>( pItem )) {
          const auto pCurrentMenu = manager.CurrentMenu();
          wxASSERT( pCurrentMenu );
-         pSpecial->fn( project, *pCurrentMenu );
+         pSpecial->fn( project, pCurrentMenu );
       }
       else
          wxASSERT( false );
@@ -431,11 +430,11 @@ void MenuCreator::CreateMenusAndCommands(AudacityProject &project)
 
    // Post step:  place orphan menu items under Extra
    if (!visitor.mOrphanItems.empty())
-   {
-      auto index = menubar->FindMenu(_("Extra"));
-      auto pExtraMenu = (index < 0) ? nullptr : menubar->GetMenu(index);
-      if (pExtraMenu) {
-         commandManager.SetCurrentMenu(pExtraMenu);
+      if (auto end = menubar.end(), iter = std::find_if(menubar.begin(), end,
+            [](auto &&item){ return item.title == XO("Extra");} );
+         iter != end
+      ) {
+         commandManager.SetCurrentMenu((*iter).pSubMenu);
          auto cleanup = finally([&]{
             commandManager.ResetCurrentMenu();
          });
@@ -443,9 +442,8 @@ void MenuCreator::CreateMenusAndCommands(AudacityProject &project)
             if (pItem)
                visitor.DoItem(*pItem);
       }
-   }
 
-   GetProjectFrame( project ).SetMenuBar(menubar.release());
+   std::move( menubar ).AttachTo( GetProjectFrame( project ) );
 
    mLastFlags = AlwaysEnabledFlag;
 
@@ -461,13 +459,6 @@ void MenuManager::Visit( ToolbarMenuVisitor &visitor )
       &MenuTable::ItemRegistry::Registry() );
 }
 
-// Get hackcess to a protected method
-class wxFrameEx : public wxFrame
-{
-public:
-   using wxFrame::DetachMenuBar;
-};
-
 void MenuCreator::RebuildMenuBar(AudacityProject &project)
 {
    // On OSX, we can't rebuild the menus while a modal dialog is being shown
@@ -480,15 +471,6 @@ void MenuCreator::RebuildMenuBar(AudacityProject &project)
       wxASSERT((!dlg || !dlg->IsModal()));
    }
 #endif
-
-   // Delete the menus, since we will soon recreate them.
-   // Rather oddly, the menus don't vanish as a result of doing this.
-   {
-      auto &window = static_cast<wxFrameEx&>( GetProjectFrame( project ) );
-      wxWindowPtr<wxMenuBar> menuBar{ window.GetMenuBar() };
-      window.DetachMenuBar();
-      // menuBar gets deleted here
-   }
 
    CommandManager::Get( project ).PurgeData();
 
