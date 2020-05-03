@@ -49,6 +49,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "toolbars/SelectionBar.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/FileHistory.h"
+#include "widgets/BasicMenu.h"
 #include "widgets/UnwritableLocationErrorDialog.h"
 #include "widgets/Warning.h"
 #include "widgets/wxPanelWrapper.h"

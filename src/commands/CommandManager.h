@@ -30,10 +30,12 @@
 
 #include <unordered_map>
 
-class wxEvent;
-class wxMenu;
-class wxMenuBar;
 using CommandParameter = CommandID;
+
+namespace BasicMenu {
+   class Handle;
+   class BarHandle;
+}
 
 class BoolSetting;
 
@@ -87,9 +89,9 @@ class AUDACITY_DLL_API CommandManager final
    // Creating menus and adding commands
    //
 
-   std::unique_ptr<wxMenuBar> AddMenuBar(const wxString & sMenu);
+   BasicMenu::BarHandle AddMenuBar(const wxString & sMenu);
 
-   wxMenu *BeginMenu(const BasicMenu::Item::Text & text);
+   BasicMenu::Handle BeginMenu(const BasicMenu::Item::Text & text);
    void EndMenu();
 
    // type of a function that determines checkmark state
@@ -176,7 +178,7 @@ class AUDACITY_DLL_API CommandManager final
 
    void AddItem(AudacityProject &project,
                 const CommandID & name,
-                const BasicMenu::Item::Text &text,
+                BasicMenu::Item::Text text,
                 CommandHandlerFinder finder,
                 CommandFunctorPointer callback,
                 CommandFlag flags,
@@ -184,7 +186,6 @@ class AUDACITY_DLL_API CommandManager final
 
    void AddSeparator();
 
-   void PopMenuBar();
    void BeginOccultCommands();
    void EndOccultCommands();
 
@@ -249,7 +250,7 @@ class AUDACITY_DLL_API CommandManager final
 #endif
       bool includeMultis);
 
-   // Each command is assigned a numerical ID for use in wxMenu and wxEvent,
+   // Each command is assigned a numerical ID for use in BasicMenu::Handle and wxEvent,
    // which need not be the same across platforms or sessions
    CommandID GetNameFromNumericID( int id );
 
@@ -294,7 +295,7 @@ private:
    int NextIdentifier(int ID);
    CommandListEntry *NewIdentifier(const CommandID & name,
                                    const BasicMenu::Item::Text & text,
-                                   wxMenu *menu,
+                                   BasicMenu::Handle menu,
                                    CommandHandlerFinder finder,
                                    CommandFunctorPointer callback,
                                    const CommandID &nameSuffix,
@@ -322,20 +323,24 @@ private:
    //
 
    void Enable(CommandListEntry *entry, bool enabled);
-   wxMenu *BeginMainMenu(const BasicMenu::Item::Text & text);
+   BasicMenu::Handle BeginMainMenu(const BasicMenu::Item::Text & text);
    void EndMainMenu();
-   wxMenu* BeginSubMenu(const BasicMenu::Item::Text & text);
+   BasicMenu::Handle BeginSubMenu(const BasicMenu::Item::Text & text);
    void EndSubMenu();
 
    //
    // Accessing
    //
 
-   wxMenuBar * CurrentMenuBar() const;
-   wxMenuBar * GetMenuBar(const wxString & sMenu) const;
-   wxMenu * CurrentSubMenu() const;
+private:
+   void PushMenuBar( const wxString &sMenu );
+   void PopMenuBar();
+   BasicMenu::BarHandle CurrentMenuBar() const;
+   BasicMenu::BarHandle GetMenuBar(const wxString & sMenu);
+   BasicMenu::Handle CurrentSubMenu() const;
+
 public:
-   wxMenu * CurrentMenu() const;
+   BasicMenu::Handle CurrentMenu() const;
 
    void UpdateCheckmarks( AudacityProject &project );
 
@@ -344,15 +349,14 @@ public:
     @param pLabel if not null, use this instead of the manager's
     stored label
     */
-   wxString FormatLabelForMenu(
+   BasicMenu::Item::Label FormatLabelForMenu(
       const CommandID &id, const TranslatableString *pLabel) const;
 
 private:
-   wxString FormatLabelForMenu(const CommandListEntry *entry) const;
-   wxString FormatLabelForMenu(
-      const TranslatableString &translatableLabel,
-      const NormalizedKeyString &keyStr) const;
-   wxString FormatLabelWithDisabledAccel(const CommandListEntry *entry) const;
+   BasicMenu::Item::Label
+      FormatLabelForMenu(const CommandListEntry *entry) const;
+   BasicMenu::Item::Label FormatLabelWithDisabledAccel(
+      const CommandListEntry *entry) const;
 
    //
    // Loading/Saving
@@ -381,11 +385,9 @@ private:
    TranslatableString mNiceName;
    int mLastProcessId;
    BasicMenu::Item::Text mCurrentMenuText;
-   std::unique_ptr<wxMenu> uCurrentMenu;
-   wxMenu *mCurrentMenu {};
+   const std::unique_ptr<BasicMenu::Handle> uCurrentMenu;
 
    bool bMakingOccultCommands;
-   std::unique_ptr< wxMenuBar > mTempMenuBar;
 };
 
 struct AUDACITY_DLL_API MenuVisitor : Registry::Visitor
@@ -566,7 +568,8 @@ namespace MenuTable {
    // adding any number of items, not using the CommandManager
    struct SpecialItem final : SingleItem
    {
-      using Appender = std::function< void( AudacityProject&, wxMenu& ) >;
+      using Appender =
+         std::function< void( AudacityProject&, BasicMenu::Handle ) >;
 
       explicit SpecialItem( const Identifier &internalName, const Appender &fn_ )
       : SingleItem{ internalName }
