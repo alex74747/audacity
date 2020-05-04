@@ -585,13 +585,22 @@ void CommandManager::AddItem(AudacityProject &project,
    SetCommandFlags(name, flags);
 
 
+   // Callback for the menu button
+   auto action = [&project, ID]{
+      auto &commandManager = CommandManager::Get( project );
+      bool handled = commandManager.HandleMenuID( project,
+         ID, MenuManager::Get( project ).GetUpdateFlags(),
+         false);
+      (void) handled;
+   };
+
    auto &checker = options.checker;
    // PRL:  store a help string?
    if (checker)
-      CurrentMenu().AppendCheckItem( text, {},
+      CurrentMenu().AppendCheckItem( text, std::move( action ),
          { true, checker( project ) }, ID);
    else
-      CurrentMenu().Append(text, {}, {}, ID);
+      CurrentMenu().Append(text, std::move( action ), {}, ID);
 
    mbSeparatorAllowed = true;
 }
