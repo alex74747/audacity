@@ -87,6 +87,7 @@ struct Text {
       const NormalizedKeyString &accel = {} )
       : label{ main, accel }
    {}
+
    Text( const TranslatableLabel &main,
       const NormalizedKeyString &accel,
       const TranslatableString &help )

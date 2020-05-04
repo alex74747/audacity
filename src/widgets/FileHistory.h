@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_WIDGETS_FILEHISTORY__
 #define __AUDACITY_WIDGETS_FILEHISTORY__
 
+#include <functional>
 #include <vector>
 #include <algorithm>
 #include <wx/defs.h>
@@ -34,8 +35,7 @@ class AUDACITY_DLL_API FileHistory
    : public wxEvtHandler
 {
  public:
-   enum { MAX_FILES = 12 };
-   FileHistory(size_t maxfiles = MAX_FILES);
+   FileHistory(size_t maxfiles = 12);
    virtual ~FileHistory();
    FileHistory( const FileHistory& ) = delete;
    FileHistory &operator =( const FileHistory & ) = delete;
@@ -47,6 +47,7 @@ class AUDACITY_DLL_API FileHistory
    void Remove( size_t i );
    void Clear();
 
+   // Load and save history contents to configuration file
    void Load(wxConfigBase& config, const wxString & group = wxEmptyString);
    void Save(wxConfigBase& config);
 

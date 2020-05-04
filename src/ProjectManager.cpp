@@ -46,7 +46,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "toolbars/TimeToolBar.h"
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
-#include "widgets/FileHistory.h"
 #include "widgets/WindowAccessible.h"
 
 #include <wx/app.h>
@@ -975,9 +974,9 @@ void FileHistoryMenus::OnChangedHistory(wxEvent &evt)
 //vvv Basically, anything from Recent Files is treated as a .aup3, until proven otherwise,
 // then it tries to Import(). Very questionable handling, imo.
 // Better, for example, to check the file type early on.
-void ProjectManager::OnMRUFile(size_t nn) {
+bool ProjectManager::OnMRUFile( const FilePath &fullPathStr )
+{
    auto &history = FileHistory::Global();
-   const auto &fullPathStr = history[ nn ];
 
    // Try to open only if not already open.
    // Test IsAlreadyOpen() here even though AudacityProject::MRUOpen() also now checks,
@@ -987,8 +986,8 @@ void ProjectManager::OnMRUFile(size_t nn) {
    // PRL: Don't call SafeMRUOpen
    // -- if open fails for some exceptional reason of resource exhaustion that
    // the user can correct, leave the file in history.
-   if (!ProjectFileManager::IsAlreadyOpen(fullPathStr) && !MRUOpen(fullPathStr))
-      history.Remove(nn);
+   return
+      ProjectFileManager::IsAlreadyOpen(fullPathStr) || MRUOpen(fullPathStr);
 }
 
 // backend for OnMRUFile
@@ -1036,22 +1035,6 @@ bool ProjectManager::SafeMRUOpen(const wxString &fullPathStr)
    return GuardedCall< bool >( [&]{ return MRUOpen( fullPathStr ); } );
 }
 
-void ProjectManager::OnMRUClear()
-{
-   FileHistory::Global().Clear();
-}
-
-void FileHistoryMenus::Compress()
-{
-   // Clear up expired weak pointers
-   auto end = mMenus.end();
-   mMenus.erase(
-     std::remove_if( mMenus.begin(), end,
-        [](auto &pMenu){ return !pMenu; } ),
-     end
-   );
-}
-
 void FileHistoryMenus::NotifyMenu(BasicMenu::Handle menu)
 {
    menu.Clear();
@@ -1060,13 +1043,29 @@ void FileHistoryMenus::NotifyMenu(BasicMenu::Handle menu)
    int ii = 0;
    for (auto item : history) {
       item.Replace( "&", "&&" );
-      menu.Append(
-         VerbatimLabel( item ), [ii]{ ProjectManager::OnMRUFile(ii); } );
+      menu.Append( VerbatimLabel( item ), [ii]{
+         auto &history = FileHistory::Global();
+         if( !ProjectManager::OnMRUFile(history[ii]) )
+            history.Remove(ii);
+      } );
+      ++ii;
    }
 
    if (history.size() > 0)
       menu.AppendSeparator();
 
    menu.Append( XXO("&Clear"),
-      &ProjectManager::OnMRUClear, history.size() > 0 );
+      [this]{ FileHistory::Global().Clear(); },
+      { history.size() > 0 } );
+}
+
+void FileHistoryMenus::Compress()
+{
+   // Clear up expired weak pointers
+   auto end = mMenus.end();
+   mMenus.erase(
+     std::remove_if( mMenus.begin(), end,
+        [](BasicMenu::Handle &pMenu){ return !pMenu; } ),
+     end
+   );
 }

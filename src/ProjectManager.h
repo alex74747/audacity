@@ -123,8 +123,7 @@ public:
    static void UseMenu(BasicMenu::Handle menu);
 
    // Most Recently Used File support (for all platforms).
-   static void OnMRUClear();
-   static void OnMRUFile(size_t nn);
+   static bool OnMRUFile( const FilePath &path );
    // Backend for above - returns true for success, false for failure
    static bool MRUOpen(const FilePath &fileName);
    // A wrapper of the above that does not throw
