@@ -840,12 +840,6 @@ BEGIN_EVENT_TABLE(AudacityApp, wxApp)
    EVT_END_SESSION(AudacityApp::OnEndSession)
 
    EVT_TIMER(kAudacityAppTimerID, AudacityApp::OnTimer)
-#ifdef __WXMAC__
-   EVT_MENU(wxID_NEW, AudacityApp::OnMenuNew)
-   EVT_MENU(wxID_OPEN, AudacityApp::OnMenuOpen)
-   EVT_MENU(wxID_ABOUT, AudacityApp::OnMenuAbout)
-   EVT_MENU(wxID_PREFERENCES, AudacityApp::OnMenuPreferences)
-#endif
 
    // Associate the handler with the menu id on all operating systems, even
    // if they don't have an application menu bar like in macOS, so that
@@ -1430,11 +1424,13 @@ bool AudacityApp::InitPart2()
 
       BasicMenu::Handle fileMenu{ BasicMenu::FreshMenu };
       BasicMenu::Handle recentMenu{ BasicMenu::FreshMenu };
-      fileMenu.Append({ XXO("&New"), "Ctrl+N" }, {}, {}, wxID_NEW );
-      fileMenu.Append({ XXO("&Open..."), "Ctrl+O" }, {}, {}, wxID_OPEN );
+      // PRL:  It's important to use special explicit ids, at least for About
+      // and Preferences, so that wxWidgets moves them to the Audacity menu
+      fileMenu.Append({{ XXO("&New"), "Ctrl+N" }}, [this]{ OnMenuNew(); }, {}, wxID_NEW );
+      fileMenu.Append({{ XXO("&Open..."), "Ctrl+O" }}, [this]{ OnMenuOpen(); }, {}, wxID_OPEN );
       fileMenu.AppendSubMenu(std::move( recentMenu ), XXO("Open &Recent..."));
-      fileMenu.Append(XXO("&About Audacity..."), {}, {}, wxID_ABOUT);
-      fileMenu.Append({ XXO("&Preferences..."), "Ctrl+," }, {}, {}, wxID_PREFERENCES );
+      fileMenu.Append(XXO("&About Audacity..."), [this]{ OnMenuAbout(); }, {}, wxID_ABOUT);
+      fileMenu.Append({{ XXO("&Preferences..."), "Ctrl+," }}, [this]{ OnMenuPreferences(); }, {}, wxID_PREFERENCES );
 
       {
          BasicMenu::BarHandle menuBar{ BasicMenu::FreshMenu };
@@ -2277,7 +2273,7 @@ int AudacityApp::OnExit()
 // and skip the event unless none are open (which should only happen
 // on the Mac, at least currently.)
 
-void AudacityApp::OnMenuAbout(wxCommandEvent & /*event*/)
+void AudacityApp::OnMenuAbout()
 {
    // This function shadows a similar function
    // in Menus.cpp, but should only be used on the Mac platform.
@@ -2295,7 +2291,7 @@ void AudacityApp::OnMenuAbout(wxCommandEvent & /*event*/)
 #endif
 }
 
-void AudacityApp::OnMenuNew(wxCommandEvent & event)
+void AudacityApp::OnMenuNew()
 {
    // This function shadows a similar function
    // in Menus.cpp, but should only be used on the Mac platform
@@ -2305,12 +2301,10 @@ void AudacityApp::OnMenuNew(wxCommandEvent & event)
 
    if(AllProjects{}.empty())
       (void) ProjectManager::New();
-   else
-      event.Skip();
 }
 
 
-void AudacityApp::OnMenuOpen(wxCommandEvent & event)
+void AudacityApp::OnMenuOpen()
 {
    // This function shadows a similar function
    // in Menus.cpp, but should only be used on the Mac platform
@@ -2321,13 +2315,9 @@ void AudacityApp::OnMenuOpen(wxCommandEvent & event)
 
    if(AllProjects{}.empty())
       ProjectManager::OpenFiles(NULL);
-   else
-      event.Skip();
-
-
 }
 
-void AudacityApp::OnMenuPreferences(wxCommandEvent & event)
+void AudacityApp::OnMenuPreferences()
 {
    // This function shadows a similar function
    // in Menus.cpp, but should only be used on the Mac platform
@@ -2339,9 +2329,6 @@ void AudacityApp::OnMenuPreferences(wxCommandEvent & event)
       GlobalPrefsDialog dialog(nullptr /* parent */, nullptr );
       dialog.ShowModal();
    }
-   else
-      event.Skip();
-
 }
 
 void AudacityApp::OnMenuExit(wxCommandEvent & event)

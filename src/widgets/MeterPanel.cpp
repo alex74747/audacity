@@ -1936,11 +1936,11 @@ void MeterPanel::ShowMenu(const wxPoint & pos)
    if (mIsInput) {
       menu.Append(
          mMonitoring ? XXO("Stop Monitoring") : XXO("Start Monitoring"),
-         [this]{ OnMonitor(); },
+         { [this]{ StartMonitoring(); } },
          { !mActive || mMonitoring } );
    }
 
-   menu.Append(XXO("Options..."), [this]{ OnPreferences(); });
+   menu.Append(XXO("Options..."), [this]{ OnPreferences(); } );
 
    mAccSilent = true;      // temporarily make screen readers say (close to) nothing on focus events
 
@@ -1960,11 +1960,6 @@ void MeterPanel::ShowMenu(const wxPoint & pos)
                                 wxOBJID_CLIENT,
                                 wxACC_SELF);
 #endif
-}
-
-void MeterPanel::OnMonitor()
-{
-   StartMonitoring();
 }
 
 void MeterPanel::OnPreferences()

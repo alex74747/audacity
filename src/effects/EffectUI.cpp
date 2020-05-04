@@ -1224,9 +1224,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
          {
             auto label = VerbatimLabel( factory[i] );
             if (label.empty())
-            {
                label = XXO("None");
-            }
             
             sub.Append( label, [this, i]{ OnFactoryPreset(i); } );
          }
@@ -1557,8 +1555,6 @@ void EffectUIHost::OnSaveAs()
       
       break;
    }
-   
-   return;
 }
 
 void EffectUIHost::OnImport()
@@ -1566,8 +1562,6 @@ void EffectUIHost::OnImport()
    mClient.ImportPresets();
    
    LoadUserPresets();
-   
-   return;
 }
 
 void EffectUIHost::OnExport()
@@ -1575,22 +1569,16 @@ void EffectUIHost::OnExport()
    // may throw
    // exceptions are handled in AudacityApp::OnExceptionInMainLoop
    mClient.ExportPresets();
-   
-   return;
 }
 
 void EffectUIHost::OnOptions()
 {
    mClient.ShowOptions();
-   
-   return;
 }
 
 void EffectUIHost::OnDefaults()
 {
    mEffect.LoadFactoryDefaults();
-   
-   return;
 }
 
 wxBitmap EffectUIHost::CreateBitmap(const char * const xpm[], bool up, bool pusher)

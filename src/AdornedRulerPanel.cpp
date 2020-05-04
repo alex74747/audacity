@@ -2296,7 +2296,7 @@ void AdornedRulerPanel::HandleSnapping(size_t index)
 }
 
 #if 0
-void AdornedRulerPanel::OnTimelineToolTips(wxCommandEvent&)
+void AdornedRulerPanel::OnTimelineToolTips()
 {
    mTimelineToolTip = (mTimelineToolTip)? false : true;
    gPrefs->Write(L"/QuickPlay/ToolTips", mTimelineToolTip);

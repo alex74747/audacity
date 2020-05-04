@@ -165,7 +165,7 @@ private:
    static void DragSelection(AudacityProject &project);
    void HandleSnapping(size_t index);
    void OnSyncSelToQuickPlay();
-   //void OnTimelineToolTips(wxCommandEvent &evt);
+   //void OnTimelineToolTips();
    void OnAutoScroll();
    void OnTogglePlayRegion();
    void OnClearPlayRegion();
