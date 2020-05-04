@@ -62,13 +62,6 @@ IMPLEMENT_CLASS(ToolsToolBar, ToolBar);
 /// Methods for ToolsToolBar
 ////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(ToolsToolBar, ToolBar)
-   EVT_COMMAND_RANGE(ToolCodes::firstTool + FirstToolID,
-                     ToolsToolBar::numTools - 1 + FirstToolID,
-                     wxEVT_COMMAND_BUTTON_CLICKED,
-                     ToolsToolBar::OnTool)
-END_EVENT_TABLE()
-
 //Standard constructor
 ToolsToolBar::ToolsToolBar( AudacityProject &project )
 : ToolBar(project, ToolsBarID, XO("Tools"), L"Tools")
@@ -172,7 +165,8 @@ void ToolsToolBar::UpdatePrefs()
 
 AButton * ToolsToolBar::MakeTool(
    ToolsToolBar *pBar, teBmps eTool,
-   int id, const TranslatableString &label)
+   int id, const TranslatableString &label,
+   std::function< void() > action )
 {
    AButton *button = ToolBar::MakeButton(pBar,
       bmpRecoloredUpSmall, 
@@ -180,9 +174,9 @@ AButton * ToolsToolBar::MakeTool(
       bmpRecoloredUpHiliteSmall, 
       bmpRecoloredDownSmall, // Not bmpRecoloredHiliteSmall as down is inactive.
       eTool, eTool, eTool,
-      wxWindowID(id + FirstToolID),
+      wxID_ANY,
       wxDefaultPosition, label, true,
-      theTheme.ImageSize( bmpRecoloredUpSmall ));
+      theTheme.ImageSize( bmpRecoloredUpSmall ), move( action ) );
    pBar->mToolSizer->Add( button );
    return button;
 }
@@ -197,27 +191,44 @@ void ToolsToolBar::Populate()
 
    /* Tools */
    using namespace ToolCodes;
-   mTool[ selectTool   ] = MakeTool( this, bmpIBeam, selectTool, XO("Selection Tool") );
-   mTool[ envelopeTool ] = MakeTool( this, bmpEnvelope, envelopeTool, XO("Envelope Tool") );
-   mTool[ drawTool     ] = MakeTool( this, bmpDraw, drawTool, XO("Draw Tool") );
-   mTool[ zoomTool     ] = MakeTool( this, bmpZoom, zoomTool, XO("Zoom Tool") );
-   mTool[ multiTool    ] = MakeTool( this, bmpMulti, multiTool, XO("Multi-Tool") );
+
+   const struct Entry{
+      decltype(bmpIBeam) bitmap;
+      TranslatableString name;
+   } table[] = {
+      { bmpIBeam,     XO("Selection Tool") },
+      { bmpEnvelope,  XO("Envelope Tool") },
+      { bmpDraw,      XO("Draw Tool") },
+      { bmpZoom,      XO("Zoom Tool") },
+      { bmpMulti,     XO("Multi-Tool") },
+   };
+
+   int ii = 0;
+   for ( const auto &entry : table ) {
+      mTool[ii] = MakeTool( this,
+         entry.bitmap, ii, entry.name, [this, ii]{ OnTool(ii); } );
+      ++ii;
+   }
 
    DoToolChanged();
 
    RegenerateTooltips();
 }
 
-void ToolsToolBar::OnTool(wxCommandEvent & evt)
+void ToolsToolBar::OnTool( int tool )
 {
-   // This will cause callback to OnToolChanged
-   auto iTool = evt.GetId() - ToolCodes::firstTool - FirstToolID;
-   auto pButton = mTool[iTool];
-   if (pButton->IsDown())
-      ProjectSettings::Get( mProject ).SetTool( iTool );
-   else
-      // Don't stay up
-      pButton->PushDown();
+   auto &projectSettings = ProjectSettings::Get( mProject );
+   using namespace ToolCodes;
+   mCurrentTool = tool;
+   for (int i = 0; i < numTools; i++)
+      if (i == mCurrentTool)
+         mTool[i]->PushDown();
+      else
+         mTool[i]->PopUp();
+
+   gPrefs->Write(L"/GUI/ToolBars/Tools/MultiToolActive",
+                 mTool[multiTool]->IsDown());
+   gPrefs->Flush();
 }
 
 void ToolsToolBar::OnToolChanged(wxCommandEvent &evt)
@@ -232,17 +243,7 @@ void ToolsToolBar::OnToolChanged(wxCommandEvent &evt)
 void ToolsToolBar::DoToolChanged()
 {
    auto &projectSettings = ProjectSettings::Get( mProject );
-   using namespace ToolCodes;
-   mCurrentTool = projectSettings.GetTool() - firstTool;
-   for (int i = 0; i < numTools; i++)
-      if (i == mCurrentTool)
-         mTool[i]->PushDown();
-      else
-         mTool[i]->PopUp();
-
-   gPrefs->Write(L"/GUI/ToolBars/Tools/MultiToolActive",
-                 mTool[multiTool]->IsDown());
-   gPrefs->Flush();
+   OnTool( projectSettings.GetTool() - ToolCodes::firstTool );
 }
 
 void ToolsToolBar::Create(wxWindow * parent)

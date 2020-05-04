@@ -54,7 +54,6 @@ namespace {
 bool MakeReadyToPlay(AudacityProject &project)
 {
    auto &toolbar = ControlToolBar::Get( project );
-   wxCommandEvent evt;
 
    // If this project is playing, stop playing
    auto gAudioIO = AudioIOBase::Get();
@@ -64,7 +63,7 @@ bool MakeReadyToPlay(AudacityProject &project)
       // Make momentary changes of button appearances
       toolbar.SetPlay(false);        //Pops
       toolbar.SetStop();         //Pushes stop down
-      toolbar.OnStop(evt);
+      toolbar.OnStop();
 
       using namespace std::chrono;
       std::this_thread::sleep_for(100ms);

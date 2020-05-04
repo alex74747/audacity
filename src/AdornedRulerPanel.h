@@ -171,7 +171,7 @@ private:
    void OnClearPlayRegion();
    void OnSetPlayRegionToSelection();
 
-   void OnPinnedButton(wxCommandEvent & event);
+   void OnPinnedButton();
    void OnTogglePinnedState();
 
    bool mPlayRegionDragsSelection;

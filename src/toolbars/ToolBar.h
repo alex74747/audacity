@@ -162,7 +162,8 @@ public:
                        wxPoint placement,
                        const TranslatableString &name,
                        bool processdownevents,
-                       wxSize size);
+                       wxSize size,
+                       std::function< void() > action = {});
 
    static
    void MakeAlternateImages(AButton &button, int idx,
