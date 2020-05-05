@@ -143,7 +143,7 @@ template< typename Table >
 PopupMenuTableEntry::StateFunction stateFn( Table &handler,
    ValueFinder findValue, int value )
 {
-   return [&handler, findValue = std::move(findValue), value]()
+   return [&handler, findValue = move(findValue), value]()
    -> BasicMenu::Item::State {
       auto pData = static_cast<Table&>( handler ).mpData;
       const auto pTrack = static_cast<WaveTrack*>(pData->pTrack);
