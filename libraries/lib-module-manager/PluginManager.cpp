@@ -721,7 +721,7 @@ bool PluginManager::DropFile(const wxString &fileName)
 
             // Register for real
             std::vector<PluginID> ids;
-            std::vector<wxString> names;
+            TranslatableStrings names;
             nPlugIns = module->DiscoverPluginsAtPath(dstPath, errMsg,
                [&](ModuleInterface *provider, ComponentInterface *ident)
                                                      -> const PluginID& {
@@ -730,7 +730,7 @@ bool PluginManager::DropFile(const wxString &fileName)
                   auto &id = PluginManagerInterface::DefaultRegistrationCallback(
                         provider, ident);
                   ids.push_back(id);
-                  names.push_back( ident->GetSymbol().Translation() );
+                  names.push_back( ident->GetSymbol().Msgid() );
                   return id;
                });
             if ( ! nPlugIns ) {
@@ -751,7 +751,7 @@ bool PluginManager::DropFile(const wxString &fileName)
                   "plug-ins"
                )( nIds );
                for (const auto &name : names)
-                  message.Join( Verbatim( name ), L"\n" );
+                  message.Join( name, L"\n" );
                bool enable = (MessageBoxResult::Yes == ShowMessageBox(
                   message,
                   MessageBoxOptions{}

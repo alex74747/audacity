@@ -31,7 +31,7 @@ private:
    struct ItemData
    {
       std::vector<PluginDescriptor*> plugs;
-      wxString name;
+      TranslatableString name;
       PluginPath path;
       int state;
       bool valid;
