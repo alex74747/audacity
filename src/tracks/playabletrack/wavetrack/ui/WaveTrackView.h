@@ -18,7 +18,6 @@ namespace WaveTrackViewConstants{ enum Display : int; }
 struct WaveTrackSubViewType;
 
 class CutlineHandle;
-class TranslatableString;
 class SampleTrack;
 class WaveTrack;
 class WaveTrackView;

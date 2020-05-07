@@ -11,7 +11,7 @@
 #ifndef __AUDACITY_HELP_TEXT__
 #define __AUDACITY_HELP_TEXT__
 
-class TranslatableString;
+#include "audacity/Types.h"
 class wxString;
 #include "Identifier.h"
 
