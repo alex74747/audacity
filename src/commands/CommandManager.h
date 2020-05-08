@@ -351,13 +351,13 @@ public:
     stored label
     */
    BasicMenu::Item::Label FormatLabelForMenu(
-      const CommandID &id, const TranslatableString *pLabel) const;
+      const CommandID &id, const TranslatableLabel *pLabel) const;
 
 private:
    BasicMenu::Item::Label
       FormatLabelForMenu(const CommandListEntry *entry) const;
    BasicMenu::Item::Label FormatLabelForMenu(
-      const TranslatableString &translatableLabel,
+      const TranslatableLabel &translatableLabel,
       const NormalizedKeyString &keyStr) const;
    BasicMenu::Item::Label FormatLabelWithDisabledAccel(
       const CommandListEntry *entry) const;

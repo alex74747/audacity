@@ -181,7 +181,7 @@ private:
    bool mActive{ false };
 };
 
-extern SCREEN_GEOMETRY_API const TranslatableString LoopToggleText;
+extern SCREEN_GEOMETRY_API const TranslatableLabel LoopToggleText;
 
 class SCREEN_GEOMETRY_API ViewInfo final
    : public ZoomInfo

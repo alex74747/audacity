@@ -87,8 +87,9 @@ unsigned CommonTrackPanelCell::DoContextMenu( const wxRect &rect,
       else {
          // Generate a menu item with the same shortcut key as in the toolbar
          // menu, and as determined by keyboard preferences
+         auto labeltext = VerbatimLabel(item.symbol.Msgid().Translation());
          auto label =
-            commandManager.FormatLabelForMenu( commandID, &item.symbol.Msgid() );
+            commandManager.FormatLabelForMenu( commandID, &labeltext );
          menu.Append( label,
             [&]{
                if (auto &action = item.action)

@@ -224,8 +224,8 @@ TranslatableLabel Label::Full() const
 {
    return accel.empty()
       ? main
-      : TranslatableString{ main }
-         .Join( Verbatim( accel.GET() ), L"\t" );
+      : TranslatableLabel{ main }
+         .Join( VerbatimLabel( accel.GET() ), L"\t" );
 }
 
 }

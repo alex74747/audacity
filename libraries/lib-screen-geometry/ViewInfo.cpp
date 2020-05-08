@@ -224,7 +224,7 @@ void PlayRegion::Notify()
    Publish({});
 }
 
-const TranslatableString LoopToggleText = XXO("&Loop On/Off");
+const TranslatableLabel LoopToggleText = XXO("&Loop On/Off");
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
    []( AudacityProject &project ) {

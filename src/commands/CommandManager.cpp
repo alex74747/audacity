@@ -836,7 +836,7 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
 
 BasicMenu::Item::Label
 CommandManager::FormatLabelForMenu(
-   const CommandID &id, const TranslatableString *pLabel) const
+   const CommandID &id, const TranslatableLabel *pLabel) const
 {
    NormalizedKeyString keyStr;
    if (auto iter = mCommandNameHash.find(id); iter != mCommandNameHash.end()) {
@@ -858,7 +858,7 @@ CommandManager::FormatLabelForMenu(const CommandListEntry *entry) const
 }
 
 BasicMenu::Item::Label CommandManager::FormatLabelForMenu(
-   const TranslatableString &translatableLabel,
+   const TranslatableLabel &translatableLabel,
    const NormalizedKeyString &keyStr) const
 {
    auto label = translatableLabel.Translation();
@@ -869,7 +869,7 @@ BasicMenu::Item::Label CommandManager::FormatLabelForMenu(
       label += L"\t" + key;
    }
 
-   return Verbatim(label);
+   return VerbatimLabel(label);
 }
 
 // A label that may have its accelerator disabled.
@@ -1294,7 +1294,7 @@ void CommandManager::RegisterLastAnalyzer(const CommandContext& context) {
       auto& menuManager = MenuManager::Get(context.project);
       menuManager.mLastAnalyzerRegistration = MenuCreator::repeattypeunique;
       menuManager.mLastAnalyzerRegisteredId = mLastProcessId;
-      auto lastEffectDesc = XO("Repeat %s").Format(mNiceName);
+      auto lastEffectDesc = XXO("Repeat %s").Format(mNiceName.Translation());
       Modify(L"RepeatLastAnalyzer", lastEffectDesc);
    }
    return;
@@ -1307,7 +1307,7 @@ void CommandManager::RegisterLastTool(const CommandContext& context) {
       auto& menuManager = MenuManager::Get(context.project);
       menuManager.mLastToolRegistration = MenuCreator::repeattypeunique;
       menuManager.mLastToolRegisteredId = mLastProcessId;
-      auto lastEffectDesc = XO("Repeat %s").Format(mNiceName);
+      auto lastEffectDesc = XXO("Repeat %s").Format(mNiceName.Translation());
       Modify(L"RepeatLastTool", lastEffectDesc);
    }
    return;

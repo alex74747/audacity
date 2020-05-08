@@ -2225,7 +2225,7 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
       { true, mViewInfo->bUpdateTrackIndicator } );
 
    rulerMenu.AppendCheckItem(
-      LoopToggleText.Stripped(), [this]{ OnTogglePlayRegion(); },
+      LoopToggleText, [this]{ OnTogglePlayRegion(); },
       { true, playRegion.Active() } );
 
    rulerMenu.Append(

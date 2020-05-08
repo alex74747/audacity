@@ -109,7 +109,7 @@ UpdateNoticeDialog::UpdateNoticeDialog(wxWindow* parent)
       {
          S.AddSpace(1, 0, 1);
 
-         S.Id(wxID_OK).AddButton(XO("&OK"))->SetFocus();
+         S.Id(wxID_OK).AddButton(XXO("&OK"))->SetFocus();
 
          S.AddSpace(8, 0);
       }
