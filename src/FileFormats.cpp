@@ -350,23 +350,23 @@ int SFFileCloser::operator() (SNDFILE *sf) const
    return err;
 }
 
-ChoiceSetting FileFormatsCopyOrEditSetting{
-   wxT("/FileFormats/CopyOrEditUncompressedData"),
+LabelSetting FileFormatsCopyOrEditSetting{
+   L"/FileFormats/CopyOrEditUncompressedData",
    {
-      EnumValueSymbol{
-         wxT("copy"),
+      EnumLabelSymbol{
+         L"copy",
          XXO("&Copy uncompressed files into the project (safer)")
       },
-      EnumValueSymbol{
-         wxT("edit"),
+      EnumLabelSymbol{
+         L"edit",
          XXO("&Read uncompressed files from original location (faster)")
       },
    },
    0 // copy
 };
 
-ChoiceSetting FileFormatsSaveWithDependenciesSetting{
-   wxT("/FileFormats/SaveProjectWithDependencies"),
+LabelSetting FileFormatsSaveWithDependenciesSetting{
+   L"/FileFormats/SaveProjectWithDependencies",
    {
       { wxT("copy"), XXO("&Copy all audio into project (safest)") },
       { wxT("never"), XXO("Do &not copy any audio") },

@@ -31,6 +31,7 @@
 #include <optional>
 
 class ChoiceSetting;
+class LabelSetting;
 
 class wxArrayStringEx;
 
@@ -510,7 +511,7 @@ public:
    // Introduce a sequence of calls to AddRadioButton.
    void StartRadioButtonGroup();
    // SettingName is a key in Preferences.
-   void StartRadioButtonGroup( const ChoiceSetting &Setting );
+   void StartRadioButtonGroup( const LabelSetting &Setting );
 
    // End a sequence of calls to AddRadioButton.
    void EndRadioButtonGroup();

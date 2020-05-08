@@ -294,8 +294,8 @@ ExportMP3Options::~ExportMP3Options()
    TransferDataFromWindow();
 }
 
-EnumSetting< MP3RateMode > MP3RateModeSetting{
-   wxT("/FileFormats/MP3RateModeChoice"),
+EnumLabelSetting< MP3RateMode > MP3RateModeSetting{
+   L"/FileFormats/MP3RateModeChoice",
    {
       { wxT("SET"), XXO("Preset") },
       { wxT("VBR"), XXO("Variable") },
@@ -311,11 +311,11 @@ EnumSetting< MP3RateMode > MP3RateModeSetting{
    wxT("/FileFormats/MP3RateMode"),
 };
 
-static EnumSetting< MP3ChannelMode > MP3ChannelModeSetting{
-   wxT("/FileFormats/MP3ChannelModeChoice"),
+static EnumLabelSetting< MP3ChannelMode > MP3ChannelModeSetting{
+   L"/FileFormats/MP3ChannelModeChoice",
    {
-      EnumValueSymbol{ wxT("JOINT"), XXO("Joint Stereo") },
-      EnumValueSymbol{ wxT("STEREO"), XXO("Stereo") },
+      EnumLabelSymbol{ L"JOINT", XXO("Joint Stereo") },
+      EnumLabelSymbol{ L"STEREO", XXO("Stereo") },
    },
    0, // CHANNEL_JOINT
 
