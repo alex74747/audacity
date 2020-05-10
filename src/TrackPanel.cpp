@@ -268,13 +268,13 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
    {
       auto pAx = std::make_unique <TrackPanelAx>( *project );
       pAx->SetWindow( this );
-      wxWeakRef< TrackPanel > weakThis{ this };
       pAx->SetFinder(
-         [weakThis]( const Track &track ) -> wxRect {
-            if (weakThis)
-               return weakThis->FindTrackRect( &track );
-            return {};
-         }
+         [weakThis = wxWeakRef< TrackPanel >{ this }](
+            const Track &track ) -> wxRect {
+               if (weakThis)
+                  return weakThis->FindTrackRect( &track );
+               return {};
+            }
       );
       TrackFocus::Get( *GetProject() ).SetAccessible(
          *this, std::move( pAx ) );

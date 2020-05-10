@@ -620,15 +620,16 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
                   menu.Enable( id, false );
             };
          };
-         Append( [type, id]( My &table ) -> Registry::BaseItemPtr {
-            const auto pTrack = &table.FindWaveTrack();
-            const auto &view = WaveTrackView::Get( *pTrack );
-            const auto itemType =
-               view.GetMultiView() ? Entry::CheckItem : Entry::RadioItem;
-            return std::make_unique<Entry>( type.name.Internal(), itemType,
-               id, type.name.Msgid(),
-               POPUP_MENU_FN( OnSetDisplay ), table,
-               initFn( !view.GetMultiView() ) );
+         Append( [name = type.name, id]( My &table )
+            -> Registry::BaseItemPtr {
+               const auto pTrack = &table.FindWaveTrack();
+               const auto &view = WaveTrackView::Get( *pTrack );
+               const auto itemType =
+                  view.GetMultiView() ? Entry::CheckItem : Entry::RadioItem;
+               return std::make_unique<Entry>( name.Internal(), itemType,
+                  id, name.Msgid(),
+                  POPUP_MENU_FN( OnSetDisplay ), table,
+                  initFn( !view.GetMultiView() ) );
          } );
          ++id;
       }
