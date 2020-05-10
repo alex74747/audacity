@@ -912,7 +912,7 @@ void TrackList::SwapNodes(TrackNodePointer s1, TrackNodePointer s2)
    using Saved = std::vector< ListOfTracks::value_type >;
    Saved saved1, saved2;
 
-   auto doSave = [&] ( auto &saved, auto &s ) {
+   auto doSave = [this] ( auto &saved, auto &s ) {
       size_t nn = Channels( s.first->get() ).size();
       saved.resize( nn );
       // Save them in backwards order

@@ -1814,7 +1814,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
       wxMenu menu;
       menu.Bind(wxEVT_MENU,
          [this, &project]( auto &event ){
-            OnContextMenu( project, event ); }
+            this->OnContextMenu( project, event ); }
       );
 
       menu.Append(OnCutSelectedTextID, _("Cu&t Label text"));

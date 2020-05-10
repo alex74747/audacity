@@ -65,10 +65,10 @@ struct SubViewAdjuster
       mPermutation.resize( size );
       const auto begin = mPermutation.begin(), end = mPermutation.end();
       std::iota( begin, end, 0 );
-      static auto invisible = []( const auto &placement ){
+      static auto invisible = []( const WaveTrackSubViewPlacement &placement ){
          return placement.index < 0 || placement.fraction <= 0;
       };
-      const auto comp = [this]( auto ii, auto jj ){
+      const auto comp = [this]( size_t ii, size_t jj ){
          auto &pi = mOrigPlacements[ii];
          bool iInvisible = invisible( pi );
 
@@ -86,7 +86,7 @@ struct SubViewAdjuster
       };
       std::sort( begin, end, comp );
       // Find the start of visible sub-views
-      auto first = std::find_if( begin, end, [this](auto ii){
+      auto first = std::find_if( begin, end, [this](size_t ii){
          return !invisible( mOrigPlacements[ii] );
       } );
       mFirstSubView = first - begin;

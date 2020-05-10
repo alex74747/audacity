@@ -210,7 +210,8 @@ static void RemoveDependencies(AudacityProject *project,
             // and so we can allow exceptions from ReadData too
             f->ReadData(buffer.ptr(), format, 0, len);
             newBlockFile =
-               dirManager.NewBlockFile( [&]( auto filePath ) {
+               dirManager.NewBlockFile(
+               [&buffer, len, format]( auto filePath ) {
                   return make_blockfile<SimpleBlockFile>(
                      std::move(filePath), buffer.ptr(), len, format);
                } );

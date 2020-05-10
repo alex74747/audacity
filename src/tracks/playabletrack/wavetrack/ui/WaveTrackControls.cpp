@@ -551,14 +551,14 @@ static std::vector<WaveTrackSubViewType> AllTypes()
 BEGIN_POPUP_MENU(WaveTrackMenuTable)
    // Functions usable in callbacks to check and disable items
    static const auto isMono =
-   []( auto &handler ) -> bool {
+   []( PopupMenuHandler &handler ) -> bool {
       auto &track =
          static_cast< WaveTrackMenuTable& >( handler ).FindWaveTrack();
       return 1 == TrackList::Channels( &track ).size();
    };
 
    static const auto isUnsafe =
-   []( auto &handler ) -> bool {
+   []( PopupMenuHandler &handler ) -> bool {
       auto &project =
          static_cast< WaveTrackMenuTable& >( handler ).mpData->project;
       return RealtimeEffectManager::Get().RealtimeIsActive() &&
@@ -663,7 +663,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
    //   );
       AppendItem( "MakeStereo", OnMergeStereoID, XXO("Ma&ke Stereo Track"),
          POPUP_MENU_FN( OnMergeStereo ),
-         []( auto &handler, auto &menu, auto id ){
+         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
             bool canMakeStereo = !isUnsafe( handler ) && isMono( handler );
             if ( canMakeStereo ) {
                AudacityProject &project =
@@ -693,7 +693,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
       );
 
       static const auto enableSplitStereo =
-      []( auto &handler, auto &menu, auto id ){
+      []( PopupMenuHandler &handler, wxMenu &menu, int id ){
          menu.Enable( id, !isMono( handler ) && !isUnsafe( handler ) );
       };
 

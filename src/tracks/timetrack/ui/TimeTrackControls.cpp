@@ -142,12 +142,12 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
    BeginSection( "Scales" );
       AppendRadioItem( "Linear", OnTimeTrackLinID, XXO("&Linear scale"),
          POPUP_MENU_FN( OnTimeTrackLin ),
-         []( auto &handler, auto &menu, auto id ){
+         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
             menu.Check( id, !findTrack(handler)->GetDisplayLog() );
          } );
       AppendRadioItem( "Log", OnTimeTrackLogID, XXO("L&ogarithmic scale"),
          POPUP_MENU_FN( OnTimeTrackLog ),
-         []( auto &handler, auto &menu, auto id ){
+         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
             menu.Check( id, findTrack(handler)->GetDisplayLog() );
          } );
    EndSection();
@@ -157,7 +157,7 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
          POPUP_MENU_FN( OnSetTimeTrackRange ) );
       AppendCheckItem( "LogInterp", OnTimeTrackLogIntID,
          XXO("Logarithmic &Interpolation"), POPUP_MENU_FN( OnTimeTrackLogInt),
-         []( auto &handler, auto &menu, auto id ){
+         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
             menu.Check( id, findTrack(handler)->GetInterpolateLog() );
          } );
    EndSection();

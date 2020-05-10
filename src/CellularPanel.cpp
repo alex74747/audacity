@@ -1142,7 +1142,7 @@ void CellularPanel::Draw( TrackPanelDrawingContext &context, unsigned nPasses )
 
          // Draw the current handle if it is associated with the node
          if ( &node == lastCell.get() ) {
-            auto target = Target();
+            auto target = this->Target();
             if ( target ) {
                const auto targetRect =
                   target->DrawingArea( context, rect, panelRect, iPass );
