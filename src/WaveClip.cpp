@@ -1602,7 +1602,7 @@ void WaveClip::ExpandCutLine(double cutLinePosition)
 {
    auto end = mCutLines.end();
    auto it = std::find_if( mCutLines.begin(), end,
-      [&](const WaveClipHolder &cutline) {
+      [&](const auto &cutline) {
          return fabs(mOffset + cutline->GetOffset() - cutLinePosition) < 0.0001;
       } );
 
@@ -1621,7 +1621,7 @@ void WaveClip::ExpandCutLine(double cutLinePosition)
       // another cutline!), invalidating the iterator we had.
       end = mCutLines.end();
       it = std::find_if(mCutLines.begin(), end,
-         [=](const WaveClipHolder &p) { return p.get() == cutline; });
+         [=](const auto &p) { return p.get() == cutline; });
       if (it != end)
          mCutLines.erase(it); // deletes cutline!
       else {

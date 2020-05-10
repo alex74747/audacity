@@ -348,7 +348,7 @@ auto ToolManager::SetGetTopPanelHook( const GetTopPanelHook &hook )
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      return std::make_shared< ToolManager >( &parent ); }
 };
 
@@ -1582,12 +1582,12 @@ AttachedToolBarMenuItem::AttachedToolBarMenuItem(
    , mAttachedItem{
       Registry::Placement{ wxT("View/Other/Toolbars/Toolbars/Other"), hint },
       (  MenuTable::FinderScope(
-            [this](AudacityProject &) -> CommandHandlerObject&
+            [this](auto &) -> CommandHandlerObject&
                { return *this; } ),
          MenuTable::Command( name, label_in,
             &AttachedToolBarMenuItem::OnShowToolBar,
             AlwaysEnabledFlag,
-            CommandManager::Options{}.CheckTest( [id](AudacityProject &project){
+            CommandManager::Options{}.CheckTest( [id](auto &project){
                auto &toolManager = ToolManager::Get( project );
                return toolManager.IsVisible( id ); } ) ) ) }
    , mExcludeIds{ std::move( excludeIDs ) }

@@ -745,7 +745,7 @@ void DeviceToolBar::ShowComboDialog(wxChoice *combo, const TranslatableString &t
 }
 
 static RegisteredToolbarFactory factory{ DeviceBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew DeviceToolBar{ project } }; }
 };
 

@@ -728,7 +728,7 @@ wxAccStatus TrackPanelAx::Select(int childId, wxAccSelectionFlags selectFlags)
 #endif // wxUSE_ACCESSIBILITY
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   []( AudacityProject &parent ){
+   []( auto &parent ){
       return std::make_shared< TrackFocus >( parent );
    }
 };

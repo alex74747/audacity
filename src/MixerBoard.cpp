@@ -1515,7 +1515,7 @@ namespace {
 
 // Mixer board window attached to each project is built on demand by:
 AudacityProject::AttachedWindows::RegisteredFactory sMixerBoardKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       return safenew MixerBoardFrame( &parent );
    }
 };

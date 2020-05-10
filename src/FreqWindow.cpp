@@ -1199,7 +1199,7 @@ void FreqPlot::OnMouseEvent(wxMouseEvent & event)
 namespace {
 
 AudacityProject::AttachedWindows::RegisteredFactory sFrequencyWindowKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       auto &window = ProjectWindow::Get( parent );
       return safenew FrequencyPlotDialog(
          &window, -1, parent, FrequencyAnalysisTitle,

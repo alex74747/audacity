@@ -15,7 +15,7 @@ Paul Licameli
 wxDEFINE_EVENT(EVT_PROJECT_STATUS_UPDATE, wxCommandEvent);
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      return std::make_shared< ProjectStatus >( parent );
    }
 };

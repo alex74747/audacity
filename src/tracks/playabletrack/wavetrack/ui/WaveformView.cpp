@@ -1038,7 +1038,7 @@ void WaveformView::Draw(
 }
 
 static const WaveTrackSubViews::RegisteredFactory key{
-   []( WaveTrackView &view ){
+   []( auto &view ){
       return std::make_shared< WaveformView >( view );
    }
 };
@@ -1099,7 +1099,7 @@ const TranslatableString GetWaveColorStr(int colorIndex)
 }
 
 BEGIN_POPUP_MENU(WaveColorMenuTable)
-   static const auto fn = []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   static const auto fn = []( auto &handler, auto &menu, auto id ){
       auto &me = static_cast<WaveColorMenuTable&>( handler );
       auto pData = me.mpData;
       const auto &track = *static_cast<WaveTrack*>(pData->pTrack);
@@ -1165,7 +1165,7 @@ PopupMenuTable::AttachedItem sAttachment{
    std::make_unique<PopupMenuSection>( "WaveColor",
       // Conditionally add sub-menu for wave color, if showing waveform
       PopupMenuTable::Computed< WaveTrackPopupMenuTable >(
-         []( WaveTrackPopupMenuTable &table ) -> Registry::BaseItemPtr {
+         []( auto &table ) -> Registry::BaseItemPtr {
             const auto pTrack = &table.FindWaveTrack();
             const auto &view = WaveTrackView::Get( *pTrack );
             const auto displays = view.GetDisplays();

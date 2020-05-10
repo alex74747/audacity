@@ -179,7 +179,7 @@ public:
          *pi = -1;
       if (*pi < 0 && obsoletes) {
          auto index = std::find_if(obsoletes, obsoletes + nObsoletes,
-                                   [&](const ObsoleteMap &entry){
+                                   [&](const auto &entry){
                                       return entry.first == s; })
             - obsoletes;
          if (index < (int)nObsoletes)

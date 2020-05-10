@@ -109,7 +109,7 @@ double AdjustForFindingStartTimes(
    const std::vector<const WaveClip*> & clips, double time)
 {
    auto q = std::find_if(clips.begin(), clips.end(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetEndTime() == time; });
    if (q != clips.end() && q + 1 != clips.end() &&
       (*q)->SharesBoundaryWithNextClip(*(q+1))) {
@@ -131,7 +131,7 @@ double AdjustForFindingEndTimes(
    const std::vector<const WaveClip*>& clips, double time)
 {
    auto q = std::find_if(clips.begin(), clips.end(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetStartTime() == time; });
    if (q != clips.end() && q != clips.begin() &&
       (*(q - 1))->SharesBoundaryWithNextClip(*q)) {
@@ -151,10 +151,10 @@ FoundClipBoundary FindNextClipBoundary
    double timeEnd = AdjustForFindingEndTimes(clips, time);
 
    auto pStart = std::find_if(clips.begin(), clips.end(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetStartTime() > timeStart; });
    auto pEnd = std::find_if(clips.begin(), clips.end(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetEndTime() > timeEnd; });
 
    if (pStart != clips.end() && pEnd != clips.end()) {
@@ -199,10 +199,10 @@ FoundClipBoundary FindPrevClipBoundary(const WaveTrack* wt, double time)
    double timeEnd = AdjustForFindingEndTimes(clips, time);
 
    auto pStart = std::find_if(clips.rbegin(), clips.rend(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetStartTime() < timeStart; });
    auto pEnd = std::find_if(clips.rbegin(), clips.rend(),
-      [&] (const WaveClip* const& clip) {
+      [&] (const auto& clip) {
          return clip->GetEndTime() < timeEnd; });
 
    if (pStart != clips.rend() && pEnd != clips.rend()) {
@@ -292,7 +292,7 @@ int FindClipBoundaries
    if (results.size() > 0) {
       // If any clip boundaries were found
       // find the clip boundary or boundaries with the min/max time
-      auto compare = [] (const FoundClipBoundary& a, const FoundClipBoundary&b)
+      auto compare = [] (const auto& a, const auto&b)
          { return a.time < b.time; };
 
       auto p = next ? min_element(results.begin(), results.end(), compare ) :
@@ -408,7 +408,7 @@ FoundClip FindNextClip
 
    {
       auto p = std::find_if(clips.begin(), clips.end(),
-         [&] (const WaveClip* const& clip) {
+         [&] (const auto& clip) {
             return clip->GetStartTime() == t0; });
       if (p != clips.end() && (*p)->GetEndTime() > t1) {
          result.found = true;
@@ -421,7 +421,7 @@ FoundClip FindNextClip
 
    {
       auto p = std::find_if(clips.begin(), clips.end(),
-         [&] (const WaveClip* const& clip) {
+         [&] (const auto& clip) {
             return clip->GetStartTime() > t0; });
       if (p != clips.end()) {
          result.found = true;
@@ -448,7 +448,7 @@ FoundClip FindPrevClip
 
    {
       auto p = std::find_if(clips.begin(), clips.end(),
-         [&] (const WaveClip* const& clip) {
+         [&] (const auto& clip) {
             return clip->GetStartTime() == t0; });
       if (p != clips.end() && (*p)->GetEndTime() < t1) {
          result.found = true;
@@ -461,7 +461,7 @@ FoundClip FindPrevClip
    
    {
       auto p = std::find_if(clips.rbegin(), clips.rend(),
-         [&] (const WaveClip* const& clip) {
+         [&] (const auto& clip) {
             return clip->GetStartTime() < t0; });
       if (p != clips.rend()) {
          result.found = true;
@@ -520,7 +520,7 @@ int FindClips
    if (results.size() > 0) {
       // if any clips were found,
       // find the clip or clips with the min/max start time
-      auto compareStart = [] (const FoundClip& a, const FoundClip& b)
+      auto compareStart = [] (const auto& a, const auto& b)
          { return a.startTime < b.startTime; };
 
       auto pStart = next
@@ -535,7 +535,7 @@ int FindClips
       if (resultsStartTime.size() > 1) {
          // more than one clip with same start time so
          // find the clip or clips with the min/max end time
-         auto compareEnd = [] (const FoundClip& a, const FoundClip& b)
+         auto compareEnd = [] (const auto& a, const auto& b)
             { return a.endTime < b.endTime; };
 
          auto pEnd = next ? std::min_element(resultsStartTime.begin(),

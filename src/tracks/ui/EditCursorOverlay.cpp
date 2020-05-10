@@ -31,7 +31,7 @@ namespace {
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sOverlayKey{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      auto result = std::make_shared< EditCursorOverlay >( &parent );
      TrackPanel::Get( parent ).AddOverlay( result );
      return result;
@@ -104,7 +104,7 @@ void EditCursorOverlay::Draw(OverlayPanel &panel, wxDC &dc)
       AColor::CursorColor(&dc);
 
       // Draw cursor in all selected tracks
-      tp->VisitCells( [&]( const wxRect &rect, TrackPanelCell &cell ) {
+      tp->VisitCells( [&]( const auto &rect, auto &cell ) {
          const auto pTrackView = dynamic_cast<TrackView*>(&cell);
          if (!pTrackView)
             return;

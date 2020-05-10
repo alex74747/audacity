@@ -1513,7 +1513,7 @@ bool AudacityApp::InitPart2()
    mTimer.Start(200);
 
 #ifdef EXPERIMENTAL_EASY_CHANGE_KEY_BINDINGS
-   CommandManager::SetMenuHook( [](const CommandID &id){
+   CommandManager::SetMenuHook( [](const auto &id){
       if (::wxGetMouseState().ShiftDown()) {
          // Only want one page of the preferences
          PrefsPanel::Factories factories;

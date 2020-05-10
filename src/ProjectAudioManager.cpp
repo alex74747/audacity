@@ -43,7 +43,7 @@ Paul Licameli split from ProjectManager.cpp
 
 static AudacityProject::AttachedObjects::RegisteredFactory
 sProjectAudioManagerKey {
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_shared< ProjectAudioManager >( project );
    }
 };
@@ -625,7 +625,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
             // A function that copies all the non-sample data between
             // wave tracks; in case the track recorded to changes scale
             // type (for instance), during the recording.
-            auto updater = [](Track &d, const Track &s){
+            auto updater = [](auto &d, const auto &s){
                auto &dst = static_cast<WaveTrack&>(d);
                auto &src = static_cast<const WaveTrack&>(s);
                dst.Reinit(src);
@@ -991,7 +991,7 @@ bool ProjectAudioManager::CanStopAudioStream() const
 
 const ReservedCommandFlag&
    CanStopAudioStreamFlag(){ static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          auto &projectAudioManager = ProjectAudioManager::Get( project );
          bool canStop = projectAudioManager.CanStopAudioStream();
          return canStop;
@@ -1143,7 +1143,7 @@ static RegisteredMenuItemEnabler stopIfPaused{{
    []{ return AudioIONotBusyFlag(); },
    []( const AudacityProject &project ){
       return MenuManager::Get( project ).mStopIfWasPaused; },
-   []( AudacityProject &project, CommandFlag ){
+   []( auto &project, auto ){
       if ( MenuManager::Get( project ).mStopIfWasPaused )
          ProjectAudioManager::Get( project ).StopIfPaused();
    }

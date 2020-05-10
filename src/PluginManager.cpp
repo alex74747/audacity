@@ -1884,7 +1884,7 @@ bool PluginManager::DropFile(const wxString &fileName)
             std::vector<PluginID> ids;
             std::vector<wxString> names;
             nPlugIns = module->DiscoverPluginsAtPath(dstPath, errMsg,
-               [&](ModuleInterface *provider, ComponentInterface *ident)
+               [&](auto provider, auto ident)
                                                      -> const PluginID& {
                   // Register as by default, but also collecting the PluginIDs
                   // and names
@@ -2039,7 +2039,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
       exeFn.RemoveLastDir();
    const auto possiblyBadPath = exeFn.GetPath();
 
-   auto AcceptPath = [&](const wxString &path) {
+   auto AcceptPath = [&](const auto &path) {
       if (!path.StartsWith(possiblyBadPath))
          // Assume it's not under /Applications
          return true;
@@ -2049,7 +2049,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
       return false;
    };
 #else
-   auto AcceptPath = [](const wxString&){ return true; };
+   auto AcceptPath = [](const auto&){ return true; };
 #endif
 
    wxString strVal;

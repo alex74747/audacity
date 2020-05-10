@@ -1018,7 +1018,7 @@ Handler &operator=( const Handler & ) PROHIBITED;
 // Handler is stateful.  Needs a factory registered with
 // AudacityProject.
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   [](AudacityProject&) {
+   [](auto&) {
       return std::make_unique< SelectActions::Handler >(); } };
 
 static CommandHandlerObject &findCommandHandler(AudacityProject &project) {

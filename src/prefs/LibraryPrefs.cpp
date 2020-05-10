@@ -231,7 +231,7 @@ bool LibraryPrefs::Commit()
 #if !defined(DISABLE_DYNAMIC_LOADING_FFMPEG) || !defined(DISABLE_DYNAMIC_LOADING_LAME)
 namespace{
 PrefsPanel::Registration sAttachment{ "Library",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew LibraryPrefs(parent, winid);

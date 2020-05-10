@@ -222,7 +222,7 @@ BaseItemSharedPtr ExtraMiscItems()
    static BaseItemSharedPtr items{
    Items( wxT("Misc"),
       // Delayed evaluation
-      []( AudacityProject &project ) {
+      []( auto &project ) {
 
    static const auto key =
 #ifdef __WXMAC__
@@ -238,7 +238,7 @@ BaseItemSharedPtr ExtraMiscItems()
          Command( wxT("FullScreenOnOff"), XXO("&Full Screen (on/off)"),
             FN(OnFullScreen),
             AlwaysEnabledFlag,
-            Options{ key }.CheckTest( []( const AudacityProject &project ) {
+            Options{ key }.CheckTest( []( const auto &project ) {
                return GetProjectFrame( project )
                   .wxTopLevelWindow::IsFullScreen(); } ) )
         );

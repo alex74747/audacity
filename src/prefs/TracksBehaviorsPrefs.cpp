@@ -131,7 +131,7 @@ bool TracksBehaviorsPrefs::Commit()
 
 namespace{
 PrefsPanel::Registration sAttachment{ "TracksBehaviors",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew TracksBehaviorsPrefs(parent, winid);

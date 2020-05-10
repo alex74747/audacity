@@ -134,7 +134,7 @@ void TimeTrackMenuTable::OnTimeTrackLogInt(wxCommandEvent & /*event*/)
 }
 
 BEGIN_POPUP_MENU(TimeTrackMenuTable)
-   static const auto findTrack = []( PopupMenuHandler &handler ){
+   static const auto findTrack = []( auto &handler ){
       return static_cast<TimeTrack*>(
          static_cast<TimeTrackMenuTable&>( handler ).mpData->pTrack );
    };
@@ -142,12 +142,12 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
    BeginSection( "Scales" );
       AppendRadioItem( "Linear", OnTimeTrackLinID, XXO("&Linear scale"),
          POPUP_MENU_FN( OnTimeTrackLin ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( auto &handler, auto &menu, auto id ){
             menu.Check( id, !findTrack(handler)->GetDisplayLog() );
          } );
       AppendRadioItem( "Log", OnTimeTrackLogID, XXO("L&ogarithmic scale"),
          POPUP_MENU_FN( OnTimeTrackLog ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( auto &handler, auto &menu, auto id ){
             menu.Check( id, findTrack(handler)->GetDisplayLog() );
          } );
    EndSection();
@@ -157,7 +157,7 @@ BEGIN_POPUP_MENU(TimeTrackMenuTable)
          POPUP_MENU_FN( OnSetTimeTrackRange ) );
       AppendCheckItem( "LogInterp", OnTimeTrackLogIntID,
          XXO("Logarithmic &Interpolation"), POPUP_MENU_FN( OnTimeTrackLogInt),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( auto &handler, auto &menu, auto id ){
             menu.Check( id, findTrack(handler)->GetInterpolateLog() );
          } );
    EndSection();
@@ -171,7 +171,7 @@ PopupMenuTable *TimeTrackControls::GetMenuExtension(Track *)
 
 using DoGetTimeTrackControls = DoGetControls::Override< TimeTrack >;
 template<> template<> auto DoGetTimeTrackControls::Implementation() -> Function {
-   return [](TimeTrack &track) {
+   return [](auto &track) {
       return std::make_shared<TimeTrackControls>( track.SharedPointer() );
    };
 }
@@ -182,7 +182,7 @@ static DoGetTimeTrackControls registerDoGetTimeTrackControls;
 using GetDefaultTimeTrackHeight = GetDefaultTrackHeight::Override< TimeTrack >;
 template<> template<>
 auto GetDefaultTimeTrackHeight::Implementation() -> Function {
-   return [](TimeTrack &) {
+   return [](auto &) {
       return 100;
    };
 }

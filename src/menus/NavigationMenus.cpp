@@ -45,7 +45,7 @@ void NextOrPrevFrame(AudacityProject &project, bool forward)
    const auto end = begin + rotationSize;
 
    // helper functions
-   auto IndexOf = [&](wxWindow *pWindow) {
+   auto IndexOf = [&](auto pWindow) {
       return std::find(begin, end, pWindow) - begin;
    };
 
@@ -544,7 +544,7 @@ Handler &operator=( const Handler & ) PROHIBITED;
 // Handler is stateful.  Needs a factory registered with
 // AudacityProject.
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   [](AudacityProject&) {
+   [](auto&) {
       return std::make_unique< NavigationActions::Handler >(); } };
 
 static CommandHandlerObject &findCommandHandler(AudacityProject &project) {

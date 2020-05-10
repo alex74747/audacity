@@ -175,7 +175,7 @@ UIHandle::Result LabelTextHandle::Click
 
       //do nothing if at least one other track is selected
       bool done = tracks.Selected().any_of(
-         [&](const Track *pTrack){ return pTrack != pLT.get(); }
+         [&](const auto pTrack){ return pTrack != pLT.get(); }
       );
 
       if (!done) {

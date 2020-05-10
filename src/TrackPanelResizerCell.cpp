@@ -110,7 +110,7 @@ void TrackPanelResizerCell::Draw(
 }
 
 static const AttachedTrackObjects::RegisteredFactory key{
-   []( Track &track ){
+   []( auto &track ){
       return std::make_shared<TrackPanelResizerCell>(
          track.shared_from_this() );
    }

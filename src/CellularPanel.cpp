@@ -931,7 +931,7 @@ namespace {
 
       // Visit cells only
       Adaptor( const SimpleCellVisitor& function_ )
-      : function{ [&](const wxRect &rect, TrackPanelNode &cell) {
+      : function{ [&](const auto &rect, auto &cell) {
          return function_( rect, static_cast<TrackPanelCell&>(cell) );
       } }
       {}
@@ -1044,7 +1044,7 @@ auto CellularPanel::FindCell(int mouseX, int mouseY) -> FoundCell
          const auto begin = children.begin(), end = children.end();
          auto iter = std::upper_bound( begin, end,
             (divideX ? mouseX : mouseY),
-            [&]( wxCoord coord, const TrackPanelGroup::Child &child ) {
+            [&]( auto coord, const auto &child ) {
                return coord < child.first;
             }
          );
@@ -1070,7 +1070,7 @@ wxRect CellularPanel::FindRect( const TrackPanelCell &cell )
    wxRect result;
 
    struct Stop{};
-   try { VisitCells( [&]( const wxRect &rect, TrackPanelCell &visited ) {
+   try { VisitCells( [&]( const auto &rect, auto &visited ) {
       if ( &visited == &cell )
          result = rect, throw Stop{};
    } ); }
@@ -1085,7 +1085,7 @@ wxRect CellularPanel::FindRect(
    wxRect result;
 
    struct Stop{};
-   try { VisitPreorder( [&]( const wxRect &rect, TrackPanelNode &visited ) {
+   try { VisitPreorder( [&]( const auto &rect, auto &visited ) {
       if ( pred( visited ) )
          result = rect, throw Stop{};
    } ); }
@@ -1132,7 +1132,7 @@ void CellularPanel::Draw( TrackPanelDrawingContext &context, unsigned nPasses )
    auto lastCell = LastCell();
    for ( unsigned iPass = 0; iPass < nPasses; ++iPass ) {
 
-      VisitPostorder( [&]( const wxRect &rect, TrackPanelNode &node ) {
+      VisitPostorder( [&]( const auto &rect, auto &node ) {
 
          // Draw the node
          const auto newRect = node.DrawingArea(

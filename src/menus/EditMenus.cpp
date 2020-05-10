@@ -155,7 +155,7 @@ void OnUndo(const CommandContext &context)
    }
 
    undoManager.Undo(
-      [&]( const UndoStackElem &elem ){
+      [&]( const auto &elem ){
          ProjectHistory::Get( project ).PopState( elem.state ); } );
 
    auto t = *tracks.Selected().begin();
@@ -185,7 +185,7 @@ void OnRedo(const CommandContext &context)
    }
 
    undoManager.Redo(
-      [&]( const UndoStackElem &elem ){
+      [&]( const auto &elem ){
          ProjectHistory::Get( project ).PopState( elem.state ); } );
 
    auto t = *tracks.Selected().begin();
@@ -975,9 +975,9 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 static const ReservedCommandFlag
 &CutCopyAvailableFlag() { static ReservedCommandFlag flag{
-   [](const AudacityProject &project){
-      auto range = TrackList::Get( project ).Any<const LabelTrack>()
-         + [&](const LabelTrack *pTrack){
+   [](const auto &project){
+      auto range = TrackList::Get( project ).template Any<const LabelTrack>()
+         + [&](const auto *pTrack){
             return LabelTrackView::Get( *pTrack ).IsTextSelected(
                // unhappy const_cast because track focus might be set
                const_cast<AudacityProject&>(project)
@@ -1037,7 +1037,7 @@ BaseItemSharedPtr EditMenu()
             AudioIONotBusyFlag() | RedoAvailableFlag(), redoKey ),
             
          Special( wxT("UndoItemsUpdateStep"),
-         [](AudacityProject &project, wxMenu&) {
+         [](auto &project, auto&) {
             // Change names in the CommandManager as a side-effect
             MenuManager::ModifyUndoMenuItems(project);
          })
@@ -1158,9 +1158,9 @@ BaseItemSharedPtr ExtraEditMenu()
    return menu;
 }
 
-auto canSelectAll = [](const AudacityProject &project){
+auto canSelectAll = [](const auto &project){
    return MenuManager::Get( project ).mWhatIfNoSelection != 0; };
-auto selectAll = []( AudacityProject &project, CommandFlag flagsRqd ){
+auto selectAll = []( auto &project, auto flagsRqd ){
    if ( MenuManager::Get( project ).mWhatIfNoSelection == 1 &&
       (flagsRqd & NoAutoSelect()).none() )
       SelectUtilities::DoSelectAllAudio(project);

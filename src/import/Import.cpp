@@ -253,7 +253,7 @@ size_t Importer::SelectDefaultOpenType( const FileNames::FileTypes &fileTypes )
    auto index = std::distance(
       begin,
       std::find_if( begin, fileTypes.end(),
-         [&type](const FileNames::FileType &fileType){
+         [&type](const auto &fileType){
             return fileType.description.Translation() == type; } ) );
    return (index == fileTypes.size()) ? 0 : index;
 }

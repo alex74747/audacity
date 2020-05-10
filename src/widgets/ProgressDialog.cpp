@@ -1110,7 +1110,7 @@ void ProgressDialog::AddMessageAsColumn(wxBoxSizer * pSizer,
    // Join strings
    auto sText = column[0];
    std::for_each( column.begin() + 1, column.end(),
-      [&](const TranslatableString &text)
+      [&](const auto &text)
          { sText.Join( text, wxT("\n") ); });
 
    // Create a statictext object and add to the sizer

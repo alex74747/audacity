@@ -47,7 +47,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "xml/XMLFileReader.h"
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sFileManagerKey{
-   []( AudacityProject &parent ){
+   []( auto &parent ){
       auto result = std::make_shared< ProjectFileManager >( parent );
       return result;
    }
@@ -119,7 +119,7 @@ wxString FindHelpUrl( const TranslatableString &libraryError )
 
       auto msgid = libraryError.MSGID().GET();
       auto found = std::find_if( begin(helpURLTable), end(helpURLTable),
-         [&]( const Pair &pair ) {
+         [&]( const auto &pair ) {
             return msgid.Contains( pair.first ); }
       );
       if (found != end(helpURLTable)) {
@@ -845,7 +845,7 @@ bool ProjectFileManager::IsAlreadyOpen(const FilePath &projPathName)
    const wxFileName newProjPathName(projPathName);
    auto start = AllProjects{}.begin(), finish = AllProjects{}.end(),
    iter = std::find_if( start, finish,
-      [&]( const AllProjects::value_type &ptr ){
+      [&]( const auto &ptr ){
          return newProjPathName.SameAs(wxFileNameWrapper{ ProjectFileIO::Get(*ptr).GetFileName() });
       } );
    if (iter != finish) {
@@ -1119,7 +1119,7 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
    // track (not necessarily, more than one channel)
    const bool useSuffix =
       make_iterator_range( results.begin() + 1, results.end() )
-         .any_of( []( decltype(*results.begin()) &pTrack )
+         .any_of( []( auto &pTrack )
             { return pTrack->IsLeader(); } );
 
    for (const auto &newTrack : results) {

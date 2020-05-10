@@ -658,7 +658,7 @@ namespace {
 
 // Contrast window attached to each project is built on demand by:
 AudacityProject::AttachedWindows::RegisteredFactory sContrastDialogKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       auto &window = ProjectWindow::Get( parent );
       return safenew ContrastDialog(
          &window, -1, XO("Contrast Analysis (WCAG 2 compliance)"),

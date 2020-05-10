@@ -267,7 +267,7 @@ private:
    {
       // Push back a dynamic type test and corresponding function body
       GetRegistry().push_back({
-         []( This *b ){ return dynamic_cast< Subclass * >( b ) != nullptr; },
+         []( auto *b ){ return dynamic_cast< Subclass * >( b ) != nullptr; },
          function
       });
    }

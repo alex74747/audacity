@@ -106,7 +106,7 @@ UIHandlePtr VelocitySliderHandle::HitTest
       return {};
    if (sliderRect.Contains(state.m_x, state.m_y)) {
       auto sliderFn =
-      []( AudacityProject *pProject, const wxRect &sliderRect, Track *pTrack ) {
+      []( auto pProject, const auto &sliderRect, auto pTrack ) {
          return NoteTrackControls::VelocitySlider
             (sliderRect, static_cast<NoteTrack*>( pTrack ), true,
              &TrackPanel::Get( *pProject ));

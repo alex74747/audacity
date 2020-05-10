@@ -1813,7 +1813,7 @@ void LabelTrackView::ShowContextMenu( AudacityProject &project )
    {
       wxMenu menu;
       menu.Bind(wxEVT_MENU,
-         [this, &project]( wxCommandEvent &event ){
+         [this, &project]( auto &event ){
             OnContextMenu( project, event ); }
       );
 
@@ -2251,7 +2251,7 @@ int LabelTrackView::DialogForLabelName(
 
 using DoGetLabelTrackView = DoGetView::Override< LabelTrack >;
 template<> template<> auto DoGetLabelTrackView::Implementation() -> Function {
-   return [](LabelTrack &track) {
+   return [](auto &track) {
       return std::make_shared<LabelTrackView>( track.SharedPointer() );
    };
 }

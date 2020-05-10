@@ -346,7 +346,7 @@ void AdornedRulerPanel::QuickPlayIndicatorOverlay::Draw(
          return;
       }
       pCellularPanel
-         ->VisitCells( [&]( const wxRect &rect, TrackPanelCell &cell ) {
+         ->VisitCells( [&]( const auto &rect, auto &cell ) {
             const auto pTrackView = dynamic_cast<TrackView*>(&cell);
             if (!pTrackView)
                return;
@@ -857,7 +857,7 @@ std::vector<UIHandlePtr> AdornedRulerPanel::ScrubbingCell::HitTest
 
 namespace{
 AudacityProject::AttachedWindows::RegisteredFactory sKey{
-[]( AudacityProject &project ) -> wxWeakRef< wxWindow > {
+[]( auto &project ) -> wxWeakRef< wxWindow > {
    auto &viewInfo = ViewInfo::Get( project );
    auto &window = ProjectWindow::Get( project );
 

@@ -587,7 +587,7 @@ FileNames::SelectFile(Operation op,
    int flags,
    wxWindow *parent)
 {
-   return WithDefaultPath(op, default_path, [&](const FilePath &path) {
+   return WithDefaultPath(op, default_path, [&](const auto &path) {
       wxString filter;
       if ( !default_extension.empty() )
          filter = wxT("*.") + default_extension;

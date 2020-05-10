@@ -196,7 +196,7 @@ std::unique_ptr<wxCursor> MakeCursor( int WXUNUSED(CursorId), const char * const
 namespace{
 
 AudacityProject::AttachedWindows::RegisteredFactory sKey{
-   []( AudacityProject &project ) -> wxWeakRef< wxWindow > {
+   []( auto &project ) -> wxWeakRef< wxWindow > {
       auto &ruler = AdornedRulerPanel::Get( project );
       auto &viewInfo = ViewInfo::Get( project );
       auto &window = ProjectWindow::Get( project );
@@ -270,7 +270,7 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
       pAx->SetWindow( this );
       pAx->SetFinder(
          [weakThis = wxWeakRef< TrackPanel >{ this }](
-            const Track &track ) -> wxRect {
+            const auto &track ) -> wxRect {
                if (weakThis)
                   return weakThis->FindTrackRect( &track );
                return {};
@@ -836,9 +836,9 @@ void TrackPanel::DrawTracks(wxDC * dc)
    bool sliderFlag     = bMultiToolDown;
 
    const bool hasSolo = GetTracks()->Any< PlayableTrack >()
-      .any_of( []( const PlayableTrack *pt ) {
-         pt = static_cast< const PlayableTrack * >(
-            pt->SubstitutePendingChangedTrack().get() );
+      .any_of( []( auto p ) {
+         auto pt = static_cast< const PlayableTrack * >(
+            p->SubstitutePendingChangedTrack().get() );
          return (pt && pt->GetSolo());
       } );
 
@@ -1492,7 +1492,7 @@ wxRect TrackPanel::FindTrackRect( const Track * target )
       return { 0, 0, 0, 0 };
    }
 
-   return CellularPanel::FindRect( [&] ( TrackPanelNode &node ) {
+   return CellularPanel::FindRect( [&] ( auto &node ) {
       if (auto pGroup = dynamic_cast<const LabeledChannelGroup*>( &node ))
          return pGroup->mpTrack.get() == leader;
       return false;
@@ -1539,7 +1539,7 @@ bool IsVisibleTrack::operator () (const Track *pTrack) const
    // the view
    return
    TrackList::Channels(pTrack).StartingWith(pTrack).any_of(
-      [this]( const Track *pT ) {
+      [this]( const auto pT ) {
          auto &view = TrackView::Get( *pT );
          wxRect r(0, view.GetY(), 1, view.GetHeight());
          return r.Intersects(mPanelRect);

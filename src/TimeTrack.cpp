@@ -39,7 +39,7 @@
 
 static ProjectFileIORegistry::Entry registerFactory{
    wxT( "timetrack" ),
-   []( AudacityProject &project ){
+   []( auto &project ){
       auto &tracks = TrackList::Get( project );
       auto &viewInfo = ViewInfo::Get( project );
       auto result = tracks.Add(std::make_shared<TimeTrack>(&viewInfo));

@@ -69,7 +69,7 @@ void RealtimeEffectManager::RealtimeSetEffects(const EffectArray & effects)
    auto begin = mStates.begin(), end = mStates.end();
    for ( auto pEffect : effects ) {
       auto found = std::find_if( begin, end,
-         [=]( const decltype( mStates )::value_type &state ){
+         [=]( const auto &state ){
             return state && &state->GetEffect() == pEffect;
          }
       );
@@ -151,7 +151,7 @@ void RealtimeEffectManager::RealtimeRemoveEffect(EffectClientInterface *effect)
    // Remove from list of active effects
    auto end = mStates.end();
    auto found = std::find_if( mStates.begin(), end,
-      [&](const decltype(mStates)::value_type &state){
+      [&](const auto &state){
          return &state->GetEffect() == effect;
       }
    );

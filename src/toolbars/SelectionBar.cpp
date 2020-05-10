@@ -810,7 +810,7 @@ void SelectionBar::OnSnapTo(wxCommandEvent & WXUNUSED(event))
 }
 
 static RegisteredToolbarFactory factory{ SelectionBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew SelectionBar{ project } }; }
 };
 

@@ -210,7 +210,7 @@ struct TrackPositioner final : ClientData::Base, wxEvtHandler
 };
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &project ){
+  []( auto &project ){
      return std::make_shared< TrackPositioner >( project );
    }
 };

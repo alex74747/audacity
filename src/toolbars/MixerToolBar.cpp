@@ -332,7 +332,7 @@ void MixerToolBar::SetToolTips()
 }
 
 static RegisteredToolbarFactory factory{ MixerBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew MixerToolBar{ project } }; }
 };
 

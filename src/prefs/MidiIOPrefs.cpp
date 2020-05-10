@@ -302,7 +302,7 @@ bool MidiIOPrefs::Validate()
 #ifdef EXPERIMENTAL_MIDI_OUT
 namespace{
 PrefsPanel::Registration sAttachment{ "MidiIO",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew MidiIOPrefs(parent, winid);

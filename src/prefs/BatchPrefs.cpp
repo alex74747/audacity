@@ -98,7 +98,7 @@ BatchPrefs::~BatchPrefs()
 #if 0
 namespace{
 PrefsPanel::Registration sAttachment{ "Batch",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew BatchPrefs(parent, winid);

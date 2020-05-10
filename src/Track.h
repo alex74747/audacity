@@ -1085,7 +1085,7 @@ template <
       const auto &pred1 = this->first.GetPredicate();
       using Function = typename TrackIter<TrackType>::FunctionType;
       const auto &newPred = pred1
-         ? Function{ [=] (typename Function::argument_type track) {
+         ? Function{ [=] (auto track) {
             return pred1(track) && pred2(track);
          } }
          : Function{ pred2 };
@@ -1108,9 +1108,7 @@ template <
    template< typename Predicate2 >
       TrackIterRange operator - ( const Predicate2 &pred2 ) const
    {
-      using ArgumentType =
-         typename TrackIterRange::iterator::FunctionType::argument_type;
-      auto neg = [=] (ArgumentType track) { return !pred2( track ); };
+      auto neg = [=] (auto track) { return !pred2( track ); };
       return this->operator + ( neg );
    }
 
@@ -1163,7 +1161,7 @@ template <
    TrackIterRange Excluding ( const TrackType *pExcluded ) const
    {
       return this->operator - (
-         [=](const Track *pTrack){ return pExcluded == pTrack; } );
+         [=](const auto pTrack){ return pExcluded == pTrack; } );
    }
 
    //! See Track::TypeSwitch

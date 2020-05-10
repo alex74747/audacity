@@ -1152,7 +1152,7 @@ bool NyquistEffect::ProcessOne()
             type = wxT("wave");
             spectralEditp = mCurTrack[0]->GetSpectrogramSettings().SpectralSelectionEnabled()? wxT("T") : wxT("NIL");
             auto displays = WaveTrackView::Get( *wt ).GetDisplays();
-            auto format = [&]( decltype(displays[0]) display ) {
+            auto format = [&]( auto display ) {
                // Get the English name of the view type, without menu codes,
                // as a string that Lisp can examine
                return wxString::Format( wxT("\"%s\""),

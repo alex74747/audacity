@@ -389,14 +389,14 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
    // PRL:  What exactly should happen if first members of pairs are not unique?
    // I'm not sure, but at least I can sort stably for a better defined result.
    auto less =
-      [](const Entry &a, const Entry &b)
+      [](const auto &a, const auto &b)
          { return a.name.StrippedTranslation() <
             b.name.StrippedTranslation(); };
    std::stable_sort(commands.begin(), commands.end(), less);
 
    // Now uniquify by friendly name
    auto equal =
-      [](const Entry &a, const Entry &b)
+      [](const auto &a, const auto &b)
          { return a.name.StrippedTranslation() ==
             b.name.StrippedTranslation(); };
    std::unique_copy(
@@ -407,7 +407,7 @@ MacroCommandsCatalog::MacroCommandsCatalog( const AudacityProject *project )
 auto MacroCommandsCatalog::ByFriendlyName( const TranslatableString &friendlyName ) const
    -> Entries::const_iterator
 {
-   const auto less = [](const Entry &entryA, const Entry &entryB)
+   const auto less = [](const auto &entryA, const auto &entryB)
       { return entryA.name.StrippedTranslation() <
          entryB.name.StrippedTranslation(); };
    auto range = std::equal_range(
@@ -428,7 +428,7 @@ auto MacroCommandsCatalog::ByCommandId( const CommandID &commandId ) const
 {
    // Maybe this too should have a uniqueness check?
    return std::find_if( begin(), end(),
-      [&](const Entry &entry)
+      [&](const auto &entry)
          { return entry.name.Internal() == commandId; });
 }
 

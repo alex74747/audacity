@@ -116,7 +116,7 @@ struct Item {
    template<typename Factory>
    Item&& Validator( const Factory &f ) &&
    {
-      mValidatorSetter = [f](wxWindow *p){ p->SetValidator(f()); };
+      mValidatorSetter = [f](auto *p){ p->SetValidator(f()); };
       return std::move(*this);
    }
 

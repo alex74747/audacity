@@ -191,7 +191,7 @@ void Scrubber::ScrubPoller::Notify()
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      return std::make_shared< Scrubber >( &parent ); }
 };
 
@@ -237,8 +237,8 @@ Scrubber::~Scrubber()
 }
 
 static const auto HasWaveDataPred =
-   [](const AudacityProject &project){
-      auto range = TrackList::Get( project ).Any<const WaveTrack>()
+   [](const auto &project){
+      auto range = TrackList::Get( project ).template Any<const WaveTrack>()
          + [](const WaveTrack *pTrack){
             return pTrack->GetEndTime() > pTrack->GetStartTime();
          };
@@ -299,7 +299,7 @@ namespace {
    inline const MenuItem &FindMenuItem(bool seek)
    {
       return *std::find_if(menuItems().begin(), menuItems().end(),
-         [=](const MenuItem &item) {
+         [=](const auto &item) {
             return seek == item.seek;
          }
       );
@@ -1103,7 +1103,7 @@ wxString Scrubber::StatusMessageForWave() const
 
 static ProjectStatus::RegisteredStatusWidthFunction
 registeredStatusWidthFunction{
-   []( const AudacityProject &, StatusBarField field )
+   []( const auto &, auto field )
       -> ProjectStatus::StatusWidthResult
    {
       if ( field == stateStatusBarField ) {
@@ -1206,7 +1206,7 @@ void Scrubber::OnKeyboardScrubForwards(const CommandContext &context)
 namespace {
 
 static const auto finder =
-   [](AudacityProject &project) -> CommandHandlerObject&
+   [](auto &project) -> CommandHandlerObject&
      { return Scrubber::Get( project ); };
 
 using namespace MenuTable;
@@ -1226,7 +1226,7 @@ BaseItemSharedPtr ToolbarMenu()
                item.flags,
                item.StatusTest
                   ? // a checkmark item
-                     Options{}.CheckTest( [&item](AudacityProject &project){
+                     Options{}.CheckTest( [&item](auto &project){
                      return ( Scrubber::Get(project).*(item.StatusTest) )(); } )
                   : // not a checkmark item
                      Options{}

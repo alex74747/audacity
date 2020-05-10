@@ -28,7 +28,7 @@ void OverlayPanel::AddOverlay( const std::weak_ptr<Overlay> &pOverlay)
    Compress();
    auto iter = std::lower_bound( mOverlays.begin(), mOverlays.end(),
       pOverlay.lock()->SequenceNumber(),
-      []( const OverlayPtr &p, unsigned value ) {
+      []( const auto &p, unsigned value ) {
          return p.expired() || p.lock()->SequenceNumber() < value;
       }
    );
@@ -71,7 +71,7 @@ void OverlayPanel::DrawOverlays(bool repaint_all, wxDC *pDC)
    bool some_overlays_need_repainting =
       repaint_all ||
       std::any_of( pairs.begin(), pairs.end(),
-         []( const Pair &pair ){ return pair.second; } );
+         []( const auto &pair ){ return pair.second; } );
 
    if (!some_overlays_need_repainting) {
      // This function (OverlayPanel::DrawOverlays()) is called at
@@ -129,7 +129,7 @@ void OverlayPanel::Compress()
    auto begin = mOverlays.begin();
    auto end = mOverlays.end();
    auto newEnd = std::remove_if( begin, end,
-      []( const std::weak_ptr<Overlay> &pOverlay ){
+      []( const auto &pOverlay ){
          return pOverlay.expired(); } );
    if ( end != newEnd )
       mOverlays.resize( newEnd - begin );

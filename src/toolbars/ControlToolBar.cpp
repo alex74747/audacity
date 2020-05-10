@@ -689,7 +689,7 @@ void ControlToolBar::OnFF(wxCommandEvent & WXUNUSED(evt))
 // works out the width of the field in the status bar needed for the state (eg play, record pause)
 static ProjectStatus::RegisteredStatusWidthFunction
 registeredStatusWidthFunction{
-   []( const AudacityProject &, StatusBarField field )
+   []( const auto &, auto field )
       -> ProjectStatus::StatusWidthResult
    {
       if ( field == stateStatusBarField ) {
@@ -805,7 +805,7 @@ void ControlToolBar::StopScrolling()
 }
 
 static RegisteredToolbarFactory factory{ TransportBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew ControlToolBar{ project } }; }
 };
 

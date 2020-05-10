@@ -198,7 +198,7 @@ namespace {
 
 // Lyrics window attached to each project is built on demand by:
 AudacityProject::AttachedWindows::RegisteredFactory sLyricsWindowKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       return safenew LyricsWindow( &parent );
    }
 };

@@ -31,7 +31,7 @@ namespace {
 
 static const AudacityProject::AttachedObjects::RegisteredFactory
 sProjectSettingsKey{
-  []( AudacityProject &project ){
+  []( auto &project ){
      auto result = std::make_shared< ProjectSettings >( project );
      return result;
    }

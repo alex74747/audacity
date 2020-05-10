@@ -206,7 +206,7 @@ BaseItemSharedPtr WindowMenu()
 
       Section( "",
          Special( wxT("PopulateWindowsStep"),
-         [](AudacityProject &, wxMenu &theMenu)
+         [](auto &, auto &theMenu)
          {
             // Undo previous bindings
             for ( auto id : sReservedIds )

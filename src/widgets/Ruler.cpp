@@ -1340,7 +1340,7 @@ void Ruler::Updater::Update(
          displacementy=0;
       }
    }
-   auto update = [=]( Label &label ){
+   auto update = [=]( auto &label ){
       label.lx += displacementx;
       label.ly += displacementy;
    };
@@ -1475,7 +1475,7 @@ void Ruler::Draw(wxDC& dc, const Envelope* envelope) const
    // button, since otherwise the tick is drawn on the bevel.
    int iMaxPos = (mOrientation==wxHORIZONTAL)? mRight : mBottom-5;
 
-   auto drawLabel = [this, iMaxPos, &dc]( const Label &label, int length ){
+   auto drawLabel = [this, iMaxPos, &dc]( const auto &label, auto length ){
       int pos = label.pos;
 
       if( mbTicksAtExtremes || ((pos!=0)&&(pos!=iMaxPos)))
@@ -1579,7 +1579,7 @@ void Ruler::DrawGrid(wxDC& dc,
 int Ruler::FindZero( const Labels &labels ) const
 {
    auto begin = labels.begin(), end = labels.end(),
-      iter = std::find_if( begin, end, []( const Label &label ){
+      iter = std::find_if( begin, end, []( const auto &label ){
          return label.value == 0.0;
       } );
 

@@ -329,7 +329,7 @@ void ODWaveTrackTaskQueue::Compress()
    mTracksMutex.Lock();
    auto begin = mTracks.begin(), end = mTracks.end(),
    new_end = std::remove_if( begin, end,
-      []( const std::weak_ptr<WaveTrack> &ptr ){ return ptr.expired(); } );
+      []( const auto &ptr ){ return ptr.expired(); } );
    mTracks.erase( new_end, end );
    mTracksMutex.Unlock();
 }

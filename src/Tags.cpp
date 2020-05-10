@@ -226,11 +226,11 @@ static const wxChar *DefaultGenres[] =
 
 static ProjectFileIORegistry::Entry registerFactory{
    wxT( "tags" ),
-   []( AudacityProject &project ){ return &Tags::Get( project ); }
+   []( auto &project ){ return &Tags::Get( project ); }
 };
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  [](AudacityProject &){ return std::make_shared< Tags >(); }
+  [](auto &){ return std::make_shared< Tags >(); }
 };
 
 Tags &Tags::Get( AudacityProject &project )

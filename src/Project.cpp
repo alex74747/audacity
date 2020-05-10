@@ -53,7 +53,7 @@ auto AllProjects::Remove( AudacityProject &project ) -> value_type
    std::lock_guard<std::mutex> guard{ Mutex() };
    auto start = begin(), finish = end(), iter = std::find_if(
       start, finish,
-      [&]( const value_type &ptr ){ return ptr.get() == &project; }
+      [&]( const auto &ptr ){ return ptr.get() == &project; }
    );
    if (iter == finish)
       return nullptr;

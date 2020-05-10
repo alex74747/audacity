@@ -104,7 +104,7 @@ public:
       int oldMode;
       wxString newValue;
       auto stringValue =
-         []( WaveTrackViewConstants::Display display ){
+         []( auto display ){
          switch ( display ) {
             case WaveTrackViewConstants::Spectrum:
                return spectrumSymbol.Internal();
@@ -452,7 +452,7 @@ bool TracksPrefs::Commit()
 
 namespace{
 PrefsPanel::Registration sAttachment{ "Tracks",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew TracksPrefs(parent, winid);

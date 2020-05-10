@@ -60,7 +60,7 @@ std::vector<UIHandlePtr> NoteTrackView::DetailedHitTest
 
 using DoGetNoteTrackView = DoGetView::Override< NoteTrack >;
 template<> template<> auto DoGetNoteTrackView::Implementation() -> Function {
-   return [](NoteTrack &track) {
+   return [](auto &track) {
       return std::make_shared<NoteTrackView>( track.SharedPointer() );
    };
 }

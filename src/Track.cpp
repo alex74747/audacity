@@ -489,7 +489,7 @@ wxDEFINE_EVENT(EVT_TRACKLIST_DELETION, TrackListEvent);
 long TrackList::sCounter = -1;
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   [](AudacityProject &project) { return TrackList::Create( &project ); }
+   [](auto &project) { return TrackList::Create( &project ); }
 };
 
 TrackList &TrackList::Get( AudacityProject &project )
@@ -673,7 +673,7 @@ Track *TrackList::FindById( TrackId id )
    // Linear search.  Tracks in a project are usually very few.
    // Search only the non-pending tracks.
    auto it = std::find_if( ListOfTracks::begin(), ListOfTracks::end(),
-      [=](const ListOfTracks::value_type &ptr){ return ptr->GetId() == id; } );
+      [=](const auto &ptr){ return ptr->GetId() == id; } );
    if (it == ListOfTracks::end())
       return {};
    return it->get();
@@ -717,7 +717,7 @@ void TrackList::GroupChannels(
       for ( ; after != end && count; ++after, --count )
          ;
       if ( count == 0 ) {
-         auto unlink = [&] ( Track &tr ) {
+         auto unlink = [&] ( auto &tr ) {
             if ( tr.GetLinked() ) {
                if ( resetChannels ) {
                   auto link = tr.GetLink();
@@ -912,7 +912,7 @@ void TrackList::SwapNodes(TrackNodePointer s1, TrackNodePointer s2)
    using Saved = std::vector< ListOfTracks::value_type >;
    Saved saved1, saved2;
 
-   auto doSave = [&] ( Saved &saved, TrackNodePointer &s ) {
+   auto doSave = [&] ( auto &saved, auto &s ) {
       size_t nn = Channels( s.first->get() ).size();
       saved.resize( nn );
       // Save them in backwards order
@@ -929,7 +929,7 @@ void TrackList::SwapNodes(TrackNodePointer s1, TrackNodePointer s2)
       s1 = s2;
 
    // Reinsert them
-   auto doInsert = [&] ( Saved &saved, TrackNodePointer &s ) {
+   auto doInsert = [&] ( auto &saved, auto &s ) {
       Track *pTrack;
       for (auto & pointer : saved)
          pTrack = pointer.get(),
@@ -1192,7 +1192,7 @@ std::shared_ptr<Track> Track::SubstitutePendingChangedTrack()
       const auto end = pList->mPendingUpdates.end();
       auto it = std::find_if(
          pList->mPendingUpdates.begin(), end,
-         [=](const ListOfTracks::value_type &ptr){ return ptr->GetId() == id; } );
+         [=](const auto &ptr){ return ptr->GetId() == id; } );
       if (it != end)
          return *it;
    }
@@ -1209,7 +1209,7 @@ std::shared_ptr<const Track> Track::SubstituteOriginalTrack() const
    auto pList = mList.lock();
    if (pList) {
       const auto id = GetId();
-      const auto pred = [=]( const ListOfTracks::value_type &ptr ) {
+      const auto pred = [=]( const auto &ptr ) {
          return ptr->GetId() == id; };
       const auto end = pList->mPendingUpdates.end();
       const auto it = std::find_if( pList->mPendingUpdates.begin(), end, pred );
@@ -1290,7 +1290,7 @@ bool TrackList::HasPendingTracks() const
 {
    if ( !mPendingUpdates.empty() )
       return true;
-   if (end() != std::find_if(begin(), end(), [](const Track *t){
+   if (end() != std::find_if(begin(), end(), [](auto t){
       return t->GetId() == TrackId{};
    }))
       return true;

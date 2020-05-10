@@ -101,7 +101,7 @@ void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
       wxASSERT(mIsMaster);
 
       // Draw indicator in all visible tracks
-      tp->VisitCells( [&]( const wxRect &rect, TrackPanelCell &cell ) {
+      tp->VisitCells( [&]( const auto &rect, auto &cell ) {
          const auto pTrackView = dynamic_cast<TrackView*>(&cell);
          if (pTrackView) pTrackView->FindTrack()->TypeSwitch(
             [](LabelTrack *) {
@@ -130,7 +130,7 @@ void PlayIndicatorOverlayBase::Draw(OverlayPanel &panel, wxDC &dc)
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sOverlayKey{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      auto result = std::make_shared< PlayIndicatorOverlay >( &parent );
      TrackPanel::Get( parent ).AddOverlay( result );
      return result;

@@ -139,7 +139,7 @@ using ValueFinder = std::function< int( WaveTrack& ) >;
 template< typename Table >
 PopupMenuTableEntry::InitFunction initFn( const ValueFinder &findValue )
 {
-   return [findValue]( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   return [findValue]( auto &handler, auto &menu, auto id ){
       auto pData = static_cast<Table&>( handler ).mpData;
       const auto pTrack = static_cast<WaveTrack*>(pData->pTrack);
       auto &project = pData->project;
@@ -191,7 +191,7 @@ void FormatMenuTable::InitUserData(void *pUserData)
 
 BEGIN_POPUP_MENU(FormatMenuTable)
    static const auto fn = initFn< FormatMenuTable >(
-      []( WaveTrack &track ){
+      []( auto &track ){
          return IdOfFormat( track.GetSampleFormat() );
       }
    );
@@ -338,7 +338,7 @@ void RateMenuTable::InitUserData(void *pUserData)
 // when it is already selected.
 BEGIN_POPUP_MENU(RateMenuTable)
    static const auto fn = initFn< RateMenuTable >(
-      []( WaveTrack &track ){
+      []( auto &track ){
          return IdOfRate( (int)track.GetRate() );
       }
    );
@@ -551,14 +551,14 @@ static std::vector<WaveTrackSubViewType> AllTypes()
 BEGIN_POPUP_MENU(WaveTrackMenuTable)
    // Functions usable in callbacks to check and disable items
    static const auto isMono =
-   []( PopupMenuHandler &handler ) -> bool {
+   []( auto &handler ) -> bool {
       auto &track =
          static_cast< WaveTrackMenuTable& >( handler ).FindWaveTrack();
       return 1 == TrackList::Channels( &track ).size();
    };
 
    static const auto isUnsafe =
-   []( PopupMenuHandler &handler ) -> bool {
+   []( auto &handler ) -> bool {
       auto &project =
          static_cast< WaveTrackMenuTable& >( handler ).mpData->project;
       return RealtimeEffectManager::Get().RealtimeIsActive() &&
@@ -568,13 +568,13 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
    BeginSection( "SubViews" );
       // Multi-view check mark item, if more than one track sub-view type is
       // known
-      Append( []( My &table ) -> Registry::BaseItemPtr {
+      Append( []( auto &table ) -> Registry::BaseItemPtr {
          if ( WaveTrackSubViews::slots() > 1 )
             return std::make_unique<Entry>(
                "MultiView", Entry::CheckItem, OnMultiViewID, XXO("&Multi-view"),
                POPUP_MENU_FN( OnMultiView ),
                table,
-               []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+               []( auto &handler, auto &menu, auto id ){
                   auto &table = static_cast< WaveTrackMenuTable& >( handler );
                   auto &track = table.FindWaveTrack();
                   const auto &view = WaveTrackView::Get( track );
@@ -589,13 +589,13 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
       int id = OnSetDisplayId;
       for ( const auto &type : AllTypes() ) {
          static const auto initFn = []( bool radio ){ return
-            [radio]( PopupMenuHandler &handler, wxMenu &menu, int id ){
+            [radio]( auto &handler, auto &menu, auto id ){
                // Find all known sub-view types
                const auto allTypes = AllTypes();
 
                // How to convert a type to a menu item id
                const auto IdForType =
-               [&allTypes]( const WaveTrackSubViewType &type ) -> int {
+               [&allTypes]( const auto &type ) -> int {
                   const auto begin = allTypes.begin();
                   return OnSetDisplayId +
                      (std::find( begin, allTypes.end(), type ) - begin);
@@ -610,7 +610,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
                const auto end = displays.end();
                bool check = (end !=
                   std::find_if( displays.begin(), end,
-                     [&]( const WaveTrackSubViewType &type ){
+                     [&]( const auto &type ){
                         return id == IdForType( type ); } ) );
                menu.Check( id, check );
 
@@ -620,7 +620,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
                   menu.Enable( id, false );
             };
          };
-         Append( [name = type.name, id]( My &table )
+         Append( [name = type.name, id]( auto &table )
             -> Registry::BaseItemPtr {
                const auto pTrack = &table.FindWaveTrack();
                const auto &view = WaveTrackView::Get( *pTrack );
@@ -642,28 +642,28 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
    // with Multi View
    //   AppendRadioItem(OnChannelMonoID, XXO("&Mono"),
    //      POPUP_MENU_FN( OnChannelChange ),
-   //      []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   //      []( auto &handler, auto &menu, auto id ){
    //         menu.Enable( id, isMono( handler ) );
    //         menu.Check( id, findTrack( handler ).GetChannel() == Track::MonoChannel );
    //      }
    //   );
    //   AppendRadioItem(OnChannelLeftID, XXO("&Left Channel"),
    //      POPUP_MENU_FN( OnChannelChange ),
-   //      []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   //      []( auto &handler, auto &menu, auto id ){
    //         menu.Enable( id, isMono( handler ) );
    //         menu.Check( id, findTrack( handler ).GetChannel() == Track::LeftChannel );
    //      }
    //   );
    //   AppendRadioItem(OnChannelRightID, XXO("R&ight Channel"),
    //      POPUP_MENU_FN( OnChannelChange ),
-   //      []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+   //      []( auto &handler, auto &menu, auto id ){
    //         menu.Enable( id, isMono( handler ) );
    //         menu.Check( id, findTrack( handler ).GetChannel() == Track::RightChannel );
    //      }
    //   );
       AppendItem( "MakeStereo", OnMergeStereoID, XXO("Ma&ke Stereo Track"),
          POPUP_MENU_FN( OnMergeStereo ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( auto &handler, auto &menu, auto id ){
             bool canMakeStereo = !isUnsafe( handler ) && isMono( handler );
             if ( canMakeStereo ) {
                AudacityProject &project =
@@ -683,7 +683,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
 
       AppendItem( "Swap", OnSwapChannelsID, XXO("Swap Stereo &Channels"),
          POPUP_MENU_FN( OnSwapChannels ),
-         []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+         []( auto &handler, auto &menu, auto id ){
             auto &track =
                static_cast< WaveTrackMenuTable& >( handler ).FindWaveTrack();
             bool isStereo =
@@ -693,7 +693,7 @@ BEGIN_POPUP_MENU(WaveTrackMenuTable)
       );
 
       static const auto enableSplitStereo =
-      []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+      []( auto &handler, auto &menu, auto id ){
          menu.Enable( id, !isMono( handler ) && !isUnsafe( handler ) );
       };
 
@@ -1254,7 +1254,7 @@ void WaveTrackControls::ReCreatePanSlider( wxEvent &event )
 
 using DoGetWaveTrackControls = DoGetControls::Override< WaveTrack >;
 template<> template<> auto DoGetWaveTrackControls::Implementation() -> Function {
-   return [](WaveTrack &track) {
+   return [](auto &track) {
       return std::make_shared<WaveTrackControls>( track.SharedPointer() );
    };
 }
@@ -1263,7 +1263,7 @@ static DoGetWaveTrackControls registerDoGetWaveTrackControls;
 using GetDefaultWaveTrackHeight = GetDefaultTrackHeight::Override< WaveTrack >;
 template<> template<>
 auto GetDefaultWaveTrackHeight::Implementation() -> Function {
-   return [](WaveTrack &) {
+   return [](auto &) {
       return WaveTrackControls::DefaultWaveTrackHeight();
    };
 }

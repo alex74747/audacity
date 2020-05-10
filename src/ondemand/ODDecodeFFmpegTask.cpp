@@ -109,7 +109,7 @@ auto ODDecodeFFmpegTask::FromList( const TrackHolders &channels ) -> Streams
 {
    // Convert array of array of unique_ptr to array of array of bare pointers
    return transform_container<Streams>( channels,
-      [](const NewChannelGroup &holders) {
+      [](const auto &holders) {
          return transform_container<Channels>( holders,
             std::mem_fn(&NewChannelGroup::value_type::get) );
       }

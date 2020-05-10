@@ -57,7 +57,7 @@ wxDEFINE_EVENT(EVT_LABELTRACK_SELECTION, LabelTrackEvent);
 
 static ProjectFileIORegistry::Entry registerFactory{
    wxT( "labeltrack" ),
-   []( AudacityProject &project ){
+   []( auto &project ){
       auto &tracks = TrackList::Get( project );
       auto result = tracks.Add(std::make_shared<LabelTrack>());
       TrackView::Get( *result );

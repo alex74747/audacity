@@ -26,7 +26,7 @@ Paul Licameli split from ProjectManager.cpp
 
 static AudacityProject::AttachedObjects::RegisteredFactory
 sProjectSelectionManagerKey {
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_shared< ProjectSelectionManager >( project );
    }
 };

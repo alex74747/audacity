@@ -664,7 +664,7 @@ void SpectrumView::Draw(
 }
 
 static const WaveTrackSubViews::RegisteredFactory key{
-   []( WaveTrackView &view ){
+   []( auto &view ){
       return std::make_shared< SpectrumView >( view );
    }
 };
@@ -772,7 +772,7 @@ PopupMenuTable::AttachedItem sAttachment{
    std::make_unique<PopupMenuSection>( "SpectrogramSettings",
       // Conditionally add menu item for settings, if showing spectrum
       PopupMenuTable::Computed< WaveTrackPopupMenuTable >(
-         []( WaveTrackPopupMenuTable &table ) -> Registry::BaseItemPtr {
+         []( auto &table ) -> Registry::BaseItemPtr {
             using Entry = PopupMenuTable::Entry;
             static const int OnSpectrogramSettingsID =
             GetWaveTrackMenuTable().ReserveId();
@@ -797,7 +797,7 @@ PopupMenuTable::AttachedItem sAttachment{
                   (wxCommandEventFunction)
                      (&SpectrogramSettingsHandler::OnSpectrogramSettings),
                   SpectrogramSettingsHandler::Instance(),
-                  []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+                  []( auto &handler, auto &menu, auto id ){
                      // Bug 1253.  Shouldn't open preferences if audio is busy.
                      // We can't change them on the fly yet anyway.
                      auto gAudioIO = AudioIOBase::Get();

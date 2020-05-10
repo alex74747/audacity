@@ -376,7 +376,7 @@ void TimeToolBar::OnIdle(wxIdleEvent &evt)
 static RegisteredToolbarFactory factory
 {
    TimeBarID,
-   []( AudacityProject &project )
+   []( auto &project )
    {
       return ToolBar::Holder{ safenew TimeToolBar{ project } };
    }

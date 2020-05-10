@@ -485,7 +485,7 @@ void SpectralSelectionBar::SetBandwidthSelectionFormatName(const NumericFormatSy
 }
 
 static RegisteredToolbarFactory factory{ SpectralSelectionBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew SpectralSelectionBar{ project } }; }
 };
 

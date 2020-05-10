@@ -50,7 +50,7 @@ wxDEFINE_EVENT(EVT_UNDO_PURGE, wxCommandEvent);
 using SampleBlockID = long long;
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   [](AudacityProject &project)
+   [](auto &project)
       { return std::make_unique<UndoManager>( project ); }
 };
 

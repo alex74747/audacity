@@ -180,7 +180,7 @@ PopupMenuTable *LabelTrackControls::GetMenuExtension(Track *)
 
 using DoGetLabelTrackControls = DoGetControls::Override< LabelTrack >;
 template<> template<> auto DoGetLabelTrackControls::Implementation() -> Function {
-   return [](LabelTrack &track) {
+   return [](auto &track) {
       return std::make_shared<LabelTrackControls>( track.SharedPointer() );
    };
 }
@@ -189,7 +189,7 @@ static DoGetLabelTrackControls registerDoGetLabelTrackControls;
 using GetDefaultLabelTrackHeight = GetDefaultTrackHeight::Override< LabelTrack >;
 template<> template<>
 auto GetDefaultLabelTrackHeight::Implementation() -> Function {
-   return [](LabelTrack &) {
+   return [](auto &) {
       // Label tracks are narrow
       // Default is to allow two rows so that NEW users get the
       // idea that labels can 'stack' when they would overlap.

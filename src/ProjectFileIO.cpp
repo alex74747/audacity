@@ -239,7 +239,7 @@ TitleRestorer::TitleRestorer(
       sProjName = _("<untitled>");
       UnnamedCount = std::count_if(
          AllProjects{}.begin(), AllProjects{}.end(),
-         []( const AllProjects::value_type &ptr ){
+         []( const auto &ptr ){
             return ptr->GetProjectName().empty();
          }
       );
@@ -259,7 +259,7 @@ TitleRestorer::~TitleRestorer() {
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sFileIOKey{
-   []( AudacityProject &parent ){
+   []( auto &parent ){
       auto result = std::make_shared< ProjectFileIO >( parent );
       return result;
    }

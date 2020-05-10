@@ -167,7 +167,7 @@ bool ModulePrefs::Commit()
 #ifdef EXPERIMENTAL_MODULE_PREFS
 namespace{
 PrefsPanel::Registration sAttachment{ "Module",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew ModulePrefs(parent, winid);

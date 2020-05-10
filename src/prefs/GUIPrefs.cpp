@@ -288,7 +288,7 @@ int ShowTrackNameInWaveformPrefsID()
 
 namespace{
 PrefsPanel::Registration sAttachment{ "GUI",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew GUIPrefs(parent, winid);

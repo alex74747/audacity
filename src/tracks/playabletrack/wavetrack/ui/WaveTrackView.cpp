@@ -65,10 +65,10 @@ struct SubViewAdjuster
       mPermutation.resize( size );
       const auto begin = mPermutation.begin(), end = mPermutation.end();
       std::iota( begin, end, 0 );
-      static auto invisible = []( const WaveTrackSubViewPlacement &placement ){
+      static auto invisible = []( const auto &placement ){
          return placement.index < 0 || placement.fraction <= 0;
       };
-      const auto comp = [this]( size_t ii, size_t jj ){
+      const auto comp = [this]( auto ii, auto jj ){
          auto &pi = mOrigPlacements[ii];
          bool iInvisible = invisible( pi );
 
@@ -86,7 +86,7 @@ struct SubViewAdjuster
       };
       std::sort( begin, end, comp );
       // Find the start of visible sub-views
-      auto first = std::find_if( begin, end, [this](size_t ii){
+      auto first = std::find_if( begin, end, [this](auto ii){
          return !invisible( mOrigPlacements[ii] );
       } );
       mFirstSubView = first - begin;
@@ -136,7 +136,7 @@ struct SubViewAdjuster
    size_t FindIndex( WaveTrackSubView &subView ) const
    {
       const auto begin = mPermutation.begin(), end = mPermutation.end();
-      auto iter = std::find_if( begin, end, [&](size_t ii){
+      auto iter = std::find_if( begin, end, [&](auto ii){
          return mSubViews[ ii ].get() == &subView;
       } );
       return iter - begin;
@@ -325,7 +325,7 @@ public:
 
       // Grow or shrink other sub-views
       auto excess = newHeight - mOrigHeight; // maybe negative
-      const auto adjustHeight = [&](size_t ii) {
+      const auto adjustHeight = [&](auto ii) {
          if (excess == 0)
             return true;
 
@@ -847,7 +847,7 @@ auto WaveTrackView::GetDisplays() const
    using Pair = std::pair< int, WaveTrackSubView::Type >;
    std::vector< Pair > pairs;
    size_t ii = 0;
-   WaveTrackSubViews::ForEach( [&]( const WaveTrackSubView &subView ){
+   WaveTrackSubViews::ForEach( [&]( const auto &subView ){
       auto &placement = mPlacements[ii];
       if ( placement.fraction > 0 )
          pairs.emplace_back( placement.index, subView.SubViewType() );
@@ -870,7 +870,7 @@ bool WaveTrackView::ToggleSubView(Display display)
 {
    size_t ii = 0;
    size_t found = 0;
-   if ( WaveTrackSubViews::FindIf( [&]( const WaveTrackSubView &subView ) {
+   if ( WaveTrackSubViews::FindIf( [&]( const auto &subView ) {
       if ( subView.SubViewType().id == display ) {
          found = ii;
          return true;
@@ -931,7 +931,7 @@ void WaveTrackView::DoSetDisplay(Display display, bool exclusive)
    // by sorting by the view type constants.
    size_t ii = 0;
    std::vector< std::pair< WaveTrackViewConstants::Display, size_t > > pairs;
-   WaveTrackSubViews::ForEach( [&pairs, &ii]( WaveTrackSubView &subView ){
+   WaveTrackSubViews::ForEach( [&pairs, &ii]( auto &subView ){
       pairs.push_back( { subView.SubViewType().id, ii++ } );
    } );
    std::sort( pairs.begin(), pairs.end() );
@@ -966,7 +966,7 @@ auto WaveTrackView::GetSubViews( const wxRect &rect ) -> Refinement
    std::vector< Item > items;
    size_t ii = 0;
    float total = 0;
-   WaveTrackSubViews::ForEach( [&]( WaveTrackSubView &subView ){
+   WaveTrackSubViews::ForEach( [&]( auto &subView ){
       auto &placement = mPlacements[ii];
       auto index = placement.index;
       auto fraction = placement.fraction;
@@ -975,14 +975,14 @@ auto WaveTrackView::GetSubViews( const wxRect &rect ) -> Refinement
          items.push_back( { index, fraction, subView.shared_from_this() } );
       ++ii;
    } );
-   std::sort( items.begin(), items.end(), [](const Item &a, const Item &b){
+   std::sort( items.begin(), items.end(), [](const auto &a, const auto &b){
       return a.index < b.index;
    } );
 
    // Remove views we don't need
    auto begin = items.begin(), end = items.end(),
      newEnd = std::remove_if( begin, end,
-        []( const Item &item ){ return !item.pView; } );
+        []( const auto &item ){ return !item.pView; } );
    items.erase( newEnd, end );
 
    // Assign coordinates, redenominating to the total height,
@@ -1011,7 +1011,7 @@ WaveTrackView::GetAllSubViews()
    BuildSubViews();
 
    std::vector< std::shared_ptr< WaveTrackSubView > > results;
-   WaveTrackSubViews::ForEach( [&]( WaveTrackSubView &subView ){
+   WaveTrackSubViews::ForEach( [&]( auto &subView ){
       results.push_back( std::static_pointer_cast<WaveTrackSubView>(
          subView.shared_from_this() ) );
    } );
@@ -1024,14 +1024,14 @@ void WaveTrackView::DoSetMinimized( bool minimized )
 
    // May come here.  Invoke also on sub-views.
    TrackView::DoSetMinimized( minimized );
-   WaveTrackSubViews::ForEach( [minimized](WaveTrackSubView &subView){
+   WaveTrackSubViews::ForEach( [minimized](auto &subView){
       subView.DoSetMinimized( minimized );
    } );
 }
 
 using DoGetWaveTrackView = DoGetView::Override< WaveTrack >;
 template<> template<> auto DoGetWaveTrackView::Implementation() -> Function {
-   return [](WaveTrack &track) {
+   return [](auto &track) {
       return std::make_shared<WaveTrackView>( track.SharedPointer() );
    };
 }
@@ -1249,7 +1249,7 @@ void WaveTrackView::Reparent( const std::shared_ptr<Track> &parent )
 {
    // BuildSubViews(); // not really needed
    CommonTrackView::Reparent( parent );
-   WaveTrackSubViews::ForEach( [&parent](WaveTrackSubView &subView){
+   WaveTrackSubViews::ForEach( [&parent](auto &subView){
       subView.Reparent( parent );
    } );
 }
@@ -1261,7 +1261,7 @@ void WaveTrackView::BuildSubViews() const
       auto pThis = const_cast<WaveTrackView*>( this );
       pThis->BuildAll();
       bool minimized = GetMinimized();
-      pThis->WaveTrackSubViews::ForEach( [&]( WaveTrackSubView &subView ){
+      pThis->WaveTrackSubViews::ForEach( [&]( auto &subView ){
          subView.DoSetMinimized( minimized );
       } );
 

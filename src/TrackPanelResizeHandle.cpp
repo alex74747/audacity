@@ -63,7 +63,7 @@ UIHandle::Result TrackPanelResizeHandle::Click(
           !TrackView::Get(*pTrack).GetMinimized()) {
          auto range = TrackList::Channels( pTrack.get() );
          auto size = range.size();
-         auto height = range.sum( [](const Track *pTrack){
+         auto height = range.sum( [](const auto pTrack){
             return TrackView::Get(*pTrack).GetHeight(); } );
          int ii = 1;
          int coord = 0;
@@ -151,7 +151,7 @@ UIHandle::Result TrackPanelResizeHandle::Drag
    }
 
    // Common pieces of code for MONO_WAVE_PAN and otherwise.
-   auto doResizeBelow = [&] (Track *prev, bool WXUNUSED(vStereo)) {
+   auto doResizeBelow = [&] (auto prev, auto) {
       // TODO: more-than-two-channels
       
       auto &prevView = TrackView::Get( *prev );
@@ -175,7 +175,7 @@ UIHandle::Result TrackPanelResizeHandle::Drag
       prevView.SetHeight(newUpperTrackHeight);
    };
 
-   auto doResizeBetween = [&] (Track *next, bool WXUNUSED(vStereo)) {
+   auto doResizeBetween = [&] (auto next, auto) {
       // TODO: more-than-two-channels
 
       auto &nextView = TrackView::Get( *next );

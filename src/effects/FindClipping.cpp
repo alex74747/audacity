@@ -115,7 +115,7 @@ bool EffectFindClipping::Process()
    const wxString name{ _("Clipping") };
 
    auto clt = *inputTracks()->Any< const LabelTrack >().find_if(
-      [&]( const Track *track ){ return track->GetName() == name; } );
+      [&]( auto track ){ return track->GetName() == name; } );
 
    LabelTrack *lt{};
    if (!clt)

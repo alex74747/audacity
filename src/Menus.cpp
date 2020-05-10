@@ -62,7 +62,7 @@ MenuCreator::~MenuCreator()
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &project ){
+  []( auto &project ){
      return std::make_shared< MenuManager >( project ); }
 };
 
@@ -234,7 +234,7 @@ MenuSection::~MenuSection() {}
 WholeMenu::~WholeMenu() {}
 
 CommandHandlerFinder FinderScope::sFinder =
-   [](AudacityProject &project) -> CommandHandlerObject & {
+   [](auto &project) -> CommandHandlerObject & {
       // If this default finder function is reached, then FinderScope should
       // have been used somewhere, or an explicit CommandHandlerFinder passed
       // to menu item constructors
@@ -752,7 +752,7 @@ void MenuManager::TellUserWhyDisallowed(
    bool enableDefaultMessage = true;
    bool defaultMessage = true;
 
-   auto doOption = [&](const CommandFlagOptions &options) {
+   auto doOption = [&](const auto &options) {
       if ( options.message ) {
          reason = options.message( Name );
          defaultMessage = false;

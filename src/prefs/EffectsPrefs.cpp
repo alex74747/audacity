@@ -163,7 +163,7 @@ static const std::vector< Entry > &GetModuleData()
          }
          // Guarantee some determinate ordering
          std::sort( begin(), end(),
-            []( const Entry &a, const Entry &b ){
+            []( const auto &a, const auto &b ){
                return a.setting < b.setting;
             }
          );
@@ -250,7 +250,7 @@ bool EffectsPrefs::Commit()
 
 namespace{
 PrefsPanel::Registration sAttachment{ "Effects",
-   [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+   [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew EffectsPrefs(parent, winid);

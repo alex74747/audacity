@@ -56,7 +56,7 @@ auto ToolBarConfiguration::FindPlace(const ToolBar *bar) const
 {
    auto This = const_cast<ToolBarConfiguration*>(this);
    return std::find_if(This->begin(), This->end(),
-      [=](const Place &place){
+      [=](const auto &place){
          return place.pTree->pBar == bar;
       });
 }
@@ -64,9 +64,9 @@ auto ToolBarConfiguration::FindPlace(const ToolBar *bar) const
 auto ToolBarConfiguration::FindPeers(const ToolBar *bar)
    -> std::pair<Forest*, Forest::iterator>
 {
-   auto findTree = [=](Forest &forest){
+   auto findTree = [=](auto &forest){
       return std::find_if(forest.begin(), forest.end(),
-         [=](const Tree &tree){ return tree.pBar == bar; });
+         [=](const auto &tree){ return tree.pBar == bar; });
    };
 
    auto iter1 = findTree(mForest);
@@ -75,7 +75,7 @@ auto ToolBarConfiguration::FindPeers(const ToolBar *bar)
 
    Forest::iterator result;
    auto iter = std::find_if(begin(), end(),
-      [&](const Place &place){
+      [&](const auto &place){
          auto &children = place.pTree->children;
          return (result = findTree(children)) != children.end();
       }
@@ -127,7 +127,7 @@ void ToolBarConfiguration::Insert(ToolBar *bar, Position position)
 
       if (position.below) {
          iter = std::find_if(begin, end,
-            [=](const Tree &tree){ return tree.pBar == position.below; }
+            [=](const auto &tree){ return tree.pBar == position.below; }
          );
          if (iter != end) {
             ++iter;
@@ -612,13 +612,13 @@ void ToolDock::VisitLayout(LayoutVisitor &visitor,
 
       // Find the items with leftover spaces
       const auto end = std::remove_if(layout, layout + ToolBarCount,
-         [](const Item &item){
+         [](const auto &item){
             return item.myBarID == NoBarID || item.rect.IsEmpty();
          }
       );
       // Sort top to bottom for definiteness, though perhaps not really needed
       std::sort(layout, end,
-         [](const Item &lhs, const Item &rhs){
+         [](const auto &lhs, const auto &rhs){
             return lhs.rect.y < rhs.rect.y;
          }
       );

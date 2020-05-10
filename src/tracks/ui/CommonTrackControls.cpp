@@ -123,7 +123,7 @@ void TrackMenuTable::InitUserData(void *pUserData)
 
 BEGIN_POPUP_MENU(TrackMenuTable)
    static const auto enableIfCanMove = [](bool up){ return
-      [up]( PopupMenuHandler &handler, wxMenu &menu, int id ){
+      [up]( auto &handler, auto &menu, auto id ){
          auto pData = static_cast<TrackMenuTable&>( handler ).mpData;
          const auto &tracks = TrackList::Get( pData->project );
          Track *const pTrack = pData->pTrack;

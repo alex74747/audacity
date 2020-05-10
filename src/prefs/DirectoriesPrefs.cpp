@@ -444,9 +444,8 @@ bool DirectoriesPrefs::Commit()
 }
 
 PrefsPanel::Factory
-DirectoriesPrefsFactory()
-{
-   return [](wxWindow *parent, wxWindowID winid, AudacityProject *)
+DirectoriesPrefsFactory() {
+   return [](auto parent, auto winid, auto)
    {
       wxASSERT(parent); // to justify safenew
       return safenew DirectoriesPrefs(parent, winid);

@@ -21,7 +21,7 @@ Identifier TranslatableString::MSGID() const
 
 const TranslatableString::Formatter
 TranslatableString::NullContextFormatter {
-   [](const wxString & str, TranslatableString::Request request) -> wxString {
+   [](const auto & str, auto request) -> wxString {
       switch ( request ) {
          case Request::Context:
             return NullContextName;
@@ -127,7 +127,7 @@ TranslatableString &TranslatableString::Join(
    mFormatter =
    [prevFormatter = std::move(mFormatter),
     arg /* = std::move( arg ) */,
-    separator](const wxString &str, Request request)
+    separator](const auto &str, auto request)
       -> wxString {
       switch ( request ) {
          case Request::Context:

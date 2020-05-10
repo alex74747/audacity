@@ -66,7 +66,7 @@ using std::max;
 
 static ProjectFileIORegistry::Entry registerFactory{
    wxT( "wavetrack" ),
-   []( AudacityProject &project ){
+   []( auto &project ){
       auto &trackFactory = WaveTrackFactory::Get( project );
       auto &tracks = TrackList::Get( project );
       auto result = tracks.Add(trackFactory.NewWaveTrack());
@@ -1391,7 +1391,7 @@ void WaveTrack::InsertSilence(double t, double len)
       // Assume at most one clip contains t
       const auto end = mClips.end();
       const auto it = std::find_if( mClips.begin(), end,
-         [&](const WaveClipHolder &clip) { return clip->WithinClip(t); } );
+         [&](const auto &clip) { return clip->WithinClip(t); } );
 
       // use Strong-guarantee
       if (it != end)
@@ -2108,7 +2108,7 @@ WaveClip* WaveTrack::GetClipAtTime(double time)
 {
    
    const auto clips = SortedClipArray();
-   auto p = std::find_if(clips.rbegin(), clips.rend(), [&] (WaveClip* const& clip) {
+   auto p = std::find_if(clips.rbegin(), clips.rend(), [&] (const auto& clip) {
       return time >= clip->GetStartTime() && time <= clip->GetEndTime(); });
 
    // When two clips are immediately next to each other, the GetEndTime() of the first clip
@@ -2409,7 +2409,7 @@ void WaveTrack::ExpandCutLine(double cutLinePosition, double* cutlineStart,
    double start = 0, end = 0;
    auto pEnd = mClips.end();
    auto pClip = std::find_if( mClips.begin(), pEnd,
-      [&](const WaveClipHolder &clip) {
+      [&](const auto &clip) {
          return clip->FindCutLine(cutLinePosition, &start, &end); } );
    if (pClip != pEnd)
    {
@@ -2499,7 +2499,7 @@ namespace {
       for (const auto &clip : mClips)
          clips.push_back(clip.get());
       std::sort(clips.begin(), clips.end(),
-         [](const WaveClip *a, const WaveClip *b)
+         [](auto a, auto b)
       { return a->GetStartTime() < b->GetStartTime(); });
       return clips;
    }

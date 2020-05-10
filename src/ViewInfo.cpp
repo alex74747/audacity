@@ -148,7 +148,7 @@ void NotifyingSelectedRegion::Notify( bool delayed )
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_unique<ViewInfo>(0.0, 1.0, ZoomInfo::GetDefaultZoom());
    }
 };

@@ -215,7 +215,7 @@ bool DoStopPlaying(const CommandContext &context)
       //find out which project we need;
       auto start = AllProjects{}.begin(), finish = AllProjects{}.end(),
          iter = std::find_if(start, finish,
-            [&](const AllProjects::value_type &ptr) {
+            [&](const auto &ptr) {
          return gAudioIO->IsStreamActive(
             ProjectAudioIO::Get(*ptr).GetAudioIOToken()); });
 
@@ -1083,7 +1083,7 @@ BaseItemSharedPtr TransportMenu()
             // it records below, if normal record records below, it records beside.
             // TODO: Do 'the right thing' with other options like TimerRecord.
             // Delayed evaluation in case gPrefs is not yet defined
-            [](const AudacityProject&)
+            [](const auto&)
             { return Command( wxT("Record2ndChoice"),
                // Our first choice is bound to R (by default)
                // and gets the prime position.
@@ -1146,7 +1146,7 @@ BaseItemSharedPtr TransportMenu()
                   // Switching of scrolling on and off is permitted
                   // even during transport
                   AlwaysEnabledFlag,
-                  Options{}.CheckTest([](const AudacityProject&){
+                  Options{}.CheckTest([](const auto&){
                      return TracksPrefs::GetPinnedHeadPreference(); } ) ),
 
                Command( wxT("Overdub"), XXO("&Overdub (on/off)"),

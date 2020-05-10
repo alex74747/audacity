@@ -15,7 +15,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "widgets/MeterPanelBase.h"
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sAudioIOKey{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      return std::make_shared< ProjectAudioIO >( parent );
    }
 };

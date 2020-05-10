@@ -394,7 +394,7 @@ AudacityProject &mProject;
 // Handler needs a back-reference to the project, so needs a factory registered
 // with AudacityProject.
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_unique< ViewActions::Handler >( project ); } };
 
 static CommandHandlerObject &findCommandHandler(AudacityProject &project) {
@@ -473,7 +473,7 @@ BaseItemSharedPtr ViewMenu()
          ,
          Command( wxT("ShowEffectsRack"), XXO("Show Effects Rack"),
             FN(OnShowEffectsRack), AlwaysEnabledFlag,
-            Options{}.CheckTest( [](AudacityProject &project){
+            Options{}.CheckTest( [](auto &project){
                auto &rack = EffectRack::Get( project );
                return rack.IsShown(); } ) )
    #endif

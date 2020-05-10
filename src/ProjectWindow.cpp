@@ -497,7 +497,7 @@ unsigned operator()
 } sMouseWheelHandler;
 
 AudacityProject::AttachedWindows::RegisteredFactory sProjectWindowKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       wxRect wndRect;
       bool bMaximized = false;
       bool bIconized = false;
@@ -1306,7 +1306,7 @@ void ProjectWindow::OnIconize(wxIconizeEvent &event)
    // It's not used outside this function.
    auto VisibleProjectCount = std::count_if(
       AllProjects{}.begin(), AllProjects{}.end(),
-      []( const AllProjects::value_type &ptr ){
+      []( const auto &ptr ){
          return !GetProjectFrame( *ptr ).IsIconized();
       }
    );
@@ -1854,7 +1854,7 @@ void ProjectWindow::DoZoomFit()
 
 static struct InstallTopPanelHook{ InstallTopPanelHook() {
    ToolManager::SetGetTopPanelHook(
-      []( wxWindow &window ){
+      []( auto &window ){
          auto pProjectWindow = dynamic_cast< ProjectWindow* >( &window );
          return pProjectWindow ? pProjectWindow->GetTopPanel() : nullptr;
       }

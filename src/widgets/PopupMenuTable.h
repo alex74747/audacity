@@ -154,7 +154,7 @@ public:
    {
       using namespace Registry;
       return std::make_unique< ComputedItem >(
-         [factory]( Visitor &baseVisitor ){
+         [factory]( auto &baseVisitor ){
             auto &visitor = static_cast< PopupMenuVisitor& >( baseVisitor );
             auto &table =  static_cast< Table& >( visitor.mTable );
             return factory( table );
@@ -271,7 +271,7 @@ BEGIN_POPUP_MENU(MyTable)
    AppendItem("Cut",
       OnCutSelectedTextID, XO("Cu&t"), POPUP_MENU_FN( OnCutSelectedText ),
       // optional argument:
-      [](PopupMenuHandler &handler, wxMenu &menu, int id)
+      [](auto handler, auto menu, auto id)
       {
          auto data = static_cast<MyTable&>( handler ).pData;
          // maybe enable or disable the menu item

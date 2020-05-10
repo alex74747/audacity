@@ -46,7 +46,7 @@ void LabelTrackHit::OnLabelPermuted( LabelTrackEvent &e )
    auto former = e.mFormerPosition;
    auto present = e.mPresentPosition;
 
-   auto update = [=]( int &index ){
+   auto update = [=]( auto &index ){
       if ( index == former )
          index = present;
       else if ( former < index && index <= present )

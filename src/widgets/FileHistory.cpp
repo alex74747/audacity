@@ -184,7 +184,7 @@ void FileHistory::Compress()
    auto end = mMenus.end();
    mMenus.erase(
      std::remove_if( mMenus.begin(), end,
-        [](wxWeakRef<wxMenu> &pMenu){ return !pMenu; } ),
+        [](auto &pMenu){ return !pMenu; } ),
      end
    );
 }

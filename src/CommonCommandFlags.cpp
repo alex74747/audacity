@@ -73,7 +73,7 @@ bool TimeSelectedPred( const AudacityProject &project )
 const CommandFlagOptions &cutCopyOptions() {
 static CommandFlagOptions result{
 // In reporting the issue with cut or copy, we don't tell the user they could also select some text in a label.
-   []( const TranslatableString &Name ) {
+   []( const auto &Name ) {
       // PRL:  These strings have hard-coded mention of a certain shortcut key,
       // thus assuming the default shortcuts.  That is questionable.
       TranslatableString format;
@@ -106,7 +106,7 @@ return result;
 
 // Noise Reduction has a custom error message, when nothing selected.
 const CommandFlagOptions noiseReductionOptions{
-   []( const TranslatableString &Name ) {
+   []( const auto &Name ) {
       // i18n-hint: %s will be replaced by the name of an effect, usually 'Noise Reduction'.
       auto format = XO("Select the audio for %s to use.\n\n1. Select audio that represents noise and use %s to get your 'noise profile'.\n\n2. When you have got your noise profile, select the audio you want to change\nand use %s to change that audio.");
       return format.Format( Name, Name, Name );
@@ -125,10 +125,10 @@ const CommandFlagOptions noiseReductionOptions{
    // significant.
 const ReservedCommandFlag&
    AudioIONotBusyFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project ){
+      [](const auto &project ){
          return !AudioIOBusyPred( project );
       },
-      CommandFlagOptions{ []( const TranslatableString& ) { return
+      CommandFlagOptions{ []( const auto& ) { return
          // This reason will not be shown, because options that require it will be greyed out.
          XO("You can only do this when playing and recording are\nstopped. (Pausing is not sufficient.)");
       } ,"FAQ:Errors:Audio Must Be Stopped"}
@@ -145,7 +145,7 @@ const ReservedCommandFlag&
             - &Track::IsLeader;
          return !range.empty();
       },
-      { []( const TranslatableString& ) { return
+      { []( const auto& ) { return
          // This reason will not be shown, because the stereo-to-mono is greyed out if not allowed.
          XO("You must first select some stereo audio to perform this\naction. (You cannot use this with mono.)");
       } ,"Audacity_Selection"}
@@ -165,13 +165,13 @@ const ReservedCommandFlag&
       [](const AudacityProject &project){
          return !TrackList::Get( project ).Selected<const WaveTrack>().empty();
       },
-      { []( const TranslatableString& ) { return
+      { []( const auto& ) { return
          XO("You must first select some audio to perform this action.\n(Selecting other kinds of track won't work.)");
       } ,"Audacity_Selection"}
    }; return flag; }
 const ReservedCommandFlag&
    TracksExistFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return !TrackList::Get( project ).Any().empty();
       },
       CommandFlagOptions{}.DisableDefaultMessage()
@@ -179,7 +179,7 @@ const ReservedCommandFlag&
 const ReservedCommandFlag&
    EditableTracksSelectedFlag() { static ReservedCommandFlag flag{
       EditableTracksSelectedPred,
-      { []( const TranslatableString &Name ){ return
+      { []( const auto &Name ){ return
          // i18n-hint: %s will be replaced by the name of an action, such as "Remove Tracks".
          XO("\"%s\" requires one or more tracks to be selected.").Format( Name );
       },"Audacity_Selection" }
@@ -187,14 +187,14 @@ const ReservedCommandFlag&
 const ReservedCommandFlag&
    AnyTracksSelectedFlag() { static ReservedCommandFlag flag{
       AnyTracksSelectedPred,
-      { []( const TranslatableString &Name ){ return
+      { []( const auto &Name ){ return
          // i18n-hint: %s will be replaced by the name of an action, such as "Remove Tracks".
          XO("\"%s\" requires one or more tracks to be selected.").Format( Name );
       },"Audacity_Selection" }
    }; return flag; }
 const ReservedCommandFlag&
    TrackPanelHasFocus() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          for (auto w = wxWindow::FindFocus(); w; w = w->GetParent()) {
             if (dynamic_cast<const NonKeystrokeInterceptingWindow*>(w))
                return true;
@@ -211,7 +211,7 @@ const ReservedCommandFlag&
    }; return flag; } //lll
 const ReservedCommandFlag&
    CaptureNotBusyFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &){
+      [](const auto &){
          auto gAudioIO = AudioIO::Get();
          return !(
             gAudioIO->IsBusy() &&
@@ -228,7 +228,7 @@ const ReservedCommandFlag&
    }; return flag; }
 const ReservedCommandFlag&
    UnsavedChangesFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          auto &undoManager = UndoManager::Get( project );
          return
             undoManager.UnsavedChanges()
@@ -239,19 +239,19 @@ const ReservedCommandFlag&
    }; return flag; }
 const ReservedCommandFlag&
    UndoAvailableFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return ProjectHistory::Get( project ).UndoAvailable();
       }
    }; return flag; }
 const ReservedCommandFlag&
    RedoAvailableFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return ProjectHistory::Get( project ).RedoAvailable();
       }
    }; return flag; }
 const ReservedCommandFlag&
    ZoomInAvailableFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return
             ViewInfo::Get( project ).ZoomInAvailable()
          &&
@@ -261,7 +261,7 @@ const ReservedCommandFlag&
    }; return flag; }
 const ReservedCommandFlag&
    ZoomOutAvailableFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return
             ViewInfo::Get( project ).ZoomOutAvailable()
          &&
@@ -271,13 +271,13 @@ const ReservedCommandFlag&
    }; return flag; }
 const ReservedCommandFlag&
    PlayRegionLockedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return ViewInfo::Get(project).playRegion.Locked();
       }
    }; return flag; }  //msmeyer
 const ReservedCommandFlag&
    PlayRegionNotLockedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          const auto &playRegion = ViewInfo::Get(project).playRegion;
          return !playRegion.Locked() && !playRegion.Empty();
       }
@@ -304,19 +304,19 @@ const ReservedCommandFlag&
 #endif
 const ReservedCommandFlag&
    IsNotSyncLockedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return !ProjectSettings::Get( project ).IsSyncLocked();
       }
    }; return flag; }  //awd
 const ReservedCommandFlag&
    IsSyncLockedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          return ProjectSettings::Get( project ).IsSyncLocked();
       }
    }; return flag; }  //awd
 const ReservedCommandFlag&
    NotMinimizedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
+      [](const auto &project){
          const wxWindow *focus = FindProjectFrame( &project );
          if (focus) {
             while (focus && focus->GetParent())
@@ -330,7 +330,7 @@ const ReservedCommandFlag&
    }; return flag; } // prl
 const ReservedCommandFlag&
    PausedFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject&){
+      [](const auto&){
          return AudioIOBase::Get()->IsPaused();
       },
       CommandFlagOptions{}.QuickTest()
@@ -364,7 +364,7 @@ const ReservedCommandFlag&
    }; return flag; }
 const ReservedCommandFlag&
    NoAutoSelect() { static ReservedCommandFlag flag{
-     [](const AudacityProject &){ return true; }
+     [](const auto &){ return true; }
    }; return flag; } // jkc
 ;
 

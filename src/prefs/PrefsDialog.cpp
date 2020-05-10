@@ -93,7 +93,7 @@ namespace {
       // visit of the items in the tree (not counting the root item which we
       // assume is a dummy that never matches id)
       return VisitItems<unsigned>( ctrl,
-         [=]( wxTreeItemId itemId, unsigned position ){
+         [=]( auto itemId, auto position ){
             return std::make_pair( itemId == id, position ); } );
    }
    
@@ -101,7 +101,7 @@ namespace {
    {
       // The inverse of the function above
       return VisitItems<wxTreeItemId>( ctrl,
-         [=]( wxTreeItemId itemId, unsigned position ){
+         [=]( auto itemId, auto position ){
             return std::make_pair( nn == position, itemId ); } );
    }
 }

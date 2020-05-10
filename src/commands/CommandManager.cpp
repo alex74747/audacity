@@ -194,7 +194,7 @@ SubMenuListEntry::~SubMenuListEntry()
 
 ///
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-   [](AudacityProject&) {
+   [](auto&) {
       return std::make_unique<CommandManager>();
    }
 };
@@ -583,7 +583,7 @@ void CommandManager::AddItem(AudacityProject &project,
 auto CommandManager::Options::MakeCheckFn(
    const wxString key, bool defaultValue ) -> CheckFn
 {
-   return [=](AudacityProject&){ return gPrefs->ReadBool( key, defaultValue ); };
+   return [=](auto&){ return gPrefs->ReadBool( key, defaultValue ); };
 }
 
 auto CommandManager::Options::MakeCheckFn(

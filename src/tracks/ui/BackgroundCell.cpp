@@ -83,7 +83,7 @@ public:
 };
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      auto result = std::make_shared< BackgroundCell >( &parent );
      TrackPanel::Get( parent ).SetBackgroundCell( result );
      return result;

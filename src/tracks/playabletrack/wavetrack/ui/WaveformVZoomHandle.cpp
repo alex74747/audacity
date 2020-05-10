@@ -274,7 +274,7 @@ BEGIN_POPUP_MENU(WaveformVRulerMenuTable)
          AppendRadioItem( names[ii].Internal(),
             OnFirstWaveformScaleID + ii, names[ii].Msgid(),
             POPUP_MENU_FN( OnWaveformScaleType ),
-            []( PopupMenuHandler &handler, wxMenu &menu, int id ){
+            []( auto &handler, auto &menu, auto id ){
                const auto pData =
                   static_cast< WaveformVRulerMenuTable& >( handler ).mpData;
                WaveTrack *const wt = pData->pTrack;

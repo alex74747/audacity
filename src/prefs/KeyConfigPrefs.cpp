@@ -422,7 +422,7 @@ TranslatableString KeyConfigPrefs::MergeWithExistingKeys(
 {
    TranslatableString disabledShortcuts;
 
-   auto searchAddInKeys = [&](size_t index)
+   auto searchAddInKeys = [&](auto index)
    {
       for (size_t k{ 0 }; k < toAdd.size(); k++)
          if (k == index)
@@ -934,7 +934,7 @@ void KeyConfigPrefs::Cancel()
 PrefsPanel::Factory
 KeyConfigPrefsFactory( const CommandID &name )
 {
-   return [=](wxWindow *parent, wxWindowID winid, AudacityProject *pProject)
+   return [name](auto parent, auto winid, auto pProject)
    {
       wxASSERT(parent); // to justify safenew
       auto result = safenew KeyConfigPrefs{ parent, winid, pProject, name };

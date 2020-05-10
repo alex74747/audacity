@@ -14,7 +14,7 @@
 #include "Project.h"
 
 static const AudacityProject::AttachedObjects::RegisteredFactory key{
-  [](AudacityProject &){ return std::make_shared< SelectionState >(); }
+  [](auto &){ return std::make_shared< SelectionState >(); }
 };
 
 SelectionState &SelectionState::Get( AudacityProject &project )

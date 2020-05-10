@@ -292,7 +292,7 @@ void ScrubbingToolBar::OnIdle( wxIdleEvent &evt )
 }
 
 static RegisteredToolbarFactory factory{ ScrubbingBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew ScrubbingToolBar{ project } }; }
 };
 

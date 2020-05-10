@@ -257,17 +257,17 @@ void MeterToolBar::SetDocked(ToolDock *dock, bool pushed) {
 }
 
 static RegisteredToolbarFactory factory1{ RecordMeterBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{
          safenew MeterToolBar{ project, RecordMeterBarID } }; }
 };
 static RegisteredToolbarFactory factory2{ PlayMeterBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{
          safenew MeterToolBar{ project, PlayMeterBarID } }; }
 };
 static RegisteredToolbarFactory factory3{ MeterBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{
          safenew MeterToolBar{ project, MeterBarID } }; }
 };

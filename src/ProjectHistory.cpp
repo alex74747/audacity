@@ -18,7 +18,7 @@ Paul Licameli split from ProjectManager.cpp
 #include "ViewInfo.h"
 
 static AudacityProject::AttachedObjects::RegisteredFactory sProjectHistoryKey {
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_shared< ProjectHistory >( project );
    }
 };
@@ -173,6 +173,6 @@ void ProjectHistory::SetStateTo(unsigned int n, bool doAutosave)
    auto &undoManager = UndoManager::Get( project );
 
    undoManager.SetStateTo(n,
-      [this, doAutosave]( const UndoStackElem &elem ){
+      [this, doAutosave]( const auto &elem ){
          PopState(elem.state, doAutosave); } );
 }

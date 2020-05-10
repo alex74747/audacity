@@ -203,7 +203,7 @@ Scrubber &ScrubbingOverlay::GetScrubber()
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sOverlayKey{
-  []( AudacityProject &parent ){
+  []( auto &parent ){
      auto result = std::make_shared< ScrubbingOverlay >( &parent );
      TrackPanel::Get( parent ).AddOverlay( result );
      return result;
@@ -292,7 +292,7 @@ BEGIN_EVENT_TABLE(ScrubForwarder, wxEvtHandler)
 END_EVENT_TABLE()
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sForwarderKey{
-   []( AudacityProject &parent ){
+   []( auto &parent ){
       return std::make_shared< ScrubForwarder >( parent );
    }
 };

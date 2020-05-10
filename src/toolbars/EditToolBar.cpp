@@ -313,7 +313,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
 }
 
 static RegisteredToolbarFactory factory{ EditBarID,
-   []( AudacityProject &project ){
+   []( auto &project ){
       return ToolBar::Holder{ safenew EditToolBar{ project } }; }
 };
 

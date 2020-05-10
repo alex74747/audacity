@@ -42,7 +42,7 @@ struct CollectedItems
       return name.empty()
          ? end
          : std::find_if( items.begin(), end,
-            [&]( const Item& item ){
+            [&]( const auto& item ){
                return name == item.visitNow->name; } );
    }
 
@@ -780,7 +780,7 @@ void RegisterItem( GroupItem &registry, const Placement &placement,
       // same name; we don't care which if there is more than one.
       const auto range = find( pathComponent );
       const auto iter2 = std::find_if( range.first, range.second,
-         [](const BaseItemPtr &pItem){
+         [](const auto &pItem){
             return dynamic_cast< GroupItem* >( pItem.get() ); } );
 
       if ( iter2 != range.second ) {

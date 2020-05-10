@@ -301,7 +301,7 @@ void GetLanguages( FilePaths pathList,
    }
 
    std::sort( tempNames.begin(), tempNames.end(),
-      []( const TranslatableString &a, const TranslatableString &b ){
+      []( const auto &a, const auto &b ){
          return a.Translation() < b.Translation();
       } );
 

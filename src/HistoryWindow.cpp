@@ -413,7 +413,7 @@ namespace {
 
 // History window attached to each project is built on demand by:
 AudacityProject::AttachedWindows::RegisteredFactory sHistoryWindowKey{
-   []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
+   []( auto &parent ) -> wxWeakRef< wxWindow > {
       auto &undoManager = UndoManager::Get( parent );
       return safenew HistoryDialog( &parent, &undoManager );
    }

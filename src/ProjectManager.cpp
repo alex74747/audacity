@@ -59,7 +59,7 @@ Paul Licameli split from AudacityProject.cpp
 const int AudacityProjectTimerID = 5200;
 
 static AudacityProject::AttachedObjects::RegisteredFactory sProjectManagerKey {
-   []( AudacityProject &project ) {
+   []( auto &project ) {
       return std::make_shared< ProjectManager >( project );
    }
 };
