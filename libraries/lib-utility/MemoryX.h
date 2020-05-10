@@ -241,10 +241,10 @@ private:
 
    // Data
 #if 0
-   typename ::std::aligned_storage<
+   ::std::aligned_storage_t<
       sizeof(X)
       // , alignof(X) // Not here yet in all compilers
-   >::type storage{};
+   > storage{};
 #else
    union {
       double d;

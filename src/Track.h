@@ -136,21 +136,20 @@ namespace TrackTyper {
 template<typename TrackType> constexpr TrackKind track_kind ()
 {
    using namespace TrackTyper;
-   return Lookup< typename std::remove_const<TrackType>::type, List >::value();
+   return Lookup< std::remove_const_t<TrackType>, List >::value();
 }
 
 // forward declarations, so we can make them friends
 template<typename T>
-   typename std::enable_if< std::is_pointer<T>::value, T >::type
-      track_cast(Track *track);
+   auto track_cast(Track *track)
+      -> std::enable_if_t< std::is_pointer<T>::value, T >;
 
 template<typename T>
-   typename std::enable_if<
-      std::is_pointer<T>::value &&
-         std::is_const< typename std::remove_pointer< T >::type >::value,
-      T
-   >::type
-      track_cast(const Track *track);
+   auto track_cast(const Track *track)
+      -> std::enable_if_t<
+         std::is_pointer<T>::value &&
+            std::is_const< std::remove_pointer_t< T > >::value,
+         T >;
 
 //! An in-session identifier of track objects across undo states.  It does not persist between sessions
 /*!
@@ -284,10 +283,9 @@ class AUDACITY_DLL_API Track /* not final */
    }
 
    template<typename Subclass = const Track>
-   inline auto SharedPointer() const -> typename
-      std::enable_if<
-         std::is_const<Subclass>::value, std::shared_ptr<Subclass>
-      >::type
+   inline auto SharedPointer() const ->
+      std::enable_if_t< std::is_const<Subclass>::value,
+         std::shared_ptr<Subclass> >
    {
       // shared_from_this is injected into class scope by base class
       // std::enable_shared_from_this<Track>
@@ -466,14 +464,13 @@ private:
    virtual TrackKind GetKind() const { return TrackKind::None; }
 
    template<typename T>
-      friend typename std::enable_if< std::is_pointer<T>::value, T >::type
+      friend std::enable_if_t< std::is_pointer<T>::value, T >
          track_cast(Track *track);
    template<typename T>
-      friend typename std::enable_if<
+      friend std::enable_if_t<
          std::is_pointer<T>::value &&
-            std::is_const< typename std::remove_pointer< T >::type >::value,
-         T
-      >::type
+            std::is_const< std::remove_pointer_t< T > >::value,
+         T >
          track_cast(const Track *track);
 
 public:
@@ -870,10 +867,10 @@ if (auto wt = track_cast<const WaveTrack*>(track)) { ... }
 ```
  */
 template<typename T>
-   inline typename std::enable_if< std::is_pointer<T>::value, T >::type
+   inline std::enable_if_t< std::is_pointer<T>::value, T >
       track_cast(Track *track)
 {
-   using BareType = typename std::remove_pointer< T >::type;
+   using BareType = std::remove_pointer_t< T >;
    if (track &&
        CompatibleTrackKinds( track_kind<BareType>(), track->GetKind() ))
       return reinterpret_cast<T>(track);
@@ -884,14 +881,13 @@ template<typename T>
 /*! @copydoc track_cast(Track*)
 This overload for const pointers can cast only to other const pointer types. */
 template<typename T>
-   inline typename std::enable_if<
+   inline std::enable_if_t<
       std::is_pointer<T>::value &&
-         std::is_const< typename std::remove_pointer< T >::type >::value,
-      T
-   >::type
+         std::is_const< std::remove_pointer_t< T > >::value,
+      T >
       track_cast(const Track *track)
 {
-   using BareType = typename std::remove_pointer< T >::type;
+   using BareType = std::remove_pointer_t< T >;
    if (track &&
        CompatibleTrackKinds( track_kind<BareType>(), track->GetKind() ))
       return reinterpret_cast<T>(track);
@@ -916,16 +912,9 @@ template <
 {
 public:
    //! Type of predicate taking pointer to const TrackType
-   /*! @todo C++14:  simplify away ::type */
    using FunctionType = std::function< bool(
-      typename std::add_pointer<
-         typename std::add_const<
-            typename std::remove_pointer<
-               TrackType
-            >::type
-         >::type
-      >::type
-   ) >;
+      std::add_pointer_t<
+         std::add_const_t< std::remove_pointer_t < TrackType > > > ) >;
 
    //! Constructor, usually not called directly except by methods of TrackList
    TrackIter(
@@ -956,12 +945,11 @@ public:
    satisfies the type constraint, or to the end */
    template < typename TrackType2 >
       auto Filter() const
-         -> typename std::enable_if<
+         -> std::enable_if_t<
             std::is_base_of< TrackType, TrackType2 >::value &&
                (!std::is_const<TrackType>::value ||
                  std::is_const<TrackType2>::value),
-            TrackIter< TrackType2 >
-         >::type
+            TrackIter< TrackType2 > >
    {
       return { this->mBegin, this->mIter, this->mEnd, this->mPred };
    }
@@ -1326,9 +1314,8 @@ class AUDACITY_DLL_API TrackList final
    /*! const overload will only produce iterators over const TrackType */
    template < typename TrackType = const Track >
       auto Find(const Track *pTrack) const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIter< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIter< TrackType > >
    {
       if (!pTrack || pTrack->GetOwner().get() != this)
          return EndIterator<TrackType>();
@@ -1359,9 +1346,8 @@ class AUDACITY_DLL_API TrackList final
 
    template < typename TrackType = const Track >
       auto Any() const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIterRange< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIterRange< TrackType > >
    {
       return Tracks< TrackType >();
    }
@@ -1376,9 +1362,8 @@ class AUDACITY_DLL_API TrackList final
 
    template < typename TrackType = const Track >
       auto Selected() const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIterRange< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIterRange< TrackType > >
    {
       return Tracks< TrackType >( &Track::IsSelected );
    }
@@ -1393,9 +1378,8 @@ class AUDACITY_DLL_API TrackList final
 
    template < typename TrackType = const Track >
       auto Leaders() const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIterRange< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIterRange< TrackType > >
    {
       return Tracks< TrackType >( &Track::IsLeader );
    }
@@ -1410,9 +1394,8 @@ class AUDACITY_DLL_API TrackList final
 
    template < typename TrackType = const Track >
       auto SelectedLeaders() const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIterRange< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIterRange< TrackType > >
    {
       return Tracks< TrackType >( &Track::IsSelectedLeader );
    }
@@ -1561,9 +1544,8 @@ private:
          typename TrackIterRange< TrackType >::iterator::FunctionType
    >
       auto Tracks( const Pred &pred = {} ) const
-         -> typename std::enable_if< std::is_const<TrackType>::value,
-            TrackIterRange< TrackType >
-         >::type
+         -> std::enable_if_t< std::is_const<TrackType>::value,
+            TrackIterRange< TrackType > >
    {
       auto b = const_cast<TrackList*>(this)->getBegin();
       auto e = const_cast<TrackList*>(this)->getEnd();
