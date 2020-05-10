@@ -180,7 +180,8 @@ namespace Registry {
       // applied implicitly.)
       void AppendOne( const ComputedItem::Factory<VisitorType> &factory )
       {
-         auto adaptedFactory = [factory]( Registry::Visitor &visitor ){
+         auto adaptedFactory =
+         [factory = move(factory)]( Registry::Visitor &visitor ){
             return factory( dynamic_cast< VisitorType& >( visitor ) );
          };
          AppendOne( std::make_unique<ComputedItem>( adaptedFactory ) );

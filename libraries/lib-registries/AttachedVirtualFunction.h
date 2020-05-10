@@ -210,10 +210,12 @@ public:
          std::call_once( flag, []{
             // Register in the table an adaptor thunk that downcasts the object
             auto implementation = Implementation();
-            Register< Subclass >( [=]( This &obj, Arguments &&...arguments ){
-               return implementation(
-                  static_cast< Subclass& >( obj ),
-                  std::forward< Arguments >( arguments )... );
+            Register< Subclass >(
+               [implementation = move( implementation )](
+                  This &obj, Arguments &&...arguments ){
+                     return implementation(
+                        static_cast< Subclass& >( obj ),
+                        std::forward< Arguments >( arguments )... );
             });
          });
       }

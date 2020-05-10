@@ -40,8 +40,8 @@ bool TranslatableString::IsVerbatim() const
 
 TranslatableString &TranslatableString::Strip( unsigned codes ) &
 {
-   auto prevFormatter = mFormatter;
-   mFormatter = [prevFormatter, codes]
+   mFormatter =
+   [prevFormatter = move(mFormatter), codes]
    ( const wxString & str, TranslatableString::Request request ) -> wxString {
       switch ( request ) {
          case Request::Context:
@@ -124,9 +124,8 @@ wxString TranslatableString::DoChooseFormat(
 TranslatableString &TranslatableString::Join(
    const TranslatableString arg, const wxString &separator ) &
 {
-   auto prevFormatter = mFormatter;
    mFormatter =
-   [prevFormatter,
+   [prevFormatter = move(mFormatter),
     arg /* = std::move( arg ) */,
     separator](const wxString &str, Request request)
       -> wxString {
