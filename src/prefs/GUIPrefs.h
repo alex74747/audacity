@@ -36,17 +36,16 @@ class AUDACITY_DLL_API GUIPrefs final : public PrefsPanel
 
    static void GetRangeChoices(
       TranslatableStrings *pChoices,
-      wxArrayStringEx *pCodes,
-      int *pDefaultRangeIndex = nullptr
-   );
+      Identifiers *pCodes,
+      int *pDefaultRangeIndex = nullptr );
 
  private:
    void Populate();
 
-   wxArrayStringEx mLangCodes;
+   Identifiers mLangCodes;
    TranslatableStrings mLangNames;
 
-   wxArrayStringEx mRangeCodes;
+   Identifiers mRangeCodes;
    TranslatableStrings mRangeChoices;
    int mDefaultRangeIndex;
 };

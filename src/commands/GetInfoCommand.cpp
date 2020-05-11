@@ -257,7 +257,7 @@ void Collector::Visit(
    StartField( "enum" );
    StartArray();
    for ( const auto &choice : Setting.GetSymbols().GetInternals() )
-      AddItem( choice );
+      AddItem( choice.GET() );
    EndArray();
    EndField();
    EndStruct();

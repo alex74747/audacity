@@ -24,7 +24,7 @@ Paul Licameli split from HelpMenus.cpp
 void ShowDiagnostics(
    AudacityProject &project, const wxString &info,
    const TranslatableString &description, const wxString &defaultPath,
-   bool fixedWidth = false)
+   bool fixedWidth)
 {
    auto &window = GetProjectFrame( project );
    wxDialogWrapper dlg( &window, wxID_ANY, description);

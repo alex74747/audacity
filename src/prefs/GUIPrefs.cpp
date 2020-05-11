@@ -62,11 +62,10 @@ ManualPageID GUIPrefs::HelpPageName()
 
 void GUIPrefs::GetRangeChoices(
    TranslatableStrings *pChoices,
-   wxArrayStringEx *pCodes,
-   int *pDefaultRangeIndex
-)
+   Identifiers *pCodes,
+   int *pDefaultRangeIndex )
 {
-   static const auto sCodes = {
+   static const Identifiers sCodes = {
       wxT("36") ,
       wxT("48") ,
       wxT("60") ,
@@ -229,8 +228,8 @@ bool GUIPrefs::Commit()
    PopulateOrExchange(S);
 
    // If language has changed, we want to change it now, not on the next reboot.
-   wxString lang = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
-   wxString usedLang = GUISettings::SetLang(lang);
+   Identifier lang = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
+   auto usedLang = GUISettings::SetLang(lang);
    // Bug 1523: Previously didn't check no-language (=System Language)
    if (!(lang.empty() || lang == L"System") && (lang != usedLang)) {
       // lang was not usable and is not system language.  We got overridden.

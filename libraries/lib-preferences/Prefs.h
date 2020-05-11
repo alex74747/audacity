@@ -335,15 +335,14 @@ public:
    EnumValueSymbols(
       ByColumns_t,
       const TranslatableStrings &msgids,
-      wxArrayStringEx internals
-   );
+      Identifiers internals );
 
    const TranslatableStrings &GetMsgids() const;
-   const wxArrayStringEx &GetInternals() const;
+   const Identifiers &GetInternals() const;
 
 private:
    mutable TranslatableStrings mMsgids;
-   mutable wxArrayStringEx mInternals;
+   mutable Identifiers mInternals;
 };
 
 /// Packages a table of user-visible choices each with an internal code string,

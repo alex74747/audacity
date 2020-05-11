@@ -16,12 +16,12 @@ Paul Licameli split from GUIPrefs.cpp
 
 #include <wx/app.h>
 
-wxString GUISettings::SetLang( const wxString & lang )
+Identifier GUISettings::SetLang( const Identifier & lang )
 {
    auto result = Languages::SetLang(FileNames::AudacityPathList(), lang);
    if (!(lang.empty() || lang == L"System") && result != lang)
       ::AudacityMessageBox(
-         XO("Language \"%s\" is unknown").Format( lang ) );
+         XO("Language \"%s\" is unknown").Format( lang.GET() ) );
 
 #ifdef EXPERIMENTAL_CEE_NUMBERS_OPTION
    bool forceCeeNumbers;
@@ -36,4 +36,3 @@ wxString GUISettings::SetLang( const wxString & lang )
 
    return result;
 }
-

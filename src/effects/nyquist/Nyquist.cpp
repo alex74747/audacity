@@ -708,11 +708,11 @@ bool NyquistEffect::Process()
       mProps = wxEmptyString;
 
       mProps += wxString::Format(wxT("(putprop '*AUDACITY* (list %d %d %d) 'VERSION)\n"), AUDACITY_VERSION, AUDACITY_RELEASE, AUDACITY_REVISION);
-      wxString lang = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
+      Identifier lang = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
       lang = (lang.empty())
          ? Languages::GetSystemLanguageCode(FileNames::AudacityPathList())
          : lang;
-      mProps += wxString::Format(wxT("(putprop '*AUDACITY* \"%s\" 'LANGUAGE)\n"), lang);
+      mProps += wxString::Format(wxT("(putprop '*AUDACITY* \"%s\" 'LANGUAGE)\n"), lang.GET());
 
       mProps += wxString::Format(wxT("(setf *DECIMAL-SEPARATOR* #\\%c)\n"), wxNumberFormatter::GetDecimalSeparator());
 

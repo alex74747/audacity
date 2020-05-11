@@ -228,7 +228,7 @@ void ExportMultipleDialog::PopulateOrExchange(ShuttleGui& S)
    wxString defaultFormat = gPrefs->Read(wxT("/Export/Format"), wxT("WAV"));
 
    TranslatableStrings visibleFormats;
-   wxArrayStringEx formats;
+   Identifiers formats;
    mPluginIndex = -1;
    mFilterIndex = 0;
 

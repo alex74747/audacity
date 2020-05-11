@@ -339,7 +339,7 @@ MenuTable::BaseItemPtrs PopulateEffectsMenu(
          optplugs.push_back(plug);
    }
 
-   wxString groupby = EffectsGroupBy.Read();
+   auto groupby = EffectsGroupBy.Read();
 
    using Comparator = bool(*)(const PluginDescriptor*, const PluginDescriptor*);
    Comparator comp1, comp2;
