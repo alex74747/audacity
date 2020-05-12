@@ -362,7 +362,7 @@ Identifier ChoiceSetting::Read() const
 Identifier ChoiceSetting::ReadWithDefault( const Identifier &defaultValue ) const
 {
    wxString value;
-   if ( !gPrefs->Read(mKey, &value, defaultValue.GET()) )
+   if ( !gPrefs->Read( GetPath(), &value, defaultValue.GET()) )
       if (!mMigrated) {
          const_cast<ChoiceSetting*>(this)->Migrate( value );
          mMigrated = true;
@@ -395,7 +395,7 @@ bool ChoiceSetting::Write( const Identifier &value )
    if (index >= mSymbols.size())
       return false;
 
-   auto result = gPrefs->Write( mKey, value );
+   auto result = gPrefs->Write( GetPath(), value );
    mMigrated = true;
    return result;
 }
@@ -416,7 +416,7 @@ Identifier LabelSetting::Read() const
 Identifier LabelSetting::ReadWithDefault( const Identifier &defaultValue ) const
 {
    wxString value;
-   if ( !gPrefs->Read(mKey, &value, defaultValue.GET()) )
+   if ( !gPrefs->Read( GetPath(), &value, defaultValue.GET()) )
       if (!mMigrated) {
          const_cast<LabelSetting*>(this)->Migrate( value );
          mMigrated = true;
@@ -449,7 +449,7 @@ bool LabelSetting::Write( const Identifier &value )
    if (index >= mSymbols.size())
       return false;
 
-   auto result = gPrefs->Write( mKey, value );
+   auto result = gPrefs->Write( GetPath(), value );
    mMigrated = true;
    return result;
 }

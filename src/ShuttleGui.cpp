@@ -1621,10 +1621,10 @@ void ShuttleGuiBase::StartRadioButtonGroup( const LabelSetting &Setting )
    mRadioValue.emplace( mRadioValueString );
 
    // Now actually start the radio button group.
-   mRadioSettingName = Setting.Key();
+   mRadioSettingName = Setting.GetPath();
    mRadioCount = 0;
-   if( mpState -> mShuttleMode == eIsCreating )
-      DoDataShuttle( Setting.Key(), *mRadioValue );
+   if ( mpState -> mShuttleMode == eIsCreating )
+      DoDataShuttle( Setting.GetPath(), *mRadioValue );
 }
 
 /// Call this after any TieRadioButton calls.
@@ -2032,7 +2032,7 @@ wxChoice *ShuttleGuiBase::DoTieChoice(
    // Do this to force any needed migrations first
    choiceSetting.Read();
 
-   const auto &SettingName = choiceSetting.Key();
+   const auto &SettingName = choiceSetting.GetPath();
    const auto &Default = choiceSetting.GetDefault();
 
    // uh oh

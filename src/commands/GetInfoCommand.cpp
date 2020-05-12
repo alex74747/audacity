@@ -253,7 +253,7 @@ void Collector::Visit(
    const ChoiceSetting &Setting)
 {
    StartStruct();
-   AddItem( Setting.Key(), "id" );
+   AddItem( Setting.GetPath(), "id" );
    AddItem( Prompt, "prompt" );
    AddItem( "enum", "type" );
    AddItem( Setting.GetDefault().GET(), "default"  );
