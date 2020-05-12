@@ -413,7 +413,7 @@ bool LabelDialog::TransferDataFromWindow()
    while (tndx < (int)mTrackNames.size() - 1) {
 
       // Extract the name
-      wxString name = mTrackNames[tndx + 1].AfterFirst(L'-').Mid(1);
+      auto name = mTrackNames[tndx + 1].AfterFirst(L'-').Mid(1);
 
       // Create the NEW track and add to track list
       auto newTrack = std::make_shared<LabelTrack>();
@@ -653,7 +653,7 @@ void LabelDialog::OnRemove()
 void LabelDialog::OnImport()
 {
    // Ask user for a filename
-   wxString fileName =
+   auto fileName =
        SelectFile(FileNames::Operation::Open,
          XO("Select a text file containing labels"),
          wxEmptyString,     // Path
@@ -701,7 +701,7 @@ void LabelDialog::OnExport()
    }
 
    // Extract the actual name.
-   wxString fName = mTrackNames[mTrackNames.size() - 1].AfterFirst(L'-').Mid(1);
+   auto fName = mTrackNames[mTrackNames.size() - 1].AfterFirst(L'-').Mid(1);
 
    fName = SelectFile(FileNames::Operation::Export,
       XO("Export Labels As:"),
@@ -720,9 +720,9 @@ void LabelDialog::OnExport()
 
    if (wxFileExists(fName)) {
 #ifdef __WXGTK__
-      wxString safetyFileName = fName + L"~";
+      auto safetyFileName = fName + L"~";
 #else
-      wxString safetyFileName = fName + L".bak";
+      auto safetyFileName = fName + L".bak";
 #endif
 
       if (wxFileExists(safetyFileName))
@@ -834,7 +834,7 @@ void LabelDialog::OnCellChange(wxGridEvent &event)
 
 void LabelDialog::OnChangeTrack(wxGridEvent & WXUNUSED(event), int row, RowData *rd)
 {
-   wxString val = mGrid->GetCellValue(row, Col_Track);
+   auto val = mGrid->GetCellValue(row, Col_Track);
 
    // User selected the "New..." choice so ask for a NEW name
    if ( make_iterator_range( mTrackNames ).index( val ) == 0 ) {

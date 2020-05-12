@@ -512,7 +512,7 @@ wxString EffectPresetsDialog::GetSelected() const
 
 void EffectPresetsDialog::SetSelected(const wxString & parms)
 {
-   wxString preset = parms;
+   auto preset = parms;
    if (preset.StartsWith(Effect::kUserPresetIdent))
    {
       preset.Replace(Effect::kUserPresetIdent, wxEmptyString, false);

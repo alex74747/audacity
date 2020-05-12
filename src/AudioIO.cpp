@@ -317,7 +317,7 @@ AudioIO::AudioIO()
    if (err != paNoError) {
       auto errStr = XO("Could not find any audio devices.\n");
       errStr += XO("You will not be able to play or record audio.\n\n");
-      wxString paErrStr = LAT1CTOWX(Pa_GetErrorText(err));
+      auto paErrStr = LAT1CTOWX(Pa_GetErrorText(err));
       if (!paErrStr.empty())
          errStr += XO("Error: %s").Format( paErrStr );
       // XXX: we are in libaudacity, popping up dialogs not allowed!  A

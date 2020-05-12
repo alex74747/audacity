@@ -397,7 +397,7 @@ public:
 
 int wxTreebookExt::ChangeSelection(size_t n) {
    int i = wxTreebook::ChangeSelection(n);
-   wxString Temp = GetPageText( n );
+   auto Temp = GetPageText( n );
    static_cast<wxDialog*>(GetParent())->SetTitle( Temp );
    static_cast<wxDialog*>(GetParent())->SetName( Temp );
    return i;

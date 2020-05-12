@@ -1092,7 +1092,7 @@ bool LabelTrackView::CutSelectedText( AudacityProject &project )
       std::swap(init, cur);
 
    // data for cutting
-   wxString data = text.Mid(init, cur - init);
+   auto data = text.Mid(init, cur - init);
 
    // get left-remaining text
    if (init > 0)
@@ -1142,7 +1142,7 @@ bool LabelTrackView::CopySelectedText( AudacityProject &project )
       return false;
 
    // data for copying
-   wxString data = labelStruct.title.Mid(init, cur-init);
+   auto data = labelStruct.title.Mid(init, cur-init);
 
    // copy the data on clipboard
    if (wxTheClipboard->Open()) {
@@ -1889,7 +1889,7 @@ bool LabelTrackView::DoChar(
 
    if (mCurrentCursorPos < (int)title.length()) {
       // Get substring on the righthand side of cursor
-      wxString rightPart = title.Mid(mCurrentCursorPos);
+      auto rightPart = title.Mid(mCurrentCursorPos);
       // Set title to substring on the lefthand side of cursor
       title = title.Left(mCurrentCursorPos);
       //append charcode

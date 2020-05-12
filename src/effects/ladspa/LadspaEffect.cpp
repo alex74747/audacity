@@ -263,7 +263,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    wxString envpath;
    bool hadpath = wxGetEnv(L"PATH", &envpath);
    wxSetEnv(L"PATH", ff.GetPath() + wxFILE_SEP_PATH + envpath);
-   wxString saveOldCWD = ff.GetCwd();
+   auto saveOldCWD = ff.GetCwd();
    ff.SetCwd();
 
    int index = 0;
@@ -325,7 +325,7 @@ bool LadspaEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
 {
    if( bFast )
       return true;
-   wxString realPath = path.BeforeFirst(L';');
+   auto realPath = path.BeforeFirst(L';');
    return wxFileName::FileExists(realPath);
 }
 
@@ -337,7 +337,7 @@ LadspaEffectsModule::CreateInstance(const PluginPath & path)
    // 1)  The library's path
    // 2)  The LADSPA descriptor index
    long index;
-   wxString realPath = path.BeforeFirst(L';');
+   auto realPath = path.BeforeFirst(L';');
    path.AfterFirst(L';').ToLong(&index);
    return std::make_unique<LadspaEffect>(realPath, (int)index);
 }
@@ -1099,7 +1099,7 @@ bool LadspaEffect::SetAutomationParameters(CommandParameters & parms)
 
       if (LADSPA_IS_PORT_CONTROL(descriptor) && LADSPA_IS_PORT_INPUT(descriptor))
       {
-         wxString labelText = LAT1CTOWX(mData->PortNames[p]);
+         auto labelText = LAT1CTOWX(mData->PortNames[p]);
          double d = 0.0;
          if (!parms.Read(labelText, &d))
          {
@@ -1211,7 +1211,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
                      continue;
                   }
 
-                  wxString labelText = LAT1CTOWX(mData->PortNames[p]);
+                  auto labelText = LAT1CTOWX(mData->PortNames[p]);
                   item = safenew wxStaticText(S.GetParent(), 0, wxString::Format(_("%s:"), labelText));
                   S.Position(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL)
                      .AddWindow(item);
@@ -1393,7 +1393,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
                      continue;
                   }
 
-                  wxString labelText = LAT1CTOWX(mData->PortNames[p]);
+                  auto labelText = LAT1CTOWX(mData->PortNames[p]);
                   item = safenew wxStaticText(S.GetParent(), 0, wxString::Format(_("%s:"), labelText));
                   S.Position(wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL)
                      .AddWindow(item);
@@ -1546,7 +1546,7 @@ bool LadspaEffect::Load()
    wxString envpath;
    bool hadpath = wxGetEnv(L"PATH", &envpath);
    wxSetEnv(L"PATH", ff.GetPath() + wxFILE_SEP_PATH + envpath);
-   wxString saveOldCWD = ff.GetCwd();
+   auto saveOldCWD = ff.GetCwd();
    ff.SetCwd();
 
    LADSPA_Descriptor_Function mainFn = NULL;

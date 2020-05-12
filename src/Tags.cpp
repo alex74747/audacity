@@ -404,7 +404,7 @@ int Tags::GetGenre(const wxString & name)
 
 bool Tags::HasTag(const wxString & name) const
 {
-   wxString key = name;
+   auto key = name;
    key.UpperCase();
 
    auto iter = mXref.find(key);
@@ -413,7 +413,7 @@ bool Tags::HasTag(const wxString & name) const
 
 wxString Tags::GetTag(const wxString & name) const
 {
-   wxString key = name;
+   auto key = name;
    key.UpperCase();
 
    auto iter = mXref.find(key);
@@ -450,7 +450,7 @@ void Tags::SetTag(const wxString & name, const wxString & value, const bool bSpe
    }
 
    // All keys are uppercase
-   wxString key = name;
+   auto key = name;
    key.UpperCase();
 
    // Look it up

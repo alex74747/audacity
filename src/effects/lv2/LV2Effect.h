@@ -571,7 +571,7 @@ inline wxString LilvString(const LilvNode *node)
 
 inline wxString LilvString(LilvNode *node, bool free)
 {
-   wxString str = LilvString(node);
+   auto str = LilvString(node);
    if (free)
    {
       lilv_node_free(node);

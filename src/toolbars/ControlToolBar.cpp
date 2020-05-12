@@ -319,7 +319,7 @@ void ControlToolBar::UpdatePrefs()
 {
    bool updated = false;
 
-   wxString strLocale = LocaleLanguage.Read();
+   auto strLocale = LocaleLanguage.Read();
    if (mStrLocale != strLocale)
    {
       mStrLocale = strLocale;

@@ -292,7 +292,7 @@ ProgressResult LOFImportFileHandle::Import(
       return ProgressResult::Failed;
    }
 
-   wxString line = mTextFile->GetFirstLine();
+   auto line = mTextFile->GetFirstLine();
 
    while (!mTextFile->Eof())
    {
@@ -351,7 +351,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
    int tokenplace = 0;
 
    wxString targetfile;
-   wxString tokenholder = tok.GetNextToken();
+   auto tokenholder = tok.GetNextToken();
 
 
    if (tokenholder.IsSameAs(L"window", false))
@@ -425,7 +425,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       nFilesInGroup++;
       // To identify filename and open it
       tokenholder = temptok1.GetNextToken();
-      wxString targettoken = temptok1.GetNextToken();
+      auto targettoken = temptok1.GetNextToken();
       targetfile = targettoken;
 
       // If path is relative, make absolute path from LOF path

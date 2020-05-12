@@ -271,7 +271,7 @@ void OnAudioDeviceInfo(const CommandContext &context)
 {
    auto &project = context.project;
    auto gAudioIO = AudioIOBase::Get();
-   wxString info = gAudioIO->GetDeviceInfo();
+   auto info = gAudioIO->GetDeviceInfo();
    ShowDiagnostics( project, info,
       XO("Audio Device Info"), L"deviceinfo.txt" );
 }

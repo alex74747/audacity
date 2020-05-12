@@ -1630,7 +1630,7 @@ void ProjectFileIO::SetProjectTitle(int number)
       return;
    }
    auto &window = *pWindow;
-   wxString name = project.GetProjectName();
+   auto name = project.GetProjectName();
 
    // If we are showing project numbers, then we also explicitly show "<untitled>" if there
    // is none.

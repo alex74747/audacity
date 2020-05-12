@@ -22,7 +22,7 @@ Identifier EffectDefinitionInterface::GetSquashedName(const Identifier &ident)
 
    // CamelCase the name
    while (st.HasMoreTokens()) {
-      wxString tok = st.GetNextToken();
+      auto tok = st.GetNextToken();
       id += tok.Left(1).MakeUpper() + tok.Mid(1).MakeLower();
    }
 

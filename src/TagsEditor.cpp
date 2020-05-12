@@ -413,7 +413,7 @@ bool TagsEditorDialog::TransferDataFromWindow()
       // Get tag name from the grid
 
       auto n = mGrid->GetCellValue(i, 0);
-      wxString v = mGrid->GetCellValue(i, 1);
+      auto v = mGrid->GetCellValue(i, 1);
 
       if (n.empty()) {
          continue;
@@ -535,7 +535,7 @@ void TagsEditorDialog::OnChange(wxGridEvent & event)
    // Do not permit duplication of any of the tags.
    // Tags differing only in case are nondistinct.
    auto row = event.GetRow();
-   const wxString key0 = mGrid->GetCellValue(row, 0).Upper();
+   const auto key0 = mGrid->GetCellValue(row, 0).Upper();
    auto nn = mGrid->GetNumberRows();
    for (decltype(nn) ii = 0; ii < nn; ++ii) {
       if (ii == row)
@@ -695,8 +695,8 @@ void TagsEditorDialog::OnLoad()
    }
 
    // Remember title and track in case they're read only
-   wxString title = mLocal.GetTag(TAG_TITLE);
-   wxString track = mLocal.GetTag(TAG_TRACK);
+   auto title = mLocal.GetTag(TAG_TITLE);
+   auto track = mLocal.GetTag(TAG_TRACK);
 
    // Replace existing tags with loaded ones
    mLocal = temp;
@@ -744,8 +744,8 @@ void TagsEditorDialog::OnSave()
       XMLFileWriter writer{ fn, XO("Error Saving Tags File") };
 
       // Remember title and track in case they're read only
-      wxString title = mLocal.GetTag(TAG_TITLE);
-      wxString track = mLocal.GetTag(TAG_TRACK);
+      auto title = mLocal.GetTag(TAG_TITLE);
+      auto track = mLocal.GetTag(TAG_TRACK);
 
       // Clear title
       if (!mEditTitle) {
@@ -911,7 +911,7 @@ void TagsEditorDialog::SetEditors()
    int cnt = mGrid->GetNumberRows();
 
    for (int i = 0; i < cnt; i++) {
-      wxString label = mGrid->GetCellValue(i, 0);
+      auto label = mGrid->GetCellValue(i, 0);
       if (label.CmpNoCase(LABEL_GENRE.Translation()) == 0) {
          // This use of GetDefaultEditorForType does not require DecRef.
          mGrid->SetCellEditor(i, 1, mGrid->GetDefaultEditorForType(L"Combo"));

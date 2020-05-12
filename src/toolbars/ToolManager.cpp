@@ -720,7 +720,7 @@ int ToolManager::FilterEvent(wxEvent &event)
 //
 void ToolManager::ReadConfig()
 {
-   wxString oldpath = gPrefs->GetPath();
+   auto oldpath = gPrefs->GetPath();
    std::vector<int> unordered[ DockCount ];
    std::vector<ToolBar*> dockedAndHidden;
    bool show[ ToolBarCount ];
@@ -858,7 +858,7 @@ void ToolManager::ReadConfig()
          // in the EditToolbar.
          // It is needed so that the meterToolbar size gets preserved.
          // Longer-term we should find a better fix for this.
-         wxString thisBar = bar->GetSection();
+         auto thisBar = bar->GetSection();
          if( thisBar != L"Edit")
          {
             // Set the width
@@ -970,7 +970,7 @@ void ToolManager::WriteConfig()
       return;
    }
 
-   wxString oldpath = gPrefs->GetPath();
+   auto oldpath = gPrefs->GetPath();
    int ndx;
 
    // Change to the bar root

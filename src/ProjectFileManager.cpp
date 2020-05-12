@@ -707,7 +707,7 @@ bool ProjectFileManager::SaveFromTimerRecording(wxFileName fnFile)
    // MY: Will save the project to a NEW location a-la Save As
    // and then tidy up after itself.
 
-   wxString sNewFileName = fnFile.GetFullPath();
+   auto sNewFileName = fnFile.GetFullPath();
 
    // MY: To allow SaveAs from Timer Recording we need to check what
    // the value of mFileName is before we change it.
@@ -1088,7 +1088,7 @@ ProjectFileManager::AddImportedTracks(const FilePath &fileName,
 
    bool initiallyEmpty = tracks.empty();
    double newRate = 0;
-   wxString trackNameBase = fn.GetName();
+   auto trackNameBase = fn.GetName();
    int i = -1;
    
    // Fix the bug 2109.

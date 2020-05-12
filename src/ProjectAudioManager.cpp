@@ -867,7 +867,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
          auto defaultTrackName = WaveTrack::GetDefaultAudioTrackNamePreference();
          auto defaultRecordingTrackName = RecordingTrackName.Read();
 
-         wxString baseTrackName = recordingNameCustom? defaultRecordingTrackName : defaultTrackName;
+         auto baseTrackName = recordingNameCustom? defaultRecordingTrackName : defaultTrackName;
 
          Track *first {};
          for (int c = 0; c < recordingChannels; c++) {
@@ -884,7 +884,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
             }
 
             newTrack->SetOffset(t0);
-            wxString nameSuffix = wxString(L"");
+            auto nameSuffix = wxString(L"");
 
             if (useTrackNumber) {
                nameSuffix += wxString::Format(L"%d", 1 + (int) numTracks + c);

@@ -333,8 +333,8 @@ bool EffectEqualization::DefineParams( ShuttleParams & S ){
       int point;
       for( point = 0; point < numPoints; point++ )
       {
-         const wxString nameFreq = wxString::Format("f%i",point);
-         const wxString nameVal = wxString::Format("v%i",point);
+         const auto nameFreq = wxString::Format("f%i",point);
+         const auto nameVal = wxString::Format("v%i",point);
          S.Define( mCurves[ 0 ].points[ point ].Freq,  nameFreq, 0.0,  0.0, 0.0, 0.0 );
          S.Define( mCurves[ 0 ].points[ point ].dB,    nameVal,  0.0, 0.0, 0.0, 0.0 );
       }
@@ -346,8 +346,8 @@ bool EffectEqualization::DefineParams( ShuttleParams & S ){
    
       for (int i = 0; i < 200; i++)
       {
-         const wxString nameFreq = wxString::Format("f%i",i);
-         const wxString nameVal = wxString::Format("v%i",i);
+         const auto nameFreq = wxString::Format("f%i",i);
+         const auto nameVal = wxString::Format("v%i",i);
          double f = -1000.0;
          double d = 0.0;
          S.Define( f,  nameFreq, 0.0,  -10000.0, 1000000.0, 0.0 );
@@ -473,7 +473,7 @@ bool EffectEqualization::LoadFactoryPreset(int id)
       return false;
 
    // mParams = 
-   wxString params = FactoryPresets[index].values;
+   auto params = FactoryPresets[index].values;
 
    CommandParameters eap(params);
    ShuttleSetAutomation S;
@@ -557,7 +557,7 @@ wxString EffectEqualization::GetPrefsPrefix()
 
 bool EffectEqualization::Startup()
 {
-   wxString base = GetPrefsPrefix();
+   auto base = GetPrefsPrefix();
 
    // Migrate settings from 2.1.0 or before
 
@@ -1586,7 +1586,7 @@ void EffectEqualization::LoadCurves(const wxString &fileName, bool append)
 
    if(fileName.empty()) {
       // Check if presets are up to date.
-      wxString eqCurvesCurrentVersion = wxString::Format(L"%d.%d", EQCURVES_VERSION, EQCURVES_REVISION);
+      auto eqCurvesCurrentVersion = wxString::Format(L"%d.%d", EQCURVES_VERSION, EQCURVES_REVISION);
       wxString eqCurvesInstalledVersion;
       gPrefs->Read(GetPrefsPrefix() + "PresetVersion", &eqCurvesInstalledVersion, L"");
 
@@ -1771,7 +1771,7 @@ void EffectEqualization::UpdateDefaultCurves(bool updateAll /* false */)
 
    // Write current EqCurve version number
    // TODO: Probably better if we used pluginregistry.cfg
-   wxString eqCurvesCurrentVersion = wxString::Format(L"%d.%d", EQCURVES_VERSION, EQCURVES_REVISION);
+   auto eqCurvesCurrentVersion = wxString::Format(L"%d.%d", EQCURVES_VERSION, EQCURVES_REVISION);
    gPrefs->Write(GetPrefsPrefix()+"PresetVersion", eqCurvesCurrentVersion);
    gPrefs->Flush();
 
@@ -2170,7 +2170,7 @@ bool EffectEqualization::HandleXMLTag(const std::string_view& tag, const Attribu
             const wxString strValue = value.ToWString();
             // check for a duplicate name and add (n) if there is one
             int n = 0;
-            wxString strValueTemp = strValue;
+            auto strValueTemp = strValue;
             bool exists;
             do
             {
@@ -3396,7 +3396,7 @@ void EditCurvesDialog::OnUp()
       if ( state != wxLIST_STATE_SELECTED )
       { // swap this with one above but only if it isn't selected
          std::swap( mEditCurves[item], mEditCurves[item - 1] );
-         wxString sTemp = mList->GetItemText(item);
+         auto sTemp = mList->GetItemText(item);
          mList->SetItem(item, 0, mList->GetItemText(item-1));
          mList->SetItem(item-1, 0, sTemp);
          mList->SetItemState(item, 0, wxLIST_STATE_SELECTED);
@@ -3420,7 +3420,7 @@ void EditCurvesDialog::OnDown()
          if ( state != wxLIST_STATE_SELECTED )
          { // swap this with one below but only if it isn't selected
             std::swap( mEditCurves[item], mEditCurves[item + 1] );
-            wxString sTemp = mList->GetItemText(item);
+            auto sTemp = mList->GetItemText(item);
             mList->SetItem(item, 0, mList->GetItemText(item+1));
             mList->SetItem(item+1, 0, sTemp);
             mList->SetItemState(item, 0, wxLIST_STATE_SELECTED);
@@ -3491,7 +3491,7 @@ void EditCurvesDialog::OnRename()
          // Search list of curves for a duplicate name
          for( curve = 0; curve < numCurves; curve++ )
          {
-            wxString temp = mEditCurves[ curve ];
+            auto temp = mEditCurves[ curve ];
             if( name ==  mEditCurves[ curve ] ) // case sensitive
             {
                bad = true;
@@ -3754,7 +3754,7 @@ void EditCurvesDialog::OnDefaults()
 void EditCurvesDialog::OnOK()
 {
    // Make a backup of the current curves
-   wxString backupPlace = wxFileName( FileNames::DataDir(), L"EQBackup.xml" ).GetFullPath();
+   auto backupPlace = wxFileName( FileNames::DataDir(), L"EQBackup.xml" ).GetFullPath();
    mEffect->SaveCurves(backupPlace);
    // Load back into the main dialog
    mEffect->mCurves = mEditCurves;

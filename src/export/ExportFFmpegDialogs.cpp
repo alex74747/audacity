@@ -2104,7 +2104,7 @@ void ExportFFmpegOptions::FindSelectedFormat(wxString **name, wxString **longnam
    if (n <= 0) return;
 
    // Get selected format short name
-   wxString selfmt = mFormatList->GetString(selections[0]);
+   auto selfmt = mFormatList->GetString(selections[0]);
 
    // Find its index
    int nFormat = make_iterator_range( mFormatNames ).index( selfmt );
@@ -2125,7 +2125,7 @@ void ExportFFmpegOptions::FindSelectedCodec(wxString **name, wxString **longname
    if (n <= 0) return;
 
    // Get selected codec short name
-   wxString selcdc = mCodecList->GetString(selections[0]);
+   auto selcdc = mCodecList->GetString(selections[0]);
 
    // Find its index
    int nCodec = make_iterator_range( mCodecNames ).index( selcdc );
@@ -2281,7 +2281,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(
       {
          if (ofmt->GetAudioCodec() == mFFmpeg->GetAVCodecID(id))
          {
-            wxString ofmtname = wxString::FromUTF8(ofmt->GetName());
+            auto ofmtname = wxString::FromUTF8(ofmt->GetName());
             found = false;
             for (unsigned int i = 0; i < FromList.size(); i++)
             {
@@ -2314,7 +2314,7 @@ int ExportFFmpegOptions::FetchCompatibleFormatList(
 ///
 void ExportFFmpegOptions::OnDeletePreset()
 {
-   wxString presetname = FFmpegPreset.Read();
+   auto presetname = FFmpegPreset.Read();
    if (presetname.empty())
    {
       AudacityMessageBox( XO("You can't delete a preset without name") );

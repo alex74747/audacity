@@ -807,7 +807,7 @@ void ThemeBase::WriteOneImageMap( teThemeType id )
 
    File.Write( L"<html>\r\n");
    File.Write( L"<body bgcolor=\"303030\">\r\n");
-   wxString Temp = wxString::Format( L"<img src=\"ImageCache.png\" width=\"%i\" usemap=\"#map1\">\r\n", ImageCacheWidth );
+   auto Temp = wxString::Format( L"<img src=\"ImageCache.png\" width=\"%i\" usemap=\"#map1\">\r\n", ImageCacheWidth );
    File.Write( Temp );
    File.Write( L"<map name=\"map1\">\r\n" );
 

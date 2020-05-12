@@ -1185,7 +1185,7 @@ void ExportFFmpeg::SetMetadata(const Tags *tags, const char *name, const wxChar 
 {
    if (tags->HasTag(tag))
    {
-      wxString value = tags->GetTag(tag);
+      auto value = tags->GetTag(tag);
 
       AVDictionaryWrapper metadata = mEncFormatCtx->GetMetadata();
 
@@ -1259,7 +1259,7 @@ int ExportFFmpeg::AskResample(int bitrate, int rate, int lowrate, int highrate, 
                         int label = sampRates[i];
                         if ((!lowrate || label >= lowrate) && (!highrate || label <= highrate))
                         {
-                           wxString name = wxString::Format(L"%d",label);
+                           auto name = wxString::Format(L"%d",label);
                            choices.push_back( Verbatim( name ) );
                            if (label <= rate)
                               selected = i;

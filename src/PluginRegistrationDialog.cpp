@@ -867,7 +867,7 @@ void PluginRegistrationDialog::OnOK()
    for (ItemDataMap::iterator iter = mItems.begin(); iter != mItems.end(); ++iter)
    {
       ItemData & item = iter->second;
-      wxString path = item.path;
+      auto path = item.path;
 
       if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
       {
@@ -875,7 +875,7 @@ void PluginRegistrationDialog::OnOK()
       }
    }
 
-   wxString last3 = mLongestPath + L"\n" +
+   auto last3 = mLongestPath + L"\n" +
                     mLongestPath + L"\n" +
                     mLongestPath + L"\n";
 
@@ -893,7 +893,7 @@ void PluginRegistrationDialog::OnOK()
       for (ItemDataMap::iterator iter = mItems.begin(); iter != mItems.end(); ++iter)
       {
          ItemData & item = iter->second;
-         wxString path = item.path;
+         auto path = item.path;
 
          if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
          {

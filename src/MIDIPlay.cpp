@@ -525,7 +525,7 @@ MIDIPlay::MIDIPlay(const PlaybackSchedule &schedule)
       auto errStr =
               XO("There was an error initializing the midi i/o layer.\n");
       errStr += XO("You will not be able to play midi.\n\n");
-      wxString pmErrStr = LAT1CTOWX(Pm_GetErrorText(pmErr));
+      auto pmErrStr = LAT1CTOWX(Pm_GetErrorText(pmErr));
       if (!pmErrStr.empty())
          errStr += XO("Error: %s").Format( pmErrStr );
       // XXX: we are in libaudacity, popping up dialogs not allowed!  A

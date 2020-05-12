@@ -63,7 +63,7 @@ void ShowDiagnostics(
    if (dlg.ShowModal() == wxID_OK)
    {
       const auto fileDialogTitle = XO("Save %s").Format( description );
-      wxString fName = SelectFile(FileNames::Operation::Export,
+      auto fName = SelectFile(FileNames::Operation::Export,
          fileDialogTitle,
          wxEmptyString,
          defaultPath,

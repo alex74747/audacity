@@ -793,7 +793,7 @@ void PluginManager::Load()
    // Check for a registry version that we can understand
    // TODO: Should also check for a registry file that is newer than
    // what we can understand.
-   wxString regver = registry.Read(REGVERKEY);
+   auto regver = registry.Read(REGVERKEY);
    if (regver < REGVERCUR )
    {
       // Conversion code here, for when registry version changes.
@@ -801,8 +801,8 @@ void PluginManager::Load()
       // We iterate through the effects, possibly updating their info.
       wxString groupName;
       long groupIndex;
-      wxString group = GetPluginTypeString(PluginTypeEffect);
-      wxString cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
+      auto group = GetPluginTypeString(PluginTypeEffect);
+      auto cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
       wxArrayString groupsToDelete;
 
       registry.SetPath(cfgPath);
@@ -812,8 +812,8 @@ void PluginManager::Load()
          cont = registry.GetNextGroup(groupName, groupIndex))
       {
          registry.SetPath(groupName);
-         wxString effectSymbol = registry.Read(KEY_SYMBOL, "");
-         wxString effectVersion = registry.Read(KEY_VERSION, "");
+         auto effectSymbol = registry.Read(KEY_SYMBOL, "");
+         auto effectVersion = registry.Read(KEY_VERSION, "");
 
 
          // For 2.3.0 the plugins we distribute have moved around.
@@ -898,8 +898,8 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
    bool boolVal;
    wxString groupName;
    long groupIndex;
-   wxString group = GetPluginTypeString(type);
-   wxString cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
+   auto group = GetPluginTypeString(type);
+   auto cfgPath = REGROOT + group + wxCONFIG_PATH_SEPARATOR;
 
    pRegistry->SetPath(cfgPath);
    for (bool cont = pRegistry->GetFirstGroup(groupName, groupIndex);
@@ -1147,7 +1147,7 @@ void PluginManager::Save()
 
 void PluginManager::SaveGroup(FileConfig *pRegistry, PluginType type)
 {
-   wxString group = GetPluginTypeString(type);
+   auto group = GetPluginTypeString(type);
    for (auto &pair : mPlugins) {
       auto & plug = pair.second;
 
@@ -1285,7 +1285,7 @@ void PluginManager::CheckForUpdates(bool bFast)
                paths = provider->FindPluginPaths( *this );
             for (size_t i = 0, cnt = paths.size(); i < cnt; i++)
             {
-               wxString path = paths[i].BeforeFirst(L';');;
+               auto path = paths[i].BeforeFirst(L';');;
                if ( ! make_iterator_range( pathIndex ).contains( path ) )
                {
                   PluginID ID = plugID + L"_" + path;
@@ -1544,7 +1544,7 @@ FileConfig *PluginManager::GetSettings()
       // Check for a settings version that we can understand
       if (mSettings->HasEntry(SETVERKEY))
       {
-         wxString setver = mSettings->Read(SETVERKEY, SETVERKEY);
+         auto setver = mSettings->Read(SETVERKEY, SETVERKEY);
          if (setver < SETVERCUR )
          {
             // This is where we'd put in conversion code when the
@@ -1573,7 +1573,7 @@ bool PluginManager::HasGroup(const RegistryPath & group)
    if (res)
    {
       // The group exists, but empty groups aren't considered valid
-      wxString oldPath = settings->GetPath();
+      auto oldPath = settings->GetPath();
       settings->SetPath(group);
       res = settings->GetNumberOfEntries() || settings->GetNumberOfGroups();
       settings->SetPath(oldPath);
@@ -1589,7 +1589,7 @@ bool PluginManager::GetSubgroups(const RegistryPath & group, RegistryPaths & sub
       return false;
    }
 
-   wxString path = GetSettings()->GetPath();
+   auto path = GetSettings()->GetPath();
    GetSettings()->SetPath(group);
 
    wxString name;
@@ -1709,7 +1709,7 @@ wxString PluginManager::ConvertID(const PluginID & ID)
 {
    if (ID.StartsWith(L"base64:"))
    {
-      wxString id = ID.Mid(7);
+      auto id = ID.Mid(7);
       ArrayOf<char> buf{ id.length() / 4 * 3 };
       id =  wxString::FromUTF8(buf.get(), b64decode(id, buf.get()));
       return id;

@@ -742,7 +742,7 @@ void Effect::ImportPresets()
    wxFFile f(path);
    if (f.IsOpened()) {
       if (f.ReadAll(&params)) {
-         wxString ident = params.BeforeFirst(':');
+         auto ident = params.BeforeFirst(':');
          params = params.AfterFirst(':');
 
          auto commandId = GetSquashedName(GetSymbol().Internal());
@@ -943,7 +943,7 @@ bool Effect::GetAutomationParametersAsString(wxString & parms)
 
 bool Effect::SetAutomationParametersFromString(const wxString & parms)
 {
-   wxString preset = parms;
+   auto preset = parms;
    bool success = false;
    if (preset.StartsWith(kUserPresetIdent))
    {

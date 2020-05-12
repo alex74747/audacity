@@ -776,14 +776,14 @@ TranslatableString AudioUnitEffectImportDialog::Import(
       return XO("Unable to read the preset from \"%s\"").Format(fullPath);
    }
 
-   wxString parms = wxBase64Encode(buf.GetData(), len);
+   auto parms = wxBase64Encode(buf.GetData(), len);
    if (parms.IsEmpty())
    {
       return XO("Failed to encode preset from \"%s\"").Format(fullPath);
    }
 
    // And write it to the config
-   wxString group = mEffect->mHost->GetUserPresetsGroup(name);
+   auto group = mEffect->mHost->GetUserPresetsGroup(name);
    if (!SetConfig(*mEffect,
       PluginSettings::Private, group, PRESET_KEY,
       parms))
@@ -806,8 +806,8 @@ void AudioUnitEffectImportDialog::OnOk()
       item.SetMask(wxLIST_MASK_TEXT);
       mList->GetItem(item);
 
-      wxString path = item.GetText();
-      wxString name = mList->GetItemText(sel);
+      auto path = item.GetText();
+      auto name = mList->GetItemText(sel);
       auto msg = Import(path, name);
 
       if (!msg.empty())
@@ -2048,7 +2048,7 @@ bool AudioUnitEffect::SavePreset(const RegistryPath & group)
    if (length)
    {
       // Base64 encode the returned binary property list
-      wxString parms = wxBase64Encode(CFDataGetBytePtr(data.get()), length);
+      auto parms = wxBase64Encode(CFDataGetBytePtr(data.get()), length);
 
       // And write it to the config
       if (!SetConfig(*this,

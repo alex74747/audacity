@@ -392,7 +392,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
    wxString title;
    static const wxString continuation{ L"\\" };
 
-   wxString firstLine = file.GetLine(index++);
+   auto firstLine = file.GetLine(index++);
 
    {
       // Assume tab is an impossible character within the exported text
