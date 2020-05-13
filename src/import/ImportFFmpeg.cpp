@@ -27,7 +27,6 @@ Licensed under the GNU General Public License v2 or later
 
 #ifndef WX_PRECOMP
 #include <wx/log.h>
-#include <wx/window.h>
 #endif
 
 #include "../widgets/ProgressDialog.h"

@@ -24,7 +24,6 @@
 #include <wx/eventfilter.h>
 #include <wx/toplevel.h>
 #include <wx/weakref.h>
-#include <wx/window.h>
 
 #include "AudacityException.h"
 
