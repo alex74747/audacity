@@ -14,7 +14,6 @@
 #include <chrono>
 #include <vector>
 
-#include <wx/setup.h> // for wxUSE_* macros
 #include <wx/timer.h> // to inherit
 
 #include "HitTestResult.h"
