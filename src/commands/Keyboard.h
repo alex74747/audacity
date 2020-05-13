@@ -65,7 +65,7 @@ struct AUDACITY_DLL_API NormalizedKeyString : NormalizedKeyStringBase
 
    // Convert to and from display form
    DisplayKeyString Display(bool usesSpecialChars = false) const;
-   explicit NormalizedKeyString(
+   NormalizedKeyString(
       const DisplayKeyString &str, bool usesSpecialChars = false );
 };
 
