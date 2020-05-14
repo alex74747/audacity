@@ -2161,7 +2161,7 @@ void AudioIO::StopStream()
          wxMilliSleep( latency + 50);
    }
 
-   wxMutexLocker locker(mSuspendAudioThread);
+   std::lock_guard< std::mutex > locker{ mSuspendAudioThread };
 
    // No longer need effects processing
    if (mNumPlaybackChannels > 0)
@@ -4432,7 +4432,7 @@ int AudioIoCallback::AudioCallback(const void *inputBuffer, void *outputBuffer,
 int AudioIoCallback::CallbackDoSeek()
 {
    const int token = mStreamToken;
-   wxMutexLocker locker(mSuspendAudioThread);
+   std::lock_guard< std::mutex > locker{ mSuspendAudioThread };
    if (token != mStreamToken)
       // This stream got destroyed while we waited for it
       return paAbort;

@@ -19,7 +19,6 @@
 #include <string>
 
 ResponseQueue::ResponseQueue()
-   : mCondition(mMutex)
 { }
 
 ResponseQueue::~ResponseQueue()
@@ -27,18 +26,16 @@ ResponseQueue::~ResponseQueue()
 
 void ResponseQueue::AddResponse(Response response)
 {
-   wxMutexLocker locker(mMutex);
+   std::lock_guard< std::mutex > locker{ mMutex };
    mResponses.push(response);
-   mCondition.Signal();
+   mCondition.notify_one();
 }
 
 Response ResponseQueue::WaitAndGetResponse()
 {
-   wxMutexLocker locker(mMutex);
-   if (mResponses.empty())
-   {
-      mCondition.Wait();
-   }
+   std::unique_lock< std::mutex > lock{ mMutex };
+   while (mResponses.empty())
+      mCondition.wait( lock );
    wxASSERT(!mResponses.empty());
    Response msg = mResponses.front();
    mResponses.pop();

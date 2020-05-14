@@ -26,7 +26,7 @@ because of thread-safety concerns.
 \brief Allow messages to be sent from the main thread to the script thread
 
 Based roughly on wxMessageQueue<T> (which hasn't reached the stable wxwidgets
-yet). Wraps a std::queue<Response> inside a wxMutex with a wxCondition to
+yet). Wraps a std::queue<Response> inside a mutex with a condition variable to
 force the script thread to wait until a response is available.
 
 *//*******************************************************************/
@@ -36,12 +36,9 @@ force the script thread to wait until a response is available.
 
 #include <queue>
 #include <string>
-#include <wx/thread.h> // member variable
+#include <mutex>
+#include <condition_variable>
 #include <wx/string.h> // member variable
-
-class wxMutex;
-class wxCondition;
-class wxMutexLocker;
 
 class Response {
    private:
@@ -60,8 +57,8 @@ class Response {
 class ResponseQueue {
    private:
       std::queue<Response> mResponses;
-      wxMutex mMutex;
-      wxCondition mCondition;
+      std::mutex mMutex;
+      std::condition_variable mCondition;
 
    public:
       ResponseQueue();

@@ -20,6 +20,7 @@
 #include "Experimental.h"
 
 #include <memory>
+#include <mutex>
 #include <utility>
 
 #ifdef USE_MIDI
@@ -488,7 +489,7 @@ protected:
 
    // Serialize main thread and PortAudio thread's attempts to pause and change
    // the state used by the third, Audio thread.
-   wxMutex mSuspendAudioThread;
+   std::mutex mSuspendAudioThread;
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
 public:

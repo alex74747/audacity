@@ -227,7 +227,6 @@ bool EffectEqualization48x::AllocateBuffersWorkers(int nThreads)
    }
    if(mThreadCount) {
       // start the workers
-      mDataMutex.IsOk();
       mEQWorkers.clear();
       mEQWorkers.reserve(mThreadCount);
       for ( size_t ii = 0; ii < mThreadCount; ++ii )
@@ -865,7 +864,7 @@ void EQWorker::Entry()
    while( !mExitLoop.load( std::memory_order_relaxed ) ) {
       int i = 0;
       {
-         wxMutexLocker locker( *mMutex );
+         std::lock_guard< std::mutex > locker{ *mMutex };
          for(; i < mBufferInfoCount; i++) {
             if(mBufferInfoList[i].mBufferStatus==BufferReady) { // we found an unlocked ready buffer
                mBufferInfoList[i].mBufferStatus=BufferBusy; // we own it now
@@ -940,7 +939,7 @@ bool EffectEqualization48x::ProcessOne1x4xThreaded(int count, WaveTrack * t,
       bBreakLoop=mEffectEqualization->TrackProgress(count, (double)(bigBlocksWritten)/bigRuns.as_double());
       if( bBreakLoop )
          break;
-      wxMutexLocker locker( mDataMutex ); // Get in line for data
+      std::lock_guard< std::mutex > locker{ mDataMutex }; // Get in line for data
       // process as many blocks as we can
       while((mBufferInfo[currentIndex].mBufferStatus==BufferDone) && (bigBlocksWritten<bigRuns)) { // data is ours
          output->Append((samplePtr)&mBufferInfo[currentIndex].mBufferDest[0][(bigBlocksWritten?mBlockSize:0)+(mFilterSize>>1)], floatSample, subBufferSize-((bigBlocksWritten?mBlockSize:0)+(mFilterSize>>1)));
@@ -1236,7 +1235,7 @@ bool EffectEqualization48x::ProcessOne8xThreaded(int count, WaveTrack * t,
       {
          break;
       }
-      wxMutexLocker locker( mDataMutex ); // Get in line for data
+      std::lock_guard< std::mutex > locker{ mDataMutex }; // Get in line for data
       // process as many blocks as we can
       while((mBufferInfo[currentIndex].mBufferStatus==BufferDone) && (bigBlocksWritten<bigRuns)) { // data is ours
          output->Append((samplePtr)&mBufferInfo[currentIndex].mBufferDest[0][(bigBlocksWritten?mBlockSize:0)+(mFilterSize>>1)], floatSample, mSubBufferSize-((bigBlocksWritten?mBlockSize:0)+(mFilterSize>>1)));

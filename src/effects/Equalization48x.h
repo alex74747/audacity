@@ -17,8 +17,8 @@ Intrinsics (SSE/AVX) and Threaded Equalization
 
 #include "../MemoryX.h"
 
-#include <wx/thread.h> // for wxMutex
 #include <atomic>
+#include <mutex>
 #include <thread>
 #include <audacity/Types.h>
 class WaveTrack;
@@ -90,7 +90,7 @@ class EffectEqualization48x;
 static int EQWorkerCounter=0;
 
 struct EQWorker {
-   EQWorker( BufferInfo* bufferInfoList, int bufferInfoCount, wxMutex *mutex,
+   EQWorker( BufferInfo* bufferInfoList, int bufferInfoCount, std::mutex *mutex,
       EffectEqualization48x *effectEqualization48x )
    : mBufferInfoList{ bufferInfoList }
    , mBufferInfoCount{ bufferInfoCount }
@@ -106,7 +106,7 @@ struct EQWorker {
 
    BufferInfo* mBufferInfoList;
    int mBufferInfoCount;
-   wxMutex *mMutex;
+   std::mutex *mMutex;
    EffectEqualization48x *mEffectEqualization48x;
    std::atomic< bool > mExitLoop{ false };
    int mProcessingType{ 0 };
@@ -167,7 +167,7 @@ private:
    size_t mSubBufferSize;
    simd_floats mBigBuffer;
    ArrayOf<BufferInfo> mBufferInfo;
-   wxMutex mDataMutex;
+   std::mutex mDataMutex;
    std::vector< EQWorker > mEQWorkers;
    bool mThreaded;
    bool mBenching;
