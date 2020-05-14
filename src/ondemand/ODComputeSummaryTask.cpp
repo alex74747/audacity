@@ -34,7 +34,6 @@ updating the ODPCMAliasBlockFile and the GUI of the newly available data.
 ODComputeSummaryTask::ODComputeSummaryTask()
 {
    mMaxBlockFiles = 0;
-   mHasUpdateRan=false;
 }
 
 std::unique_ptr<ODTask> ODComputeSummaryTask::Clone() const
@@ -61,9 +60,7 @@ void ODComputeSummaryTask::DoSomeInternal()
 {
    if(mBlockFiles.size()<=0)
    {
-      mPercentCompleteMutex.Lock();
-      mPercentComplete = 1.0;
-      mPercentCompleteMutex.Unlock();
+      SetPercentComplete( 1.0f );
       return;
    }
 
@@ -139,40 +136,25 @@ float ODComputeSummaryTask::ComputeNextWorkUntilPercentageComplete()
    if(mMaxBlockFiles==0)
      return 1.0;
 
-   float nextPercent;
-   mPercentCompleteMutex.Lock();
-   nextPercent=mPercentComplete + ((float)nBlockFilesPerDoSome/(mMaxBlockFiles+1));
-   mPercentCompleteMutex.Unlock();
-
-   return nextPercent;
+   return PercentComplete() + ((float)nBlockFilesPerDoSome/(mMaxBlockFiles+1));
 }
 
 void ODComputeSummaryTask::MarkUpdateRan()
 {
-   mHasUpdateRanMutex.Lock();
-   mHasUpdateRan=true;
-   mHasUpdateRanMutex.Unlock();
+   mHasUpdateRan.store( true, std::memory_order_release );
 }
 
 bool ODComputeSummaryTask::HasUpdateRan()
 {
-   bool ret;
-   mHasUpdateRanMutex.Lock();
-   ret = mHasUpdateRan;
-   mHasUpdateRanMutex.Unlock();
-   return ret;
+   return mHasUpdateRan.load( std::memory_order_acquire );
 }
 
 void ODComputeSummaryTask::CalculatePercentComplete()
 {
-   bool hasUpdateRan;
-   hasUpdateRan = HasUpdateRan();
-   mPercentCompleteMutex.Lock();
-   if(hasUpdateRan)
-      mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
-   else
-      mPercentComplete =0.0;
-   mPercentCompleteMutex.Unlock();
+   SetPercentComplete(
+      HasUpdateRan()
+         ? (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1))
+         : 0.0f );
 }
 
 ///creates the order of the wavetrack to load.

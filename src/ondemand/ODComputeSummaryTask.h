@@ -76,8 +76,7 @@ protected:
    ODLock  mBlockFilesMutex;
    std::vector< std::weak_ptr< ODPCMAliasBlockFile > > mBlockFiles;
    int mMaxBlockFiles;
-   ODLock  mHasUpdateRanMutex;
-   bool mHasUpdateRan;
+   std::atomic< bool > mHasUpdateRan{ false };
 };
 
 #endif

@@ -37,9 +37,7 @@ void ODDecodeTask::DoSomeInternal()
 {
    if(mBlockFiles.size()<=0)
    {
-      mPercentCompleteMutex.Lock();
-      mPercentComplete = 1.0;
-      mPercentCompleteMutex.Unlock();
+      SetPercentComplete( 1.0f );
       return;
    }
 
@@ -116,9 +114,8 @@ void ODDecodeTask::DoSomeInternal()
 
 void ODDecodeTask::CalculatePercentComplete()
 {
-   mPercentCompleteMutex.Lock();
-   mPercentComplete = (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
-   mPercentCompleteMutex.Unlock();
+   SetPercentComplete(
+      (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1)) );
 }
 
 bool ODDecodeTask::SeekingAllowed()

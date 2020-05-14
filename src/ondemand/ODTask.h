@@ -25,6 +25,7 @@ in a background thread.
 
 #include "../BlockFile.h"
 
+#include <atomic>
 #include <vector>
 #include <wx/event.h> // to declare custom event type
 class AudacityProject;
@@ -70,7 +71,8 @@ class ODTask /* not final */
    ///Call DoSome until PercentComplete >= 1.0
    void DoAll();
 
-   virtual float PercentComplete();
+   float PercentComplete();
+   void SetPercentComplete( float complete );
 
    virtual bool UsesCustomWorkUntilPercentage(){return false;}
    virtual float ComputeNextWorkUntilPercentageComplete(){return 1.0;}
@@ -108,7 +110,7 @@ class ODTask /* not final */
    virtual void SetDemandSample(sampleCount sample);
 
    ///does an od update and then recalculates the data.
-   virtual void RecalculatePercentComplete();
+   void RecalculatePercentComplete();
 
    ///returns the number of tasks created before this instance.
    int GetTaskNumber(){return mTaskNumber;}
@@ -148,32 +150,22 @@ class ODTask /* not final */
 
 
    int   mTaskNumber;
-   volatile float mPercentComplete;
-   ODLock mPercentCompleteMutex;
-   volatile bool  mDoingTask;
-   volatile bool  mTaskStarted;
-   volatile bool mTerminate;
-   ODLock mTerminateMutex;
+   std::atomic<float> mPercentComplete{ 0.0f };
+   std::atomic< bool > mTerminate{ false };
    //for a function not a member var.
    ODLock mBlockUntilTerminateMutex;
 
    std::vector< std::weak_ptr< WaveTrack > > mWaveTracks;
    ODLock     mWaveTrackMutex;
 
-   sampleCount mDemandSample;
-   mutable ODLock      mDemandSampleMutex;
+   mutable std::atomic<sampleCount> mDemandSample{ 0 };
 
-   volatile bool mIsRunning;
-   ODLock mIsRunningMutex;
+   std::atomic< bool > mIsRunning{ false }; // true?
 
 
    private:
 
-   volatile bool mNeedsODUpdate;
-   ODLock mNeedsODUpdateMutex;
-
-
-
+   std::atomic< bool > mNeedsODUpdate{ false };
 };
 
 #endif

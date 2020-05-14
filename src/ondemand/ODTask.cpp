@@ -35,29 +35,17 @@ wxDEFINE_EVENT(EVT_ODTASK_COMPLETE, wxCommandEvent);
 
 /// Constructs an ODTask
 ODTask::ODTask()
-: mDemandSample(0)
 {
-
    static int sTaskNumber=0;
-   mPercentComplete=0;
-   mDoingTask=false;
-   mTerminate = false;
-   mNeedsODUpdate=false;
-   mIsRunning = false;
-
-   mTaskNumber=sTaskNumber++;
+   mTaskNumber = sTaskNumber++;
 }
 
 //outside code must ensure this task is not scheduled again.
 void ODTask::TerminateAndBlock()
 {
-   //one mutex pair for the value of mTerminate
-   mTerminateMutex.Lock();
-   mTerminate=true;
-   //release all data the derived class may have allocated
-   mTerminateMutex.Unlock();
+   mTerminate.store( true, std::memory_order_relaxed );
 
-   //and one mutex pair for the exit of the function
+   //one mutex pair for the exit of the function
    mBlockUntilTerminateMutex.Lock();
 //TODO lock mTerminate?
    mBlockUntilTerminateMutex.Unlock();
@@ -73,29 +61,24 @@ void ODTask::TerminateAndBlock()
 void ODTask::DoSome(float amountWork)
 {
    SetIsRunning(true);
+   auto cleanup = finally( [&]{ SetIsRunning(false); } );
+
    mBlockUntilTerminateMutex.Lock();
 
 //   wxPrintf("%s %i subtask starting on NEW thread with priority\n", GetTaskName(),GetTaskNumber());
 
-   mDoingTask=mTaskStarted=true;
-
    float workUntil = amountWork+PercentComplete();
 
-
-
    //check periodically to see if we should exit.
-   mTerminateMutex.Lock();
-   if(mTerminate)
-   {
-      mTerminateMutex.Unlock();
-      SetIsRunning(false);
+   auto terminate = [this]{
+      return mTerminate.load( std::memory_order_relaxed ); };
+
+   if( terminate() ) {
       mBlockUntilTerminateMutex.Unlock();
       return;
    }
-   mTerminateMutex.Unlock();
 
    Update();
-
 
    if(UsesCustomWorkUntilPercentage())
       workUntil = ComputeNextWorkUntilPercentageComplete();
@@ -105,28 +88,19 @@ void ODTask::DoSome(float amountWork)
 
    //Do Some of the task.
 
-   mTerminateMutex.Lock();
-   while(PercentComplete() < workUntil && PercentComplete() < 1.0 && !mTerminate)
+   while(PercentComplete() < workUntil && PercentComplete() < 1.0 && !terminate())
    {
       std::this_thread::yield();
       //release within the loop so we can cut the number of iterations short
 
-      DoSomeInternal(); //keep the terminate mutex on so we don't remo
-      mTerminateMutex.Unlock();
+      DoSomeInternal();
       //check to see if ondemand has been called
       if(GetNeedsODUpdate() && PercentComplete() < 1.0)
          ODUpdate();
-
-
-      //But add the mutex lock back before we check the value again.
-      mTerminateMutex.Lock();
    }
-   mTerminateMutex.Unlock();
-   mDoingTask=false;
 
-   mTerminateMutex.Lock();
    //if it is not done, put it back onto the ODManager queue.
-   if(PercentComplete() < 1.0&& !mTerminate)
+   if(PercentComplete() < 1.0&& !terminate())
    {
       ODManager::Instance()->AddTask(this);
 
@@ -170,8 +144,6 @@ void ODTask::DoSome(float amountWork)
 
 //      wxPrintf("%s %i complete\n", GetTaskName(),GetTaskNumber());
    }
-   mTerminateMutex.Unlock();
-   SetIsRunning(false);
    mBlockUntilTerminateMutex.Unlock();
 }
 
@@ -206,45 +178,34 @@ void ODTask::ODUpdate()
 
 void ODTask::SetIsRunning(bool value)
 {
-   mIsRunningMutex.Lock();
-   mIsRunning=value;
-   mIsRunningMutex.Unlock();
+   mIsRunning.store( value, std::memory_order_release );
 }
 
 bool ODTask::IsRunning()
 {
-   bool ret;
-   mIsRunningMutex.Lock();
-   ret= mIsRunning;
-   mIsRunningMutex.Unlock();
-   return ret;
+   return mIsRunning.load( std::memory_order_acquire );
 }
 
 sampleCount ODTask::GetDemandSample() const
 {
-   sampleCount retval;
-   mDemandSampleMutex.Lock();
-   retval = mDemandSample;
-   mDemandSampleMutex.Unlock();
-   return retval;
+   return mDemandSample.load( std::memory_order_acquire );
 }
 
 void ODTask::SetDemandSample(sampleCount sample)
 {
-
-   mDemandSampleMutex.Lock();
-   mDemandSample=sample;
-   mDemandSampleMutex.Unlock();
+   mDemandSample.store( sample, std::memory_order_release );
 }
 
 
 ///return the amount of the task that has been completed.  0.0 to 1.0
 float ODTask::PercentComplete()
 {
-   mPercentCompleteMutex.Lock();
-   float ret = mPercentComplete;
-   mPercentCompleteMutex.Unlock();
-   return ret;
+   return mPercentComplete.load( std::memory_order_acquire );
+}
+
+void ODTask::SetPercentComplete( float complete )
+{
+   mPercentComplete.store( complete, std::memory_order_release );
 }
 
 ///return
@@ -284,24 +245,16 @@ int ODTask::GetNumWaveTracks()
 
 void ODTask::SetNeedsODUpdate()
 {
-   mNeedsODUpdateMutex.Lock();
-   mNeedsODUpdate=true;
-   mNeedsODUpdateMutex.Unlock();
+   mNeedsODUpdate.store( true, std::memory_order_release );
 }
 bool ODTask::GetNeedsODUpdate()
 {
-   bool ret;
-   mNeedsODUpdateMutex.Lock();
-   ret=mNeedsODUpdate;
-   mNeedsODUpdateMutex.Unlock();
-   return ret;
+   return mNeedsODUpdate.load( std::memory_order_acquire );
 }
 
 void ODTask::ResetNeedsODUpdate()
 {
-   mNeedsODUpdateMutex.Lock();
-   mNeedsODUpdate=false;
-   mNeedsODUpdateMutex.Unlock();
+   mNeedsODUpdate.store( false, std::memory_order_relaxed );
 }
 
 ///does an od update and then recalculates the data.

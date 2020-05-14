@@ -19,6 +19,7 @@ number of threads.
 #ifndef __AUDACITY_ODMANAGER__
 #define __AUDACITY_ODMANAGER__
 
+#include <atomic>
 #include <vector>
 #include "ODTaskThread.h"
 #include <wx/event.h> // for DECLARE_EXPORTED_EVENT_TYPE
@@ -140,16 +141,8 @@ class ODManager final
    //mutex for above variable
    ODLock mTasksMutex;
 
-   //global pause switch for OD
-   volatile bool mPause;
-   ODLock mPauseLock;
-
-   volatile int mNeedsDraw;
-
    ///Number of threads currently running.   Accessed thru multiple threads
-   volatile int mCurrentThreads;
-   //mutex for above variable
-   ODLock mCurrentThreadsMutex;
+   std::atomic< unsigned > mCurrentThreads{ 0 };
 
    ///Maximum number of threads allowed out.
    int mMaxThreads;

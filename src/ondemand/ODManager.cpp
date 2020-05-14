@@ -26,7 +26,7 @@ ODTask requests and internals.
 #include <thread>
 
 static std::atomic<bool> gManagerCreated{ false };
-static bool gPause=false; //to be loaded in and used with Pause/Resume before ODMan init.
+std::atomic< bool > gPause{ false }; //to be loaded in and used with Pause/Resume before ODMan init.
 /// a flag that is set if we have loaded some OD blockfiles from PCM.
 static bool sHasLoadedOD=false;
 
@@ -58,7 +58,6 @@ ODManager::ODManager()
 {
    mTerminate = false;
    mTerminated = false;
-   mPause = gPause;
 
    //must set up the queue condition
    mQueueNotEmptyCond = std::make_unique<ODCondition>(&mQueueNotEmptyCondLock);
@@ -101,11 +100,7 @@ void ODManager::AddTask(ODTask* task)
    mTasks.push_back(task);
    mTasksMutex.Unlock();
    //signal the queue not empty condition.
-   bool paused;
-
-   mPauseLock.Lock();
-   paused=mPause;
-   mPauseLock.Unlock();
+   bool paused = gPause.load( std::memory_order_acquire );
 
    //don't signal if we are paused since if we wake up the loop it will start processing other tasks while paused
    if(!paused)
@@ -114,11 +109,7 @@ void ODManager::AddTask(ODTask* task)
 
 void ODManager::SignalTaskQueueLoop()
 {
-   bool paused;
-
-   mPauseLock.Lock();
-   paused=mPause;
-   mPauseLock.Unlock();
+   bool paused = gPause.load( std::memory_order_acquire );
    //don't signal if we are paused
    if(!paused)
       mQueueNotEmptyCond->Signal();
@@ -205,9 +196,7 @@ void ODManager::Init()
 
 void ODManager::DecrementCurrentThreads()
 {
-   mCurrentThreadsMutex.Lock();
-   mCurrentThreads--;
-   mCurrentThreadsMutex.Unlock();
+   mCurrentThreads.fetch_sub( 1, std::memory_order_release );
 }
 
 ///Main loop for managing threads and tasks.
@@ -218,7 +207,7 @@ void ODManager::DispatchLoop()
    bool paused;
    int  numQueues=0;
 
-   mNeedsDraw=0;
+   int mNeedsDraw=0;
 
    //wxLog calls not threadsafe.  are printfs?  thread-messy for sure, but safe?
 //   wxPrintf("ODManager thread strating \n");
@@ -239,16 +228,13 @@ void ODManager::DispatchLoop()
       tasksInArray = mTasks.size()>0;
       mTasksMutex.Unlock();
 
-      mPauseLock.Lock();
-      paused=mPause;
-      mPauseLock.Unlock();
+      bool paused = gPause.load( std::memory_order_acquire );
 
-      mCurrentThreadsMutex.Lock();
       // keep adding tasks if there is work to do, up to the limit.
-      while(!paused && tasksInArray && (mCurrentThreads < mMaxThreads))
+      while(!paused && tasksInArray &&
+            (mCurrentThreads.load( std::memory_order_acquire ) < mMaxThreads))
       {
-         mCurrentThreads++;
-         mCurrentThreadsMutex.Unlock();
+         mCurrentThreads.fetch_add( 1, std::memory_order_relaxed );
 
          mTasksMutex.Lock();
          //detach a NEW thread.
@@ -269,11 +255,8 @@ void ODManager::DispatchLoop()
          mTasks.erase(mTasks.begin());
          tasksInArray = mTasks.size()>0;
          mTasksMutex.Unlock();
-
-         mCurrentThreadsMutex.Lock();
       }
 
-      mCurrentThreadsMutex.Unlock();
       //use a condition variable to block here instead of a sleep.
 
       // JKC: If there are no tasks ready to run, or we're paused then
@@ -316,19 +299,12 @@ void ODManager::DispatchLoop()
 //but presumably they will finish within a second
 void ODManager::Pauser::Pause(bool pause)
 {
+   gPause.store( pause, std::memory_order_release );
    if(IsInstanceCreated())
    {
-      pMan->mPauseLock.Lock();
-      pMan->mPause = pause;
-      pMan->mPauseLock.Unlock();
-
       if(!pause)
          //we should check the queue again.
          pMan->mQueueNotEmptyCond->Signal();
-   }
-   else
-   {
-      gPause=pause;
    }
 }
 
