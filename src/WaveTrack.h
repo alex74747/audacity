@@ -591,8 +591,8 @@ private:
    // Private variables
    //
 
-   wxCriticalSection mFlushCriticalSection;
-   wxCriticalSection mAppendCriticalSection;
+//   std::mutex mFlushCriticalSection;
+//   std::mutex mAppendCriticalSection;
    double mLegacyProjectFileOffset;
    int mAutoSaveIdent;
 

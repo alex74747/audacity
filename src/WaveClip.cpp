@@ -706,7 +706,7 @@ bool WaveClip::GetWaveDisplay(WaveDisplay &display, double t0,
             auto right = std::min(sampleCount{ mAppendBufferLen },
                                   where[i + 1] - numSamples);
 
-            //wxCriticalSectionLocker locker(mAppendCriticalSection);
+            //std::lock_guard< std::mutex > locker{ mAppendCriticalSection };
 
             if (right > left) {
                Floats b;

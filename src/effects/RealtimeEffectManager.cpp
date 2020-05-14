@@ -50,11 +50,10 @@ RealtimeEffectManager & RealtimeEffectManager::Get()
 
 RealtimeEffectManager::RealtimeEffectManager()
 {
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
    mRealtimeActive = false;
    mRealtimeSuspended = true;
    mRealtimeLatency = 0;
-   mRealtimeLock.Leave();
 }
 
 RealtimeEffectManager::~RealtimeEffectManager()
@@ -218,23 +217,18 @@ void RealtimeEffectManager::RealtimeFinalize()
 
 void RealtimeEffectManager::RealtimeSuspend()
 {
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
 
    // Already suspended...bail
    if (mRealtimeSuspended)
-   {
-      mRealtimeLock.Leave();
       return;
-   }
-
+ 
    // Show that we aren't going to be doing anything
    mRealtimeSuspended = true;
 
    // And make sure the effects don't either
    for (auto &state : mStates)
       state->RealtimeSuspend();
-
-   mRealtimeLock.Leave();
 }
 
 void RealtimeEffectManager::RealtimeSuspendOne( EffectClientInterface &effect )
@@ -251,14 +245,11 @@ void RealtimeEffectManager::RealtimeSuspendOne( EffectClientInterface &effect )
 
 void RealtimeEffectManager::RealtimeResume()
 {
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
 
    // Already running...bail
    if (!mRealtimeSuspended)
-   {
-      mRealtimeLock.Leave();
       return;
-   }
 
    // Tell the effects to get ready for more action
    for (auto &state : mStates)
@@ -266,8 +257,6 @@ void RealtimeEffectManager::RealtimeResume()
 
    // And we should too
    mRealtimeSuspended = false;
-
-   mRealtimeLock.Leave();
 }
 
 void RealtimeEffectManager::RealtimeResumeOne( EffectClientInterface &effect )
@@ -288,7 +277,7 @@ void RealtimeEffectManager::RealtimeResumeOne( EffectClientInterface &effect )
 void RealtimeEffectManager::RealtimeProcessStart()
 {
    // Protect ourselves from the main thread
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
 
    // Can be suspended because of the audio stream being paused or because effects
    // have been suspended.
@@ -300,8 +289,6 @@ void RealtimeEffectManager::RealtimeProcessStart()
             state->GetEffect().RealtimeProcessStart();
       }
    }
-
-   mRealtimeLock.Leave();
 }
 
 //
@@ -310,15 +297,12 @@ void RealtimeEffectManager::RealtimeProcessStart()
 size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples)
 {
    // Protect ourselves from the main thread
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
 
    // Can be suspended because of the audio stream being paused or because effects
    // have been suspended, so allow the samples to pass as-is.
    if (mRealtimeSuspended || mStates.empty())
-   {
-      mRealtimeLock.Leave();
       return numSamples;
-   }
 
    // Remember when we started so we can calculate the amount of latency we
    // are introducing
@@ -371,8 +355,6 @@ size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float *
    // Remember the latency
    mRealtimeLatency = (int) (wxGetUTCTimeMillis() - start).GetValue();
 
-   mRealtimeLock.Leave();
-
    //
    // This is wrong...needs to handle tails
    //
@@ -385,7 +367,7 @@ size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float *
 void RealtimeEffectManager::RealtimeProcessEnd()
 {
    // Protect ourselves from the main thread
-   mRealtimeLock.Enter();
+   std::lock_guard< std::mutex > lock{ mRealtimeLock };
 
    // Can be suspended because of the audio stream being paused or because effects
    // have been suspended.
@@ -397,8 +379,6 @@ void RealtimeEffectManager::RealtimeProcessEnd()
             state->GetEffect().RealtimeProcessEnd();
       }
    }
-
-   mRealtimeLock.Leave();
 }
 
 int RealtimeEffectManager::GetRealtimeLatency()
