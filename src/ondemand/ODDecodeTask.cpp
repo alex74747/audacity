@@ -139,7 +139,7 @@ void ODDecodeTask::Update()
          for (const auto &clip : waveTrack->GetAllClips()) {
             auto seq = clip->GetSequence();
             //TODO:this lock is way to big since the whole file is one sequence.  find a way to break it down.
-            Sequence::DeleteUpdateMutexLocker locker(*seq);
+            Sequence::DeleteUpdateMutexLocker locker{ *seq };
 
             //See Sequence::Delete() for why need this for now..
             auto blocks = clip->GetSequenceBlockArray();

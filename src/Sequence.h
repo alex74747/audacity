@@ -11,11 +11,11 @@
 #ifndef __AUDACITY_SEQUENCE__
 #define __AUDACITY_SEQUENCE__
 
+#include <mutex>
 #include <vector>
 
 #include "SampleFormat.h"
 #include "xml/XMLTagHandler.h"
-#include "ondemand/ODTaskThread.h"
 
 #include "audacity/Types.h"
 
@@ -189,20 +189,16 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    BlockArray &GetBlockArray() { return mBlock; }
    const BlockArray &GetBlockArray() const { return mBlock; }
 
-   ///
-   void LockDeleteUpdateMutex(){mDeleteUpdateMutex.Lock();}
-   void UnlockDeleteUpdateMutex(){mDeleteUpdateMutex.Unlock();}
-
-   // RAII idiom wrapping the functions above
+   // RAII idiom
    struct DeleteUpdateMutexLocker {
       DeleteUpdateMutexLocker(Sequence &sequence)
          : mSequence(sequence)
       {
-         mSequence.LockDeleteUpdateMutex();
+         mSequence.mDeleteUpdateMutex.lock();
       }
       ~DeleteUpdateMutexLocker()
       {
-         mSequence.UnlockDeleteUpdateMutex();
+         mSequence.mDeleteUpdateMutex.unlock();
       }
    private:
       Sequence &mSequence;
@@ -234,7 +230,7 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    bool          mErrorOpening{ false };
 
    ///To block the Delete() method against the ODCalcSummaryTask::Update() method
-   ODLock   mDeleteUpdateMutex;
+   std::mutex   mDeleteUpdateMutex;
 
    //
    // Private methods

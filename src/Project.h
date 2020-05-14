@@ -23,7 +23,6 @@ class wxFrame;
 class wxWindow;
 
 class AudacityProject;
-class ODLock;
 
 
 AUDACITY_DLL_API AudacityProject *GetActiveProject();
@@ -67,7 +66,7 @@ public:
 
    /// In case you must iterate in a non-main thread, use this to prevent
    /// changes in the set of open projects
-   static ODLock &Mutex();
+   static std::mutex &Mutex();
 
    // Return true if all projects do close (always so if force == true)
    // But if return is false, that means the user cancelled close of at least

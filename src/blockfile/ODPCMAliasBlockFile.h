@@ -141,16 +141,16 @@ protected:
 
   private:
 
-   ODLock mWriteSummaryMutex;
+   std::mutex mWriteSummaryMutex;
 
    //need to protect this since it is changed from the main thread upon save.
-   mutable ODLock mFileNameMutex;
+   mutable std::mutex mFileNameMutex;
 
    ///Also need to protect the aliased file name.
-   ODLock mAliasedFileNameMutex;
+   std::mutex mAliasedFileNameMutex;
 
    //lock the read data - libsndfile can't handle two reads at once?
-   mutable ODLock mReadDataMutex;
+   mutable std::mutex mReadDataMutex;
 
    std::atomic<bool> mSummaryAvailable{ false };
    bool mSummaryBeingComputed;

@@ -162,7 +162,7 @@ class ODDecodeBlockFile final : public SimpleBlockFile
 
    ///This lock is for the filename (string) of the blockfile that contains summary/audio data
    ///after decoding
-   mutable ODLock mFileNameMutex;
+   mutable std::mutex mFileNameMutex;
 
    ///The original file the audio came from.
    wxFileNameWrapper mAudioFileName;
@@ -173,7 +173,7 @@ class ODDecodeBlockFile final : public SimpleBlockFile
    std::atomic<ODFileDecoder*> mDecoder{ nullptr };
 
    ///For accessing the audio file that will be decoded.  Used by dir manager;
-   mutable ODLock mReadDataMutex;
+   mutable std::mutex mReadDataMutex;
 
    ///for reporting after task is complete.  Only for display use.
    sampleCount mStart;

@@ -218,7 +218,7 @@ void ODDecodeBlockFile::SaveXML(XMLWriter &xmlFile)
       {
          //unlock to prevent deadlock and resume lock after.
          auto suspension = locker.Suspend();
-         ODLocker locker2{ &mFileNameMutex };
+         std::lock_guard< std::mutex > locker2{ mFileNameMutex };
          xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
       }
       xmlFile.WriteAttr(wxT("audiofile"), mAudioFileName.GetFullPath());
@@ -348,7 +348,7 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
 
    {
       //the summary is also calculated here.
-      ODLocker locker{ &mFileNameMutex };
+      std::lock_guard< std::mutex > locker{ mFileNameMutex };
       //TODO: we may need to write a version of WriteSimpleBlockFile that uses threadsafe FILE vs wxFile
       bool bSuccess =
          WriteSimpleBlockFile(
@@ -368,19 +368,18 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
 ///sets the file name the summary info will be saved in.  threadsafe.
 void ODDecodeBlockFile::SetFileName(wxFileNameWrapper &&name)
 {
-   mFileNameMutex.Lock();
+   std::lock_guard< std::mutex > locker{ mFileNameMutex };
    mFileName=std::move(name);
 /* mchinen oct 9 2009 don't think we need the char* but leaving it in for now just as a reminder that we might
    if wxFileName isn't threadsafe.
    mFileNameChar.reinit(strlen(mFileName.GetFullPath().mb_str(wxConvUTF8))+1);
    strcpy(mFileNameChar.get(), mFileName.GetFullPath().mb_str(wxConvUTF8)); */
-   mFileNameMutex.Unlock();
 }
 
 ///sets the file name the summary info will be saved in.  threadsafe.
 auto ODDecodeBlockFile::GetFileName() const -> GetFileNameResult
 {
-   return { mFileName, ODLocker{ &mFileNameMutex } };
+   return { mFileName, std::unique_lock< std::mutex >{ mFileNameMutex } };
 }
 
 /// A thread-safe version of CalcSummary.  BlockFile::CalcSummary
@@ -490,12 +489,12 @@ void ODDecodeBlockFile::SetODFileDecoder(ODFileDecoder* decoder)
 /// Prevents a read on other threads.
 void ODDecodeBlockFile::LockRead() const
 {
-   mReadDataMutex.Lock();
+   mReadDataMutex.lock();
 }
 /// Allows reading of encoded file on other threads.
 void ODDecodeBlockFile::UnlockRead() const
 {
-   mReadDataMutex.Unlock();
+   mReadDataMutex.unlock();
 }
 
 const wxFileNameWrapper &ODDecodeBlockFile::GetExternalFileName() const

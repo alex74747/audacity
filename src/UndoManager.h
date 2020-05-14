@@ -52,7 +52,6 @@
 #include <atomic>
 #include <vector>
 #include <wx/event.h> // to declare custom event types
-#include "ondemand/ODTaskThread.h"
 #include "ClientData.h"
 #include "SelectedRegion.h"
 

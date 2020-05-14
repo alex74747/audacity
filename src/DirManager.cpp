@@ -1291,7 +1291,7 @@ BlockFilePtr DirManager::CopyBlockFile(const BlockFilePtr &b)
       }
 
       // Done with fn
-      result.mLocker.reset();
+      result.mLocker.unlock();
 
       b2 = b->Copy(std::move(newFile));
 
@@ -1438,7 +1438,7 @@ std::pair<bool, FilePath> DirManager::LinkOrCopyToNewProjectDirectory(
 
          // Now we can free any lock (and should, if as the comment below says, we need
          // the other threads to progress)
-         result.mLocker.reset();
+         result.mLocker.unlock();
 
          f->SetFileName(std::move(newFileName));
 

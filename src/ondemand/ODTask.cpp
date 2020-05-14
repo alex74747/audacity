@@ -98,7 +98,7 @@ bool ODTask::DoSome(float amountWork)
       result = true;
 
       //we did a bit of progress - we should allow a resave.
-      ODLocker locker{ &AllProjects::Mutex() };
+      std::lock_guard< std::mutex > locker{ AllProjects::Mutex() };
       for ( auto pProject : AllProjects{} )
       {
          if(IsTaskAssociatedWithProject(pProject.get()))
@@ -122,7 +122,7 @@ bool ODTask::DoSome(float amountWork)
 
       wxCommandEvent event( EVT_ODTASK_COMPLETE );
 
-      ODLocker locker{ &AllProjects::Mutex() };
+      std::lock_guard< std::mutex > locker{ AllProjects::Mutex() };
       for ( auto pProject : AllProjects{} )
       {
          if(IsTaskAssociatedWithProject(pProject.get()))

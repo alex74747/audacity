@@ -15,13 +15,13 @@
 #include "Audacity.h"
 
 #include "SampleFormat.h"
-#include "ondemand/ODTaskThread.h"
 #include "xml/XMLTagHandler.h"
 
 #include "RealFFTf.h"
 
 #include <wx/longlong.h>
 
+#include <mutex>
 #include <vector>
 
 class BlockArray;
@@ -378,7 +378,7 @@ protected:
    std::unique_ptr<Envelope> mEnvelope;
 
    mutable std::unique_ptr<WaveCache> mWaveCache;
-   mutable ODLock       mWaveCacheMutex {};
+   mutable std::mutex       mWaveCacheMutex;
    mutable std::unique_ptr<SpecCache> mSpecCache;
    SampleBuffer  mAppendBuffer {};
    size_t        mAppendBufferLen { 0 };

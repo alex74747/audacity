@@ -79,10 +79,9 @@ auto ODPCMAliasBlockFile::GetSpaceUsage() const -> DiskByteCount
    if(IsSummaryAvailable())
    {
       DiskByteCount ret;
-      mFileNameMutex.Lock();
+      std::lock_guard< std::mutex > locker{ mFileNameMutex };
       wxFFile summaryFile(mFileName.GetFullPath());
       ret= summaryFile.Length();
-      mFileNameMutex.Unlock();
       return ret;
    }
    else
@@ -250,7 +249,7 @@ void ODPCMAliasBlockFile::SaveXML(XMLWriter &xmlFile)
       //unlock to prevent deadlock and resume lock after.
       {
          auto suspension = locker.Suspend();
-         ODLocker locker2 { &mFileNameMutex };
+         std::lock_guard< std::mutex > locker2{ mFileNameMutex };
          xmlFile.WriteAttr(wxT("summaryfile"), mFileName.GetFullName());
       }
 
@@ -347,7 +346,7 @@ bool ODPCMAliasBlockFile::IsSummaryAvailable() const
 ///Calls write summary, and makes sure it is only done once in a thread-safe fashion.
 void ODPCMAliasBlockFile::DoWriteSummary()
 {
-   ODLocker locker { &mWriteSummaryMutex };
+   std::lock_guard< std::mutex > locker{ mWriteSummaryMutex };
    if(!IsSummaryAvailable())
       WriteSummary();
 }
@@ -355,15 +354,14 @@ void ODPCMAliasBlockFile::DoWriteSummary()
 ///sets the file name the summary info will be saved in.  threadsafe.
 void ODPCMAliasBlockFile::SetFileName(wxFileNameWrapper &&name)
 {
-   mFileNameMutex.Lock();
+   std::lock_guard< std::mutex > locker{ mFileNameMutex };
    mFileName = std::move(name);
-   mFileNameMutex.Unlock();
 }
 
 ///sets the file name the summary info will be saved in.  threadsafe.
 auto ODPCMAliasBlockFile::GetFileName() const -> GetFileNameResult
 {
-   return { mFileName, ODLocker{ &mFileNameMutex } };
+   return { mFileName, std::unique_lock<std::mutex>{ mFileNameMutex } };
 }
 
 /// Write the summary to disk, using the derived ReadData() to get the data
@@ -381,7 +379,7 @@ void ODPCMAliasBlockFile::WriteSummary()
    {
       //the mFileName path may change, for example, when the project is saved.
       //(it moves from /tmp/ to wherever it is saved to.
-      ODLocker locker { &mFileNameMutex };
+      std::lock_guard< std::mutex > locker{ mFileNameMutex };
 
       //wxFFile is not thread-safe - if any error occurs in opening the file,
       // it posts a wxlog message which WILL crash
@@ -510,7 +508,7 @@ bool ODPCMAliasBlockFile::ReadSummary(ArrayOf<char> &data)
 {
    data.reinit( mSummaryInfo.totalSummaryBytes );
 
-   ODLocker locker{ &mFileNameMutex };
+   std::lock_guard< std::mutex > locker{ mFileNameMutex };
    wxFFile summaryFile(mFileName.GetFullPath(), wxT("rb"));
 
    if( !summaryFile.IsOpened() ) {
@@ -544,12 +542,12 @@ bool ODPCMAliasBlockFile::ReadSummary(ArrayOf<char> &data)
 /// Prevents a read on other threads.
 void ODPCMAliasBlockFile::LockRead() const
 {
-   mReadDataMutex.Lock();
+   mReadDataMutex.lock();
 }
 /// Allows reading on other threads.
 void ODPCMAliasBlockFile::UnlockRead() const
 {
-   mReadDataMutex.Unlock();
+   mReadDataMutex.unlock();
 }
 
 static DirManager::RegisteredBlockFileDeserializer sRegistration {

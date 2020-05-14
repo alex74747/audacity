@@ -16,9 +16,8 @@
 
 #include "wxFileNameWrapper.h" // member variable
 
-#include "ondemand/ODTaskThread.h"
-
 #include <functional>
+#include <mutex>
 
 class XMLWriter;
 
@@ -100,9 +99,10 @@ class PROFILE_DLL_API BlockFile /* not final, abstract */ {
    /// of any lock when it goes out of scope.  Call mLocker.reset() to unlock it sooner.
    struct GetFileNameResult {
       const wxFileName &name;
-      ODLocker mLocker;
+      std::unique_lock< std::mutex > mLocker;
 
-      GetFileNameResult(const wxFileName &name_, ODLocker &&locker = ODLocker{})
+      GetFileNameResult(const wxFileName &name_,
+         std::unique_lock< std::mutex > &&locker = {})
       : name{ name_ }, mLocker{ std::move(locker) } {}
 
       GetFileNameResult(const GetFileNameResult&) PROHIBITED;
