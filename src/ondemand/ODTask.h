@@ -26,6 +26,7 @@ in a background thread.
 #include "../BlockFile.h"
 
 #include <atomic>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <wx/event.h> // to declare custom event type
@@ -153,7 +154,7 @@ class ODTask /* not final */
    std::atomic< bool > mTerminate{ false };
 
    std::vector< std::weak_ptr< WaveTrack > > mWaveTracks;
-   ODLock     mWaveTrackMutex;
+   std::mutex     mWaveTrackMutex;
 
    mutable std::atomic<sampleCount> mDemandSample{ 0 };
 

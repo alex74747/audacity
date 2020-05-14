@@ -172,39 +172,38 @@ FLAC__StreamDecoderWriteStatus ODFLACFile::write_callback(const FLAC__Frame *fra
 int ODFlacDecoder::Decode(SampleBuffer & data, sampleFormat & format, sampleCount start, size_t len, unsigned int channel)
 {
 
+   bool usingCache = false;
    //we need to lock this so the target stays fixed over the seek/write callback.
-   mFlacFileLock.Lock();
-
-   bool usingCache=mLastDecodeStartSample==start;
-   if(usingCache)
    {
-      //we've just decoded this, so lets use a cache.  (often so for
+      std::lock_guard< std::mutex > locker{ mFlacFileLock };
+
+      usingCache=mLastDecodeStartSample==start;
+      if(usingCache)
+      {
+         //we've just decoded this, so lets use a cache.  (often so for
+      }
+
+
+      mDecodeBufferWritePosition=0;
+      mDecodeBufferLen = len;
+
+      data.Allocate(len, mFormat);
+      mDecodeBuffer = data.ptr();
+      format = mFormat;
+
+      mTargetChannel=channel;
+
+      // Third party library has its own type alias, check it
+      static_assert(sizeof(sampleCount::type) <=
+                    sizeof(FLAC__int64),
+                    "Type FLAC__int64 is too narrow to hold a sampleCount");
+      if(!mFile->seek_absolute(static_cast<FLAC__int64>( start.as_long_long() )))
+         return -1;
+
+      while(mDecodeBufferWritePosition<mDecodeBufferLen)
+         mFile->process_single();
    }
 
-
-   mDecodeBufferWritePosition=0;
-   mDecodeBufferLen = len;
-
-   data.Allocate(len, mFormat);
-   mDecodeBuffer = data.ptr();
-   format = mFormat;
-
-   mTargetChannel=channel;
-
-   // Third party library has its own type alias, check it
-   static_assert(sizeof(sampleCount::type) <=
-                 sizeof(FLAC__int64),
-                 "Type FLAC__int64 is too narrow to hold a sampleCount");
-   if(!mFile->seek_absolute(static_cast<FLAC__int64>( start.as_long_long() )))
-   {
-      mFlacFileLock.Unlock();
-      return -1;
-   }
-
-   while(mDecodeBufferWritePosition<mDecodeBufferLen)
-      mFile->process_single();
-
-   mFlacFileLock.Unlock();
    if(!usingCache)
    {
       mLastDecodeStartSample=start;

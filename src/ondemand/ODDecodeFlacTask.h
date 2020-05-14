@@ -122,7 +122,7 @@ private:
    friend class FLACImportFileHandle;
    sampleFormat          mFormat;
    std::unique_ptr<ODFLACFile> mFile;
-   ODLock         mFlacFileLock;//for mFile;
+   std::mutex         mFlacFileLock;//for mFile;
    wxFFile               mHandle;
    unsigned long         mSampleRate;
    unsigned long         mNumChannels;

@@ -92,14 +92,13 @@ void ODComputeSummaryTask::DoSomeInternal()
       //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
       //the next iteration at the same sample window.
       if (success && bf) {
-         mWaveTrackMutex.Lock();
+         std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
          for(size_t i=0;i<mWaveTracks.size();i++)
          {
             auto waveTrack = mWaveTracks[i].lock();
             if(success && waveTrack)
                waveTrack->AddInvalidRegion(blockStartSample,blockEndSample);
          }
-         mWaveTrackMutex.Unlock();
       }
    }
 }
@@ -130,7 +129,8 @@ void ODComputeSummaryTask::Update()
 {
    std::vector< std::weak_ptr< ODPCMAliasBlockFile > > tempBlocks;
 
-   mWaveTrackMutex.Lock();
+{
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
 
    for (const auto &pTrack : mWaveTracks)
    {
@@ -177,7 +177,7 @@ void ODComputeSummaryTask::Update()
          }
       }
    }
-   mWaveTrackMutex.Unlock();
+}
 
    //get the NEW order.
    OrderBlockFiles(tempBlocks);

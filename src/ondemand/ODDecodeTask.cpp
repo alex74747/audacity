@@ -94,14 +94,13 @@ void ODDecodeTask::DoSomeInternal()
          //upddate the gui for all associated blocks.  It doesn't matter that we're hitting more wavetracks then we should
          //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
          //the next iteration at the same sample window.
-         mWaveTrackMutex.Lock();
+         std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
          for(size_t i=0;i<mWaveTracks.size();i++)
          {
             auto waveTrack = mWaveTracks[i].lock();
             if(waveTrack)
                waveTrack->AddInvalidRegion(blockStartSample,blockEndSample);
          }
-         mWaveTrackMutex.Unlock();
       }
    }
 }
@@ -128,7 +127,8 @@ void ODDecodeTask::Update()
 {
    std::vector< std::weak_ptr< ODDecodeBlockFile > > tempBlocks;
 
-   mWaveTrackMutex.Lock();
+{
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
 
    for (const auto &pTrack : mWaveTracks)
    {
@@ -175,7 +175,7 @@ void ODDecodeTask::Update()
          }
       }
    }
-   mWaveTrackMutex.Unlock();
+}
 
    //get the NEW order.
    OrderBlockFiles(tempBlocks);

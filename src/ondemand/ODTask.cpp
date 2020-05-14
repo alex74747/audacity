@@ -144,17 +144,15 @@ bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
    {
       //go over all tracks in the project
       //look inside our task's track list for one that matches this projects one.
-      mWaveTrackMutex.Lock();
+      std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
       for(int i=0;i<(int)mWaveTracks.size();i++)
       {
          if ( mWaveTracks[i].lock().get() == tr )
          {
             //if we find one, then the project is associated with us;return true
-            mWaveTrackMutex.Unlock();
             return true;
          }
       }
-      mWaveTrackMutex.Unlock();
    }
 
    return false;
@@ -205,10 +203,9 @@ void ODTask::SetFractionComplete( float complete )
 std::shared_ptr< WaveTrack > ODTask::GetWaveTrack(int i)
 {
    std::shared_ptr< WaveTrack > track;
-   mWaveTrackMutex.Lock();
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
    if(i<(int)mWaveTracks.size())
       track = mWaveTracks[i].lock();
-   mWaveTrackMutex.Unlock();
    return track;
 }
 
@@ -222,11 +219,8 @@ void ODTask::AddWaveTrack( const std::shared_ptr< WaveTrack > &track)
 
 int ODTask::GetNumWaveTracks()
 {
-   int num;
-   mWaveTrackMutex.Lock();
-   num = (int)mWaveTracks.size();
-   mWaveTrackMutex.Unlock();
-   return num;
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
+   return (int)mWaveTracks.size();
 }
 
 
@@ -249,18 +243,19 @@ void ODTask::ReUpdateFractionComplete()
 void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
 {
    bool demandSampleChanged = false;
-   mWaveTrackMutex.Lock();
-   for (const auto &pTrack : mWaveTracks)
    {
-      if ( track == pTrack.lock().get() )
+      std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
+      for (const auto &pTrack : mWaveTracks)
       {
-         auto newDemandSample = (sampleCount)(seconds * track->GetRate());
-         demandSampleChanged = newDemandSample != GetDemandSample();
-         SetDemandSample(newDemandSample);
-         break;
+         if ( track == pTrack.lock().get() )
+         {
+            auto newDemandSample = (sampleCount)(seconds * track->GetRate());
+            demandSampleChanged = newDemandSample != GetDemandSample();
+            SetDemandSample(newDemandSample);
+            break;
+         }
       }
    }
-   mWaveTrackMutex.Unlock();
 
    if(demandSampleChanged)
       SetNeedsODUpdate();
@@ -269,20 +264,19 @@ void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
 
 void ODTask::StopUsingWaveTrack(WaveTrack* track)
 {
-   mWaveTrackMutex.Lock();
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
    for(size_t i=0;i<mWaveTracks.size();i++)
    {
       if(mWaveTracks[i].lock().get() == track)
          mWaveTracks[i].reset();
    }
-   mWaveTrackMutex.Unlock();
 }
 
 ///Replaces all instances to a wavetrack with a NEW one, effectively transferring the task.
 void ODTask::ReplaceWaveTrack(Track *oldTrack,
    const std::shared_ptr< Track > &newTrack)
 {
-   mWaveTrackMutex.Lock();
+   std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
    for(size_t i=0;i<mWaveTracks.size();i++)
    {
       if(oldTrack == mWaveTracks[i].lock().get())
@@ -290,5 +284,4 @@ void ODTask::ReplaceWaveTrack(Track *oldTrack,
          mWaveTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
       }
    }
-   mWaveTrackMutex.Unlock();
 }
