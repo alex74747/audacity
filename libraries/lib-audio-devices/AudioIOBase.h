@@ -16,7 +16,6 @@ Paul Licameli split from AudioIO.h
 #include <functional>
 #include <optional>
 #include <vector>
-#include <wx/string.h>
 #include "MemoryX.h"
 
 struct PaDeviceInfo;
