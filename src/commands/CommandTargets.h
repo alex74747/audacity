@@ -57,7 +57,7 @@ and sends it to that message target.
 
 #include "../MemoryX.h"
 #include <vector>
-#include <wx/thread.h>
+#include <condition_variable>
 
 class wxStatusBar;
 
@@ -225,13 +225,16 @@ public:
 class ResponseTarget final : public CommandMessageTarget
 {
 private:
-   wxSemaphore mSemaphore;
+   // TODO: simplify with std::binary_semaphore in C++20
+   bool mReady = false;
+   std::condition_variable mCV;
+   std::mutex mMutex;
+
    wxString mBuffer;
 public:
    ResponseTarget()
-      : mBuffer(wxEmptyString),
-        mSemaphore(0, 1)
-   { 
+      : mBuffer(wxEmptyString)
+   {
       // Cater for handling long responses quickly.
       mBuffer.Alloc(40000);
    }
@@ -244,11 +247,16 @@ public:
    }
    virtual void Flush() override
    {
-      mSemaphore.Post();
+      std::lock_guard< std::mutex > guard{ mMutex };
+      mReady = true;
+      mCV.notify_one();
    }
    wxString GetResponse()
    {
-      mSemaphore.Wait();
+      std::unique_lock< std::mutex > lock{ mMutex };
+      while ( !mReady )
+         mCV.wait( lock );
+      mReady = false;
       return mBuffer;
    }
 };

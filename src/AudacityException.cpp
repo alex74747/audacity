@@ -24,6 +24,8 @@ got to show.
 
 #include "widgets/AudacityMessageBox.h"
 
+#include <atomic>
+
 AudacityException::~AudacityException()
 {
 }
