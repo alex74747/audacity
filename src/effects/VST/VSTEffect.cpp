@@ -55,7 +55,6 @@
 #include <wx/filename.h>
 #include <wx/imaglist.h>
 #include <wx/listctrl.h>
-#include <wx/log.h>
 #include <wx/module.h>
 #include <wx/process.h>
 #include <wx/recguard.h>

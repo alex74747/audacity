@@ -30,7 +30,6 @@ ShuttleGui.
 #include <wx/defs.h>
 #include <wx/stockitem.h>
 #include <wx/tglbtn.h>
-#include <wx/log.h>
 
 #include "ConfigInterface.h"
 

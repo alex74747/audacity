@@ -17,7 +17,6 @@
 
 #include <wx/app.h>
 #include <wx/cmdline.h>
-#include <wx/log.h>
 #include <wx/process.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>

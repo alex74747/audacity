@@ -20,7 +20,6 @@
 
 #include <math.h>
 #include <vector>
-#include <wx/log.h>
 
 #include "BasicUI.h"
 #include "Sequence.h"
