@@ -969,7 +969,7 @@ void ProjectManager::OnTimer(wxTimerEvent& WXUNUSED(event))
       if(numTasks)
       {
          TranslatableString msg;
-         float ratioComplete= ODManager::Instance()->GetOverallPercentComplete();
+         float ratioComplete = ODManager::Instance()->GetOverallCompletion();
 
          if(ratioComplete>=1.0f)
          {

@@ -92,8 +92,9 @@ class ODManager final
    ///fills in the status bar message for a given track
    void FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip );
 
-   ///Gets the total percent complete for all tasks combined.
-   float GetOverallPercentComplete();
+   ///Gets the total fraction complete for all tasks combined, weighting the tasks
+   /// equally.
+   float GetOverallCompletion();
 
    ///Get Total Number of Tasks.
    int GetTotalNumTasks();

@@ -72,9 +72,7 @@ class ODDecodeTask /* not final */ : public ODTask
 
 
 protected:
-
-   ///recalculates the percentage complete.
-   void CalculatePercentComplete() override;
+   float ComputeFractionComplete() override;
 
    ///Computes and writes the data for one BlockFile if it still has a refcount.
    void DoSomeInternal() override;

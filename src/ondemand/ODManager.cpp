@@ -481,14 +481,15 @@ void ODManager::FillTipForWaveTrack( const WaveTrack * t, TranslatableString &ti
    mQueuesMutex.Unlock();
 }
 
-///Gets the total percent complete for all tasks combined.
-float ODManager::GetOverallPercentComplete()
+///Gets the total fraction complete for all tasks combined, weighting the tasks
+/// equally.
+float ODManager::GetOverallCompletion()
 {
    float total=0.0;
    mQueuesMutex.Lock();
    for(unsigned int i=0;i<mQueues.size();i++)
    {
-      total+=mQueues[i]->GetFrontTask()->PercentComplete();
+      total+=mQueues[i]->GetFrontTask()->FractionComplete();
    }
    mQueuesMutex.Unlock();
 

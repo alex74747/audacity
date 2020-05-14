@@ -55,9 +55,9 @@ void ODTask::TerminateAndBlock()
 }
 
 ///Do a modular part of the task.  For example, if the task is to load the entire file, load one BlockFile.
-///Relies on DoSomeInternal(), which the subclasses must implement.
-///@param amountWork the percent amount of the total job to do.  1.0 represents the entire job.  the default of 0.0
-/// will do the smallest unit of work possible
+///Relies on DoSomeInternal(), which is the subclasses must implement.
+///@param amountWork between 0 and 1, the fraction of the total job to do.
+/// will do at least the smallest unit of work possible
 void ODTask::DoSome(float amountWork)
 {
    SetIsRunning(true);
@@ -67,7 +67,7 @@ void ODTask::DoSome(float amountWork)
 
 //   wxPrintf("%s %i subtask starting on NEW thread with priority\n", GetTaskName(),GetTaskNumber());
 
-   float workUntil = amountWork+PercentComplete();
+   float workUntil = amountWork+FractionComplete();
 
    //check periodically to see if we should exit.
    auto terminate = [this]{
@@ -80,27 +80,28 @@ void ODTask::DoSome(float amountWork)
 
    Update();
 
-   if(UsesCustomWorkUntilPercentage())
-      workUntil = ComputeNextWorkUntilPercentageComplete();
+   if(UsesCustomNextFraction())
+      workUntil = ComputeNextFractionComplete();
 
-   if(workUntil<PercentComplete())
-      workUntil = PercentComplete();
+   if(workUntil<FractionComplete())
+      workUntil = FractionComplete();
 
    //Do Some of the task.
 
-   while(PercentComplete() < workUntil && PercentComplete() < 1.0 && !terminate())
+   while(FractionComplete() < workUntil && FractionComplete() < 1.0 && !terminate())
    {
       std::this_thread::yield();
       //release within the loop so we can cut the number of iterations short
 
       DoSomeInternal();
+      SetFractionComplete( ComputeFractionComplete() );
       //check to see if ondemand has been called
-      if(GetNeedsODUpdate() && PercentComplete() < 1.0)
+      if(GetNeedsODUpdate() && FractionComplete() < 1.0)
          ODUpdate();
    }
 
    //if it is not done, put it back onto the ODManager queue.
-   if(PercentComplete() < 1.0&& !terminate())
+   if(FractionComplete() < 1.0&& !terminate())
    {
       ODManager::Instance()->AddTask(this);
 
@@ -117,7 +118,7 @@ void ODTask::DoSome(float amountWork)
       }
 
 
-//      wxPrintf("%s %i is %f done\n", GetTaskName(),GetTaskNumber(),PercentComplete());
+//      wxPrintf("%s %i is %f done\n", GetTaskName(),GetTaskNumber(),FractionComplete());
    }
    else
    {
@@ -198,20 +199,20 @@ void ODTask::SetDemandSample(sampleCount sample)
 
 
 ///return the amount of the task that has been completed.  0.0 to 1.0
-float ODTask::PercentComplete()
+float ODTask::FractionComplete()
 {
-   return mPercentComplete.load( std::memory_order_acquire );
+   return mFractionComplete.load( std::memory_order_acquire );
 }
 
-void ODTask::SetPercentComplete( float complete )
+void ODTask::SetFractionComplete( float complete )
 {
-   mPercentComplete.store( complete, std::memory_order_release );
+   mFractionComplete.store( complete, std::memory_order_release );
 }
 
 ///return
 bool ODTask::IsComplete()
 {
-   return PercentComplete() >= 1.0 && !IsRunning();
+   return FractionComplete() >= 1.0 && !IsRunning();
 }
 
 
@@ -258,12 +259,12 @@ void ODTask::ResetNeedsODUpdate()
 }
 
 ///does an od update and then recalculates the data.
-void ODTask::RecalculatePercentComplete()
+void ODTask::ReUpdateFractionComplete()
 {
    if(GetNeedsODUpdate())
    {
       ODUpdate();
-      CalculatePercentComplete();
+      SetFractionComplete( ComputeFractionComplete() );
    }
 }
 

@@ -58,11 +58,8 @@ void ODComputeSummaryTask::Terminate()
 ///Computes and writes the data for one BlockFile if it still has a refcount.
 void ODComputeSummaryTask::DoSomeInternal()
 {
-   if(mBlockFiles.size()<=0)
-   {
-      SetPercentComplete( 1.0f );
+   if ( mBlockFiles.empty() )
       return;
-   }
 
    mBlockFilesMutex.Lock();
    for(size_t j=0; j < mWaveTracks.size() && mBlockFiles.size();j++)
@@ -124,19 +121,16 @@ void ODComputeSummaryTask::DoSomeInternal()
    }
 
    mBlockFilesMutex.Unlock();
-
-   //update percentage complete.
-   CalculatePercentComplete();
 }
 
-///compute the next time we should take a break in terms of overall percentage.
+///compute the next time we should take a break in terms of overall completion.
 ///We want to do a constant number of blockfiles.
-float ODComputeSummaryTask::ComputeNextWorkUntilPercentageComplete()
+float ODComputeSummaryTask::ComputeNextFractionComplete()
 {
    if(mMaxBlockFiles==0)
      return 1.0;
 
-   return PercentComplete() + ((float)nBlockFilesPerDoSome/(mMaxBlockFiles+1));
+   return FractionComplete() + ((float)nBlockFilesPerDoSome/(mMaxBlockFiles+1));
 }
 
 void ODComputeSummaryTask::MarkUpdateRan()
@@ -149,12 +143,14 @@ bool ODComputeSummaryTask::HasUpdateRan()
    return mHasUpdateRan.load( std::memory_order_acquire );
 }
 
-void ODComputeSummaryTask::CalculatePercentComplete()
+float ODComputeSummaryTask::ComputeFractionComplete()
 {
-   SetPercentComplete(
-      HasUpdateRan()
-         ? (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1))
-         : 0.0f );
+   if ( mBlockFiles.empty() )
+      return 1;
+   else if ( HasUpdateRan() )
+      return (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
+   else
+      return 0;
 }
 
 ///creates the order of the wavetrack to load.

@@ -35,11 +35,8 @@ ODDecodeTask::ODDecodeTask()
 ///Computes and writes the data for one BlockFile if it still has a refcount.
 void ODDecodeTask::DoSomeInternal()
 {
-   if(mBlockFiles.size()<=0)
-   {
-      SetPercentComplete( 1.0f );
+   if ( mBlockFiles.empty() )
       return;
-   }
 
    ODFileDecoder* decoder;
 
@@ -107,15 +104,14 @@ void ODDecodeTask::DoSomeInternal()
          mWaveTrackMutex.Unlock();
       }
    }
-
-   //update percentage complete.
-   CalculatePercentComplete();
 }
 
-void ODDecodeTask::CalculatePercentComplete()
+float ODDecodeTask::ComputeFractionComplete()
 {
-   SetPercentComplete(
-      (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1)) );
+   if ( mBlockFiles.empty() )
+      return 1;
+   else
+      return (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
 }
 
 bool ODDecodeTask::SeekingAllowed()

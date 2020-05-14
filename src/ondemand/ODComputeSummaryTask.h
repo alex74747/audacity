@@ -47,15 +47,14 @@ class ODComputeSummaryTask final : public ODTask
    TranslatableString GetTip() override
       { return XO("Import complete. Calculating waveform"); }
 
-   bool UsesCustomWorkUntilPercentage() override { return true; }
-   float ComputeNextWorkUntilPercentageComplete() override;
+   bool UsesCustomNextFraction() override { return true; }
+   float ComputeNextFractionComplete() override;
 
    ///releases memory that the ODTask owns.  Subclasses should override.
    void Terminate() override;
 
 protected:
-   ///recalculates the percentage complete.
-   void CalculatePercentComplete() override;
+   float ComputeFractionComplete() override;
 
    ///Computes and writes the data for one BlockFile if it still has a refcount.
    void DoSomeInternal() override;

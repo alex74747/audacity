@@ -267,7 +267,7 @@ bool ODWaveTrackTaskQueue::IsFrontTaskComplete()
    {
       //there is a chance the task got updated and now has more to do, (like when it is joined with a NEW track)
       //check.
-      mTasks[0]->RecalculatePercentComplete();
+      mTasks[0]->ReUpdateFractionComplete();
       bool ret;
       ret = mTasks[0]->IsComplete();
       mTasksMutex.Unlock();
@@ -314,7 +314,7 @@ void ODWaveTrackTaskQueue::FillTipForWaveTrack(
       mTipMsg = XO("%s %2.0f%% complete. Click to change task focal point.")
          .Format(
             GetFrontTask()->GetTip(),
-            GetFrontTask()->PercentComplete()*100.0 );
+            GetFrontTask()->FractionComplete()*100.0 );
      // else
        //  msg = XO("%s %d additional tasks remaining.")
        //     .Format( GetFrontTask()->GetTip(), GetNumTasks());

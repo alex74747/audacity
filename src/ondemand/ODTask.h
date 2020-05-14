@@ -64,18 +64,18 @@ class ODTask /* not final */
 
 ///Do a modular part of the task.  For example, if the task is to load the entire file, load one BlockFile.
 ///Relies on DoSomeInternal(), which is the subclasses must implement.
-///@param amountWork the percent amount of the total job to do.  1.0 represents the entire job.  the default of 0.0
-/// will do the smallest unit of work possible
+///@param amountWork between 0 and 1, the fraction of the total job to do.
+/// will do at least the smallest unit of work possible
    void DoSome(float amountWork=0.0);
 
-   ///Call DoSome until PercentComplete >= 1.0
+   ///Call DoSome until FractionComplete >= 1.0
    void DoAll();
 
-   float PercentComplete();
-   void SetPercentComplete( float complete );
+   float FractionComplete();
+   void SetFractionComplete( float complete );
 
-   virtual bool UsesCustomWorkUntilPercentage(){return false;}
-   virtual float ComputeNextWorkUntilPercentageComplete(){return 1.0;}
+   virtual bool UsesCustomNextFraction(){return false;}
+   virtual float ComputeNextFractionComplete(){return 1.0;}
 
    ///returns whether or not this task and another task can merge together, as when we make two mono tracks stereo.
    ///for Loading/Summarizing, this is not an issue because the entire track is processed
@@ -110,7 +110,7 @@ class ODTask /* not final */
    virtual void SetDemandSample(sampleCount sample);
 
    ///does an od update and then recalculates the data.
-   void RecalculatePercentComplete();
+   void ReUpdateFractionComplete();
 
    ///returns the number of tasks created before this instance.
    int GetTaskNumber(){return mTaskNumber;}
@@ -129,8 +129,8 @@ class ODTask /* not final */
 
  protected:
 
-   ///calculates the percentage complete from existing data.
-   virtual void CalculatePercentComplete() = 0;
+   ///calculates the fraction complete from existing data.
+   virtual float ComputeFractionComplete() = 0;
 
    ///pure virtual function that does some part of the task this object represents.
    ///this function is meant to be called repeatedly until IsComplete is true.
@@ -150,7 +150,7 @@ class ODTask /* not final */
 
 
    int   mTaskNumber;
-   std::atomic<float> mPercentComplete{ 0.0f };
+   std::atomic<float> mFractionComplete{ 0.0f };
    std::atomic< bool > mTerminate{ false };
    //for a function not a member var.
    ODLock mBlockUntilTerminateMutex;
