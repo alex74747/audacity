@@ -25,7 +25,6 @@ function.
 #include "FFmpegFunctions.h"
 
 #include <wx/log.h>
-#include <wx/textctrl.h>
 #include <wx/listbox.h>
 #include <wx/spinctrl.h>
 

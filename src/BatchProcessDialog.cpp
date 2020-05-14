@@ -28,7 +28,6 @@
 #include <wx/log.h>
 #include <wx/statbox.h>
 #include <wx/stattext.h>
-#include <wx/textctrl.h>
 #include <wx/listctrl.h>
 #include <wx/button.h>
 #include <wx/imaglist.h>
