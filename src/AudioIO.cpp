@@ -1458,9 +1458,9 @@ int AudioIO::StartStream(const TransportTracks &tracks,
 {
    mLostSamples = 0;
    mLostCaptureIntervals.clear();
-   mDetectDropouts =
-      gPrefs->Read( WarningDialogKey(wxT("DropoutDetected")), true ) != 0;
-   auto cleanup = finally ( [this] { ClearRecordingException(); } );
+   auto cleanup = finally ( [this] {
+      // Tell the fill-buffers thread
+      mRecordingException.store( false, std::memory_order_release ); } );
 
    if( IsBusy() )
       return 0;
@@ -2123,7 +2123,8 @@ void AudioIO::SetMeters()
 void AudioIO::StopStream()
 {
    auto cleanup = finally ( [this] {
-      ClearRecordingException();
+      // Tell the fill-buffers thread
+      mRecordingException.store( false, std::memory_order_release );
       mRecordingSchedule.mCrossfadeData.clear(); // free arrays
    } );
 
@@ -2841,7 +2842,9 @@ void AudioIO::FillBuffers()
       }
    }  // end of playback buffering
 
-   if (!mRecordingException &&
+   // Test first if the main thread has cleared the exception
+   // If there is already an exception, skip
+   if (! mRecordingException.load( std::memory_order_acquire ) &&
        mCaptureTracks.size() > 0)
       GuardedCall( [&] {
          // start record buffering
@@ -3011,7 +3014,8 @@ void AudioIO::FillBuffers()
          if ( pException ) {
             // So that we don't attempt to fill the recording buffer again
             // before the main thread stops recording
-            SetRecordingException();
+            // (Relaxed order, because only this thread needs to read it again)
+            mRecordingException.store( true, std::memory_order_relaxed );
             return ;
          }
          else

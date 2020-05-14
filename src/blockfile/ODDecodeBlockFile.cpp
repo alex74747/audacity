@@ -316,7 +316,7 @@ bool ODDecodeBlockFile::IsSummaryAvailable() const
 
 bool ODDecodeBlockFile::IsDataAvailable() const
 {
-   return mDataAvailable != 0;
+   return mDataAvailable.load( std::memory_order_acquire ) != 0;
 }
 
 /// Write the summary to disk, using the derived ReadData() to get the data
@@ -359,7 +359,7 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
          return -1;
    }
 
-   wxAtomicInc( mDataAvailable );
+   mDataAvailable.store( true, std::memory_order_release );
 
    return ret;
 }

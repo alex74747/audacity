@@ -21,7 +21,6 @@
 
 #include <memory>
 #include <utility>
-#include <wx/atomic.h> // member variable
 
 #ifdef USE_MIDI
 
@@ -504,11 +503,7 @@ public:
 protected:
    // A flag tested and set in one thread, cleared in another.  Perhaps
    // this guarantee of atomicity is more cautious than necessary.
-   wxAtomicInt mRecordingException {};
-   void SetRecordingException()
-      { wxAtomicInc( mRecordingException ); }
-   void ClearRecordingException()
-      { if (mRecordingException) wxAtomicDec( mRecordingException ); }
+   std::atomic< bool > mRecordingException { false };
 
    std::vector< std::pair<double, double> > mLostCaptureIntervals;
    bool mDetectDropouts{ true };
