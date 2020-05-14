@@ -170,8 +170,7 @@ class ODDecodeBlockFile final : public SimpleBlockFile
    wxAtomicInt mDataAvailable{ 0 };
    bool mDataBeingComputed;
 
-   ODFileDecoder* mDecoder;
-   ODLock mDecoderMutex;
+   std::atomic<ODFileDecoder*> mDecoder{ nullptr };
 
    ///For accessing the audio file that will be decoded.  Used by dir manager;
    mutable ODLock mReadDataMutex;
@@ -221,8 +220,7 @@ protected:
    ///Derived classes should call this after they have parsed the header.
    void MarkInitialized();
 
-   bool     mInited;
-   ODLock   mInitedLock;
+   std::atomic< bool > mInited{ false };
 
    const wxString  mFName;
 

@@ -85,7 +85,6 @@ UndoManager::UndoManager( AudacityProject &project )
 {
    current = -1;
    saved = -1;
-   ResetODChangesFlag();
 }
 
 UndoManager::~UndoManager()
@@ -415,23 +414,15 @@ void UndoManager::StateSaved()
 ///to mark as unsaved changes without changing the state/tracks.
 void UndoManager::SetODChangesFlag()
 {
-   mODChangesMutex.Lock();
-   mODChanges=true;
-   mODChangesMutex.Unlock();
+   mODChanges.store( true, std::memory_order_release );
 }
 
 bool UndoManager::HasODChangesFlag() const
 {
-   bool ret;
-   mODChangesMutex.Lock();
-   ret=mODChanges;
-   mODChangesMutex.Unlock();
-   return ret;
+   return mODChanges.load( std::memory_order_acquire );
 }
 
 void UndoManager::ResetODChangesFlag()
 {
-   mODChangesMutex.Lock();
-   mODChanges=false;
-   mODChangesMutex.Unlock();
+   mODChanges.store( false, std::memory_order_release );
 }

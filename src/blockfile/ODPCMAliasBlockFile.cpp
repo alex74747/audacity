@@ -49,7 +49,7 @@ ODPCMAliasBlockFile::ODPCMAliasBlockFile(
 : PCMAliasBlockFile { std::move(fileName), std::move(aliasedFileName),
                       aliasStart, aliasLen, aliasChannel, false }
 {
-   mSummaryAvailable = mSummaryBeingComputed = mHasBeenSaved = false;
+    mSummaryBeingComputed = mHasBeenSaved = false;
 }
 
 ///summaryAvailable should be true if the file has been written already.
@@ -62,8 +62,8 @@ ODPCMAliasBlockFile::ODPCMAliasBlockFile(
 : PCMAliasBlockFile(std::move(existingSummaryFileName), std::move(aliasedFileName),
                     aliasStart, aliasLen,
                     aliasChannel, min, max, rms)
+, mSummaryAvailable{ summaryAvailable }
 {
-   mSummaryAvailable=summaryAvailable;
    mSummaryBeingComputed=mHasBeenSaved=false;
  }
 
@@ -341,11 +341,7 @@ void ODPCMAliasBlockFile::Recover(void)
 
 bool ODPCMAliasBlockFile::IsSummaryAvailable() const
 {
-   bool retval;
-   mSummaryAvailableMutex.Lock();
-   retval= mSummaryAvailable;
-   mSummaryAvailableMutex.Unlock();
-   return retval;
+   return mSummaryAvailable.load( std::memory_order_acquire );
 }
 
 ///Calls write summary, and makes sure it is only done once in a thread-safe fashion.
@@ -423,9 +419,7 @@ void ODPCMAliasBlockFile::WriteSummary()
 
     //     wxPrintf("write successful. filename: %s\n", fileNameChar);
 
-   mSummaryAvailableMutex.Lock();
-   mSummaryAvailable=true;
-   mSummaryAvailableMutex.Unlock();
+   mSummaryAvailable.store( true, std::memory_order_release );
 }
 
 

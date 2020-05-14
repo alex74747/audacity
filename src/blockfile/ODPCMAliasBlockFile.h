@@ -36,6 +36,7 @@ Some of these methods have been overridden only because they used the unsafe wxL
 #ifndef __AUDACITY_ODPCMALIASBLOCKFILE__
 #define __AUDACITY_ODPCMALIASBLOCKFILE__
 
+#include <atomic>
 #include "PCMAliasBlockFile.h"
 
 /// An AliasBlockFile that references uncompressed data in an existing file
@@ -151,8 +152,7 @@ protected:
    //lock the read data - libsndfile can't handle two reads at once?
    mutable ODLock mReadDataMutex;
 
-   mutable ODLock    mSummaryAvailableMutex;
-   bool mSummaryAvailable;
+   std::atomic<bool> mSummaryAvailable{ false };
    bool mSummaryBeingComputed;
    bool mHasBeenSaved;
 

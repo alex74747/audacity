@@ -49,6 +49,7 @@
 #ifndef __AUDACITY_UNDOMANAGER__
 #define __AUDACITY_UNDOMANAGER__
 
+#include <atomic>
 #include <vector>
 #include <wx/event.h> // to declare custom event types
 #include "ondemand/ODTaskThread.h"
@@ -186,9 +187,7 @@ class AUDACITY_DLL_API UndoManager final
    SpaceArray space;
    unsigned long long mClipboardSpaceUsage {};
 
-   bool mODChanges;
-   mutable ODLock mODChangesMutex;//mODChanges is accessed from many threads.
-
+   std::atomic<bool> mODChanges{ false };
 };
 
 #endif

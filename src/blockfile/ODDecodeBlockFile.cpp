@@ -49,7 +49,6 @@ try
    mAliasStart(aliasStart),
    mAliasChannel(aliasChannel)
 {
-   mDecoder = NULL;
    mAudioFileName = std::move(audioFileName);
    mFormat = int16Sample;
 }
@@ -73,7 +72,6 @@ ODDecodeBlockFile::ODDecodeBlockFile(wxFileNameWrapper &&existingFile, wxFileNam
    mAliasStart(aliasStart),
    mAliasChannel(aliasChannel)
 {
-   mDecoder = NULL;
    mAudioFileName = std::move(audioFileName);
    mFormat = int16Sample;
 }
@@ -335,13 +333,12 @@ int ODDecodeBlockFile::WriteODDecodeBlockFile()
 
    {
       //use the decoder here.
-      ODLocker locker{ &mDecoderMutex };
-
-      if(!mDecoder)
+      auto pDecoder = mDecoder.load( std::memory_order_acquire );
+      if( !pDecoder )
          return -1;
 
       //sampleData and mFormat are set by the decoder.
-      ret = mDecoder->Decode(sampleData, mFormat, mAliasStart, mLen, mAliasChannel);
+      ret = pDecoder->Decode(sampleData, mFormat, mAliasStart, mLen, mAliasChannel);
 
       if(ret < 0) {
          wxPrintf("ODDecodeBlockFile Decode failure\n");
@@ -484,11 +481,9 @@ bool ODDecodeBlockFile::ReadSummary(ArrayOf<char> &data)
 void ODDecodeBlockFile::SetODFileDecoder(ODFileDecoder* decoder)
 {
    //since this is the only place that writes to mdecoder, it is totally thread-safe to read check without the mutex
-   if(decoder == mDecoder)
+   if ( decoder == mDecoder.load( std::memory_order_relaxed ) )
       return;
-   mDecoderMutex.Lock();
-   mDecoder = decoder;
-   mDecoderMutex.Unlock();
+   mDecoder.store( mDecoder, std::memory_order_release );
 }
 
 
@@ -538,7 +533,6 @@ static DirManager::RegisteredBlockFileDeserializer sRegistration {
 ODFileDecoder::ODFileDecoder(const wxString & fName)
    : mFName{ fName }
 {
-   mInited = false;
 }
 
 ODFileDecoder::~ODFileDecoder()
@@ -547,18 +541,12 @@ ODFileDecoder::~ODFileDecoder()
 
 bool ODFileDecoder::IsInitialized()
 {
-   bool ret;
-   mInitedLock.Lock();
-   ret = mInited;
-   mInitedLock.Unlock();
-   return ret;
+   return mInited.load( std::memory_order_acquire );
 }
 
 ///Derived classes should call this after they have parsed the header.
 void ODFileDecoder::MarkInitialized()
 {
-   mInitedLock.Lock();
-   mInited=true;
-   mInitedLock.Unlock();
+   mInited.store( true, std::memory_order_release );
 }
 
