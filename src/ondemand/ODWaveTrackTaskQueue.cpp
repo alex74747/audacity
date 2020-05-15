@@ -130,17 +130,14 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
 void ODWaveTrackTaskQueue::MakeWaveTrackIndependent(
    const std::shared_ptr< WaveTrack > &track)
 {
-   // First remove expired weak pointers
-   Compress();
-   
-   mTracksMutex.Lock();
+   TracksLocker locker{ &mTracksMutex };
 
+   // First remove expired weak pointers
+   Compress( locker );
+   
    if(mTracks.size()<2)
-   {
       //if there is only one track, it is already independent.
-      mTracksMutex.Unlock();
       return;
-   }
 
    for(unsigned int i=0;i<mTracks.size();i++)
    {
@@ -166,7 +163,6 @@ void ODWaveTrackTaskQueue::MakeWaveTrackIndependent(
          break;
       }
    }
-   mTracksMutex.Unlock();
 }
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
@@ -209,12 +205,12 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(Track *oldTrack,
 ///returns the number of wavetracks in this queue.
 int ODWaveTrackTaskQueue::GetNumWaveTracks()
 {
-   Compress();
+   TracksLocker locker{ &mTracksMutex };
+
+   Compress( locker );
 
    int ret = 0;
-   mTracksMutex.Lock();
    ret=mTracks.size();
-   mTracksMutex.Unlock();
    return ret;
 }
 
@@ -244,12 +240,13 @@ ODTask* ODWaveTrackTaskQueue::GetTask(size_t x)
 //returns true if either tracks or tasks are empty
 bool ODWaveTrackTaskQueue::IsEmpty()
 {
-   Compress();
-
    bool isEmpty;
-   mTracksMutex.Lock();
-   isEmpty = mTracks.size()<=0;
-   mTracksMutex.Unlock();
+   {
+      TracksLocker locker{ &mTracksMutex };
+      Compress( locker );
+
+      isEmpty = mTracks.size()<=0;
+   }
 
    mTasksMutex.Lock();
    isEmpty = isEmpty || mTasks.size()<=0;
@@ -304,12 +301,11 @@ void ODWaveTrackTaskQueue::FillTipForWaveTrack(
    }
 }
 
-void ODWaveTrackTaskQueue::Compress()
+// Call this only within the scope of a lock on the set of tracks!
+void ODWaveTrackTaskQueue::Compress( const TracksLocker & )
 {
-   mTracksMutex.Lock();
    auto begin = mTracks.begin(), end = mTracks.end(),
    new_end = std::remove_if( begin, end,
       []( const std::weak_ptr<WaveTrack> &ptr ){ return ptr.expired(); } );
    mTracks.erase( new_end, end );
-   mTracksMutex.Unlock();
 }

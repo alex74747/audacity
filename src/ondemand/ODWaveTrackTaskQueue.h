@@ -33,6 +33,7 @@ class ODTask;
 class ODWaveTrackTaskQueue final
 {
  public:
+   using TracksLocker = ODLocker;
 
    // Constructor / Destructor
 
@@ -91,7 +92,7 @@ class ODWaveTrackTaskQueue final
  protected:
 
    // Remove expired weak pointers to tracks
-   void Compress();
+   void Compress( const TracksLocker& );
 
    //because we need to save this around for the tool tip.
    TranslatableString mTipMsg;
