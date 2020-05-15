@@ -421,7 +421,10 @@ bool ODManager::MakeWaveTrackDependent(
    }
    //then we add dependentTrack to the masterTrack's queue - this will allow future ODScheduling to affect them together.
    //this sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
-   masterQueue->MergeWaveTrack(dependentTrack);
+   {
+      ODWaveTrackTaskQueue::TracksLocker locker{ &masterQueue->mTracksMutex };
+      masterQueue->MergeWaveTrack( std::move( locker ), dependentTrack );
+   }
 
    //finally remove the dependent track
    DeleteQueue( dependentIndex );
@@ -436,9 +439,10 @@ bool ODManager::MakeWaveTrackDependent(
 void ODManager::DemandTrackUpdate(WaveTrack* track, double seconds)
 {
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( const auto &pQueue : mQueues )
    {
-      mQueues[i]->DemandTrackUpdate(track,seconds);
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      pQueue->DemandTrackUpdate( locker, track, seconds );
    }
    mQueuesMutex.Unlock();
 }
@@ -448,9 +452,10 @@ void ODManager::DemandTrackUpdate(WaveTrack* track, double seconds)
 void ODManager::UpdateQueues( ODTask *pTask )
 {
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( size_t ii = 0; ii < mQueues.size(); ++ii )
    {
-      if ( pTask == mQueues[i]->GetFrontTask() &&
+      const auto &pQueue = mQueues[ii];
+      if ( pTask == pQueue->GetFrontTask() &&
          //there is a chance the task got updated and now has more to do,
          //(like when it is joined with a NEW track)
          //check.
@@ -458,24 +463,24 @@ void ODManager::UpdateQueues( ODTask *pTask )
            pTask->FractionComplete() >= 1.0 ) )
       {
          //this should DELETE and remove the front task instance.
-         mQueues[i]->RemoveFrontTask();
+         pQueue->RemoveFrontTask();
+   
          //schedule next.
-         if(!mQueues[i]->IsEmpty())
+         ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+         if ( !pQueue->IsEmpty( std::move( locker ) ) )
          {
             //we need to release the lock on the queue vector before using the task vector's lock or we deadlock
             //so get a temp.
-            ODWaveTrackTaskQueue* queue = mQueues[i].get();
+            ODWaveTrackTaskQueue* queue = pQueue.get();
 
             AddTask(queue->GetFrontTask());
          }
       }
 
       //if the queue is empty DELETE it.
-      if(mQueues[i]->IsEmpty())
-      {
-         DeleteQueue( i );
-         i--;
-      }
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      if ( pQueue->IsEmpty( std::move( locker ) ) )
+         DeleteQueue( ii-- );
    }
    mQueuesMutex.Unlock();
 }

@@ -54,10 +54,12 @@ bool ODWaveTrackTaskQueue::CanMergeWith(ODWaveTrackTaskQueue* otherQueue)
 /// sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
 ///
 ///@param track the track to bring into the tasks AND tracklist for this queue
-void ODWaveTrackTaskQueue::MergeWaveTrack(
+void ODWaveTrackTaskQueue::MergeWaveTrack( TracksLocker &&locker,
    const std::shared_ptr< WaveTrack > &track)
 {
-   AddWaveTrack(track);
+   AddWaveTrack( locker, track );
+   locker.reset();
+
    mTasksMutex.Lock();
    for(unsigned int i=0;i<mTasks.size();i++)
    {
@@ -81,15 +83,11 @@ bool ODWaveTrackTaskQueue::ContainsWaveTrack(
 }
 
 ///Adds a track to the associated list.
-void ODWaveTrackTaskQueue::AddWaveTrack(
+void ODWaveTrackTaskQueue::AddWaveTrack( const TracksLocker &,
    const std::shared_ptr< WaveTrack > &track)
 {
-
-   mTracksMutex.Lock();
    if(track)
       mTracks.push_back(track);
-
-   mTracksMutex.Unlock();
 }
 
 void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
@@ -117,17 +115,13 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///@param track the track to update
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
-void ODWaveTrackTaskQueue::DemandTrackUpdate(WaveTrack* track, double seconds)
+void ODWaveTrackTaskQueue::DemandTrackUpdate( const TracksLocker &,
+   WaveTrack* track, double seconds)
 {
    if(track)
    {
-      mTracksMutex.Lock();
       for(unsigned int i=0;i<mTasks.size();i++)
-      {
          mTasks[i]->DemandTrackUpdate(track,seconds);
-      }
-
-      mTracksMutex.Unlock();
    }
 }
 
@@ -187,14 +181,14 @@ ODTask* ODWaveTrackTaskQueue::GetTask(size_t x)
 
 
 //returns true if either tracks or tasks are empty
-bool ODWaveTrackTaskQueue::IsEmpty()
+bool ODWaveTrackTaskQueue::IsEmpty( TracksLocker &&locker )
 {
    bool isEmpty;
    {
-      TracksLocker locker{ &mTracksMutex };
       Compress( locker );
 
       isEmpty = mTracks.size()<=0;
+      locker.release();
    }
 
    mTasksMutex.Lock();

@@ -45,10 +45,12 @@ class ODWaveTrackTaskQueue final
 
 
    ///Adds a track to the associated list.
-   void AddWaveTrack( const std::shared_ptr< WaveTrack > &track);
+   void AddWaveTrack( const TracksLocker&,
+      const std::shared_ptr< WaveTrack > &track);
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
-   void DemandTrackUpdate(WaveTrack* track, double seconds);
+   void DemandTrackUpdate( const TracksLocker&,
+      WaveTrack* track, double seconds );
 
    ///replaces all instances of a WaveTrack within this task with another.
    void ReplaceWaveTrack(Track *oldTrack,
@@ -56,7 +58,8 @@ class ODWaveTrackTaskQueue final
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
    bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
-   void MergeWaveTrack( const std::shared_ptr< WaveTrack > &track);
+   void MergeWaveTrack( TracksLocker &&locker,
+      const std::shared_ptr< WaveTrack > &track);
 
 
    //returns true if the argument is in the WaveTrack list.
@@ -69,7 +72,7 @@ class ODWaveTrackTaskQueue final
    void AddTask(std::unique_ptr<ODTask> &&mtask);
 
    //returns true if either tracks or tasks are empty
-   bool IsEmpty();
+   bool IsEmpty( TracksLocker&& );
 
    ///Removes and deletes the front task from the list.
    void RemoveFrontTask();
