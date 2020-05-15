@@ -89,12 +89,12 @@ void ODWaveTrackTaskQueue::AddWaveTrack( const TracksLocker &,
       mTracks.push_back(track);
 }
 
-void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
+void ODWaveTrackTaskQueue::AddTask( const TracksLocker &,
+   std::unique_ptr<ODTask> &&mtask)
 {
    ODTask *task = mtask.get();
 
    //take all of the tracks in the task.
-   mTracksMutex.Lock();
    for(int i=0;i<task->GetNumWaveTracks();i++)
    {
       //task->GetWaveTrack(i) may return NULL, but we handle it by checking before using.
@@ -106,9 +106,6 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
    mTasksMutex.Lock();
    mTasks.push_back(std::move(mtask));
    mTasksMutex.Unlock();
-
-   mTracksMutex.Unlock();
-
 }
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
@@ -126,12 +123,12 @@ void ODWaveTrackTaskQueue::DemandTrackUpdate( const TracksLocker &,
 
 
 //Replaces all instances of a wavetracck with a NEW one (effectively transferes the task.)
-void ODWaveTrackTaskQueue::ReplaceWaveTrack(Track *oldTrack,
-   const std::shared_ptr<Track> &newTrack)
+void ODWaveTrackTaskQueue::ReplaceWaveTrack( const TracksLocker &,
+   Track *oldTrack,
+   const std::shared_ptr<Track> &newTrack )
 {
    if(oldTrack)
    {
-      mTracksMutex.Lock();
       for(unsigned int i=0;i<mTracks.size();i++)
          if ( mTracks[i].lock().get() == oldTrack )
             mTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
@@ -140,21 +137,7 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(Track *oldTrack,
       for(unsigned int i=0;i<mTasks.size();i++)
          mTasks[i]->ReplaceWaveTrack( oldTrack, newTrack );
       mTasksMutex.Unlock();
-
-      mTracksMutex.Unlock();
    }
-}
-
-///returns the number of wavetracks in this queue.
-int ODWaveTrackTaskQueue::GetNumWaveTracks()
-{
-   TracksLocker locker{ &mTracksMutex };
-
-   Compress( locker );
-
-   int ret = 0;
-   ret=mTracks.size();
-   return ret;
 }
 
 ///returns the number of ODTasks in this queue

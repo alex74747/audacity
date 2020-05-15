@@ -53,8 +53,8 @@ class ODWaveTrackTaskQueue final
       WaveTrack* track, double seconds );
 
    ///replaces all instances of a WaveTrack within this task with another.
-   void ReplaceWaveTrack(Track *oldTrack,
-      const std::shared_ptr<Track> &newTrack);
+   void ReplaceWaveTrack( const TracksLocker &, Track *oldTrack,
+      const std::shared_ptr<Track> &newTrack );
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
    bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
@@ -65,11 +65,8 @@ class ODWaveTrackTaskQueue final
    //returns true if the argument is in the WaveTrack list.
    bool ContainsWaveTrack( const TracksLocker&, const WaveTrack* track );
 
-   ///returns the number of wavetracks in this queue.
-   int GetNumWaveTracks();
-
    ///Add a task to the queue.
-   void AddTask(std::unique_ptr<ODTask> &&mtask);
+   void AddTask( const TracksLocker&, std::unique_ptr<ODTask> &&mtask );
 
    //returns true if either tracks or tasks are empty
    bool IsEmpty( const TracksLocker& );

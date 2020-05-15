@@ -131,22 +131,25 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
       //note that GetWaveTrack is not threadsafe, but we are assuming task is not running on a different thread yet.
       ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
       if( pQueue->ContainsWaveTrack( locker, task->GetWaveTrack(0).get() ) )
+      {
+         //Add it to the existing queue but keep the lock since this reference can be deleted.
+         queue->AddTask( locker, std::move(mtask) );
+         if(lockMutex)
+            mQueuesMutex.Unlock();
          queue = pQueue.get();
+         break;
+      }
    }
 
-   if(queue)
-   {
-      //Add it to the existing queue but keep the lock since this reference can be deleted.
-      queue->AddTask(std::move(mtask));
-      if(lockMutex)
-         mQueuesMutex.Unlock();
-   }
-   else
+   if( !queue )
    {
       //Make a NEW one, add it to the local track queue, and to the immediate running task list,
       //since this task is definitely at the head
       auto newqueue = std::make_unique<ODWaveTrackTaskQueue>();
-      newqueue->AddTask(std::move(mtask));
+      {
+         ODWaveTrackTaskQueue::TracksLocker locker{ &newqueue->mTracksMutex };
+         newqueue->AddTask( locker, std::move(mtask) );
+      }
       mQueues.push_back(std::move(newqueue));
       if(lockMutex)
          mQueuesMutex.Unlock();
@@ -317,9 +320,10 @@ void ODManager::ReplaceWaveTrack(Track *oldTrack,
    const std::shared_ptr<Track> &newTrack)
 {
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( const auto &pQueue : mQueues )
    {
-      mQueues[i]->ReplaceWaveTrack( oldTrack, newTrack );
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      pQueue->ReplaceWaveTrack( locker, oldTrack, newTrack );
    }
    mQueuesMutex.Unlock();
 }
