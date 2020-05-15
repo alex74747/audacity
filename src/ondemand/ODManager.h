@@ -41,6 +41,8 @@ class ODWaveTrackTaskQueue;
 class ODManager final
 {
  public:
+   using QueuesLocker = ODLocker;
+
    ///Get the singleton instance (creating it only on demand)
    static ODManager* Instance();
 
@@ -54,7 +56,8 @@ class ODManager final
    void DecrementCurrentThreads();
 
    ///Adds a wavetrack, creates a queue member.
-   void AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex=true);
+   void AddNewTask( std::unique_ptr<ODTask> mtask );
+   void DoAddNewTask( const QueuesLocker &, std::unique_ptr<ODTask> mtask );
 
    ///if it shares a queue/task, creates a NEW queue/task for the track, and removes it from any previously existing tasks.
    void MakeWaveTrackIndependent( const std::shared_ptr< WaveTrack > &track);

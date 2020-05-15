@@ -118,13 +118,17 @@ void ODManager::RemoveTaskIfInQueue(ODTask* task)
 ///
 ///@param task the task to add
 ///@param lockMutex locks the mutexes if true (default).  This function is used within other ODManager calls, which many need to set this to false.
-void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
+void ODManager::AddNewTask(std::unique_ptr<ODTask> mtask)
+{
+   QueuesLocker locker{ &mQueuesMutex };
+   DoAddNewTask( locker, std::move( mtask ) );
+}
+
+void ODManager::DoAddNewTask( const QueuesLocker &, std::unique_ptr<ODTask> mtask )
 {
    auto task = mtask.get();
    ODWaveTrackTaskQueue* queue = NULL;
 
-   if(lockMutex)
-      mQueuesMutex.Lock();
    for ( const auto &pQueue : mQueues )
    {
       //search for a task containing the lead track.  wavetrack removal is threadsafe and bound to the mQueuesMutex
@@ -134,8 +138,6 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
       {
          //Add it to the existing queue but keep the lock since this reference can be deleted.
          queue->AddTask( locker, std::move(mtask) );
-         if(lockMutex)
-            mQueuesMutex.Unlock();
          queue = pQueue.get();
          break;
       }
@@ -151,9 +153,6 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
          newqueue->AddTask( locker, std::move(mtask) );
       }
       mQueues.push_back(std::move(newqueue));
-      if(lockMutex)
-         mQueuesMutex.Unlock();
-
       AddTask(task);
    }
 }
@@ -332,7 +331,7 @@ void ODManager::ReplaceWaveTrack(Track *oldTrack,
 void ODManager::MakeWaveTrackIndependent(
    const std::shared_ptr< WaveTrack > &track)
 {
-   mQueuesMutex.Lock();
+   QueuesLocker locker{ &mQueuesMutex };
    for ( const auto &pQueue : mQueues )
    {
       ODWaveTrackTaskQueue::TracksLocker locker1{ &pQueue->mTracksMutex };
@@ -364,9 +363,7 @@ void ODManager::MakeWaveTrackIndependent(
                      //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
                      //has already locked the m_queuesMutex.
                      owner->mTasksMutex.Unlock();
-                     //AddNewTask locks the m_queuesMutex which is already locked by ODManager::MakeWaveTrackIndependent,
-                     //so we pass a boolean flag telling it not to lock again.
-                     this->AddNewTask(std::move(task), false);
+                     this->DoAddNewTask( locker, std::move(task) );
                      owner->mTasksMutex.Lock();
                   }
                   owner->mTasksMutex.Unlock();
@@ -377,8 +374,6 @@ void ODManager::MakeWaveTrackIndependent(
          break;
       }
    }
-
-   mQueuesMutex.Unlock();
 }
 
 ///attach the track in question to another, already existing track's queues and tasks.  Remove the task/tracks.
