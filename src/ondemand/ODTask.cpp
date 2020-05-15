@@ -28,6 +28,8 @@ in a background thread.
 //temporarily commented out till it is added to all projects
 //#include "../Profiler.h"
 
+#include <thread>
+
 
 wxDEFINE_EVENT(EVT_ODTASK_COMPLETE, wxCommandEvent);
 
@@ -106,7 +108,7 @@ void ODTask::DoSome(float amountWork)
    mTerminateMutex.Lock();
    while(PercentComplete() < workUntil && PercentComplete() < 1.0 && !mTerminate)
    {
-      wxThread::This()->Yield();
+      std::this_thread::yield();
       //release within the loop so we can cut the number of iterations short
 
       DoSomeInternal(); //keep the terminate mutex on so we don't remo

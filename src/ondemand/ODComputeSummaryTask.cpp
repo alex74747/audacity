@@ -25,6 +25,8 @@ updating the ODPCMAliasBlockFile and the GUI of the newly available data.
 #include "../WaveTrack.h"
 #include <wx/wx.h>
 
+#include <thread>
+
 //36 blockfiles > 3 minutes stereo 44.1kHz per ODTask::DoSome
 #define nBlockFilesPerDoSome 36
 
@@ -106,7 +108,7 @@ void ODComputeSummaryTask::DoSomeInternal()
       //This is a bit of a convenience in case someone tries to terminate the task by closing the trackpanel or window.
       //ODComputeSummaryTask::Terminate() uses this lock to remove everything, and we don't want it to wait since the UI is being blocked.
       mBlockFilesMutex.Unlock();
-      wxThread::This()->Yield();
+      std::this_thread::yield();
       mBlockFilesMutex.Lock();
 
       //update the gui for all associated blocks.  It doesn't matter that we're hitting more wavetracks then we should

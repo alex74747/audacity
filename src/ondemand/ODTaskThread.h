@@ -8,11 +8,6 @@
   Audacity(R) is copyright (c) 1999-2008 Audacity Team.
   License: GPL v2.  See License.txt.
 
-******************************************************************//**
-
-\class ODTaskThread
-\brief A thread that executes a part of the task specfied by an ODTask.
-
 *//*******************************************************************/
 
 
@@ -88,8 +83,7 @@ protected:
 class AUDACITY_DLL_API ODLock final : public wxMutex
 {
 public:
-   ///Constructs a ODTaskThread
-   ///@param task the task to be launched as an
+   ///Constructs an ODLock
    ODLock(){}
   virtual ~ODLock(){}
 };

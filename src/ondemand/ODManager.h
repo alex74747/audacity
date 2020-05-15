@@ -23,13 +23,6 @@ number of threads.
 #include "ODTaskThread.h"
 #include <wx/event.h> // for DECLARE_EXPORTED_EVENT_TYPE
 
-#ifdef __WXMAC__
-// On Mac OS X, it's better not to use the wxThread class.
-// We use our own implementation based on pthreads instead.
-#include <pthread.h>
-#include <time.h>
-#endif //__WXMAC__
-
 // This event is posted to the application
 wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
                          EVT_ODTASK_UPDATE, wxCommandEvent);
@@ -134,8 +127,9 @@ class ODManager final
    ///Launches a thread for the manager and starts accepting Tasks.
    void Init();
 
-   ///Start the main loop for the manager.
-   void Start();
+   /// The main loop for the manager.
+   /// Runs in its own thread, which spawns other worker threads.
+   void DispatchLoop();
 
    ///Remove references in our array to Tasks that have been completed/Schedule NEW ones
    void UpdateQueues();
@@ -175,71 +169,6 @@ class ODManager final
    //for the queue not empty comdition
    ODLock         mQueueNotEmptyCondLock;
    std::unique_ptr<ODCondition> mQueueNotEmptyCond;
-
-#ifdef __WXMAC__
-
-// On Mac OS X, it's better not to use the wxThread class.
-// We use our own implementation based on pthreads instead.
-
-class ODManagerHelperThread {
- public:
-   typedef int ExitCode;
-   ODManagerHelperThread() { mDestroy = false; mThread = NULL; }
-  /* ExitCode*/ void Entry(){
-         ODManager::Instance()->Start();
-   }
-
-   void Create() {}
-   void Delete() {
-      mDestroy = true;
-      pthread_join(mThread, NULL);
-   }
-   bool TestDestroy() { return mDestroy; }
-   void Sleep(int ms) {
-      struct timespec spec;
-      spec.tv_sec = 0;
-      spec.tv_nsec = ms * 1000 * 1000;
-      nanosleep(&spec, NULL);
-   }
-   static void *callback(void *p) {
-      ODManagerHelperThread *th = (ODManagerHelperThread *)p;
-      /* return (void *) */th->Entry();
-      return NULL;
-   }
-
-   ///Specifies the priority the thread will run at.  Currently doesn't work.
-   ///@param priority value from 0 (min priority) to 100 (max priority)
-   void SetPriority(int priority)
-   {
-      mPriority=priority;
-   }
-
-   void Run() {
-      pthread_create(&mThread, NULL, callback, this);
-   }
- private:
-   bool mDestroy;
-   pthread_t mThread;
-   int mPriority;
-};
-#else
-   class ODManagerHelperThread final : public wxThread
-   {
-      public:
-      ///Constructs an ODManagerHelperThread
-      ///@param task the task to be launched as an
-      ODManagerHelperThread(): wxThread(){}
-
-      protected:
-      ///Executes a part of the task
-      void *Entry()
-      {
-         ODManager::Instance()->Start();
-         return NULL;
-      }
-
-   };
-#endif //__WXMAC__
 };
 
 #endif
