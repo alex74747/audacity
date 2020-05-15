@@ -54,10 +54,10 @@ bool ODWaveTrackTaskQueue::CanMergeWith(ODWaveTrackTaskQueue* otherQueue)
 /// sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
 ///
 ///@param track the track to bring into the tasks AND tracklist for this queue
-void ODWaveTrackTaskQueue::MergeWaveTrack( const TracksLocker &locker,
+void ODWaveTrackTaskQueue::MergeWaveTrack(
    const std::shared_ptr< WaveTrack > &track)
 {
-   AddWaveTrack( locker, track );
+   AddWaveTrack( track );
 
    mTasksMutex.Lock();
    for(unsigned int i=0;i<mTasks.size();i++)
@@ -70,8 +70,7 @@ void ODWaveTrackTaskQueue::MergeWaveTrack( const TracksLocker &locker,
 }
 
 ///returns true if the argument is in the WaveTrack list.
-bool ODWaveTrackTaskQueue::ContainsWaveTrack(
-   const TracksLocker &, const WaveTrack* track)
+bool ODWaveTrackTaskQueue::ContainsWaveTrack( const WaveTrack* track )
 {
    for(unsigned int i=0;i<mTracks.size();i++)
    {
@@ -82,15 +81,14 @@ bool ODWaveTrackTaskQueue::ContainsWaveTrack(
 }
 
 ///Adds a track to the associated list.
-void ODWaveTrackTaskQueue::AddWaveTrack( const TracksLocker &,
+void ODWaveTrackTaskQueue::AddWaveTrack(
    const std::shared_ptr< WaveTrack > &track)
 {
    if(track)
       mTracks.push_back(track);
 }
 
-void ODWaveTrackTaskQueue::AddTask( const TracksLocker &,
-   std::unique_ptr<ODTask> &&mtask)
+void ODWaveTrackTaskQueue::AddTask( std::unique_ptr<ODTask> mtask )
 {
    ODTask *task = mtask.get();
 
@@ -111,8 +109,7 @@ void ODWaveTrackTaskQueue::AddTask( const TracksLocker &,
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///@param track the track to update
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
-void ODWaveTrackTaskQueue::DemandTrackUpdate( const TracksLocker &,
-   WaveTrack* track, double seconds)
+void ODWaveTrackTaskQueue::DemandTrackUpdate( WaveTrack* track, double seconds )
 {
    if(track)
    {
@@ -123,7 +120,7 @@ void ODWaveTrackTaskQueue::DemandTrackUpdate( const TracksLocker &,
 
 
 //Replaces all instances of a wavetracck with a NEW one (effectively transferes the task.)
-void ODWaveTrackTaskQueue::ReplaceWaveTrack( const TracksLocker &,
+void ODWaveTrackTaskQueue::ReplaceWaveTrack(
    Track *oldTrack,
    const std::shared_ptr<Track> &newTrack )
 {
@@ -164,11 +161,11 @@ ODTask* ODWaveTrackTaskQueue::GetTask(size_t x)
 
 
 //returns true if either tracks or tasks are empty
-bool ODWaveTrackTaskQueue::IsEmpty( const TracksLocker &locker )
+bool ODWaveTrackTaskQueue::IsEmpty()
 {
    bool isEmpty;
    {
-      Compress( locker );
+      Compress();
 
       isEmpty = mTracks.size()<=0;
    }
@@ -206,10 +203,10 @@ ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 }
 
 ///fills in the status bar message for a given track
-void ODWaveTrackTaskQueue::FillTipForWaveTrack( const TracksLocker &locker,
+void ODWaveTrackTaskQueue::FillTipForWaveTrack(
    const WaveTrack * t, TranslatableString &tip )
 {
-   if ( ContainsWaveTrack( locker, t ) && GetNumTasks() )
+   if ( ContainsWaveTrack( t ) && GetNumTasks() )
    {
 
     //  if(GetNumTasks()==1)
@@ -227,7 +224,7 @@ void ODWaveTrackTaskQueue::FillTipForWaveTrack( const TracksLocker &locker,
 }
 
 // Call this only within the scope of a lock on the set of tracks!
-void ODWaveTrackTaskQueue::Compress( const TracksLocker & )
+void ODWaveTrackTaskQueue::Compress()
 {
    auto begin = mTracks.begin(), end = mTracks.end(),
    new_end = std::remove_if( begin, end,

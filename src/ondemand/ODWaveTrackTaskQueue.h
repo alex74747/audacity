@@ -33,8 +33,6 @@ class ODTask;
 class ODWaveTrackTaskQueue final
 {
  public:
-   using TracksLocker = ODLocker;
-
    // Constructor / Destructor
 
    /// Constructs an ODWaveTrackTaskQueue
@@ -45,31 +43,30 @@ class ODWaveTrackTaskQueue final
 
 
    ///Adds a track to the associated list.
-   void AddWaveTrack( const TracksLocker&,
+   void AddWaveTrack(
       const std::shared_ptr< WaveTrack > &track);
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
-   void DemandTrackUpdate( const TracksLocker&,
+   void DemandTrackUpdate(
       WaveTrack* track, double seconds );
 
    ///replaces all instances of a WaveTrack within this task with another.
-   void ReplaceWaveTrack( const TracksLocker &, Track *oldTrack,
+   void ReplaceWaveTrack( Track *oldTrack,
       const std::shared_ptr<Track> &newTrack );
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
    bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
-   void MergeWaveTrack( const TracksLocker &,
-      const std::shared_ptr< WaveTrack > &track);
+   void MergeWaveTrack( const std::shared_ptr< WaveTrack > &track );
 
 
    //returns true if the argument is in the WaveTrack list.
-   bool ContainsWaveTrack( const TracksLocker&, const WaveTrack* track );
+   bool ContainsWaveTrack( const WaveTrack* track );
 
    ///Add a task to the queue.
-   void AddTask( const TracksLocker&, std::unique_ptr<ODTask> &&mtask );
+   void AddTask( std::unique_ptr<ODTask> mtask );
 
    //returns true if either tracks or tasks are empty
-   bool IsEmpty( const TracksLocker& );
+   bool IsEmpty();
 
    ///Removes and deletes the front task from the list.
    void RemoveFrontTask();
@@ -84,14 +81,14 @@ class ODWaveTrackTaskQueue final
    ODTask* GetTask(size_t x);
 
    ///fills in the status bar message for a given track
-   void FillTipForWaveTrack( const TracksLocker &locker,
+   void FillTipForWaveTrack(
       const WaveTrack * t, TranslatableString &tip );
 
  protected:
    friend class ODManager;
 
    // Remove expired weak pointers to tracks
-   void Compress( const TracksLocker& );
+   void Compress();
 
    //because we need to save this around for the tool tip.
    TranslatableString mTipMsg;
@@ -99,10 +96,7 @@ class ODWaveTrackTaskQueue final
 
   ///the list of tracks associated with this queue.
   std::vector< std::weak_ptr< WaveTrack > > mTracks;
- public:
-  ODLock mTracksMutex;
 
- protected:
   ///the list of tasks associated with the tracks.  This class owns these tasks.
   std::vector<std::unique_ptr<ODTask>> mTasks;
   ODLock    mTasksMutex;
