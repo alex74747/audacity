@@ -464,7 +464,6 @@ void ODManager::DeleteQueue( size_t ii )
          pQueue->RemoveFrontTask();
       }
    }
-   // Relinquish the mutex before destroying it!
    mQueues.erase( ppQueue );
 }
 
@@ -497,32 +496,20 @@ void ODManager::FillTipForWaveTrack( const WaveTrack * t, TranslatableString &ti
       pQueue->FillTipForWaveTrack( t, tip );
 }
 
-///Gets the total fraction complete for all tasks combined, weighting the tasks
-/// equally.
-float ODManager::GetOverallCompletion()
+///Gets the total percent complete for all tasks combined.
+std::pair< float, int > ODManager::GetOverallCompletion()
 {
-   float total=0.0;
+   QueuesLocker locker{ mQueuesMutex };
+   float total = 0.0;
+   int totalTasks = 0;
+   for ( const auto &pQueue : mQueues )
    {
-      QueuesLocker locker{ mQueuesMutex };
-      for ( const auto &pQueue : mQueues )
-      {
-         total += pQueue->GetFrontTask()->FractionComplete();
-      }
+      total += pQueue->GetFrontTask()->FractionComplete();
+      totalTasks += pQueue->GetNumTasks();
    }
 
    //avoid div by zero and be thread smart.
-   int totalTasks = GetTotalNumTasks();
-   return (float) total/(totalTasks>0?totalTasks:1);
+   auto percent = total / ( totalTasks > 0 ? totalTasks : 1 );
+   return { percent, totalTasks };
 }
 
-///Get Total Number of Tasks.
-int ODManager::GetTotalNumTasks()
-{
-   QueuesLocker locker{ mQueuesMutex };
-   int ret=0;
-   for ( const auto &pQueue : mQueues )
-   {
-      ret += pQueue->GetNumTasks();
-   }
-   return ret;
-}

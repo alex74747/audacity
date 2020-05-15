@@ -63,6 +63,7 @@ class ODManager final
 
    ///attach the track in question to another, already existing track's queues and tasks.  Remove the task/tracks.
    ///Returns success if it was possible..  Some ODTask conditions make it impossible until the Tasks finish.
+   ///Callable from the main thread
    bool MakeWaveTrackDependent(
       const std::shared_ptr< WaveTrack > &dependentTrack,
       WaveTrack* masterTrack
@@ -91,12 +92,10 @@ class ODManager final
    ///fills in the status bar message for a given track
    void FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip );
 
-   ///Gets the total fraction complete for all tasks combined, weighting the tasks
-   /// equally.
-   float GetOverallCompletion();
-
-   ///Get Total Number of Tasks.
-   int GetTotalNumTasks();
+   ///Gets the total percent complete for all tasks combined, and number of
+   // tasks
+   ///(Answer might be invalidated by action of other threads)
+   std::pair< float, int > GetOverallCompletion();
 
    // RAII object for pausing and resuming.
    class Pauser

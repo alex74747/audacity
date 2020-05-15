@@ -54,22 +54,18 @@ void ODWaveTrackTaskQueue::MergeWaveTrack(
 {
    AddWaveTrack( track );
 
-   for(unsigned int i=0;i<mTasks.size();i++)
+   for ( const auto &pTask : mTasks )
    {
-      mTasks[i]->AddWaveTrack(track);
-      mTasks[i]->SetNeedsODUpdate();
+      pTask->AddWaveTrack(track);
+      pTask->SetNeedsODUpdate();
    }
 }
 
 ///returns true if the argument is in the WaveTrack list.
 bool ODWaveTrackTaskQueue::ContainsWaveTrack( const WaveTrack* track )
 {
-   for(unsigned int i=0;i<mTracks.size();i++)
-   {
-      if ( mTracks[i].lock().get() == track )
-         return true;
-   }
-   return false;
+   return std::any_of( mTracks.begin(), mTracks.end(),
+     [track]( const auto &pTrack ){ return pTrack.lock().get() == track; } );
 }
 
 ///Adds a track to the associated list.
@@ -116,12 +112,12 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(
 {
    if(oldTrack)
    {
-      for(unsigned int i=0;i<mTracks.size();i++)
-         if ( mTracks[i].lock().get() == oldTrack )
-            mTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
+      for ( auto &pTrack : mTracks )
+         if ( pTrack.lock().get() == oldTrack )
+            pTrack = std::static_pointer_cast<WaveTrack>( newTrack );
 
-      for(unsigned int i=0;i<mTasks.size();i++)
-         mTasks[i]->ReplaceWaveTrack( oldTrack, newTrack );
+      for ( const auto &pTask : mTasks )
+         pTask->ReplaceWaveTrack( oldTrack, newTrack );
    }
 }
 
@@ -152,10 +148,8 @@ bool ODWaveTrackTaskQueue::IsEmpty()
 void ODWaveTrackTaskQueue::RemoveFrontTask()
 {
    if(mTasks.size())
-   {
       //wait for the task to stop running.
       mTasks.erase(mTasks.begin());
-   }
 }
 
 ///gets the front task for immediate execution
@@ -192,6 +186,6 @@ void ODWaveTrackTaskQueue::Compress()
 {
    auto begin = mTracks.begin(), end = mTracks.end(),
    new_end = std::remove_if( begin, end,
-      []( const std::weak_ptr<WaveTrack> &ptr ){ return ptr.expired(); } );
+      []( const auto &ptr ){ return ptr.expired(); } );
    mTracks.erase( new_end, end );
 }

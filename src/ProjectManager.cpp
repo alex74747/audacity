@@ -965,15 +965,17 @@ void ProjectManager::OnTimer(wxTimerEvent& WXUNUSED(event))
    else if(ODManager::IsInstanceCreated())
    {
       //if we have some tasks running, we should say something about it.
-      int numTasks = ODManager::Instance()->GetTotalNumTasks();
-      if(numTasks)
+      auto complete = ODManager::Instance()->GetOverallCompletion();
+      auto ratioComplete = complete.first;
+      auto numTasks = complete.second;
+      if ( numTasks )
       {
          TranslatableString msg;
-         float ratioComplete = ODManager::Instance()->GetOverallCompletion();
+         // Estimate present task completion
 
-         if(ratioComplete>=1.0f)
+         if( ratioComplete >= 1.0f )
             msg = XO("On-demand import and waveform calculation complete.");
-         else if(numTasks>1)
+         else if( numTasks > 1 )
             msg = XO(
 "Import(s) complete. Running %d on-demand waveform calculations. Overall %2.0f%% complete.")
                .Format( numTasks, ratioComplete * 100.0 );
