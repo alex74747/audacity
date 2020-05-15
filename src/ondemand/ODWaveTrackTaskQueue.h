@@ -68,7 +68,8 @@ class ODWaveTrackTaskQueue final
    bool ContainsWaveTrack( const WaveTrack* track );
 
    ///Add a task to the queue.
-   void AddTask( std::unique_ptr<ODTask> mtask );
+   void AddTask( const TasksLocker &,
+      std::unique_ptr<ODTask> mtask );
 
    //returns true if either tracks or tasks are empty
    bool IsEmpty( const TasksLocker & );

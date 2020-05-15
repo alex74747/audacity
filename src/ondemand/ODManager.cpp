@@ -143,7 +143,8 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> mtask)
       mQueues.push_back(std::move(newqueue));
       task = mtask.get();
    }
-   queue->AddTask( std::move(mtask) );
+   ODWaveTrackTaskQueue::TasksLocker locker2{ &queue->mTasksMutex };
+   queue->AddTask( locker2, std::move(mtask) );
    if ( task )
       AddTask( task ); // CV?
 }
@@ -342,18 +343,15 @@ void ODManager::MakeWaveTrackIndependent(
                   pTrack.reset();
 
                   //clone the items in order and add them to the ODManager.
-                  owner->mTasksMutex.Lock();
+                  ODWaveTrackTaskQueue::TasksLocker locker2{ &owner->mTasksMutex };
                   for ( const auto &pTask : owner->mTasks )
                   {
                      auto task = pTask->Clone();
                      pTask->StopUsingWaveTrack( track.get() );
                      //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
                      //has already locked the m_queuesMutex.
-                     owner->mTasksMutex.Unlock();
-                     owner->AddTask( std::move(task) );
-                     owner->mTasksMutex.Lock();
+                     owner->AddTask( locker2, std::move(task) );
                   }
-                  owner->mTasksMutex.Unlock();
                   break;
                }
             }

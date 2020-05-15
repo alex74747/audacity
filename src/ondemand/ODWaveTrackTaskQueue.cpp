@@ -82,7 +82,8 @@ void ODWaveTrackTaskQueue::AddWaveTrack(
       mTracks.push_back(track);
 }
 
-void ODWaveTrackTaskQueue::AddTask( std::unique_ptr<ODTask> mtask )
+void ODWaveTrackTaskQueue::AddTask( const TasksLocker &,
+   std::unique_ptr<ODTask> mtask )
 {
    ODTask *task = mtask.get();
 
@@ -95,9 +96,7 @@ void ODWaveTrackTaskQueue::AddTask( std::unique_ptr<ODTask> mtask )
       mTracks.push_back(task->GetWaveTrack(i));
    }
 
-   mTasksMutex.Lock();
    mTasks.push_back(std::move(mtask));
-   mTasksMutex.Unlock();
 }
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
