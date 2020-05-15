@@ -54,9 +54,6 @@ class ODWaveTrackTaskQueue final
    void ReplaceWaveTrack(Track *oldTrack,
       const std::shared_ptr<Track> &newTrack);
 
-   //if the wavetrack is in this queue, and is not the only wavetrack, clones the tasks and schedules it.
-   void MakeWaveTrackIndependent( const std::shared_ptr< WaveTrack > &track);
-
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
    bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
    void MergeWaveTrack( const std::shared_ptr< WaveTrack > &track);
@@ -91,6 +88,7 @@ class ODWaveTrackTaskQueue final
       const WaveTrack * t, TranslatableString &tip );
 
  protected:
+   friend class ODManager;
 
    // Remove expired weak pointers to tracks
    void Compress( const TracksLocker& );

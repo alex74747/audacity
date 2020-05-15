@@ -74,8 +74,6 @@ class ODManager final
    ///Adds a task to the running queue.  Thread-safe.
    void AddTask(ODTask* task);
 
-   void RemoveTaskIfInQueue(ODTask* task);
-
    ///sets a flag that is set if we have loaded some OD blockfiles from PCM.
    static void MarkLoadedODFlag();
 
@@ -128,6 +126,8 @@ class ODManager final
 
    ///Remove references in our array to Tasks that have been completed/Schedule NEW ones
    void UpdateQueues( ODTask *pTask );
+   void DeleteQueue( size_t ii );
+   void RemoveTaskIfInQueue(ODTask* task);
 
    //instance
    static std::unique_ptr<ODManager> pMan;

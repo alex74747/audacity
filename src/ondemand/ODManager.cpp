@@ -71,9 +71,10 @@ ODManager::~ODManager()
 
    mDispatcher.join();
 
-   //get rid of all the queues.  The queues get rid of the tasks, so we don't worry about them.
-   //nothing else should be running on OD related threads at this point, so we don't lock.
-   mQueues.clear();
+   // get rid of all the queues.
+   // DeleteQueue properly terminates worker threads and destroys task objects.
+   while ( auto size = mQueues.size() )
+      DeleteQueue( size - 1 );
 }
 
 ///Adds a task to running queue.  Thread-safe.
@@ -326,19 +327,51 @@ void ODManager::ReplaceWaveTrack(Track *oldTrack,
 void ODManager::MakeWaveTrackIndependent(
    const std::shared_ptr< WaveTrack > &track)
 {
-   ODWaveTrackTaskQueue* owner=NULL;
    mQueuesMutex.Lock();
    for ( const auto &pQueue : mQueues )
    {
-      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
-      if( pQueue->ContainsWaveTrack( locker, track.get() ) )
+      ODWaveTrackTaskQueue::TracksLocker locker1{ &pQueue->mTracksMutex };
+      if( pQueue->ContainsWaveTrack( locker1, track.get() ) )
       {
-         owner = pQueue.get();
+         const auto owner = pQueue.get();
+
+         //if the wavetrack is in this queue, and is not the only wavetrack,
+         //clone the tasks and schedule it.
+         // First remove expired weak pointers
+         owner->Compress( locker1 );
+      
+         if ( owner->mTracks.size() < 2 )
+            //if there is only one track, it is already independent.
+            ;
+         else {
+            for ( auto &pTrack : owner->mTracks )
+            {
+               if ( pTrack.lock() == track )
+               {
+                  pTrack.reset();
+
+                  //clone the items in order and add them to the ODManager.
+                  owner->mTasksMutex.Lock();
+                  for ( const auto &pTask : owner->mTasks )
+                  {
+                     auto task = pTask->Clone();
+                     pTask->StopUsingWaveTrack( track.get() );
+                     //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
+                     //has already locked the m_queuesMutex.
+                     owner->mTasksMutex.Unlock();
+                     //AddNewTask locks the m_queuesMutex which is already locked by ODManager::MakeWaveTrackIndependent,
+                     //so we pass a boolean flag telling it not to lock again.
+                     this->AddNewTask(std::move(task), false);
+                     owner->mTasksMutex.Lock();
+                  }
+                  owner->mTasksMutex.Unlock();
+                  break;
+               }
+            }
+         }
          break;
       }
    }
-   if(owner)
-      owner->MakeWaveTrackIndependent(track);
 
    mQueuesMutex.Unlock();
 }
@@ -390,7 +423,7 @@ bool ODManager::MakeWaveTrackDependent(
    masterQueue->MergeWaveTrack(dependentTrack);
 
    //finally remove the dependent track
-   mQueues.erase(mQueues.begin()+dependentIndex);
+   DeleteQueue( dependentIndex );
    mQueuesMutex.Unlock();
    return true;
 }
@@ -439,11 +472,28 @@ void ODManager::UpdateQueues( ODTask *pTask )
       //if the queue is empty DELETE it.
       if(mQueues[i]->IsEmpty())
       {
-         mQueues.erase(mQueues.begin()+i);
+         DeleteQueue( i );
          i--;
       }
    }
    mQueuesMutex.Unlock();
+}
+
+void ODManager::DeleteQueue( size_t ii )
+{
+   const auto ppQueue = mQueues.begin() + ii;
+   const auto &pQueue = *ppQueue;
+
+   //we need to DELETE all ODTasks.  We will have to block or wait until block for the active ones.
+   while ( pQueue->GetNumTasks() > 0 )
+   {
+      const auto pTask = pQueue->GetTask(0);
+      pTask->Join();//blocks if active.
+      //small chance we may have re-added the task back into the queue from a diff thread.  - so remove it if we have.
+      RemoveTaskIfInQueue( pTask );
+      pQueue->RemoveFrontTask();
+   }
+   mQueues.erase( ppQueue );
 }
 
 //static

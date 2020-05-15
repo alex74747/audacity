@@ -20,7 +20,6 @@ tasks associated with a WaveTrack.
 #include "ODWaveTrackTaskQueue.h"
 
 #include "ODTask.h"
-#include "ODManager.h"
 #include "../WaveTrack.h"
 /// Constructs an ODWaveTrackTaskQueue
 ODWaveTrackTaskQueue::ODWaveTrackTaskQueue()
@@ -29,14 +28,6 @@ ODWaveTrackTaskQueue::ODWaveTrackTaskQueue()
 
 ODWaveTrackTaskQueue::~ODWaveTrackTaskQueue()
 {
-   //we need to DELETE all ODTasks.  We will have to block or wait until block for the active ones.
-   for ( auto &pTask : mTasks )
-   {
-      pTask->Join();//blocks if active.
-      //small chance we may have re-added the task back into the queue from a diff thread.  - so remove it if we have.
-      ODManager::Instance()->RemoveTaskIfInQueue( pTask.get() );
-   }
-
 }
 
 ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
@@ -121,45 +112,6 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
 
    mTracksMutex.Unlock();
 
-}
-
-//if the wavetrack is in this queue, and is not the only wavetrack, clones the tasks and schedules it.
-void ODWaveTrackTaskQueue::MakeWaveTrackIndependent(
-   const std::shared_ptr< WaveTrack > &track)
-{
-   TracksLocker locker{ &mTracksMutex };
-
-   // First remove expired weak pointers
-   Compress( locker );
-   
-   if(mTracks.size()<2)
-      //if there is only one track, it is already independent.
-      return;
-
-   for(unsigned int i=0;i<mTracks.size();i++)
-   {
-      if ( mTracks[i].lock() == track )
-      {
-         mTracks[i].reset();
-
-         //clone the items in order and add them to the ODManager.
-         mTasksMutex.Lock();
-         for(unsigned int j=0;j<mTasks.size();j++)
-         {
-            auto task = mTasks[j]->Clone();
-            mTasks[j]->StopUsingWaveTrack( track.get() );
-            //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
-            //has already locked the m_queuesMutex.
-            mTasksMutex.Unlock();
-            //AddNewTask locks the m_queuesMutex which is already locked by ODManager::MakeWaveTrackIndependent,
-            //so we pass a boolean flag telling it not to lock again.
-            ODManager::Instance()->AddNewTask(std::move(task), false);
-            mTasksMutex.Lock();
-         }
-         mTasksMutex.Unlock();
-         break;
-      }
-   }
 }
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
