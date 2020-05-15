@@ -58,7 +58,7 @@ class ODWaveTrackTaskQueue final
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
    bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
-   void MergeWaveTrack( TracksLocker &&locker,
+   void MergeWaveTrack( const TracksLocker &,
       const std::shared_ptr< WaveTrack > &track);
 
 
@@ -72,7 +72,7 @@ class ODWaveTrackTaskQueue final
    void AddTask(std::unique_ptr<ODTask> &&mtask);
 
    //returns true if either tracks or tasks are empty
-   bool IsEmpty( TracksLocker&& );
+   bool IsEmpty( const TracksLocker& );
 
    ///Removes and deletes the front task from the list.
    void RemoveFrontTask();

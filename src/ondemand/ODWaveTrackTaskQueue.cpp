@@ -54,11 +54,10 @@ bool ODWaveTrackTaskQueue::CanMergeWith(ODWaveTrackTaskQueue* otherQueue)
 /// sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
 ///
 ///@param track the track to bring into the tasks AND tracklist for this queue
-void ODWaveTrackTaskQueue::MergeWaveTrack( TracksLocker &&locker,
+void ODWaveTrackTaskQueue::MergeWaveTrack( const TracksLocker &locker,
    const std::shared_ptr< WaveTrack > &track)
 {
    AddWaveTrack( locker, track );
-   locker.reset();
 
    mTasksMutex.Lock();
    for(unsigned int i=0;i<mTasks.size();i++)
@@ -94,10 +93,6 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
 {
    ODTask *task = mtask.get();
 
-   mTasksMutex.Lock();
-   mTasks.push_back(std::move(mtask));
-   mTasksMutex.Unlock();
-
    //take all of the tracks in the task.
    mTracksMutex.Lock();
    for(int i=0;i<task->GetNumWaveTracks();i++)
@@ -107,6 +102,10 @@ void ODWaveTrackTaskQueue::AddTask(std::unique_ptr<ODTask> &&mtask)
       //handled by keeping standard weak pointers to tracks, which give thread safety.
       mTracks.push_back(task->GetWaveTrack(i));
    }
+
+   mTasksMutex.Lock();
+   mTasks.push_back(std::move(mtask));
+   mTasksMutex.Unlock();
 
    mTracksMutex.Unlock();
 
@@ -132,15 +131,16 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(Track *oldTrack,
 {
    if(oldTrack)
    {
+      mTracksMutex.Lock();
+      for(unsigned int i=0;i<mTracks.size();i++)
+         if ( mTracks[i].lock().get() == oldTrack )
+            mTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
+
       mTasksMutex.Lock();
       for(unsigned int i=0;i<mTasks.size();i++)
          mTasks[i]->ReplaceWaveTrack( oldTrack, newTrack );
       mTasksMutex.Unlock();
 
-      mTracksMutex.Lock();
-      for(unsigned int i=0;i<mTracks.size();i++)
-         if ( mTracks[i].lock().get() == oldTrack )
-            mTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
       mTracksMutex.Unlock();
    }
 }
@@ -181,14 +181,13 @@ ODTask* ODWaveTrackTaskQueue::GetTask(size_t x)
 
 
 //returns true if either tracks or tasks are empty
-bool ODWaveTrackTaskQueue::IsEmpty( TracksLocker &&locker )
+bool ODWaveTrackTaskQueue::IsEmpty( const TracksLocker &locker )
 {
    bool isEmpty;
    {
       Compress( locker );
 
       isEmpty = mTracks.size()<=0;
-      locker.release();
    }
 
    mTasksMutex.Lock();

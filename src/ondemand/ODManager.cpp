@@ -423,7 +423,7 @@ bool ODManager::MakeWaveTrackDependent(
    //this sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
    {
       ODWaveTrackTaskQueue::TracksLocker locker{ &masterQueue->mTracksMutex };
-      masterQueue->MergeWaveTrack( std::move( locker ), dependentTrack );
+      masterQueue->MergeWaveTrack( locker, dependentTrack );
    }
 
    //finally remove the dependent track
@@ -467,7 +467,7 @@ void ODManager::UpdateQueues( ODTask *pTask )
    
          //schedule next.
          ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
-         if ( !pQueue->IsEmpty( std::move( locker ) ) )
+         if ( !pQueue->IsEmpty( locker ) )
          {
             //we need to release the lock on the queue vector before using the task vector's lock or we deadlock
             //so get a temp.
@@ -479,7 +479,7 @@ void ODManager::UpdateQueues( ODTask *pTask )
 
       //if the queue is empty DELETE it.
       ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
-      if ( pQueue->IsEmpty( std::move( locker ) ) )
+      if ( pQueue->IsEmpty( locker ) )
          DeleteQueue( ii-- );
    }
    mQueuesMutex.Unlock();
