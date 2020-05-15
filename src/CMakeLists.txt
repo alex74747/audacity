@@ -709,8 +709,6 @@ list( APPEND SOURCES
 #      ondemand/ODManager.h
 #      ondemand/ODTask.cpp
 #      ondemand/ODTask.h
-#      ondemand/ODTaskThread.cpp
-#      ondemand/ODTaskThread.h
 #      ondemand/ODWaveTrackTaskQueue.cpp
 #      ondemand/ODWaveTrackTaskQueue.h
 
