@@ -123,36 +123,29 @@ void ODManager::RemoveTaskIfInQueue(ODTask* task)
 void ODManager::AddNewTask(std::unique_ptr<ODTask> mtask)
 {
    QueuesLocker locker{ &mQueuesMutex };
-   DoAddNewTask( locker, std::move( mtask ) );
-}
-
-void ODManager::DoAddNewTask( const QueuesLocker &, std::unique_ptr<ODTask> mtask )
-{
-   auto task = mtask.get();
-   ODWaveTrackTaskQueue* queue = NULL;
-
+   ODTask *task = nullptr;
+   ODWaveTrackTaskQueue* queue = nullptr;
    for ( const auto &pQueue : mQueues )
    {
       //search for a task containing the lead track.  wavetrack removal is threadsafe and bound to the mQueuesMutex
       //note that GetWaveTrack is not threadsafe, but we are assuming task is not running on a different thread yet.
-      if( pQueue->ContainsWaveTrack( task->GetWaveTrack(0).get() ) )
+      if( pQueue->ContainsWaveTrack( mtask->GetWaveTrack(0).get() ) )
       {
-         //Add it to the existing queue but keep the lock since this reference can be deleted.
-         queue->AddTask( std::move(mtask) );
          queue = pQueue.get();
          break;
       }
    }
-
-   if( !queue )
-   {
+   if ( !queue ) {
       //Make a NEW one, add it to the local track queue, and to the immediate running task list,
       //since this task is definitely at the head
       auto newqueue = std::make_unique<ODWaveTrackTaskQueue>();
-      newqueue->AddTask( std::move(mtask) );
+      queue = newqueue.get();
       mQueues.push_back(std::move(newqueue));
-      AddTask(task);
+      task = mtask.get();
    }
+   queue->AddTask( std::move(mtask) );
+   if ( task )
+      AddTask( task ); // CV?
 }
 
 bool ODManager::IsInstanceCreated()
@@ -357,7 +350,7 @@ void ODManager::MakeWaveTrackIndependent(
                      //AddNewTask requires us to relinquish this lock. However, it is safe because ODManager::MakeWaveTrackIndependent
                      //has already locked the m_queuesMutex.
                      owner->mTasksMutex.Unlock();
-                     this->DoAddNewTask( locker, std::move(task) );
+                     owner->AddTask( std::move(task) );
                      owner->mTasksMutex.Lock();
                   }
                   owner->mTasksMutex.Unlock();
