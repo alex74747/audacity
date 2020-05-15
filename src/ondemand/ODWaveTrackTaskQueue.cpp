@@ -31,18 +31,16 @@ ODWaveTrackTaskQueue::~ODWaveTrackTaskQueue()
 }
 
 ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
-bool ODWaveTrackTaskQueue::CanMergeWith( const TasksLocker &myLocker,
-   const TasksLocker &otherLocker,
-   ODWaveTrackTaskQueue* otherQueue)
+bool ODWaveTrackTaskQueue::CanMergeWith( ODWaveTrackTaskQueue* otherQueue )
 {
    //have to be very careful when dealing with two lists that need to be locked.
    // Define an ordering to prevent deadlock!
 
-   if( GetNumTasks( myLocker ) != otherQueue->GetNumTasks( otherLocker ) )
+   if( GetNumTasks() != otherQueue->GetNumTasks() )
       return false;
 
    for( unsigned int i = 0; i < mTasks.size(); i++ )
-      if( !mTasks[i]->CanMergeWith( otherQueue->GetTask( otherLocker, i) ) )
+      if( !mTasks[i]->CanMergeWith( otherQueue->GetTask( i ) ) )
          return false;
    return true;
 }
@@ -51,7 +49,7 @@ bool ODWaveTrackTaskQueue::CanMergeWith( const TasksLocker &myLocker,
 /// sets the NeedODUpdateFlag since we don't want the head task to finish without haven't dealt with the dependent
 ///
 ///@param track the track to bring into the tasks AND tracklist for this queue
-void ODWaveTrackTaskQueue::MergeWaveTrack( const TasksLocker &,
+void ODWaveTrackTaskQueue::MergeWaveTrack(
    const std::shared_ptr< WaveTrack > &track)
 {
    AddWaveTrack( track );
@@ -82,8 +80,7 @@ void ODWaveTrackTaskQueue::AddWaveTrack(
       mTracks.push_back(track);
 }
 
-void ODWaveTrackTaskQueue::AddTask( const TasksLocker &,
-   std::unique_ptr<ODTask> mtask )
+void ODWaveTrackTaskQueue::AddTask( std::unique_ptr<ODTask> mtask )
 {
    ODTask *task = mtask.get();
 
@@ -123,21 +120,19 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(
          if ( mTracks[i].lock().get() == oldTrack )
             mTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
 
-      mTasksMutex.Lock();
       for(unsigned int i=0;i<mTasks.size();i++)
          mTasks[i]->ReplaceWaveTrack( oldTrack, newTrack );
-      mTasksMutex.Unlock();
    }
 }
 
 ///returns the number of ODTasks in this queue
-size_t ODWaveTrackTaskQueue::GetNumTasks( const TasksLocker & )
+size_t ODWaveTrackTaskQueue::GetNumTasks()
 {
    return mTasks.size();
 }
 
 ///returns a ODTask at position x
-ODTask* ODWaveTrackTaskQueue::GetTask( const TasksLocker &, size_t x )
+ODTask* ODWaveTrackTaskQueue::GetTask( size_t x )
 {
    if ( x < mTasks.size() )
       return mTasks[x].get();
@@ -147,14 +142,14 @@ ODTask* ODWaveTrackTaskQueue::GetTask( const TasksLocker &, size_t x )
 
 
 //returns true if either tracks or tasks are empty
-bool ODWaveTrackTaskQueue::IsEmpty( const TasksLocker & )
+bool ODWaveTrackTaskQueue::IsEmpty()
 {
    Compress();
    return mTracks.empty() || mTasks.empty();
 }
 
 ///Removes and deletes the front task from the list.
-void ODWaveTrackTaskQueue::RemoveFrontTask( const TasksLocker & )
+void ODWaveTrackTaskQueue::RemoveFrontTask()
 {
    if(mTasks.size())
    {
@@ -164,7 +159,7 @@ void ODWaveTrackTaskQueue::RemoveFrontTask( const TasksLocker & )
 }
 
 ///gets the front task for immediate execution
-ODTask* ODWaveTrackTaskQueue::GetFrontTask( const TasksLocker & )
+ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 {
    if( mTasks.size() )
       return mTasks[0].get();
@@ -175,15 +170,14 @@ ODTask* ODWaveTrackTaskQueue::GetFrontTask( const TasksLocker & )
 void ODWaveTrackTaskQueue::FillTipForWaveTrack(
    const WaveTrack * t, TranslatableString &tip )
 {
-   TasksLocker locker{ &mTasksMutex };
-   if ( ContainsWaveTrack( t ) && GetNumTasks( locker ) )
+   if ( ContainsWaveTrack( t ) && GetNumTasks() )
    {
 
     //  if(GetNumTasks()==1)
       mTipMsg = XO("%s %2.0f%% complete. Click to change task focal point.")
          .Format(
-            GetFrontTask( locker )->GetTip(),
-            GetFrontTask( locker )->FractionComplete()*100.0 );
+            GetFrontTask()->GetTip(),
+            GetFrontTask()->FractionComplete()*100.0 );
      // else
        //  msg = XO("%s %d additional tasks remaining.")
        //     .Format( GetFrontTask()->GetTip(), GetNumTasks());

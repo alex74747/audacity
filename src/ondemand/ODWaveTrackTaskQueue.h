@@ -24,7 +24,6 @@ tasks associated with a WaveTrack.
 
 #include <memory>
 #include <vector>
-#include "ODTaskThread.h"
 #include "../Internat.h" // for TranslatableString
 class Track;
 class WaveTrack;
@@ -33,8 +32,6 @@ class ODTask;
 class ODWaveTrackTaskQueue final
 {
  public:
-   using TasksLocker = ODLocker;
-
    // Constructor / Destructor
 
    /// Constructs an ODWaveTrackTaskQueue
@@ -57,10 +54,9 @@ class ODWaveTrackTaskQueue final
       const std::shared_ptr<Track> &newTrack );
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
-   bool CanMergeWith( const TasksLocker &myLocker,
-      const TasksLocker &otherLocker,
+   bool CanMergeWith(
       ODWaveTrackTaskQueue* otherQueue);
-   void MergeWaveTrack( const TasksLocker &,
+   void MergeWaveTrack(
       const std::shared_ptr< WaveTrack > &track );
 
 
@@ -68,23 +64,23 @@ class ODWaveTrackTaskQueue final
    bool ContainsWaveTrack( const WaveTrack* track );
 
    ///Add a task to the queue.
-   void AddTask( const TasksLocker &,
+   void AddTask(
       std::unique_ptr<ODTask> mtask );
 
    //returns true if either tracks or tasks are empty
-   bool IsEmpty( const TasksLocker & );
+   bool IsEmpty();
 
    ///Removes and deletes the front task from the list.
-   void RemoveFrontTask( const TasksLocker & );
+   void RemoveFrontTask();
 
    ///Schedules the front task for immediate execution
-   ODTask* GetFrontTask( const TasksLocker & );
+   ODTask* GetFrontTask();
 
    ///returns the number of ODTasks in this queue
-   size_t GetNumTasks( const TasksLocker & );
+   size_t GetNumTasks();
 
    ///returns a ODTask at position x
-   ODTask* GetTask( const TasksLocker &, size_t x );
+   ODTask* GetTask( size_t x );
 
    ///fills in the status bar message for a given track
    void FillTipForWaveTrack(
@@ -105,7 +101,6 @@ class ODWaveTrackTaskQueue final
 
   ///the list of tasks associated with the tracks.  This class owns these tasks.
   std::vector<std::unique_ptr<ODTask>> mTasks;
-  ODLock    mTasksMutex;
 
 };
 
