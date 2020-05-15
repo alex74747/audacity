@@ -33,6 +33,8 @@ class ODTask;
 class ODWaveTrackTaskQueue final
 {
  public:
+   using TasksLocker = ODLocker;
+
    // Constructor / Destructor
 
    /// Constructs an ODWaveTrackTaskQueue
@@ -55,8 +57,11 @@ class ODWaveTrackTaskQueue final
       const std::shared_ptr<Track> &newTrack );
 
    ///returns whether or not this queue's task list and another's can merge together, as when we make two mono tracks stereo.
-   bool CanMergeWith(ODWaveTrackTaskQueue* otherQueue);
-   void MergeWaveTrack( const std::shared_ptr< WaveTrack > &track );
+   bool CanMergeWith( const TasksLocker &myLocker,
+      const TasksLocker &otherLocker,
+      ODWaveTrackTaskQueue* otherQueue);
+   void MergeWaveTrack( const TasksLocker &,
+      const std::shared_ptr< WaveTrack > &track );
 
 
    //returns true if the argument is in the WaveTrack list.
@@ -66,19 +71,19 @@ class ODWaveTrackTaskQueue final
    void AddTask( std::unique_ptr<ODTask> mtask );
 
    //returns true if either tracks or tasks are empty
-   bool IsEmpty();
+   bool IsEmpty( const TasksLocker & );
 
    ///Removes and deletes the front task from the list.
-   void RemoveFrontTask();
+   void RemoveFrontTask( const TasksLocker & );
 
    ///Schedules the front task for immediate execution
-   ODTask* GetFrontTask();
+   ODTask* GetFrontTask( const TasksLocker & );
 
    ///returns the number of ODTasks in this queue
-   int GetNumTasks();
+   size_t GetNumTasks( const TasksLocker & );
 
    ///returns a ODTask at position x
-   ODTask* GetTask(size_t x);
+   ODTask* GetTask( const TasksLocker &, size_t x );
 
    ///fills in the status bar message for a given track
    void FillTipForWaveTrack(

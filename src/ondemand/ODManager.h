@@ -129,7 +129,7 @@ class ODManager final
 
    ///Remove references in our array to Tasks that have been completed/Schedule NEW ones
    void UpdateQueues( ODTask *pTask );
-   void DeleteQueue( size_t ii );
+   void DeleteQueue( ODLocker &&, size_t ii );
    void RemoveTaskIfInQueue(ODTask* task);
 
    //instance
