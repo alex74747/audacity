@@ -3281,15 +3281,15 @@ LV2Wrapper::~LV2Wrapper()
 {
    if (mInstance)
    {
-      wxThread *thread = GetThread();
-      if (thread && thread->IsAlive())
+      if (mThread.joinable())
       {
          mStopWorker = true;
 
          LV2Work work = {0, NULL};
          mRequests.Post(work);
 
-         thread->Wait();
+         mThread.join();
+         std::thread{}.swap( mThread );
       }
 
       if (mEffect->mActivated)
@@ -3372,11 +3372,7 @@ LilvInstance *LV2Wrapper::Instantiate(const LilvPlugin *plugin,
 
    if (mWorkerInterface)
    {
-      if (CreateThread() == wxTHREAD_NO_ERROR)
-      {
-         GetThread()->Run();
-      }
-
+      mThread = std::thread{ [this]{ Entry(); } };
    }
 
    return mInstance;

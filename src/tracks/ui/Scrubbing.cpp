@@ -14,6 +14,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../Experimental.h"
 
 #include <functional>
+#include <thread>
 
 #include "../../AudioIO.h"
 #include "../../CommonCommandFlags.h"
@@ -139,26 +140,36 @@ namespace {
 
 #ifdef USE_SCRUB_THREAD
 
-class Scrubber::ScrubPollerThread final : public wxThread {
+class Scrubber::ScrubPollerThread final {
 public:
    ScrubPollerThread(Scrubber &scrubber)
-      : wxThread { }
-      , mScrubber(scrubber)
-   {}
-   ExitCode Entry() override;
+      : mScrubber(scrubber)
+      , mThread{ [this]{ Entry(); } }
+   {
+      mThread.detach();
+   }
+   void Entry();
+
+   bool TestDestroy() const
+   { return mDestroyed.load( std::memory_order_relaxed ); }
+
+   void Delete()
+   { mDestroyed.store( true, std::memory_order_relaxed ); }
 
 private:
    Scrubber &mScrubber;
+   std::atomic<bool> mDestroyed{ false };
+   std::thread mThread;
 };
 
-auto Scrubber::ScrubPollerThread::Entry() -> ExitCode
+void Scrubber::ScrubPollerThread::Entry()
 {
    while( !TestDestroy() )
    {
-      wxThread::Sleep(ScrubPollInterval_ms);
+      std::this_thread::sleep_for( ScrubPollInterval );
       mScrubber.ContinueScrubbingPoll();
    }
-   return 0;
+   delete this;
 }
 
 #endif
@@ -805,8 +816,6 @@ void Scrubber::StartPolling()
 #ifdef USE_SCRUB_THREAD
    // Detached thread is self-deleting, after it receives the Delete() message
    mpThread = safenew ScrubPollerThread{ *this };
-   mpThread->Create(4096);
-   mpThread->Run();
 #endif
    
    mPoller->Start(ScrubPollInterval_ms * 0.9);

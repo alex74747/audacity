@@ -17,7 +17,9 @@ Intrinsics (SSE/AVX) and Threaded Equalization
 
 #include "../MemoryX.h"
 
-#include <wx/thread.h> // to inherit
+#include <wx/thread.h> // for wxMutex
+#include <atomic>
+#include <thread>
 #include <audacity/Types.h>
 class WaveTrack;
 using fft_type = float;
@@ -87,33 +89,29 @@ class EffectEqualization48x;
 
 static int EQWorkerCounter=0;
 
-class EQWorker : public wxThread {
-public:
-   EQWorker():wxThread(wxTHREAD_JOINABLE) {   
-      mBufferInfoList=NULL;
-      mBufferInfoCount=0;
-      mMutex=NULL;
-      mEffectEqualization48x=NULL;
-      mExitLoop=false;
-      mThreadID=EQWorkerCounter++;
-      mProcessingType=4;
-   }
-   void SetData( BufferInfo* bufferInfoList, int bufferInfoCount, wxMutex *mutex, EffectEqualization48x *effectEqualization48x) {
-      mBufferInfoList=bufferInfoList;
-      mBufferInfoCount=bufferInfoCount;
-      mMutex=mutex;
-      mEffectEqualization48x=effectEqualization48x;
-   }
-   void ExitLoop() { // this will cause the thread to drop from the loops
-      mExitLoop=true;
-   }
-   void* Entry() override;
+struct EQWorker {
+   EQWorker( BufferInfo* bufferInfoList, int bufferInfoCount, wxMutex *mutex,
+      EffectEqualization48x *effectEqualization48x )
+   : mBufferInfoList{ bufferInfoList }
+   , mBufferInfoCount{ bufferInfoCount }
+   , mMutex{ mutex }
+   , mEffectEqualization48x{ effectEqualization48x }
+   , mThread{ [this]{ return Entry(); } }
+   {}
+
+   // need this so vector<EQWorker>::reserve compiles but shouldn't happen
+   EQWorker( EQWorker&& ) { wxASSERT(false); }
+
+   void Entry();
+
    BufferInfo* mBufferInfoList;
-   int mBufferInfoCount, mThreadID;
+   int mBufferInfoCount;
    wxMutex *mMutex;
    EffectEqualization48x *mEffectEqualization48x;
-   bool mExitLoop;
-   int mProcessingType;
+   std::atomic< bool > mExitLoop{ false };
+   int mProcessingType{ 0 };
+
+   std::thread mThread;
 };
 
 class EffectEqualization48x {
@@ -170,7 +168,7 @@ private:
    simd_floats mBigBuffer;
    ArrayOf<BufferInfo> mBufferInfo;
    wxMutex mDataMutex;
-   ArrayOf<EQWorker> mEQWorkers;
+   std::vector< EQWorker > mEQWorkers;
    bool mThreaded;
    bool mBenching;
    friend EQWorker;

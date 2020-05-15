@@ -395,9 +395,7 @@ Time (in seconds, = total_sample_count / sample_rate)
 *//****************************************************************//**
 
 \class AudioThread
-\brief Defined different on Mac and other platforms (on Mac it does not
-use wxWidgets wxThread), this class sits in a thread loop reading and
-writing audio.
+\brief this class sits in a thread loop reading and writing audio.
 
 *//****************************************************************//**
 
@@ -846,59 +844,32 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 
 #include <thread>
 
-#ifdef __WXMAC__
-
-// On Mac OS X, it's better not to use the wxThread class.
-// We use our own implementation based on pthreads instead.
-
-#include <pthread.h>
-#include <time.h>
-
-class AudioThread {
+class AudioThreadBase /* not final */ {
  public:
-   typedef int ExitCode;
-   AudioThread() { mDestroy = false; mThread = NULL; }
-   virtual ExitCode Entry();
-   void Create() {}
-   void Delete() {
-      mDestroy = true;
-      pthread_join(mThread, NULL);
-   }
-   bool TestDestroy() { return mDestroy; }
-   void Sleep(int ms) {
-      struct timespec spec;
-      spec.tv_sec = 0;
-      spec.tv_nsec = ms * 1000 * 1000;
-      nanosleep(&spec, NULL);
-   }
-   static void *callback(void *p) {
-      AudioThread *th = (AudioThread *)p;
-      return reinterpret_cast<void *>( th->Entry() );
-   }
-   void Run() {
-      pthread_create(&mThread, NULL, callback, this);
-   }
- private:
-   bool mDestroy;
-   pthread_t mThread;
+   // Tested in the thread
+   bool TestDestroy() const
+   { return mDestroyed.load( std::memory_order_relaxed ); }
+   // Invoked outside the thread
+   void Delete()
+   { mDestroyed.store( true, std::memory_order_relaxed ); mThread.join(); }
+
+protected:
+   std::thread mThread;
+private:
+   std::atomic< bool > mDestroyed{ false };
 };
 
-#else
-
-// The normal wxThread-derived AudioThread class for all other
-// platforms:
-class AudioThread /* not final */ : public wxThread {
+class AudioThread final : public AudioThreadBase {
  public:
-   AudioThread():wxThread(wxTHREAD_JOINABLE) {}
-   ExitCode Entry() override;
+   void Entry();
+   AudioThread() { mThread = std::thread{ [this]{ Entry(); } }; }
 };
-
-#endif
 
 #ifdef EXPERIMENTAL_MIDI_OUT
-class MidiThread final : public AudioThread {
+class MidiThread final : public AudioThreadBase {
  public:
-   ExitCode Entry() override;
+   void Entry();
+   MidiThread() { mThread = std::thread{ [this]{ Entry(); } }; }
 };
 #endif
 
@@ -912,10 +883,10 @@ class MidiThread final : public AudioThread {
 void AudioIO::Init()
 {
    ugAudioIO.reset(safenew AudioIO());
-   Get()->mThread->Run();
+   Get()->mThread = std::make_unique<AudioThread>();
 #ifdef EXPERIMENTAL_MIDI_OUT
 #ifdef USE_MIDI_THREAD
-   Get()->mMidiThread->Run();
+   Get()->mMidiThread = std::make_unique<MidiThread>();
 #endif
 #endif
 
@@ -1046,16 +1017,7 @@ AudioIO::AudioIO()
       // Same logic for PortMidi as described above for PortAudio
    }
 
-#ifdef USE_MIDI_THREAD
-   mMidiThread = std::make_unique<MidiThread>();
-   mMidiThread->Create();
 #endif
-
-#endif
-
-   // Start thread
-   mThread = std::make_unique<AudioThread>();
-   mThread->Create();
 
 #if defined(USE_PORTMIXER)
    mPortMixer = NULL;
@@ -2579,15 +2541,16 @@ finished:
 //
 //////////////////////////////////////////////////////////////////////
 
-AudioThread::ExitCode AudioThread::Entry()
+void AudioThread::Entry()
 {
    AudioIO *gAudioIO;
    while( !TestDestroy() &&
       nullptr != ( gAudioIO = AudioIO::Get() ) )
    {
-      using Clock = std::chrono::steady_clock;
+      using namespace std::chrono;
+      using Clock = steady_clock;
       auto loopPassStart = Clock::now();
-      const auto interval = ScrubPollInterval_ms;
+      const auto interval = ScrubPollInterval;
 
       // Set LoopActive outside the tests to avoid race condition
       gAudioIO->mAudioThreadFillBuffersLoopActive = true;
@@ -2603,18 +2566,15 @@ AudioThread::ExitCode AudioThread::Entry()
       gAudioIO->mAudioThreadFillBuffersLoopActive = false;
 
       if ( gAudioIO->mPlaybackSchedule.Interactive() )
-         std::this_thread::sleep_until(
-            loopPassStart + std::chrono::milliseconds( interval ) );
+         std::this_thread::sleep_until( loopPassStart + interval );
       else
-         Sleep(10);
+         std::this_thread::sleep_for( 10ms );
    }
-
-   return 0;
 }
 
 
 #ifdef EXPERIMENTAL_MIDI_OUT
-MidiThread::ExitCode MidiThread::Entry()
+void MidiThread::Entry()
 {
    AudioIO *gAudioIO;
    while( !TestDestroy() &&
@@ -2629,9 +2589,8 @@ MidiThread::ExitCode MidiThread::Entry()
          gAudioIO->FillMidiBuffers();
       }
       gAudioIO->mMidiThreadFillBuffersLoopActive = false;
-      Sleep(MIDI_SLEEP);
+         std::this_thread::sleep_for( std::chrono::milliseconds{ MIDI_SLEEP } );
    }
-   return 0;
 }
 #endif
 

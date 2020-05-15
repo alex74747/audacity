@@ -36,7 +36,6 @@
 #include <wx/ffile.h>
 #include <wx/filename.h>
 #include <wx/textfile.h>
-#include <wx/thread.h>
 #include <wx/tooltip.h>
 
 #include "audacity/Types.h"

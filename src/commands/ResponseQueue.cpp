@@ -17,7 +17,6 @@
 
 #include <queue>
 #include <string>
-#include <wx/thread.h>
 
 ResponseQueue::ResponseQueue()
    : mCondition(mMutex)

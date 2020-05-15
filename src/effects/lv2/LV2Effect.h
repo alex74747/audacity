@@ -15,11 +15,11 @@
 
 class wxArrayString;
 
+#include <thread>
 #include <vector>
 
 #include <wx/event.h> // to inherit
 #include <wx/msgqueue.h>
-#include <wx/thread.h>
 #include <wx/timer.h>
 
 #include "lv2/atom/forge.h"
@@ -585,7 +585,7 @@ inline wxString LilvString(LilvNode *node, bool free)
    return str;
 };
 
-class LV2Wrapper : public wxThreadHelper
+class LV2Wrapper
 {
 public:
    typedef struct LV2Work
@@ -652,6 +652,8 @@ private:
    float mLatency;
    bool mFreeWheeling;
    bool mStopWorker;
+
+   std::thread mThread;
 };
 
 #endif

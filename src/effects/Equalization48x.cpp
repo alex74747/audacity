@@ -188,7 +188,7 @@ bool EffectEqualization48x::AllocateBuffersWorkers(int nThreads)
    mWindowSize=mEffectEqualization->windowSize;
    wxASSERT(mFilterSize < mWindowSize);
    mBlockSize=mWindowSize-mFilterSize; // 12,384
-   auto threadCount = wxThread::GetCPUCount();
+   auto threadCount = std::thread::hardware_concurrency();
    mThreaded = (nThreads > 0 && threadCount > 0);
    if(mThreaded)
    {
@@ -228,12 +228,10 @@ bool EffectEqualization48x::AllocateBuffersWorkers(int nThreads)
    if(mThreadCount) {
       // start the workers
       mDataMutex.IsOk();
-      mEQWorkers.reinit(mThreadCount);
-      for(int i=0;i<mThreadCount;i++) {
-         mEQWorkers[i].SetData( mBufferInfo.get(), mWorkerDataCount, &mDataMutex, this);
-         mEQWorkers[i].Create();
-         mEQWorkers[i].Run();
-      }
+      mEQWorkers.clear();
+      mEQWorkers.reserve(mThreadCount);
+      for ( size_t ii = 0; ii < mThreadCount; ++ii )
+         mEQWorkers.emplace_back(mBufferInfo.get(), mWorkerDataCount, &mDataMutex, this );
    } 
    return true;
 }
@@ -241,13 +239,11 @@ bool EffectEqualization48x::AllocateBuffersWorkers(int nThreads)
 bool EffectEqualization48x::FreeBuffersWorkers()
 {
    if(mThreaded) {
-      for(int i=0;i<mThreadCount;i++) { // tell all the workers to exit
-         mEQWorkers[i].ExitLoop();
-      }
-      for(int i=0;i<mThreadCount;i++) {
-         mEQWorkers[i].Wait();
-      }
-      mEQWorkers.reset(); // kill the workers ( go directly to jail)
+      for (auto &worker : mEQWorkers) // tell all the workers to exit
+         worker.mExitLoop.store( true, std::memory_order_relaxed );
+      for (auto &worker : mEQWorkers)
+         worker.mThread.join();
+      mEQWorkers.clear(); // kill the workers ( go directly to jail)
       mThreadCount=0;
       mWorkerDataCount=0; 
    }
@@ -864,11 +860,9 @@ bool EffectEqualization48x::ProcessOne4x(int count, WaveTrack * t,
    return bBreakLoop;
 }
 
-#include <wx/thread.h>
-
-void *EQWorker::Entry()
+void EQWorker::Entry()
 {
-   while(!mExitLoop) {
+   while( !mExitLoop.load( std::memory_order_relaxed ) ) {
       int i = 0;
       {
          wxMutexLocker locker( *mMutex );
@@ -892,7 +886,6 @@ void *EQWorker::Entry()
          mBufferInfoList[i].mBufferStatus=BufferDone; // we're done
       }
    }
-   return NULL;
 }
 
 bool EffectEqualization48x::ProcessOne1x4xThreaded(int count, WaveTrack * t,

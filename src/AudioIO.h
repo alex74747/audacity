@@ -53,7 +53,7 @@ class AudioIO;
 class RingBuffer;
 class Mixer;
 class Resample;
-class AudioThread;
+class AudioThreadBase;
 class SelectedRegion;
 
 class AudacityProject;
@@ -418,10 +418,10 @@ public:
    unsigned short mAILALastChangeType;  //0 - no change, 1 - increase change, 2 - decrease change
 #endif
 
-   std::unique_ptr<AudioThread> mThread;
+   std::unique_ptr<AudioThreadBase> mThread;
 #ifdef EXPERIMENTAL_MIDI_OUT
 #ifdef USE_MIDI_THREAD
-   std::unique_ptr<AudioThread> mMidiThread;
+   std::unique_ptr<AudioThreadBase> mMidiThread;
 #endif
 #endif
    ArrayOf<std::unique_ptr<Resample>> mResample;
@@ -791,5 +791,7 @@ private:
 };
 
 static constexpr unsigned ScrubPollInterval_ms = 50;
+static constexpr auto ScrubPollInterval =
+   std::chrono::milliseconds{ ScrubPollInterval_ms };
 
 #endif

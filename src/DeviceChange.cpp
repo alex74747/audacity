@@ -23,7 +23,6 @@
 
 #include <wx/module.h>
 #include <wx/timer.h>
-#include <wx/thread.h>
 
 DECLARE_LOCAL_EVENT_TYPE(EVT_DEVICE_CHANGE, -1);
 DEFINE_EVENT_TYPE(EVT_DEVICE_CHANGE);
