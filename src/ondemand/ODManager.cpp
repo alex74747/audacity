@@ -124,12 +124,13 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
 
    if(lockMutex)
       mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( const auto &pQueue : mQueues )
    {
       //search for a task containing the lead track.  wavetrack removal is threadsafe and bound to the mQueuesMutex
       //note that GetWaveTrack is not threadsafe, but we are assuming task is not running on a different thread yet.
-      if(mQueues[i]->ContainsWaveTrack(task->GetWaveTrack(0).get()))
-         queue = mQueues[i].get();
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      if( pQueue->ContainsWaveTrack( locker, task->GetWaveTrack(0).get() ) )
+         queue = pQueue.get();
    }
 
    if(queue)
@@ -327,11 +328,12 @@ void ODManager::MakeWaveTrackIndependent(
 {
    ODWaveTrackTaskQueue* owner=NULL;
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( const auto &pQueue : mQueues )
    {
-      if(mQueues[i]->ContainsWaveTrack(track.get()))
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      if( pQueue->ContainsWaveTrack( locker, track.get() ) )
       {
-         owner = mQueues[i].get();
+         owner = pQueue.get();
          break;
       }
    }
@@ -359,18 +361,20 @@ bool ODManager::MakeWaveTrackDependent(
    bool canMerge = false;
 
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   size_t ii = 0;
+   for( const auto &pQueue : mQueues )
    {
-      if(mQueues[i]->ContainsWaveTrack(masterTrack))
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      if ( pQueue->ContainsWaveTrack( locker, masterTrack) )
       {
-         masterQueue = mQueues[i].get();
+         masterQueue = pQueue.get();
       }
-      else if(mQueues[i]->ContainsWaveTrack(dependentTrack.get()))
+      else if( pQueue->ContainsWaveTrack( locker, dependentTrack.get() ) )
       {
-         dependentQueue = mQueues[i].get();
-         dependentIndex = i;
+         dependentQueue = pQueue.get();
+         dependentIndex = ii;
       }
-
+      ++ii;
    }
    if(masterQueue&&dependentQueue)
       canMerge=masterQueue->CanMergeWith(dependentQueue);
@@ -467,9 +471,10 @@ bool ODManager::HasLoadedODFlag()
 void ODManager::FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip )
 {
    mQueuesMutex.Lock();
-   for(unsigned int i=0;i<mQueues.size();i++)
+   for ( const auto &pQueue : mQueues )
    {
-      mQueues[i]->FillTipForWaveTrack(t, tip);
+      ODWaveTrackTaskQueue::TracksLocker locker{ &pQueue->mTracksMutex };
+      pQueue->FillTipForWaveTrack( locker, t, tip );
    }
    mQueuesMutex.Unlock();
 }

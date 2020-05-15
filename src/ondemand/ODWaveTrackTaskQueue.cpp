@@ -78,20 +78,17 @@ void ODWaveTrackTaskQueue::MergeWaveTrack(
 }
 
 ///returns true if the argument is in the WaveTrack list.
-bool ODWaveTrackTaskQueue::ContainsWaveTrack(const WaveTrack* track)
+bool ODWaveTrackTaskQueue::ContainsWaveTrack(
+   const TracksLocker &, const WaveTrack* track)
 {
-   mTracksMutex.Lock();
    for(unsigned int i=0;i<mTracks.size();i++)
    {
       if ( mTracks[i].lock().get() == track )
-      {
-         mTracksMutex.Unlock();
          return true;
-      }
    }
-   mTracksMutex.Unlock();
    return false;
 }
+
 ///Adds a track to the associated list.
 void ODWaveTrackTaskQueue::AddWaveTrack(
    const std::shared_ptr< WaveTrack > &track)
@@ -281,10 +278,10 @@ ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 }
 
 ///fills in the status bar message for a given track
-void ODWaveTrackTaskQueue::FillTipForWaveTrack(
+void ODWaveTrackTaskQueue::FillTipForWaveTrack( const TracksLocker &locker,
    const WaveTrack * t, TranslatableString &tip )
 {
-   if(ContainsWaveTrack(t) && GetNumTasks())
+   if ( ContainsWaveTrack( locker, t ) && GetNumTasks() )
    {
 
     //  if(GetNumTasks()==1)

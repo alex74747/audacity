@@ -63,7 +63,7 @@ class ODWaveTrackTaskQueue final
 
 
    //returns true if the argument is in the WaveTrack list.
-   bool ContainsWaveTrack(const WaveTrack* track);
+   bool ContainsWaveTrack( const TracksLocker&, const WaveTrack* track );
 
    ///returns the number of wavetracks in this queue.
    int GetNumWaveTracks();
@@ -87,7 +87,8 @@ class ODWaveTrackTaskQueue final
    ODTask* GetTask(size_t x);
 
    ///fills in the status bar message for a given track
-   void FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip );
+   void FillTipForWaveTrack( const TracksLocker &locker,
+      const WaveTrack * t, TranslatableString &tip );
 
  protected:
 
@@ -100,8 +101,10 @@ class ODWaveTrackTaskQueue final
 
   ///the list of tracks associated with this queue.
   std::vector< std::weak_ptr< WaveTrack > > mTracks;
+ public:
   ODLock mTracksMutex;
 
+ protected:
   ///the list of tasks associated with the tracks.  This class owns these tasks.
   std::vector<std::unique_ptr<ODTask>> mTasks;
   ODLock    mTasksMutex;
