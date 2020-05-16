@@ -32,8 +32,6 @@
 
 
 #include "Languages.h"
-#include <memory>
-#include "wxArrayStringEx.h"
 
 #include "Internat.h"
 #include "wxArrayStringEx.h"

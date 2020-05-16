@@ -24,9 +24,8 @@
 
 #include "../Audacity.h"	// contains the set-up of AUDACITY_DLL_API
 
+#include <memory>
 #include <wx/thread.h> // to inherit
-
-#include "../MemoryX.h"
 
 class ODTask;
 

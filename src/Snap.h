@@ -15,6 +15,7 @@
 #ifndef __AUDACITY_SNAP__
 #define __AUDACITY_SNAP__
 
+#include <memory>
 #include <vector>
 #include <wx/defs.h>
 #include "widgets/NumericTextCtrl.h" // member variable

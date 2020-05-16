@@ -56,7 +56,7 @@ public:
    void CreateCarbon();
    void CreateCarbonOverlay();
    void CarbonViewResized();
-   static pascal OSStatus ControlEventHandlerCallback(EventHandlerCallRef handler,
+   static pascal OSStatus ControlEventHandlerCallback(EventHandlerCallRef handler);
 #endif
 
 private:

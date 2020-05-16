@@ -19,7 +19,6 @@
 #include "DirManager.h"
 #include "widgets/AudacityMessageBox.h"
 #include "Internat.h"
-#include "MemoryX.h"
 #include "widgets/MultiDialog.h"
 #include "widgets/ProgressDialog.h"
 

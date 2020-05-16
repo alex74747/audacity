@@ -15,7 +15,6 @@
 #define __AUDACITY_DEPENDENCIES__
 
 #include <list>
-#include "MemoryX.h"
 #include "wxFileNameWrapper.h" // member variable
 
 class AudacityProject;

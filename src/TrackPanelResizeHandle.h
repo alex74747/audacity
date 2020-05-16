@@ -11,6 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_TRACK_PANEL_RESIZE_HANDLE__
 #define __AUDACITY_TRACK_PANEL_RESIZE_HANDLE__
 
+#include <memory>
 #include "UIHandle.h"
 
 class Track;
