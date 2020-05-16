@@ -20,7 +20,6 @@ in a background thread.
 
 #include "ODTask.h"
 
-#include "ODManager.h"
 #include "../WaveClip.h"
 #include "../WaveTrack.h"
 #include "../Project.h"
@@ -56,7 +55,7 @@ void ODTask::Join()
 ///Relies on DoSomeInternal(), which is the subclasses must implement.
 ///@param amountWork between 0 and 1, the fraction of the total job to do.
 /// will do at least the smallest unit of work possible
-void ODTask::DoSome(float amountWork)
+bool ODTask::DoSome(float amountWork)
 {
 //   wxPrintf("%s %i subtask starting on NEW thread with priority\n", GetTaskName(),GetTaskNumber());
 
@@ -67,7 +66,7 @@ void ODTask::DoSome(float amountWork)
       return mTerminate.load( std::memory_order_relaxed ); };
 
    if( terminate() )
-      return;
+      return false;
 
    Update();
 
@@ -91,10 +90,12 @@ void ODTask::DoSome(float amountWork)
          ;
    }
 
+   bool result = false;
+
    //if it is not done, put it back onto the ODManager queue.
    if(FractionComplete() < 1.0&& !terminate())
    {
-      ODManager::Instance()->AddTask(this);
+      result = true;
 
       //we did a bit of progress - we should allow a resave.
       ODLocker locker{ &AllProjects::Mutex() };
@@ -136,6 +137,7 @@ void ODTask::DoSome(float amountWork)
 
 //      wxPrintf("%s %i complete\n", GetTaskName(),GetTaskNumber());
    }
+   return result;
 }
 
 bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)

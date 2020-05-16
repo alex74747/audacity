@@ -243,7 +243,8 @@ void ODManager::DispatchLoop()
             //TODO: Figure out why this has no effect at all.
             //wxThread::This()->SetPriority( 40);
             //Do at least 5 percent of the task
-            pTask->DoSome(0.05f);
+            if ( pTask->DoSome(0.05f) )
+               AddTask( pTask );
             
             //we should look at our WaveTrack queues to see if we can schedule
             //a NEW task to the running queue.

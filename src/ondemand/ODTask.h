@@ -88,7 +88,8 @@ class ODTask /* not final */
 ///Relies on DoSomeInternal(), which is the subclasses must implement.
 ///@param amountWork between 0 and 1, the fraction of the total job to do.
 /// will do at least the smallest unit of work possible
-   void DoSome(float amountWork=0.0);
+///@return true if the task should be scheduled to run again
+   bool DoSome(float amountWork=0.0);
 
    ///Call DoSome until FractionComplete >= 1.0
    void DoAll();
