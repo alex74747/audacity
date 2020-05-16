@@ -23,7 +23,6 @@ number of threads.
 #include <condition_variable>
 #include <thread>
 #include <vector>
-#include "ODTaskThread.h"
 #include <wx/event.h> // for DECLARE_EXPORTED_EVENT_TYPE
 
 // This event is posted to the application
@@ -37,11 +36,12 @@ int CompareNoCaseFileName(const wxString& first, const wxString& second);
 class TranslatableString;
 class Track;
 class WaveTrack;
+class ODTask;
 class ODWaveTrackTaskQueue;
 class ODManager final
 {
  public:
-   using QueuesLocker = ODLocker;
+   using QueuesLocker = std::lock_guard< std::mutex >;
 
    ///Get the singleton instance (creating it only on demand)
    static ODManager* Instance();
@@ -136,12 +136,12 @@ class ODManager final
 
    //List of tracks and their active and inactive tasks.
    std::vector<std::unique_ptr<ODWaveTrackTaskQueue>> mQueues;
-   ODLock mQueuesMutex;
+   std::mutex mQueuesMutex;
 
    //List of current Task to do.
    std::vector<ODTask*> mTasks;
    //mutex for above variable
-   ODLock mTasksMutex;
+   std::mutex mTasksMutex;
 
    ///Number of threads currently running.   Accessed thru multiple threads
    std::atomic< unsigned > mCurrentThreads{ 0 };
@@ -152,6 +152,7 @@ class ODManager final
    std::atomic< bool > mTerminate{ false };
 
    //for the queue not empty comdition
+   // Must NOT be locked while already holding mTasksMutex!
    std::mutex         mQueueNotEmptyCondLock;
    std::condition_variable mQueueNotEmptyCond;
    std::thread mDispatcher;
