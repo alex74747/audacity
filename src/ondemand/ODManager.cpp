@@ -235,9 +235,9 @@ void ODManager::DispatchLoop()
             break;
          mCurrentThreads.fetch_add( 1, std::memory_order_relaxed );
 
-         //detach a NEW thread.
+         // recruit a NEW thread.
          auto pTask = mTasks[0];
-         std::thread{ [ this, pTask ]{
+         pTask->SetThread( std::thread{ [ this, pTask ]{
             //TODO: Figure out why this has no effect at all.
             //wxThread::This()->SetPriority( 40);
             //Do at least 5 percent of the task
@@ -250,7 +250,7 @@ void ODManager::DispatchLoop()
             //release the thread count so that the dispatcher thread knows how
             //many active threads are alive.
             DecrementCurrentThreads();
-         } }.detach();
+         } } );
 
          //thread->SetPriority(10);//default is 50.
 

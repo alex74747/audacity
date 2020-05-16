@@ -26,6 +26,7 @@ in a background thread.
 #include "../BlockFile.h"
 
 #include <atomic>
+#include <thread>
 #include <vector>
 #include <wx/event.h> // to declare custom event type
 class AudacityProject;
@@ -53,10 +54,12 @@ class ODTask /* not final */
    /// Constructs an ODTask
    ODTask();
 
-   virtual ~ODTask(){};
+   virtual ~ODTask();
 
    //clones everything except information about the tracks.
    virtual std::unique_ptr<ODTask> Clone() const = 0;
+
+   void SetThread( std::thread &&thread ) { mThread = std::move( thread ); }
 
    ///Subclasses should override to return respective type.
    virtual unsigned int GetODType(){return eODNone;}
@@ -97,9 +100,7 @@ class ODTask /* not final */
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
    virtual void DemandTrackUpdate(WaveTrack* track, double seconds);
 
-   void TerminateAndBlock();
-   ///releases memory that the ODTask owns.  Subclasses should override.
-   virtual void Terminate(){}
+   void Join();
 
    virtual const char* GetTaskName(){return "ODTask";}
 
@@ -143,8 +144,6 @@ class ODTask /* not final */
    int   mTaskNumber;
    std::atomic<float> mFractionComplete{ 0.0f };
    std::atomic< bool > mTerminate{ false };
-   //for a function not a member var.
-   ODLock mBlockUntilTerminateMutex;
 
    std::vector< std::weak_ptr< WaveTrack > > mWaveTracks;
    ODLock     mWaveTrackMutex;
@@ -154,6 +153,7 @@ class ODTask /* not final */
    private:
 
    std::atomic< bool > mNeedsODUpdate{ false };
+   std::thread mThread;
 };
 
 #endif

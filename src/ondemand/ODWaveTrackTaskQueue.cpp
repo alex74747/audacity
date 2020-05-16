@@ -30,12 +30,11 @@ ODWaveTrackTaskQueue::ODWaveTrackTaskQueue()
 ODWaveTrackTaskQueue::~ODWaveTrackTaskQueue()
 {
    //we need to DELETE all ODTasks.  We will have to block or wait until block for the active ones.
-   for(unsigned int i=0;i<mTasks.size();i++)
+   for ( auto &pTask : mTasks )
    {
-      mTasks[i]->TerminateAndBlock();//blocks if active.
-      //small chance we may have rea-added the task back into the queue from a diff thread.  - so remove it if we have.
-      ODManager::Instance()->RemoveTaskIfInQueue(mTasks[i].get());
-      mTasks[i].reset();
+      pTask->Join();//blocks if active.
+      //small chance we may have re-added the task back into the queue from a diff thread.  - so remove it if we have.
+      ODManager::Instance()->RemoveTaskIfInQueue( pTask.get() );
    }
 
 }

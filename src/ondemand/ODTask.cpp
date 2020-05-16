@@ -40,18 +40,16 @@ ODTask::ODTask()
    mTaskNumber = sTaskNumber++;
 }
 
+ODTask::~ODTask() = default;
+
 //outside code must ensure this task is not scheduled again.
-void ODTask::TerminateAndBlock()
+void ODTask::Join()
 {
-   mTerminate.store( true, std::memory_order_relaxed );
-
-   //one mutex pair for the exit of the function
-   mBlockUntilTerminateMutex.Lock();
-//TODO lock mTerminate?
-   mBlockUntilTerminateMutex.Unlock();
-
-   //wait till we are out of doSome() to terminate.
-   Terminate();
+   if ( mThread.joinable() ) {
+      // Send the poison pill
+      mTerminate.store( true, std::memory_order_relaxed );
+      mThread.join();
+   }
 }
 
 ///Do a modular part of the task.  For example, if the task is to load the entire file, load one BlockFile.
@@ -60,8 +58,6 @@ void ODTask::TerminateAndBlock()
 /// will do at least the smallest unit of work possible
 void ODTask::DoSome(float amountWork)
 {
-   mBlockUntilTerminateMutex.Lock();
-
 //   wxPrintf("%s %i subtask starting on NEW thread with priority\n", GetTaskName(),GetTaskNumber());
 
    float workUntil = amountWork+FractionComplete();
@@ -70,10 +66,8 @@ void ODTask::DoSome(float amountWork)
    auto terminate = [this]{
       return mTerminate.load( std::memory_order_relaxed ); };
 
-   if( terminate() ) {
-      mBlockUntilTerminateMutex.Unlock();
+   if( terminate() )
       return;
-   }
 
    Update();
 
@@ -142,7 +136,6 @@ void ODTask::DoSome(float amountWork)
 
 //      wxPrintf("%s %i complete\n", GetTaskName(),GetTaskNumber());
    }
-   mBlockUntilTerminateMutex.Unlock();
 }
 
 bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)

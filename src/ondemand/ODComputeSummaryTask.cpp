@@ -45,16 +45,6 @@ std::unique_ptr<ODTask> ODComputeSummaryTask::Clone() const
 }
 
 
-///releases memory that the ODTask owns.  Subclasses should override.
-void ODComputeSummaryTask::Terminate()
-{
-   //The terminate block won't allow DoSomeInternal and this method to be run async, so this is thread-safe.
-   //Deref the block files since they are ref'ed when put into the array.
-   mBlockFilesMutex.Lock();
-   mBlockFiles.clear();
-   mBlockFilesMutex.Unlock();
-}
-
 ///Computes and writes the data for one BlockFile if it still has a refcount.
 void ODComputeSummaryTask::DoSomeInternal()
 {

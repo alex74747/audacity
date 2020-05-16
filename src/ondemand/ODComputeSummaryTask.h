@@ -50,9 +50,6 @@ class ODComputeSummaryTask final : public ODTask
    bool UsesCustomNextFraction() override { return true; }
    float ComputeNextFractionComplete() override;
 
-   ///releases memory that the ODTask owns.  Subclasses should override.
-   void Terminate() override;
-
 protected:
    float ComputeFractionComplete() override;
 
