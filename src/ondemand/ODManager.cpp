@@ -56,37 +56,20 @@ int CompareNoCaseFileName(const wxString& first, const wxString& second)
 //private constructor - Singleton.
 ODManager::ODManager()
 {
-   mTerminate = false;
-   mTerminated = false;
-
-   //must set up the queue condition
-   mQueueNotEmptyCond = std::make_unique<ODCondition>(&mQueueNotEmptyCondLock);
 }
 
 //private destructor - DELETE with static method Quit()
 ODManager::~ODManager()
 {
-   mTerminateMutex.Lock();
-   mTerminate = true;
-   mTerminateMutex.Unlock();
-
-   //This while loop waits for ODTasks to finish and the DELETE removes all tasks from the Queue.
-   //This function is called from the main audacity event thread, so there should not be more requests for pMan
-   mTerminatedMutex.Lock();
-   while (!mTerminated)
    {
-      using namespace std::chrono;
-      mTerminatedMutex.Unlock();
-      std::this_thread::sleep_for( 200ms );
-
+      // Must hold mutex while making the condition (termination) true
+      std::lock_guard< std::mutex > lock{ mQueueNotEmptyCondLock };
+      mTerminate.store( true, std::memory_order_relaxed );
       //signal the queue not empty condition since the ODMan thread will wait on the queue condition
-      mQueueNotEmptyCondLock.Lock();
-      mQueueNotEmptyCond->Signal();
-      mQueueNotEmptyCondLock.Unlock();
-
-      mTerminatedMutex.Lock();
+      mQueueNotEmptyCond.notify_one();
    }
-   mTerminatedMutex.Unlock();
+
+   mDispatcher.join();
 
    //get rid of all the queues.  The queues get rid of the tasks, so we don't worry about them.
    //nothing else should be running on OD related threads at this point, so we don't lock.
@@ -96,23 +79,21 @@ ODManager::~ODManager()
 ///Adds a task to running queue.  Thread-safe.
 void ODManager::AddTask(ODTask* task)
 {
+   bool hadTask = false;
+
+   // Must hold mutex while making the condition (nonempty queue) true
+   std::lock_guard< std::mutex > lock{ mQueueNotEmptyCondLock };
    mTasksMutex.Lock();
+   hadTask = !mTasks.empty();
    mTasks.push_back(task);
    mTasksMutex.Unlock();
    //signal the queue not empty condition.
    bool paused = gPause.load( std::memory_order_acquire );
 
    //don't signal if we are paused since if we wake up the loop it will start processing other tasks while paused
-   if(!paused)
-      mQueueNotEmptyCond->Signal();
-}
-
-void ODManager::SignalTaskQueueLoop()
-{
-   bool paused = gPause.load( std::memory_order_acquire );
-   //don't signal if we are paused
-   if(!paused)
-      mQueueNotEmptyCond->Signal();
+   // Also shouldn't need a signal if tasks were already nonempty
+   if ( !(paused || hadTask) )
+      mQueueNotEmptyCond.notify_one();
 }
 
 ///removes a task from the active task queue
@@ -188,7 +169,7 @@ void ODManager::Init()
 //   startThread->SetPriority(0);//default of 50.
 //   wxPrintf("starting thread from init\n");
 
-   std::thread{ [this]{ DispatchLoop(); } }.detach();
+   mDispatcher = std::thread{ [this]{ DispatchLoop(); } };
 
 //   wxPrintf("started thread from init\n");
    //destruction of thread is taken care of by thread library
@@ -203,40 +184,57 @@ void ODManager::DecrementCurrentThreads()
 /// Runs in its own thread, which spawns other worker threads.
 void ODManager::DispatchLoop()
 {
-   bool tasksInArray;
-   bool paused;
    int  numQueues=0;
 
    int mNeedsDraw=0;
+
+   auto tasksInArray = [this](const ODLocker&){
+      return !mTasks.empty();
+   };
+
+   auto paused = []{ return gPause.load( std::memory_order_acquire ); };
 
    //wxLog calls not threadsafe.  are printfs?  thread-messy for sure, but safe?
 //   wxPrintf("ODManager thread strating \n");
    //TODO: Figure out why this has no effect at all.
    //wxThread::This()->SetPriority(30);
-   mTerminateMutex.Lock();
-   while(!mTerminate)
+   while( true )
    {
-      mTerminateMutex.Unlock();
 //    wxPrintf("ODManager thread running \n");
-
-      //we should look at our WaveTrack queues to see if we can process a NEW task to the running queue.
-      UpdateQueues();
 
       //start some threads if necessary
 
-      mTasksMutex.Lock();
-      tasksInArray = mTasks.size()>0;
-      mTasksMutex.Unlock();
+      //use a condition variable to block here instead of a sleep.
 
-      bool paused = gPause.load( std::memory_order_acquire );
+      // JKC: If there are no tasks ready to run, or we're paused then
+      // we wait for there to be tasks in the queue.
+      // PRL but we also reply promptly to the "poison pill" sent from main
+      // thread when ODManager is being destroyed.
+      {
+         bool terminated = false;
+         std::unique_lock< std::mutex > locker{ mQueueNotEmptyCondLock };
+         mQueueNotEmptyCond.wait( locker, [&]{
+            if ( (terminated = mTerminate.load( std::memory_order_relaxed )) )
+               return true;
+            if ( paused() )
+               return false;
+            return tasksInArray( ODLocker { &mTasksMutex } );
+         } );
+         if ( terminated )
+            return;
+      }
 
       // keep adding tasks if there is work to do, up to the limit.
-      while(!paused && tasksInArray &&
-            (mCurrentThreads.load( std::memory_order_acquire ) < mMaxThreads))
+      while(!paused() &&
+         (mCurrentThreads.load( std::memory_order_acquire ) < mMaxThreads))
       {
+         // Retest for tasks at the top of the loop, because we let go of
+         // mTasksMutex, and other functions may destroy tasks.
+         ODLocker locker{ &mTasksMutex };
+         if ( !tasksInArray( locker ) )
+            break;
          mCurrentThreads.fetch_add( 1, std::memory_order_relaxed );
 
-         mTasksMutex.Lock();
          //detach a NEW thread.
          auto pTask = mTasks[0];
          std::thread{ [ this, pTask ]{
@@ -245,6 +243,10 @@ void ODManager::DispatchLoop()
             //Do at least 5 percent of the task
             pTask->DoSome(0.05f);
             
+            //we should look at our WaveTrack queues to see if we can schedule
+            //a NEW task to the running queue.
+            UpdateQueues( pTask );
+
             //release the thread count so that the dispatcher thread knows how
             //many active threads are alive.
             DecrementCurrentThreads();
@@ -253,18 +255,6 @@ void ODManager::DispatchLoop()
          //thread->SetPriority(10);//default is 50.
 
          mTasks.erase(mTasks.begin());
-         tasksInArray = mTasks.size()>0;
-         mTasksMutex.Unlock();
-      }
-
-      //use a condition variable to block here instead of a sleep.
-
-      // JKC: If there are no tasks ready to run, or we're paused then
-      // we wait for there to be tasks in the queue.
-      {
-         ODLocker locker{ &mQueueNotEmptyCondLock };
-         if( (!tasksInArray) || paused)
-            mQueueNotEmptyCond->Wait();
       }
 
       //if there is some ODTask running, then there will be something in the queue.  If so then redraw to show progress
@@ -282,13 +272,7 @@ void ODManager::DispatchLoop()
          wxCommandEvent event( EVT_ODTASK_UPDATE );
          wxTheApp->AddPendingEvent(event);
       }
-      mTerminateMutex.Lock();
    }
-   mTerminateMutex.Unlock();
-
-   mTerminatedMutex.Lock();
-   mTerminated=true;
-   mTerminatedMutex.Unlock();
 
    //wxLogDebug Not thread safe.
    //wxPrintf("ODManager thread terminating\n");
@@ -299,13 +283,17 @@ void ODManager::DispatchLoop()
 //but presumably they will finish within a second
 void ODManager::Pauser::Pause(bool pause)
 {
-   gPause.store( pause, std::memory_order_release );
    if(IsInstanceCreated())
    {
+      // Must hold mutex while making the condition (unpaused) true
+      std::lock_guard< std::mutex > lock{ pMan->mQueueNotEmptyCondLock };
+      gPause.store( pause, std::memory_order_release );
       if(!pause)
          //we should check the queue again.
-         pMan->mQueueNotEmptyCond->Signal();
+         pMan->mQueueNotEmptyCond.notify_one();
    }
+   else
+      gPause.store( pause, std::memory_order_relaxed );
 }
 
 void ODManager::Pauser::Resume()
@@ -419,12 +407,17 @@ void ODManager::DemandTrackUpdate(WaveTrack* track, double seconds)
 
 ///remove tasks from ODWaveTrackTaskQueues that have been done.  Schedules NEW ones if they exist
 ///Also remove queues that have become empty.
-void ODManager::UpdateQueues()
+void ODManager::UpdateQueues( ODTask *pTask )
 {
    mQueuesMutex.Lock();
    for(unsigned int i=0;i<mQueues.size();i++)
    {
-      if(mQueues[i]->IsFrontTaskComplete())
+      if ( pTask == mQueues[i]->GetFrontTask() &&
+         //there is a chance the task got updated and now has more to do,
+         //(like when it is joined with a NEW track)
+         //check.
+          (pTask->ReUpdateFractionComplete(),
+           pTask->FractionComplete() >= 1.0 ) )
       {
          //this should DELETE and remove the front task instance.
          mQueues[i]->RemoveFrontTask();

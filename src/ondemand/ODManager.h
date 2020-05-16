@@ -20,6 +20,8 @@ number of threads.
 #define __AUDACITY_ODMANAGER__
 
 #include <atomic>
+#include <condition_variable>
+#include <thread>
 #include <vector>
 #include "ODTaskThread.h"
 #include <wx/event.h> // for DECLARE_EXPORTED_EVENT_TYPE
@@ -53,9 +55,6 @@ class ODManager final
 
    ///Adds a wavetrack, creates a queue member.
    void AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex=true);
-
-   ///Wakes the queue loop up by signalling its condition variable.
-   void SignalTaskQueueLoop();
 
    ///if it shares a queue/task, creates a NEW queue/task for the track, and removes it from any previously existing tasks.
    void MakeWaveTrackIndependent( const std::shared_ptr< WaveTrack > &track);
@@ -128,7 +127,7 @@ class ODManager final
    void DispatchLoop();
 
    ///Remove references in our array to Tasks that have been completed/Schedule NEW ones
-   void UpdateQueues();
+   void UpdateQueues( ODTask *pTask );
 
    //instance
    static std::unique_ptr<ODManager> pMan;
@@ -148,15 +147,12 @@ class ODManager final
    ///Maximum number of threads allowed out.
    int mMaxThreads;
 
-   volatile bool mTerminate;
-   ODLock mTerminateMutex;
-
-   volatile bool mTerminated;
-   ODLock mTerminatedMutex;
+   std::atomic< bool > mTerminate{ false };
 
    //for the queue not empty comdition
-   ODLock         mQueueNotEmptyCondLock;
-   std::unique_ptr<ODCondition> mQueueNotEmptyCond;
+   std::mutex         mQueueNotEmptyCondLock;
+   std::condition_variable mQueueNotEmptyCond;
+   std::thread mDispatcher;
 };
 
 #endif

@@ -60,9 +60,6 @@ void ODTask::TerminateAndBlock()
 /// will do at least the smallest unit of work possible
 void ODTask::DoSome(float amountWork)
 {
-   SetIsRunning(true);
-   auto cleanup = finally( [&]{ SetIsRunning(false); } );
-
    mBlockUntilTerminateMutex.Lock();
 
 //   wxPrintf("%s %i subtask starting on NEW thread with priority\n", GetTaskName(),GetTaskNumber());
@@ -177,16 +174,6 @@ void ODTask::ODUpdate()
    ResetNeedsODUpdate();
 }
 
-void ODTask::SetIsRunning(bool value)
-{
-   mIsRunning.store( value, std::memory_order_release );
-}
-
-bool ODTask::IsRunning()
-{
-   return mIsRunning.load( std::memory_order_acquire );
-}
-
 sampleCount ODTask::GetDemandSample() const
 {
    return mDemandSample.load( std::memory_order_acquire );
@@ -208,13 +195,6 @@ void ODTask::SetFractionComplete( float complete )
 {
    mFractionComplete.store( complete, std::memory_order_release );
 }
-
-///return
-bool ODTask::IsComplete()
-{
-   return FractionComplete() >= 1.0 && !IsRunning();
-}
-
 
 std::shared_ptr< WaveTrack > ODTask::GetWaveTrack(int i)
 {

@@ -97,8 +97,6 @@ class ODTask /* not final */
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
    virtual void DemandTrackUpdate(WaveTrack* track, double seconds);
 
-   bool IsComplete();
-
    void TerminateAndBlock();
    ///releases memory that the ODTask owns.  Subclasses should override.
    virtual void Terminate(){}
@@ -124,16 +122,13 @@ class ODTask /* not final */
     ///returns true if the task is associated with the project.
    virtual bool IsTaskAssociatedWithProject(AudacityProject* proj);
 
-   bool IsRunning();
-
-
  protected:
 
    ///calculates the fraction complete from existing data.
    virtual float ComputeFractionComplete() = 0;
 
    ///pure virtual function that does some part of the task this object represents.
-   ///this function is meant to be called repeatedly until IsComplete is true.
+   ///this function is meant to be called repeatedly until mPercentComplete reaches 1.0.
    ///Does the smallest unit of work for this task.
    virtual void DoSomeInternal() = 0;
 
@@ -145,10 +140,6 @@ class ODTask /* not final */
    ///special needs can override this
    virtual void ODUpdate();
 
-   void SetIsRunning(bool value);
-
-
-
    int   mTaskNumber;
    std::atomic<float> mFractionComplete{ 0.0f };
    std::atomic< bool > mTerminate{ false };
@@ -159,9 +150,6 @@ class ODTask /* not final */
    ODLock     mWaveTrackMutex;
 
    mutable std::atomic<sampleCount> mDemandSample{ 0 };
-
-   std::atomic< bool > mIsRunning{ false }; // true?
-
 
    private:
 

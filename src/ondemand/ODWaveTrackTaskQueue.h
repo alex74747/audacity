@@ -73,9 +73,6 @@ class ODWaveTrackTaskQueue final
    //returns true if either tracks or tasks are empty
    bool IsEmpty();
 
-   //returns true if the foremost task exists and is empty.
-   bool IsFrontTaskComplete();
-
    ///Removes and deletes the front task from the list.
    void RemoveFrontTask();
 

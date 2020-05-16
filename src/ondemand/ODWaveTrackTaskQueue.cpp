@@ -259,25 +259,6 @@ bool ODWaveTrackTaskQueue::IsEmpty()
    return isEmpty;
 }
 
-//returns true if the foremost task exists and is empty.
-bool ODWaveTrackTaskQueue::IsFrontTaskComplete()
-{
-   mTasksMutex.Lock();
-   if(mTasks.size())
-   {
-      //there is a chance the task got updated and now has more to do, (like when it is joined with a NEW track)
-      //check.
-      mTasks[0]->ReUpdateFractionComplete();
-      bool ret;
-      ret = mTasks[0]->IsComplete();
-      mTasksMutex.Unlock();
-
-      return ret;
-   }
-   mTasksMutex.Unlock();
-   return false;
-}
-
 ///Removes and deletes the front task from the list.
 void ODWaveTrackTaskQueue::RemoveFrontTask()
 {
