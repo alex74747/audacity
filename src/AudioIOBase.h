@@ -274,7 +274,7 @@ protected:
    /// mMidiStreamActive tells when mMidiStream is open for output
    bool             mMidiStreamActive;
 
-   volatile int        mStreamToken;
+   volatile int        mStreamToken{ 0 };
 
    /// Audio playback rate in samples per second
    double              mRate;
