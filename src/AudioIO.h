@@ -564,7 +564,9 @@ public:
     * This uses the Default project sample format, current sample rate, and
     * selected number of input channels to open the recording device and start
     * reading input data. If software playthrough is enabled, it also opens
-    * the output device in stereo to play the data through */
+    * the output device in stereo to play the data through
+    * Call this from the main thread only!
+    */
    void StartMonitoring( const AudioIOStartStreamOptions &options );
 
    /** \brief Start recording or playing back audio
@@ -572,8 +574,9 @@ public:
     * Allocates buffers for recording and playback, gets the Audio thread to
     * fill them, and sets the stream rolling.
     * If successful, returns a token identifying this particular stream
-    * instance.  For use with IsStreamActive() */
-
+    * instance.  For use with IsStreamActive()
+    * Call this from the main thread only!
+    */
    int StartStream(const TransportTracks &tracks,
                    double t0, double t1,
                    const AudioIOStartStreamOptions &options);
@@ -582,10 +585,14 @@ public:
     *
     * Does quite a bit of housekeeping, including switching off monitoring,
     * flushing recording buffers out to wave tracks, and applies latency
-    * correction to recorded tracks if necessary */
+    * correction to recorded tracks if necessary
+    * Call this from the main thread only!
+    */
    void StopStream() override;
+
    /** \brief Move the playback / recording position of the current stream
-    * by the specified amount from where it is now */
+    * by the specified amount from where it is now
+    */
    void SeekStream(double seconds) { mSeek = seconds; }
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT

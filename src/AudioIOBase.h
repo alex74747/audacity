@@ -235,7 +235,9 @@ public:
     *
     * Doesn't return true if the device has been closed but some disk i/o or
     * cleanup is still going on. If you want to know if it's safe to start a
-    * NEW stream, use IsBusy() */
+    * NEW stream, use IsBusy()
+    * Callable on multiple threads?
+    */
    bool IsStreamActive() const;
    bool IsStreamActive(int token) const;
 
