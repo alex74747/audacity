@@ -38,14 +38,8 @@ class ODWaveTrackTaskQueue;
 class ODManager final
 {
  public:
-   ///Gets the singleton instance - this is a function pointer that points to one of the below two instance calls.
-   ///Note that it is not a member function pointer since it is a static function.
-   ///the function pointer swapping is valid as long as the initial calls only happen from the main thread.
-   static ODManager* (*Instance)();
-   ///Gets the singleton instance
-   static ODManager* InstanceFirstTime();
-   ///Gets the singleton instance
-   static ODManager* InstanceNormal();
+   ///Get the singleton instance (creating it only on demand)
+   static ODManager* Instance();
 
    ///Kills the ODMananger Thread.
    static void Quit();
@@ -103,7 +97,7 @@ class ODManager final
    ///Get Total Number of Tasks.
    int GetTotalNumTasks();
 
-   // RAII object for pausing and resuming..
+   // RAII object for pausing and resuming.
    class Pauser
    {
       //Pause/unpause all OD Tasks.  Does not occur immediately.

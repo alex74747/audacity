@@ -25,17 +25,23 @@ ODTask requests and internals.
 #include <wx/event.h>
 #include <thread>
 
-static ODLock gODInitedMutex;
-static bool gManagerCreated=false;
+static std::atomic<bool> gManagerCreated{ false };
 static bool gPause=false; //to be loaded in and used with Pause/Resume before ODMan init.
 /// a flag that is set if we have loaded some OD blockfiles from PCM.
 static bool sHasLoadedOD=false;
 
-std::unique_ptr<ODManager> ODManager::pMan{};
-//init the accessor function pointer - use the first time version of the interface fetcher
-//first we need to typedef the function pointer type because the compiler doesn't support it in the raw
-typedef  ODManager* (*pfodman)();
-pfodman ODManager::Instance = &(ODManager::InstanceFirstTime);
+std::unique_ptr<ODManager> ODManager::pMan;
+
+ODManager *ODManager::Instance()
+{
+   static std::once_flag flag;
+   std::call_once( flag, []{
+      pMan.reset( safenew ODManager );
+      pMan->Init();
+      gManagerCreated.store( true, std::memory_order_release );
+   } );
+   return pMan.get();
+}
 
 wxDEFINE_EVENT(EVT_ODTASK_UPDATE, wxCommandEvent);
 
@@ -175,37 +181,9 @@ void ODManager::AddNewTask(std::unique_ptr<ODTask> &&mtask, bool lockMutex)
    }
 }
 
-//that switches out the mutex/null check.
-ODManager* ODManager::InstanceFirstTime()
-{
-   gODInitedMutex.Lock();
-   if(!pMan)
-   {
-      pMan.reset(safenew ODManager());
-      pMan->Init();
-      gManagerCreated = true;
-   }
-   gODInitedMutex.Unlock();
-
-   //change the accessor function to use the quicker method.
-   Instance = &(ODManager::InstanceNormal);
-
-   return pMan.get();
-}
-
-//faster method of instance fetching once init is done
-ODManager* ODManager::InstanceNormal()
-{
-   return pMan.get();
-}
-
 bool ODManager::IsInstanceCreated()
 {
-   bool ret;
-   gODInitedMutex.Lock();
-   ret= gManagerCreated;
-   gODInitedMutex.Unlock();
-   return ret;
+   return gManagerCreated.load( std::memory_order_acquire );
 }
 
 ///Launches a thread for the manager and starts accepting Tasks.
