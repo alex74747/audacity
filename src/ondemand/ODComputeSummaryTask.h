@@ -23,7 +23,6 @@ updating the ODPCMAliasBlockFile and the GUI of the newly available data.
 #include "ODTask.h"
 #include "../Internat.h"
 class ODPCMAliasBlockFile;
-class WaveTrack;
 
 /// A class representing a modular task to be used with the On-Demand structures.
 class ODComputeSummaryTask final : public ODTask
