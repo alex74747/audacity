@@ -20,9 +20,8 @@ in a background thread.
 
 #include "ODTask.h"
 
-#include "../WaveTrack.h"
+#include "../Track.h"
 #include "../Project.h"
-#include "../UndoManager.h"
 //temporarily commented out till it is added to all projects
 //#include "../Profiler.h"
 
@@ -103,7 +102,7 @@ bool ODTask::DoSome(float amountWork)
          if(IsTaskAssociatedWithProject(pProject.get()))
          {
             //mark the changes so that the project can be resaved.
-            UndoManager::Get( *pProject ).SetODChangesFlag();
+//            UndoManager::Get( *pProject ).SetODChangesFlag();
             break;
          }
       }
@@ -129,7 +128,7 @@ bool ODTask::DoSome(float amountWork)
             //this assumes tasks are only associated with one project.
             pProject->wxEvtHandler::AddPendingEvent(event);
             //mark the changes so that the project can be resaved.
-            UndoManager::Get( *pProject ).SetODChangesFlag();
+//            UndoManager::Get( *pProject ).SetODChangesFlag();
             break;
          }
       }
@@ -141,7 +140,7 @@ bool ODTask::DoSome(float amountWork)
 
 bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
 {
-   for (auto tr : TrackList::Get( *proj ).Any<const WaveTrack>())
+   for (auto tr : TrackList::Get( *proj )/*.Any<const WaveTrack>()*/)
    {
       //go over all tracks in the project
       //look inside our task's track list for one that matches this projects one.
@@ -201,9 +200,9 @@ void ODTask::SetFractionComplete( float complete )
    mFractionComplete.store( complete, std::memory_order_release );
 }
 
-std::shared_ptr< WaveTrack > ODTask::GetWaveTrack(int i)
+std::shared_ptr< Track > ODTask::GetWaveTrack(int i)
 {
-   std::shared_ptr< WaveTrack > track;
+   std::shared_ptr< Track > track;
    std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
    if(i<(int)mWaveTracks.size())
       track = mWaveTracks[i].lock();
@@ -212,7 +211,7 @@ std::shared_ptr< WaveTrack > ODTask::GetWaveTrack(int i)
 
 ///Sets the wavetrack that will be analyzed for ODPCMAliasBlockFiles that will
 ///have their summaries computed and written to disk.
-void ODTask::AddWaveTrack( const std::shared_ptr< WaveTrack > &track)
+void ODTask::AddWaveTrack( const std::shared_ptr< Track > &track)
 {
    mWaveTracks.push_back(track);
 }
@@ -241,7 +240,7 @@ void ODTask::ReUpdateFractionComplete()
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///@param track the track to update
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
-void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
+void ODTask::DemandTrackUpdate(Track* track, double seconds)
 {
    bool demandSampleChanged = false;
    {
@@ -250,7 +249,7 @@ void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
       {
          if ( track == pTrack.lock().get() )
          {
-            auto newDemandSample = (sampleCount)(seconds * track->GetRate());
+            auto newDemandSample = 0;//(sampleCount)(seconds * track->GetRate());
             demandSampleChanged = newDemandSample != GetDemandSample();
             SetDemandSample(newDemandSample);
             break;
@@ -263,7 +262,7 @@ void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
 }
 
 
-void ODTask::StopUsingWaveTrack(WaveTrack* track)
+void ODTask::StopUsingWaveTrack(Track* track)
 {
    std::lock_guard< std::mutex > locker{ mWaveTrackMutex };
    for(size_t i=0;i<mWaveTracks.size();i++)
@@ -282,7 +281,7 @@ void ODTask::ReplaceWaveTrack(Track *oldTrack,
    {
       if(oldTrack == mWaveTracks[i].lock().get())
       {
-         mWaveTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
+//         mWaveTracks[i] = std::static_pointer_cast<WaveTrack>( newTrack );
       }
    }
 }

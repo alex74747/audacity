@@ -97,7 +97,8 @@ void ODComputeSummaryTask::DoSomeInternal()
          {
             auto waveTrack = mWaveTracks[i].lock();
             if(success && waveTrack)
-               waveTrack->AddInvalidRegion(blockStartSample,blockEndSample);
+               static_cast<WaveTrack*>(waveTrack.get())
+                  ->AddInvalidRegion(blockStartSample,blockEndSample);
          }
       }
    }
@@ -138,7 +139,8 @@ void ODComputeSummaryTask::Update()
       if (waveTrack)
       {
          //gather all the blockfiles that we should process in the wavetrack.
-         for (const auto &clip : waveTrack->GetAllClips()) {
+         for (const auto &clip : static_cast<WaveTrack*>(waveTrack.get())
+            ->GetAllClips()) {
             auto seq = clip->GetSequence();
             //This lock may be way too big since the whole file is one sequence.
             //TODO: test for large files and find a way to break it down.

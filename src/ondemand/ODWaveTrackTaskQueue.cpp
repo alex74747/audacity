@@ -20,7 +20,6 @@ tasks associated with a WaveTrack.
 #include "ODWaveTrackTaskQueue.h"
 
 #include "ODTask.h"
-#include "../WaveTrack.h"
 /// Constructs an ODWaveTrackTaskQueue
 ODWaveTrackTaskQueue::ODWaveTrackTaskQueue()
 {
@@ -50,7 +49,7 @@ bool ODWaveTrackTaskQueue::CanMergeWith( ODWaveTrackTaskQueue* otherQueue )
 ///
 ///@param track the track to bring into the tasks AND tracklist for this queue
 void ODWaveTrackTaskQueue::MergeWaveTrack(
-   const std::shared_ptr< WaveTrack > &track)
+   const std::shared_ptr< Track > &track)
 {
    AddWaveTrack( track );
 
@@ -62,7 +61,7 @@ void ODWaveTrackTaskQueue::MergeWaveTrack(
 }
 
 ///returns true if the argument is in the WaveTrack list.
-bool ODWaveTrackTaskQueue::ContainsWaveTrack( const WaveTrack* track )
+bool ODWaveTrackTaskQueue::ContainsWaveTrack( const Track* track )
 {
    return std::any_of( mTracks.begin(), mTracks.end(),
      [track]( const auto &pTrack ){ return pTrack.lock().get() == track; } );
@@ -70,7 +69,7 @@ bool ODWaveTrackTaskQueue::ContainsWaveTrack( const WaveTrack* track )
 
 ///Adds a track to the associated list.
 void ODWaveTrackTaskQueue::AddWaveTrack(
-   const std::shared_ptr< WaveTrack > &track)
+   const std::shared_ptr< Track > &track)
 {
    if(track)
       mTracks.push_back(track);
@@ -95,7 +94,7 @@ void ODWaveTrackTaskQueue::AddTask( std::unique_ptr<ODTask> mtask )
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///@param track the track to update
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
-void ODWaveTrackTaskQueue::DemandTrackUpdate( WaveTrack* track, double seconds )
+void ODWaveTrackTaskQueue::DemandTrackUpdate( Track* track, double seconds )
 {
    if(track)
    {
@@ -114,7 +113,7 @@ void ODWaveTrackTaskQueue::ReplaceWaveTrack(
    {
       for ( auto &pTrack : mTracks )
          if ( pTrack.lock().get() == oldTrack )
-            pTrack = std::static_pointer_cast<WaveTrack>( newTrack );
+            pTrack = newTrack;
 
       for ( const auto &pTask : mTasks )
          pTask->ReplaceWaveTrack( oldTrack, newTrack );
@@ -162,7 +161,7 @@ ODTask* ODWaveTrackTaskQueue::GetFrontTask()
 
 ///fills in the status bar message for a given track
 void ODWaveTrackTaskQueue::FillTipForWaveTrack(
-   const WaveTrack * t, TranslatableString &tip )
+   const Track * t, TranslatableString &tip )
 {
    if ( ContainsWaveTrack( t ) && GetNumTasks() )
    {

@@ -20,7 +20,7 @@ ODTask requests and internals.
 #include "ODTask.h"
 #include "ODWaveTrackTaskQueue.h"
 #include "../Project.h"
-#include "../WaveTrack.h"
+#include "../Track.h"
 #include <wx/utils.h>
 #include <wx/wx.h>
 #include <wx/event.h>
@@ -314,7 +314,7 @@ void ODManager::ReplaceWaveTrack(Track *oldTrack,
 
 ///if it shares a queue/task, creates a NEW queue/task for the track, and removes it from any previously existing tasks.
 void ODManager::MakeWaveTrackIndependent(
-   const std::shared_ptr< WaveTrack > &track)
+   const std::shared_ptr< Track > &track)
 {
    QueuesLocker locker{ mQueuesMutex };
    for ( const auto &pQueue : mQueues )
@@ -362,8 +362,8 @@ void ODManager::MakeWaveTrackIndependent(
 ///@return returns success.  Some ODTask conditions require that the tasks finish before merging.
 ///e.g. they have different effects being processed at the same time.
 bool ODManager::MakeWaveTrackDependent(
-   const std::shared_ptr< WaveTrack > &dependentTrack,
-   WaveTrack* masterTrack )
+   const std::shared_ptr< Track > &dependentTrack,
+   Track* masterTrack )
 {
    //First, check to see if the task lists are mergeable.  If so, we can simply add this track to the other task and queue,
    //then DELETE this one.
@@ -408,7 +408,7 @@ bool ODManager::MakeWaveTrackDependent(
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///@param track the track to update
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
-void ODManager::DemandTrackUpdate(WaveTrack* track, double seconds)
+void ODManager::DemandTrackUpdate(Track* track, double seconds)
 {
    QueuesLocker locker{ mQueuesMutex };
    for ( const auto &pQueue : mQueues )
@@ -490,7 +490,7 @@ bool ODManager::HasLoadedODFlag()
 }
 
 ///fills in the status bar message for a given track
-void ODManager::FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip )
+void ODManager::FillTipForWaveTrack( const Track * t, TranslatableString &tip )
 {
    QueuesLocker locker{ mQueuesMutex };
    for ( const auto &pQueue : mQueues )
@@ -521,7 +521,7 @@ namespace {
 struct ReplacementHandler final : ClientData::Base, wxEvtHandler
 {
    AudacityProject &mProject;
-   std::shared_ptr< WaveTrack > mpOldTrack; // lifetime?
+   std::shared_ptr< Track > mpOldTrack; // lifetime?
 
    explicit ReplacementHandler( AudacityProject &project )
       : mProject{ project }
@@ -538,14 +538,20 @@ struct ReplacementHandler final : ClientData::Base, wxEvtHandler
    {
       e.Skip();
       mpOldTrack =
-         std::dynamic_pointer_cast<WaveTrack>( e.mpTrack.lock() );
+//         std::dynamic_pointer_cast<WaveTrack>(
+                                              e.mpTrack.lock()
+                                              //)
+      ;
    }
 
    void OnAddition( TrackListEvent & e )
    {
       e.Skip();
 
-      auto pNewTrack = std::dynamic_pointer_cast<WaveTrack>( e.mpTrack.lock() );
+      auto pNewTrack = //std::dynamic_pointer_cast<WaveTrack>(
+                                                            e.mpTrack.lock()
+                                                            //)
+      ;
       if ( mpOldTrack && pNewTrack && ODManager::IsInstanceCreated() ) {
          // If the track is a wave track,
          // Swap the wavecache track the ondemand task uses, since now the NEW

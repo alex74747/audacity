@@ -43,11 +43,11 @@ class ODWaveTrackTaskQueue final
 
    ///Adds a track to the associated list.
    void AddWaveTrack(
-      const std::shared_ptr< WaveTrack > &track);
+      const std::shared_ptr< Track > &track);
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
    void DemandTrackUpdate(
-      WaveTrack* track, double seconds );
+      Track* track, double seconds );
 
    ///replaces all instances of a WaveTrack within this task with another.
    void ReplaceWaveTrack( Track *oldTrack,
@@ -57,11 +57,11 @@ class ODWaveTrackTaskQueue final
    bool CanMergeWith(
       ODWaveTrackTaskQueue* otherQueue);
    void MergeWaveTrack(
-      const std::shared_ptr< WaveTrack > &track );
+      const std::shared_ptr< Track > &track );
 
 
    //returns true if the argument is in the WaveTrack list.
-   bool ContainsWaveTrack( const WaveTrack* track );
+   bool ContainsWaveTrack( const Track* track );
 
    ///Add a task to the queue.
    void AddTask(
@@ -84,7 +84,7 @@ class ODWaveTrackTaskQueue final
 
    ///fills in the status bar message for a given track
    void FillTipForWaveTrack(
-      const WaveTrack * t, TranslatableString &tip );
+      const Track * t, TranslatableString &tip );
 
  protected:
    friend class ODManager;
@@ -97,7 +97,7 @@ class ODWaveTrackTaskQueue final
 
 
   ///the list of tracks associated with this queue.
-  std::vector< std::weak_ptr< WaveTrack > > mTracks;
+  std::vector< std::weak_ptr< Track > > mTracks;
 
   ///the list of tasks associated with the tracks.  This class owns these tasks.
   std::vector<std::unique_ptr<ODTask>> mTasks;

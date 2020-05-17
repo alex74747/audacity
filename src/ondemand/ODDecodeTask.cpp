@@ -99,7 +99,8 @@ void ODDecodeTask::DoSomeInternal()
          {
             auto waveTrack = mWaveTracks[i].lock();
             if(waveTrack)
-               waveTrack->AddInvalidRegion(blockStartSample,blockEndSample);
+               static_cast<WaveTrack*>(waveTrack.get())
+                  ->AddInvalidRegion(blockStartSample,blockEndSample);
          }
       }
    }
@@ -136,7 +137,7 @@ void ODDecodeTask::Update()
       if (waveTrack)
       {
          //gather all the blockfiles that we should process in the wavetrack.
-         for (const auto &clip : waveTrack->GetAllClips()) {
+         for (const auto &clip : static_cast<WaveTrack*>(waveTrack.get())->GetAllClips()) {
             auto seq = clip->GetSequence();
             //TODO:this lock is way to big since the whole file is one sequence.  find a way to break it down.
             Sequence::DeleteUpdateMutexLocker locker{ *seq };
@@ -235,7 +236,7 @@ void ODDecodeTask::OrderBlockFiles
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
 ///this is overridden from ODTask because certain classes don't allow users to seek sometimes, or not at all.
-void ODDecodeTask::DemandTrackUpdate(WaveTrack* track, double seconds)
+void ODDecodeTask::DemandTrackUpdate(Track* track, double seconds)
 {
    //only update if the subclass says we can seek.
    if(SeekingAllowed())

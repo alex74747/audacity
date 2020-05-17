@@ -50,7 +50,7 @@ class ODManager final
    static void Quit();
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
-   void DemandTrackUpdate(WaveTrack* track, double seconds);
+   void DemandTrackUpdate(Track* track, double seconds);
 
    ///Reduces the count of current threads running.  Meant to be called when ODTaskThreads end in their own threads.  Thread-safe.
    void DecrementCurrentThreads();
@@ -59,14 +59,14 @@ class ODManager final
    void AddNewTask( std::unique_ptr<ODTask> mtask );
 
    ///if it shares a queue/task, creates a NEW queue/task for the track, and removes it from any previously existing tasks.
-   void MakeWaveTrackIndependent( const std::shared_ptr< WaveTrack > &track);
+   void MakeWaveTrackIndependent( const std::shared_ptr< Track > &track);
 
    ///attach the track in question to another, already existing track's queues and tasks.  Remove the task/tracks.
    ///Returns success if it was possible..  Some ODTask conditions make it impossible until the Tasks finish.
    ///Callable from the main thread
    bool MakeWaveTrackDependent(
-      const std::shared_ptr< WaveTrack > &dependentTrack,
-      WaveTrack* masterTrack
+      const std::shared_ptr< Track > &dependentTrack,
+      Track* masterTrack
    );
 
    ///if oldTrack is being watched,
@@ -90,7 +90,7 @@ class ODManager final
    static bool IsInstanceCreated();
 
    ///fills in the status bar message for a given track
-   void FillTipForWaveTrack( const WaveTrack * t, TranslatableString &tip );
+   void FillTipForWaveTrack( const Track * t, TranslatableString &tip );
 
    ///Gets the total percent complete for all tasks combined, and number of
    // tasks

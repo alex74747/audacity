@@ -106,7 +106,7 @@ class ODTask /* not final */
    ///Effects that affect portions of a track will need to check this.
    bool CanMergeWith(ODTask* otherTask){return strcmp(GetTaskName(),otherTask->GetTaskName())==0;}
 
-   virtual void StopUsingWaveTrack(WaveTrack* track);
+   virtual void StopUsingWaveTrack(Track* track);
 
    ///Replaces all instances to a wavetrack with a NEW one, effectively transferring the task.
    ///ODTask has no wavetrack, so it does nothing.  But subclasses that do should override this.
@@ -114,12 +114,12 @@ class ODTask /* not final */
       const std::shared_ptr< Track > &newTrack);
 
     ///Adds a WaveTrack to do the task for
-   void AddWaveTrack( const std::shared_ptr< WaveTrack > &track);
+   void AddWaveTrack( const std::shared_ptr< Track > &track);
    virtual int GetNumWaveTracks();
-   virtual std::shared_ptr< WaveTrack > GetWaveTrack(int i);
+   virtual std::shared_ptr< Track > GetWaveTrack(int i);
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
-   virtual void DemandTrackUpdate(WaveTrack* track, double seconds);
+   virtual void DemandTrackUpdate(Track* track, double seconds);
 
    void Join();
 
@@ -155,7 +155,7 @@ class ODTask /* not final */
    std::atomic<float> mFractionComplete{ 0.0f };
    std::atomic< bool > mTerminate{ false };
 
-   std::vector< std::weak_ptr< WaveTrack > > mWaveTracks;
+   std::vector< std::weak_ptr< Track > > mWaveTracks;
    std::mutex     mWaveTrackMutex;
 
    mutable std::atomic<sampleCount> mDemandSample{ 0 };

@@ -48,7 +48,7 @@ class ODDecodeTask /* not final */ : public ODTask
 
    ///changes the tasks associated with this Waveform to process the task from a different point in the track
    ///this is overridden from ODTask because certain classes don't allow users to seek sometimes, or not at all.
-   void DemandTrackUpdate(WaveTrack* track, double seconds) override;
+   void DemandTrackUpdate(Track* track, double seconds) override;
 
    ///Return the task name
    const char* GetTaskName() override { return "ODDecodeTask"; }
