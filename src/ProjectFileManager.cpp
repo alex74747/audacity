@@ -1392,9 +1392,6 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
    // might throw.
    bool closed = false;
    auto cleanup = finally( [&] {
-      //release the flag.
-      ODManager::UnmarkLoadedODFlag();
-
       if (! closed ) {
          if ( bParseSuccess ) {
             // This is a no-fail:
@@ -1406,6 +1403,9 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          // raised if a recovery took place.
          window.CallAfter( [&] { window.Raise(); } );
       }
+
+         //release the flag.
+      ODManager::UnmarkLoadedODFlag();
    } );
    
    if (bParseSuccess) {
