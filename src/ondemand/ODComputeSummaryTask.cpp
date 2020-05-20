@@ -51,7 +51,6 @@ void ODComputeSummaryTask::DoSomeInternal()
    if ( mBlockFiles.empty() )
       return;
 
-   mBlockFilesMutex.Lock();
    for(size_t j=0; j < mWaveTracks.size() && mBlockFiles.size();j++)
    {
       bool success = false;
@@ -89,12 +88,6 @@ void ODComputeSummaryTask::DoSomeInternal()
          // The task does not make progress
          ;
 
-      //This is a bit of a convenience in case someone tries to terminate the task by closing the trackpanel or window.
-      //ODComputeSummaryTask::Terminate() uses this lock to remove everything, and we don't want it to wait since the UI is being blocked.
-      mBlockFilesMutex.Unlock();
-      std::this_thread::yield();
-      mBlockFilesMutex.Lock();
-
       //update the gui for all associated blocks.  It doesn't matter that we're hitting more wavetracks then we should
       //because this loop runs a number of times equal to the number of tracks, they probably are getting processed in
       //the next iteration at the same sample window.
@@ -109,8 +102,6 @@ void ODComputeSummaryTask::DoSomeInternal()
          mWaveTrackMutex.Unlock();
       }
    }
-
-   mBlockFilesMutex.Unlock();
 }
 
 ///compute the next time we should take a break in terms of overall completion.
@@ -123,21 +114,11 @@ float ODComputeSummaryTask::ComputeNextFractionComplete()
    return FractionComplete() + ((float)nBlockFilesPerDoSome/(mMaxBlockFiles+1));
 }
 
-void ODComputeSummaryTask::MarkUpdateRan()
-{
-   mHasUpdateRan.store( true, std::memory_order_release );
-}
-
-bool ODComputeSummaryTask::HasUpdateRan()
-{
-   return mHasUpdateRan.load( std::memory_order_acquire );
-}
-
 float ODComputeSummaryTask::ComputeFractionComplete()
 {
    if ( mBlockFiles.empty() )
       return 1;
-   else if ( HasUpdateRan() )
+   else if ( mHasUpdateRun )
       return (float) 1.0 - ((float)mBlockFiles.size() / (mMaxBlockFiles+1));
    else
       return 0;
@@ -151,37 +132,27 @@ void ODComputeSummaryTask::Update()
 
    mWaveTrackMutex.Lock();
 
-   for(size_t j=0;j<mWaveTracks.size();j++)
+   for (const auto &pTrack : mWaveTracks)
    {
-      auto waveTrack = mWaveTracks[j].lock();
-      if(waveTrack)
+      auto waveTrack = pTrack.lock();
+      if (waveTrack)
       {
-         BlockArray *blocks;
-         Sequence *seq;
-
          //gather all the blockfiles that we should process in the wavetrack.
          for (const auto &clip : waveTrack->GetAllClips()) {
-            seq = clip->GetSequence();
+            auto seq = clip->GetSequence();
             //This lock may be way too big since the whole file is one sequence.
             //TODO: test for large files and find a way to break it down.
             Sequence::DeleteUpdateMutexLocker locker(*seq);
 
-            //See Sequence::Delete() for why need this for now..
-            //We don't need the mBlockFilesMutex here because it is only for the vector list.
-            //These are existing blocks, and its wavetrack or blockfiles won't be deleted because
-            //of the respective mWaveTrackMutex lock and LockDeleteUpdateMutex() call.
-            blocks = clip->GetSequenceBlockArray();
-            int i;
-            int insertCursor;
+            auto blocks = clip->GetSequenceBlockArray();
 
-            insertCursor =0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
+            int insertCursor = 0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
 
-            for(i=0; i<(int)blocks->size(); i++)
+            for (auto &block : *blocks)
             {
                //if there is data but no summary, this blockfile needs summarizing.
-               SeqBlock &block = (*blocks)[i];
                const auto &file = block.f;
-               if(file->IsDataAvailable() && !file->IsSummaryAvailable())
+               if (file->IsDataAvailable() && !file->IsSummaryAvailable())
                {
                   const auto odpcmaFile =
                      std::static_pointer_cast<ODPCMAliasBlockFile>(file);
@@ -209,11 +180,9 @@ void ODComputeSummaryTask::Update()
    mWaveTrackMutex.Unlock();
 
    //get the NEW order.
-   mBlockFilesMutex.Lock();
    OrderBlockFiles(tempBlocks);
-   mBlockFilesMutex.Unlock();
 
-   MarkUpdateRan();
+   mHasUpdateRun = true;
 }
 
 
@@ -231,14 +200,14 @@ void ODComputeSummaryTask::OrderBlockFiles
    //find the startpoint
    auto processStartSample = GetDemandSample();
    std::shared_ptr< ODPCMAliasBlockFile > firstBlock;
-   for(auto i = unorderedBlocks.size(); i--;)
+   for (auto i = unorderedBlocks.size(); i--;)
    {
       auto ptr = unorderedBlocks[i].lock();
-      if(ptr)
+      if (ptr)
       {
          //test if the blockfiles are near the task cursor.  we use the last mBlockFiles[0] as our point of reference
          //and add ones that are closer.
-         if(firstBlock &&
+         if (firstBlock &&
             ptr->GetGlobalEnd() >= processStartSample &&
                 ( firstBlock->GetGlobalEnd() < processStartSample ||
                   ptr->GetGlobalStart() <= firstBlock->GetGlobalStart())
@@ -255,7 +224,7 @@ void ODComputeSummaryTask::OrderBlockFiles
                firstBlock = ptr;
             mBlockFiles.push_back(unorderedBlocks[i]);
          }
-         if(mMaxBlockFiles< (int) mBlockFiles.size())
+         if (mMaxBlockFiles< (int) mBlockFiles.size())
             mMaxBlockFiles = mBlockFiles.size();
       }
       else

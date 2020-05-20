@@ -130,30 +130,24 @@ void ODDecodeTask::Update()
 
    mWaveTrackMutex.Lock();
 
-   for(size_t j=0;j<mWaveTracks.size();j++)
+   for (const auto &pTrack : mWaveTracks)
    {
-      auto waveTrack = mWaveTracks[j].lock();
-      if(waveTrack)
+      auto waveTrack = pTrack.lock();
+      if (waveTrack)
       {
-         BlockArray *blocks;
-         Sequence *seq;
-
          //gather all the blockfiles that we should process in the wavetrack.
          for (const auto &clip : waveTrack->GetAllClips()) {
-            seq = clip->GetSequence();
+            auto seq = clip->GetSequence();
             //TODO:this lock is way to big since the whole file is one sequence.  find a way to break it down.
-            seq->LockDeleteUpdateMutex();
+            Sequence::DeleteUpdateMutexLocker locker(*seq);
 
             //See Sequence::Delete() for why need this for now..
-            blocks = clip->GetSequenceBlockArray();
-            int i;
-            int insertCursor;
+            auto blocks = clip->GetSequenceBlockArray();
 
-            insertCursor =0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
-            for (i = 0; i<(int)blocks->size(); i++)
+            int insertCursor = 0;//OD TODO:see if this works, removed from inner loop (bfore was n*n)
+            for (auto &block : *blocks)
             {
                //since we have more than one ODDecodeBlockFile, we will need type flags to cast.
-               SeqBlock &block = (*blocks)[i];
                const auto &file = block.f;
                std::shared_ptr<ODDecodeBlockFile> oddbFile;
                if (!file->IsDataAvailable() &&
@@ -178,8 +172,6 @@ void ODDecodeTask::Update()
                   tempBlocks.insert(tempBlocks.begin() + insertCursor++, oddbFile);
                }
             }
-
-            seq->UnlockDeleteUpdateMutex();
          }
       }
    }
@@ -203,16 +195,16 @@ void ODDecodeTask::OrderBlockFiles
    //find the startpoint
    auto processStartSample = GetDemandSample();
    std::shared_ptr< ODDecodeBlockFile > firstBlock;
-   for(auto i = unorderedBlocks.size(); i--; )
+   for (auto i = unorderedBlocks.size(); i--; )
    {
       auto ptr = unorderedBlocks[i].lock();
-      if(ptr)
+      if (ptr)
       {
          //test if the blockfiles are near the task cursor.  we use the last mBlockFiles[0] as our point of reference
          //and add ones that are closer.
          //since the order is linear right to left, this will add blocks so that the ones on the right side of the target
          //are processed first, with the ones closer being processed earlier.  Then the ones on the left side get processed.
-         if(mBlockFiles.size() &&
+         if (mBlockFiles.size() &&
             ptr->GetGlobalEnd() >= processStartSample &&
                 ( firstBlock->GetGlobalEnd() < processStartSample ||
                   ptr->GetGlobalStart() <= firstBlock->GetGlobalStart()) )

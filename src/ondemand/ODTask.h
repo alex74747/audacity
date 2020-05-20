@@ -56,6 +56,24 @@ class ODTask /* not final */
 
    virtual ~ODTask();
 
+ protected:
+   // The callbacks to these overridables are guaranteed to be serialized with
+   // each other, and with the addition of the task to the task manager, and
+   // the destruction of the task
+
+   ///calculates the fraction complete from existing data.
+   virtual float ComputeFractionComplete() = 0;
+
+   ///pure virtual function that does some part of the task this object represents.
+   ///this function is meant to be called repeatedly until mPercentComplete reaches 1.0.
+   ///Does the smallest unit of work for this task.
+   virtual void DoSomeInternal() = 0;
+
+   ///virtual method called before DoSomeInternal is used from DoSome.
+   /// Allows the task to check for messages from its environment.
+   virtual void Update(){}
+
+ public:
    //clones everything except information about the tracks.
    virtual std::unique_ptr<ODTask> Clone() const = 0;
 
@@ -124,17 +142,6 @@ class ODTask /* not final */
    virtual bool IsTaskAssociatedWithProject(AudacityProject* proj);
 
  protected:
-
-   ///calculates the fraction complete from existing data.
-   virtual float ComputeFractionComplete() = 0;
-
-   ///pure virtual function that does some part of the task this object represents.
-   ///this function is meant to be called repeatedly until mPercentComplete reaches 1.0.
-   ///Does the smallest unit of work for this task.
-   virtual void DoSomeInternal() = 0;
-
-   ///virtual method called before DoSomeInternal is used from DoSome.
-   virtual void Update(){}
 
    ///virtual method called in DoSome everytime the user has demanded some OD function so that the
    ///ODTask can readjust its computation order.  By default just calls Update(), but subclasses with

@@ -169,12 +169,15 @@ void ODTask::ODUpdate()
 
 sampleCount ODTask::GetDemandSample() const
 {
-   return mDemandSample.load( std::memory_order_acquire );
+   // Receive mesage about a pick in the track that should change the
+   // priority for computing block information; no other associated information
+   // so relaxed order is enough
+   return mDemandSample.load( std::memory_order_relaxed );
 }
 
 void ODTask::SetDemandSample(sampleCount sample)
 {
-   mDemandSample.store( sample, std::memory_order_release );
+   mDemandSample.store( sample, std::memory_order_relaxed );
 }
 
 
@@ -221,6 +224,7 @@ void ODTask::SetNeedsODUpdate()
 {
    mNeedsODUpdate.store( true, std::memory_order_release );
 }
+
 bool ODTask::GetNeedsODUpdate()
 {
    return mNeedsODUpdate.load( std::memory_order_acquire );
@@ -246,11 +250,11 @@ void ODTask::ReUpdateFractionComplete()
 ///@param seconds the point in the track from which the tasks associated with track should begin processing from.
 void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
 {
-   bool demandSampleChanged=false;
+   bool demandSampleChanged = false;
    mWaveTrackMutex.Lock();
-   for(size_t i=0;i<mWaveTracks.size();i++)
+   for (const auto &pTrack : mWaveTracks)
    {
-      if ( track == mWaveTracks[i].lock().get() )
+      if ( track == pTrack.lock().get() )
       {
          auto newDemandSample = (sampleCount)(seconds * track->GetRate());
          demandSampleChanged = newDemandSample != GetDemandSample();
