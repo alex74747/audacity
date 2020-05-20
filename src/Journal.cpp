@@ -145,57 +145,139 @@ using EventCode = Identifier;
 
 // An entry in a catalog describing the types of events that are intercepted
 // and recorded, and simulated when playing back.
+// Some metaprogramming machinery in here to simplify usage of the constructor.
 struct EventType {
+
    // Function that returns a list of parameters that, with the event type,
    // are sufficient to record an event to the journal and recreate it on
-   // playback
-   using Serializer = std::function< wxArrayStringEx( const wxEvent& ) >;
+   // playback; or a null for failure
+   using Serializer =
+      std::function< Optional<wxArrayStringEx>( const wxEvent& ) >;
 
-   // Function that recreates an event at playback
+   // Function that recreates an event at playback; or a null for failure
    using Deserializer =
       std::function< std::unique_ptr<wxEvent>( const wxArrayStringEx& ) >;
 
+   // Helper to keep casts out of the supplied function's definition
+   // Tag is the subtype of wxEvent expected by fn
+   template< typename Tag, typename SerialFn >
+   Serializer makeSerializer( SerialFn fn )
+   {
+      // Return an adaptor taking wxEvent
+      return [fn = std::move( fn )]( const wxEvent &e ){
+         return fn(static_cast<const Tag&>(e));
+      };
+   }
+
+   // Helper to keep casts out of the supplied function's definition
+   // fn returns a unique pointer to Tag which is a subtype of wxEvent
+   template< typename Tag, typename DeserialFn >
+   Deserializer makeDeserializer( wxEventTypeTag<Tag> ignored, DeserialFn fn
+      // Sfinae type check disambiguates this overload
+      , decltype( fn( wxArrayStringEx{} ) ) * = nullptr
+   )
+   {
+      // Check consistency of the deduced template parameters
+      // The deserializer should produce unique pointer to Tag
+      using DeserializerResult = decltype( *fn( wxArrayStringEx{} ) );
+      static_assert( std::is_same< Tag&, DeserializerResult >::value,
+         "deserializer produces the wrong type" );
+
+      (void)ignored;
+
+      // Return an adaptor that applies a conversion to the result
+      return [fn = std::move( fn )](
+         const wxArrayStringEx &strings ) -> std::unique_ptr< wxEvent > {
+         return fn(strings);
+      };
+   }
+
+   // Helper to keep casts out of the supplied function's definition
+   // In this overload, Tag is a subtype of wxEvent (such as wxCommandEvent),
+   // and fn defines a family of deserializers dependent on a run-time wxEvent
+   // type (such as one of the many event types implemented by wxCommandEvent)
+   template< typename Tag, typename DeserialFnFamily >
+   Deserializer makeDeserializer( wxEventTypeTag<Tag> type, DeserialFnFamily fn
+      // Sfinae type check disambiguates this overload
+      , decltype( fn( type ) ) * = nullptr
+   )
+   {
+      // Check consistency of the deduced template parameters
+      // The deserializer should produce unique pointer to Tag
+      // (note that fn is "curried")
+      using DeserializerResult = decltype( *fn( type )( wxArrayStringEx{} ) );
+      static_assert( std::is_same< Tag&, DeserializerResult >::value,
+         "deserializer produces the wrong type" );
+
+      // Return an adaptor that captures the run-time type, and applies a
+      // conversion to the result
+      return [fn = std::move( fn ), type](
+         const wxArrayStringEx &strings ) -> std::unique_ptr< wxEvent > {
+         return fn(type)(strings);
+      };
+   }
+
+   // Type-erasing constructor applies compile-time type consistency checks to
+   // the functions, which can be supplied as lambdas using a subtype of wxEvent
+   template<
+      typename Tag, // such as wxCommandEvent
+      typename SerialFn,
+      typename DeserialFn
+   >
+   EventType( wxEventTypeTag<Tag> type, // such as wxEVT_BUTTON
+      const EventCode &code, SerialFn serialFn, DeserialFn deserialFn )
+      : type{ type }
+      , code{ code }
+      , serializer{ makeSerializer<Tag>( std::move( serialFn ) ) }
+      , deserializer{ makeDeserializer( type, std::move( deserialFn ) ) }
+   {
+   }
+
+   // Data members
    wxEventType type;
    EventCode code;
    Serializer serializer;
    Deserializer deserializer;
-
-   // Type-erasing constructor so you can avoid casting when you supply
-   // the functions
-   template<
-      typename Tag, // such as wxCommandEvent
-      typename SerialFn,
-      typename DeserialFn >
-   EventType( wxEventTypeTag<Tag> type, // such as wxEVT_BUTTON
-      const EventCode &code,
-      const SerialFn &serialFn, const DeserialFn &deserialFn )
-      : type{ type }
-      , code{ code }
-      , serializer{ [serialFn]( const wxEvent &e )
-         { return serialFn(static_cast<const Tag&>(e)); } }
-      , deserializer{ [deserialFn]( const wxArrayStringEx &strings )
-         -> std::unique_ptr< wxEvent >
-         { return deserialFn(strings); } }
-   {
-      // Check consistency of the deduced template parameters
-      // The deserializer should produce unique pointer to Tag
-      using DeserializerResult = decltype( *deserialFn( wxArrayStringEx{} ) );
-      static_assert( std::is_same< Tag&, DeserializerResult >::value,
-         "deserializer produces the wrong type" );
-   }
 };
 using EventTypes = std::vector< EventType >;
 
 // The list of event types to intercept and record.  Its construction must be
 // delayed until wxWidgets has initialized and chosen the integer values of
-// event types.
+// run-time event types.
 static const EventTypes &typeCatalog()
 {
+   static const auto SerializeCommandEvent =
+   [](const wxCommandEvent &event) {
+      Optional< wxArrayStringEx > result;
+      if ( auto pWindow = dynamic_cast< wxWindow * >( event.GetEventObject() ) )
+         result.emplace( wxArrayStringEx{
+            FindWindowPath( *pWindow ).GET()
+         } );
+      return result;
+   };
+
+   static const auto
+   DeserializeCommandEvent = []( wxEventType type ) { return
+      [type](const wxArrayStringEx &components) {
+         std::unique_ptr< wxCommandEvent > result;
+         if ( components.size() == 1 ) {
+            if ( auto pWindow = FindWindowByPath( *components.begin() ) ) {
+               result =
+                  std::make_unique< wxCommandEvent >( type, pWindow->GetId() );
+               result->SetEventObject( pWindow );
+            }
+         }
+         return result;
+      };
+   };
+
+   static const auto CommandEventType = []( auto type, const auto &code ) {
+      return EventType{ type, code,
+         SerializeCommandEvent, DeserializeCommandEvent };
+   };
+
    static EventTypes result {
-      { wxEVT_BUTTON, "Press",
-         [](const auto &event){ return wxArrayString{}; },
-         [](const wxArrayStringEx &){
-            return std::make_unique<wxCommandEvent>(); } },
+      CommandEventType( wxEVT_BUTTON, "Press" ),
    };
    return result;
 }
