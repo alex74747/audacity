@@ -761,7 +761,7 @@ void OnSplit(const CommandContext &context)
    for (auto wt : tracks.Selected< WaveTrack >())
       wt->Split( sel0, sel1 );
 
-   ProjectHistory::Get( project ).PushState(XO("Split"), XO("Split"));
+   ProjectHistory::Get( project ).PushState(XO("Split"), XO("Split")); //
 #if 0
 //ANSWER-ME: Do we need to keep this commented out OnSplit() code?
 // This whole section no longer used...

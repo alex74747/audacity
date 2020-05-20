@@ -934,7 +934,7 @@ void WaveTrackMenuTable::OnSplitStereo(wxCommandEvent &)
    ProjectHistory::Get( *project ).PushState(
    /* i18n-hint: The string names a track  */
       XO("Split stereo track '%s'").Format( pTrack->GetName() ),
-      XO("Split"));
+      XO("Split")); //
 
    using namespace RefreshCode;
    mpData->result = RefreshAll | FixScrollbars;

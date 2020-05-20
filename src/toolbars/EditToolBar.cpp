@@ -231,7 +231,7 @@ static const struct Entry {
    { ETBCopyID,     wxT("Copy"),        XO("Copy")  },
    { ETBPasteID,    wxT("Paste"),       XO("Paste")  },
    { ETBTrimID,     wxT("Trim"),        XO("Trim audio outside selection")  },
-   { ETBSilenceID,  wxT("Silence"),     XO("Silence audio selection")  },
+   { ETBSilenceID,  wxT("Silence"),     XO("Silence audio selection")  }, //
    { ETBUndoID,     wxT("Undo"),        XO("Undo")  },
    { ETBRedoID,     wxT("Redo"),        XO("Redo")  },
 
