@@ -87,8 +87,8 @@ void ODTask::DoSome(float amountWork)
       DoSomeInternal();
       SetFractionComplete( ComputeFractionComplete() );
       //check to see if ondemand has been called
-      if(GetNeedsODUpdate() && FractionComplete() < 1.0)
-         ODUpdate();
+      while( FractionComplete() < 1.0 && !ODUpdate() )
+         ;
    }
 
    //if it is not done, put it back onto the ODManager queue.
@@ -161,10 +161,20 @@ bool ODTask::IsTaskAssociatedWithProject(AudacityProject* proj)
 
 }
 
-void ODTask::ODUpdate()
+bool ODTask::ODUpdate()
 {
+   // Was work demanded?
+   auto expected = mNeedsODUpdate.load( std::memory_order_acquire );
+   if ( !expected )
+      // No, so done
+      return true;
+
+   // Do work
    Update();
-   ResetNeedsODUpdate();
+
+   // Be careful to check whether more yet was demanded during the work
+   return mNeedsODUpdate.compare_exchange_weak(
+      expected, 0, std::memory_order_acquire );
 }
 
 sampleCount ODTask::GetDemandSample() const
@@ -222,27 +232,15 @@ int ODTask::GetNumWaveTracks()
 
 void ODTask::SetNeedsODUpdate()
 {
-   mNeedsODUpdate.store( true, std::memory_order_release );
-}
-
-bool ODTask::GetNeedsODUpdate()
-{
-   return mNeedsODUpdate.load( std::memory_order_acquire );
-}
-
-void ODTask::ResetNeedsODUpdate()
-{
-   mNeedsODUpdate.store( false, std::memory_order_relaxed );
+   mNeedsODUpdate.fetch_add( 1u, std::memory_order_release );
 }
 
 ///does an od update and then recalculates the data.
 void ODTask::ReUpdateFractionComplete()
 {
-   if(GetNeedsODUpdate())
-   {
-      ODUpdate();
-      SetFractionComplete( ComputeFractionComplete() );
-   }
+   while( !ODUpdate() )
+      ;
+   SetFractionComplete( ComputeFractionComplete() );
 }
 
 ///changes the tasks associated with this Waveform to process the task from a different point in the track
@@ -266,7 +264,6 @@ void ODTask::DemandTrackUpdate(WaveTrack* track, double seconds)
 
    if(demandSampleChanged)
       SetNeedsODUpdate();
-
 }
 
 

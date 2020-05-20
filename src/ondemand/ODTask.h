@@ -133,21 +133,21 @@ class ODTask /* not final */
    int GetTaskNumber(){return mTaskNumber;}
 
    void SetNeedsODUpdate();
-   bool GetNeedsODUpdate();
-   void ResetNeedsODUpdate();
 
    virtual TranslatableString GetTip()=0;
 
     ///returns true if the task is associated with the project.
    virtual bool IsTaskAssociatedWithProject(AudacityProject* proj);
 
+ private:
+   ///method called in DoSome to check whether the user has demanded some OD
+   //function so that the ODTask can readjust its computation order.
+   ///Calls Update() if demanded.
+   ///Returns true if work is complete; else, there may have been a concurrent
+   ///demand for more work during the update.
+   bool ODUpdate();
+
  protected:
-
-   ///virtual method called in DoSome everytime the user has demanded some OD function so that the
-   ///ODTask can readjust its computation order.  By default just calls Update(), but subclasses with
-   ///special needs can override this
-   virtual void ODUpdate();
-
    int   mTaskNumber;
    std::atomic<float> mFractionComplete{ 0.0f };
    std::atomic< bool > mTerminate{ false };
@@ -159,7 +159,7 @@ class ODTask /* not final */
 
    private:
 
-   std::atomic< bool > mNeedsODUpdate{ false };
+   std::atomic< unsigned > mNeedsODUpdate{ 0u };
    std::thread mThread;
 };
 
