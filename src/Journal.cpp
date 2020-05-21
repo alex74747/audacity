@@ -16,16 +16,215 @@
 #include "Journal.h"
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
+#include <map>
+#include <mutex>
+#include <type_traits>
 #include <unordered_map>
 #include <wx/app.h>
+#include <wx/event.h>
 #include <wx/filename.h>
 #include <wx/textfile.h>
+#include <wx/toplevel.h>
 
 #include "MemoryX.h"
 #include "Prefs.h"
 
 namespace {
+
+/******************************************************************************
+utilities to identify corresponding windows between recording and playback runs
+******************************************************************************/
+
+using WindowPath = Identifier;
+constexpr auto WindowPathSeparator = ':';
+constexpr auto WindowPathEscape = '\\';
+
+// Is the window uniquely named among top level windows or among children
+// of its parent?
+bool HasUniqueNameAmongPeers( wxWindow &window, const wxWindowList &list )
+{
+   auto name = window.GetName();
+   auto pred = [&name]( wxWindow *pWindow2 ){
+      return pWindow2->GetName() == name;
+   };
+   auto begin = wxTopLevelWindows.begin(),
+      end = wxTopLevelWindows.end(), iter1 = begin;
+   for ( ; iter1 != end; ++iter1 )
+      if ( pred( *iter1 ) )
+         break;
+   auto iter2 = iter1;
+   for ( ; iter2 != end; ++iter2 )
+      if ( pred( *iter2 ) )
+         break;
+   return ( iter2 == end && iter1 != end && *iter1 == &window );
+}
+
+// Find the unique window in the list for the given name, if there is such
+wxWindow *FindWindowByNameAmongPeers(
+   const wxString &name, const wxWindowList &list )
+{
+   auto pred = [&name]( wxWindow *pWindow2 ){
+      return pWindow2->GetName() == name;
+   };
+   auto begin = wxTopLevelWindows.begin(),
+      end = wxTopLevelWindows.end(), iter1 = begin;
+   for ( ; iter1 != end; ++iter1 )
+      if ( pred( *iter1 ) )
+         break;
+   auto iter2 = iter1;
+   for ( ; iter2 != end; ++iter2 )
+      if ( pred( *iter2 ) )
+         break;
+   if ( iter2 == end && iter1 != end )
+      return *iter1;
+   return nullptr;
+}
+
+// Find array of window names, starting with a top-level window and ending
+// with the given window, or an empty array of the conditions fail for
+// uniqueness of names.
+void WindowPathComponents( wxWindow &window, wxArrayStringEx &components )
+{
+   if ( dynamic_cast<wxTopLevelWindow*>( &window ) ) {
+      if ( HasUniqueNameAmongPeers( window, wxTopLevelWindows ) ) {
+         components.push_back( window.GetName() );
+         return;
+      }
+   }
+   else if ( auto pParent = window.GetParent() ) {
+      // Recur
+      WindowPathComponents( *pParent, components );
+      if ( !components.empty() &&
+          HasUniqueNameAmongPeers( window, pParent->GetChildren() ) ) {
+         components.push_back( window.GetName() );
+         return;
+      }
+   }
+
+   // Failure
+   components.clear();
+}
+
+// When recording, find a string to identify the window in the journal
+WindowPath FindWindowPath( wxWindow &window )
+{
+   wxArrayStringEx components;
+   WindowPathComponents( window, components );
+   return wxJoin( components, WindowPathSeparator, WindowPathEscape );
+}
+
+// When playing, find a window by path, corresponding to the window that had the
+// same path in a previous run
+wxWindow *FindWindowByPath( const WindowPath &path )
+{
+   wxArrayStringEx components;
+   wxSplit( path.GET(), WindowPathSeparator, WindowPathEscape );
+   if ( !components.empty() ) {
+      auto iter = components.begin(), end = components.end();
+      wxWindow *pWindow =
+         FindWindowByNameAmongPeers( *iter++, wxTopLevelWindows );
+      while ( pWindow && iter != end )
+         pWindow = FindWindowByNameAmongPeers( *iter++, pWindow->GetChildren() );
+      return pWindow;
+   }
+   return nullptr;
+}
+
+/******************************************************************************
+utilities to record events to journal and recreate them on playback
+******************************************************************************/
+
+// Events need to be recorded in the journal, but the numbers associated with
+// event types by wxWidgets are chosen dynamically and may not be the same
+// across runs or platforms.  We need an invariant name for each event type
+// of interest, which also makes the journal more legible than if we wrote mere
+// numbers.
+using EventCode = Identifier;
+
+// An entry in a catalog describing the types of events that are intercepted
+// and recorded, and simulated when playing back.
+struct EventType {
+   // Function that returns a list of parameters that, with the event type,
+   // are sufficient to record an event to the journal and recreate it on
+   // playback
+   using Serializer = std::function< wxArrayStringEx( const wxEvent& ) >;
+
+   // Function that recreates an event at playback
+   using Deserializer =
+      std::function< std::unique_ptr<wxEvent>( const wxArrayStringEx& ) >;
+
+   wxEventType type;
+   EventCode code;
+   Serializer serializer;
+   Deserializer deserializer;
+
+   // Type-erasing constructor so you can avoid casting when you supply
+   // the functions
+   template<
+      typename Tag, // such as wxCommandEvent
+      typename SerialFn,
+      typename DeserialFn >
+   EventType( wxEventTypeTag<Tag> type, // such as wxEVT_BUTTON
+      const EventCode &code,
+      const SerialFn &serialFn, const DeserialFn &deserialFn )
+      : type{ type }
+      , code{ code }
+      , serializer{ [serialFn]( const wxEvent &e )
+         { return serialFn(static_cast<const Tag&>(e)); } }
+      , deserializer{ [deserialFn]( const wxArrayStringEx &strings )
+         -> std::unique_ptr< wxEvent >
+         { return deserialFn(strings); } }
+   {
+      // Check consistency of the deduced template parameters
+      // The deserializer should produce unique pointer to Tag
+      using DeserializerResult = decltype( *deserialFn( wxArrayStringEx{} ) );
+      static_assert( std::is_same< Tag&, DeserializerResult >::value,
+         "deserializer produces the wrong type" );
+   }
+};
+using EventTypes = std::vector< EventType >;
+
+// The list of event types to intercept and record.  Its construction must be
+// delayed until wxWidgets has initialized and chosen the integer values of
+// event types.
+static const EventTypes &typeCatalog()
+{
+   static EventTypes result {
+      { wxEVT_BUTTON, "Press",
+         [](const auto &event){ return wxArrayString{}; },
+         [](const wxArrayStringEx &){
+            return std::make_unique<wxCommandEvent>(); } },
+   };
+   return result;
+}
+
+// Lookup into the event type catalog during recording
+using ByType = std::map< wxEventType, const EventType& >;
+static const ByType &byType()
+{
+   static std::once_flag flag;
+   static ByType result;
+   std::call_once( flag, []{
+      for ( const auto &type : typeCatalog() )
+         result.emplace( type.type, type );
+   } );
+   return result;
+}
+
+// Lookup into the event type catalog during playback
+using ByCode = std::unordered_map< EventCode, const EventType & >;
+static const ByCode &byCode()
+{
+   static std::once_flag flag;
+   static ByCode result;
+   std::call_once( flag, []{
+      for ( const auto &type : typeCatalog() )
+         result.emplace( type.code, type );
+   } );
+   return result;
+}
 
 constexpr auto SeparatorCharacter = ',';
 constexpr auto CommentCharacter = '#';
