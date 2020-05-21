@@ -1611,8 +1611,15 @@ bool AudacityApp::InitPart2()
    });
 #endif
 
+   // A reachable coverage point
+   JOURNAL_COVERAGE();
+   
    return TRUE;
 }
+
+// Make at least one point that the test driver detects as unreachable -- to
+// test that detection feature of the driver itself
+// JOURNAL_COVERAGE();
 
 void AudacityApp::OnIdle( wxIdleEvent &evt )
 {

@@ -16,6 +16,7 @@
 #include "Journal.h"
 
 #include <algorithm>
+#include <iostream>
 #include <unordered_map>
 #include <wx/app.h>
 #include <wx/filename.h>
@@ -293,6 +294,16 @@ void Comment( const wxString &string )
 {
    if ( IsRecording() )
       sFileOut.AddLine( CommentCharacter + string );
+}
+
+void CoverageComment( const char *file, int line )
+{
+   wxString path{ file };
+   wxString src{ "/src/" };
+   auto pos = path.Find( src );
+   if ( pos != wxString::npos )
+      std::cerr << wxString::Format( "Covered %s %d\n",
+         path.substr( pos + src.length() ), line );
 }
 
 void Sync( const wxString &string )

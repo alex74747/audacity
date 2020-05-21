@@ -81,6 +81,9 @@ namespace Journal
    // no effect on playback
    void Comment( const wxString &string );
 
+   //\brief meant to be called only via the macro JOURNAL_COVERAGE
+   void CoverageComment( const char *file, int line );
+
    //\brief If recording, output the strings; if playing back, require
    // identical strings.  None of them may contain newlines
    void Sync( const wxString &string );
@@ -104,5 +107,17 @@ namespace Journal
       void DelayedHandlerAction() override;
    };
 }
+
+#ifdef IS_ALPHA
+//\brief A special comment that a test driver script finds in a scan of the
+// source code tree.  At runtime, emits a message to stderr.  The test driver
+// can deduce from the messages which coverage points were reached.
+// The macro call requires a semicolon after.
+#define JOURNAL_COVERAGE() \
+   do { Journal::CoverageComment( __FILE__, __LINE__ ); } while ( false )
+
+#else
+#define JOURNAL_COVERAGE()
+#endif
 
 #endif
