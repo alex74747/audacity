@@ -1186,7 +1186,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       BasicMenu::Handle sub{ BasicMenu::FreshMenu };
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub.Append( Verbatim( mUserPresets[i] ),
+         sub.Append( VerbatimLabel( mUserPresets[i] ),
             [this, i]{ OnUserPreset(i); } );
       }
       menu.AppendSubMenu(std::move( sub ), XXO("User Presets") );
@@ -1204,7 +1204,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       BasicMenu::Handle sub{ BasicMenu::FreshMenu };
       for (size_t i = 0, cnt = mUserPresets.size(); i < cnt; i++)
       {
-         sub.Append( Verbatim( mUserPresets[i] ),
+         sub.Append( VerbatimLabel( mUserPresets[i] ),
             [this, i]{ OnDeletePreset(i); } );
       }
       menu.AppendSubMenu( std::move( sub ), XXO("Delete Preset") );
@@ -1222,7 +1222,7 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
          sub.AppendSeparator();
          for (size_t i = 0, cnt = factory.size(); i < cnt; i++)
          {
-            auto label = Verbatim( factory[i] );
+            auto label = VerbatimLabel( factory[i] );
             if (label.empty())
             {
                label = XXO("None");
@@ -1889,7 +1889,8 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
          auto shortDesc = em.GetCommandName(ID);
          /* i18n-hint: %s will be the name of the effect which will be
           * repeated if this menu item is chosen */
-         auto lastEffectDesc = XO("Repeat %s").Format(shortDesc);
+         auto lastEffectDesc =
+            TranslatableLabel{ XO("Repeat %s").Format( shortDesc ) };
          auto& menuManager = MenuManager::Get(project);
          switch ( type ) {
          case EffectTypeGenerate:

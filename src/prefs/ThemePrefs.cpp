@@ -157,7 +157,8 @@ void ThemePrefs::PopulateOrExchange(ShuttleGui & S)
          // It is for developers who are compiling Audacity themselves
          // and who wish to generate NEW *ThemeAsCeeCode.h and compile them in.
 #ifdef _DEBUG
-         S.Id(idSaveThemeAsCode).AddButton(Verbatim("Output Sourcery"));
+         S.Id(idSaveThemeAsCode).AddButton(
+            VerbatimLabel("Output Sourcery"));
 #endif
 
          S.Id(idReadThemeInternal).AddButton(XXO("&Defaults"));

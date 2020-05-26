@@ -194,15 +194,15 @@ BEGIN_POPUP_MENU(FormatMenuTable)
    };
 
    AppendRadioItem( "16Bit", On16BitID,
-      GetSampleFormatStr(int16Sample),
+      TranslatableLabel{ GetSampleFormatStr(int16Sample) },
       [this]{ OnFormatChange(int16Sample); },
       fn( int16Sample ) );
    AppendRadioItem("24Bit", On24BitID,
-      GetSampleFormatStr(int24Sample),
+      TranslatableLabel{ GetSampleFormatStr(int24Sample) },
       [this]{ OnFormatChange(int24Sample); },
       fn( int24Sample ) );
    AppendRadioItem( "Float", OnFloatID,
-      GetSampleFormatStr(floatSample),
+      TranslatableLabel{ GetSampleFormatStr(floatSample) },
       [this]{ OnFormatChange(floatSample); },
       fn( floatSample ) );
 

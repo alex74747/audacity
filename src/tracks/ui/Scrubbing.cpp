@@ -257,7 +257,7 @@ static const ReservedCommandFlag
 namespace {
    struct MenuItem {
       CommandID name;
-      TranslatableString label;
+      TranslatableLabel label;
       TranslatableString status;
       CommandFlag flags;
       void (Scrubber::*memFn)(const CommandContext&);

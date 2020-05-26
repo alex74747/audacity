@@ -113,7 +113,7 @@ CommandManager.  It holds the callback for one command.
 #define MAX_SUBMENU_LEN 1000
 #endif
 
-#define COMMAND XO("Command")
+static const auto COMMAND = XXO("Command");
 
 
 struct MenuBarListEntry
@@ -145,12 +145,12 @@ struct CommandListEntry
 
    int id;
    CommandID name;
-   TranslatableString longLabel;
+   TranslatableLabel longLabel;
    NormalizedKeyString key;
    NormalizedKeyString defaultKey;
-   TranslatableString label;
-   TranslatableString labelPrefix;
-   TranslatableString labelTop;
+   TranslatableLabel label;
+   TranslatableLabel labelPrefix;
+   TranslatableLabel labelTop;
    BasicMenu::Handle menu;
    CommandHandlerFinder finder;
    CommandFunctorPointer callback;
@@ -715,7 +715,7 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
    {
       auto entry = std::make_unique<CommandListEntry>( menu );
 
-      TranslatableString labelPrefix;
+      TranslatableLabel labelPrefix;
       if (!mSubMenuList.empty())
          labelPrefix = mSubMenuList.back().text.label.main.Stripped();
 
@@ -753,7 +753,9 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
       entry->label = label;
 
       // long label is the same as label unless options specified otherwise:
-      entry->longLabel = longLabel.empty() ? label : longLabel;
+      entry->longLabel = longLabel.empty()
+         ? label
+         : TranslatableLabel{ longLabel };
 
       entry->excludeFromMacros = excludeFromMacros;
       entry->key = NormalizedKeyString{ accel.BeforeFirst(L'\t') };
@@ -1025,7 +1027,7 @@ void CommandManager::Check(const CommandID &name, bool checked)
 }
 
 ///Changes the label text of a menu item
-void CommandManager::Modify(const wxString &name, const TranslatableString &newLabel)
+void CommandManager::Modify(const wxString &name, const TranslatableLabel &newLabel)
 {
    CommandListEntry *entry = mCommandNameHash[name];
    if (entry && entry->menu) {
@@ -1258,7 +1260,7 @@ bool CommandManager::HandleCommandEntry(AudacityProject &project,
    if (!alwaysEnabled && entry->flags.any()) {
 
       const auto NiceName = entry->label.Stripped(
-         TranslatableString::Ellipses | TranslatableString::MenuCodes );
+         TranslatableLabel::Ellipses | TranslatableLabel::MenuCodes );
       // NB: The call may have the side effect of changing flags.
       bool allowed =
          MenuManager::Get(project).ReportIfActionNotAllowed(
@@ -1380,9 +1382,9 @@ CommandManager::HandleTextualCommand(const CommandID & Str,
    return CommandNotFound;
 }
 
-TranslatableStrings CommandManager::GetCategories( AudacityProject& )
+TranslatableLabels CommandManager::GetCategories( AudacityProject& )
 {
-   TranslatableStrings cats;
+   TranslatableLabels cats;
 
    for (const auto &entry : mCommandList) {
       auto &cat = entry->labelTop;
@@ -1424,7 +1426,7 @@ void CommandManager::GetAllCommandNames(CommandIDs &names,
    }
 }
 
-void CommandManager::GetAllCommandLabels(TranslatableStrings &names,
+void CommandManager::GetAllCommandLabels(TranslatableLabels &labels,
                                          std::vector<bool> &vExcludeFromMacros,
                                         bool includeMultis) const
 {
@@ -1437,9 +1439,9 @@ void CommandManager::GetAllCommandLabels(TranslatableStrings &names,
       if ( entry->isEffect )
          continue;
       if (!entry->multi)
-         names.push_back(entry->longLabel), vExcludeFromMacros.push_back(entry->excludeFromMacros);
+         labels.push_back(entry->longLabel), vExcludeFromMacros.push_back(entry->excludeFromMacros);
       else if( includeMultis )
-         names.push_back(entry->longLabel), vExcludeFromMacros.push_back(entry->excludeFromMacros);
+         labels.push_back(entry->longLabel), vExcludeFromMacros.push_back(entry->excludeFromMacros);
    }
 }
 
@@ -1447,10 +1449,10 @@ void CommandManager::GetAllCommandData(
    CommandIDs &names,
    std::vector<NormalizedKeyString> &keys,
    std::vector<NormalizedKeyString> &default_keys,
-   TranslatableStrings &labels,
-   TranslatableStrings &categories,
+   TranslatableLabels &labels,
+   TranslatableLabels &categories,
 #if defined(EXPERIMENTAL_KEY_VIEW)
-   TranslatableStrings &prefixes,
+   TranslatableLabels &prefixes,
 #endif
    bool includeMultis)
 {
@@ -1481,7 +1483,7 @@ CommandID CommandManager::GetNameFromNumericID(int id)
    return entry->name;
 }
 
-TranslatableString CommandManager::GetLabelFromName(const CommandID &name)
+TranslatableLabel CommandManager::GetLabelFromName(const CommandID &name)
 {
    CommandListEntry *entry = mCommandNameHash[name];
    if (!entry)
@@ -1490,21 +1492,20 @@ TranslatableString CommandManager::GetLabelFromName(const CommandID &name)
    return entry->longLabel;
 }
 
-TranslatableString CommandManager::GetPrefixedLabelFromName(const CommandID &name)
+TranslatableLabel CommandManager::GetPrefixedLabelFromName(const CommandID &name)
 {
    CommandListEntry *entry = mCommandNameHash[name];
    if (!entry)
       return {};
 
    if (!entry->labelPrefix.empty())
-      return Verbatim( L"%s - %s" )
-         .Format(entry->labelPrefix, entry->label)
-            .Stripped();
+      return VerbatimLabel( L"%s - %s" )
+         .Format(entry->labelPrefix, entry->label);
    else
       return entry->label.Stripped();
 }
 
-TranslatableString CommandManager::GetCategoryFromName(const CommandID &name)
+TranslatableLabel CommandManager::GetCategoryFromName(const CommandID &name)
 {
    CommandListEntry *entry = mCommandNameHash[name];
    if (!entry)

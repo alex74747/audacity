@@ -277,7 +277,8 @@ BEGIN_POPUP_MENU(WaveformVRulerMenuTable)
       const auto & names = WaveformSettings::GetScaleNames();
       for (int ii = 0, nn = names.size(); ii < nn; ++ii) {
          AppendRadioItem( names[ii].Internal(),
-            OnFirstWaveformScaleID + ii, names[ii].Msgid(),
+            OnFirstWaveformScaleID + ii,
+            TranslatableLabel{ names[ii].Msgid() },
             [this, ii]{ OnWaveformScaleType(ii); },
             [this, ii]() -> BasicMenu::Item::State {
                WaveTrack *const wt = mpData->pTrack;

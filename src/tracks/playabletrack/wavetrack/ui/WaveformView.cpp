@@ -1111,7 +1111,7 @@ void WaveColorMenuTable::InitUserData(void *pUserData)
 namespace {
 using ValueFinder = std::function< int( WaveTrack& ) >;
 
-const TranslatableString GetWaveColorStr(int colorIndex)
+const TranslatableLabel GetWaveColorStr(int colorIndex)
 {
    return XXO("Instrument %i").Format( colorIndex+1 );
 }
