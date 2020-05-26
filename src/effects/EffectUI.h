@@ -20,6 +20,7 @@
 
 #include <vector>
 
+#include <wx/bitmap.h> // member variables
 #include <wx/defs.h>
 #include <wx/frame.h> // to inherit
 #include <wx/timer.h> // member variable
