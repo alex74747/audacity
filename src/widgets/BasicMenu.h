@@ -64,17 +64,17 @@ struct State {
    
 //! Determines user-visible text on the menu button
 struct AUDACITY_DLL_API Label {
-   TranslatableString main;
+   TranslatableLabel main;
    NormalizedKeyString accel;
 
    Label() = default;
-   Label( const TranslatableString &main,
+   Label( const TranslatableLabel &main,
       const NormalizedKeyString &accel = {} )
       : main{ main }, accel{ accel }
    {}
 
    //! Computes the full label text
-   TranslatableString Full() const;
+   TranslatableLabel Full() const;
 };
 
 //! Full menu texts including an optional help string
@@ -83,11 +83,11 @@ struct Text {
    std::optional<TranslatableString> pHelp;
 
    Text() = default;
-   Text( const TranslatableString &main,
+   Text( const TranslatableLabel &main,
       const NormalizedKeyString &accel = {} )
       : label{ main, accel }
    {}
-   Text( const TranslatableString &main,
+   Text( const TranslatableLabel &main,
       const NormalizedKeyString &accel,
       const TranslatableString &help )
       : label{ main, accel }
@@ -273,7 +273,7 @@ private:
 struct Info {
    Item::ID id;
    Item::Type type;
-   TranslatableString label;
+   TranslatableLabel label;
    wxString accel;
    Item::State state;
    Handle pSubMenu{};
@@ -281,7 +281,7 @@ struct Info {
 
 //! Information accessed by iterator over menu bar items
 struct BarInfo {
-   TranslatableString title;
+   TranslatableLabel title;
    Handle pSubMenu{};
 };
 
@@ -328,7 +328,7 @@ public:
    //! @{
 
    //! menu gives up ownership but retains a weak reference
-   void Append( Handle &&menu, const TranslatableString &title );
+   void Append( Handle &&menu, const TranslatableLabel &title );
 
    //! @}
 

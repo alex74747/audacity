@@ -199,14 +199,14 @@ KeyView::GetName() const
 //
 // Returns the label for the given index
 //
-wxString
+TranslatableLabel
 KeyView::GetLabel(int index) const
 {
    // Make sure index is valid
    if (index < 0 || index >= (int) mNodes.size())
    {
       wxASSERT(false);
-      return wxEmptyString;
+      return {};
    }
 
    return mNodes[index].label;
@@ -215,24 +215,24 @@ KeyView::GetLabel(int index) const
 //
 // Returns the prefix (if available) prepended to the label for the given index
 //
-wxString
+TranslatableLabel
 KeyView::GetFullLabel(int index) const
 {
    // Make sure index is valid
    if (index < 0 || index >= (int) mNodes.size())
    {
       wxASSERT(false);
-      return wxEmptyString;
+      return {};
    }
 
    // Cache the node and label
    const KeyNode & node = mNodes[index];
-   wxString label = node.label;
+   auto label = node.label;
 
    // Prepend the prefix if available
    if (!node.prefix.empty())
    {
-      label = node.prefix + L" - " + label;
+      label = VerbatimLabel("%s - %s").Format( node.prefix, label );
    }
 
    return label;
@@ -560,12 +560,12 @@ KeyView::RecalcExtents()
       if (node.iscat)
       {
          // Measure the category
-         GetTextExtent(node.category, &x, &y);
+         GetTextExtent(node.category.Stripped().Translation(), &x, &y);
       }
       else if (node.ispfx)
       {
          // Measure the prefix
-         GetTextExtent(node.prefix, &x, &y);
+         GetTextExtent(node.prefix.Stripped().Translation(), &x, &y);
       }
       else
       {
@@ -575,14 +575,14 @@ KeyView::RecalcExtents()
          mKeyWidth = std::max(mKeyWidth, x);
 
          // Prepend prefix for view types other than tree
-         wxString label = node.label;
+         auto label = node.label;
          if (mViewType != ViewByTree && !node.prefix.empty())
          {
-            label = node.prefix + L" - " + label;
+            label = VerbatimLabel("%s - %s").Format( node.prefix, label );
          }
 
          // Measure the label
-         GetTextExtent(label, &x, &y);
+         GetTextExtent(label.Stripped().Translation(), &x, &y);
       }
 
       // Finish calc for command column
@@ -633,12 +633,11 @@ KeyView::UpdateHScroll()
 //
 void
 KeyView::RefreshBindings(const CommandIDs & names,
-                         const TranslatableStrings & categories,
-                         const TranslatableStrings & prefixes,
-                         const TranslatableStrings & labels,
+                         const TranslatableLabels & categories,
+                         const TranslatableLabels & prefixes,
+                         const TranslatableLabels & labels,
                          const std::vector<NormalizedKeyString> & keys,
-                         bool bSort
-                         )
+                         bool bSort )
 {
    // Start clean
    mNodes.clear();
@@ -648,8 +647,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
    mKeyWidth = 0;
    mCommandWidth = 0;
 
-   wxString lastcat;
-   wxString lastpfx;
+   TranslatableLabel lastcat, lastpfx;
    int nodecnt = 0;
    int depth = 1;
    bool incat = false;
@@ -666,15 +664,12 @@ KeyView::RefreshBindings(const CommandIDs & names,
       int x, y;
 
       // Remove any menu code from the category and prefix
-      wxString cat = categories[i].Translation();
-      wxString pfx = prefixes[i].Translation();
+      auto cat = categories[i];
+      auto pfx = prefixes[i];
 
       // Append "Menu" this node is for a menu title
-      if (cat != CommandTranslated)
-      {
-         cat.Append(L" ");
-         cat += _("Menu");
-      }
+      if (cat.Stripped().Translation() != CommandTranslated)
+         cat.Join( XXO("Menu"), ' ' );
 
       // Process a NEW category
       if (cat != lastcat)
@@ -719,7 +714,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
             incat = true;
 
             // Measure category
-            GetTextExtent(cat, &x, &y);
+            GetTextExtent(cat.Stripped().Translation(), &x, &y);
             mLineHeight = std::max(mLineHeight, y);
             mCommandWidth = std::max(mCommandWidth, x);
          }
@@ -770,17 +765,14 @@ KeyView::RefreshBindings(const CommandIDs & names,
       // not to confuse users
       if (name == L"Undo")
       {
-         node.label = _("Undo");
+         node.label = XXO("Undo");
       }
       else if (name == L"Redo")
       {
-         node.label = _("Redo");
+         node.label = XXO("Redo");
       }
       else
-      {
-         auto label = labels[i];
-         node.label = label.Strip().Translation();
-      }
+         node.label = labels[i];
 
       // Fill in remaining info
       node.name = name;
@@ -798,14 +790,14 @@ KeyView::RefreshBindings(const CommandIDs & names,
 
       // Prepend prefix for all view types to determine maximum
       // column widths
-      wxString label = node.label;
+      auto label = node.label;
       if (!node.prefix.empty())
       {
-         label = node.prefix + L" - " + label;
+         label = VerbatimLabel("%s - %s").Format( node.prefix, label );
       }
 
       // Measure label
-      GetTextExtent(label, &x, &y);
+      GetTextExtent(label.Stripped().Translation(), &x, &y);
       mLineHeight = std::max(mLineHeight, y);
       mCommandWidth = std::max(mCommandWidth, x);
    }
@@ -879,13 +871,13 @@ KeyView::RefreshLines(bool bSort)
             // of the key.  It was chosen since it's not very likely
             // to appear in the filter itself.
             case ViewByTree:
-               searchit = node.label.Lower() +
+               searchit = node.label.Stripped().Translation().Lower() +
                           L"\01x" +
                           node.key.Display().GET().Lower();
             break;
 
             case ViewByName:
-               searchit = node.label.Lower();
+               searchit = node.label.Stripped().Translation().Lower();
             break;
 
             case ViewByKey:
@@ -1240,7 +1232,7 @@ void
 KeyView::OnDrawItem(wxDC & dc, const wxRect & rect, size_t line) const
 {
    const KeyNode *node = mLines[line];
-   wxString label = node->label;
+   auto label = node->label;
 
    // Make sure the DC has a valid font
    dc.SetFont(GetFont());
@@ -1290,7 +1282,7 @@ KeyView::OnDrawItem(wxDC & dc, const wxRect & rect, size_t line) const
 
       // Draw the key and command columns
       dc.DrawText(node->key.Display().GET(), x , rect.y);
-      dc.DrawText(label, x + mKeyWidth  + KV_COLUMN_SPACER + node->depth * KV_BITMAP_SIZE, rect.y);
+      dc.DrawText(label.Stripped().Translation(), x + mKeyWidth  + KV_COLUMN_SPACER + node->depth * KV_BITMAP_SIZE, rect.y);
    }
    else
    {
@@ -1300,7 +1292,7 @@ KeyView::OnDrawItem(wxDC & dc, const wxRect & rect, size_t line) const
       // Prepend prefix if available
       if (!node->prefix.empty())
       {
-         label = node->prefix + L" - " + label;
+         label = VerbatimLabel("%s - %s").Format( node->prefix, label );
       }
 
       // don't swap the columns based on view type
@@ -1308,7 +1300,7 @@ KeyView::OnDrawItem(wxDC & dc, const wxRect & rect, size_t line) const
       {
          // Draw key columnd and then command column
          dc.DrawText(node->key.Display().GET(), x, rect.y);
-         dc.DrawText(label, x + mKeyWidth + KV_COLUMN_SPACER, rect.y);
+         dc.DrawText(label.Stripped().Translation(), x + mKeyWidth + KV_COLUMN_SPACER, rect.y);
       }
    }
 
@@ -1547,7 +1539,7 @@ KeyView::OnKeyDown(wxKeyEvent & event)
             // Search from the node following the current one
             for (int i = line + 1; i < cnt; i++)
             {
-               wxString label;
+               TranslatableLabel label;
 
                // Get the string to search based on view type
                if (mViewType == ViewByTree)
@@ -1560,11 +1552,11 @@ KeyView::OnKeyDown(wxKeyEvent & event)
                }
                else if (mViewType == ViewByKey)
                {
-                  label = GetKey(LineToIndex(i)).Display().GET();
+                  label = VerbatimLabel( GetKey(LineToIndex(i)).Display().GET() );
                }
 
                // Move selection if they match
-               if (label.Left(1).IsSameAs(keycode, false))
+               if (label.Stripped().Translation().Left(1).IsSameAs(keycode, false))
                {
                   SelectNode(LineToIndex(i));
 
@@ -1581,7 +1573,7 @@ KeyView::OnKeyDown(wxKeyEvent & event)
             // So scan from the start of the list to the current node
             for (int i = 0; i < line; i++)
             {
-               wxString label;
+               TranslatableLabel label;
 
                // Get the string to search based on view type
                if (mViewType == ViewByTree)
@@ -1594,11 +1586,11 @@ KeyView::OnKeyDown(wxKeyEvent & event)
                }
                else if (mViewType == ViewByKey)
                {
-                  label = GetKey(LineToIndex(i)).Display().GET();
+                  label = VerbatimLabel( GetKey(LineToIndex(i)).Display().GET() );
                }
 
                // Move selection if they match
-               if (label.Left(1).IsSameAs(keycode, false))
+               if (label.Stripped().Translation().Left(1).IsSameAs(keycode, false))
                {
                   SelectNode(LineToIndex(i));
 
@@ -1704,9 +1696,10 @@ bool CmpKeyNodeByTree(KeyNode *t1, KeyNode *t2)
       // and it is a child of the "Command" category.  This latter
       // test ensures that the "Command" parent will be handled
       // as a "menu" node and remain at the bottom of the list.
-      if (node.category != CommandTranslated || node.isparent)
+      if (node.category.Stripped().Translation() != CommandTranslated
+          || node.isparent)
          k1UInt = (unsigned int) node.line;
-      return { k1UInt, node.label };
+      return { k1UInt, node.label.Stripped().Translation() };
    };
    
    return projection( *t1 ) < projection( *t2 );
@@ -1715,10 +1708,11 @@ bool CmpKeyNodeByTree(KeyNode *t1, KeyNode *t2)
 auto PrefixedLabel( const KeyNode &node ) -> std::pair< wxString, wxString >
 {
    if (node.prefix.empty())
-      return { node.label, {} };
+      return { node.label.Stripped().Translation(), {} };
    else
       // Prepend prefix if available
-      return { node.prefix, node.label };
+      return { node.prefix.Stripped().Translation(),
+         node.label.Stripped().Translation() };
 }
 
 //
@@ -1824,11 +1818,11 @@ KeyView::GetValue(int line)
    wxString value;
    if (mViewType == ViewByTree)
    {
-      value = GetLabel(index);
+      value = GetLabel(index).Stripped().Translation();
    }
    else
    {
-      value = GetFullLabel(index);
+      value = GetFullLabel(index).Stripped().Translation();
    }
    wxString key = GetKey(index).Display().GET();
 

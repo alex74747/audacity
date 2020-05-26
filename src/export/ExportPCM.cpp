@@ -246,7 +246,7 @@ void ExportPCMOptions::OnHeaderChoice(wxCommandEvent & evt)
    mEncodingChoice->Clear();
    for (int i = 0, num = mEncodingNames.size(); i < num; ++i)
    {
-      mEncodingChoice->AppendString(mEncodingNames[i].StrippedTranslation());
+      mEncodingChoice->AppendString(mEncodingNames[i].Translation());
    }
 
    // Select the desired encoding

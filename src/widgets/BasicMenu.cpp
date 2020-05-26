@@ -220,7 +220,7 @@ namespace Item {
 static_assert( std::is_same_v<ID, wxWindowID>,
    "Does Menu::Item::ID lose information?" );
 
-TranslatableString Label::Full() const
+TranslatableLabel Label::Full() const
 {
    return accel.empty()
       ? main
@@ -239,7 +239,7 @@ public:
    ~Menu() override = default;
 
    // Remember the unstranslated strings
-   TranslatableStrings mLabels;
+   TranslatableLabels mLabels;
 };
 
 struct Handle::Impl {
@@ -709,7 +709,7 @@ public:
    ~MenuBar() override = default;
 
    // Remember the unstranslated strings
-   TranslatableStrings mTitles;
+   TranslatableLabels mTitles;
 };
 
 struct BarHandle::Impl {
@@ -770,7 +770,7 @@ BarHandle::operator bool() const
 }
 
 void BarHandle::Append(
-   Handle &&menu, const TranslatableString &title )
+   Handle &&menu, const TranslatableLabel &title )
 {
    if (auto &uMenu = menu.mpImpl->muMenu) {
       mpImpl->mwMenuBar->Append( uMenu.release(), title.Translation() );

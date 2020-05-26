@@ -1060,7 +1060,8 @@ void FileHistoryMenus::NotifyMenu(BasicMenu::Handle menu)
    int ii = 0;
    for (auto item : history) {
       item.Replace( "&", "&&" );
-      menu.Append( Verbatim( item ), [ii]{ ProjectManager::OnMRUFile(ii); } );
+      menu.Append(
+         VerbatimLabel( item ), [ii]{ ProjectManager::OnMRUFile(ii); } );
    }
 
    if (history.size() > 0)
