@@ -44,6 +44,7 @@
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ShuttleGui.h"
+#include "../Theme.h"
 #include "../widgets/Grabber.h"
 #include "../DeviceManager.h"
 #include "../widgets/AudacityMessageBox.h"

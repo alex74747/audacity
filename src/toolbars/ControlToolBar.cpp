@@ -65,6 +65,7 @@
 #include "../ProjectSettings.h"
 #include "../ProjectStatus.h"
 #include "../ProjectWindow.h"
+#include "../Theme.h"
 #include "../Track.h"
 #include "../widgets/AButton.h"
 #include "../widgets/ErrorDialog.h"

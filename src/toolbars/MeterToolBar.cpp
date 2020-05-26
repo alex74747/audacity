@@ -35,6 +35,7 @@
 
 #include "../AllThemeResources.h"
 #include "../ProjectAudioIO.h"
+#include "../Theme.h"
 #include "../widgets/Meter.h"
 
 IMPLEMENT_CLASS(MeterToolBar, ToolBar);

@@ -34,6 +34,7 @@
 #include "../AllThemeResources.h"
 #include "../ImageManipulation.h"
 #include "../Prefs.h"
+#include "../Theme.h"
 #include "../UndoManager.h"
 #include "../widgets/AButton.h"
 #include "../tracks/ui/Scrubbing.h"

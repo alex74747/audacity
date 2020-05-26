@@ -31,6 +31,7 @@
 #endif
 
 
+class auStaticText;
 class wxChoice;
 class wxComboBox;
 class wxCommandEvent;

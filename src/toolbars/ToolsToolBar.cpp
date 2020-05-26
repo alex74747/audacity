@@ -53,6 +53,7 @@
 #include "../Project.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
+#include "../Theme.h"
 #include "../tracks/ui/Scrubbing.h"
 
 #include "../widgets/AButton.h"
