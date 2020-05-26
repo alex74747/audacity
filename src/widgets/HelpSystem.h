@@ -27,6 +27,7 @@
 #include "wxPanelWrapper.h" // to inherit
 
 class AudacityProject;
+class ChoiceSetting;
 
 /** @brief Class which contains static methods and data needed for implementing
  * help buttons
@@ -154,5 +155,9 @@ public:
    bool mDismissed{};
    DECLARE_EVENT_TABLE()
 };
+
+extern ChoiceSetting
+     GUIManualLocation
+;
 
 #endif // __AUDACITY_HELPSYSTEM__
