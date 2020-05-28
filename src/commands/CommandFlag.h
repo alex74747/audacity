@@ -121,6 +121,6 @@ struct AUDACITY_DLL_API RegisteredMenuItemEnabler{
 };
 
 // Unnecessary #include to indicate otherwise hidden link dependencies
-#include "Menus.h"
+// #include "Menus.h"
 
 #endif

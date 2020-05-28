@@ -700,7 +700,6 @@ bool MenuManager::ReportIfActionNotAllowed(
    bool bAllowed = TryToMakeActionAllowed( flags, flagsRqd );
    if( bAllowed )
       return true;
-   auto &cm = CommandManager::Get( project );
    TellUserWhyDisallowed( Name, flags & flagsRqd, flagsRqd);
    return false;
 }
