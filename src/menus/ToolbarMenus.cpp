@@ -42,7 +42,7 @@ using namespace MenuTable;
 
 BaseItemSharedPtr ToolbarsMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },

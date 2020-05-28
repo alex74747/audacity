@@ -208,7 +208,7 @@ CommandItem::CommandItem(const CommandID &name_,
          const TranslatableString &label_in_,
          CommandFunctorPointer callback_,
          CommandFlag flags_,
-         const CommandManager::Options &options_,
+         const MenuTable::Options &options_,
          CommandHandlerFinder finder_)
 : SingleItem{ name_ }, label_in{ label_in_ }
 , finder{ finder_ }, callback{ callback_ }
@@ -523,7 +523,7 @@ namespace{
       static Predicates thePredicates;
       return thePredicates;
    }
-   std::vector< CommandFlagOptions > &Options()
+   std::vector< CommandFlagOptions > &theOptions()
    {
       static std::vector< CommandFlagOptions > options;
       return options;
@@ -538,7 +538,7 @@ ReservedCommandFlag::ReservedCommandFlag(
    // small
    set( sNextReservedFlag++ );
    RegisteredPredicates().emplace_back( predicate );
-   Options().emplace_back( options );
+   theOptions().emplace_back( options );
 }
 
 CommandFlag MenuManager::GetUpdateFlags( bool checkActive ) const
@@ -553,7 +553,7 @@ CommandFlag MenuManager::GetUpdateFlags( bool checkActive ) const
 
    CommandFlag flags, quickFlags;
 
-   const auto &options = Options();
+   const auto &options = theOptions();
    size_t ii = 0;
    for ( const auto &predicate : RegisteredPredicates() ) {
       if ( options[ii].quickTest ) {
@@ -768,7 +768,7 @@ void MenuManager::TellUserWhyDisallowed(
       }
    };
 
-   const auto &alloptions = Options();
+   const auto &alloptions = theOptions();
    auto missingFlags = flagsRequired & ~flagsGot;
 
    // Find greatest priority
@@ -810,4 +810,16 @@ void MenuManager::TellUserWhyDisallowed(
       untranslatedTitle,
       reason,
       helpPage);
+}
+
+auto MenuTable::Options::MakeCheckFn(
+   const wxString key, bool defaultValue ) -> CheckFn
+{
+   return [=](AudacityProject&){ return gPrefs->ReadBool( key, defaultValue ); };
+}
+
+auto MenuTable::Options::MakeCheckFn(
+   const BoolSetting &setting ) -> CheckFn
+{
+   return MakeCheckFn( setting.GetPath(), setting.GetDefault() );
 }

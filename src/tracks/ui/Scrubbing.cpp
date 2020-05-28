@@ -1212,7 +1212,7 @@ static const auto finder =
 using namespace MenuTable;
 BaseItemSharedPtr ToolbarMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu { (
    FinderScope{ finder },
@@ -1247,7 +1247,7 @@ AttachedItem sAttachment{
 
 BaseItemSharedPtr KeyboardScrubbingItems()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr items{
    ( FinderScope{ finder },

@@ -690,7 +690,7 @@ using namespace MenuTable;
 BaseItemSharedPtr LabelEditMenus()
 {
    using namespace MenuTable;
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static const auto NotBusyLabelsAndWaveFlags =
       AudioIONotBusyFlag() |

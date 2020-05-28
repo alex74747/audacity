@@ -548,7 +548,7 @@ using namespace MenuTable;
 
 BaseItemSharedPtr FileMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },

@@ -1033,7 +1033,7 @@ namespace {
 using namespace MenuTable;
 BaseItemSharedPtr SelectMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
    /* i18n-hint: (verb) It's an item on a menu. */
@@ -1144,7 +1144,7 @@ AttachedItem sAttachment1{
 
 BaseItemSharedPtr ExtraSelectionMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
    Menu( wxT("Select"), XXO("&Selection"),
@@ -1193,7 +1193,7 @@ AttachedItem sAttachment2{
 namespace {
 BaseItemSharedPtr CursorMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static const auto CanStopFlags = AudioIONotBusyFlag() | CanStopAudioStreamFlag();
 
    // JKC: ANSWER-ME: How is 'cursor to' different to 'Skip To' and how is it
@@ -1240,7 +1240,7 @@ AttachedItem sAttachment0{
 
 BaseItemSharedPtr ExtraCursorMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
    Menu( wxT("Cursor"), XXO("&Cursor"),
@@ -1273,7 +1273,7 @@ AttachedItem sAttachment4{
 
 BaseItemSharedPtr ExtraSeekMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
    Menu( wxT("Seek"), XXO("See&k"),

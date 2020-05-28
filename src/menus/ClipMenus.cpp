@@ -818,7 +818,7 @@ using namespace MenuTable;
 
 BaseItemSharedPtr ClipSelectMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu {
    ( FinderScope{ findCommandHandler },
@@ -848,7 +848,7 @@ AttachedItem sAttachment1{
 
 BaseItemSharedPtr ClipCursorItems()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr items{
    ( FinderScope{ findCommandHandler },
@@ -873,7 +873,7 @@ AttachedItem sAttachment2{
 
 BaseItemSharedPtr ExtraTimeShiftItems()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr items{
    ( FinderScope{ findCommandHandler },
    Items( wxT("TimeShift"),

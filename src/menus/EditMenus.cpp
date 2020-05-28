@@ -1002,7 +1002,7 @@ namespace {
 using namespace MenuTable;
 BaseItemSharedPtr EditMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static const auto NotBusyTimeAndTracksFlags =
       AudioIONotBusyFlag() | TimeSelectedFlag() | EditableTracksSelectedFlag();
@@ -1142,7 +1142,7 @@ AttachedItem sAttachment1{
 
 BaseItemSharedPtr ExtraEditMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static const auto flags =
       AudioIONotBusyFlag() | EditableTracksSelectedFlag() | TimeSelectedFlag();
    static BaseItemSharedPtr menu{

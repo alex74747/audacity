@@ -1052,7 +1052,7 @@ namespace {
 using namespace MenuTable;
 BaseItemSharedPtr TransportMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static const auto CanStopFlags = AudioIONotBusyFlag() | CanStopAudioStreamFlag();
 
@@ -1264,7 +1264,7 @@ AttachedItem sAttachment3{
 
 BaseItemSharedPtr ExtraSelectionItems()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr items{
    (FinderScope{ findCommandHandler },
    Items(wxT("MoveToLabel"),

@@ -1292,7 +1292,7 @@ using namespace MenuTable;
 BaseItemSharedPtr TracksMenu()
 {
    // Tracks Menu (formerly Project Menu)
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
@@ -1458,7 +1458,7 @@ AttachedItem sAttachment1{
 
 BaseItemSharedPtr ExtraTrackMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
    Menu( wxT("Track"), XXO("&Track"),

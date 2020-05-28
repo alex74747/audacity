@@ -216,7 +216,7 @@ BaseItemSharedPtr ExtraDeviceMenu()
 // Under /MenuBar/Optional/Extra/Part2
 BaseItemSharedPtr ExtraMiscItems()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    // Not a menu.
    static BaseItemSharedPtr items{

@@ -410,7 +410,7 @@ namespace {
 using namespace MenuTable;
 BaseItemSharedPtr ViewMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },

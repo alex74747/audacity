@@ -731,7 +731,7 @@ void AddEffectMenuItemGroup(
                   Verbatim( item ),
                   FN(OnEffect),
                   flags[i],
-                  CommandManager::Options{}
+                  MenuTable::Options{}
                      .IsEffect()
                      .AllowInMacros()
                      .Parameter( plugs[i] ) ) );
@@ -756,7 +756,7 @@ void AddEffectMenuItemGroup(
                names[i],
                FN(OnEffect),
                flags[i],
-               CommandManager::Options{}
+               MenuTable::Options{}
                   .IsEffect()
                   .AllowInMacros()
                   .Parameter( plugs[i] ) ) );
@@ -801,7 +801,7 @@ MenuTable::BaseItemPtrs PopulateMacrosMenu( CommandFlag flags  )
          Verbatim( names[i] ), // file name verbatim
          FN(OnApplyMacroDirectly),
          flags,
-         CommandManager::Options{}.AllowInMacros()
+         MenuTable::Options{}.AllowInMacros()
       ) );
    }
 
@@ -828,7 +828,7 @@ BaseItemSharedPtr GenerateMenu()
    // All of this is a bit hacky until we can get more things connected into
    // the plugin manager...sorry! :-(
 
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
@@ -960,7 +960,7 @@ BaseItemSharedPtr AnalyzeMenu()
    // All of this is a bit hacky until we can get more things connected into
    // the plugin manager...sorry! :-(
 
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
@@ -1024,7 +1024,7 @@ const ReservedCommandFlag&
 
 BaseItemSharedPtr ToolsMenu()
 {
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },

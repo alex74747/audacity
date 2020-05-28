@@ -1587,7 +1587,7 @@ AttachedToolBarMenuItem::AttachedToolBarMenuItem(
          MenuTable::Command( name, label_in,
             &AttachedToolBarMenuItem::OnShowToolBar,
             AlwaysEnabledFlag,
-            CommandManager::Options{}.CheckTest( [id](AudacityProject &project){
+            MenuTable::Options{}.CheckTest( [id](AudacityProject &project){
                auto &toolManager = ToolManager::Get( project );
                return toolManager.IsVisible( id ); } ) ) ) }
    , mExcludeIds{ std::move( excludeIDs ) }

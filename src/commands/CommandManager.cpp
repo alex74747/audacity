@@ -544,7 +544,7 @@ void CommandManager::AddItem(AudacityProject &project,
                              CommandHandlerFinder finder,
                              CommandFunctorPointer callback,
                              CommandFlag flags,
-                             const Options &options)
+                             const MenuTable::Options &options)
 {
    if (options.global) {
       //wxASSERT( flags == AlwaysEnabledFlag );
@@ -580,18 +580,6 @@ void CommandManager::AddItem(AudacityProject &project,
    mbSeparatorAllowed = true;
 }
 
-auto CommandManager::Options::MakeCheckFn(
-   const wxString key, bool defaultValue ) -> CheckFn
-{
-   return [=](AudacityProject&){ return gPrefs->ReadBool( key, defaultValue ); };
-}
-
-auto CommandManager::Options::MakeCheckFn(
-   const BoolSetting &setting ) -> CheckFn
-{
-   return MakeCheckFn( setting.GetPath(), setting.GetDefault() );
-}
-
 ///
 /// Add a list of menu items to the current menu.  When the user selects any
 /// one of these, the given functor will be called
@@ -616,7 +604,7 @@ void CommandManager::AddItemList(const CommandID & name,
             items[i].Internal(),
             i,
             cnt,
-            Options{}
+            MenuTable::Options{}
                .IsEffect(bIsEffect));
       entry->flags = flags;
       CurrentMenu()->Append(entry->id, FormatLabelForMenu(entry));
@@ -628,7 +616,7 @@ void CommandManager::AddGlobalCommand(const CommandID &name,
                                       const TranslatableString &label_in,
                                       CommandHandlerFinder finder,
                                       CommandFunctorPointer callback,
-                                      const Options &options)
+                                      const MenuTable::Options &options)
 {
    CommandListEntry *entry =
       NewIdentifier(name, label_in, NULL, finder, callback,
@@ -670,7 +658,7 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
    const CommandID &nameSuffix,
    int index,
    int count,
-   const Options &options)
+   const MenuTable::Options &options)
 {
    bool excludeFromMacros =
       (options.allowInMacros == 0) ||

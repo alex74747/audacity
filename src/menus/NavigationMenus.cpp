@@ -560,7 +560,7 @@ using namespace MenuTable;
 BaseItemSharedPtr ExtraGlobalCommands()
 {
    // Ceci n'est pas un menu
-   using Options = CommandManager::Options;
+   using Options = MenuTable::Options;
 
    static BaseItemSharedPtr items{
    ( FinderScope{ findCommandHandler },
