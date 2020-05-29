@@ -20,6 +20,8 @@ Nyquist support:LoadNyquist Nyquist
 various toolbars:TimeToolBar ControlToolBar DeviceToolBar EditToolBar MeterToolBar MixerToolBar ScrubbingToolBar SelectionBar SpectralSelectionBar TranscriptionToolBar ToolsToolBar SelectionBarListener SpectralSelectionBarListener VoiceKey
 XML:XMLFileReader XMLWriter XMLTagHandler
 audio unit support:AUControl AudioUnitEffect
+audio io:AudioIO RealtimeEffectManager Mix
+audio io utilities:DeviceManager AudioIOBase DeviceChange RingBuffer AudioIOListener MeterPanelBase QualityPrefs DevicePrefs
 END
 effect/generator/analyzer support: Effect Generator EffectManager SimpleMono TwoPassSimpleMono ShuttleGetDefinition
 common track UI:CommonTrackView ButtonHandle SliderHandle ZoomHandle SelectHandle TimeShiftHandle TrackInfo TrackButtonHandles CommonTrackControls TrackSelectHandle
@@ -34,8 +36,6 @@ various block files:SimpleBlockFile SilentBlockFile PCMAliasBlockFile
 legacy block files:LegacyAliasBlockFile LegacyBlockFile
 exporting:Export ExportCL ExportFFmpeg ExportFFmpegDialogs ExportFLAC ExportMP2 ExportMP3 ExportOGG ExportPCM ExportMultiple
 importing:Import ImportQT ImportOGG ImportMP3 ImportPCM ImportForwards ImportFLAC ImportFFmpeg ImportPlugin ImportRaw FormatClassifier MultiFormatReader ImportMIDI ODDecodeFlacTask ODDecodeFFmpegTask ODDecodeTask ODDecodeBlockFile RawAudioGuess ImportGStreamer
-audio io:AudioIO RealtimeEffectManager Mix
-audio io utilities:DeviceManager AudioIOBase DeviceChange RingBuffer AudioIOListener MeterPanelBase QualityPrefs DevicePrefs
 include:ComponentInterface ConfigInterface ImporterInterface EffectInterface EffectAutomationParameters PluginInterface ModuleInterface Types
 pervasive:Audacity Experimental
 various preferences:BatchPrefs DirectoriesPrefs EffectsPrefs ImportExportPrefs MidiIOPrefs ModulePrefs MousePrefs PlaybackPrefs ProjectsPrefs TracksPrefs TracksBehaviorsPrefs WarningsPrefs RecordingPrefs Languages ThemePrefs GUIPrefs
