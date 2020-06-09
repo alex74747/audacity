@@ -34,8 +34,6 @@ do_directory(
       LegacyBlockFile.h
       NotYetAvailableException.cpp
       NotYetAvailableException.h
-      ODDecodeBlockFile.cpp
-      ODDecodeBlockFile.h
       ODPCMAliasBlockFile.cpp
       ODPCMAliasBlockFile.h
       PCMAliasBlockFile.cpp

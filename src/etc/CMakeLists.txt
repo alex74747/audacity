@@ -106,6 +106,7 @@ do_directory(
       FFmpeg.h
       FileFormats.cpp
       FileFormats.h
+      ImportLOF.cpp
       LabelTrack.cpp
       LabelTrack.h
       Legacy.cpp

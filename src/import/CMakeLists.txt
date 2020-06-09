@@ -9,19 +9,31 @@ set(
       MultiFormatReader.h
       RawAudioGuess.cpp
       RawAudioGuess.h
-      ImportLOF.cpp
       ImportPCM.cpp
       ImportPlugin.h
       ImportPlugin.cpp
       ImportRaw.cpp
-      ImportRaw.h )
+      ImportRaw.h
+      ODDecodeTask.cpp
+      ODDecodeTask.h
+      ODDecodeBlockFile.cpp
+      ODDecodeBlockFile.h
+)
 
 if( USE_FFMPEG )
-   list( APPEND MY_SOURCES ImportFFmpeg.cpp )
+   list( APPEND MY_SOURCES
+      ImportFFmpeg.cpp
+      ODDecodeFFmpegTask.cpp
+      ODDecodeFFmpegTask.h
+   )
 endif()
 
 if( USE_LIBFLAC )
-   list( APPEND MY_SOURCES ImportFLAC.cpp )
+   list( APPEND MY_SOURCES
+      ImportFLAC.cpp
+      ODDecodeFlacTask.cpp
+      ODDecodeFlacTask.h
+   )
 endif()
 
 if( USE_GSTREAMER )

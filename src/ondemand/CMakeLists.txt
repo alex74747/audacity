@@ -34,12 +34,6 @@ do_directory(
    SOURCES
       ODComputeSummaryTask.cpp
       ODComputeSummaryTask.h
-      ODDecodeFFmpegTask.cpp
-      ODDecodeFFmpegTask.h
-      ODDecodeFlacTask.cpp
-      ODDecodeFlacTask.h
-      ODDecodeTask.cpp
-      ODDecodeTask.h
       ODManager.cpp
       ODManager.h
       ODTask.cpp
