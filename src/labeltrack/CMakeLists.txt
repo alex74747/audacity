@@ -7,6 +7,7 @@ do_directory(
    PRIVATE
       src/utility/math
       src/utility/registries
+      src/widgets/etc
       src/widgets/help
       src/widgets/theme
       src/widgets/utility
@@ -38,6 +39,8 @@ do_directory(
    SOURCES
       LabelDefaultClickHandle.cpp
       LabelDefaultClickHandle.h
+      LabelDialog.cpp
+      LabelDialog.h
       LabelGlyphHandle.cpp
       LabelGlyphHandle.h
       LabelTextHandle.cpp

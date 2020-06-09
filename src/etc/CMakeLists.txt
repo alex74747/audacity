@@ -110,8 +110,6 @@ do_directory(
       FreqWindow.h
       HistoryWindow.cpp
       HistoryWindow.h
-      LabelDialog.cpp
-      LabelDialog.h
       LabelTrack.cpp
       LabelTrack.h
       Legacy.cpp
