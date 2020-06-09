@@ -9,6 +9,7 @@ my $traceLevel = 3;
 my @clusterlist = qw(
    /command-classes
    /dialogs
+   /effect-classes
    /effect-classes/VST
    /effect-classes/audiounits
    /effect-classes/ladspa
@@ -16,11 +17,17 @@ my @clusterlist = qw(
    /effect-classes/nyquist
    /effect-classes/vamp
    /export
+   /import
+   /labeltrack
    /menus
    /non_modal_dialogs
+   /notetrack
    /project_management
+   /timetrack
    /toolbar-classes
    /utility
+   /widgets/CellularPanel
+   /widgets/DialogDefinition
    /utility/exceptions
    /utility/math
    /utility/registries
