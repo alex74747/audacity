@@ -16,6 +16,7 @@ my @clusterlist = qw(
    /effect-classes/vamp
    /export
    /menus
+   /non_modal_dialogs
    /toolbar-classes
    /utility
    /utility/exceptions

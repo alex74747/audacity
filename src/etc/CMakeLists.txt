@@ -106,18 +106,10 @@ do_directory(
       FFmpeg.h
       FileFormats.cpp
       FileFormats.h
-      FreqWindow.cpp
-      FreqWindow.h
-      HistoryWindow.cpp
-      HistoryWindow.h
       LabelTrack.cpp
       LabelTrack.h
       Legacy.cpp
       Legacy.h
-      Lyrics.cpp
-      Lyrics.h
-      LyricsWindow.cpp
-      LyricsWindow.h
       Menus.cpp
       Menus.h
       Meter.cpp
@@ -128,8 +120,6 @@ do_directory(
       MissingAliasFileDialog.h
       Mix.cpp
       Mix.h
-      MixerBoard.cpp
-      MixerBoard.h
       ModuleManager.cpp
       ModuleManager.h
       NoteTrack.cpp

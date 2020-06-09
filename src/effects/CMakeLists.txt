@@ -42,8 +42,6 @@ do_directory(
       ProgressDialog.h
 
    SOURCES
-      Contrast.cpp
-      Contrast.h
       Effect.cpp
       Effect.h
       EffectManager.cpp

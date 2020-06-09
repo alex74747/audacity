@@ -20,6 +20,7 @@ foreach( SUBDIRECTORY
    import
    labeltrack
    menus
+   non_modal_dialogs
    notetrack
    ondemand
    playabletrack

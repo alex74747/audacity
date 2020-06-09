@@ -1,0 +1,35 @@
+do_directory(
+   INCLUDE_PRIVATE
+      src/command-classes
+      src/commands
+      src/effects
+      src/etc
+      src/ondemand
+      src/prefs
+      src/track
+
+   PRIVATE
+      src/utility/math
+      src/widgets/CellularPanel
+      src/widgets/DialogDefinition
+      src/widgets/etc
+      src/widgets/help
+      src/widgets/theme
+      src/widgets/utility
+      src/xml
+      wxWidgets
+
+   SOURCES
+      Contrast.cpp
+      Contrast.h
+      FreqWindow.cpp
+      FreqWindow.h
+      HistoryWindow.cpp
+      HistoryWindow.h
+      Lyrics.cpp
+      Lyrics.h
+      LyricsWindow.cpp
+      LyricsWindow.h
+      MixerBoard.cpp
+      MixerBoard.h
+)
