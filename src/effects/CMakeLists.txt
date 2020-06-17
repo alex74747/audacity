@@ -54,8 +54,6 @@ do_directory(
       LoadEffects.h
       RealtimeEffectManager.cpp
       RealtimeEffectManager.h
-      ScoreAlignDialog.cpp
-      ScoreAlignDialog.h
       SimpleMono.cpp
       SimpleMono.h
       TimeWarper.cpp

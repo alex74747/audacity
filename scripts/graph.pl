@@ -8,6 +8,7 @@ my $traceLevel = 3;
 # whether to box the clusters by sub-folder, but always color nodes regardless
 my @clusterlist = qw(
    /command-classes
+   /dialogs
    /effect-classes/VST
    /effect-classes/audiounits
    /effect-classes/ladspa

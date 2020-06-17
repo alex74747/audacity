@@ -3,6 +3,7 @@ do_directory(
       src/blockfile
       src/command-classes
       src/commands
+      src/dialogs
       src/effects
       src/export
       src/import
@@ -57,8 +58,6 @@ do_directory(
       Ruler.h
 
    SOURCES
-      AboutDialog.cpp
-      AboutDialog.h
       AdornedRulerPanel.cpp
       AdornedRulerPanel.h
       AttachableScrollBar.cpp
@@ -74,14 +73,8 @@ do_directory(
       AutoRecovery.h
       AutoRecoveryDialog.cpp
       AutoRecoveryDialog.h
-      BatchCommandDialog.cpp
-      BatchCommandDialog.h
       BatchCommands.cpp
       BatchCommands.h
-      BatchProcessDialog.cpp
-      BatchProcessDialog.h
-      Benchmark.cpp
-      Benchmark.h
       BlockFile.cpp
       BlockFile.h
       Clipboard.cpp
@@ -158,8 +151,6 @@ do_directory(
       RingBuffer.h
       Ruler.cpp
       Ruler.h
-      Screenshot.cpp
-      Screenshot.h
       SelectUtilities.cpp
       SelectUtilities.h
       SelectedRegion.cpp
@@ -172,20 +163,12 @@ do_directory(
       ShuttleGetDefinition.h
       Snap.cpp
       Snap.h
-      SoundActivatedRecord.cpp
-      SoundActivatedRecord.h
       SpectrumAnalyst.cpp
       SpectrumAnalyst.h
-      SplashDialog.cpp
-      SplashDialog.h
       Tags.cpp
       Tags.h
-      TimeDialog.cpp
-      TimeDialog.h
       TimeTrack.cpp
       TimeTrack.h
-      TimerRecordDialog.cpp
-      TimerRecordDialog.h
       Track.cpp
       Track.h
       TrackArtist.cpp
@@ -217,22 +200,4 @@ do_directory(
       ZoomInfo.cpp
       ZoomInfo.h
 )
-
-# For AboutDialog.h
-# Add a target that will provide the git revision info
-# whenever it changes.  (Must be done at build time, not
-# configuration time.)
-def_vars()
-if( GIT_FOUND )
-   add_custom_target(
-      version
-      COMMAND
-         ${CMAKE_COMMAND} -D GIT=${GIT_EXECUTABLE}
-                          -D _PRVDIR=${_PRVDIR}
-                          -P ${CMAKE_MODULE_PATH}/Version.cmake
-      WORKING_DIRECTORY
-         ${topdir}
-   )
-   add_dependencies( etc version )
-endif()
 

@@ -2,6 +2,7 @@ do_directory(
    INCLUDE_PRIVATE
       src/command-classes
       src/commands
+      src/dialogs
       src/effects
       src/etc
       src/export

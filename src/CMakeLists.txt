@@ -13,6 +13,7 @@ foreach( SUBDIRECTORY
    blockfile
    command-classes
    commands
+   dialogs
    effect-classes
    effects
    etc
