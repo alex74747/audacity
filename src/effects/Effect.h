@@ -30,7 +30,7 @@ class wxWindow;
 #include "audacity/ConfigInterface.h"
 #include "audacity/EffectInterface.h"
 
-#include "SelectedRegion.h"
+class SelectedRegion;
 
 #include "Track.h"
 
