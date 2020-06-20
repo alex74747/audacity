@@ -66,21 +66,21 @@
 #define AUDACITY_MODLEVEL  0
 
 #if defined(IS_BETA)
-   #define AUDACITY_SUFFIX wxT("-beta-") __TDATE__
+   #define AUDACITY_SUFFIX L"-beta-" __TDATE__
 #elif defined(IS_ALPHA)
-   #define AUDACITY_SUFFIX wxT("-alpha-") __TDATE__
+   #define AUDACITY_SUFFIX L"-alpha-" __TDATE__
 #else
-   #define AUDACITY_SUFFIX    wxT("") // for a stable release
-   //#define AUDACITY_SUFFIX wxT("x  ") __TDATE__
+   #define AUDACITY_SUFFIX    L"" // for a stable release
+   //#define AUDACITY_SUFFIX L"x  " __TDATE__
 #endif
 
 #define AUDACITY_MAKESTR( x ) #x
 #define AUDACITY_QUOTE( x ) AUDACITY_MAKESTR( x )
 
 // Version string for visual display
-#define AUDACITY_VERSION_STRING wxT( AUDACITY_QUOTE( AUDACITY_VERSION ) ) wxT(".") \
-                                wxT( AUDACITY_QUOTE( AUDACITY_RELEASE ) ) wxT(".") \
-                                wxT( AUDACITY_QUOTE( AUDACITY_REVISION ) ) \
+#define AUDACITY_VERSION_STRING AUDACITY_QUOTE( AUDACITY_VERSION ) L"." \
+                                AUDACITY_QUOTE( AUDACITY_RELEASE ) L"." \
+                                AUDACITY_QUOTE( AUDACITY_REVISION ) \
                                 AUDACITY_SUFFIX
 
 // DA: x on end of version string.
@@ -114,13 +114,13 @@ class wxWindow;
 // platform-specific conditionals everywhere we want to check it.
 #define PLATFORM_MAX_PATH 260 // Play it safe for default, with same value as Windows' MAX_PATH.
 
-#ifdef __WXMAC__
+#ifdef __APPLE__
 #include "configmac.h"
 #undef PLATFORM_MAX_PATH
 #define PLATFORM_MAX_PATH PATH_MAX
 #endif
 
-#ifdef __WXGTK__
+#ifdef __linux__
 #ifndef __CONFIG_UNIX_INCLUDED
    #define __CONFIG_UNIX_INCLUDED
    #include "configunix.h"
@@ -133,6 +133,9 @@ class wxWindow;
 #endif
 #endif
 
+#if 0
+
+// PRL:  Is this needed?  How to rewrite without __WXX11__ ?
 #ifdef __WXX11__
 #ifndef __CONFIG_UNIX_INCLUDED
    #define __CONFIG_UNIX_INCLUDED
@@ -141,7 +144,9 @@ class wxWindow;
 // wxX11 should also get the platform-specific definition of PLATFORM_MAX_PATH, so do not declare here.
 #endif
 
-#ifdef __WXMSW__
+#endif
+
+#ifdef _WIN32
 #include "configwin.h"
 #undef PLATFORM_MAX_PATH
 #define PLATFORM_MAX_PATH MAX_PATH
@@ -208,7 +213,7 @@ class wxWindow;
 
 // Right to left languages fail in many wx3 dialogs with missing buttons.
 // The workaround is to use LTR in those dialogs.
-#ifndef __WXMAC__
+#ifndef __APPLE__
 #define RTL_WORKAROUND( pWnd ) \
    if ( gPrefs->Read( "/GUI/RtlWorkaround", true) ) \
        pWnd->SetLayoutDirection(wxLayout_LeftToRight); 
