@@ -21,10 +21,8 @@
 #include "ShuttleGui.h"
 #include "SplashDialog.h"
 #include "Theme.h"
-#include "ToolManager.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "PrefsDialog.h"
 #include "AudacityMessageBox.h"
 #include "HelpSystem.h"
 
