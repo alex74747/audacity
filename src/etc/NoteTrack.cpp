@@ -257,7 +257,7 @@ void NoteTrack::WarpAndTransposeNotes(double t0, double t1,
    int i, len = map->length();
    for (i = 0; i < len; i++) {
       Alg_beat &beat = map->beats[i];
-      beat.time = warper.Warp(beat.time + offset) - offset;
+      beat.time = warper(beat.time + offset) - offset;
    }
    // about to redisplay, so might as well convert back to time now
    seq.convert_to_seconds();

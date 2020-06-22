@@ -164,24 +164,24 @@ void EffectSBSMS::setParameters(double tempoRatio, double pitchRatio)
                  SlideConstant, SlideConstant, false, false, false);
 }
 
-std::unique_ptr<TimeWarper> createTimeWarper(double t0, double t1, double duration,
+TimeWarper createTimeWarper(double t0, double t1, double duration,
                              double rateStart, double rateEnd, SlideType rateSlideType)
 {
-   std::unique_ptr<TimeWarper> warper;
+   TimeWarper warper;
    if (rateStart == rateEnd || rateSlideType == SlideConstant) {
-      warper = std::make_unique<LinearTimeWarper>(t0, t0, t1, t0+duration);
+      warper = LinearTimeWarper(t0, t0, t1, t0+duration);
    } else if(rateSlideType == SlideLinearInputRate) {
-      warper = std::make_unique<LinearInputRateTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = LinearInputRateTimeWarper(t0, t1, rateStart, rateEnd);
    } else if(rateSlideType == SlideLinearOutputRate) {
-      warper = std::make_unique<LinearOutputRateTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = LinearOutputRateTimeWarper(t0, t1, rateStart, rateEnd);
    } else if(rateSlideType == SlideLinearInputStretch) {
-      warper = std::make_unique<LinearInputStretchTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = LinearInputStretchTimeWarper(t0, t1, rateStart, rateEnd);
    } else if(rateSlideType == SlideLinearOutputStretch) {
-      warper = std::make_unique<LinearOutputStretchTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = LinearOutputStretchTimeWarper(t0, t1, rateStart, rateEnd);
    } else if(rateSlideType == SlideGeometricInput) {
-      warper = std::make_unique<GeometricInputTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = GeometricInputTimeWarper(t0, t1, rateStart, rateEnd);
    } else if(rateSlideType == SlideGeometricOutput) {
-      warper = std::make_unique<GeometricOutputTimeWarper>(t0, t1, rateStart, rateEnd);
+      warper = GeometricOutputTimeWarper(t0, t1, rateStart, rateEnd);
    }
    return warper;
 }
@@ -191,7 +191,7 @@ std::unique_ptr<TimeWarper> createTimeWarper(double t0, double t1, double durati
 bool EffectSBSMS::ProcessLabelTrack(LabelTrack *lt)
 {
    auto warper1 = createTimeWarper(mT0,mT1,(mT1-mT0)*mTotalStretch,rateStart,rateEnd,rateSlideType);
-   RegionTimeWarper warper{ mT0, mT1, std::move(warper1) };
+   auto warper = RegionTimeWarper( mT0, mT1, std::move(warper1) );
    lt->WarpLabels(warper);
    return true;
 }
@@ -427,11 +427,11 @@ bool EffectSBSMS::Process()
                rb.outputRightTrack->Flush();
 
             leftTrack->ClearAndPaste(mCurT0, mCurT1, rb.outputLeftTrack.get(),
-                                     true, false, warper.get());
+                                     true, false, &warper);
 
             if(rightTrack)
                rightTrack->ClearAndPaste(mCurT0, mCurT1, rb.outputRightTrack.get(),
-                                         true, false, warper.get());
+                                         true, false, &warper);
          }
          mCurTrackNum++;
       },

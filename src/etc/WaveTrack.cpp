@@ -736,8 +736,9 @@ void WaveTrack::ClearAndPaste(double t0, // Start of time to clear
    WaveClipHolders cuts;
 
    // If provided time warper was NULL, use a default one that does nothing
-   IdentityTimeWarper localWarper;
-   const TimeWarper *warper = (effectWarper ? effectWarper : &localWarper);
+   const auto warper = effectWarper
+      ? *effectWarper
+      : TimeWarper( [](double t){ return t; } );
 
    // Align to a sample
    t0 = LongSamplesToTime(TimeToLongSamples(t0));
@@ -846,7 +847,7 @@ void WaveTrack::ClearAndPaste(double t0, // Start of time to clear
 
          // Restore the split lines, transforming the position appropriately
          for (const auto split: splits) {
-            SplitAt(warper->Warp(split));
+            SplitAt(warper(split));
          }
 
          // Restore the saved cut lines, also transforming if time altered
@@ -865,7 +866,7 @@ void WaveTrack::ClearAndPaste(double t0, // Start of time to clear
                // Offset the cut from the start of the clip and add it to
                // this clips cutlines.
                if (cs >= st && cs <= et) {
-                  cut->SetOffset(warper->Warp(cs) - st);
+                  cut->SetOffset(warper(cs) - st);
                   clip->GetCutLines().push_back( std::move(*it) ); // transfer ownership!
                   it = cuts.erase(it);
                }

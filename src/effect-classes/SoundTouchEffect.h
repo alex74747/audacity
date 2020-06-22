@@ -19,6 +19,7 @@
 #ifndef __AUDACITY_EFFECT_SOUNDTOUCH__
 #define __AUDACITY_EFFECT_SOUNDTOUCH__
 
+#include <functional>
 #include "Effect.h"
 
 // forward declaration of a class defined in SoundTouch.h
@@ -26,7 +27,7 @@
 namespace soundtouch { class SoundTouch; }
 
 
-class TimeWarper;
+using TimeWarper = std::function< double( double /* originalTime */ ) >;
 class WaveTrack;
 
 class EffectSoundTouch /* not final */ : public Effect

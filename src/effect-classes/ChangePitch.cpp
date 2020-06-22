@@ -231,7 +231,7 @@ bool EffectChangePitch::Process()
       Calc_SemitonesChange_fromPercentChange();
 
       mSoundTouch = std::make_unique<soundtouch::SoundTouch>();
-      IdentityTimeWarper warper;
+      auto warper = IdentityTimeWarper();
       mSoundTouch->setPitchSemiTones((float)(m_dSemitonesChange));
 #ifdef USE_MIDI
       // Pitch shifting note tracks is currently only supported by SoundTouchEffect

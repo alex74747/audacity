@@ -15,6 +15,7 @@
 
 
 
+#include <functional>
 #include <utility>
 #include "Track.h"
 
@@ -60,7 +61,7 @@ using NoteTrackBase =
 using QuantizedTimeAndBeat = std::pair< double, double >;
 
 class StretchHandle;
-class TimeWarper;
+using TimeWarper = std::function< double( double /* originalTime */ ) >;
 
 class AUDACITY_DLL_API NoteTrack final
    : public NoteTrackBase

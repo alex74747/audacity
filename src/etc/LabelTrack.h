@@ -16,13 +16,14 @@
 #include "SelectedRegion.h"
 #include "Track.h"
 
+#include <functional>
 
 class wxTextFile;
 
 class AudacityProject;
 class DirManager;
 class NotifyingSelectedRegion;
-class TimeWarper;
+using TimeWarper = std::function< double( double /* originalTime */ ) >;
 
 struct LabelTrackHit;
 struct TrackPanelDrawingContext;

@@ -13,6 +13,7 @@
 
 #include "Track.h"
 
+#include <functional>
 #include <vector>
 #include <wx/longlong.h>
 
@@ -22,7 +23,7 @@ class ProgressDialog;
 
 class SpectrogramSettings;
 class WaveformSettings;
-class TimeWarper;
+using TimeWarper = std::function< double( double /* originalTime */ ) >;
 
 class Sequence;
 class WaveClip;

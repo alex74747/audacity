@@ -76,7 +76,7 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
    // Check if this effect will alter the selection length; if so, we need
    // to operate on sync-lock selected tracks.
    bool mustSync = true;
-   if (mT1 == warper.Warp(mT1)) {
+   if (mT1 == warper(mT1)) {
       mustSync = false;
    }
 
@@ -163,7 +163,7 @@ bool EffectSoundTouch::ProcessWithTimeWarper(const TimeWarper &warper)
       },
       [&]( Track *t ) {
          if (mustSync && t->IsSyncLockSelected()) {
-            t->SyncLockAdjust(mT1, warper.Warp(mT1));
+            t->SyncLockAdjust(mT1, warper(mT1));
          }
       }
    );

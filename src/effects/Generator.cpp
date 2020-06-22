@@ -75,8 +75,8 @@ bool Generator::Process()
             else {
                // Transfer the data from the temporary track to the actual one
                tmp->Flush();
-               StepTimeWarper warper{
-                  mT0+GetDuration(), GetDuration()-(mT1-mT0) };
+               auto warper = StepTimeWarper(
+                  mT0+GetDuration(), GetDuration()-(mT1-mT0) );
                const auto &selectedRegion =
                   ViewInfo::Get( *pProject ).selectedRegion;
                track->ClearAndPaste(

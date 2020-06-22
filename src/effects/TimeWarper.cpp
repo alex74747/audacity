@@ -21,128 +21,153 @@ Geometric TimeWarper classes
 #include <wx/string.h>
 #include <math.h>
 
-TimeWarper::~TimeWarper() = default;
-
-double IdentityTimeWarper::Warp(double originalTime) const
+TimeWarper IdentityTimeWarper()
 {
-   return originalTime;
+   return [](double originalTime ){ return originalTime; };
 }
 
-double ShiftTimeWarper::Warp(double originalTime) const
+TimeWarper ShiftTimeWarper(
+   const TimeWarper &warper, double shiftAmount )
 {
-   return mWarper->Warp(originalTime + mShift);
+   return [warper, shiftAmount]( double originalTime ) {
+      return warper(originalTime + shiftAmount);
+   };
 }
 
-double LinearTimeWarper::Warp(double originalTime) const
+TimeWarper LinearTimeWarper(
+   double tBefore0, double tAfter0,
+   double tBefore1, double tAfter1 )
 {
-   return originalTime*mScale + mShift;
+   auto scale = ((tAfter1 - tAfter0)/(tBefore1 - tBefore0)),
+      shift = (tAfter0 - scale * tBefore0);
+   return [scale, shift]( double originalTime ){
+      return originalTime * scale + shift;
+   };
 }
 
-double LinearInputRateTimeWarper::Warp(double originalTime) const
-{
-   double rate = mRateWarper.Warp(originalTime);
-   return mTStart + mScale*log(rate/mRStart);
-}
 
-LinearInputRateTimeWarper::LinearInputRateTimeWarper(double tStart, double tEnd,
-                                                     double rStart, double rEnd)
-: mRateWarper(tStart, rStart, tEnd, rEnd), mRStart(rStart),
-  mTStart(tStart), mScale((tEnd-tStart)/(rEnd-rStart))
+TimeWarper LinearInputRateTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd)
 {
-   wxASSERT(mRStart != 0.0);
+   wxASSERT(rStart != 0.0);
    wxASSERT(tStart < tEnd);
+   auto warper = LinearTimeWarper(tStart, rStart, tEnd, rEnd);
+   auto scale = ((tEnd-tStart)/(rEnd-rStart));
+   return [warper, tStart, rStart, scale]( double originalTime ){
+      auto rate = warper(originalTime);
+      return tStart + scale * log(rate/rStart);
+   };
 }
 
-double LinearOutputRateTimeWarper::Warp(double originalTime) const
-{
-   double scaledTime = mTimeWarper.Warp(originalTime);
-   return mTStart + mScale*(sqrt(mC1 + scaledTime * mC2) - mRStart);
-}
-
-LinearOutputRateTimeWarper::LinearOutputRateTimeWarper(double tStart, double tEnd,
-                                                       double rStart, double rEnd)
-: mTimeWarper(tStart, 0.0, tEnd, 1.0),
-  mRStart(rStart), mTStart(tStart),
-  mScale(2.0*(tEnd-tStart)/(rEnd*rEnd-rStart*rStart)),
-  mC1(rStart*rStart), mC2(rEnd*rEnd-rStart*rStart)
+TimeWarper LinearOutputRateTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd)
 {
    wxASSERT(rStart != rEnd);
    wxASSERT(rStart > 0.0);
    wxASSERT(rEnd > 0.0);
    wxASSERT(tStart < tEnd);
+   
+  auto scale = (2.0*(tEnd-tStart)/(rEnd*rEnd-rStart*rStart)),
+     c1 = (rStart*rStart), c2 = (rEnd*rEnd-rStart*rStart);
+   auto warper = LinearTimeWarper(tStart, 0.0, tEnd, 1.0);
+   return [warper, tStart, rStart, scale, c1, c2]( double originalTime ){
+      double scaledTime = warper(originalTime);
+      return tStart + scale * (sqrt(c1 + scaledTime * c2) - rStart);
+   };
 }
 
-double LinearInputStretchTimeWarper::Warp(double originalTime) const
-{
-   double scaledTime = mTimeWarper.Warp(originalTime);
-   return mTStart + mC1 * scaledTime * (1.0 + mC2 * scaledTime);
-}
-
-LinearInputStretchTimeWarper::LinearInputStretchTimeWarper(double tStart, double tEnd,
-                                                           double rStart, double rEnd)
-: mTimeWarper(tStart, 0.0, tEnd, 1.0), mTStart(tStart),
-  mC1((tEnd-tStart)/rStart), mC2(0.5*(rStart/rEnd - 1.0))
+TimeWarper LinearInputStretchTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd )
 {
    wxASSERT(rStart > 0.0);
    wxASSERT(rEnd > 0.0);
    wxASSERT(tStart < tEnd);
+   
+   auto warper = LinearTimeWarper(tStart, 0.0, tEnd, 1.0);
+   auto c1 = ((tEnd-tStart)/rStart), c2 = (0.5*(rStart/rEnd - 1.0));
+   return [warper, tStart, c1, c2]( double originalTime ){
+      double scaledTime = warper(originalTime);
+      return tStart + c1 * scaledTime * (1.0 + c2 * scaledTime);
+   };
 }
 
-double LinearOutputStretchTimeWarper::Warp(double originalTime) const
-{
-   double scaledTime = mTimeWarper.Warp(originalTime);
-   return mTStart + mC1 * (pow(mC2, scaledTime) - 1.0);
-}
-
-LinearOutputStretchTimeWarper::LinearOutputStretchTimeWarper(double tStart, double tEnd,
-                                                             double rStart, double rEnd)
-: mTimeWarper(tStart, 0.0, tEnd, 1.0), mTStart(tStart),
-  mC1((tEnd-tStart)/(rStart*log(rStart/rEnd))), mC2(rStart/rEnd)
+TimeWarper LinearOutputStretchTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd)
 {
    wxASSERT(rStart != rEnd);
    wxASSERT(rStart > 0.0);
    wxASSERT(rEnd > 0.0);
    wxASSERT(tStart < tEnd);
+   
+   auto warper = LinearTimeWarper(tStart, 0.0, tEnd, 1.0);
+   auto c1 = ((tEnd-tStart)/(rStart*log(rStart/rEnd))), c2 = (rStart/rEnd);
+   return [warper, tStart, c1, c2]( double originalTime ){
+      double scaledTime = warper(originalTime);
+      return tStart + c1 * (pow(c2, scaledTime) - 1.0);
+   };
 }
 
-double GeometricInputTimeWarper::Warp(double originalTime) const
-{
-   double scaledTime = mTimeWarper.Warp(originalTime);
-   return mTStart + mScale*(pow(mRatio,scaledTime) - 1.0);
-}
-
-GeometricInputTimeWarper::GeometricInputTimeWarper(double tStart, double tEnd,
-                                                   double rStart, double rEnd)
-: mTimeWarper(tStart, 0.0, tEnd, 1.0), mTStart(tStart),
-  mScale((tEnd-tStart)/(log(rStart/rEnd)*rStart)), mRatio(rStart/rEnd)
+TimeWarper GeometricInputTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd)
 {
    wxASSERT(rStart != rEnd);
    wxASSERT(rStart > 0.0);
    wxASSERT(rEnd > 0.0);
    wxASSERT(tStart < tEnd);
+
+   auto warper = LinearTimeWarper(tStart, 0.0, tEnd, 1.0);
+   auto scale = ((tEnd-tStart)/(log(rStart/rEnd)*rStart)), ratio = (rStart/rEnd);
+   return [warper, tStart, scale, ratio]( double originalTime ){
+      double scaledTime = warper(originalTime);
+      return tStart + scale * (pow(ratio,scaledTime) - 1.0);
+   };
 }
 
-double GeometricOutputTimeWarper::Warp(double originalTime) const
-{
-   double scaledTime = mTimeWarper.Warp(originalTime);
-   return mTStart + mScale*log1p(mC0 * scaledTime);
-}
-
-GeometricOutputTimeWarper::GeometricOutputTimeWarper(double tStart, double tEnd,
-                                                     double rStart, double rEnd)
-: mTimeWarper(tStart, 0.0, tEnd, 1.0), mTStart(tStart),
-  mScale((tEnd-tStart)/(rEnd-rStart)), mC0((rEnd-rStart)/rStart)
+TimeWarper GeometricOutputTimeWarper(
+   double tStart, double tEnd,
+   double rStart, double rEnd)
 {
    wxASSERT(rStart > 0.0);
    wxASSERT(rEnd > 0.0);
    wxASSERT(tStart < tEnd);
+
+   auto warper = LinearTimeWarper(tStart, 0.0, tEnd, 1.0);
+   auto scale = ((tEnd-tStart)/(rEnd-rStart)), c0 = ((rEnd-rStart)/rStart);
+   return [warper, tStart, scale, c0]( double originalTime ){
+      double scaledTime = warper(originalTime);
+      return tStart + scale * log1p(c0 * scaledTime);
+   };
 }
 
-StepTimeWarper::StepTimeWarper(double tStep, double offset)
-: mTStep(tStep), mOffset(offset)
-{ }
-
-double StepTimeWarper::Warp(double originalTime) const
+TimeWarper StepTimeWarper(double tStep, double offset)
 {
-   return originalTime + ((originalTime > mTStep) ? mOffset : 0.0);
+   return [tStep, offset]( double originalTime ){
+      return originalTime + ((originalTime > tStep) ? offset : 0.0);
+   };
 }
+
+TimeWarper RegionTimeWarper(
+   double tStart, double tEnd, const TimeWarper &warper )
+{
+   auto offset = (warper(tEnd) - tEnd);
+   return [warper, tStart, tEnd, offset]( double originalTime ) {
+      if (originalTime < tStart)
+      {
+         return originalTime;
+      }
+      else if (originalTime < tEnd)
+      {
+         return warper(originalTime);
+      }
+      else
+      {
+         return offset + originalTime;
+      }
+   };
+}
+

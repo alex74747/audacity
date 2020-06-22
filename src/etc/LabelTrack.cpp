@@ -217,8 +217,8 @@ double LabelTrack::AdjustTimeStampOnScale(double t, double b, double e, double c
 void LabelTrack::WarpLabels(const TimeWarper &warper) {
    for (auto &labelStruct: mLabels) {
       labelStruct.selectedRegion.setTimes(
-         warper.Warp(labelStruct.getT0()),
-         warper.Warp(labelStruct.getT1()));
+         warper(labelStruct.getT0()),
+         warper(labelStruct.getT1()));
    }
 
    // This should not be needed, assuming the warper is nondecreasing, but
