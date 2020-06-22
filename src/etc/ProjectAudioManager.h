@@ -175,7 +175,7 @@ PropertiesOfSelected GetPropertiesOfSelected(const AudacityProject &proj);
 
 #include "CommandFlag.h"
 
-extern const ReservedCommandFlag
+const ReservedCommandFlag
    &CanStopAudioStreamFlag();
 
 #endif

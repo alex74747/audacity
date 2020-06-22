@@ -46,5 +46,5 @@ class DirectoriesPrefs final : public PrefsPanel
 
 /// A PrefsPanel::Factory that creates one DirectoriesPrefs panel.
 /// This one is used not only in the Preferences command.
-extern PrefsPanel::Factory DirectoriesPrefsFactory();
+PrefsPanel::Factory DirectoriesPrefsFactory();
 #endif

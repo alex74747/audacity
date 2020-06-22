@@ -19,6 +19,7 @@
 template< typename Enum > class EnumSetting;
 
 struct soxr;
+// Defined in lib-src/libsoxr in a headerless .c file:
 extern "C" void soxr_delete(soxr*);
 struct soxr_deleter {
    void operator () (soxr *p) const { if (p) soxr_delete(p); }

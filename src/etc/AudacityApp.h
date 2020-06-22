@@ -127,6 +127,6 @@ class AudacityApp final
     DECLARE_EVENT_TABLE()
 };
 
-extern AudacityApp & wxGetApp();
+AudacityApp & wxGetApp();
 
 #endif

@@ -1040,7 +1040,7 @@ struct streamContext
 using Scs = ArrayOf<std::unique_ptr<streamContext>>;
 using ScsPtr = std::shared_ptr<Scs>;
 
-extern FFmpegLibs *FFmpegLibsInst();
+FFmpegLibs *FFmpegLibsInst();
 
 #endif // USE_FFMPEG
 #endif // __AUDACITY_FFMPEG__

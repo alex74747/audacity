@@ -112,5 +112,5 @@ class SpectrumPrefs final : public PrefsPanel
 /// A PrefsPanel::Factory that creates one SpectrumPrefs panel.
 /// This factory can be parametrized by a single track, to change settings
 /// non-globally
-extern PrefsPanel::Factory SpectrumPrefsFactory( WaveTrack *wt = 0 );
+PrefsPanel::Factory SpectrumPrefsFactory( WaveTrack *wt = 0 );
 #endif

@@ -29,7 +29,7 @@ class ODLock;
 
 AUDACITY_DLL_API AudacityProject *GetActiveProject();
 // For use by ProjectManager only:
-extern void SetActiveProject(AudacityProject * project);
+void SetActiveProject(AudacityProject * project);
 
 /// \brief an object of class AllProjects acts like a standard library
 /// container, but refers to a global array of open projects.  So you can

@@ -96,7 +96,6 @@ public:
 };
 
 int SmallRB(int bits, int numberBits);
-extern int (*SmallVRB[])(int bits);
 
 
 #endif

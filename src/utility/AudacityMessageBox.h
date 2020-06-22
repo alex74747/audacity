@@ -14,7 +14,7 @@
 class wxWindow;
 #include "Internat.h"
 
-extern TranslatableString AudacityMessageBoxCaptionStr();
+TranslatableString AudacityMessageBoxCaptionStr();
 
 // Do not use wxMessageBox!!  Its default window title does not translate!
 int AudacityMessageBox(

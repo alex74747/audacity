@@ -21,8 +21,8 @@
 class wxArrayString;
 class wxArrayStringEx;
 
-extern AUDACITY_DLL_API const wxString& GetCustomTranslation(const wxString& str1 );
-extern AUDACITY_DLL_API const wxString& GetCustomSubstitution(const wxString& str1 );
+AUDACITY_DLL_API const wxString& GetCustomTranslation(const wxString& str1 );
+AUDACITY_DLL_API const wxString& GetCustomSubstitution(const wxString& str1 );
 
 // Marks string for substitution only.
 #define _TS( s ) GetCustomSubstitution( s )

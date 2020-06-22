@@ -110,6 +110,6 @@ private:
 /// A PrefsPanel::Factory that creates one KeyConfigPrefs panel.
 /// This factory can be parametrized by name, which specifies a command to be
 /// focused initially
-extern PrefsPanel::Factory KeyConfigPrefsFactory(
+PrefsPanel::Factory KeyConfigPrefsFactory(
    const CommandID &name = {} );
 #endif

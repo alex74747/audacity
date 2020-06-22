@@ -587,9 +587,9 @@ protected:
 
 // A rarely used helper function that sets a pointer
 // ONLY if the value it is to be set to is non NULL.
-extern void SetIfCreated( wxChoice *&Var, wxChoice * Val );
-extern void SetIfCreated( wxTextCtrl *&Var, wxTextCtrl * Val );
-extern void SetIfCreated( wxStaticText *&Var, wxStaticText * Val );
+void SetIfCreated( wxChoice *&Var, wxChoice * Val );
+void SetIfCreated( wxTextCtrl *&Var, wxTextCtrl * Val );
+void SetIfCreated( wxStaticText *&Var, wxStaticText * Val );
 
 class GuiWaveTrack;
 class AttachableScrollBar;

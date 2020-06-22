@@ -18,9 +18,9 @@ Paul Licameli split from Menus.cpp
 bool TracksSelectedPred( const AudacityProject &project );
 bool AudioIOBusyPred( const AudacityProject &project );
 bool TimeSelectedPred( const AudacityProject &project );
-extern const CommandFlagOptions &cutCopyOptions();
+const CommandFlagOptions &cutCopyOptions();
 
-extern AUDACITY_DLL_API const ReservedCommandFlag
+AUDACITY_DLL_API const ReservedCommandFlag
    &AudioIONotBusyFlag(),
    &StereoRequiredFlag(),  //lda
    &NoiseReductionTimeSelectedFlag(),
@@ -31,11 +31,11 @@ extern AUDACITY_DLL_API const ReservedCommandFlag
    &AnyTracksSelectedFlag(),
    &TrackPanelHasFocus();  //lll
 
-extern AUDACITY_DLL_API const ReservedCommandFlag
+AUDACITY_DLL_API const ReservedCommandFlag
    &AudioIOBusyFlag(), // lll
    &CaptureNotBusyFlag();
 
-extern AUDACITY_DLL_API const ReservedCommandFlag
+AUDACITY_DLL_API const ReservedCommandFlag
    &LabelTracksExistFlag(),
    &UnsavedChangesFlag(),
    &HasLastEffectFlag(),

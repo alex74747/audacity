@@ -67,5 +67,5 @@ private:
 /// A PrefsPanel::Factory that creates one WaveformPrefs panel.
 /// This factory can be parametrized by a single track, to change settings
 /// non-globally
-extern PrefsPanel::Factory WaveformPrefsFactory(WaveTrack *wt);
+PrefsPanel::Factory WaveformPrefsFactory(WaveTrack *wt);
 #endif

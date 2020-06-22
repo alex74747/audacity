@@ -9,7 +9,7 @@
 
 *******************************************************************//*!
 
-\class TrackArtist
+\class TrackArtistg
 \brief   This class handles the actual rendering of WaveTracks (both
   waveforms and spectra), NoteTracks, LabelTracks and TimeTracks.
 

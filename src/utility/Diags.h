@@ -28,10 +28,10 @@ struct t_diag_struct {
 };
 
 
-extern void diagnostics_do_diag( t_diag_struct * pDiag );
-extern void diagnostics_do_diag_mem( t_diag_struct * pDiag, long amount );
-extern void diagnostics_do_perfmon_start( t_diag_struct * pDiag, t_diag_struct ** ppRememberMe );
-extern void diagnostics_do_perfmon_stop( t_diag_struct ** ppDiag);
+void diagnostics_do_diag( t_diag_struct * pDiag );
+void diagnostics_do_diag_mem( t_diag_struct * pDiag, long amount );
+void diagnostics_do_perfmon_start( t_diag_struct * pDiag, t_diag_struct ** ppRememberMe );
+void diagnostics_do_perfmon_stop( t_diag_struct ** ppDiag);
 
 // A constant that sets the maximum number of times we log the message.
 #define DEFAULT_LOG_COUNT (10)
