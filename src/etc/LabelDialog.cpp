@@ -270,7 +270,7 @@ NumericRenderer::~NumericRenderer()
 {
 }
 
-void NumericRenderer::Draw(wxGrid &grid,
+void NumericRenderer::Draw(wxGrid &g,
                         wxGridCellAttr &attr,
                         wxDC &dc,
                         const wxRect &rect,
@@ -278,11 +278,12 @@ void NumericRenderer::Draw(wxGrid &grid,
                         int col,
                         bool isSelected)
 {
+   auto &grid = static_cast<Grid&>(g);
    wxGridCellRenderer::Draw(grid, attr, dc, rect, row, col, isSelected);
 
    wxGridTableBase *table = grid.GetTable();
-   NumericEditor *ne =
-      static_cast<NumericEditor *>(grid.GetCellEditor(row, col));
+   auto e = grid.GetCellEditor(row, col);
+   NumericEditor *ne = static_cast<NumericEditor *>(e.get());
    wxString tstr;
 
    if (ne) {
@@ -298,8 +299,6 @@ void NumericRenderer::Draw(wxGrid &grid,
                       NumericTextCtrl::Options{}.AutoPos(true),
                       wxPoint(10000, 10000));  // create offscreen
       tstr = tt.GetString();
-
-      ne->DecRef();
    }
 
    dc.SetBackgroundMode(wxTRANSPARENT);
@@ -332,15 +331,16 @@ void NumericRenderer::Draw(wxGrid &grid,
    grid.DrawTextRectangle(dc, tstr, rect, hAlign, vAlign);
 }
 
-wxSize NumericRenderer::GetBestSize(wxGrid &grid,
+wxSize NumericRenderer::GetBestSize(wxGrid &g,
                                  wxGridCellAttr & WXUNUSED(attr),
                                  wxDC & WXUNUSED(dc),
                                  int row,
                                  int col)
 {
+   auto &grid = static_cast<Grid&>(g);
    wxGridTableBase *table = grid.GetTable();
-   NumericEditor *ne =
-      static_cast<NumericEditor *>(grid.GetCellEditor(row, col));
+   auto e = grid.GetCellEditor(row, col);
+   NumericEditor *ne = static_cast<NumericEditor *>(e.get());
    wxSize sz;
 
    if (ne) {
@@ -354,8 +354,6 @@ wxSize NumericRenderer::GetBestSize(wxGrid &grid,
                       NumericTextCtrl::Options{}.AutoPos(true),
                       wxPoint(10000, 10000));  // create offscreen
       sz = tt.GetSize();
-
-      ne->DecRef();
    }
 
    return sz;
@@ -675,11 +673,15 @@ void LabelDialog::PopulateLabels()
    // Create and remember editors.  No need to DELETE these as the wxGrid will
    // do it for us.  (The DecRef() that is needed after GetDefaultEditorForType
    // becomes the duty of the wxGridCellAttr objects after we set them in the grid.)
-   mChoiceEditor = (ChoiceEditor *) mGrid->GetDefaultEditorForType(GRID_VALUE_CHOICE);
+   // (We get pointers to the editors without keeping the temporary bump of the
+   // reference count!  But the editors will live as long as this dialog so that
+   // is all right.)
+   mChoiceEditor =
+      static_cast<ChoiceEditor *>( mGrid->GetDefaultEditor(GRID_VALUE_CHOICE).get() );
    mTimeEditor = static_cast<NumericEditor*>
-      (mGrid->GetDefaultEditorForType(GRID_VALUE_TIME));
+      (mGrid->GetDefaultEditor(GRID_VALUE_TIME).get());
    mFrequencyEditor = static_cast<NumericEditor *>
-      (mGrid->GetDefaultEditorForType(GRID_VALUE_FREQUENCY));
+      (mGrid->GetDefaultEditor(GRID_VALUE_FREQUENCY).get());
 
    // Initialize and set the track name column attributes
    wxGridCellAttr *attr;
@@ -1464,8 +1466,6 @@ void LabelDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
       auto editor = mGrid->GetCellEditor(mGrid->GetGridCursorRow(),
          mGrid->GetGridCursorCol());
       editor->Reset();
-      // To avoid memory leak, don't forget DecRef()!
-      editor->DecRef();
       mGrid->HideCellEditControl();
       return;
    }

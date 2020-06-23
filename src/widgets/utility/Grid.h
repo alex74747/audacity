@@ -40,6 +40,22 @@ class Grid final : public wxGrid
 
    ~Grid();
 
+   // Hide the inherited accessors with this better version that returns
+   // a smart pointer for RAII
+   struct EditorDeleter{ void operator () (wxGridCellEditor *p) const {
+      if (p) p->DecRef();
+   } };
+   using EditorPointer = std::unique_ptr< wxGridCellEditor, EditorDeleter >;
+   EditorPointer GetCellEditor(int row, int col) const
+   {
+      return { wxGrid::GetCellEditor( row, col ), {} };
+   }
+
+   EditorPointer GetDefaultEditor(const wxString& typeName) const
+   {
+      return { GetDefaultEditorForType( typeName), {} }  ;
+   }
+
 #if wxUSE_ACCESSIBILITY
    void ClearGrid();
    bool InsertRows(int pos = 0, int numRows = 1, bool updateLabels = true);
@@ -69,6 +85,9 @@ class Grid final : public wxGrid
  public:
 
    DECLARE_EVENT_TABLE()
+
+ private:
+   using wxGrid::GetDefaultEditorForType;
 };
 
 // If a cell editor derives from this class, then invoke the virtual function

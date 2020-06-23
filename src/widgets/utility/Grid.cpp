@@ -519,13 +519,9 @@ wxAccStatus GridAx::GetName(int childId, wxString *name)
       }
 
       auto editor = mGrid->GetCellEditor(row, col);
-      auto cleanup = finally([&]{
-      if (editor)
-         editor->DecRef();
-      });
    
       if ( auto accessibleEditor =
-          dynamic_cast<AccessibleGridCellEditor*>( editor ) )
+          dynamic_cast<AccessibleGridCellEditor*>( editor.get() ) )
          v = accessibleEditor->ConvertValue( v );
 
       *name = n + wxT(" ") + v;
