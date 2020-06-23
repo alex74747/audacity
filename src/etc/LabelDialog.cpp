@@ -44,6 +44,512 @@
 #include "FileNames.h"
 #include <limits>
 
+/**********************************************************************//**
+
+\class NumericEditor
+\brief wxGridCellEditor for the NumericTextCtrl.
+
+**************************************************************************/
+#define GRID_VALUE_TIME wxT("Time")
+#define GRID_VALUE_FREQUENCY wxT("Frequency")
+
+#include "NumericTextCtrl.h"
+class NumericEditor /* not final */ : public AccessibleGridCellEditor
+{
+public:
+
+   NumericEditor
+      (NumericConverter::Type type, const NumericFormatSymbol &format, double rate);
+
+   ~NumericEditor();
+
+   // Precondition: parent != NULL
+   void Create(wxWindow *parent, wxWindowID id, wxEvtHandler *handler) override;
+
+   bool IsAcceptedKey(wxKeyEvent &event) override;
+
+   void SetSize(const wxRect &rect) override;
+
+   void BeginEdit(int row, int col, wxGrid *grid) override;
+
+   bool EndEdit(int row, int col, const wxGrid *grid, const wxString &oldval, wxString *newval) override;
+
+   void ApplyEdit(int row, int col, wxGrid *grid) override;
+
+   void Reset() override;
+
+   NumericFormatSymbol GetFormat() const;
+   double GetRate() const;
+   void SetFormat(const NumericFormatSymbol &format);
+   void SetRate(double rate);
+
+   wxGridCellEditor *Clone() const override;
+   wxString GetValue() const override;
+
+   NumericTextCtrl *GetNumericTextControl() const
+      { return static_cast<NumericTextCtrl *>(m_control); }
+
+   wxString ConvertValue( const wxString &value ) override;
+
+ private:
+
+   NumericFormatSymbol mFormat;
+   double mRate;
+   NumericConverter::Type mType;
+   double mOld;
+   wxString mOldString;
+   wxString mValueAsString;
+};
+
+NumericEditor::NumericEditor
+   (NumericConverter::Type type, const NumericFormatSymbol &format, double rate)
+{
+   mType = type;
+   mFormat = format;
+   mRate = rate;
+   mOld = 0.0;
+}
+
+NumericEditor::~NumericEditor()
+{
+}
+
+void NumericEditor::Create(wxWindow *parent, wxWindowID id, wxEvtHandler *handler)
+{
+   wxASSERT(parent); // to justify safenew
+   auto control = safenew NumericTextCtrl(
+      parent, wxID_ANY,
+      mType,
+      mFormat,
+      mOld,
+      mRate,
+      NumericTextCtrl::Options{}
+         .AutoPos(true)
+         .InvalidValue(mType == NumericTextCtrl::FREQUENCY,
+                       NumericConverter::UndefinedFrequency)
+   );
+   m_control = control;
+
+   wxGridCellEditor::Create(parent, id, handler);
+}
+
+void NumericEditor::SetSize(const wxRect &rect)
+{
+   wxSize size = m_control->GetSize();
+
+   // Always center...looks bad otherwise
+   int x = rect.x + ((rect.width / 2) - (size.x / 2)) + 1;
+   int y = rect.y + ((rect.height / 2) - (size.y / 2)) + 1;
+
+   m_control->Move(x, y);
+}
+
+void NumericEditor::BeginEdit(int row, int col, wxGrid *grid)
+{
+   wxGridTableBase *table = grid->GetTable();
+
+   mOldString = table->GetValue(row, col);
+   mOldString.ToDouble(&mOld);
+
+   auto control = GetNumericTextControl();
+   control->SetValue(mOld);
+   control->EnableMenu();
+
+   control->SetFocus();
+}
+
+
+bool NumericEditor::EndEdit(int WXUNUSED(row), int WXUNUSED(col), const wxGrid *WXUNUSED(grid), const wxString &WXUNUSED(oldval), wxString *newval)
+{
+   double newtime = GetNumericTextControl()->GetValue();
+   bool changed = newtime != mOld;
+
+   if (changed) {
+      mValueAsString = wxString::Format(wxT("%g"), newtime);
+      *newval = mValueAsString;
+   }
+
+   return changed;
+}
+
+void NumericEditor::ApplyEdit(int row, int col, wxGrid *grid)
+{
+   grid->GetTable()->SetValue(row, col, mValueAsString);
+}
+
+void NumericEditor::Reset()
+{
+   GetNumericTextControl()->SetValue(mOld);
+}
+
+bool NumericEditor::IsAcceptedKey(wxKeyEvent &event)
+{
+   if (wxGridCellEditor::IsAcceptedKey(event)) {
+      if (event.GetKeyCode() == WXK_RETURN) {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+// Clone is required by wxwidgets; implemented via copy constructor
+wxGridCellEditor *NumericEditor::Clone() const
+{
+   return safenew NumericEditor{ mType, mFormat, mRate };
+}
+
+wxString NumericEditor::GetValue() const
+{
+   return wxString::Format(wxT("%g"), GetNumericTextControl()->GetValue());
+}
+
+NumericFormatSymbol NumericEditor::GetFormat() const
+{
+   return mFormat;
+}
+
+double NumericEditor::GetRate() const
+{
+   return mRate;
+}
+
+void NumericEditor::SetFormat(const NumericFormatSymbol &format)
+{
+   mFormat = format;
+}
+
+void NumericEditor::SetRate(double rate)
+{
+   mRate = rate;
+}
+
+wxString NumericEditor::ConvertValue( const wxString &v )
+{
+   double value;
+   v.ToDouble(&value);
+   NumericConverter converter( mType,
+                  GetFormat(),
+                  value,
+                  GetRate() );
+
+   return converter.GetString();
+}
+
+/**********************************************************************//**
+\class NumericRenderer
+\brief wxGridCellRenderer for the NumericTextCtrl.
+**************************************************************************/
+class NumericRenderer final : public wxGridCellRenderer
+{
+ public:
+   NumericRenderer(NumericConverter::Type type) : mType{ type } {}
+   ~NumericRenderer() override;
+
+   void Draw(wxGrid &grid,
+              wxGridCellAttr &attr,
+              wxDC &dc,
+              const wxRect &rect,
+              int row,
+              int col,
+              bool isSelected) override;
+
+   wxSize GetBestSize(wxGrid &grid,
+                      wxGridCellAttr &attr,
+                      wxDC &dc,
+                      int row,
+                      int col) override;
+
+   wxGridCellRenderer *Clone() const override;
+
+private:
+   NumericConverter::Type mType;
+};
+
+NumericRenderer::~NumericRenderer()
+{
+}
+
+void NumericRenderer::Draw(wxGrid &grid,
+                        wxGridCellAttr &attr,
+                        wxDC &dc,
+                        const wxRect &rect,
+                        int row,
+                        int col,
+                        bool isSelected)
+{
+   wxGridCellRenderer::Draw(grid, attr, dc, rect, row, col, isSelected);
+
+   wxGridTableBase *table = grid.GetTable();
+   NumericEditor *ne =
+      static_cast<NumericEditor *>(grid.GetCellEditor(row, col));
+   wxString tstr;
+
+   if (ne) {
+      double value;
+
+      table->GetValue(row, col).ToDouble(&value);
+
+      NumericTextCtrl tt(&grid, wxID_ANY,
+                      mType,
+                      ne->GetFormat(),
+                      value,
+                      ne->GetRate(),
+                      NumericTextCtrl::Options{}.AutoPos(true),
+                      wxPoint(10000, 10000));  // create offscreen
+      tstr = tt.GetString();
+
+      ne->DecRef();
+   }
+
+   dc.SetBackgroundMode(wxTRANSPARENT);
+
+   if (grid.IsEnabled())
+   {
+      if (isSelected)
+      {
+         dc.SetTextBackground(grid.GetSelectionBackground());
+         dc.SetTextForeground(grid.GetSelectionForeground());
+      }
+      else
+      {
+         dc.SetTextBackground(attr.GetBackgroundColour());
+         dc.SetTextForeground(attr.GetTextColour());
+      }
+   }
+   else
+   {
+      dc.SetTextBackground(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+      dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+   }
+
+   dc.SetFont(attr.GetFont());
+
+   int hAlign, vAlign;
+
+   attr.GetAlignment(&hAlign, &vAlign);
+
+   grid.DrawTextRectangle(dc, tstr, rect, hAlign, vAlign);
+}
+
+wxSize NumericRenderer::GetBestSize(wxGrid &grid,
+                                 wxGridCellAttr & WXUNUSED(attr),
+                                 wxDC & WXUNUSED(dc),
+                                 int row,
+                                 int col)
+{
+   wxGridTableBase *table = grid.GetTable();
+   NumericEditor *ne =
+      static_cast<NumericEditor *>(grid.GetCellEditor(row, col));
+   wxSize sz;
+
+   if (ne) {
+      double value;
+      table->GetValue(row, col).ToDouble(&value);
+      NumericTextCtrl tt(&grid, wxID_ANY,
+                      mType,
+                      ne->GetFormat(),
+                      value,
+                      ne->GetRate(),
+                      NumericTextCtrl::Options{}.AutoPos(true),
+                      wxPoint(10000, 10000));  // create offscreen
+      sz = tt.GetSize();
+
+      ne->DecRef();
+   }
+
+   return sz;
+}
+
+// Clone is required by wxwidgets; implemented via copy constructor
+wxGridCellRenderer *NumericRenderer::Clone() const
+{
+   return safenew NumericRenderer{ mType };
+}
+
+/**********************************************************************//**
+\class ChoiceEditor
+\brief Modified version of wxGridChoiceEditor using wxChoice instead of
+wxComboBox.
+**************************************************************************/
+#define GRID_VALUE_CHOICE wxT("Choice")
+
+class ChoiceEditor final : public wxGridCellEditor, wxEvtHandler
+{
+public:
+
+   ChoiceEditor(size_t count = 0,
+                const wxString choices[] = NULL);
+
+   ChoiceEditor(const wxArrayString &choices);
+
+   ~ChoiceEditor();
+
+   void Create(wxWindow *parent,
+                       wxWindowID id,
+                       wxEvtHandler *evtHandler) override;
+
+   void SetSize(const wxRect &rect) override;
+   void BeginEdit(int row, int col, wxGrid *grid) override;
+   bool EndEdit(int row, int col, wxGrid *grid);
+   bool EndEdit(int row, int col, const wxGrid *grid,
+                const wxString &oldval, wxString *newval) override;
+   void ApplyEdit(int row, int col, wxGrid *grid) override;
+   void Reset() override;
+
+   wxGridCellEditor *Clone() const override;
+
+   void SetChoices(const wxArrayString &choices);
+   wxString GetValue() const override;
+
+ protected:
+
+   wxChoice *Choice() const { return (wxChoice *)m_control; }
+
+ private:
+
+   // A whole separate class just to get rid of Visual C++ warning C4407
+   class FocusHandler:wxEvtHandler
+   {
+   public:
+      void ConnectEvent(wxWindow *w)
+      {
+         // Need to use a named function pointer, not a lambda, so that we
+         // can unbind the same later
+         w->GetEventHandler()->Bind(wxEVT_KILL_FOCUS, OnKillFocus);
+      };
+      void DisconnectEvent(wxWindow *w)
+      {
+         w->GetEventHandler()->Unbind(wxEVT_KILL_FOCUS, OnKillFocus);
+      };
+      static void OnKillFocus(wxFocusEvent & WXUNUSED(event))
+      {
+         return;
+      };
+   } mHandler;
+
+   wxArrayString mChoices;
+   wxString mOld;
+   wxString mValueAsString;
+};
+
+ChoiceEditor::ChoiceEditor(size_t count, const wxString choices[])
+{
+   if (count) {
+      mChoices.reserve(count);
+      for (size_t n = 0; n < count; n++) {
+         mChoices.push_back(choices[n]);
+      }
+   }
+}
+
+ChoiceEditor::ChoiceEditor(const wxArrayString &choices)
+{
+   mChoices = choices;
+}
+
+ChoiceEditor::~ChoiceEditor()
+{
+   if (m_control)
+      mHandler.DisconnectEvent(m_control);
+}
+
+// Clone is required by wxwidgets; implemented via copy constructor
+wxGridCellEditor *ChoiceEditor::Clone() const
+{
+   return safenew ChoiceEditor(mChoices);
+}
+
+void ChoiceEditor::Create(wxWindow* parent, wxWindowID id, wxEvtHandler* evtHandler)
+{
+   m_control = safenew wxChoice(parent,
+                            id,
+                            wxDefaultPosition,
+                            wxDefaultSize,
+                            mChoices);
+
+   wxGridCellEditor::Create(parent, id, evtHandler);
+   mHandler.ConnectEvent(m_control);
+}
+
+void ChoiceEditor::SetSize(const wxRect &rect)
+{
+   wxSize size = m_control->GetSize();
+
+   // Always center...looks bad otherwise
+   int x = rect.x + ((rect.width / 2) - (size.x / 2)) + 1;
+   int y = rect.y + ((rect.height / 2) - (size.y / 2)) + 1;
+
+   m_control->Move(x, y);
+}
+
+void ChoiceEditor::BeginEdit(int row, int col, wxGrid* grid)
+{
+   if (!m_control)
+      return;
+
+   mOld = grid->GetTable()->GetValue(row, col);
+
+   Choice()->Clear();
+   Choice()->Append(mChoices);
+   Choice()->SetSelection( make_iterator_range( mChoices ).index( mOld ) );
+   Choice()->SetFocus();
+}
+
+bool ChoiceEditor::EndEdit(int row, int col, wxGrid *grid)
+{
+    wxString newvalue;
+    bool changed = EndEdit(row, col, grid, mOld, &newvalue);
+    if (changed) {
+        ApplyEdit(row, col, grid);
+    }
+    return changed;
+}
+
+bool ChoiceEditor::EndEdit(int WXUNUSED(row), int WXUNUSED(col),
+                           const wxGrid* WXUNUSED(grid),
+                           const wxString &WXUNUSED(oldval), wxString *newval)
+{
+   int sel = Choice()->GetSelection();
+
+   // This can happen if the wxChoice control is displayed and the list of choices get changed
+   if ((sel < 0) || (sel >= (int)(mChoices.size())))
+   {
+      return false;
+   }
+
+   wxString val = mChoices[sel];
+   bool changed = val != mOld;
+
+   if (changed)
+   {
+      mValueAsString = val;
+      *newval = val;
+   }
+
+   return changed;
+}
+
+void ChoiceEditor::ApplyEdit(int row, int col, wxGrid *grid)
+{
+   grid->GetTable()->SetValue(row, col, mValueAsString);
+}
+
+void ChoiceEditor::Reset()
+{
+   Choice()->SetSelection( make_iterator_range( mChoices ).index( mOld ) );
+}
+
+void ChoiceEditor::SetChoices(const wxArrayString &choices)
+{
+   mChoices = choices;
+}
+
+wxString ChoiceEditor::GetValue() const
+{
+   return mChoices[Choice()->GetSelection()];
+}
+
 enum Column
 {
    Col_Track,
@@ -149,6 +655,22 @@ void LabelDialog::PopulateLabels()
       XO("High Frequency"),
    })
       mGrid->SetColLabelValue( ii++, label.Translation() );
+
+   mGrid->RegisterDataType(GRID_VALUE_TIME,
+                    safenew NumericRenderer{ NumericConverter::TIME },
+                    safenew NumericEditor
+                      { NumericTextCtrl::TIME,
+                        NumericConverter::SecondsFormat(), 44100.0 });
+
+   mGrid->RegisterDataType(GRID_VALUE_FREQUENCY,
+                    safenew NumericRenderer{ NumericConverter::FREQUENCY },
+                    safenew NumericEditor
+                    { NumericTextCtrl::FREQUENCY,
+                      NumericConverter::HertzFormat(), 44100.0 });
+
+   mGrid->RegisterDataType(GRID_VALUE_CHOICE,
+                    safenew wxGridCellStringRenderer,
+                    safenew ChoiceEditor);
 
    // Create and remember editors.  No need to DELETE these as the wxGrid will
    // do it for us.  (The DecRef() that is needed after GetDefaultEditorForType
@@ -955,12 +1477,3 @@ void LabelDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
    return;
 }
 
-// PRL:  This was lifted here as a small cycle-breaking move so that neither
-// of Grid and SelectedRegion should depend on the other but the consistency
-// is checked somewhere.
-// This is not wholly satisfactory.  The better fix would do more serious
-// refactoring of Grid to lift the definitions of Editor classes to this file.
-static_assert(
-   SelectedRegion::UndefinedFrequency == NumericConverter::UndefinedFrequency,
-   "inconsistent UndefinedFrequency"
-);

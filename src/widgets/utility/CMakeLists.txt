@@ -1,5 +1,6 @@
 do_directory(
    PRIVATE
+      src/utility
       src/utility/exceptions
       wxWidgets
 
@@ -20,6 +21,8 @@ do_directory(
       FileHistory.h
       FileNames.cpp
       FileNames.h
+      Grid.cpp
+      Grid.h
       HtmlWindow.cpp
       HtmlWindow.h
       ImageRoll.cpp

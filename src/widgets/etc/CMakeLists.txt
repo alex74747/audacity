@@ -21,8 +21,6 @@ do_directory(
       ASlider.h
       ExpandingToolBar.cpp
       ExpandingToolBar.h
-      Grid.cpp
-      Grid.h
       NumericTextCtrl.cpp
       NumericTextCtrl.h
       ProgressDialog.cpp
