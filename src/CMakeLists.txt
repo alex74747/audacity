@@ -11,6 +11,7 @@ set( CMAKE_ENABLE_EXPORTS ON )
 # add sub-directory libraries to the build
 foreach( SUBDIRECTORY
    blockfile
+   command-classes
    commands
    effect-classes
    effects

@@ -17,7 +17,6 @@ do_directory(
       src/widgets/help
       src/widgets/theme
       src/widgets/utility
-      src/widgets/CellularPanel
       src/widgets/DialogDefinition
       src/xml
       wxWidgets
@@ -49,8 +48,6 @@ do_directory(
       AppCommandEvent.h
       AudacityCommand.cpp
       AudacityCommand.h
-      BatchEvalCommand.cpp
-      BatchEvalCommand.h
       Command.cpp
       Command.h
       CommandBuilder.cpp
@@ -73,49 +70,15 @@ do_directory(
       CommandTargets.h
       CommandType.cpp
       CommandType.h
-      CompareAudioCommand.cpp
-      CompareAudioCommand.h
-      Demo.cpp
-      Demo.h
-      DragCommand.cpp
-      DragCommand.h
-      GetInfoCommand.cpp
-      GetInfoCommand.h
-      GetTrackInfoCommand.cpp
-      GetTrackInfoCommand.h
-      HelpCommand.cpp
-      HelpCommand.h
-      ImportExportCommands.cpp
-      ImportExportCommands.h
       KeyView.cpp
       KeyView.h
       LoadCommands.cpp
       LoadCommands.h
-      MessageCommand.cpp
-      MessageCommand.h
-      OpenSaveCommands.cpp
-      OpenSaveCommands.h
       PopupMenuTable.cpp
       PopupMenuTable.h
-      PreferenceCommands.cpp
-      PreferenceCommands.h
       ResponseQueue.cpp
       ResponseQueue.h
-      ScreenshotCommand.cpp
-      ScreenshotCommand.h
       ScriptCommandRelay.cpp
       ScriptCommandRelay.h
-      SelectCommand.cpp
-      SelectCommand.h
-      SetClipCommand.cpp
-      SetClipCommand.h
-      SetEnvelopeCommand.cpp
-      SetEnvelopeCommand.h
-      SetLabelCommand.cpp
-      SetLabelCommand.h
-      SetProjectCommand.cpp
-      SetProjectCommand.h
-      SetTrackInfoCommand.cpp
-      SetTrackInfoCommand.h
       Validators.h
 )

@@ -1,5 +1,6 @@
 do_directory(
    INCLUDE_PRIVATE
+      src/command-classes
       src/commands
       src/effects
       src/etc

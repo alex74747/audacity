@@ -1,6 +1,7 @@
 do_directory(
    INCLUDE_PRIVATE
       src/blockfile
+      src/command-classes
       src/commands
       src/effects
       src/export

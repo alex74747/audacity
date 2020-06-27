@@ -26,6 +26,7 @@ threshold of difference in two selected tracks
 #include "WaveTrack.h"
 
 
+
 #include <float.h>
 #include <wx/intl.h>
 
