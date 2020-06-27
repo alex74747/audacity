@@ -40,3 +40,9 @@ do_directory( TYPE STATIC
       SseMathFuncs.h
       float_cast.h
 )
+
+if( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+   # Need this for M_PI, etc.
+   target_compile_definitions( utility_math PRIVATE _USE_MATH_DEFINES )
+endif()
+
