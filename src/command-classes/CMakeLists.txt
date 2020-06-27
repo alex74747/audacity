@@ -7,6 +7,7 @@ do_directory(
       src/labeltrack
       src/ondemand
       src/prefs
+      src/project_management
       src/toolbar-classes
       src/toolbars
       src/track

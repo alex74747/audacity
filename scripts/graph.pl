@@ -18,6 +18,7 @@ my @clusterlist = qw(
    /export
    /menus
    /non_modal_dialogs
+   /project_management
    /toolbar-classes
    /utility
    /utility/exceptions

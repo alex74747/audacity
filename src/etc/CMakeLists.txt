@@ -10,6 +10,7 @@ do_directory(
       src/labeltrack
       src/ondemand
       src/prefs
+      src/project_management
       src/toolbar-classes
       src/toolbars
       src/track
@@ -102,8 +103,6 @@ do_directory(
       ImportLOF.cpp
       LabelTrack.cpp
       LabelTrack.h
-      Legacy.cpp
-      Legacy.h
       Menus.cpp
       Menus.h
       Meter.cpp
@@ -129,20 +128,12 @@ do_directory(
       ProjectAudioIO.h
       ProjectAudioManager.cpp
       ProjectAudioManager.h
-      ProjectFSCK.cpp
-      ProjectFSCK.h
       ProjectFileIO.cpp
       ProjectFileIO.h
       ProjectFileIORegistry.cpp
       ProjectFileIORegistry.h
-      ProjectFileManager.cpp
-      ProjectFileManager.h
       ProjectHistory.cpp
       ProjectHistory.h
-      ProjectManager.cpp
-      ProjectManager.h
-      ProjectSelectionManager.cpp
-      ProjectSelectionManager.h
       ProjectSettings.cpp
       ProjectSettings.h
       ProjectWindow.cpp

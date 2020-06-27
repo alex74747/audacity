@@ -8,6 +8,7 @@ do_directory(
       src/import
       src/ondemand
       src/prefs
+      src/project_management
       src/toolbars
       src/track
 

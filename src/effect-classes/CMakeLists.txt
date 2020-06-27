@@ -2,6 +2,7 @@ do_directory(
    INCLUDE_PRIVATE
       src/etc
       src/effects
+      src/project_management
       src/track
 
    PRIVATE

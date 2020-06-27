@@ -26,6 +26,7 @@ foreach( SUBDIRECTORY
    ondemand
    playabletrack
    prefs
+   project_management
    timetrack
    toolbar-classes
    toolbars

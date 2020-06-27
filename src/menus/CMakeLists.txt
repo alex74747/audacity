@@ -11,6 +11,7 @@ do_directory(
       src/ondemand
       src/playabletrack
       src/prefs
+      src/project_management
       src/toolbar-classes
       src/toolbars
       src/track

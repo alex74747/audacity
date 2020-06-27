@@ -1,0 +1,39 @@
+do_directory(
+   INCLUDE_PRIVATE
+      src/blockfile
+      src/commands
+      src/etc
+      src/export
+      src/import
+      src/ondemand
+      src/prefs
+      src/toolbar-classes
+      src/toolbars
+      src/track
+
+   PRIVATE
+      src/utility/math
+      src/utility/registries
+      src/widgets/CellularPanel
+      src/widgets/etc
+      src/widgets/help
+      src/widgets/theme
+      src/widgets/utility
+      src/xml
+      wxWidgets
+      portaudio-v19
+      libsndfile
+      $<$<BOOL:${USE_LIBFLAC}>:libflac>
+
+   SOURCES
+      Legacy.cpp
+      Legacy.h
+      ProjectFSCK.cpp
+      ProjectFSCK.h
+      ProjectFileManager.cpp
+      ProjectFileManager.h
+      ProjectManager.cpp
+      ProjectManager.h
+      ProjectSelectionManager.cpp
+      ProjectSelectionManager.h
+)
