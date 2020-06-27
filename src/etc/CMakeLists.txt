@@ -8,6 +8,7 @@ do_directory(
       src/labeltrack
       src/ondemand
       src/prefs
+      src/toolbar-classes
       src/toolbars
       src/track
       src/wavetrack

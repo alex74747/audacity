@@ -6,14 +6,11 @@ do_directory(
       src/track
 
    PRIVATE
-      src/utility/math
+      #src/utility/math
       src/utility/registries
       src/widgets/etc
-      src/widgets/help
       src/widgets/theme
       src/widgets/utility
-      src/widgets/CellularPanel
-      src/widgets/DialogDefinition
       src/xml
       wxWidgets
 
@@ -40,36 +37,12 @@ do_directory(
       Ruler.h
 
    SOURCES
-      ControlToolBar.cpp
-      ControlToolBar.h
-      DeviceToolBar.cpp
-      DeviceToolBar.h
-      EditToolBar.cpp
-      EditToolBar.h
       Grabber.cpp
       Grabber.h
-      MeterToolBar.cpp
-      MeterToolBar.h
-      MixerToolBar.cpp
-      MixerToolBar.h
-      ScrubbingToolBar.cpp
-      ScrubbingToolBar.h
-      SelectionBar.cpp
-      SelectionBar.h
-      SelectionBarListener.h
-      SpectralSelectionBar.cpp
-      SpectralSelectionBar.h
-      SpectralSelectionBarListener.h
-      TimeToolBar.cpp
-      TimeToolBar.h
       ToolBar.cpp
       ToolBar.h
       ToolDock.cpp
       ToolDock.h
       ToolManager.cpp
       ToolManager.h
-      ToolsToolBar.cpp
-      ToolsToolBar.h
-      TranscriptionToolBar.cpp
-      TranscriptionToolBar.h
 )

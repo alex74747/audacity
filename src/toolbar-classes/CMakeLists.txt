@@ -1,0 +1,48 @@
+do_directory(
+   INCLUDE_PRIVATE
+      src/commands
+      src/etc
+      src/export
+      src/ondemand
+      src/track
+      src/toolbars
+
+   PRIVATE
+      src/utility
+      src/utility/math
+      src/utility/registries
+      src/widgets/CellularPanel
+      src/widgets/DialogDefinition
+      src/widgets/etc
+      src/widgets/help
+      src/widgets/theme
+      src/widgets/utility
+      wxWidgets
+      src/xml
+
+   SOURCES
+      ControlToolBar.cpp
+      ControlToolBar.h
+      DeviceToolBar.cpp
+      DeviceToolBar.h
+      EditToolBar.cpp
+      EditToolBar.h
+      MeterToolBar.cpp
+      MeterToolBar.h
+      MixerToolBar.cpp
+      MixerToolBar.h
+      ScrubbingToolBar.cpp
+      ScrubbingToolBar.h
+      SelectionBar.cpp
+      SelectionBar.h
+      SelectionBarListener.h
+      SpectralSelectionBar.cpp
+      SpectralSelectionBar.h
+      SpectralSelectionBarListener.h
+      TimeToolBar.cpp
+      TimeToolBar.h
+      ToolsToolBar.cpp
+      ToolsToolBar.h
+      TranscriptionToolBar.cpp
+      TranscriptionToolBar.h
+)

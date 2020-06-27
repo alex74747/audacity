@@ -9,6 +9,7 @@ do_directory(
       src/ondemand
       src/playabletrack
       src/prefs
+      src/toolbar-classes
       src/toolbars
       src/track
       src/wavetrack

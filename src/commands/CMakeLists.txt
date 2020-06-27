@@ -5,6 +5,7 @@ do_directory(
       src/export
       src/labeltrack
       src/prefs
+      src/toolbar-classes
       src/toolbars
       src/track
       src/wavetrack

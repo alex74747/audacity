@@ -24,6 +24,7 @@ foreach( SUBDIRECTORY
    playabletrack
    prefs
    timetrack
+   toolbar-classes
    toolbars
    track
    utility

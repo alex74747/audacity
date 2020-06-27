@@ -15,6 +15,7 @@ my @clusterlist = qw(
    /effect-classes/vamp
    /export
    /menus
+   /toolbar-classes
    /utility
    /utility/exceptions
    /utility/math
