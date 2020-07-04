@@ -17,6 +17,7 @@ Paul Licameli split from AudacityProject.h
 #include "xml/XMLTagHandler.h" // to inherit
 
 struct sqlite3;
+struct sqlite3_wrapper;
 
 class AudacityProject;
 class AutoCommitTransaction;
@@ -113,10 +114,12 @@ private:
    static int ExecCallback(void *data, int cols, char **vals, char **names);
    int Exec(const char *query, ExecCB callback, wxString *result);
 
+   // Just get the pointer; for my use only, not for friends
+   sqlite3 *DBptr();
+
    // The opening of the database may be delayed until demanded.
-   // Returns a non-null pointer to an open database, or throws an exception
-   // if opening fails.
-   sqlite3 *DB();
+   // Throws an exception if opening fails.
+   const sqlite3_wrapper &DB();
 
    // Put the current database connection aside, keeping it open, so that
    // another may be opened with OpenDB()
@@ -131,7 +134,7 @@ private:
    // Use a connection that is already open rather than invoke OpenDB
    void UseConnection( sqlite3 *db );
 
-   sqlite3 *OpenDB(FilePath fileName = {});
+   bool OpenDB(FilePath fileName = {});
    bool CloseDB();
    bool DeleteDB();
 
@@ -171,9 +174,9 @@ private:
    // Bypass transactions if database will be deleted after close
    bool mBypass;
 
-   sqlite3 *mPrevDB;
-   sqlite3 *mDB;
+   std::unique_ptr< sqlite3_wrapper > mpImpl;
    FilePath mDBPath;
+   int mLastRC = 0;
    TranslatableString mLastError;
    TranslatableString mLibraryError;
 
