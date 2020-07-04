@@ -1315,11 +1315,6 @@ bool ProjectFileIO::SaveCopy(const FilePath& fileName)
 
    auto cleanup = finally([&]
    {
-      if (db)
-      {
-         (void) sqlite3_close(db);
-      }
-
       if (!success)
       {
          wxRemoveFile(fileName);
