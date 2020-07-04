@@ -266,6 +266,7 @@ list( APPEND SOURCES
       SplashDialog.cpp
       SplashDialog.h
       SqliteSampleBlock.cpp
+      Sqlite3Wrappers.h
       SseMathFuncs.cpp
       SseMathFuncs.h
       Tags.cpp
