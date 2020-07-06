@@ -650,17 +650,17 @@ bool ProjectFileIO::UpgradeSchema()
 
 sqlite3 *ProjectFileIO::CopyTo(const FilePath &destpath)
 {
-   sqlite3 *destdb = nullptr;
+   int rc = 0;
+   sqlite3_ptr udestdb{ nullptr, { &rc } };
    auto db = DB();
-   int rc;
    bool success = false;
    bool opened = false;
    auto cleanup = finally([&]{
       if (opened && !success)
       {
          // Don't give this DB connection back to the caller
-         rc = sqlite3_close(destdb);
-         destdb = nullptr;
+         // Destroy explicitly to capture an error code
+         udestdb.reset();
          if (rc != SQLITE_OK)
          {
             SetDBError(
@@ -673,7 +673,7 @@ sqlite3 *ProjectFileIO::CopyTo(const FilePath &destpath)
    ProgressResult res = ProgressResult::Success;
 
    /* Open the database file identified by destpath. */
-   rc = sqlite3_open(destpath, &destdb);
+   rc = sqlite3_open(destpath, &udestdb);
    if (rc != SQLITE_OK)
    {
       SetDBError(
@@ -684,6 +684,7 @@ sqlite3 *ProjectFileIO::CopyTo(const FilePath &destpath)
    else
    {
       opened = true;
+      auto destdb = udestdb.get();
       if( auto ubackup = sqlite3_backup_ptr{
          sqlite3_backup_init(destdb, "main", db, "main"),
          { &rc }
@@ -711,8 +712,6 @@ sqlite3 *ProjectFileIO::CopyTo(const FilePath &destpath)
 
             rc = sqlite3_backup_step(backup, 12);
          } while (rc == SQLITE_OK || rc == SQLITE_BUSY || rc == SQLITE_LOCKED);
-
-         // Loop may end because of errors, detected below
       }
       else
       {
@@ -740,7 +739,7 @@ sqlite3 *ProjectFileIO::CopyTo(const FilePath &destpath)
 
    // Let the caller use this connection and close it later
    success = true;
-   return destdb;
+   return udestdb.release();
 }
 
 void ProjectFileIO::UpdatePrefs()
