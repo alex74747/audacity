@@ -414,7 +414,7 @@ bool ProjectFileIO::DeleteDB()
 
 bool ProjectFileIO::TransactionStart(const wxString &name)
 {
-   char* errmsg = nullptr;
+   sqlite3_message_ptr errmsg;
 
    int rc = sqlite3_exec(DB(),
                          wxT("SAVEPOINT ") + name + wxT(";"),
@@ -427,7 +427,6 @@ bool ProjectFileIO::TransactionStart(const wxString &name)
       SetDBError(
          XO("Failed to create savepoint:\n\n%s").Format(name)
       );
-      sqlite3_free(errmsg);
    }
 
    return rc == SQLITE_OK;
@@ -435,7 +434,7 @@ bool ProjectFileIO::TransactionStart(const wxString &name)
 
 bool ProjectFileIO::TransactionCommit(const wxString &name)
 {
-   char* errmsg = nullptr;
+   sqlite3_message_ptr errmsg;
 
    int rc = sqlite3_exec(DB(),
                          wxT("SAVEPOINT ") + name + wxT(";"),
@@ -448,7 +447,6 @@ bool ProjectFileIO::TransactionCommit(const wxString &name)
       SetDBError(
          XO("Failed to release savepoint:\n\n%s").Format(name)
       );
-      sqlite3_free(errmsg);
    }
 
    return rc == SQLITE_OK;
@@ -456,7 +454,7 @@ bool ProjectFileIO::TransactionCommit(const wxString &name)
 
 bool ProjectFileIO::TransactionRollback(const wxString &name)
 {
-   char* errmsg = nullptr;
+   sqlite3_message_ptr errmsg;
 
    int rc = sqlite3_exec(DB(),
                          wxT("RELEASE ") + name + wxT(";"),
@@ -469,7 +467,6 @@ bool ProjectFileIO::TransactionRollback(const wxString &name)
       SetDBError(
          XO("Failed to release savepoint:\n\n%s").Format(name)
       );
-      sqlite3_free(errmsg);
    }
 
    return rc == SQLITE_OK;
@@ -484,7 +481,7 @@ int ProjectFileIO::ExecCallback(void *data, int cols, char **vals, char **names)
 
 int ProjectFileIO::Exec(const char *query, ExecCB callback, wxString *result)
 {
-   char *errmsg = nullptr;
+   sqlite3_message_ptr errmsg;
    ExecParm ep = {callback, result};
 
    int rc = sqlite3_exec(DB(), query, ExecCallback, &ep, &errmsg);
@@ -494,8 +491,7 @@ int ProjectFileIO::Exec(const char *query, ExecCB callback, wxString *result)
       SetDBError(
          XO("Failed to execute a project file command:\n\n%s").Format(query)
       );
-      mLibraryError = Verbatim(errmsg);
-      sqlite3_free(errmsg);
+      mLibraryError = Verbatim(errmsg.get());
    }
 
    return rc;
