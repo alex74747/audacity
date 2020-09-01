@@ -1131,6 +1131,7 @@ bool AUPImportFileHandle::HandlePCMAliasBlockFile(XMLTagHandler *&handler)
       auto attr = pair.first;
       auto value = pair.second;
 
+      // Old format also stored a "summaryfile" tag that is ignored
       if (CaseInsensitiveEquals(attr, "aliasfile"))
       {
          const wxString strValue = value.ToWString();
