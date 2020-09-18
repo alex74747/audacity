@@ -1,26 +1,4 @@
-
 set( TARGET mod-null )
-set( TARGET_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
-
-message( STATUS "========== Configuring ${TARGET} ==========" )
-
-def_vars()
-
-add_library( ${TARGET} MODULE EXCLUDE_FROM_ALL )
-
-list( APPEND SOURCES
-   PRIVATE
-      ${TARGET_ROOT}/ModNullCallback.cpp
-      ${TARGET_ROOT}/ModNullCallback.h
-)
-
-get_target_property( INCLUDES wxWidgets INTERFACE_INCLUDE_DIRECTORIES )
-list( APPEND INCLUDES
-   PUBLIC
-      ${TARGET_ROOT}
-)
-
-get_target_property( DEFINES wxWidgets INTERFACE_COMPILE_DEFINITIONS )
 list( APPEND DEFINES
    PRIVATE
       # This is needed until the transition to cmake is complete and
@@ -30,29 +8,11 @@ list( APPEND DEFINES
       # debug versions of wxWidgets...even if the build is for Release.
       wxDEBUG_LEVEL=0
 )
-
-list( APPEND LOPTS
-   PRIVATE
-      $<$<PLATFORM_ID:Darwin>:-undefined dynamic_lookup>
+list( APPEND SOURCES
+      ModNullCallback.cpp
+      ModNullCallback.h
 )
+audacity_module( ${TARGET} "${SOURCES}" "wxWidgets"
+   "${DEFINES}" "" )
 
-list( APPEND LIBRARIES
-   PRIVATE
-      Audacity
-      $<$<PLATFORM_ID:Windows>:wxWidgets>
-)
-
-set_target_property_all( ${TARGET} LIBRARY_OUTPUT_DIRECTORY "${_MODDIR}" )
-set_target_properties( ${TARGET}
-   PROPERTIES
-      PREFIX ""
-      FOLDER "modules"
-)
-
-organize_source( "${TARGET_ROOT}" "" "${SOURCES}" )
-target_sources( ${TARGET} PRIVATE ${SOURCES} )
-target_compile_definitions( ${TARGET} PRIVATE ${DEFINES} )
-target_include_directories( ${TARGET} PRIVATE ${INCLUDES} )
-target_link_options( ${TARGET} PRIVATE ${LOPTS} )
-target_link_libraries( ${TARGET} PRIVATE ${LIBRARIES} )
-
+set_target_properties( ${TARGET} PROPERTIES EXCLUDE_FROM_ALL YES )
