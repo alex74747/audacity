@@ -28,6 +28,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-pcm",
       "mod-midi-import-export",
       "mod-soundtouch",
+      "mod-mixer-board",
    };
    return modules;
 }

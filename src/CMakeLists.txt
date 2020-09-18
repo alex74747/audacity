@@ -146,8 +146,6 @@ list( APPEND SOURCES
       LyricsWindow.h
       MIDIPlay.cpp
       MIDIPlay.h
-      MixerBoard.cpp
-      MixerBoard.h
       NoteTrack.cpp
       NoteTrack.h
       PitchName.cpp

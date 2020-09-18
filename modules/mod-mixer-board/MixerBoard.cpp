@@ -1558,3 +1558,5 @@ AttachedItem sAttachment{ wxT("View/Windows"),
 
 }
 
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
