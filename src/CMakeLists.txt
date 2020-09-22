@@ -122,8 +122,6 @@ list( APPEND SOURCES
       EnvelopeEditor.h
       FileFormats.cpp
       FileFormats.h
-      FreqWindow.cpp
-      FreqWindow.h
       HelpUtilities.cpp
       HelpUtilities.h
       KeystrokeHandler.cpp
