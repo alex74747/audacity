@@ -9,7 +9,6 @@
 
 *//*******************************************************************/
 
-
 #include "Contrast.h"
 
 #include "CommonCommandFlags.h"
@@ -18,14 +17,14 @@
 #include "Project.h"
 #include "ProjectFileIO.h"
 #include "ProjectRate.h"
-#include "../ProjectWindow.h"
+#include "ProjectWindow.h"
 #include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "FileNames.h"
 #include "HelpSystem.h"
 #include "NumericTextCtrl.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/VetoDialogHook.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/VetoDialogHook.h"
 #include "ViewInfo.h"
 
 #include <cmath>
@@ -703,3 +702,6 @@ AttachedItem sAttachment{ wxT("Analyze/Analyzers/Windows"),
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
