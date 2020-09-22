@@ -171,6 +171,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
    // with Audacity and enable automatically.
    static std::unordered_set<wxString> modules{
       "mod-mixer-board",
+      "mod-lyrics",
    };
    return modules;
 }

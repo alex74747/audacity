@@ -168,10 +168,6 @@ list( APPEND SOURCES
       Legacy.cpp
       Legacy.h
       LightThemeAsCeeCode.h
-      Lyrics.cpp
-      Lyrics.h
-      LyricsWindow.cpp
-      LyricsWindow.h
       MacroMagic.h
       Matrix.cpp
       Matrix.h
