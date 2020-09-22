@@ -458,9 +458,6 @@ list( APPEND SOURCES
          export/ExportFFmpegDialogs.h
       >
 
-      $<$<BOOL:${USE_LIBFLAC}>:
-         export/ExportFLAC.cpp
-      >
 
       $<$<BOOL:${USE_LIBTWOLAME}>:
          export/ExportMP2.cpp
@@ -498,10 +495,6 @@ list( APPEND SOURCES
 
       $<$<BOOL:${USE_FFMPEG}>:
          import/ImportFFmpeg.cpp
-      >
-
-      $<$<BOOL:${USE_LIBFLAC}>:
-         import/ImportFLAC.cpp
       >
 
       $<$<BOOL:${USE_GSTREAMER}>:
@@ -896,7 +889,6 @@ list( APPEND LIBRARIES
       sqlite
       $<$<BOOL:${USE_FFMPEG}>:ffmpeg>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag>
-      $<$<BOOL:${USE_LIBFLAC}>:libflac>
       $<$<BOOL:${USE_LIBMAD}>:libmad>
       $<$<BOOL:${USE_LIBOGG}>:libogg>
       $<$<BOOL:${USE_LIBVORBIS}>:libvorbis>
@@ -1074,12 +1066,6 @@ else()
          audio/mp4
          audio/x-ms-wma
          video/mpeg
-      )
-   endif()
-   if( USE_LIBFLAC )
-      list( APPEND MIMETYPES
-         audio/flac
-         audio/x-flac
       )
    endif()
    if( USE_LIBMAD )

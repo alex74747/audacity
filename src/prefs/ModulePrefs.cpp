@@ -193,6 +193,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-printing",
       "mod-macros",
       "mod-plugin-menus",
+      "mod-flac",
    };
    return modules;
 }
