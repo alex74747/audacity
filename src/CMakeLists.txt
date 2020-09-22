@@ -126,8 +126,6 @@ list( APPEND SOURCES
       FreqWindow.h
       HelpUtilities.cpp
       HelpUtilities.h
-      HistoryWindow.cpp
-      HistoryWindow.h
       KeystrokeHandler.cpp
       KeystrokeHandler.h
       LabelDialog.cpp
