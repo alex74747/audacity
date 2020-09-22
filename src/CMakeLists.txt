@@ -139,8 +139,6 @@ list( APPEND SOURCES
       FileIO.h
       FileNames.cpp
       FileNames.h
-      FreqWindow.cpp
-      FreqWindow.h
       HelpText.cpp
       HelpText.h
       HiContrastThemeAsCeeCode.h
