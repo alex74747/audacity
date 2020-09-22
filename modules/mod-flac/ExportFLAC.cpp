@@ -14,11 +14,9 @@ Joshua Haberman
 
 **********************************************************************/
 
-
-
 #ifdef USE_LIBFLAC
 
-#include "Export.h"
+#include "export/Export.h"
 
 #include <wx/ffile.h>
 #include <wx/log.h>
@@ -31,11 +29,11 @@ Joshua Haberman
 #include "Prefs.h"
 #include "ShuttleGui.h"
 
-#include "../Tags.h"
+#include "Tags.h"
 #include "Track.h"
 
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ProgressDialog.h"
 #include "wxFileNameWrapper.h"
 
 //----------------------------------------------------------------------------
@@ -484,5 +482,41 @@ static Exporter::RegisteredExportPlugin sRegisteredPlugin{ "FLAC",
    []{ return std::make_unique< ExportFLAC >(); }
 };
 
-#endif // USE_LIBFLAC
+// Register a hidden menu item, available as a macro command
+#include "CommandContext.h"
+#include "CommandManager.h"
+#include "CommonCommandFlags.h"
 
+namespace {
+struct Handler : CommandHandlerObject {
+void OnExportFLAC(const CommandContext &context)
+{
+   Exporter::DoExport(context.project, "FLAC");
+}
+}; // struct Handler
+
+static CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+using namespace MenuTable;
+#define FN(X) (& Handler :: X)
+AttachedItem sAttachment{
+   { wxT("HiddenFileItems/HiddenFileMenu"),
+      // This item may be duplicated in other modules,
+      // so use the "ignore" conflict resolution
+      { OrderingHint::Unspecified, {}, OrderingHint::Ignore } },
+   ( FinderScope{ findCommandHandler },
+   Command( wxT("ExportFLAC"), XXO("Export as FLAC"),
+      FN(OnExportFLAC),
+      AudioIONotBusyFlag() )
+   )
+};
+#undef FN
+
+} // namespace
+
+#endif // USE_LIBFLAC
