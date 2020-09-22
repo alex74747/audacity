@@ -144,8 +144,6 @@ list( APPEND SOURCES
       HelpText.cpp
       HelpText.h
       HiContrastThemeAsCeeCode.h
-      HistoryWindow.cpp
-      HistoryWindow.h
       HitTestResult.h
       ImageManipulation.cpp
       ImageManipulation.h
