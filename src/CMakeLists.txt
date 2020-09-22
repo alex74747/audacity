@@ -183,6 +183,7 @@ list( APPEND SOURCES
       Mix.h
       MixerBoard.cpp
       MixerBoard.h
+      ModuleConstants.h
       ModuleManager.cpp
       ModuleManager.h
       NoteTrack.cpp

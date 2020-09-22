@@ -31,17 +31,8 @@ wxWindow *  MakeHijackPanel();
 //
 // wxPluginManager would be MUCH better, but it's an "undocumented" framework.
 //
-#define ModuleDispatchName "ModuleDispatch"
 
-typedef enum
-{
-   ModuleInitialize,
-   ModuleTerminate,
-   AppInitialized,
-   AppQuiting,
-   ProjectInitialized,
-   ProjectClosing
-} ModuleDispatchTypes;
+#include "ModuleConstants.h"
 
 typedef int (*fnModuleDispatch)(ModuleDispatchTypes type);
 
