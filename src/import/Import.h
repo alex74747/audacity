@@ -78,11 +78,14 @@ class ExtImportItem
 };
 
 class Importer {
+   struct ImporterItem;
 public:
 
    // Objects of this type are statically constructed in files implementing
    // subclasses of ImportPlugin
-   struct RegisteredImportPlugin{
+   struct RegisteredImportPlugin final
+      : public Registry::RegisteredItem<ImporterItem>
+   {
       RegisteredImportPlugin(
          const Identifier &id, // an internal string naming the plug-in
          std::unique_ptr<ImportPlugin>,
@@ -173,6 +176,13 @@ public:
               TranslatableString &errorMessage);
 
 private:
+   struct ImporterItem final : Registry::SingleItem {
+      static Registry::GroupItem &Registry();
+
+      ImporterItem( const Identifier &id, std::unique_ptr<ImportPlugin> pPlugin );
+      std::unique_ptr<ImportPlugin> mpPlugin;
+   };
+
    static Importer mInstance;
 
    ExtImportItems mExtImportItems;

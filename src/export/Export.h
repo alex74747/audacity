@@ -162,6 +162,7 @@ wxDECLARE_EVENT(AUDACITY_FILE_SUFFIX_EVENT, wxCommandEvent);
 
 class  AUDACITY_DLL_API Exporter final : public wxEvtHandler
 {
+   struct ExporterItem;
 public:
 
    using ExportPluginFactory =
@@ -172,7 +173,9 @@ public:
    // Register factories, not plugin objects themselves, which allows them
    // to have some fresh state variables each time export begins again
    // and to compute translated strings for the current locale
-   struct RegisteredExportPlugin{
+   struct RegisteredExportPlugin
+      : public Registry::RegisteredItem<ExporterItem>
+   {
       RegisteredExportPlugin(
          const Identifier &id, // an internal string naming the plug-in
          const ExportPluginFactory&,
@@ -217,6 +220,13 @@ public:
    void OnHelp(wxCommandEvent &evt);
 
 private:
+   struct ExporterItem final : Registry::SingleItem {
+      static Registry::GroupItem &Registry();
+      ExporterItem(
+         const Identifier &id, const Exporter::ExportPluginFactory &factory );
+      Exporter::ExportPluginFactory mFactory;
+   };
+
    bool ExamineTracks();
    bool GetFilename();
    bool CheckFilename();
