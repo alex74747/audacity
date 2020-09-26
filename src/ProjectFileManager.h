@@ -98,7 +98,10 @@ public:
    bool Import(const FilePath &fileName,
                bool addToHistory = true);
 
+
    void Compact();
+
+   void Export(const FileExtension &format);
 
    void AddImportedTracks(const FilePath &fileName,
                      TrackHolders &&newTracks);
