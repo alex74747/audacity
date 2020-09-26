@@ -87,6 +87,8 @@ class PrefsPanel /* not final */ : public wxPanelWrapper, ComponentInterface
       Registration( const wxString &name, const Factory &factory,
          bool expanded = true,
          const Registry::Placement &placement = { wxEmptyString, {} });
+
+      struct Init{ Init(); };
    };
 
    PrefsPanel(wxWindow * parent,
@@ -136,5 +138,8 @@ class PrefsPanel /* not final */ : public wxPanelWrapper, ComponentInterface
       struct Visitor;
    };
 };
+
+// Guarantees registry exists before attempts to use it
+static PrefsPanel::Registration::Init sInitPrefsPanelRegistration;
 
 #endif

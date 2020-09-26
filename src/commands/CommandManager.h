@@ -705,10 +705,15 @@ namespace MenuTable {
          // Delegating constructor
          : AttachedItem( Placement{ path }, std::move( pItem ) )
       {}
+
+      struct Init{ Init(); };
    };
 
    void DestroyRegistry();
 
 }
+
+// Guarantees registry exists before attempts to use it
+static MenuTable::AttachedItem::Init sInitAttachedItems;
 
 #endif

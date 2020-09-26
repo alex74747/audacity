@@ -32,6 +32,8 @@ public:
    BuiltinEffectsModule(const wxString *path);
    virtual ~BuiltinEffectsModule();
 
+   struct Init{ Init(); };
+
    using Factory = std::function< std::unique_ptr<Effect> () >;
 
    // Typically you make a static object of this type in the .cpp file that
@@ -88,5 +90,8 @@ private:
    using EffectHash = std::unordered_map< wxString, const Entry* > ;
    EffectHash mEffects;
 };
+
+// Guarantees registry exists before attempts to use it
+static BuiltinEffectsModule::Init sInitLoadEffects;
 
 #endif

@@ -180,6 +180,8 @@ public:
          const Identifier &id, // an internal string naming the plug-in
          const ExportPluginFactory&,
          const Registry::Placement &placement = { wxEmptyString, {} } );
+
+      struct Init{ Init(); };
    };
 
    static bool DoEditMetadata(AudacityProject &project,
@@ -222,6 +224,7 @@ public:
 private:
    struct ExporterItem final : Registry::SingleItem {
       static Registry::GroupItem &Registry();
+   
       ExporterItem(
          const Identifier &id, const Exporter::ExportPluginFactory &factory );
       Exporter::ExportPluginFactory mFactory;
@@ -343,5 +346,8 @@ void ShowExportErrorDialog(wxString ErrorCode,
    const TranslatableString& caption = AudacityExportCaptionStr());
 
 void ShowDiskFullExportErrorDialog(const wxFileNameWrapper &fileName);
+
+// Guarantees registry exists before attempts to use it
+static Exporter::RegisteredExportPlugin::Init sInitRegisteredExportPlugin;
 
 #endif

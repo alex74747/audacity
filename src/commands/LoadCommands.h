@@ -33,6 +33,8 @@ public:
    BuiltinCommandsModule(const wxString *path);
    virtual ~BuiltinCommandsModule();
 
+   struct Init{ Init(); };
+
    using Factory = std::function< std::unique_ptr<AudacityCommand> () >;
 
    // Typically you make a static object of this type in the .cpp file that
@@ -88,5 +90,8 @@ private:
    using CommandHash = std::unordered_map< wxString, const Entry* > ;
    CommandHash mCommands;
 };
+
+// Guarantees registry exists before attempts to use it
+static BuiltinCommandsModule::Init sInitLoadCommands;
 
 #endif

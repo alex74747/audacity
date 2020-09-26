@@ -26,10 +26,15 @@ using TagHandlerFactory =
 // Typically statically constructed
 struct Entry{
    Entry( const wxString &tag, const TagHandlerFactory &factory );
+
+   struct Init{ Init(); };
 };
 
 TagHandlerFactory Lookup( const wxString &tag );
 
 }
+
+// Guarantees registry exists before attempts to use it
+static ProjectFileIORegistry::Entry::Init sInitProjectFileIORegistryEntry;
 
 #endif
