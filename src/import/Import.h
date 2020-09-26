@@ -90,12 +90,16 @@ public:
          const Identifier &id, // an internal string naming the plug-in
          std::unique_ptr<ImportPlugin>,
          const Registry::Placement &placement = { wxEmptyString, {} } );
+
+      struct AUDACITY_DLL_API Init{ Init(); };
    };
 
    // Objects of this type are statically constructed in files, to identify
    // unsupported import formats; typically in a conditional compilation
    struct RegisteredUnusableImportPlugin{
       RegisteredUnusableImportPlugin( std::unique_ptr<UnusableImportPlugin> );
+
+      struct AUDACITY_DLL_API Init{ Init(); };
    };
 
    Importer();
@@ -197,5 +201,10 @@ private:
 };
 
 extern AUDACITY_DLL_API BoolSetting NewImportingSession;
+
+// Guarantees registries exist before attempts to use them
+static Importer::RegisteredImportPlugin::Init sInitRegisteredImportPlugin;
+static Importer::RegisteredUnusableImportPlugin::Init
+   sInitRegisteredUnusableImportPlugin;
 
 #endif
