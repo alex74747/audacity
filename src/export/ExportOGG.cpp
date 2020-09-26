@@ -401,5 +401,37 @@ static Exporter::RegisteredExportPlugin sRegisteredPlugin{ "OGG",
    []{ return std::make_unique< ExportOGG >(); }
 };
 
-#endif // USE_LIBVORBIS
+// Register a menu item
+#include "CommonCommandFlags.h"
+#include "ProjectFileManager.h"
+#include "commands/CommandContext.h"
+#include "commands/CommandManager.h"
 
+namespace {
+
+struct Handler : CommandHandlerObject {
+   
+void OnExportOgg(const CommandContext &context)
+{
+   ProjectFileManager::Get(context.project).Export("OGG");
+}
+   
+};
+
+CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+using namespace MenuTable;
+static AttachedItem sAttachment{
+   wxT("File/Import-Export"),
+   ( FinderScope{ findCommandHandler },
+     Command( wxT("ExportOgg"), XXO("Export as &OGG"), &Handler::OnExportOgg,
+        AudioIONotBusyFlag() | WaveTracksExistFlag() ) )
+};
+}
+
+#endif // USE_LIBVORBIS

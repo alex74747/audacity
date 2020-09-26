@@ -158,11 +158,6 @@ void OnExportWav(const CommandContext &context)
    ProjectFileManager::Get(context.project).Export("WAV");
 }
 
-void OnExportOgg(const CommandContext &context)
-{
-   ProjectFileManager::Get(context.project).Export("OGG");
-}
-
 void OnExportAudio(const CommandContext &context)
 {
    ProjectFileManager::Get(context.project).Export("");
@@ -557,9 +552,6 @@ BaseItemSharedPtr FileMenu()
                AudioIONotBusyFlag() | WaveTracksExistFlag() ),
 
             Command( wxT("ExportWav"), XXO("Export as &WAV"), FN(OnExportWav),
-               AudioIONotBusyFlag() | WaveTracksExistFlag() ),
-
-            Command( wxT("ExportOgg"), XXO("Export as &OGG"), FN(OnExportOgg),
                AudioIONotBusyFlag() | WaveTracksExistFlag() ),
 
             Command( wxT("Export"), XXO("&Export Audio..."), FN(OnExportAudio),
