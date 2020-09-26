@@ -98,8 +98,12 @@ public:
    // unsupported import formats; typically in a conditional compilation
    struct RegisteredUnusableImportPlugin{
       RegisteredUnusableImportPlugin( std::unique_ptr<UnusableImportPlugin> );
+      ~RegisteredUnusableImportPlugin();
 
       struct Init{ Init(); };
+
+   private:
+      UnusableImportPlugin *mpPlugin = nullptr;
    };
 
    Importer();
