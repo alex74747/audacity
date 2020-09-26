@@ -263,7 +263,8 @@ MenuTable::AttachedItem::AttachedItem(
 
 void MenuTable::DestroyRegistry()
 {
-   MenuTable::ItemRegistry::Registry().items.clear();
+//   No longer needed, each static registered item cleans itself up
+//   MenuTable::ItemRegistry::Registry().items.clear();
 }
 
 namespace {
@@ -493,6 +494,18 @@ ReservedCommandFlag::ReservedCommandFlag(
    set( sNextReservedFlag++ );
    RegisteredPredicates().emplace_back( predicate );
    Options().emplace_back( options );
+}
+
+ReservedCommandFlag::~ReservedCommandFlag()
+{
+   RegisteredPredicates().pop_back();
+   Options().pop_back();
+}
+
+ReservedCommandFlag::Init::Init()
+{
+   RegisteredPredicates();
+   Options();
 }
 
 CommandFlag MenuManager::GetUpdateFlags( bool checkActive ) const
