@@ -46,4 +46,9 @@ if( NOT CMAKE_SYSTEM_NAME MATCHES "Darwin" )
    endif()
 endif()
 
+# Propagate some collected values
+foreach(var MIMETYPES MAC_RESOURCES)
+   set( ${var} "${${var}}" PARENT_SCOPE )
+endforeach()
+
 set( GRAPH_EDGES "${GRAPH_EDGES}" PARENT_SCOPE )
