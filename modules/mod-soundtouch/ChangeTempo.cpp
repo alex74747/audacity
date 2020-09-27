@@ -15,7 +15,7 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h" // for USE_SOUNDTOUCH
+#include "Audacity.h" // for USE_SOUNDTOUCH
 
 #if USE_SOUNDTOUCH
 #include "ChangeTempo.h"
@@ -29,12 +29,12 @@
 #include <wx/checkbox.h>
 #include <wx/slider.h>
 
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
-#include "../widgets/valnum.h"
-#include "TimeWarper.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
+#include "widgets/valnum.h"
+#include "effects/TimeWarper.h"
 
-#include "LoadEffects.h"
+#include "effects/LoadEffects.h"
 
 // Soundtouch defines these as well, which are also in generated configmac.h
 // and configunix.h, so get rid of them before including,

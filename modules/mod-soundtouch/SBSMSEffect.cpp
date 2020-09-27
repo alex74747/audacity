@@ -11,17 +11,17 @@ effect that uses SBSMS to do its processing (TimeScale)
 
 **********************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 
 #if USE_SBSMS
 #include "SBSMSEffect.h"
 
 #include <math.h>
 
-#include "../LabelTrack.h"
-#include "../WaveClip.h"
-#include "../WaveTrack.h"
-#include "TimeWarper.h"
+#include "LabelTrack.h"
+#include "WaveClip.h"
+#include "WaveTrack.h"
+#include "effects/TimeWarper.h"
 
 enum {
   SBSMSOutBlockSize = 512
