@@ -195,6 +195,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-plugin-menus",
       "mod-flac",
       "mod-ogg",
+      "mod-mp2",
    };
    return modules;
 }
