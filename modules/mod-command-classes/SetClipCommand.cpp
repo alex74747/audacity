@@ -16,10 +16,9 @@
 
 *//*******************************************************************/
 
-
 #include "SetClipCommand.h"
 
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
 #include "Shuttle.h"

@@ -16,11 +16,10 @@
 
 *//*******************************************************************/
 
-
 #include "SetEnvelopeCommand.h"
 
 #include "CommandContext.h"
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "ProjectHistory.h"
 #include "UndoManager.h"
 #include "WaveClip.h"

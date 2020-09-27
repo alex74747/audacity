@@ -20,25 +20,24 @@ This class now lists
 
 *//*******************************************************************/
 
-
 #include "GetInfoCommand.h"
 
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "Project.h"
 #include "ProjectWindows.h"
 #include "CommandManager.h"
 #include "CommandTargets.h"
-#include "../effects/EffectManager.h"
+#include "effects/EffectManager.h"
 #include "Overlay.h"
-#include "../TrackPanelAx.h"
-#include "../TrackPanel.h"
+#include "TrackPanelAx.h"
+#include "TrackPanel.h"
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "prefs/WaveformSettings.h"
-#include "../LabelTrack.h"
-#include "../NoteTrack.h"
-#include "../TimeTrack.h"
+#include "LabelTrack.h"
+#include "NoteTrack.h"
+#include "TimeTrack.h"
 #include "Envelope.h"
 
 #include "SelectCommand.h"
@@ -50,7 +49,6 @@ This class now lists
 #include "PluginManager.h"
 #include "TrackView.h"
 #include "ShuttleGui.h"
-#include "MenuHandle.h"
 
 #include <wx/frame.h>
 #include <wx/log.h>

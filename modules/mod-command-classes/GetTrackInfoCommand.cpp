@@ -16,10 +16,9 @@
 
 *//*******************************************************************/
 
-
 #include "GetTrackInfoCommand.h"
 
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "CommandContext.h"

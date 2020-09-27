@@ -16,10 +16,9 @@
 
 *//*******************************************************************/
 
-
 #include "DragCommand.h"
 
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "Project.h"
 #include "ProjectWindows.h"
 #include "WaveTrack.h"

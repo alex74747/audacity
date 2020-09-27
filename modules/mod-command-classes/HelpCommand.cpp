@@ -14,15 +14,14 @@
 
 *//*******************************************************************/
 
-
 #include "HelpCommand.h"
 
 #include "Shuttle.h"
-#include "LoadCommands.h"
+#include "commands/LoadCommands.h"
 #include "ShuttleGui.h"
 #include "CommandTargets.h"
 #include "CommandContext.h"
-#include "../effects/EffectManager.h"
+#include "effects/EffectManager.h"
 
 const ComponentInterfaceSymbol HelpCommand::Symbol
 { XO("Help") };
