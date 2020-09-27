@@ -48,7 +48,6 @@
 #include "Mix.h"
 #include "Prefs.h"
 #include "Sequence.h"
-#include "TimeTrack.h"
 #include "UndoManager.h"
 #include "WaveTrack.h"
 #include "ASlider.h"
