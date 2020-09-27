@@ -495,10 +495,6 @@ list( APPEND SOURCES
          export/ExportMP2.cpp
       >
 
-      $<$<AND:$<BOOL:${USE_LIBOGG}>,$<BOOL:${USE_LIBVORBIS}>>:
-         export/ExportOGG.cpp
-      >
-
       # Import
 
       import/FormatClassifier.cpp
@@ -541,10 +537,6 @@ list( APPEND SOURCES
 
       $<$<BOOL:${USE_LIBMAD}>:
          import/ImportMP3.cpp
-      >
-
-      $<$<AND:$<BOOL:${USE_LIBOGG}>,$<BOOL:${USE_LIBVORBIS}>>:
-         import/ImportOGG.cpp
       >
 
       # Menus
@@ -922,11 +914,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag::libid3tag>
       $<$<BOOL:${USE_LIBMAD}>:libmad::libmad>
-      $<$<BOOL:${USE_LIBOGG}>:Ogg::ogg>
-      $<$<BOOL:${USE_LIBVORBIS}>:Vorbis::vorbis>
-      $<$<BOOL:${USE_LIBVORBIS}>:Vorbis::vorbisfile>
-      $<$<BOOL:${USE_LIBVORBIS}>:Vorbis::vorbisenc>
-      $<$<BOOL:${USE_LIBOPUS}>:Opus::opus>
       $<$<BOOL:${USE_LIBTWOLAME}>:twolame>
       $<$<BOOL:${USE_LV2}>:lv2>
       $<$<BOOL:${USE_MIDI}>:PortMidi::PortMidi>
@@ -1019,7 +1006,6 @@ elseif( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
       ../mac/Resources/AudacityAIFF.icns
       ../mac/Resources/AudacityAU.icns
       ../mac/Resources/AudacityMP3.icns
-      ../mac/Resources/AudacityOGG.icns
       ../mac/Resources/AudacityProject.icns
       ../mac/Resources/AudacityWAV.icns
    )
@@ -1109,12 +1095,6 @@ else()
          audio/x-wav
       )
    endif()
-   if( USE_LIBOGG AND USE_LIBVORBIS )
-      list( APPEND MIMETYPES
-         application/ogg
-         audio/x-vorbis+ogg
-      )
-   endif()
 
    # Create the desktop file
    configure_file( audacity.desktop.in ${_INTDIR}/audacity.desktop )
@@ -1148,7 +1128,7 @@ set_target_property_all( ${TARGET} RUNTIME_OUTPUT_NAME ${AUDACITY_NAME} )
 organize_source( "${TARGET_ROOT}/.." "include" "${HEADERS}" )
 organize_source( "${TARGET_ROOT}/../presets" "presets" "${RESOURCES}" )
 organize_source( "${TARGET_ROOT}" "src" "${SOURCES}" )
-organize_source( "${TARGET_ROOT}/../mac/Resources" "mac" "${MAC_RESOURCES}" )
+organize_source( "${TARGET_ROOT}/.." "mac/resources" "${MAC_RESOURCES}" )
 organize_source( "${TARGET_ROOT}/../win" "win" "${WIN_RESOURCES}" )
 
 #

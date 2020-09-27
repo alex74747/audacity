@@ -11,11 +11,9 @@
 
 **********************************************************************/
 
-
-
 #ifdef USE_LIBVORBIS
 
-#include "Export.h"
+#include "export/Export.h"
 
 #include <wx/log.h>
 #include <wx/slider.h>
@@ -29,10 +27,10 @@
 #include "Prefs.h"
 #include "ShuttleGui.h"
 
-#include "../Tags.h"
+#include "Tags.h"
 #include "Track.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ProgressDialog.h"
 
 //----------------------------------------------------------------------------
 // ExportOGGOptions
@@ -397,5 +395,40 @@ static Exporter::RegisteredExportPlugin sRegisteredPlugin{ "OGG",
    []{ return std::make_unique< ExportOGG >(); }
 };
 
-#endif // USE_LIBVORBIS
+// Register a menu item
+#include "CommandContext.h"
+#include "CommandManager.h"
+#include "CommonCommandFlags.h"
 
+namespace {
+struct Handler : CommandHandlerObject {
+void OnExportOgg(const CommandContext &context)
+{
+   Exporter::DoExport(context.project, "OGG");
+}
+}; // struct Handler
+
+static CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+using namespace MenuTable;
+#define FN(X) (& Handler :: X)
+AttachedItem sAttachment{
+   { wxT("File/Import-Export/Export"),
+      // This item may be duplicated in other modules,
+      // so use the "ignore" conflict resolution
+      { OrderingHint::Unspecified, {}, OrderingHint::Ignore } },
+   ( FinderScope{ findCommandHandler },
+   Command( wxT("ExportOgg"), XXO("Export as &OGG"), FN(OnExportOgg),
+      AudioIONotBusyFlag() | WaveTracksExistFlag() )
+   )
+};
+#undef FN
+
+} // namespace
+
+#endif // USE_LIBVORBIS
