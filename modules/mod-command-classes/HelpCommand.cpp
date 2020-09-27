@@ -14,15 +14,15 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "HelpCommand.h"
 
-#include "../Shuttle.h"
-#include "LoadCommands.h"
-#include "../ShuttleGui.h"
-#include "CommandTargets.h"
-#include "CommandContext.h"
-#include "../effects/EffectManager.h"
+#include "Shuttle.h"
+#include "commands/LoadCommands.h"
+#include "ShuttleGui.h"
+#include "commands/CommandTargets.h"
+#include "commands/CommandContext.h"
+#include "effects/EffectManager.h"
 
 const ComponentInterfaceSymbol HelpCommand::Symbol
 { XO("Help") };

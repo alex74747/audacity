@@ -4,52 +4,52 @@
    Copyright 1999-2018 Audacity Team
    License: wxwidgets
 
-   Dan Horgan
    James Crook
 
 ******************************************************************//**
 
-\file SetProjectCommand.h
-\brief Declarations of SetProjectCommand and SetProjectCommandType classes
+\file SetLabelCommand.h
+\brief Declarations of SetLabelCommand and SetLabelCommandType classes
 
 *//*******************************************************************/
 
-#ifndef __SET_PROJECT_COMMAND__
-#define __SET_PROJECT_COMMAND__
+#ifndef __SET_LABEL_COMMAND__
+#define __SET_LABEL_COMMAND__
 
-#include "Command.h"
-#include "CommandType.h"
+#include "commands/Command.h"
+#include "commands/CommandType.h"
 
-class SetProjectCommand : public AudacityCommand
+class SetLabelCommand : public AudacityCommand
 {
 public:
    static const ComponentInterfaceSymbol Symbol;
 
-   SetProjectCommand();
+   SetLabelCommand();
    // ComponentInterface overrides
    ComponentInterfaceSymbol GetSymbol() override {return Symbol;};
-   TranslatableString GetDescription() override {return XO("Sets various values for a project.");};
+   TranslatableString GetDescription() override {return XO("Sets various values for a label.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
 
    // AudacityCommand overrides
-   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_project");};
+   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_label");};
 
    bool Apply(const CommandContext & context) override;
 
 public:
-
-   wxString mName;
-   int mPosX;
-   int mPosY;
-   int mWidth;
-   int mHeight;
-   double mRate;
+   // zero-based index of the desired label, within the concatenation of the
+   // arrays of labels of all label tracks
+   int mLabelIndex;
+   wxString mText;
+   double mT0;
+   double mT1;
+   bool mbSelected;
 
 // For tracking optional parameters.
-   bool bHasName;
-   bool bHasSizing;
-   bool bHasRate;
+   bool bHasText;
+   bool bHasT0;
+   bool bHasT1;
+   bool bHasSelected;
 };
 
 

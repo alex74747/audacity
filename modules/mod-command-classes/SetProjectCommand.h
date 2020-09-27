@@ -4,52 +4,52 @@
    Copyright 1999-2018 Audacity Team
    License: wxwidgets
 
+   Dan Horgan
    James Crook
 
 ******************************************************************//**
 
-\file SetLabelCommand.h
-\brief Declarations of SetLabelCommand and SetLabelCommandType classes
+\file SetProjectCommand.h
+\brief Declarations of SetProjectCommand and SetProjectCommandType classes
 
 *//*******************************************************************/
 
-#ifndef __SET_LABEL_COMMAND__
-#define __SET_LABEL_COMMAND__
+#ifndef __SET_PROJECT_COMMAND__
+#define __SET_PROJECT_COMMAND__
 
-#include "Command.h"
-#include "CommandType.h"
+#include "commands/Command.h"
+#include "commands/CommandType.h"
 
-class SetLabelCommand : public AudacityCommand
+class SetProjectCommand : public AudacityCommand
 {
 public:
    static const ComponentInterfaceSymbol Symbol;
 
-   SetLabelCommand();
+   SetProjectCommand();
    // ComponentInterface overrides
    ComponentInterfaceSymbol GetSymbol() override {return Symbol;};
-   TranslatableString GetDescription() override {return XO("Sets various values for a label.");};
+   TranslatableString GetDescription() override {return XO("Sets various values for a project.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
 
    // AudacityCommand overrides
-   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_label");};
+   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_project");};
 
    bool Apply(const CommandContext & context) override;
 
 public:
-   // zero-based index of the desired label, within the concatenation of the
-   // arrays of labels of all label tracks
-   int mLabelIndex;
-   wxString mText;
-   double mT0;
-   double mT1;
-   bool mbSelected;
+
+   wxString mName;
+   int mPosX;
+   int mPosY;
+   int mWidth;
+   int mHeight;
+   double mRate;
 
 // For tracking optional parameters.
-   bool bHasText;
-   bool bHasT0;
-   bool bHasT1;
-   bool bHasSelected;
+   bool bHasName;
+   bool bHasSizing;
+   bool bHasRate;
 };
 
 

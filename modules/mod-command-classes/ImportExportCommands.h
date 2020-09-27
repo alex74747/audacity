@@ -4,67 +4,58 @@
    Audacity(R) is copyright (c) 1999-2018 Audacity Team.
    File License: wxwidgets
 
-   PreferenceCommands.h
+   ImportExportCommands.h
    Dan Horgan
    James Crook
 
 ******************************************************************//**
 
-\class GetPreferenceCommand
-\brief Command for getting the value of a preference
+\class ImportCommand
+\brief Command for importing audio
 
-\class SetPreferenceCommand
-\brief Command for setting a preference to a given value
+\class ExportCommand
+\brief Command for exporting audio
 
 *//*******************************************************************/
 
-#ifndef __PREFERENCE_COMMANDS__
-#define __PREFERENCE_COMMANDS__
+#include "commands/Command.h"
+#include "commands/CommandType.h"
 
-#include "Command.h"
-#include "CommandType.h"
+// Import
 
-// GetPreference
-
-class GetPreferenceCommand final : public AudacityCommand
+class ImportCommand : public AudacityCommand
 {
 public:
    static const ComponentInterfaceSymbol Symbol;
 
    // ComponentInterface overrides
    ComponentInterfaceSymbol GetSymbol() override {return Symbol;};
-   TranslatableString GetDescription() override {return XO("Gets the value of a single preference.");};
+   TranslatableString GetDescription() override {return XO("Imports from a file.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool Apply(const CommandContext & context) override;
 
    // AudacityCommand overrides
-   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#get_preference");};
-
-   wxString mName;
+   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#import");};
+public:
+   wxString mFileName;
 };
 
-// SetPreference
-
-class SetPreferenceCommand final : public AudacityCommand
+class ExportCommand : public AudacityCommand
 {
 public:
    static const ComponentInterfaceSymbol Symbol;
 
    // ComponentInterface overrides
    ComponentInterfaceSymbol GetSymbol() override {return Symbol;};
-   TranslatableString GetDescription() override {return XO("Sets the value of a single preference.");};
+   TranslatableString GetDescription() override {return XO("Exports to a file.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
    bool Apply(const CommandContext & context) override;
 
    // AudacityCommand overrides
-   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_preference");};
-
-   wxString mName;
-   wxString mValue;
-   bool mbReload;
-   bool bHasReload;
+   wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#export");};
+public:
+   wxString mFileName;
+   int mnChannels;
 };
-
-#endif /* End of include guard: __PREFERENCE_COMMANDS__ */

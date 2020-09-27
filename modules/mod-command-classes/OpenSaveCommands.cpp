@@ -14,19 +14,19 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "OpenSaveCommands.h"
 
-#include "LoadCommands.h"
-#include "../AudacityLogger.h"
-#include "../Project.h"
-#include "../ProjectFileIO.h"
-#include "../ProjectFileManager.h"
-#include "../ProjectManager.h"
-#include "../export/Export.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
-#include "CommandContext.h"
+#include "commands/LoadCommands.h"
+#include "AudacityLogger.h"
+#include "Project.h"
+#include "ProjectFileIO.h"
+#include "ProjectFileManager.h"
+#include "ProjectManager.h"
+#include "export/Export.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
+#include "commands/CommandContext.h"
 
 
 const ComponentInterfaceSymbol OpenProjectCommand::Symbol

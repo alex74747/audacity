@@ -188,6 +188,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-nyquist",
       "mod-vamp",
       "mod-vst",
+      "mod-command-classes",
    };
    return modules;
 }

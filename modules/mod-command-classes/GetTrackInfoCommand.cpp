@@ -16,13 +16,13 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "GetTrackInfoCommand.h"
 
-#include "LoadCommands.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
-#include "CommandContext.h"
+#include "commands/LoadCommands.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
+#include "commands/CommandContext.h"
 
 const ComponentInterfaceSymbol GetTrackInfoCommand::Symbol
 { XO("Get Track Info") };
