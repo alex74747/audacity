@@ -307,12 +307,6 @@ list( APPEND SOURCES
       effects/BassTreble.h
       effects/Biquad.cpp
       effects/Biquad.h
-      effects/ChangePitch.cpp
-      effects/ChangePitch.h
-      effects/ChangeSpeed.cpp
-      effects/ChangeSpeed.h
-      effects/ChangeTempo.cpp
-      effects/ChangeTempo.h
       effects/ClickRemoval.cpp
       effects/ClickRemoval.h
       effects/Compressor.cpp
@@ -370,8 +364,6 @@ list( APPEND SOURCES
       effects/Reverb_libSoX.h
       effects/Reverse.cpp
       effects/Reverse.h
-      effects/SBSMSEffect.cpp
-      effects/SBSMSEffect.h
       effects/ScienFilter.cpp
       effects/ScienFilter.h
       effects/ScoreAlignDialog.cpp
@@ -380,12 +372,8 @@ list( APPEND SOURCES
       effects/Silence.h
       effects/SimpleMono.cpp
       effects/SimpleMono.h
-      effects/SoundTouchEffect.cpp
-      effects/SoundTouchEffect.h
       effects/StereoToMono.cpp
       effects/StereoToMono.h
-      effects/TimeScale.cpp
-      effects/TimeScale.h
       effects/ToneGen.cpp
       effects/ToneGen.h
       effects/TruncSilence.cpp
@@ -886,8 +874,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${USE_MIDI}>:portsmf>
       $<$<BOOL:${USE_NYQUIST}>:libnyquist>
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
-      $<$<BOOL:${USE_SBSMS}>:libsbsms>
-      $<$<BOOL:${USE_SOUNDTOUCH}>:soundtouch>
       $<$<BOOL:${USE_VAMP}>:libvamp>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GLIB>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GTK>

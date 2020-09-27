@@ -27,6 +27,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-mp3",
       "mod-pcm",
       "mod-midi-import-export",
+      "mod-soundtouch",
    };
    return modules;
 }

@@ -13,16 +13,15 @@
 
 *//*******************************************************************/
 
-
 #include "ChangeSpeed.h"
-#include "LoadEffects.h"
+#include "effects/LoadEffects.h"
 
 #include <math.h>
 
 #include <wx/choice.h>
 #include <wx/slider.h>
 
-#include "../LabelTrack.h"
+#include "LabelTrack.h"
 #include "Prefs.h"
 #include "Resample.h"
 #include "Shuttle.h"

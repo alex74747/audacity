@@ -15,8 +15,6 @@
 
 *//*******************************************************************/
 
-
-
 #if USE_SOUNDTOUCH
 #include "ChangeTempo.h"
 
@@ -34,7 +32,7 @@
 #include "valnum.h"
 #include "TimeWarper.h"
 
-#include "LoadEffects.h"
+#include "effects/LoadEffects.h"
 
 // Soundtouch defines these as well, which are also in generated configmac.h
 // and configunix.h, so get rid of them before including,

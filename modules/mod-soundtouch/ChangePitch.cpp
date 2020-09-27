@@ -15,11 +15,9 @@ the pitch without changing the tempo.
 
 *//*******************************************************************/
 
-
-
 #if USE_SOUNDTOUCH
 #include "ChangePitch.h"
-#include "LoadEffects.h"
+#include "effects/LoadEffects.h"
 
 #if USE_SBSMS
 #include <wx/valgen.h>
@@ -34,7 +32,7 @@ the pitch without changing the tempo.
 #include <wx/spinctrl.h>
 #include <wx/valtext.h>
 
-#include "../PitchName.h"
+#include "PitchName.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "Spectrum.h"
