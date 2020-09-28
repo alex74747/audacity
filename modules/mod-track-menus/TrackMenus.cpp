@@ -1,5 +1,5 @@
 #include "CommonCommandFlags.h"
-#include "../LabelTrack.h"
+#include "LabelTrack.h"
 #include "Menus.h"
 #include "MixAndRender.h"
 
@@ -8,35 +8,35 @@
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
 #include "ProjectRate.h"
-#include "../ProjectSettings.h"
+#include "ProjectSettings.h"
 #include "PluginManager.h"
 #include "ProjectStatus.h"
-#include "../ProjectWindow.h"
-#include "../SelectUtilities.h"
+#include "ProjectWindow.h"
+#include "SelectUtilities.h"
 #include "ShuttleGui.h"
 #include "SyncLock.h"
-#include "../TrackPanelAx.h"
-#include "../TrackPanel.h"
-#include "../TrackUtilities.h"
+#include "TrackPanelAx.h"
+#include "TrackPanel.h"
+#include "TrackUtilities.h"
 #include "UndoManager.h"
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../effects/EffectManager.h"
-#include "../effects/EffectUI.h"
+#include "effects/EffectManager.h"
+#include "effects/EffectUI.h"
 #include "QualitySettings.h"
-#include "../tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
-#include "../toolbars/ToolManager.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
+#include "toolbars/ToolManager.h"
 #include "ASlider.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ProgressDialog.h"
 
 #include <wx/combobox.h>
 
 #ifdef EXPERIMENTAL_SCOREALIGN
-#include "../effects/ScoreAlignDialog.h"
+#include "effects/ScoreAlignDialog.h"
 #include "audioreader.h"
 #include "scorealign.h"
 #include "scorealign-glue.h"
@@ -1422,4 +1422,5 @@ AttachedItem sAttachment2{
 
 }
 
-#undef FN
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
