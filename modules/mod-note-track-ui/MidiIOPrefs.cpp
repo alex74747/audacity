@@ -23,7 +23,6 @@ other settings.
 
 *//********************************************************************/
 
-
 #include "MidiIOPrefs.h"
 
 #ifdef EXPERIMENTAL_MIDI_OUT
@@ -38,7 +37,7 @@ other settings.
 #include "NoteTrack.h"
 #include "Prefs.h"
 #include "ShuttleGui.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
 enum {
    HostID = 10000,

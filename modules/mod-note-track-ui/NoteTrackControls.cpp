@@ -8,29 +8,28 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #ifdef USE_MIDI
 #include "NoteTrackControls.h"
 
 #include "NoteTrackButtonHandle.h"
 
-#include "../../ui/PlayableTrackButtonHandles.h"
+#include "tracks/playabletrack/ui/PlayableTrackButtonHandles.h"
 #include "NoteTrackSliderHandles.h"
 
 #include "AColor.h"
 #include "AllThemeResources.h"
 #include "HitTestResult.h"
 #include "TrackArtist.h"
-#include "../../../../TrackPanel.h"
+#include "TrackPanel.h"
 #include "TrackPanelMouseEvent.h"
-#include "../../../../NoteTrack.h"
-#include "../../../../widgets/PopupMenuTable.h"
+#include "NoteTrack.h"
+#include "widgets/PopupMenuTable.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectWindows.h"
 #include "RefreshCode.h"
 #include "Theme.h"
-#include "../../../../prefs/ThemePrefs.h"
+#include "prefs/ThemePrefs.h"
 
 #include <mutex>
 #include <wx/app.h>
@@ -146,7 +145,7 @@ PopupMenuTable *NoteTrackControls::GetMenuExtension(Track *)
 
 // drawing related
 #include "ASlider.h"
-#include "../../../../TrackInfo.h"
+#include "TrackInfo.h"
 #include "TrackPanelDrawingContext.h"
 #include "ViewInfo.h"
 

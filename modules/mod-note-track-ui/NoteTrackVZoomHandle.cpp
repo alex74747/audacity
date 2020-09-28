@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #ifdef USE_MIDI
 #include "NoteTrackVZoomHandle.h"
 #include "NoteTrackDisplayData.h"
@@ -16,15 +15,15 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackVRulerControls.h"
 
 #include "HitTestResult.h"
-#include "../../../../NoteTrack.h"
+#include "NoteTrack.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "RefreshCode.h"
 #include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "MenuHandle.h"
-#include "../../../../widgets/PopupMenuTable.h"
-#include "../../../../../images/Cursors.h"
+#include "widgets/PopupMenuTable.h"
+#include "../images/Cursors.h"
 #include "Prefs.h"
 #include <wx/window.h>
 

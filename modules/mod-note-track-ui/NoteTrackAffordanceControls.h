@@ -16,7 +16,7 @@ class AffordanceHandle;
 class SelectHandle;
 class NoteTrackAffordanceHandle;
 
-class AUDACITY_DLL_API NoteTrackAffordanceControls : public CommonTrackCell
+class NOTE_TRACK_UI_API NoteTrackAffordanceControls : public CommonTrackCell
 {
     std::weak_ptr<NoteTrackAffordanceHandle> mAffordanceHandle;
     std::weak_ptr<SelectHandle> mSelectHandle;

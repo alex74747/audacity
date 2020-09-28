@@ -12,20 +12,20 @@
 
 #include <wx/dc.h>
 
-#include "../../../ui/AffordanceHandle.h"
-#include "../../../ui/SelectHandle.h"
+#include "tracks/ui/AffordanceHandle.h"
+#include "tracks/ui/SelectHandle.h"
 #include "TrackView.h"
 #include "AllThemeResources.h"
 #include "AColor.h"
-#include "../../../../NoteTrack.h"
-#include "../../../../ProjectSettings.h"
+#include "NoteTrack.h"
+#include "ProjectSettings.h"
 #include "ViewInfo.h"
-#include "../../../../TrackArt.h"
+#include "TrackArt.h"
 #include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "TrackPanelDrawingContext.h"
 
-#include "../lib-src/header-substitutes/allegro.h"
+#include "../../lib-src/header-substitutes/allegro.h"
 
 
 #include "ProjectHistory.h"
