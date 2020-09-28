@@ -98,6 +98,8 @@ private:
    // I'm a singleton class
    ModuleManager();
    ~ModuleManager();
+   ModuleManager(const ModuleManager&) = delete;
+   ModuleManager &operator=(const ModuleManager&) = delete;
 
    void InitializeBuiltins();
    ModuleInterface *LoadModule(const PluginPath & path);

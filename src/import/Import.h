@@ -188,9 +188,11 @@ public:
 
 private:
    struct ImporterItem final : Registry::SingleItem {
+
       static Registry::GroupItem &Registry();
 
       ImporterItem( const Identifier &id, std::unique_ptr<ImportPlugin> pPlugin );
+      ~ImporterItem();
       std::unique_ptr<ImportPlugin> mpPlugin;
    };
 

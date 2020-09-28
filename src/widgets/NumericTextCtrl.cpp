@@ -936,6 +936,8 @@ void NumericConverter::PrintDebugInfo()
    wxPrintf("\n");
 }
 
+NumericConverter::NumericConverter(const NumericConverter&) = default;
+
 NumericConverter::~NumericConverter()
 {
 }

@@ -102,6 +102,8 @@ Importer::ImporterItem::ImporterItem( const Identifier &id, std::unique_ptr<Impo
    , mpPlugin{ std::move( pPlugin ) }
 {}
 
+Importer::ImporterItem::~ImporterItem() = default;
+
 Importer::RegisteredImportPlugin::RegisteredImportPlugin(
    const Identifier &id,
    std::unique_ptr<ImportPlugin> pPlugin,

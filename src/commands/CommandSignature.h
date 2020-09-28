@@ -33,7 +33,7 @@ private:
    CommandSignature(const CommandSignature &) = delete;
    CommandSignature& operator=(const CommandSignature &) = delete;
 public:
-   explicit CommandSignature() { }
+   explicit CommandSignature();
    ~CommandSignature();
 
    // Add a parameter to the signature.
