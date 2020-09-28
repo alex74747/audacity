@@ -11,6 +11,7 @@
 #ifndef _IMPORT_
 #define _IMPORT_
 
+#include "Audacity.h"
 #include "ImportForwards.h"
 #include "audacity/Types.h"
 #include <vector>
@@ -77,13 +78,13 @@ class ExtImportItem
   wxArrayString mime_types;
 };
 
-class Importer {
+class AUDACITY_DLL_API Importer {
    struct ImporterItem;
 public:
 
    // Objects of this type are statically constructed in files implementing
    // subclasses of ImportPlugin
-   struct RegisteredImportPlugin final
+   struct AUDACITY_DLL_API RegisteredImportPlugin final
       : public Registry::RegisteredItem<ImporterItem>
    {
       RegisteredImportPlugin(
@@ -91,7 +92,7 @@ public:
          std::unique_ptr<ImportPlugin>,
          const Registry::Placement &placement = { wxEmptyString, {} } );
 
-      struct Init{ Init(); };
+      struct AUDACITY_DLL_API Init{ Init(); };
    };
 
    // Objects of this type are statically constructed in files, to identify
@@ -100,7 +101,7 @@ public:
       RegisteredUnusableImportPlugin( std::unique_ptr<UnusableImportPlugin> );
       ~RegisteredUnusableImportPlugin();
 
-      struct Init{ Init(); };
+      struct AUDACITY_DLL_API Init{ Init(); };
 
    private:
       UnusableImportPlugin *mpPlugin = nullptr;
@@ -187,7 +188,7 @@ public:
               TranslatableString &errorMessage);
 
 private:
-   struct ImporterItem final : Registry::SingleItem {
+   struct AUDACITY_DLL_API ImporterItem final : Registry::SingleItem {
 
       static Registry::GroupItem &Registry();
 

@@ -15,6 +15,7 @@
 #ifndef __AUDACITY_SNAP__
 #define __AUDACITY_SNAP__
 
+#include "Audacity.h"
 #include <vector>
 #include <wx/defs.h>
 #include "widgets/NumericTextCtrl.h" // member variable
@@ -52,7 +53,7 @@ struct SnapResults {
    bool Snapped() const { return snappedPoint || snappedTime; }
 };
 
-class SnapManager
+class AUDACITY_DLL_API SnapManager
 {
 public:
    SnapManager(const AudacityProject &project,

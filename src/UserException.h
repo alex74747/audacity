@@ -9,11 +9,12 @@
 #ifndef __AUDACITY_USER_EXCEPTION__
 #define __AUDACITY_USER_EXCEPTION__
 
+#include "Audacity.h"
 #include "AudacityException.h"
 
  //! Can be thrown when user cancels operations, as with a progress dialog.  Delayed handler does nothing
 /*! This class does not inherit from MessageBoxException. */
-class UserException final : public AudacityException
+class AUDACITY_DLL_API UserException final : public AudacityException
 {
 public:
    UserException() {}

@@ -11,13 +11,14 @@
 #ifndef __AUDACITY_SHUTTLE_GET_DEFINITION__
 #define __AUDACITY_SHUTTLE_GET_DEFINITION__
 
+#include "Audacity.h"
 #include "Shuttle.h" // to inherit
 #include "commands/CommandTargets.h" // to inherit
 
 /**************************************************************************//**
 \brief Shuttle that retrieves a JSON format definition of a command's parameters.
 ********************************************************************************/
-class ShuttleGetDefinition final
+class AUDACITY_DLL_API ShuttleGetDefinition final
    : public ShuttleParams, public CommandMessageTargetDecorator
 {
 public:

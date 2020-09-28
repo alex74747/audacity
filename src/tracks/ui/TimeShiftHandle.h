@@ -11,6 +11,7 @@ Paul Licameli
 #ifndef __AUDACITY_TIMESHIFT_HANDLE__
 #define __AUDACITY_TIMESHIFT_HANDLE__
 
+#include "Audacity.h"
 #include <functional>
 #include <unordered_map>
 
@@ -28,7 +29,7 @@ class TrackInterval;
 class ViewInfo;
 
 //! Abstract base class for policies to manipulate a track type with the Time Shift tool
-class TrackShifter {
+class AUDACITY_DLL_API TrackShifter {
 public:
    TrackShifter();
    TrackShifter(const TrackShifter&) = delete;
@@ -200,7 +201,7 @@ DECLARE_EXPORTED_ATTACHED_VIRTUAL(AUDACITY_DLL_API, MakeTrackShifter);
 
 class ViewInfo;
 
-struct ClipMoveState {
+struct AUDACITY_DLL_API ClipMoveState {
    ClipMoveState() = default;
 
    ClipMoveState(const ClipMoveState&) = delete;
@@ -252,7 +253,7 @@ struct ClipMoveState {
    }
 };
 
-class TimeShiftHandle final : public UIHandle
+class AUDACITY_DLL_API TimeShiftHandle final : public UIHandle
 {
    TimeShiftHandle(const TimeShiftHandle&) = delete;
    static HitTestPreview HitPreview

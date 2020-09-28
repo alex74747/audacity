@@ -16,6 +16,7 @@
 #ifndef __COMMANDTYPE__
 #define __COMMANDTYPE__
 
+#include "Audacity.h"
 #include "CommandSignature.h"
 #include "../commands/AudacityCommand.h"
 
@@ -39,7 +40,7 @@ class CommandOutputTargets;
 class CommandSignature;
 class wxString;
 
-class OldStyleCommandType : public AudacityCommand
+class AUDACITY_DLL_API OldStyleCommandType : public AudacityCommand
 {
 private:
    ComponentInterfaceSymbol mSymbol;

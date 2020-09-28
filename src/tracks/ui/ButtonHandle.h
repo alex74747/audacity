@@ -11,6 +11,7 @@ Paul Licameli
 #ifndef __AUDACITY_BUTTON_HANDLE__
 #define __AUDACITY_BUTTON_HANDLE__
 
+#include "../../Audacity.h"
 #include "../../UIHandle.h"
 
 class wxMouseEvent;
@@ -22,7 +23,7 @@ class TranslatableString;
 
 /// \brief A UIHandle for a TrackPanel button, such as the Mute and Solo 
 /// buttons.
-class ButtonHandle /* not final */ : public UIHandle
+class AUDACITY_DLL_API ButtonHandle /* not final */ : public UIHandle
 {
    ButtonHandle(const ButtonHandle&) = delete;
 

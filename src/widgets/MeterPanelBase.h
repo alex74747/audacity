@@ -11,9 +11,10 @@ Paul Licameli split from Meter.h
 #ifndef __AUDACITY_METER_PANEL_BASE__
 #define __AUDACITY_METER_PANEL_BASE__
 
+#include "Audacity.h"
 #include "wxPanelWrapper.h"
 
-class MeterPanelBase /* not final */
+class AUDACITY_DLL_API MeterPanelBase /* not final */
    : public wxPanelWrapper
 {
 public:

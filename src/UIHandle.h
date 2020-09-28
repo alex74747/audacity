@@ -11,6 +11,7 @@ Paul Licameli
 #ifndef __AUDACITY_UI_HANDLE__
 #define __AUDACITY_UI_HANDLE__
 
+#include "Audacity.h"
 #include <utility>
 #include "MemoryX.h"
 #include "TrackPanelDrawable.h" // to inherit
@@ -32,7 +33,7 @@ struct TrackPanelMouseState;
 // A TrackPanelCell reports a handle object of some subclass, in response to a
 // hit test at a mouse position; then this handle processes certain events,
 // and maintains necessary state through click-drag-release event sequences.
-class UIHandle /* not final */ : public TrackPanelDrawable
+class AUDACITY_DLL_API UIHandle /* not final */ : public TrackPanelDrawable
 {
 public:
    // See RefreshCode.h for bit flags:

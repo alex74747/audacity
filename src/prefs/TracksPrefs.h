@@ -15,6 +15,7 @@
 
 //#include <wx/defs.h>
 
+#include "Audacity.h"
 #include <vector>
 #include "PrefsPanel.h"
 #include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
@@ -24,7 +25,7 @@ class ShuttleGui;
 
 #define TRACKS_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Tracks") }
 
-class TracksPrefs final : public PrefsPanel
+class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
 {
  public:
    TracksPrefs(wxWindow * parent, wxWindowID winid);

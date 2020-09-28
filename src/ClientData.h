@@ -12,6 +12,7 @@ Paul Licameli
 #ifndef __AUDACITY_CLIENT_DATA__
 #define __AUDACITY_CLIENT_DATA__
 
+#include "Audacity.h"
 #include "ClientDataHelpers.h"
 
 #include <functional>
@@ -44,7 +45,7 @@ template< typename Object > using BarePtr = Object*;
  */
 template<
    template<typename> class Owner = UniquePtr
-> struct Cloneable
+> struct AUDACITY_DLL_API Cloneable
 {
    using Base = Cloneable;
    using PointerType = Owner< Base >;

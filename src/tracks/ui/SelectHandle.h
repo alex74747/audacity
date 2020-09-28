@@ -11,6 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_SELECT_HANDLE__
 #define __AUDACITY_SELECT_HANDLE__
 
+#include "../../Audacity.h"
 #include "../../UIHandle.h"
 #include "../../SelectedRegion.h"
 #include "../../Snap.h"
@@ -27,7 +28,7 @@ class ViewInfo;
 class WaveTrack;
 class wxMouseState;
 
-class SelectHandle : public UIHandle
+class AUDACITY_DLL_API SelectHandle : public UIHandle
 {
    SelectHandle(const SelectHandle&);
 

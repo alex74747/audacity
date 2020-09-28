@@ -12,6 +12,8 @@
 #ifndef __AUDACITY_IMAGE_ROLL__
 #define __AUDACITY_IMAGE_ROLL__
 
+#include "Audacity.h"
+
 #include <vector>
 // #include <wx/dc.h> // for enum wxRasterOperationMode
 #include <wx/defs.h>
@@ -24,7 +26,7 @@
 // wxImage copies cheaply with reference counting
 using ImageArray = std::vector<wxImage>;
 
-class ImageRoll
+class AUDACITY_DLL_API ImageRoll
 {
  public:
    enum RollType {

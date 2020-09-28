@@ -13,6 +13,7 @@
 
 *//*******************************************************************/
 
+#include "Audacity.h"
 #include "Spectrum.h"
 
 #include <math.h>

@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_ABOUT_DLG__
 #define __AUDACITY_ABOUT_DLG__
 
+#include "Audacity.h"
 #include <vector>
 #include "widgets/wxPanelWrapper.h" // to inherit
 
@@ -29,7 +30,7 @@ struct AboutDialogCreditItem {
 
 using AboutDialogCreditItemsList = std::vector<AboutDialogCreditItem>;
 
-class AboutDialog final : public wxDialogWrapper {
+class AUDACITY_DLL_API AboutDialog final : public wxDialogWrapper {
    DECLARE_DYNAMIC_CLASS(AboutDialog)
 
  public:

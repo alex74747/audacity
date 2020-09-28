@@ -27,6 +27,7 @@ MousePrefs, QualityPrefs, SpectrumPrefs and ThemePrefs.
 #ifndef __AUDACITY_PREFS_PANEL__
 #define __AUDACITY_PREFS_PANEL__
 
+#include "../Audacity.h"
 #include <functional>
 #include "../widgets/wxPanelWrapper.h" // to inherit
 #include "../include/audacity/ComponentInterface.h"
@@ -46,7 +47,8 @@ MousePrefs, QualityPrefs, SpectrumPrefs and ThemePrefs.
 class AudacityProject;
 class ShuttleGui;
 
-class PrefsPanel /* not final */ : public wxPanelWrapper, ComponentInterface
+class AUDACITY_DLL_API PrefsPanel /* not final */
+   : public wxPanelWrapper, ComponentInterface
 {
    struct PrefsItem;
 
@@ -81,14 +83,14 @@ class PrefsPanel /* not final */ : public wxPanelWrapper, ComponentInterface
 
    // Typically you make a static object of this type in the .cpp file that
    // also implements the PrefsPanel subclass.
-   struct Registration final
+   struct AUDACITY_DLL_API Registration final
       : public Registry::RegisteredItem<PrefsItem>
    {
       Registration( const wxString &name, const Factory &factory,
          bool expanded = true,
          const Registry::Placement &placement = { wxEmptyString, {} });
 
-      struct Init{ Init(); };
+      struct AUDACITY_DLL_API Init{ Init(); };
    };
 
    PrefsPanel(wxWindow * parent,
@@ -126,7 +128,8 @@ class PrefsPanel /* not final */ : public wxPanelWrapper, ComponentInterface
    virtual void Cancel();
 
  private:
-   struct PrefsItem final : Registry::ConcreteGroupItem<false> {
+   struct AUDACITY_DLL_API PrefsItem final
+      : Registry::ConcreteGroupItem<false> {
       PrefsPanel::Factory factory;
       bool expanded{ false };
 

@@ -11,11 +11,12 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_TRACK_CONTROLS__
 #define __AUDACITY_TRACK_CONTROLS__
 
+#include "Audacity.h"
 #include "CommonTrackPanelCell.h"
 
 class Track;
 
-class TrackControls /* not final */ : public CommonTrackCell
+class AUDACITY_DLL_API TrackControls /* not final */ : public CommonTrackCell
    , public std::enable_shared_from_this< TrackControls >
 {
 public:

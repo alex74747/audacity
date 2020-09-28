@@ -14,8 +14,10 @@
 class wxArrayString;
 class wxString;
 
+#include "Audacity.h"
 #include "audacity/Types.h"
 
+AUDACITY_DLL_API
 void GetLanguages(
    wxArrayString &langCodes, TranslatableStrings &langNames);
 

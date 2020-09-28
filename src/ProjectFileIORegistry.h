@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_PROJECT_FILE_IO_REGISTRY__
 #define __AUDACITY_PROJECT_FILE_IO_REGISTRY__
 
+#include "Audacity.h"
 #include <functional>
 
 class AudacityProject;
@@ -24,10 +25,10 @@ using TagHandlerFactory =
    std::function< XMLTagHandler *( AudacityProject & ) >;
 
 // Typically statically constructed
-struct Entry{
+struct AUDACITY_DLL_API Entry{
    Entry( const wxString &tag, const TagHandlerFactory &factory );
 
-   struct Init{ Init(); };
+   struct AUDACITY_DLL_API Init{ Init(); };
 };
 
 TagHandlerFactory Lookup( const wxString &tag );

@@ -11,6 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_TRACK_VRULER_CONTROLS__
 #define __AUDACITY_TRACK_VRULER_CONTROLS__
 
+#include "../../Audacity.h"
 #include "CommonTrackPanelCell.h"
 
 class Track;
@@ -19,7 +20,8 @@ class wxDC;
 
 const int kGuard = 5; // 5 pixels to reduce risk of VZooming accidentally
 
-class TrackVRulerControls /* not final */ : public CommonTrackPanelCell
+class AUDACITY_DLL_API TrackVRulerControls /* not final */
+   : public CommonTrackPanelCell
    , public std::enable_shared_from_this< TrackVRulerControls >
 {
 public:

@@ -20,6 +20,7 @@ tables, and automatically attaches and detaches the event handlers.
 
 class wxCommandEvent;
 
+#include "../Audacity.h"
 #include <functional>
 #include <vector>
 #include <wx/menu.h> // to inherit wxMenu
@@ -31,7 +32,7 @@ class wxCommandEvent;
 class PopupMenuHandler;
 class PopupMenuTable;
 
-struct PopupMenuTableEntry : Registry::SingleItem
+struct AUDACITY_DLL_API PopupMenuTableEntry : Registry::SingleItem
 {
    enum Type { Item, RadioItem, CheckItem };
    using InitFunction =
@@ -60,7 +61,7 @@ struct PopupMenuTableEntry : Registry::SingleItem
    ~PopupMenuTableEntry() override;
 };
 
-struct PopupSubMenu : Registry::ConcreteGroupItem< false >
+struct AUDACITY_DLL_API PopupSubMenu : Registry::ConcreteGroupItem< false >
    , MenuTable::WholeMenu
 {
    TranslatableString caption;
@@ -100,7 +101,7 @@ struct PopupMenuVisitor : public MenuVisitor {
    PopupMenuTable &mTable;
 };
 
-class PopupMenuTable : public PopupMenuHandler
+class AUDACITY_DLL_API PopupMenuTable : public PopupMenuHandler
 {
 public:
    using Entry = PopupMenuTableEntry;

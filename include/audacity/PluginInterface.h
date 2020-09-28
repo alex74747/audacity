@@ -42,6 +42,7 @@
 #ifndef __AUDACITY_PLUGININTERFACE_H__
 #define __AUDACITY_PLUGININTERFACE_H__
 
+#include "Audacity.h"
 #include "audacity/ConfigInterface.h"
 #include "audacity/EffectInterface.h"
 #include "audacity/ComponentInterface.h"
@@ -51,7 +52,7 @@
 class ModuleInterface;
 
 
-class PluginManagerInterface /* not final */
+class AUDACITY_DLL_API PluginManagerInterface /* not final */
 {
 public:
 

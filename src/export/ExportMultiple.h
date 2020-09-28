@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_EXPORT_MULTIPLE__
 #define __AUDACITY_EXPORT_MULTIPLE__
 
+#include "Audacity.h"
 #include "Export.h"
 #include "../wxFileNameWrapper.h" // member variable
 
@@ -29,7 +30,7 @@ class SelectionState;
 class ShuttleGui;
 class Track;
 
-class ExportMultipleDialog final : public wxDialogWrapper
+class AUDACITY_DLL_API ExportMultipleDialog final : public wxDialogWrapper
 {
 public:
 

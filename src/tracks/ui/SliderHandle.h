@@ -11,6 +11,7 @@ Paul Licameli
 #ifndef __AUDACITY_SLIDER_HANDLE__
 #define __AUDACITY_SLIDER_HANDLE__
 
+#include "../../Audacity.h"
 #include "../../UIHandle.h"
 
 class wxMouseEvent;
@@ -18,7 +19,7 @@ class LWSlider;
 class Track;
 class TranslatableString;
 
-class SliderHandle /* not final */ : public UIHandle
+class AUDACITY_DLL_API SliderHandle /* not final */ : public UIHandle
 {
    SliderHandle(const SliderHandle&) = delete;
 

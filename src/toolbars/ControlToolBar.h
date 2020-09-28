@@ -14,6 +14,7 @@
 #ifndef __AUDACITY_CONTROL_TOOLBAR__
 #define __AUDACITY_CONTROL_TOOLBAR__
 
+#include "Audacity.h"
 #include "ToolBar.h"
 
 class wxBoxSizer;
@@ -29,7 +30,7 @@ class AButton;
 class AudacityProject;
 
 // In the GUI, ControlToolBar appears as the "Transport Toolbar". "Control Toolbar" is historic.
-class ControlToolBar final : public ToolBar {
+class AUDACITY_DLL_API ControlToolBar final : public ToolBar {
 
  public:
 

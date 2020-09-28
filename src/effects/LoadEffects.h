@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_LOAD_EFFECTS__
 #define __AUDACITY_LOAD_EFFECTS__
 
+#include "../Audacity.h"
 #include "audacity/ModuleInterface.h"
 
 #include <functional>
@@ -26,13 +27,13 @@ class Effect;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class BuiltinEffectsModule final : public ModuleInterface
+class AUDACITY_DLL_API BuiltinEffectsModule final : public ModuleInterface
 {
 public:
    BuiltinEffectsModule(const wxString *path);
    virtual ~BuiltinEffectsModule();
 
-   struct Init{ Init(); };
+   struct AUDACITY_DLL_API Init{ Init(); };
 
    using Factory = std::function< std::unique_ptr<Effect> () >;
 

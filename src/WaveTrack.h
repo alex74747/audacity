@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_WAVETRACK__
 #define __AUDACITY_WAVETRACK__
 
+#include "Audacity.h"
 #include "Track.h"
 
 #include <vector>
@@ -596,7 +597,7 @@ private:
 // the contents of the WaveTrack are known not to change.  It can replace
 // repeated calls to WaveTrack::Get() (each of which opens and closes at least
 // one block file).
-class WaveTrackCache {
+class AUDACITY_DLL_API WaveTrackCache {
 public:
    WaveTrackCache()
       : mBufferSize(0)

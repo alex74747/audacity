@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_WIDGETS_GRID__
 #define __AUDACITY_WIDGETS_GRID__
 
+#include "Audacity.h"
 #include <vector>
 #include <wx/setup.h> // for wxUSE_* macros
 #include <wx/defs.h>
@@ -34,7 +35,7 @@ class NumericTextCtrl;
 #define GRID_VALUE_TIME wxT("Time")
 #define GRID_VALUE_FREQUENCY wxT("Frequency")
 
-class NumericEditor /* not final */ : public wxGridCellEditor
+class AUDACITY_DLL_API NumericEditor /* not final */ : public wxGridCellEditor
 {
 public:
 
@@ -116,7 +117,8 @@ wxComboBox.
 **************************************************************************/
 #define GRID_VALUE_CHOICE wxT("Choice")
 
-class ChoiceEditor final : public wxGridCellEditor, wxEvtHandler
+class AUDACITY_DLL_API ChoiceEditor final
+   : public wxGridCellEditor, wxEvtHandler
 {
 public:
 
@@ -180,7 +182,7 @@ public:
 \brief wxGrid with support for accessibility.
 **************************************************************************/
 
-class Grid final : public wxGrid
+class AUDACITY_DLL_API Grid final : public wxGrid
 {
 
  public:

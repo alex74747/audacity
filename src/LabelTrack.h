@@ -13,6 +13,7 @@
 #ifndef _LABELTRACK_
 #define _LABELTRACK_
 
+#include "Audacity.h"
 #include "SelectedRegion.h"
 #include "Track.h"
 
@@ -26,7 +27,7 @@ class TimeWarper;
 struct LabelTrackHit;
 struct TrackPanelDrawingContext;
 
-class LabelStruct
+class AUDACITY_DLL_API LabelStruct
 {
 public:
    LabelStruct() = default;

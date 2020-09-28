@@ -46,7 +46,7 @@ enum {
 
 ///\brief Holds various per-project settings values, including the sample rate,
 /// and sends events to the project when certain values change
-class ProjectSettings final
+class AUDACITY_DLL_API ProjectSettings final
    : public ClientData::Base
    , private PrefsListener
 {

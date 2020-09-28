@@ -11,6 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_ENVELOPE_HANDLE__
 #define __AUDACITY_ENVELOPE_HANDLE__
 
+#include "../../Audacity.h"
 #include "../../UIHandle.h"
 
 #include <vector>
@@ -24,7 +25,7 @@ class ViewInfo;
 class TimeTrack;
 class WaveTrack;
 
-class EnvelopeHandle final : public UIHandle
+class AUDACITY_DLL_API EnvelopeHandle final : public UIHandle
 {
    EnvelopeHandle(const EnvelopeHandle&) = delete;
    EnvelopeHandle &operator=(const EnvelopeHandle&) = delete;

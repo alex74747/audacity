@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_TimeDialog__
 #define __AUDACITY_TimeDialog__
 
+#include "Audacity.h"
 #include <wx/defs.h>
 
 #include "audacity/ComponentInterface.h" // member variable
@@ -20,7 +21,7 @@
 class NumericTextCtrl;
 class ShuttleGui;
 
-class TimeDialog final : public wxDialogWrapper
+class AUDACITY_DLL_API TimeDialog final : public wxDialogWrapper
 {
  public:
 

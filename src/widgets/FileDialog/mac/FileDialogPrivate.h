@@ -14,6 +14,7 @@
 #ifndef _MAC_FILEDIALOG_H_
 #define _MAC_FILEDIALOG_H_
 
+#include "Audacity.h"
 #include "../FileDialog.h"
 
 class wxChoice;
@@ -22,7 +23,7 @@ class wxChoice;
 // wxFileDialog
 //-------------------------------------------------------------------------
 
-class WXDLLIMPEXP_CORE FileDialog: public FileDialogBase
+class AUDACITY_DLL_API FileDialog: public FileDialogBase
 {
 DECLARE_DYNAMIC_CLASS(FileDialog)
 protected:

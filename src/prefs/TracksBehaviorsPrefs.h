@@ -14,6 +14,7 @@
 #ifndef __AUDACITY_TRACKSBEHAVIORS_PREFS__
 #define __AUDACITY_TRACKSBEHAVIORS_PREFS__
 
+#include "Audacity.h"
 #include "PrefsPanel.h"
 
 class ChoiceSetting;
@@ -21,7 +22,7 @@ class ShuttleGui;
 
 #define TRACKS_BEHAVIORS_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Tracks Behaviors") }
 
-class TracksBehaviorsPrefs final : public PrefsPanel
+class AUDACITY_DLL_API TracksBehaviorsPrefs final : public PrefsPanel
 {
  public:
    TracksBehaviorsPrefs(wxWindow * parent, wxWindowID winid);
@@ -40,8 +41,8 @@ class TracksBehaviorsPrefs final : public PrefsPanel
    void PopulateOrExchange(ShuttleGui & S) override;
 };
 
-extern ChoiceSetting TracksBehaviorsSolo;
+extern AUDACITY_DLL_API ChoiceSetting TracksBehaviorsSolo;
 
-bool GetEditClipsCanMove();
+AUDACITY_DLL_API bool GetEditClipsCanMove();
 
 #endif

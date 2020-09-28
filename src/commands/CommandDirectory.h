@@ -23,11 +23,12 @@ they are kept separate to make things simpler.
 #ifndef __COMMANDDIRECTORY__
 #define __COMMANDDIRECTORY__
 
+#include "Audacity.h"
 #include "CommandType.h"
 
 class CommandOutputTargets;
 
-class CommandDirectory
+class AUDACITY_DLL_API CommandDirectory
 {
 private:
    static std::unique_ptr<CommandDirectory> mInstance;

@@ -12,6 +12,7 @@
 #ifndef __AUDACITY_MODULEMANAGER_H__
 #define __AUDACITY_MODULEMANAGER_H__
 
+#include "Audacity.h"
 #include "MemoryX.h"
 #include <map>
 #include <vector>
@@ -66,7 +67,7 @@ typedef std::map<wxString, ModuleInterfaceHandle> ModuleMap;
 typedef std::map<ModuleInterface *, std::unique_ptr<wxDynamicLibrary>> LibraryMap;
 using PluginIDs = wxArrayString;
 
-class ModuleManager final
+class AUDACITY_DLL_API ModuleManager final
 {
 public:
 

@@ -11,12 +11,14 @@
 #ifndef __AUDACITY_PLAYABLE_TRACK_CONTROLS__
 #define __AUDACITY_PLAYABLE_TRACK_CONTROLS__
 
+#include "../../../Audacity.h"
 #include "../../ui/CommonTrackControls.h"
 
 class wxRect;
 class Track;
 
-class PlayableTrackControls /* not final */ : public CommonTrackControls
+class AUDACITY_DLL_API PlayableTrackControls /* not final */
+   : public CommonTrackControls
 {
 public:
    // To help subclasses define GetTCPLines

@@ -13,6 +13,7 @@
 #ifndef __AUDACITY_EFFECTS_PREFS__
 #define __AUDACITY_EFFECTS_PREFS__
 
+#include "Audacity.h"
 #include <wx/defs.h>
 
 #include "PrefsPanel.h"
@@ -38,5 +39,5 @@ class EffectsPrefs final : public PrefsPanel
    void Populate();
 };
 
-extern ChoiceSetting EffectsGroupBy;
+AUDACITY_DLL_API extern ChoiceSetting EffectsGroupBy;
 #endif

@@ -20,9 +20,10 @@
 #ifndef __AUDACITY_COMPATIBILITY__
 #define __AUDACITY_COMPATIBILITY__
 
+#include "Audacity.h"
 #include "audacity/Types.h"
 
-class PlatformCompatibility
+class AUDACITY_DLL_API PlatformCompatibility
 {
 public:
    //
