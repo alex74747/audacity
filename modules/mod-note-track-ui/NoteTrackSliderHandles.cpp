@@ -8,20 +8,20 @@
 
  **********************************************************************/
 
-#include "../../../../Audacity.h"
+#include "Audacity.h"
 #include "NoteTrackSliderHandles.h"
 
 #ifdef EXPERIMENTAL_MIDI_OUT
 
 #include "NoteTrackControls.h"
-#include "../../../../ProjectHistory.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackInfo.h"
-#include "../../../../TrackPanel.h"
-#include "../../../../TrackPanelAx.h"
-#include "../../../../UndoManager.h"
-#include "../../../../NoteTrack.h"
-#include "../../../../ViewInfo.h"
+#include "ProjectHistory.h"
+#include "RefreshCode.h"
+#include "TrackInfo.h"
+#include "TrackPanel.h"
+#include "TrackPanelAx.h"
+#include "UndoManager.h"
+#include "NoteTrack.h"
+#include "ViewInfo.h"
 
 VelocitySliderHandle::VelocitySliderHandle
 ( SliderFn sliderFn, const wxRect &rect,

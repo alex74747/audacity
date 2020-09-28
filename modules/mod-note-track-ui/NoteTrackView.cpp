@@ -8,25 +8,25 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-#include "../../../../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "NoteTrackView.h"
 #include "NoteTrackDisplayData.h"
 
 #ifdef USE_MIDI
-#include "../lib-src/header-substitutes/allegro.h"
+#include "../../lib-src/header-substitutes/allegro.h"
 
 #include "NoteTrackVRulerControls.h"
-#include "../../../../NoteTrack.h"
+#include "NoteTrack.h"
 
-#include "../../../../AColor.h"
-#include "../../../../AllThemeResources.h"
-#include "../../../../HitTestResult.h"
-#include "../../../../Theme.h"
-#include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelDrawingContext.h"
-#include "../../../../TrackPanelMouseEvent.h"
-#include "../../../../ViewInfo.h"
-#include "../../../ui/SelectHandle.h"
+#include "AColor.h"
+#include "AllThemeResources.h"
+#include "HitTestResult.h"
+#include "Theme.h"
+#include "TrackArtist.h"
+#include "TrackPanelDrawingContext.h"
+#include "TrackPanelMouseEvent.h"
+#include "ViewInfo.h"
+#include "tracks/ui/SelectHandle.h"
 #include "StretchHandle.h"
 
 #include <wx/dc.h>
@@ -727,4 +727,8 @@ void NoteTrackView::Draw(
       DrawNoteTrack( context, nt.get(), rect, muted );
    }
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
+
 #endif

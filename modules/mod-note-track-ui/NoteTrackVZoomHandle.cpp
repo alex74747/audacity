@@ -8,23 +8,23 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-#include "../../../../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #ifdef USE_MIDI
 #include "NoteTrackVZoomHandle.h"
 #include "NoteTrackDisplayData.h"
 
-#include "../../../ui/TrackVRulerControls.h"
+#include "tracks/ui/TrackVRulerControls.h"
 
-#include "../../../../HitTestResult.h"
-#include "../../../../NoteTrack.h"
-#include "../../../../Project.h"
-#include "../../../../ProjectHistory.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelMouseEvent.h"
-#include "../../../../widgets/PopupMenuTable.h"
-#include "../../../../../images/Cursors.h"
-#include "../../../../Prefs.h"
+#include "HitTestResult.h"
+#include "NoteTrack.h"
+#include "Project.h"
+#include "ProjectHistory.h"
+#include "RefreshCode.h"
+#include "TrackArtist.h"
+#include "TrackPanelMouseEvent.h"
+#include "widgets/PopupMenuTable.h"
+#include "../../images/Cursors.h"
+#include "Prefs.h"
 
 namespace
 {
