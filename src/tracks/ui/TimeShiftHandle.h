@@ -30,6 +30,10 @@ class ViewInfo;
 //! Abstract base class for policies to manipulate a track type with the Time Shift tool
 class TrackShifter {
 public:
+   TrackShifter();
+   TrackShifter(const TrackShifter&) = delete;
+   TrackShifter &operator=(const TrackShifter&) = delete;
+
    virtual ~TrackShifter() = 0;
    //! There is always an associated track
    virtual Track &GetTrack() const = 0;
@@ -197,6 +201,14 @@ DECLARE_EXPORTED_ATTACHED_VIRTUAL(AUDACITY_DLL_API, MakeTrackShifter);
 class ViewInfo;
 
 struct ClipMoveState {
+   ClipMoveState() = default;
+
+   ClipMoveState(const ClipMoveState&) = delete;
+   ClipMoveState& operator =(const ClipMoveState&) = delete;
+
+   ClipMoveState(ClipMoveState&&) = default;
+   ClipMoveState& operator =(ClipMoveState&&) = default;
+
    using ShifterMap = std::unordered_map<Track*, std::unique_ptr<TrackShifter>>;
    
    //! Will associate a TrackShifter with each track in the list

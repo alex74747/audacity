@@ -30,7 +30,8 @@ class CommandSignature
 private:
    ParamValueMap mDefaults;
    ValidatorMap mValidators;
-   explicit CommandSignature(const CommandSignature & WXUNUSED(other)) { }
+   CommandSignature(const CommandSignature &) = delete;
+   CommandSignature& operator=(const CommandSignature &) = delete;
 public:
    explicit CommandSignature() { }
    ~CommandSignature();

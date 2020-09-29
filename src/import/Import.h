@@ -109,6 +109,9 @@ public:
    Importer();
    ~Importer();
 
+   Importer ( const Importer& ) = delete;
+   Importer &operator=( Importer& ) = delete;
+
    /**
     * Return instance reference
     */
@@ -167,7 +170,7 @@ public:
     * Returns a pointer to internal items array.
     * External objects are allowed to change the array contents.
     */
-   ExtImportItems &GetImportItems() { return mExtImportItems; };
+   ExtImportItems &GetImportItems() { return mExtImportItems; }
 
    /**
     * Allocates NEW ExtImportItem, fills it with default data
