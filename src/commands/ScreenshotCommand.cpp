@@ -32,9 +32,7 @@ small calculations of rectangles.
 #include <wx/valgen.h>
 
 #include "../AdornedRulerPanel.h"
-#include "../BatchCommands.h"
 #include "../TrackPanel.h"
-#include "../effects/Effect.h"
 #include "../toolbars/ToolManager.h"
 #include "../Prefs.h"
 #include "../ProjectWindow.h"
@@ -43,6 +41,7 @@ small calculations of rectangles.
 #include "../Track.h"
 #include "../widgets/VetoDialogHook.h"
 #include "CommandContext.h"
+#include "CommandDispatch.h"
 #include "CommandManager.h"
 
 const ComponentInterfaceSymbol ScreenshotCommand::Symbol
@@ -408,7 +407,7 @@ void ScreenshotCommand::CapturePreferences(
       gPrefs->Flush();
       CommandID Command{ wxT("Preferences") };
       const CommandContext projectContext( *pProject );
-      if( !MacroCommands::HandleTextualCommand( commandManager,
+      if( !::HandleTextualCommand( commandManager,
          Command, projectContext, AlwaysEnabledFlag, true ) )
       {
          // using GET in a log message for devs' eyes only
