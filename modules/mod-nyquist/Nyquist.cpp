@@ -52,8 +52,6 @@ effects from this one class.
 #include "EffectManager.h"
 #include "FileNames.h"
 #include "LabelTrack.h"
-#include "NoteTrack.h"
-#include "TimeTrack.h"
 #include "SpectrogramSettings.h"
 #include "Project.h"
 #include "ProjectSettings.h"
@@ -750,9 +748,6 @@ bool NyquistEffect::Process()
 
       int numTracks = 0;
       int numWave = 0;
-      int numLabel = 0;
-      int numMidi = 0;
-      int numTime = 0;
       wxString waveTrackList;   // track positions of selected audio tracks.
 
       {
@@ -765,11 +760,18 @@ bool NyquistEffect::Process()
             });
             numTracks++;
          }
-         numLabel = countRange.Filter<const LabelTrack>().size();
-   #if defined(USE_MIDI)
-         numMidi = countRange.Filter<const NoteTrack>().size();
-   #endif
-         numTime = countRange.Filter<const TimeTrack>().size();
+         TrackTypeRegistry::ForEach([&](const Track::TypeInfo &info){
+            if ( !info.concrete )
+               return;
+            auto pred = [&](const Track *pTrack){
+               return &pTrack->GetTypeInfo() == &info; };
+            auto countRange =
+               TrackList::Get( *project ).Leaders() + pred;
+            int num = countRange.size();
+            mProps += wxString::Format(
+               wxT("(putprop '*PROJECT* %d '%sTRACKS)\n"),
+                  num, info.names.property.Upper());
+         });
       }
 
       // We use Internat::ToString() rather than "%g" here because we
@@ -779,10 +781,6 @@ bool NyquistEffect::Process()
       mProps += wxString::Format(wxT("(putprop '*PROJECT* (float %s) 'RATE)\n"),
          Internat::ToString(ProjectSettings::Get(*project).GetRate()));
       mProps += wxString::Format(wxT("(putprop '*PROJECT* %d 'TRACKS)\n"), numTracks);
-      mProps += wxString::Format(wxT("(putprop '*PROJECT* %d 'WAVETRACKS)\n"), numWave);
-      mProps += wxString::Format(wxT("(putprop '*PROJECT* %d 'LABELTRACKS)\n"), numLabel);
-      mProps += wxString::Format(wxT("(putprop '*PROJECT* %d 'MIDITRACKS)\n"), numMidi);
-      mProps += wxString::Format(wxT("(putprop '*PROJECT* %d 'TIMETRACKS)\n"), numTime);
 
       double previewLen = 6.0;
       gPrefs->Read(wxT("/AudioIO/EffectsPreviewLen"), &previewLen);

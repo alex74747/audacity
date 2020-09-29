@@ -87,6 +87,8 @@ static const Track::TypeInfo &typeInfo()
    return info;
 }
 
+static TrackTypeRegistry::RegisteredType sType{ "Label", typeInfo() };
+
 auto LabelTrack::GetTypeInfo() const -> const TypeInfo &
 {
    return typeInfo();
