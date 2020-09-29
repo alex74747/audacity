@@ -140,6 +140,8 @@ static const Track::TypeInfo &typeInfo()
    return info;
 }
 
+static TrackTypeRegistry::RegisteredType sType{ "Time", typeInfo() };
+
 auto TimeTrack::GetTypeInfo() const -> const TypeInfo &
 {
    return typeInfo();

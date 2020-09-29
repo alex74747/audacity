@@ -1723,4 +1723,32 @@ private:
    std::vector< Updater > mUpdaters;
 };
 
+#include "Registry.h"
+
+class TRACK_API TrackTypeRegistry {
+   struct TRACK_API Item final : Registry::SingleItem {
+      static Registry::GroupItem &Registry();
+
+      Item(const Identifier &id, const Track::TypeInfo &info);
+
+      const Track::TypeInfo &info;
+   };
+
+public:
+   struct TRACK_API RegisteredType
+      : public Registry::RegisteredItem<Item>
+   {
+      RegisteredType(
+         const Identifier &id,
+         const Track::TypeInfo &info);
+
+      struct TRACK_API Init{ Init(); };
+   };
+
+   static void ForEach( std::function<void(const Track::TypeInfo&)> );
+};
+
+// Guarantees registry exists before attempts to use it
+static TrackTypeRegistry::RegisteredType::Init sInitTrackTypeRegistry;
+
 #endif
