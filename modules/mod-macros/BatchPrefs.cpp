@@ -14,7 +14,6 @@
 setting used in debugging batch (aka macros) processing.
 *//*******************************************************************/
 
-
 #include "BatchPrefs.h"
 
 #include <wx/defs.h>
