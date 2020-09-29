@@ -1693,3 +1693,6 @@ AttachedItem sAttachment3{
    wxT("Optional/Extra/Part2"),
    Shared( ExtraScriptablesIIMenu() )
 };
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
