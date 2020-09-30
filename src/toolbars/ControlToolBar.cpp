@@ -114,7 +114,7 @@ Identifier ControlToolBar::ID()
 // gets written to prefs and cannot be changed in prefs to maintain backwards
 // compatibility
 ControlToolBar::ControlToolBar( AudacityProject &project )
-: ToolBar(project, TransportBarID, XO("Transport"), ID())
+: ToolBar(project, XO("Transport"), ID())
 {
    mStrLocale = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
 
@@ -818,7 +818,7 @@ void ControlToolBar::StopScrolling()
          (ProjectWindow::PlaybackScroller::Mode::Off);
 }
 
-static RegisteredToolbarFactory factory{ TransportBarID,
+static RegisteredToolbarFactory factory{
    []( AudacityProject &project ){
       return ToolBar::Holder{ safenew ControlToolBar{ project } }; }
 };

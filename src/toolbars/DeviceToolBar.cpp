@@ -77,7 +77,7 @@ Identifier DeviceToolBar::ID()
 
 //Standard constructor
 DeviceToolBar::DeviceToolBar( AudacityProject &project )
-: ToolBar( project, DeviceBarID, XO("Device"), ID(), true )
+: ToolBar( project, XO("Device"), ID(), true )
 {
    mSubscription = DeviceManager::Instance()->Subscribe(
       *this, &DeviceToolBar::OnRescannedDevices );
@@ -761,7 +761,7 @@ void DeviceToolBar::ShowComboDialog(wxChoice *combo, const TranslatableString &t
 #endif
 }
 
-static RegisteredToolbarFactory factory{ DeviceBarID,
+static RegisteredToolbarFactory factory{
    []( AudacityProject &project ){
       return ToolBar::Holder{ safenew DeviceToolBar{ project } }; }
 };
