@@ -760,7 +760,7 @@ namespace {
 AttachedToolBarMenuItem sAttachment{
    /* i18n-hint: Clicking this menu item shows the toolbar
       that manages devices */
-   DeviceBarID, wxT("ShowDeviceTB"), XXO("&Device Toolbar")
+   DeviceToolBar::ID(), wxT("ShowDeviceTB"), XXO("&Device Toolbar")
 };
 }
 
