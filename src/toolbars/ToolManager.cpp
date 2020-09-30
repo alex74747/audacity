@@ -750,7 +750,7 @@ void ToolManager::ReadConfig()
       //   wxSystemSettings::GetMetric( wxSYS_SCREEN_Y ) /2 );
 
       // Change to the bar subkey
-      gPrefs->SetPath( bar->GetSection() );
+      gPrefs->SetPath( bar->GetSection().GET() );
 
       bool bShownByDefault = true;
       int defaultDock = TopDockID;
@@ -970,7 +970,7 @@ void ToolManager::WriteConfig()
       ToolBar *bar = mBars[ ndx ].get();
 
       // Change to the bar subkey
-      gPrefs->SetPath( bar->GetSection() );
+      gPrefs->SetPath( bar->GetSection().GET() );
 
       // Search both docks for toolbar order
       bool to = mTopDock->GetConfiguration().Contains( bar );
