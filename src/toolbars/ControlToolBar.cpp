@@ -810,6 +810,6 @@ namespace {
 AttachedToolBarMenuItem sAttachment{
    /* i18n-hint: Clicking this menu item shows the toolbar
       with the big buttons on it (play record etc) */
-   TransportBarID, wxT("ShowTransportTB"), XXO("&Transport Toolbar")
+   ControlToolBar::ID(), wxT("ShowTransportTB"), XXO("&Transport Toolbar")
 };
 }
