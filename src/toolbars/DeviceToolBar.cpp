@@ -88,6 +88,17 @@ DeviceToolBar::~DeviceToolBar()
 {
 }
 
+bool DeviceToolBar::ShownByDefault() const
+{
+   return
+#ifdef EXPERIMENTAL_DA
+      false
+#else
+      true
+#endif
+   ;
+}
+
 DeviceToolBar &DeviceToolBar::Get( AudacityProject &project )
 {
    auto &toolManager = ToolManager::Get( project );
