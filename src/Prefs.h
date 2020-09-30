@@ -50,7 +50,7 @@ extern int gMenusDirty;
 
 
 struct ByColumns_t{};
-extern ByColumns_t ByColumns;
+constexpr ByColumns_t ByColumns;
 
 class AUDACITY_DLL_API SettingBase
 {
