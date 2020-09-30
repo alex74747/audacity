@@ -100,7 +100,7 @@ class AUDACITY_DLL_API ToolBar /* not final */
    using Holder = wxWindowPtr<ToolBar>;
 
    ToolBar( AudacityProject &project,
-      int type, const TranslatableString & label, const Identifier &section,
+      const TranslatableString & label, const Identifier &section,
       bool resizable = false);
    virtual ~ToolBar();
 
@@ -131,7 +131,6 @@ class AUDACITY_DLL_API ToolBar /* not final */
    //! Set a value used for computing cascading positions of undocked bars
    void SetIndex(unsigned index) { mIndex = index; }
 
-   int GetType();
    TranslatableString GetTitle();
    TranslatableString GetLabel();
    Identifier GetSection();
@@ -250,7 +249,6 @@ public:
    AudacityProject &mProject;
    TranslatableString mLabel;
    Identifier mSection;
-   int mType;
    unsigned mIndex{0};
  private:
    void Init(wxWindow *parent, int type, const wxString & title, const wxString & label);
@@ -278,7 +276,7 @@ struct AUDACITY_DLL_API RegisteredToolbarFactory {
    using Function = std::function< ToolBar::Holder( AudacityProject & ) >;
    using Functions = std::vector< Function >;
 
-   RegisteredToolbarFactory( int id, const Function &function );
+   RegisteredToolbarFactory( const Function &function );
 
    static const Functions &GetFactories();
 };

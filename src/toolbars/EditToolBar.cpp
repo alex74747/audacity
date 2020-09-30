@@ -77,7 +77,7 @@ Identifier EditToolBar::ID()
 
 //Standard constructor
 EditToolBar::EditToolBar( AudacityProject &project )
-: ToolBar(project, EditBarID, XO("Edit"), ID())
+: ToolBar(project, XO("Edit"), ID())
 {
 }
 
@@ -313,7 +313,7 @@ void EditToolBar::OnButton(wxCommandEvent &event)
 #endif
 }
 
-static RegisteredToolbarFactory factory{ EditBarID,
+static RegisteredToolbarFactory factory{
    []( AudacityProject &project ){
       return ToolBar::Holder{ safenew EditToolBar{ project } }; }
 };

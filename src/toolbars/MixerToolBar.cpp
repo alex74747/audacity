@@ -58,7 +58,7 @@ Identifier MixerToolBar::ID()
 
 //Standard constructor
 MixerToolBar::MixerToolBar( AudacityProject &project )
-: ToolBar(project, MixerBarID, XO("Mixer"), ID(), true)
+: ToolBar(project, XO("Mixer"), ID(), true)
 {
    mInputSliderVolume = 0.0;
    mOutputSliderVolume = 0.0;
@@ -333,7 +333,7 @@ void MixerToolBar::SetToolTips()
    }
 }
 
-static RegisteredToolbarFactory factory{ MixerBarID,
+static RegisteredToolbarFactory factory{
    []( AudacityProject &project ){
       return ToolBar::Holder{ safenew MixerToolBar{ project } }; }
 };
