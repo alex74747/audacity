@@ -411,8 +411,6 @@ wxString WarningDialogKey(const wxString &internalDialogName)
    return wxT("/Warnings/") + internalDialogName;
 }
 
-ByColumns_t ByColumns{};
-
 #include <set>
 
 namespace {
