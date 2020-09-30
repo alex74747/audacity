@@ -33,6 +33,7 @@ class AudacityProject;
 class AUDACITY_DLL_API ControlToolBar final : public ToolBar {
 
  public:
+   static Identifier ID();
 
    ControlToolBar( AudacityProject &project );
    virtual ~ControlToolBar();

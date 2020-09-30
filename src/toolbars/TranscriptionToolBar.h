@@ -63,6 +63,8 @@ class TranscriptionToolBar final : public ToolBar {
 
  public:
 
+   static Identifier ID();
+
    TranscriptionToolBar( AudacityProject &project );
    virtual ~TranscriptionToolBar();
 

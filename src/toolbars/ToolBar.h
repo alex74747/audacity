@@ -100,7 +100,7 @@ class AUDACITY_DLL_API ToolBar /* not final */
    using Holder = wxWindowPtr<ToolBar>;
 
    ToolBar( AudacityProject &project,
-      int type, const TranslatableString & label, const wxString & section,
+      int type, const TranslatableString & label, const Identifier &section,
       bool resizable = false);
    virtual ~ToolBar();
 
@@ -117,7 +117,7 @@ class AUDACITY_DLL_API ToolBar /* not final */
    int GetType();
    TranslatableString GetTitle();
    TranslatableString GetLabel();
-   wxString GetSection();
+   Identifier GetSection();
    ToolDock *GetDock();
 
 private:
@@ -232,7 +232,7 @@ public:
  protected:
    AudacityProject &mProject;
    TranslatableString mLabel;
-   wxString mSection;
+   Identifier mSection;
    int mType;
  private:
    void Init(wxWindow *parent, int type, const wxString & title, const wxString & label);
