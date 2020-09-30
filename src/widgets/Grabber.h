@@ -30,6 +30,7 @@ flicker-free use.
 #define __AUDACITY_WIDGETS_GRABBER__
 
 #include "../Audacity.h"
+#include "audacity/Types.h"
 
 #include <wx/defs.h>
 #include <wx/statbmp.h> // to inherit
@@ -49,10 +50,11 @@ class GrabberEvent final : public wxCommandEvent
  public:
 
    GrabberEvent(wxEventType type = wxEVT_NULL,
-                wxWindowID winid = 0,
+                Identifier barId = {},
                 const wxPoint& pt = wxDefaultPosition,
                 bool escaping = false)
-   : wxCommandEvent(type, winid)
+   : wxCommandEvent(type)
+   , mBarId{ barId }
    {
       mPos = pt;
       mEscaping = escaping;
@@ -73,6 +75,8 @@ class GrabberEvent final : public wxCommandEvent
 
    bool IsEscaping() const { return mEscaping; }
 
+   Identifier BarId() const { return mBarId; }
+
    // Clone is required by wxwidgets; implemented via copy constructor
    wxEvent *Clone() const override
    {
@@ -81,6 +85,7 @@ class GrabberEvent final : public wxCommandEvent
 
  protected:
 
+   const Identifier mBarId;
    wxPoint mPos;
    bool mEscaping {};
 };
@@ -104,7 +109,7 @@ class AUDACITY_DLL_API Grabber final : public wxWindow
 
  public:
 
-   Grabber(wxWindow *parent, wxWindowID id);
+   Grabber(wxWindow *parent, Identifier id);
    virtual ~Grabber();
 
    // We don't need or want to accept focus since there's really
@@ -136,6 +141,7 @@ class AUDACITY_DLL_API Grabber final : public wxWindow
    void DrawGrabber(wxDC & dc);
    void SendEvent(wxEventType type, const wxPoint & pos, bool escaping);
 
+   const Identifier mIdentifier;
    bool mOver;
    bool mPressed;
    bool mAsSpacer;
