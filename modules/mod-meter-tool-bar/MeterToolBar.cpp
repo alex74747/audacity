@@ -17,7 +17,6 @@
 *//*******************************************************************/
 
 
-
 #include "MeterToolBar.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -33,7 +32,7 @@
 
 #include "AllThemeResources.h"
 #include "ProjectAudioIO.h"
-#include "../widgets/MeterPanel.h"
+#include "widgets/MeterPanel.h"
 
 IMPLEMENT_CLASS(MeterToolBar, ToolBar);
 
@@ -291,7 +290,7 @@ static RegisteredToolbarFactory factory3{
             XO("Combined Meter"), MeterToolBar::ID() } }; }
 };
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 namespace {
 AttachedToolBarMenuItem sAttachment1{
@@ -316,3 +315,6 @@ AttachedToolBarMenuItem sAttachment2{
 //   { PlayMeterBarID, RecordMeterBarID }
 //};
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
