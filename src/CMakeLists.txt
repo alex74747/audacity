@@ -395,8 +395,6 @@ list( APPEND SOURCES
 
       toolbars/ControlToolBar.cpp
       toolbars/ControlToolBar.h
-      toolbars/MeterToolBar.cpp
-      toolbars/MeterToolBar.h
       toolbars/ScrubbingToolBar.cpp
       toolbars/ScrubbingToolBar.h
       toolbars/SelectionBar.cpp
