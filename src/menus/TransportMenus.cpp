@@ -29,7 +29,6 @@
 #include "CommandContext.h"
 #include "CommandManager.h"
 #include "../toolbars/ControlToolBar.h"
-#include "../toolbars/TranscriptionToolBar.h"
 #include "../toolbars/ToolManager.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
@@ -706,66 +705,6 @@ void OnPlayCutPreview(const CommandContext &context)
    TransportUtilities::PlayCurrentRegionAndWait(context, false, true);
 }
 
-void OnPlayAtSpeed(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->PlayAtSpeed(false, false);
-   }
-}
-
-void OnPlayAtSpeedLooped(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->PlayAtSpeed(true, false);
-   }
-}
-
-void OnPlayAtSpeedCutPreview(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->PlayAtSpeed(false, true);
-   }
-}
-
-void OnSetPlaySpeed(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->ShowPlaySpeedDialog();
-   }
-}
-
-void OnPlaySpeedInc(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->AdjustPlaySpeed(0.1f);
-   }
-}
-
-void OnPlaySpeedDec(const CommandContext &context)
-{
-   auto &project = context.project;
-   auto tb = &TranscriptionToolBar::Get( project );
-
-   if (tb) {
-      tb->AdjustPlaySpeed(-0.1f);
-   }
-}
-
 void OnMoveToPrevLabel(const CommandContext &context)
 {
    auto &project = context.project;
@@ -1013,20 +952,7 @@ BaseItemSharedPtr ExtraPlayAtSpeedMenu()
 {
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
-   Menu( wxT("PlayAtSpeed"), XXO("&Play-at-Speed"),
-      /* i18n-hint: 'Normal Play-at-Speed' doesn't loop or cut preview. */
-      Command( wxT("PlayAtSpeedLooped"), XXO("&Play-at-Speed"),
-         FN(OnPlayAtSpeedLooped), CaptureNotBusyFlag() ),
-      Command( wxT("PlayAtSpeed"), XXO("Play-at-Speed &Once"),
-         FN(OnPlayAtSpeed), CaptureNotBusyFlag() ),
-      Command( wxT("PlayAtSpeedCutPreview"), XXO("Play C&ut Preview-at-Speed"),
-         FN(OnPlayAtSpeedCutPreview), CaptureNotBusyFlag() ),
-      Command( wxT("SetPlaySpeed"), XXO("Ad&just Playback Speed..."),
-         FN(OnSetPlaySpeed), CaptureNotBusyFlag() ),
-      Command( wxT("PlaySpeedInc"), XXO("&Increase Playback Speed"),
-         FN(OnPlaySpeedInc), CaptureNotBusyFlag() ),
-      Command( wxT("PlaySpeedDec"), XXO("&Decrease Playback Speed"),
-         FN(OnPlaySpeedDec), CaptureNotBusyFlag() )
+   Menu( wxT("PlayAtSpeed"), XXO("&Play-at-Speed")
    ) ) };
    return menu;
 }
