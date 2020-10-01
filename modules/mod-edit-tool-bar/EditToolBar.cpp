@@ -30,7 +30,6 @@
 *//*******************************************************************/
 
 
-
 #include "EditToolBar.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -53,7 +52,7 @@
 
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../commands/CommandDispatch.h"
+#include "commands/CommandDispatch.h"
 
 IMPLEMENT_CLASS(EditToolBar, ToolBar);
 
@@ -319,7 +318,7 @@ static RegisteredToolbarFactory factory{
       return ToolBar::Holder{ safenew EditToolBar{ project } }; }
 };
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 namespace {
 AttachedToolBarMenuItem sAttachment{
@@ -328,3 +327,5 @@ AttachedToolBarMenuItem sAttachment{
 };
 }
 
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
