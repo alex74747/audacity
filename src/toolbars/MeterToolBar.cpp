@@ -158,7 +158,7 @@ void MeterToolBar::UpdatePrefs()
    RegenerateTooltips();
 
    // Set label to pull in language change
-   SetLabel(XO("Meter"));
+   SetLabel(mLabel);
 
    // Give base class a chance
    ToolBar::UpdatePrefs();
