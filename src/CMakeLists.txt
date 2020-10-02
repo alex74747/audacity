@@ -176,8 +176,6 @@ list( APPEND SOURCES
       TransportUtilities.h
       UndoRedoMenu.cpp
       UndoRedoMenu.h
-      VoiceKey.cpp
-      VoiceKey.h
       WaveTrackLocation.cpp
       WaveTrackLocation.h
 
@@ -298,8 +296,6 @@ list( APPEND SOURCES
       toolbars/ToolManager.h
       toolbars/ToolsToolBar.cpp
       toolbars/ToolsToolBar.h
-      toolbars/TranscriptionToolBar.cpp
-      toolbars/TranscriptionToolBar.h
 
       # Tracks
 
