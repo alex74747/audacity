@@ -14,10 +14,9 @@
 *//*******************************************************************/
 
 
-
 #include "MixerToolBar.h"
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -35,9 +34,9 @@
 #include "ImageManipulation.h"
 #include "KeyboardCapture.h"
 #include "Prefs.h"
-#include "../ProjectManager.h"
+#include "ProjectManager.h"
 #include "ASlider.h"
-#include "../widgets/Grabber.h"
+#include "widgets/Grabber.h"
 
 IMPLEMENT_CLASS(MixerToolBar, ToolBar);
 
@@ -458,3 +457,6 @@ AttachedItem sAttachment2{
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

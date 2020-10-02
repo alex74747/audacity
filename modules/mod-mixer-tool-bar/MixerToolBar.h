@@ -12,7 +12,7 @@
 #define __AUDACITY_MIXER_TOOLBAR__
 
 #include "Observer.h"
-#include "ToolBar.h"
+#include "toolbars/ToolBar.h"
 
 class wxSize;
 class wxPoint;
