@@ -22,7 +22,6 @@ effects from this one class.
 *//*******************************************************************/
 
 
-
 #include "LadspaEffect.h"       // This class's header file
 #include "SampleCount.h"
 
@@ -52,7 +51,7 @@ effects from this one class.
 #include <wx/scrolwin.h>
 #include <wx/version.h>
 
-#include "../../EffectHostInterface.h"
+#include "EffectHostInterface.h"
 #include "FileNames.h"
 #include "ShuttleGui.h"
 #include "NumericTextCtrl.h"
@@ -1809,3 +1808,6 @@ void LadspaEffect::RefreshControls(bool outputOnly)
       mFields[p]->SetValue(fieldText);
    }
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
