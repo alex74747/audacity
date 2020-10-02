@@ -14,7 +14,7 @@ Functions that find and load all LV2 plugins on the system.
 
 *//*******************************************************************/
 
-#include "../../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 
 #if defined(USE_LV2)
 
@@ -32,7 +32,7 @@ Functions that find and load all LV2 plugins on the system.
 #include <wx/filename.h>
 #include <wx/log.h>
 
-#include "../../Internat.h"
+#include "Internat.h"
 
 #include "LV2Effect.h"
 #include "lv2/event/event.h"
@@ -342,3 +342,6 @@ const LilvPlugin *LV2EffectsModule::GetPlugin(const PluginPath & path)
 }
 
 #endif
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
