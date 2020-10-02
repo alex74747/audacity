@@ -14,8 +14,6 @@ Functions that find and load all LV2 plugins on the system.
 
 *//*******************************************************************/
 
-
-
 #if defined(USE_LV2)
 
 #if defined(__GNUC__)
@@ -329,3 +327,6 @@ const LilvPlugin *LV2EffectsModule::GetPlugin(const PluginPath & path)
 }
 
 #endif
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

@@ -385,20 +385,6 @@ list( APPEND SOURCES
          effects/VST/VSTControlOSX.mm
       >
 
-      # LV2 Effects
-
-      $<$<BOOL:${USE_LV2}>:
-         effects/lv2/LV2Effect.cpp
-         effects/lv2/LV2Effect.h
-         effects/lv2/LoadLV2.cpp
-         effects/lv2/LoadLV2.h
-         effects/lv2/NativeWindow.h
-         effects/lv2/lv2_external_ui.h
-         effects/lv2/zix/common.h
-         effects/lv2/zix/ring.cpp
-         effects/lv2/zix/ring.h
-      >
-
       # Nyquist Effects
 
       $<$<BOOL:${USE_NYQUIST}>:
@@ -822,7 +808,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag::libid3tag>
       $<$<BOOL:${USE_LIBMAD}>:libmad::libmad>
-      $<$<BOOL:${USE_LV2}>:lv2>
       $<$<BOOL:${USE_MIDI}>:PortMidi::PortMidi>
       $<$<BOOL:${USE_MIDI}>:portsmf>
       $<$<BOOL:${USE_NYQUIST}>:libnyquist>

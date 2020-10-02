@@ -9,8 +9,6 @@
 
 **********************************************************************/
 
-
-
 #if defined(USE_LV2)
 
 #if defined(__GNUC__)
@@ -44,10 +42,10 @@
 #include <wx/stattext.h>
 #include <wx/scrolwin.h>
 
-#include "../../EffectHostInterface.h"
+#include "EffectHostInterface.h"
 #include "ShuttleGui.h"
 #include "valnum.h"
-#include "../../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 #include "wxPanelWrapper.h"
 #include "NumericTextCtrl.h"
 
