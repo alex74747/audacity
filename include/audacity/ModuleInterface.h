@@ -42,6 +42,7 @@
 #ifndef __AUDACITY_MODULEINTERFACE_H__
 #define __AUDACITY_MODULEINTERFACE_H__
 
+#include "Audacity.h"
 #include <functional>
 #include "audacity/Types.h"
 #include "audacity/ComponentInterface.h"
@@ -169,13 +170,17 @@ static ModuleInterface * name(const wxString *path)
 // Provides the base for embedded module registration.  If used, a Register()
 // method must be supplied explicitly.
 // ----------------------------------------------------------------------------
+AUDACITY_DLL_API void RegisterBuiltinModule(ModuleMain rtn);
+AUDACITY_DLL_API void UnregisterBuiltinModule(ModuleMain rtn);
+
 #define DECLARE_BUILTIN_MODULE_BASE(name)             \
-extern void RegisterBuiltinModule(ModuleMain rtn);    \
 class name                                            \
 {                                                     \
 public:                                               \
    name() {Register();}                               \
+   ~name() {Unregister();}                            \
    void Register();                                   \
+   void Unregister();                                 \
 };                                                    \
 static name name ## _instance;
 
@@ -188,6 +193,10 @@ DECLARE_BUILTIN_MODULE_BASE(name)                     \
 void name::Register()                                 \
 {                                                     \
    RegisterBuiltinModule(MODULE_ENTRY);               \
+}                                                     \
+void name::Unregister()                               \
+{                                                     \
+   UnregisterBuiltinModule(MODULE_ENTRY);             \
 }
 
 #else
@@ -209,5 +218,8 @@ extern "C" __declspec(dllexport)                                              \
 #define DECLARE_BUILTIN_MODULE(name)
 
 #endif
+
+// Guarantee the registry exists before usage
+static struct Init{ Init() { RegisterBuiltinModule(nullptr); } } sInit;
 
 #endif // __AUDACITY_MODULEINTERFACE_H__

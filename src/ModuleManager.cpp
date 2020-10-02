@@ -217,9 +217,19 @@ namespace {
 
 void RegisterBuiltinModule(ModuleMain moduleMain)
 {
-   builtinModuleList().push_back(moduleMain);
+   auto &list = builtinModuleList();
+   if ( moduleMain )
+      list.push_back(moduleMain);
 
    return;
+}
+
+void UnregisterBuiltinModule(ModuleMain moduleMain)
+{
+   auto &list = builtinModuleList();
+   auto end = list.end(), iter = std::find(list.begin(), end, moduleMain);
+   if (iter != end)
+      list.erase(iter);
 }
 
 // ----------------------------------------------------------------------------
