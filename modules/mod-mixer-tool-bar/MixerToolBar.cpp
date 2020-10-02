@@ -14,10 +14,10 @@
 *//*******************************************************************/
 
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "MixerToolBar.h"
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -29,15 +29,15 @@
 #include <wx/tooltip.h>
 #endif
 
-#include "../AColor.h"
-#include "../AllThemeResources.h"
-#include "../AudioIO.h"
-#include "../ImageManipulation.h"
-#include "../KeyboardCapture.h"
-#include "../Prefs.h"
-#include "../ProjectManager.h"
-#include "../widgets/ASlider.h"
-#include "../widgets/Grabber.h"
+#include "AColor.h"
+#include "AllThemeResources.h"
+#include "AudioIO.h"
+#include "ImageManipulation.h"
+#include "KeyboardCapture.h"
+#include "Prefs.h"
+#include "ProjectManager.h"
+#include "widgets/ASlider.h"
+#include "widgets/Grabber.h"
 
 IMPLEMENT_CLASS(MixerToolBar, ToolBar);
 
@@ -464,3 +464,6 @@ AttachedItem sAttachment2{
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
