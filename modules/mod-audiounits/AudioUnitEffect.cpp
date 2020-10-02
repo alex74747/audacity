@@ -14,8 +14,6 @@
 
 *//*******************************************************************/
 
-
-
 #if USE_AUDIO_UNITS
 #include "AudioUnitEffect.h"
 #include "ModuleManager.h"
@@ -43,9 +41,9 @@
 #include <wx/tokenzr.h>
 
 #include "SelectFile.h"
-#include "../../EffectHostInterface.h"
+#include "EffectHostInterface.h"
 #include "ShuttleGui.h"
-#include "../../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 #include "valnum.h"
 #include "wxPanelWrapper.h"
 
@@ -2650,3 +2648,6 @@ bool AudioUnitEffect::BypassEffect(bool bypass)
 }
 
 #endif
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

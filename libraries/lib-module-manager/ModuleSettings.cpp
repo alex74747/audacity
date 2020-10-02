@@ -40,6 +40,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-view-menus",
       "mod-help-menus",
       "mod-navigation-menus",
+      "mod-audiounits",
    };
    return modules;
 }
