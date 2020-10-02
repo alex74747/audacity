@@ -8,8 +8,6 @@
 
 **********************************************************************/
 
-
-
 #include "LoadNyquist.h"
 
 #include <wx/log.h>
@@ -277,3 +275,6 @@ NyquistEffectsModule::CreateInstance(const PluginPath & path)
 // ============================================================================
 // NyquistEffectsModule implementation
 // ============================================================================
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

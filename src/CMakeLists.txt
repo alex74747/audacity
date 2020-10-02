@@ -385,15 +385,6 @@ list( APPEND SOURCES
          effects/VST/VSTControlOSX.mm
       >
 
-      # Nyquist Effects
-
-      $<$<BOOL:${USE_NYQUIST}>:
-         effects/nyquist/LoadNyquist.cpp
-         effects/nyquist/LoadNyquist.h
-         effects/nyquist/Nyquist.cpp
-         effects/nyquist/Nyquist.h
-      >
-
       # VAMP Effects
 
       $<$<BOOL:${USE_VAMP}>:
@@ -810,7 +801,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${USE_LIBMAD}>:libmad::libmad>
       $<$<BOOL:${USE_MIDI}>:PortMidi::PortMidi>
       $<$<BOOL:${USE_MIDI}>:portsmf>
-      $<$<BOOL:${USE_NYQUIST}>:libnyquist>
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
       $<$<BOOL:${USE_VAMP}>:libvamp>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GLIB>
