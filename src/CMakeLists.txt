@@ -514,15 +514,6 @@ list( APPEND SOURCES
          effects/VST/VSTControlOSX.mm
       >
 
-      # VAMP Effects
-
-      $<$<BOOL:${USE_VAMP}>:
-         effects/vamp/LoadVamp.cpp
-         effects/vamp/LoadVamp.h
-         effects/vamp/VampEffect.cpp
-         effects/vamp/VampEffect.h
-      >
-
       # Export
 
       export/Export.cpp
@@ -992,7 +983,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
       $<$<BOOL:${USE_SBSMS}>:libsbsms>
       $<$<BOOL:${USE_SOUNDTOUCH}>:soundtouch>
-      $<$<BOOL:${USE_VAMP}>:libvamp>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GLIB>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GTK>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:z>
