@@ -22,7 +22,6 @@ addlib( sqlite             sqlite      SQLITE      YES   YES   "sqlite3 >= 3.32.
 addlib( ffmpeg             ffmpeg      FFMPEG      NO    NO    "libavcodec >= 51.53" "libavformat >= 52.12" "libavutil >= 52.66" )
 addlib( libid3tag          id3tag      LIBID3TAG   NO    YES   "id3tag >= 0.15.1b" )
 addlib( libmad             mad         LIBMAD      NO    YES   "mad >= 0.15.1b" )
-addlib( libnyquist         nyquist     NYQUIST     NO    YES   "" )
 addlib( libvamp            vamp        VAMP        NO    YES   "vamp >= 2.5" "vamp-hostsdk >= 2.5" )
 addlib( libogg             ogg         LIBOGG      NO    YES   "ogg >= 1.3.1" )
 addlib( libvorbis          vorbis      LIBVORBIS   NO    YES   "vorbis >= 1.3.3" "vorbisenc >= 1.3.3" "vorbisfile >= 1.3.3" )

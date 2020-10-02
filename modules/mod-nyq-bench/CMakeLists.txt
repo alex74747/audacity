@@ -1,3 +1,5 @@
+addlib( libnyquist         nyquist     NYQUIST     NO    YES   "" )
+
 set( TARGET mod-nyq-bench )
 list( APPEND SOURCES
       NyqBench.cpp
@@ -12,7 +14,10 @@ list( APPEND DEFINES
       # versions of wxWidgets...even if the build is for Release.
       wxDEBUG_LEVEL=0
 )
-audacity_module( ${TARGET} "${SOURCES}" "Audacity"
+list( APPEND LIBRARIES
+   mod-nyquist-interface
+)
+audacity_module( ${TARGET} "${SOURCES}" "${LIBRARIES}"
    "${DEFINES}" "" )
 
 #set_target_properties( ${TARGET} PROPERTIES EXCLUDE_FROM_ALL YES )
