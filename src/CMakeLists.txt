@@ -286,8 +286,6 @@ list( APPEND SOURCES
       toolbars/ToolDock.h
       toolbars/ToolManager.cpp
       toolbars/ToolManager.h
-      toolbars/ToolsToolBar.cpp
-      toolbars/ToolsToolBar.h
 
       # Tracks
 

@@ -30,9 +30,8 @@
 *//*******************************************************************/
 
 
-
 #include "ToolsToolBar.h"
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -49,9 +48,9 @@
 #include "AllThemeResources.h"
 #include "ImageManipulation.h"
 #include "Project.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
-#include "../tracks/ui/Scrubbing.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
+#include "tracks/ui/Scrubbing.h"
 
 #include "AButton.h"
 
@@ -272,7 +271,7 @@ AttachedToolBarMenuItem sAttachment{
 
 // Following code injects menu items for changing the current tool
 
-#include "../TrackPanel.h"
+#include "TrackPanel.h"
 
 // private helper classes and functions
 namespace {
@@ -389,3 +388,6 @@ AttachedItem sAttachment2{
    Shared( ExtraToolsMenu() )
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
