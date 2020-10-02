@@ -148,12 +148,6 @@ public:
 typedef ModuleInterface *(*ModuleMain)(const wxString *path);
 
 // ----------------------------------------------------------------------------
-// If BUILDING_AUDACITY is defined during the current build, it is assumed
-// that the module wishes to be embedded in the Audacity executable.
-// ----------------------------------------------------------------------------
-#if defined(BUILDING_AUDACITY)
-
-// ----------------------------------------------------------------------------
 // Since there may be multiple embedded modules, the module entry function will
 // be declared static so as not to interfere with other modules during link.
 // ----------------------------------------------------------------------------
@@ -198,26 +192,6 @@ void name::Unregister()                               \
 {                                                     \
    UnregisterBuiltinModule(MODULE_ENTRY);             \
 }
-
-#else
-
-// ----------------------------------------------------------------------------
-// When building as an external module, the entry point must be declared with
-// "C" linkage and whatever method is used to make the function externally
-// visible.
-// ----------------------------------------------------------------------------
-#define DECLARE_MODULE_ENTRY(name)                                            \
-extern "C" __declspec(dllexport)                                              \
-   ModuleInterface * name(const wxString *path)
-
-// ----------------------------------------------------------------------------
-// Define these as empty will effectively remove the embedded registration
-// functionality.
-// ----------------------------------------------------------------------------
-#define DECLARE_BUILTIN_MODULE_BASE(name)
-#define DECLARE_BUILTIN_MODULE(name)
-
-#endif
 
 // Guarantee the registry exists before usage
 static struct Init{ Init() { RegisterBuiltinModule(nullptr); } } sInit;
