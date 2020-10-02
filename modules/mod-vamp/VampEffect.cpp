@@ -11,8 +11,6 @@
 
 **********************************************************************/
 
-
-
 #if defined(USE_VAMP)
 #include "VampEffect.h"
 
@@ -34,9 +32,9 @@
 
 #include "ShuttleGui.h"
 #include "valnum.h"
-#include "../../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
-#include "../../LabelTrack.h"
+#include "LabelTrack.h"
 #include "WaveTrack.h"
 
 enum
@@ -861,5 +859,8 @@ void VampEffect::OnTextCtrl(wxCommandEvent & evt)
 
    mSliders[p]->SetValue((int)(((val - lower) / range) * 1000.0 + 0.5));
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
 
 #endif

@@ -249,7 +249,6 @@ set_conan_vars_to_parent()
 # Optional libraries
 #
 #       directory          option      symbol      req   chk   version
-addlib( libvamp            vamp        VAMP        NO    YES   "vamp >= 2.5" "vamp-hostsdk >= 2.5" )
 
 #addlib( portmidi           midi        MIDI        NO    YES   "PortMidi" )
 
