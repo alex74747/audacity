@@ -183,6 +183,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-help-menus",
       "mod-navigation-menus",
       "mod-audiounits",
+      "mod-ladspa",
    };
    return modules;
 }
