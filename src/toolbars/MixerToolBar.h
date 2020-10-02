@@ -16,6 +16,7 @@
 
 class wxSize;
 class wxPoint;
+class wxTimerEvent;
 
 class ASlider;
 class AudacityProject;
@@ -68,6 +69,8 @@ class MixerToolBar final : public ToolBar {
 
    void InitializeMixerToolBar();
    void SetToolTips();
+
+   void OnTimer(wxTimerEvent&);
 
    Observer::Subscription mSubscription;
 
