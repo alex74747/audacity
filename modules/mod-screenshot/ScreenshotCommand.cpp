@@ -97,7 +97,7 @@ EnumValueSymbols ScreenshotCommand::kCaptureWhatStrings()
          });
       }
    }
-
+ 
    return mSymbols;
 };
 
