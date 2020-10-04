@@ -49,6 +49,8 @@ const ProjectSelectionManager &ProjectSelectionManager::Get(
 ProjectSelectionManager::ProjectSelectionManager( AudacityProject &project )
    : mProject{ project }
 {
+   mSubscription = ProjectSettings::Get(project)
+      .Subscribe(*this, &ProjectSelectionManager::OnSettingsChanged);
 }
 
 ProjectSelectionManager::~ProjectSelectionManager() = default;
@@ -84,6 +86,15 @@ bool ProjectSelectionManager::SnapSelection()
    }
 
    return false;
+}
+
+void ProjectSelectionManager::OnSettingsChanged(ProjectSettingsEvent evt)
+{
+   auto &settings = ProjectSettings::Get(mProject);
+   switch (evt.type) {
+   default:
+      break;
+   }
 }
 
 // Typically this came from the SelectionToolbar and does not need to

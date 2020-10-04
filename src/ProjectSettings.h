@@ -13,17 +13,12 @@ Paul Licameli split from AudacityProject.h
 
 #include <atomic>
 
+#include "Observer.h"
 #include "Project.h"
 #include "Prefs.h" // to inherit
 #include "audacity/Types.h"
 
 class AudacityProject;
-
-// Sent to the project when certain settings change
-// See enum EventCode below for values of GetInt() identifying changed setting
-// The previous value of that setting can also be found using GetExtraLong()
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
-   EVT_PROJECT_SETTINGS_CHANGE, wxCommandEvent);
 
 enum
 {
@@ -51,20 +46,30 @@ enum {
 };
 }
 
+struct ProjectSettingsEvent {
+   enum Type : int {
+      ChangedTool,
+      ChangedSnapTo,
+      ChangedSelectionFormat,
+      ChangedAudioTimeFormat,
+      ChangedFrequencyFormat,
+      ChangedBandwidthFormat,
+   } type;
+   int oldValue{ -1 };
+   int newValue{ -1 };
+};
+
 ///\brief Holds various per-project settings values,
 /// and sends events to the project when certain values change
 class AUDACITY_DLL_API ProjectSettings final
    : public AttachedProjectObject
+   , public Observer::Publisher<ProjectSettingsEvent>
    , private PrefsListener
 {
 public:
    static ProjectSettings &Get( AudacityProject &project );
    static const ProjectSettings &Get( const AudacityProject &project );
    
-   // Values retrievable from GetInt() of the event for settings change
-   enum EventCode : int {
-      ChangedTool,
-   };
 
    explicit ProjectSettings( AudacityProject &project );
    ProjectSettings( const ProjectSettings & ) PROHIBITED;

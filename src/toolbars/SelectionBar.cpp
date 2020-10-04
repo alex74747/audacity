@@ -126,6 +126,9 @@ SelectionBar::SelectionBar( AudacityProject &project )
 
    // Selection mode of 0 means showing 'start' and 'end' only.
    mSelectionMode = gPrefs->ReadLong(wxT("/SelectionToolbarMode"),  0);
+
+   mSubscription = ProjectSettings::Get(project)
+      .Subscribe(*this, &SelectionBar::OnSettingsChanged);
 }
 
 SelectionBar::~SelectionBar()
@@ -744,6 +747,15 @@ void SelectionBar::SetRate(double rate)
       for(i=0;i<5;i++)
          if( *Ctrls[i] )
             (*Ctrls[i])->SetSampleRate( rate );
+   }
+}
+
+void SelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
+{
+   auto &settings = ProjectSettings::Get(mProject);
+   switch (evt.type) {
+   default:
+      break;
    }
 }
 

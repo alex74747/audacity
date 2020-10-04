@@ -22,15 +22,6 @@ Paul Licameli split from AudacityProject.cpp
 
 wxDEFINE_EVENT(EVT_PROJECT_SETTINGS_CHANGE, wxCommandEvent);
 
-namespace {
-   void Notify( AudacityProject &project, ProjectSettings::EventCode code )
-   {
-      wxCommandEvent e{ EVT_PROJECT_SETTINGS_CHANGE };
-      e.SetInt( static_cast<int>( code ) );
-      project.ProcessEvent( e );
-   }
-}
-
 static const AudacityProject::AttachedObjects::RegisteredFactory
 sProjectSettingsKey{
   []( AudacityProject &project ){
@@ -120,7 +111,10 @@ ProjectSettings::GetFrequencySelectionFormatName() const
 void ProjectSettings::SetFrequencySelectionFormatName(
    const NumericFormatSymbol & formatName)
 {
-   mFrequencySelectionFormatName = formatName;
+   if (formatName != mFrequencySelectionFormatName) {
+      mFrequencySelectionFormatName = formatName;
+      Publish({ ProjectSettingsEvent::ChangedFrequencyFormat });
+   }
 }
 
 const NumericFormatSymbol &
@@ -132,12 +126,18 @@ ProjectSettings::GetBandwidthSelectionFormatName() const
 void ProjectSettings::SetBandwidthSelectionFormatName(
    const NumericFormatSymbol & formatName)
 {
-   mBandwidthSelectionFormatName = formatName;
+   if (formatName != mBandwidthSelectionFormatName) {
+      mBandwidthSelectionFormatName = formatName;
+      Publish({ ProjectSettingsEvent::ChangedBandwidthFormat });
+   }
 }
 
 void ProjectSettings::SetSelectionFormat(const NumericFormatSymbol & format)
 {
-   mSelectionFormat = format;
+   if (format != mSelectionFormat) {
+      mSelectionFormat = format;
+      Publish({ ProjectSettingsEvent::ChangedSelectionFormat });
+   }
 }
 
 const NumericFormatSymbol & ProjectSettings::GetSelectionFormat() const
@@ -147,7 +147,10 @@ const NumericFormatSymbol & ProjectSettings::GetSelectionFormat() const
 
 void ProjectSettings::SetAudioTimeFormat(const NumericFormatSymbol & format)
 {
-   mAudioTimeFormat = format;
+   if (format != mAudioTimeFormat) {
+      mAudioTimeFormat = format;
+      Publish({ ProjectSettingsEvent::ChangedAudioTimeFormat });
+   }
 }
 
 const NumericFormatSymbol & ProjectSettings::GetAudioTimeFormat() const
@@ -157,7 +160,10 @@ const NumericFormatSymbol & ProjectSettings::GetAudioTimeFormat() const
 
 void ProjectSettings::SetSnapTo(int snap)
 {
-   mSnapTo = snap;
+   if (snap != mSnapTo) {
+      mSnapTo = snap;
+      Publish({ ProjectSettingsEvent::ChangedSnapTo });
+   }
 }
    
 int ProjectSettings::GetSnapTo() const
@@ -168,7 +174,7 @@ int ProjectSettings::GetSnapTo() const
 // Move it to source file, to trigger event
 void ProjectSettings::SetTool(int tool) {
    mCurrentTool = tool;
-   Notify( mProject, ChangedTool );
+   Publish({ ProjectSettingsEvent::ChangedTool });
 }
 
 static ProjectFileIORegistry::AttributeWriterEntry entry {

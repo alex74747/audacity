@@ -13,6 +13,7 @@ Paul Licameli
 
 #include <wx/defs.h>
 
+#include "Observer.h"
 #include "ToolBar.h"
 
 class wxChoice;
@@ -23,6 +24,7 @@ class wxSizeEvent;
 
 class AudacityProject;
 class NumericTextCtrl;
+struct ProjectSettingsEvent;
 
 class SpectralSelectionBar final : public ToolBar {
 
@@ -56,6 +58,7 @@ private:
 
    void ValuesToControls();
    void SetBounds();
+   void OnSettingsChanged(ProjectSettingsEvent);
    void OnUpdate(wxCommandEvent &evt);
    void OnCtrl(wxCommandEvent &evt);
    void OnChoice(wxCommandEvent &evt);
@@ -64,6 +67,8 @@ private:
    void OnSize(wxSizeEvent &evt);
 
    void ModifySpectralSelection(bool done = false);
+
+   Observer::Subscription mSubscription;
 
    bool mbCenterAndWidth;
 

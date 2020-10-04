@@ -13,6 +13,7 @@
 
 #include <wx/defs.h>
 
+#include "Observer.h"
 #include "ToolBar.h"
 #include "auStaticText.h"
 
@@ -41,6 +42,7 @@ class wxStaticText;
 
 class AudacityProject;
 class NumericTextCtrl;
+struct ProjectSettingsEvent;
 
 class AUDACITY_DLL_API SelectionBar final : public ToolBar {
 
@@ -82,6 +84,7 @@ class AUDACITY_DLL_API SelectionBar final : public ToolBar {
    void OnUpdate(wxCommandEvent &evt);
    void OnChangedTime(wxCommandEvent &evt);
 
+   void OnSettingsChanged(ProjectSettingsEvent);
    void OnRate(wxCommandEvent & event);
    void OnSnapTo(wxCommandEvent & event);
    void OnChoice(wxCommandEvent & event);
@@ -119,6 +122,8 @@ class AUDACITY_DLL_API SelectionBar final : public ToolBar {
    wxString mLastValidText;
 
  public:
+
+   Observer::Subscription mSubscription;
 
    DECLARE_CLASS(SelectionBar)
    DECLARE_EVENT_TABLE()

@@ -11,10 +11,12 @@ Paul Licameli split from ProjectManager.cpp
 #ifndef __AUDACITY_PROJECT_SELECTION_MANAGER__
 #define __AUDACITY_PROJECT_SELECTION_MANAGER__
 
+#include "Observer.h"
 #include "Project.h"
 #include "ComponentInterfaceSymbol.h"
 
 class AudacityProject;
+struct ProjectSettingsEvent;
 
 class AUDACITY_DLL_API ProjectSelectionManager final
    : public AttachedProjectObject
@@ -29,8 +31,13 @@ public:
       const ProjectSelectionManager & ) PROHIBITED;
    ~ProjectSelectionManager() override;
 
+private:
+   void OnSettingsChanged(ProjectSettingsEvent);
+
+public:
    void AS_SetRate(double rate);
    void AS_SetSnapTo(int snap);
+
    void AS_SetSelectionFormat(const NumericFormatSymbol & format);
 
    void TT_SetAudioTimeFormat(const NumericFormatSymbol & format);
@@ -46,6 +53,7 @@ public:
 private:
    bool SnapSelection();
 
+   Observer::Subscription mSubscription;
    AudacityProject &mProject;
 };
 
