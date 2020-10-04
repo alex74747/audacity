@@ -554,11 +554,6 @@ void ProjectAudioManager::Stop(bool stopStream /* = true*/)
          meter->Clear();
       }
    }
-
-   // To do: eliminate this, use an event instead
-   const auto toolbar = ToolManager::Get( *project ).GetToolBar(wxT("Scrub"));
-   if (toolbar)
-      toolbar->EnableDisableButtons();
 }
 
 void ProjectAudioManager::Pause()
