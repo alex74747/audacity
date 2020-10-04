@@ -21,6 +21,7 @@
 #include "commands/CommandManager.h"
 #include "LabelTrackView.h"
 #include "widgets/AudacityMessageBox.h"
+#include "ExportMultiple.h"
 
 // private helper classes and functions
 namespace {
@@ -880,6 +881,24 @@ void OnMoveToNextLabel(const CommandContext &context)
    DoMoveToLabel(project, true);
 }
 
+void OnExportMultiple(const CommandContext &context)
+{
+   // When LabelTrack is available, reimplement the ExportMultiple command.
+   auto &project = context.project;
+   std::vector<ExportMultipleDialog::Label> labels;
+   // only the first label track
+   if(auto pLabelTrack =
+      *TrackList::Get(project).Any<const LabelTrack>().begin()) {
+      for (const auto &label : pLabelTrack->GetLabels()) {
+         auto &region = label.selectedRegion;
+         labels.push_back( {region.t0(), region.t1(), label.title} );
+      }
+   }
+   ExportMultipleDialog em(&project, std::move(labels));
+
+   em.ShowModal();
+}
+
 }; // struct Handler
 
 } // namespace
@@ -1049,6 +1068,16 @@ BaseItemSharedPtr ExtraSelectionItems()
 AttachedItem sAttachmentt{
   { wxT("Optional/Extra/Part1/Select"), { OrderingHint::End, {} } },
   Shared(ExtraSelectionItems())
+};
+
+AttachedItem sAttachment6{
+   { wxT("File/Import-Export/Export"),
+      { OrderingHint::Unspecified, {}, OrderingHint::Replace } },
+   ( FinderScope{ findCommandHandler },
+   Command( wxT("ExportMultiple"), XXO("Export &Multiple..."),
+      FN(OnExportMultiple),
+      AudioIONotBusyFlag() | WaveTracksExistFlag(), wxT("Ctrl+Shift+L") )
+   )
 };
 
 }
