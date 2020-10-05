@@ -47,6 +47,7 @@ selection range.
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
+#include "ProjectRate.h"
 #include "../ProjectSelectionManager.h"
 #include "../ProjectSettings.h"
 #include "../Snap.h"
@@ -179,7 +180,8 @@ auStaticText * SelectionBar::AddTitle(
 
 NumericTextCtrl * SelectionBar::AddTime(
    const TranslatableString &Name, int id, wxSizer * pSizer ){
-   auto formatName = ProjectSelectionManager::Get(mProject).AS_GetSelectionFormat();
+   auto &settings = ProjectSettings::Get(mProject);
+   auto formatName = settings.GetSelectionFormat();
    auto pCtrl = safenew NumericTextCtrl(
       this, id, NumericConverter::TIME, formatName, 0.0, mRate);
    pCtrl->SetName( Name );
@@ -296,8 +298,8 @@ void SelectionBar::Populate()
    mSnapTo->SetName(_("Snap To"));
    //mSnapTo->SetForegroundColour( clrText2 );
 
-   auto &manager = ProjectSelectionManager::Get(mProject);
-   mSnapTo->SetSelection(manager.AS_GetSnapTo());
+   auto &settings = ProjectSettings::Get(mProject);
+   mSnapTo->SetSelection(settings.GetSnapTo());
 
    mSnapTo->Bind(wxEVT_SET_FOCUS,
                     &SelectionBar::OnFocus,
@@ -362,10 +364,10 @@ void SelectionBar::Populate()
    Layout();
    
    CallAfter([this]{
-      auto &manager = ProjectSelectionManager::Get(mProject);
-      SetRate(manager.AS_GetRate());
-      SetSnapTo(manager.AS_GetSnapTo());
-      SetSelectionFormat(manager.AS_GetSelectionFormat());
+      auto &settings = ProjectSettings::Get(mProject);
+      SetRate(ProjectRate::Get(mProject).GetRate());
+      SetSnapTo(settings.GetSnapTo());
+      SetSelectionFormat(settings.GetSelectionFormat());
    });
 }
 
@@ -403,8 +405,8 @@ void SelectionBar::UpdatePrefs()
 void SelectionBar::RegenerateTooltips()
 {
 #if wxUSE_TOOLTIPS
-   auto &manager = ProjectSelectionManager::Get(mProject);
-   auto formatName = manager.AS_GetSelectionFormat();
+   auto &settings = ProjectSettings::Get(mProject);
+   auto formatName = settings.GetSelectionFormat();
    mSnapTo->SetToolTip(
       wxString::Format(
          _("Snap Clicks/Selections to %s"), formatName.Translation() ));
