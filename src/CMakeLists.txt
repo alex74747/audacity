@@ -663,7 +663,6 @@ list( APPEND SOURCES
       menus/LabelMenus.cpp
       menus/NavigationMenus.cpp
       menus/PluginMenus.cpp
-      menus/SelectMenus.cpp
       menus/ToolbarMenus.cpp
       menus/TransportMenus.cpp
       menus/ViewMenus.cpp
