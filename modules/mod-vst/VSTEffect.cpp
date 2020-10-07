@@ -24,16 +24,15 @@
 // WARNING:  This is NOT 64-bit safe
 // *******************************************************************
 
-
 #include "VSTEffect.h"
 #include "ModuleManager.h"
 #include "SampleCount.h"
 
-#include "../../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 
 #if 0
 #if defined(BUILDING_AUDACITY)
-#include "../../PlatformCompatibility.h"
+#include "PlatformCompatibility.h"
 
 // Make the main function private
 #else
@@ -85,7 +84,7 @@
 #include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "valnum.h"
-#include "../../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 #include "NumericTextCtrl.h"
 #include "XMLFileReader.h"
 
@@ -3950,5 +3949,9 @@ XMLTagHandler *VSTEffect::HandleXMLChild(const std::string_view& tag)
 
    return NULL;
 }
+
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
 
 #endif // USE_VST
