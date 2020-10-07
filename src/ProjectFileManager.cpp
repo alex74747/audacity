@@ -988,7 +988,6 @@ bool ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          // to make persistence of the vertical scrollbar position work
 
       auto &selectionManager = ProjectSelectionManager::Get( project );
-      selectionManager.AS_SetSelectionFormat(settings.GetSelectionFormat());
       selectionManager.TT_SetAudioTimeFormat(settings.GetAudioTimeFormat());
       selectionManager.SSBL_SetFrequencySelectionFormatName(
       settings.GetFrequencySelectionFormatName());
