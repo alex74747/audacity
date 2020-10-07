@@ -6,7 +6,7 @@
 
   Copyright 2005 Dominic Mazzoni
 
-  This program is free software; you can redistribute it and/or modify
+ This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
@@ -530,8 +530,8 @@ void SelectionBar::OnUpdate(wxCommandEvent &evt)
    // Save format name before recreating the controls so they resize properly
    if (mStartTime)
    {
-      auto &manager = ProjectSelectionManager::Get(mProject);
-      manager.AS_SetSelectionFormat(format);
+      auto &settings = ProjectSettings::Get(mProject);
+      settings.SetSelectionFormat(format);
    }
 
    // ReCreateButtons() will get rid of our sizers and controls
@@ -756,6 +756,8 @@ void SelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
    switch (evt.type) {
    case ProjectSettingsEvent::ChangedSnapTo:
       return SetSnapTo( settings.GetSnapTo() );
+   case ProjectSettings::ChangedSelectionFormat:
+      return SetSelectionFormat( settings.GetSelectionFormat() );
    default:
       break;
    }

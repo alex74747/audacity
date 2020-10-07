@@ -414,7 +414,9 @@ auto AUPImportFileHandle::Import(
 
    if (mProjectAttrs.haveselectionformat)
    {
-      selman.AS_SetSelectionFormat(NumericConverter::LookupFormat(NumericConverter::TIME, mProjectAttrs.selectionformat));
+      settings.SetSelectionFormat(
+         NumericConverter::LookupFormat(
+            NumericConverter::TIME, mProjectAttrs.selectionformat));
    }
 
    if (mProjectAttrs.haveaudiotimeformat)

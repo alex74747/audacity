@@ -21,7 +21,6 @@ Paul Licameli split from ProjectManager.cpp
 #include "TrackPanel.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "toolbars/SelectionBar.h"
 #include "toolbars/SpectralSelectionBar.h"
 #include "toolbars/TimeToolBar.h"
 
@@ -93,6 +92,8 @@ void ProjectSelectionManager::OnSettingsChanged(ProjectSettingsEvent evt)
    switch (evt.type) {
    case ProjectSettingsEvent::ChangedSnapTo:
       return AS_SetSnapTo( settings.GetSnapTo() );
+   case ProjectSettings::ChangedSelectionFormat:
+      return AS_SetSelectionFormat( settings.GetSelectionFormat() );
    default:
       break;
    }
@@ -104,7 +105,7 @@ void ProjectSelectionManager::AS_SetRate(double rate)
 {
    auto &project = mProject;
    ProjectRate::Get( project ).SetRate( rate );
-   SelectionBar::Get( project ).SetRate(rate);
+//?   SelectionBar::Get( project ).SetRate(rate);
 }
 
 void ProjectSelectionManager::AS_SetSnapTo(int snap)
@@ -126,17 +127,13 @@ void ProjectSelectionManager::AS_SetSnapTo(int snap)
 void ProjectSelectionManager::AS_SetSelectionFormat(
    const NumericFormatSymbol & format)
 {
-   auto &project = mProject;
-   auto &settings = ProjectSettings::Get( project );
-   settings.SetSelectionFormat( format );
+   CallAfter([this, format]{
+      gPrefs->Write(wxT("/SelectionFormat"), format.Internal());
+      gPrefs->Flush();
 
-   gPrefs->Write(wxT("/SelectionFormat"), format.Internal());
-   gPrefs->Flush();
-
-   if (SnapSelection())
-      TrackPanel::Get( project ).Refresh(false);
-
-   SelectionBar::Get( project ).SetSelectionFormat(format);
+      if (SnapSelection())
+         TrackPanel::Get( mProject ).Refresh(false);
+   });
 }
 
 void ProjectSelectionManager::TT_SetAudioTimeFormat(
