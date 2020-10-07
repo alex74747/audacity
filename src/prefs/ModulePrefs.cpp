@@ -20,6 +20,7 @@ with names like mnod-script-pipe that add NEW features.
 
 
 
+#include <unordered_set>
 #include <wx/defs.h>
 #include <wx/filename.h>
 
@@ -164,6 +165,16 @@ bool ModulePrefs::Commit()
 }
 
 
+static const std::unordered_set<wxString> &autoEnabledModules()
+{
+   // Add names to this list, of modules that are expected to ship
+   // with Audacity and enable automatically.
+   static std::unordered_set<wxString> modules{
+      
+   };
+   return modules;
+}
+
 // static function that tells us about a module.
 int ModulePrefs::GetModuleStatus(const FilePath &fname)
 {
@@ -202,6 +213,11 @@ int ModulePrefs::GetModuleStatus(const FilePath &fname)
       gPrefs->DeleteEntry( PathPref );
       gPrefs->DeleteEntry( StatusPref );
       gPrefs->DeleteEntry( DateTimePref );
+   }
+
+   if (iStatus == kModuleNew) {
+      if (autoEnabledModules().count(ShortName))
+         iStatus = kModuleEnabled;
    }
 
    return iStatus;
