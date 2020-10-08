@@ -39,7 +39,7 @@ list( APPEND OPTIONS
 
 list( APPEND LIBRARIES
    PRIVATE
-     wxWidgets
+     $<$<PLATFORM_ID:Windows>:wxWidgets>
 )
 
 configure_file( config.h.in private/config.h )
