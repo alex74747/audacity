@@ -20,10 +20,9 @@ frequency selection range.
 *//*******************************************************************/
 
 
-
 #include "SpectralSelectionBar.h"
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 #include <algorithm>
 
@@ -46,7 +45,7 @@ frequency selection range.
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectRate.h"
-#include "../ProjectSelectionManager.h"
+#include "ProjectSelectionManager.h"
 #include "ProjectSettings.h"
 #include "AllThemeResources.h"
 #include "SelectedRegion.h"
@@ -524,3 +523,6 @@ AttachedToolBarMenuItem sAttachment{
 }
 
 #endif // #ifdef EXPERIMENTAL_SPECTRAL_EDITING
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

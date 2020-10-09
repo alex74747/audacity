@@ -14,7 +14,7 @@ Paul Licameli
 #include <wx/defs.h>
 
 #include "Observer.h"
-#include "ToolBar.h"
+#include "toolbars/ToolBar.h"
 
 class wxChoice;
 class wxComboBox;
