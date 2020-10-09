@@ -21,7 +21,6 @@ Paul Licameli split from ProjectManager.cpp
 #include "TrackPanel.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "toolbars/SpectralSelectionBar.h"
 
 static AudacityProject::AttachedObjects::RegisteredFactory
 sProjectSelectionManagerKey {
@@ -98,6 +97,9 @@ void ProjectSelectionManager::OnSettingsChanged(ProjectSettingsEvent evt)
    case ProjectSettingsEvent::ChangedFrequencyFormat:
       return SSBL_SetFrequencySelectionFormatName(
          settings.GetFrequencySelectionFormatName() );
+   case ProjectSettings::ChangedBandwidthFormat:
+      return SSBL_SetBandwidthSelectionFormatName(
+         settings.GetBandwidthSelectionFormatName() );
    default:
       break;
    }
@@ -172,18 +174,9 @@ void ProjectSelectionManager::SSBL_SetFrequencySelectionFormatName(
 void ProjectSelectionManager::SSBL_SetBandwidthSelectionFormatName(
    const NumericFormatSymbol & formatName)
 {
-   auto &project = mProject;
-   auto &settings = ProjectSettings::Get( project );
-
-   settings.SetBandwidthSelectionFormatName( formatName );
-
    gPrefs->Write(wxT("/BandwidthSelectionFormatName"),
       formatName.Internal());
    gPrefs->Flush();
-
-#ifdef EXPERIMENTAL_SPECTRAL_EDITING
-   SpectralSelectionBar::Get( project ).SetBandwidthSelectionFormatName(formatName);
-#endif
 }
 
 void ProjectSelectionManager::SSBL_ModifySpectralSelection(
