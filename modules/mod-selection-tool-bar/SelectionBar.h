@@ -14,8 +14,9 @@
 #include <wx/defs.h>
 
 #include "Observer.h"
-#include "ToolBar.h"
-#include "auStaticText.h"
+#include "toolbars/ToolBar.h"
+
+class auStaticText;
 
 // Column for 
 //   Project rate
@@ -44,7 +45,7 @@ class AudacityProject;
 class NumericTextCtrl;
 struct ProjectSettingsEvent;
 
-class AUDACITY_DLL_API SelectionBar final : public ToolBar {
+class SelectionBar final : public ToolBar {
 
  public:
    static Identifier ID();

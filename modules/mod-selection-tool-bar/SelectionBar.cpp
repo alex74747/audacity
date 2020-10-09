@@ -20,10 +20,9 @@ selection range.
 *//*******************************************************************/
 
 
-
 #include "SelectionBar.h"
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -48,9 +47,9 @@ selection range.
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectRate.h"
-#include "../ProjectSelectionManager.h"
-#include "../ProjectSettings.h"
-#include "../Snap.h"
+#include "ProjectSelectionManager.h"
+#include "ProjectSettings.h"
+#include "Snap.h"
 #include "ViewInfo.h"
 #include "QualitySettings.h"
 #include "AllThemeResources.h"
@@ -854,3 +853,6 @@ AttachedToolBarMenuItem sAttachment{
 };
 }
 
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
