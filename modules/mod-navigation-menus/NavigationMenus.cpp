@@ -1,21 +1,19 @@
-
-
 #include "CommonCommandFlags.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectHistory.h"
-#include "../ProjectWindow.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "Track.h"
 #include "SelectionState.h"
-#include "../TrackPanel.h"
-#include "../TrackPanelAx.h"
+#include "TrackPanel.h"
+#include "TrackPanelAx.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../toolbars/ToolManager.h"
+#include "toolbars/ToolManager.h"
 #include "AButton.h"
 #include "ASlider.h"
-#include "../widgets/MeterPanel.h"
+#include "widgets/MeterPanel.h"
 
 // private helper classes and functions
 namespace {
@@ -622,3 +620,6 @@ AttachedItem sAttachment3{
 }
 
 #undef FN
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

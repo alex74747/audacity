@@ -39,6 +39,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-select-menus",
       "mod-view-menus",
       "mod-help-menus",
+      "mod-navigation-menus",
    };
    return modules;
 }
