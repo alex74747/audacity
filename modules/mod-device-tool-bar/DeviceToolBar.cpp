@@ -14,9 +14,8 @@
 *//*******************************************************************/
 
 
-
 #include "DeviceToolBar.h"
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 #include <thread>
 
@@ -35,7 +34,7 @@
 #include <wx/tooltip.h>
 #endif
 
-#include "../TrackPanel.h"
+#include "TrackPanel.h"
 
 #include "AColor.h"
 #include "AllThemeResources.h"
@@ -45,9 +44,9 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "ShuttleGui.h"
-#include "../widgets/Grabber.h"
+#include "widgets/Grabber.h"
 #include "DeviceManager.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"
@@ -851,3 +850,6 @@ AttachedItem sAttachment2{
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
