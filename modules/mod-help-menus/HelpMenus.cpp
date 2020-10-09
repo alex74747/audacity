@@ -1,33 +1,32 @@
-
 #include <wx/app.h>
 #include <wx/bmpbuttn.h>
 #include <wx/textctrl.h>
 #include <wx/frame.h>
 
-#include "../AboutDialog.h"
+#include "AboutDialog.h"
 #include "AllThemeResources.h"
 #include "AudioIOBase.h"
 #include "CommonCommandFlags.h"
-#include "../CrashReport.h" // for HAS_CRASH_REPORT
+#include "CrashReport.h" // for HAS_CRASH_REPORT
 #include "FileNames.h"
 #include "HelpText.h"
-#include "../HelpUtilities.h"
-#include "../LogWindow.h"
+#include "HelpUtilities.h"
+#include "LogWindow.h"
 #include "Menus.h"
-#include "../NoteTrack.h"
+#include "NoteTrack.h"
 #include "Prefs.h"
 #include "Project.h"
-#include "../ProjectSelectionManager.h"
+#include "ProjectSelectionManager.h"
 #include "ProjectWindows.h"
 #include "SelectFile.h"
 #include "ShuttleGui.h"
-#include "../SplashDialog.h"
+#include "SplashDialog.h"
 #include "Theme.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
 #include "PrefsDialog.h"
-#include "../ReloadPreferences.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "ReloadPreferences.h"
+#include "widgets/AudacityMessageBox.h"
 #include "HelpSystem.h"
 
 #if defined(HAVE_UPDATES_CHECK)
@@ -533,3 +532,6 @@ AttachedItem sAttachment1{
 }
 
 #undef FN
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
