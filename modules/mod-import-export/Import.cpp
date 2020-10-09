@@ -59,7 +59,6 @@ ImportLOF.cpp, and ImportAUP.cpp.
 #include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "SelectUtilities.h"
-#include "toolbars/SelectionBar.h"
 #include "Tags.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
@@ -491,10 +490,8 @@ Importer::AddImportedTracks( AudacityProject &project,
 
    // Automatically assign rate of imported file to whole project,
    // if this is the first file that is imported
-   if (initiallyEmpty && newRate > 0) {
-      ProjectRate::Get(project).SetRate( newRate );
-      SelectionBar::Get( project ).SetRate( newRate );
-   }
+   if (initiallyEmpty && newRate > 0)
+      ProjectRate::Get( project ).SetRate( newRate );
 
    history.PushState(XO("Imported '%s'").Format( fileName ),
        XO("Import"));

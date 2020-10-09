@@ -88,6 +88,7 @@ class AUDACITY_DLL_API SelectionBar final : public ToolBar {
    void OnUpdate(wxCommandEvent &evt);
    void OnChangedTime(wxCommandEvent &evt);
 
+   void OnRateChanged(double);
    void OnSettingsChanged(ProjectSettingsEvent);
    void OnRate(wxCommandEvent & event);
    void OnSnapTo(wxCommandEvent & event);
@@ -127,7 +128,8 @@ class AUDACITY_DLL_API SelectionBar final : public ToolBar {
 
  public:
 
-   Observer::Subscription mSubscription;
+   Observer::Subscription mSubscription1,
+      mSubscription2;
 
    DECLARE_CLASS(SelectionBar)
    DECLARE_EVENT_TABLE()

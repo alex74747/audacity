@@ -97,21 +97,12 @@ void ProjectSelectionManager::OnSettingsChanged(ProjectSettingsEvent evt)
    case ProjectSettingsEvent::ChangedFrequencyFormat:
       return SSBL_SetFrequencySelectionFormatName(
          settings.GetFrequencySelectionFormatName() );
-   case ProjectSettings::ChangedBandwidthFormat:
+   case ProjectSettingsEvent::ChangedBandwidthFormat:
       return SSBL_SetBandwidthSelectionFormatName(
          settings.GetBandwidthSelectionFormatName() );
    default:
       break;
    }
-}
-
-// Typically this came from the SelectionToolbar and does not need to
-// be communicated back to it.
-void ProjectSelectionManager::AS_SetRate(double rate)
-{
-   auto &project = mProject;
-   ProjectRate::Get( project ).SetRate( rate );
-//?   SelectionBar::Get( project ).SetRate(rate);
 }
 
 void ProjectSelectionManager::AS_SetSnapTo(int snap)

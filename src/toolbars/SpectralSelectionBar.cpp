@@ -377,7 +377,7 @@ void SpectralSelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
    case ProjectSettingsEvent::ChangedFrequencyFormat:
       return SetFrequencySelectionFormatName(
          settings.GetFrequencySelectionFormatName());
-   case ProjectSettings::ChangedBandwidthFormat:
+   case ProjectSettingsEvent::ChangedBandwidthFormat:
       return SetBandwidthSelectionFormatName(
          settings.GetBandwidthSelectionFormatName());
    default:

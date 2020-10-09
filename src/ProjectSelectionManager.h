@@ -35,7 +35,6 @@ private:
    void OnSettingsChanged(ProjectSettingsEvent);
 
 public:
-   void AS_SetRate(double rate);
    void AS_SetSnapTo(int snap);
 
    void AS_SetSelectionFormat(const NumericFormatSymbol & format);

@@ -32,6 +32,7 @@
 #include "ProjectFileIO.h"
 #include "ProjectFileManager.h"
 #include "ProjectHistory.h"
+#include "ProjectRate.h"
 #include "ProjectSettings.h"
 #include "ProjectWindows.h"
 #include "Sequence.h"
@@ -40,7 +41,6 @@
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
-#include "toolbars/SelectionBar.h"
 #include "widgets/AudacityMessageBox.h"
 #include "NumericTextCtrl.h"
 #include "widgets/ProgressDialog.h"
@@ -401,8 +401,7 @@ auto AUPImportFileHandle::Import(
 
    if (mProjectAttrs.haverate)
    {
-      auto &bar = SelectionBar::Get(mProject);
-      bar.SetRate(mProjectAttrs.rate);
+      ProjectRate::Get(mProject).SetRate(mProjectAttrs.rate);
    }
 
    if (mProjectAttrs.havesnapto)

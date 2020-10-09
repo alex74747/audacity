@@ -127,7 +127,9 @@ SelectionBar::SelectionBar( AudacityProject &project )
    // Selection mode of 0 means showing 'start' and 'end' only.
    mSelectionMode = gPrefs->ReadLong(wxT("/SelectionToolbarMode"),  0);
 
-   mSubscription = ProjectSettings::Get(project)
+   mSubscription1 = ProjectRate::Get(project)
+      .Subscribe(*this, &SelectionBar::OnRateChanged);
+   mSubscription2 = ProjectSettings::Get(project)
       .Subscribe(*this, &SelectionBar::OnSettingsChanged);
 }
 
@@ -750,6 +752,11 @@ void SelectionBar::SetRate(double rate)
    }
 }
 
+void SelectionBar::OnRateChanged(double rate)
+{
+   SetRate( rate );
+}
+
 void SelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
 {
    auto &settings = ProjectSettings::Get(mProject);
@@ -770,14 +777,7 @@ void SelectionBar::OnRate(wxCommandEvent & WXUNUSED(event))
    if (value.ToDouble(&mRate) && // is a numeric value
          (mRate != 0.0))
    {
-      NumericTextCtrl ** Ctrls[5] = { &mStartTime, &mEndTime, &mLengthTime, &mCenterTime, &mAudioTime };
-      int i;
-      for(i=0;i<5;i++)
-         if( *Ctrls[i] )
-            (*Ctrls[i])->SetSampleRate( mRate );
-      auto &manager = ProjectSelectionManager::Get(mProject);
-      manager.AS_SetRate(mRate);
-
+      ProjectRate::Get(mProject).SetRate(mRate);
       mLastValidText = value;
    }
    else
