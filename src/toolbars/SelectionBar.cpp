@@ -756,7 +756,7 @@ void SelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
    switch (evt.type) {
    case ProjectSettingsEvent::ChangedSnapTo:
       return SetSnapTo( settings.GetSnapTo() );
-   case ProjectSettings::ChangedSelectionFormat:
+   case ProjectSettingsEvent::ChangedSelectionFormat:
       return SetSelectionFormat( settings.GetSelectionFormat() );
    default:
       break;
