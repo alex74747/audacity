@@ -660,7 +660,6 @@ list( APPEND SOURCES
       menus/ExtraMenus.cpp
       menus/FileMenus.cpp
       menus/LabelMenus.cpp
-      menus/NavigationMenus.cpp
       menus/PluginMenus.cpp
       menus/TransportMenus.cpp
 
