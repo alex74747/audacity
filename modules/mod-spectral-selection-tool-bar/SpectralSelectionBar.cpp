@@ -20,10 +20,10 @@ frequency selection range.
 *//*******************************************************************/
 
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "SpectralSelectionBar.h"
 
-#include "ToolManager.h"
+#include "toolbars/ToolManager.h"
 
 #include <algorithm>
 
@@ -43,20 +43,20 @@ frequency selection range.
 #endif
 #include <wx/statline.h>
 
-#include "../Prefs.h"
-#include "../Project.h"
-#include "../ProjectSelectionManager.h"
-#include "../ProjectSettings.h"
-#include "../AllThemeResources.h"
-#include "../SelectedRegion.h"
-#include "../ViewInfo.h"
-#include "../WaveTrack.h"
+#include "Prefs.h"
+#include "Project.h"
+#include "ProjectSelectionManager.h"
+#include "ProjectSettings.h"
+#include "AllThemeResources.h"
+#include "SelectedRegion.h"
+#include "ViewInfo.h"
+#include "WaveTrack.h"
 
 #if wxUSE_ACCESSIBILITY
-#include "../widgets/WindowAccessible.h"
+#include "widgets/WindowAccessible.h"
 #endif
 
-#include "../widgets/NumericTextCtrl.h"
+#include "widgets/NumericTextCtrl.h"
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
 
@@ -525,3 +525,6 @@ AttachedToolBarMenuItem sAttachment{
 }
 
 #endif // #ifdef EXPERIMENTAL_SPECTRAL_EDITING
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
