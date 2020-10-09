@@ -61,7 +61,8 @@ bool MakeReadyToPlay(AudacityProject &project)
       // Make momentary changes of button appearances
       toolbar.SetPlay(false);        //Pops
       toolbar.SetStop();         //Pushes stop down
-      toolbar.OnStop(evt);
+
+      ProjectAudioManager::Get( project ).Stop();
 
       using namespace std::chrono;
       std::this_thread::sleep_for(100ms);
