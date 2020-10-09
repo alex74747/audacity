@@ -754,6 +754,8 @@ void SelectionBar::OnSettingsChanged(ProjectSettingsEvent evt)
 {
    auto &settings = ProjectSettings::Get(mProject);
    switch (evt.type) {
+   case ProjectSettingsEvent::ChangedSnapTo:
+      return SetSnapTo( settings.GetSnapTo() );
    default:
       break;
    }
@@ -833,8 +835,8 @@ void SelectionBar::OnCaptureKey(wxCommandEvent &event)
 
 void SelectionBar::OnSnapTo(wxCommandEvent & WXUNUSED(event))
 {
-   auto &manager = ProjectSelectionManager::Get(mProject);
-   manager.AS_SetSnapTo(mSnapTo->GetSelection());
+   auto &settings = ProjectSettings::Get(mProject);
+   settings.SetSnapTo(mSnapTo->GetSelection());
 }
 
 static RegisteredToolbarFactory factory{

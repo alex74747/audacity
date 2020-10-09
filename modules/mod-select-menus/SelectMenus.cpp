@@ -9,6 +9,7 @@
 #include "ProjectHistory.h"
 #include "ProjectRate.h"
 #include "ProjectSelectionManager.h"
+#include "ProjectWindows.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
 #include "ProjectWindows.h"
@@ -714,19 +715,19 @@ void OnZeroCrossing(const CommandContext &context)
 void OnSnapToOff(const CommandContext &context)
 {
    auto &project = context.project;
-   ProjectSelectionManager::Get( project ).AS_SetSnapTo(SNAP_OFF);
+   ProjectSettings::Get( project ).SetSnapTo(SNAP_OFF);
 }
 
 void OnSnapToNearest(const CommandContext &context)
 {
    auto &project = context.project;
-   ProjectSelectionManager::Get( project ).AS_SetSnapTo(SNAP_NEAREST);
+   ProjectSettings::Get( project ).SetSnapTo(SNAP_NEAREST);
 }
 
 void OnSnapToPrior(const CommandContext &context)
 {
    auto &project = context.project;
-   ProjectSelectionManager::Get( project ).AS_SetSnapTo(SNAP_PRIOR);
+   ProjectSettings::Get( project ).SetSnapTo(SNAP_PRIOR);
 }
 
 void OnSelToStart(const CommandContext &context)

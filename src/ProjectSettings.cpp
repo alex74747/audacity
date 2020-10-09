@@ -165,7 +165,7 @@ void ProjectSettings::SetSnapTo(int snap)
       Publish({ ProjectSettingsEvent::ChangedSnapTo });
    }
 }
-   
+
 int ProjectSettings::GetSnapTo() const
 {
    return mSnapTo;
