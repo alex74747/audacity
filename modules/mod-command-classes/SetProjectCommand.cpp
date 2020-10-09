@@ -22,11 +22,11 @@
 
 #include "commands/LoadCommands.h"
 #include "Project.h"
+#include "ProjectSettings.h"
 #include "WaveTrack.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "commands/CommandContext.h"
-#include "toolbars/SelectionBar.h"
 
 #include <wx/frame.h>
 
@@ -80,8 +80,7 @@ bool SetProjectCommand::Apply(const CommandContext & context)
 
    if( bHasRate && mRate >= 1 && mRate <= 1000000 )
    {
-      auto &bar = SelectionBar::Get( project );
-      bar.SetRate( mRate );
+      ProjectSettings::Get(project).SetRate( mRate );
    }
 
    if( bHasSizing )

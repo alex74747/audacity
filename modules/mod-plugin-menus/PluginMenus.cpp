@@ -10,7 +10,6 @@
 #include "Project.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
-#include "ProjectSelectionManager.h"
 #include "toolbars/ToolManager.h"
 #include "TempDirectory.h"
 #include "UndoManager.h"
@@ -413,8 +412,8 @@ void OnResetConfig(const CommandContext &context)
    gPrefs->Flush();
 
    ProjectSettings::Get(project).SetSnapTo(0);
-   ProjectSelectionManager::Get( project )
-      .AS_SetRate(gPrefs->ReadDouble("/DefaultProjectSampleRate", 44100.0));
+   ProjectSettings::Get(project).SetRate(
+      gPrefs->ReadDouble("/DefaultProjectSampleRate", 44100.0));
 }
 
 void OnManageGenerators(const CommandContext &context)
