@@ -13,7 +13,7 @@
 
 #include <wx/defs.h>
 
-#include "ToolBar.h"
+#include "toolbars/ToolBar.h"
 #include "NumericTextCtrl.h"
 #include "Observer.h"
 
