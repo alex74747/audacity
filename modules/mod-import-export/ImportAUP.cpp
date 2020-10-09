@@ -428,7 +428,9 @@ auto AUPImportFileHandle::Import(
 
    if (mProjectAttrs.havefrequencyformat)
    {
-      selman.SSBL_SetFrequencySelectionFormatName(NumericConverter::LookupFormat(NumericConverter::TIME, mProjectAttrs.frequencyformat));
+      settings.SetFrequencySelectionFormatName(
+         NumericConverter::LookupFormat(
+            NumericConverter::TIME, mProjectAttrs.frequencyformat));
    }
 
    if (mProjectAttrs.havebandwidthformat)
