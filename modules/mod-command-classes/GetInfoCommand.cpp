@@ -34,7 +34,7 @@ This class now lists
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "prefs/WaveformSettings.h"
+#include "WaveformSettings.h"
 #include "LabelTrack.h"
 #include "Envelope.h"
 

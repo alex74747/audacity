@@ -11,18 +11,18 @@ Paul Licameli
 #ifndef __AUDACITY_WAVEFORM_SETTINGS__
 #define __AUDACITY_WAVEFORM_SETTINGS__
 
-#include "../Audacity.h"
-#include "../ClientData.h" // to inherit
-#include "../Internat.h" // for TranslatableStrings
-#include "../Prefs.h"
-#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
+#include "Audacity.h"
+#include "ClientData.h" // to inherit
+#include "Internat.h" // for TranslatableStrings
+#include "Prefs.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 
 class wxRect;
 
 class EnumValueSymbols;
 class WaveTrack;
 
-class AUDACITY_DLL_API WaveformSettings
+class WAVEFORM_UI_API WaveformSettings
    : public PrefsListener
    , public ClientData::Cloneable< ClientData::UniquePtr >
 {
@@ -38,7 +38,7 @@ public:
    static void Set( WaveTrack &track, const WaveformSettings &settings );
 
    // Singleton for settings that are not per-track
-   class AUDACITY_DLL_API Globals
+   class Globals
    {
    public:
       static Globals &Get();
@@ -94,7 +94,7 @@ public:
    bool isLinear() const { return stLinear == scaleType; }
 };
 
-class AUDACITY_DLL_API WaveformSettingsCache
+class WAVEFORM_UI_API WaveformSettingsCache
    : public ClientData::Cloneable< ClientData::UniquePtr >
 {
 public:
