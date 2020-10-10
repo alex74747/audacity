@@ -77,7 +77,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "commands/CommandHandler.h"
 #include "commands/AppCommandEvent.h"
 #include "widgets/ASlider.h"
-#include "FFmpeg.h"
 //#include "LangChoice.h"
 #include "Languages.h"
 #include "Menus.h"
@@ -1460,10 +1459,6 @@ bool AudacityApp::InitPart2()
       SplashDialog::DoHelpWelcome(*project);
    }
 
-   #ifdef USE_FFMPEG
-   FFmpegStartup();
-   #endif
-
    Importer::Get().Initialize();
 
    // Bug1561: delay the recovery dialog, to avoid crashes.
@@ -2194,10 +2189,6 @@ int AudacityApp::OnExit()
    FileHistory::Global().Save(*gPrefs);
 
    FinishPreferences();
-
-#ifdef USE_FFMPEG
-   DropFFmpegLibs();
-#endif
 
    DeinitFFT();
 

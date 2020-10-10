@@ -196,6 +196,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-flac",
       "mod-ogg",
       "mod-mp2",
+      "mod-ffmpeg",
    };
    return modules;
 }

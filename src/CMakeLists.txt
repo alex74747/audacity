@@ -107,8 +107,6 @@ list( APPEND SOURCES
       EnvelopeEditor.h
       FFT.cpp
       FFT.h
-      FFmpeg.cpp
-      FFmpeg.h
       FileException.cpp
       FileException.h
       FileFormats.cpp
@@ -452,15 +450,6 @@ list( APPEND SOURCES
       export/ExportPCM.cpp
       export/MP3Prefs.cpp
 
-      # Optional exporters
-      $<$<BOOL:${USE_FFMPEG}>:
-         export/ExportFFmpeg.cpp
-         export/ExportFFmpegDialogs.cpp
-         export/ExportFFmpegDialogs.h
-         export/FFmpegPrefs.cpp
-      >
-
-
       # Import
 
       import/FormatClassifier.cpp
@@ -486,10 +475,6 @@ list( APPEND SOURCES
       import/ImportRaw.h
 
       # Optional importers
-
-      $<$<BOOL:${USE_FFMPEG}>:
-         import/ImportFFmpeg.cpp
-      >
 
       $<$<BOOL:${USE_GSTREAMER}>:
          import/ImportGStreamer.cpp
@@ -877,7 +862,6 @@ list( APPEND LIBRARIES
       libsoxr
       portaudio-v19
       sqlite
-      $<$<BOOL:${USE_FFMPEG}>:ffmpeg>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag>
       $<$<BOOL:${USE_LIBMAD}>:libmad>
       $<$<BOOL:${USE_MIDI}>:portmidi>
@@ -903,10 +887,6 @@ set( HAVE_GTK ${GTK_FOUND} )
 if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
    if( "${${_OPT}use_lame}" STREQUAL "local" )
       set( DISABLE_DYNAMIC_LOADING_LAME YES )
-   endif()
-
-   if( "${${_OPT}use_ffmpeg}" STREQUAL "linked" )
-      set( DISABLE_DYNAMIC_LOADING_FFMPEG YES )
    endif()
 endif()
 
@@ -1045,15 +1025,6 @@ else()
    #
    # (Don't use generator expressions since it will leave null/empty
    # entries in the list.)
-   if( USE_FFMPEG )
-      list( APPEND MIMETYPES
-         audio/aac
-         audio/ac3
-         audio/mp4
-         audio/x-ms-wma
-         video/mpeg
-      )
-   endif()
    if( USE_LIBMAD )
       list( APPEND MIMETYPES
          audio/mpeg

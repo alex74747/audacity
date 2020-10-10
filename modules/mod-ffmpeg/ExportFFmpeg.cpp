@@ -19,9 +19,9 @@ function.
 *//*******************************************************************/
 
 
-#include "../Audacity.h"   // keep ffmpeg before wx because they interact // for USE_* macros
+#include "Audacity.h"   // keep ffmpeg before wx because they interact // for USE_* macros
 
-#include "../FFmpeg.h"     // and Audacity.h before FFmpeg for config*.h
+#include "FFmpeg.h"     // and Audacity.h before FFmpeg for config*.h
 
 #include <wx/choice.h>
 #include <wx/textctrl.h>
@@ -30,16 +30,16 @@ function.
 #include <wx/spinctrl.h>
 #include <wx/combobox.h>
 
-#include "../Mix.h"
-#include "../ProjectSettings.h"
-#include "../Tags.h"
-#include "../Track.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ErrorDialog.h"
-#include "../widgets/ProgressDialog.h"
-#include "../wxFileNameWrapper.h"
+#include "Mix.h"
+#include "ProjectSettings.h"
+#include "Tags.h"
+#include "Track.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ErrorDialog.h"
+#include "widgets/ProgressDialog.h"
+#include "wxFileNameWrapper.h"
 
-#include "Export.h"
+#include "export/Export.h"
 
 #include "ExportFFmpegDialogs.h"
 
@@ -1252,6 +1252,80 @@ void ExportFFmpeg::OptionsCreate(ShuttleGui &S, int format)
 static Exporter::RegisteredExportPlugin sRegisteredPlugin{ "FFmpeg",
    []{ return std::make_unique< ExportFFmpeg >(); }
 };
+
+// Register menu items
+#include "commands/CommandContext.h"
+#include "commands/CommandManager.h"
+#include "CommonCommandFlags.h"
+
+namespace {
+struct Handler : CommandHandlerObject {
+void OnExportMp3(const CommandContext &context)
+{
+   auto &project = context.project;
+   Exporter::DoExport(project, "MP3");
+}
+
+void OnExportWav(const CommandContext &context)
+{
+   auto &project = context.project;
+   Exporter::DoExport(project, "WAV");
+}
+
+void OnExportOgg(const CommandContext &context)
+{
+   auto &project = context.project;
+   Exporter::DoExport(project, "OGG");
+}
+
+void OnExportFLAC(const CommandContext &context)
+{
+   Exporter::DoExport(context.project, "FLAC");
+}
+}; // struct Handler
+
+static CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+// These items may be duplicated in other modules,
+// so use the "ignore" conflict resolution
+
+using namespace MenuTable;
+#define FN(X) (& Handler :: X)
+AttachedItem sAttachment{
+   { wxT("File/Import-Export/Export"),
+      { OrderingHint::Unspecified, {}, OrderingHint::Ignore } },
+   ( FinderScope{ findCommandHandler },
+   Items( "",
+      Command( wxT("ExportMp3"), XXO("Export as MP&3"), FN(OnExportMp3),
+         AudioIONotBusyFlag() | WaveTracksExistFlag() ),
+
+      Command( wxT("ExportWav"), XXO("Export as &WAV"), FN(OnExportWav),
+         AudioIONotBusyFlag() | WaveTracksExistFlag() ),
+
+      Command( wxT("ExportOgg"), XXO("Export as &OGG"), FN(OnExportOgg),
+         AudioIONotBusyFlag() | WaveTracksExistFlag() )
+   ) )
+};
+
+AttachedItem sAttachment2{
+   { wxT("HiddenFileItems/HiddenFileMenu"),
+      { OrderingHint::Unspecified, {}, OrderingHint::Ignore } },
+   ( FinderScope{ findCommandHandler },
+   Command( wxT("ExportFLAC"), XXO("Export as FLAC"),
+      FN(OnExportFLAC),
+      AudioIONotBusyFlag() )
+   )
+};
+#undef FN
+
+#undef FN
+
+} // namespace
 
 #endif
 

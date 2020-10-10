@@ -19,7 +19,6 @@ addlib( sqlite             sqlite      SQLITE      YES   YES   "sqlite3 >= 3.32.
 # Optional libraries
 #
 #       directory          option      symbol      req   chk   version
-addlib( ffmpeg             ffmpeg      FFMPEG      NO    NO    "libavcodec >= 51.53" "libavformat >= 52.12" "libavutil >= 52.66" )
 addlib( libid3tag          id3tag      LIBID3TAG   NO    YES   "id3tag >= 0.15.1b" )
 addlib( libmad             mad         LIBMAD      NO    YES   "mad >= 0.15.1b" )
 
