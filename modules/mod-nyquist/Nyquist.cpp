@@ -54,7 +54,7 @@ effects from this one class.
 #include "LabelTrack.h"
 #include "NoteTrack.h"
 #include "TimeTrack.h"
-#include "prefs/SpectrogramSettings.h"
+#include "SpectrogramSettings.h"
 #include "Project.h"
 #include "ProjectSettings.h"
 #include "ShuttleGetDefinition.h"

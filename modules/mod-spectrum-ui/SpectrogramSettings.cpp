@@ -13,21 +13,21 @@ Paul Licameli
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "SpectrogramSettings.h"
 
-#include "../NumberScale.h"
-#include "../WaveTrack.h"
+#include "NumberScale.h"
+#include "WaveTrack.h"
 
 #include <algorithm>
 
-#include "../FFT.h"
-#include "../Internat.h"
-#include "../Prefs.h"
+#include "FFT.h"
+#include "Internat.h"
+#include "Prefs.h"
 
 #include <cmath>
 
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
 SpectrogramSettings::Globals::Globals()
 {

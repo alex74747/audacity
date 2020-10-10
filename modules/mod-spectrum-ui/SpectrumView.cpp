@@ -8,16 +8,15 @@ Paul Licameli split from WaveTrackView.cpp
 
 **********************************************************************/
 
-#include "../../../../Audacity.h"
+#include "Audacity.h"
 #include "SpectrumView.h"
 
 #include "Sequence.h"
 #include "Spectrum.h"
 
 #include "SpectrumVRulerControls.h"
-#include "WaveTrackView.h"
-#include "WaveTrackViewConstants.h"
-
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 #include "AColor.h"
 #include "Prefs.h"
 #include "NumberScale.h"
@@ -26,8 +25,8 @@ Paul Licameli split from WaveTrackView.cpp
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
-#include "prefs/SpectrogramSettings.h"
-#include "tracks/ui/SpectralSelectHandle.h"
+#include "SpectrogramSettings.h"
+#include "SpectralSelectHandle.h"
 
 #include <wx/dcmemory.h>
 #include <wx/graphics.h>
@@ -1390,15 +1389,15 @@ static const WaveTrackSubViews::RegisteredFactory key{
 // The following attaches the spectrogram settings item to the wave track popup
 // menu.  It is appropriate only to spectrum view and so is kept in this
 // source file with the rest of the spectrum view implementation.
-#include "WaveTrackControls.h"
-#include "../../../../AudioIOBase.h"
-#include "../../../../Menus.h"
-#include "../../../../ProjectHistory.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../prefs/PrefsDialog.h"
-#include "../../../../prefs/SpectrumPrefs.h"
-#include "../../../../widgets/AudacityMessageBox.h"
-#include "../../../../widgets/PopupMenuTable.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
+#include "AudioIOBase.h"
+#include "Menus.h"
+#include "ProjectHistory.h"
+#include "RefreshCode.h"
+#include "prefs/PrefsDialog.h"
+#include "SpectrumPrefs.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/PopupMenuTable.h"
 
 namespace {
 struct SpectrogramSettingsHandler : PopupMenuHandler {
@@ -1529,11 +1528,11 @@ PopupMenuTable::AttachedItem sAttachment{
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
 // Attach some related menu items
-#include "../../../ui/SelectHandle.h"
-#include "../../../../CommonCommandFlags.h"
-#include "../../../../Project.h"
-#include "../../../../SpectrumAnalyst.h"
-#include "../../../../commands/CommandContext.h"
+#include "tracks/ui/SelectHandle.h"
+#include "CommonCommandFlags.h"
+#include "Project.h"
+#include "SpectrumAnalyst.h"
+#include "commands/CommandContext.h"
 
 namespace {
 void DoNextPeakFrequency(AudacityProject &project, bool up)
