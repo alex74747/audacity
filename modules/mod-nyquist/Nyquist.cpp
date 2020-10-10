@@ -53,7 +53,7 @@ effects from this one class.
 #include "FileNames.h"
 #include "LabelTrack.h"
 #include "Languages.h"
-#include "prefs/SpectrogramSettings.h"
+#include "SpectrogramSettings.h"
 #include "PluginManager.h"
 #include "Project.h"
 #include "ProjectRate.h"

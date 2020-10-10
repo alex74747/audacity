@@ -13,9 +13,9 @@
 #include <cmath>
 #include "RealFFTf.h"
 #include "SampleTrackCache.h"
-#include "../../../../prefs/SpectrogramSettings.h"
+#include "SpectrogramSettings.h"
 #include "Spectrum.h"
-#include "WaveClipUtilities.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveClipUtilities.h"
 #include "WaveTrack.h"
 
 class WaveTrack;

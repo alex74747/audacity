@@ -8,7 +8,6 @@ Paul Licameli split from WaveTrackView.cpp
 
 **********************************************************************/
 
-
 #include "SpectrumView.h"
 
 #include "SpectralDataManager.h" // Cycle :-(
@@ -18,25 +17,25 @@ Paul Licameli split from WaveTrackView.cpp
 #include "Spectrum.h"
 
 #include "SpectrumVRulerControls.h"
-#include "WaveTrackView.h"
-#include "WaveTrackViewConstants.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 
-#include "../../../ui/BrushHandle.h"
+#include "BrushHandle.h"
 
 #include "AColor.h"
 #include "Prefs.h"
-#include "../../../../ProjectCommandManager.h"
+#include "ProjectCommandManager.h"
 #include "NumberScale.h"
-#include "../../../../ProjectCommandManager.h"
-#include "../../../../TrackArt.h"
+#include "ProjectCommandManager.h"
+#include "TrackArt.h"
 #include "TrackArtist.h"
 #include "TrackPanelDrawingContext.h"
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
 #include "tracks/ui/SelectHandle.h"
-#include "tracks/ui/SpectralSelectHandle.h"
-#include "../../../../prefs/SpectrogramSettings.h"
+#include "SpectralSelectHandle.h"
+#include "SpectrogramSettings.h"
 #include "SampleTrackCache.h"
 #include "WaveTrackLocation.h"
 #include "MenuHandle.h"
@@ -937,15 +936,15 @@ static const WaveTrackSubViews::RegisteredFactory key{
 // The following attaches the spectrogram settings item to the wave track popup
 // menu.  It is appropriate only to spectrum view and so is kept in this
 // source file with the rest of the spectrum view implementation.
-#include "WaveTrackControls.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
 #include "AudioIOBase.h"
 #include "Menus.h"
 #include "ProjectHistory.h"
 #include "RefreshCode.h"
 #include "PrefsDialog.h"
-#include "../../../../prefs/SpectrumPrefs.h"
-#include "../../../../widgets/AudacityMessageBox.h"
-#include "../../../../widgets/PopupMenuTable.h"
+#include "SpectrumPrefs.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/PopupMenuTable.h"
 
 namespace {
 struct SpectrogramSettingsHandler : PopupMenuHandler {
@@ -1106,10 +1105,10 @@ unsigned SpectrumView::Char(
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
 // Attach some related menu items
-#include "../../../ui/SelectHandle.h"
+#include "tracks/ui/SelectHandle.h"
 #include "CommonCommandFlags.h"
 #include "Project.h"
-#include "../../../../SpectrumAnalyst.h"
+#include "SpectrumAnalyst.h"
 #include "CommandContext.h"
 
 namespace {

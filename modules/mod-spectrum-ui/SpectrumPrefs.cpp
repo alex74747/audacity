@@ -14,7 +14,6 @@
 
 *//*******************************************************************/
 
-
 #include "SpectrumPrefs.h"
 
 #include <wx/choice.h>
@@ -26,13 +25,13 @@
 #include "Project.h"
 #include "ShuttleGui.h"
 
-#include "../TrackPanel.h"
+#include "TrackPanel.h"
 #include "WaveTrack.h"
-#include "../tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
 
 #include <algorithm>
 
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
 SpectrumPrefs::SpectrumPrefs(wxWindow * parent, wxWindowID winid,
    AudacityProject *pProject, WaveTrack *wt)
@@ -601,3 +600,6 @@ PrefsPanel::Registration sAttachment{ "Spectrum",
    { "Tracks" }
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

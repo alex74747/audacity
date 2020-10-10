@@ -14,7 +14,7 @@
 *//*******************************************************************/
 
 #include "./SpectrumTransformer.h"
-#include "tracks/playabletrack/wavetrack/ui/SpectrumView.h"
+#include "SpectrumView.h"
 
 class SpectralDataManager{
 public:

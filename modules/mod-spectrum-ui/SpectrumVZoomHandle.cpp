@@ -8,10 +8,9 @@ Paul Licameli split from WaveTrackVZoomHandle.cpp
 
 **********************************************************************/
 
-
 #include "SpectrumVZoomHandle.h"
 
-#include "WaveTrackVZoomHandle.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackVZoomHandle.h"
 
 #include "HitTestResult.h"
 #include "NumberScale.h"
@@ -20,7 +19,7 @@ Paul Licameli split from WaveTrackVZoomHandle.cpp
 #include "RefreshCode.h"
 #include "TrackPanelMouseEvent.h"
 #include "WaveTrack.h"
-#include "../../../../prefs/SpectrogramSettings.h"
+#include "SpectrogramSettings.h"
 #include "MenuHandle.h"
 
 SpectrumVZoomHandle::SpectrumVZoomHandle

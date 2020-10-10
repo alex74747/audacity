@@ -10,33 +10,32 @@ Edward Hui
 
 
 #include "BrushHandle.h"
-#include "Scrubbing.h"
 #include "TrackView.h"
 
 #include "AColor.h"
-#include "../../SpectrumAnalyst.h"
+#include "SpectrumAnalyst.h"
 #include "NumberScale.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
-#include "../../ProjectSettings.h"
-#include "../../ProjectWindow.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
 #include "RefreshCode.h"
-#include "../../SelectUtilities.h"
+#include "SelectUtilities.h"
 #include "SelectionState.h"
-#include "../../SpectralDataManager.h"
-#include "../playabletrack/wavetrack/ui/SpectrumView.h" // uh oh cycle
+#include "SpectralDataManager.h"
+#include "SpectrumView.h" // uh oh cycle
 #include "TrackArtist.h"
-#include "../../TrackPanelAx.h"
-#include "../../TrackPanel.h"
+#include "TrackPanelAx.h"
+#include "TrackPanel.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
-#include "../../prefs/SpectrogramSettings.h"
+#include "SpectrogramSettings.h"
 #include "../../../images/Cursors.h"
-#include "../playabletrack/wavetrack/ui/SpectrumView.h"
+#include "SpectrumView.h"
 
 #include <cmath>
 #include <wx/event.h>

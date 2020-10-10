@@ -25,7 +25,7 @@ class SpectrumPrefs;
 class wxArrayStringEx;
 class SampleTrack;
 
-class AUDACITY_DLL_API SpectrogramSettings
+class SPECTRUM_UI_API SpectrogramSettings
    : public PrefsListener
    , public ClientData::Cloneable< ClientData::UniquePtr >
 {
@@ -33,7 +33,7 @@ class AUDACITY_DLL_API SpectrogramSettings
 public:
 
    // Singleton for settings that are not per-track
-   class AUDACITY_DLL_API Globals
+   class SPECTRUM_UI_API Globals
    {
    public:
       static Globals &Get();
@@ -198,9 +198,9 @@ public:
    mutable Floats         dWindow; // Derivative of window
 };
 
-extern AUDACITY_DLL_API IntSetting SpectrumMaxFreq;
+extern SPECTRUM_UI_API IntSetting SpectrumMaxFreq;
 
-class AUDACITY_DLL_API SpectrogramSettingsCache
+class SPECTRUM_UI_API SpectrogramSettingsCache
    : public ClientData::Cloneable< ClientData::UniquePtr >
 {
 public:
