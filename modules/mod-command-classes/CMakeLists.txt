@@ -37,6 +37,7 @@ set( LIBRARIES
    mod-import-export-interface
    mod-effects-interface
    mod-label-track-ui-interface
+   mod-waveform-ui-interface
 )
 audacity_module( mod-command-classes "${SOURCES}" "${LIBRARIES}"
    "" "" )

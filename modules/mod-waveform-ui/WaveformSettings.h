@@ -20,7 +20,7 @@ class wxRect;
 class EnumValueSymbols;
 class WaveTrack;
 
-class AUDACITY_DLL_API WaveformSettings
+class WAVEFORM_UI_API WaveformSettings
    : public PrefsListener
    , public ClientData::Cloneable< ClientData::UniquePtr >
 {
@@ -37,7 +37,7 @@ public:
       WaveTrack &track, std::unique_ptr<WaveformSettings> pSettings );
 
    // Singleton for settings that are not per-track
-   class AUDACITY_DLL_API Globals
+   class Globals
    {
    public:
       static Globals &Get();
@@ -93,7 +93,7 @@ public:
    bool isLinear() const { return stLinear == scaleType; }
 };
 
-class AUDACITY_DLL_API WaveformSettingsCache
+class WAVEFORM_UI_API WaveformSettingsCache
    : public ClientData::Cloneable< ClientData::UniquePtr >
 {
 public:

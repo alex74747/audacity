@@ -1,0 +1,20 @@
+list( APPEND SOURCES
+   GetWaveDisplay.cpp
+   GetWaveDisplay.h
+   SampleHandle.cpp
+   SampleHandle.h
+   WaveformCache.cpp
+   WaveformCache.h
+   WaveformPrefs.cpp
+   WaveformPrefs.h
+   WaveformSettings.cpp
+   WaveformSettings.h
+   WaveformVRulerControls.cpp
+   WaveformVRulerControls.h
+   WaveformVZoomHandle.cpp
+   WaveformVZoomHandle.h
+   WaveformView.cpp
+   WaveformView.h
+)
+audacity_module( mod-waveform-ui "${SOURCES}" "Audacity"
+   "" "" )

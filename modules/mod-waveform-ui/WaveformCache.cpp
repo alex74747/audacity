@@ -13,7 +13,7 @@
 #include <cmath>
 #include "Sequence.h"
 #include "GetWaveDisplay.h"
-#include "WaveClipUtilities.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveClipUtilities.h"
 
 class WaveCache {
 public:

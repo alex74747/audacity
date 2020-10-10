@@ -11,7 +11,7 @@ Paul Licameli split from WaveTrackVRulerControls.cpp
 #include "WaveformVRulerControls.h"
 
 #include "WaveformVZoomHandle.h"
-#include "WaveTrackVRulerControls.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackVRulerControls.h"
 
 #include "NumberScale.h"
 #include "ProjectHistory.h"
@@ -19,7 +19,7 @@ Paul Licameli split from WaveTrackVRulerControls.cpp
 #include "TrackPanelMouseEvent.h"
 #include "UIHandle.h"
 #include "WaveTrack.h"
-#include "../../../../prefs/WaveformSettings.h"
+#include "WaveformSettings.h"
 #include "Ruler.h"
 
 WaveformVRulerControls::~WaveformVRulerControls() = default;

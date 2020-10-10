@@ -13,13 +13,12 @@ Paul Licameli
 
 *//*******************************************************************/
 
-
 #include "WaveformSettings.h"
 #include "WaveTrack.h"
 
 #include "Decibels.h"
-#include "GUIPrefs.h"
-#include "TracksPrefs.h"
+#include "prefs/GUIPrefs.h"
+#include "prefs/TracksPrefs.h"
 
 #include <algorithm>
 

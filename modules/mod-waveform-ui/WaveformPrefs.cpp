@@ -13,10 +13,9 @@ Paul Licameli
 
 *//*******************************************************************/
 
-
 #include "WaveformPrefs.h"
 
-#include "GUIPrefs.h"
+#include "prefs/GUIPrefs.h"
 #include "Decibels.h"
 
 #include <wx/checkbox.h>
@@ -24,7 +23,7 @@ Paul Licameli
 
 #include "Project.h"
 
-#include "../TrackPanel.h"
+#include "TrackPanel.h"
 #include "ShuttleGui.h"
 #include "WaveTrack.h"
 
@@ -278,3 +277,6 @@ PrefsPanel::Registration sAttachment{ "Waveform",
 };
 }
 #endif
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
