@@ -78,7 +78,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "CommandTargets.h"
 #include "commands/AppCommandEvent.h"
 #include "DefaultCommandOutputTargets.h"
-#include "FFmpeg.h"
 #include "Journal.h"
 //#include "LangChoice.h"
 #include "Languages.h"
@@ -1567,10 +1566,6 @@ bool AudacityApp::InitPart2()
 #if defined(HAVE_UPDATES_CHECK)
    UpdateManager::Start();
 #endif
-
-   #ifdef USE_FFMPEG
-   FFmpegStartup();
-   #endif
 
    Importer::Get().Initialize();
 

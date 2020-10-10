@@ -120,8 +120,6 @@ list( APPEND SOURCES
       EffectHostInterface.h
       EnvelopeEditor.cpp
       EnvelopeEditor.h
-      FFmpeg.cpp
-      FFmpeg.h
       FileFormats.cpp
       FileFormats.h
       FreqWindow.cpp
@@ -484,15 +482,6 @@ list( APPEND SOURCES
       export/ExportPCM.cpp
       export/MP3Prefs.cpp
 
-      # Optional exporters
-      $<$<BOOL:${USE_FFMPEG}>:
-         export/ExportFFmpeg.cpp
-         export/ExportFFmpegDialogs.cpp
-         export/ExportFFmpegDialogs.h
-         export/FFmpegPrefs.cpp
-      >
-
-
       # Import
 
       import/FormatClassifier.cpp
@@ -518,10 +507,6 @@ list( APPEND SOURCES
       import/ImportRaw.h
 
       # Optional importers
-
-      $<$<BOOL:${USE_FFMPEG}>:
-         import/ImportFFmpeg.cpp
-      >
 
       $<$<BOOL:${USE_GSTREAMER}>:
          import/ImportGStreamer.cpp
@@ -938,10 +923,6 @@ if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
    if( "${${_OPT}use_lame}" STREQUAL "local" )
       set( DISABLE_DYNAMIC_LOADING_LAME YES )
    endif()
-
-   if( "${${_OPT}use_ffmpeg}" STREQUAL "linked" )
-      set( DISABLE_DYNAMIC_LOADING_FFMPEG YES )
-   endif()
 endif()
 
 if( CMAKE_SYSTEM_NAME MATCHES "Windows" )
@@ -1071,15 +1052,6 @@ else()
    set( MIMETYPES
       application/x-audacity-project
    )
-   if( USE_FFMPEG )
-      list( APPEND MIMETYPES
-         audio/aac
-         audio/ac3
-         audio/mp4
-         audio/x-ms-wma
-         video/mpeg
-      )
-   endif()
    if( USE_LIBMAD )
       list( APPEND MIMETYPES
          audio/mpeg

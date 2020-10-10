@@ -392,4 +392,7 @@ bool FindFFmpegLibs(wxWindow* parent)
 
 BoolSetting FFmpegNotFoundDontShow{ L"/FFmpeg/NotFoundDontShow", false };
 
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
+
 #endif //USE_FFMPEG
