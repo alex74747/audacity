@@ -443,12 +443,9 @@ list( APPEND SOURCES
 
       # Standard exporters
       export/ExportCL.cpp
-      export/ExportMP3.cpp
-      export/ExportMP3.h
       export/ExportMultiple.cpp
       export/ExportMultiple.h
       export/ExportPCM.cpp
-      export/MP3Prefs.cpp
 
       # Import
 
@@ -483,10 +480,6 @@ list( APPEND SOURCES
       $<$<BOOL:${USE_MIDI}>:
          import/ImportMIDI.cpp
          import/ImportMIDI.h
-      >
-
-      $<$<BOOL:${USE_LIBMAD}>:
-         import/ImportMP3.cpp
       >
 
       # Menus
@@ -857,13 +850,11 @@ list( APPEND LIBRARIES
       ${CMAKE_REQUIRED_LIBRARIES}
       wxWidgets
       expat
-      lame
       libsndfile
       libsoxr
       portaudio-v19
       sqlite
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag>
-      $<$<BOOL:${USE_LIBMAD}>:libmad>
       $<$<BOOL:${USE_MIDI}>:portmidi>
       $<$<BOOL:${USE_MIDI}>:portsmf>
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
@@ -880,15 +871,6 @@ set( INSTALL_PREFIX "${_PREFIX}" )
 set( PKGLIBDIR "${_PKGLIBDIR}" )
 set( LIBDIR "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set( HAVE_GTK ${GTK_FOUND} )
-
-# Do not define these for Windows or Mac until further testing
-# can be done against ExportMP3.cpp.  If either are defined, the
-# build will fail.
-if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
-   if( "${${_OPT}use_lame}" STREQUAL "local" )
-      set( DISABLE_DYNAMIC_LOADING_LAME YES )
-   endif()
-endif()
 
 if( CMAKE_SYSTEM_NAME MATCHES "Windows" )
    set_target_properties(
@@ -1025,11 +1007,6 @@ else()
    #
    # (Don't use generator expressions since it will leave null/empty
    # entries in the list.)
-   if( USE_LIBMAD )
-      list( APPEND MIMETYPES
-         audio/mpeg
-      )
-   endif()
    if( USE_SNDFILE )
       list( APPEND MIMETYPES
          audio/basic

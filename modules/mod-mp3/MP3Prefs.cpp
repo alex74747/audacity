@@ -10,11 +10,19 @@
 **********************************************************************/
 
 #include "ExportMP3.h"
+<<<<<<< HEAD:src/export/MP3Prefs.cpp
 #include "../Internat.h"
 #include "../ShuttleGui.h"
 #include "../prefs/LibraryPrefs.h"
 #include "../widgets/HelpSystem.h"
 #include "../widgets/ReadOnlyText.h"
+=======
+#include "Internat.h"
+#include "ShuttleGui.h"
+#include "prefs/LibraryPrefs.h"
+#include "widgets/HelpSystem.h"
+#include "widgets/wxTextCtrlWrapper.h"
+>>>>>>> 6f0d3c1c80... mp3 import/export in a module; Audacity needn't link lame, libmad:modules/mod-mp3/MP3Prefs.cpp
 #include <wx/button.h>
 #include <wx/stattext.h>
 

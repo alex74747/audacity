@@ -59,7 +59,7 @@
 
 *//********************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "ExportMP3.h"
 
 #include <wx/defs.h>
@@ -75,21 +75,21 @@
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
-#include "../FileNames.h"
-#include "../float_cast.h"
-#include "../Mix.h"
-#include "../Prefs.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
-#include "../ShuttleGui.h"
-#include "../Tags.h"
-#include "../Track.h"
-#include "../widgets/HelpSystem.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ProgressDialog.h"
-#include "../wxFileNameWrapper.h"
+#include "FileNames.h"
+#include "float_cast.h"
+#include "Mix.h"
+#include "Prefs.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
+#include "ShuttleGui.h"
+#include "Tags.h"
+#include "Track.h"
+#include "widgets/HelpSystem.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ProgressDialog.h"
+#include "wxFileNameWrapper.h"
 
-#include "Export.h"
+#include "export/Export.h"
 
 #include <lame/lame.h>
 
@@ -2248,4 +2248,41 @@ TranslatableString GetMP3Version(wxWindow *parent, bool prompt)
 
    return versionString;
 }
+
+
+// Register a menu item
+#include "commands/CommandContext.h"
+#include "commands/CommandManager.h"
+#include "CommonCommandFlags.h"
+
+namespace {
+struct Handler : CommandHandlerObject {
+void OnExportMp3(const CommandContext &context)
+{
+   Exporter::DoExport(context.project, "MP3");
+}
+}; // struct Handler
+
+static CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+using namespace MenuTable;
+#define FN(X) (& Handler :: X)
+AttachedItem sAttachment{
+   { wxT("File/Import-Export/Export"),
+      // This item may be duplicated in other modules,
+      // so use the "ignore" conflict resolution
+      { OrderingHint::Unspecified, {}, OrderingHint::Ignore } },
+   ( FinderScope{ findCommandHandler },
+   Command( wxT("ExportMp3"), XXO("Export as MP&3"), FN(OnExportMp3),
+      AudioIONotBusyFlag() | WaveTracksExistFlag() )
+   )
+};
+#undef FN
+
+} // namespace
 

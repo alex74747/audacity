@@ -10,7 +10,6 @@ cmd_option( ${_OPT}lib_preference
 #       directory          option      symbol      req   chk   version
 addlib( wxWidgets          wxwidgets   WX          YES   NO    "" ) # must be first
 addlib( expat              expat       EXPAT       YES   YES   "expat >= 2.1.0" )
-addlib( lame               lame        LAME        YES   YES   "lame >= 3.100" )
 addlib( libsndfile         sndfile     SNDFILE     YES   YES   "sndfile >= 1.0.28" )
 addlib( libsoxr            soxr        SOXR        YES   YES   "soxr >= 0.1.1" )
 addlib( portaudio-v19      portaudio   PORTAUDIO   YES   YES   "" )
@@ -20,7 +19,6 @@ addlib( sqlite             sqlite      SQLITE      YES   YES   "sqlite3 >= 3.32.
 #
 #       directory          option      symbol      req   chk   version
 addlib( libid3tag          id3tag      LIBID3TAG   NO    YES   "id3tag >= 0.15.1b" )
-addlib( libmad             mad         LIBMAD      NO    YES   "mad >= 0.15.1b" )
 
 addlib( portmidi           midi        MIDI        NO    YES   "portmidi >= 0.1" )
 if (NOT USE_MIDI AND
