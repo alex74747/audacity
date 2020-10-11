@@ -18,7 +18,6 @@
 #include "WaveTrack.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../export/ExportMP3.h"
 #include "../export/ExportMultiple.h"
 #include "../import/Import.h"
 #include "../import/ImportMIDI.h"
