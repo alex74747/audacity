@@ -477,7 +477,6 @@ list( APPEND SOURCES
       export/ExportCL.cpp
       export/ExportMultiple.cpp
       export/ExportMultiple.h
-      export/ExportPCM.cpp
 
       # Import
 
@@ -497,7 +496,6 @@ list( APPEND SOURCES
 
       import/ImportAUP.cpp
       import/ImportLOF.cpp
-      import/ImportPCM.cpp
       import/ImportPlugin.h
       import/ImportPlugin.cpp
       import/ImportRaw.cpp
