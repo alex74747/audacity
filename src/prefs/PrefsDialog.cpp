@@ -481,12 +481,17 @@ PrefsDialog::PrefsDialog(
                   const auto &node = *it;
                   const auto &factory = node.factory;
                   wxWindow *const w = factory(mCategories, wxID_ANY, pProject);
-                  if (stack.empty())
+                  node.enabled = (w != nullptr);
+                  if (stack.empty()) {
                      // Parameters are: AddPage(page, name, IsSelected, imageId).
-                     mCategories->AddPage(w, w->GetName(), false, 0);
+                     if (w)
+                        mCategories->AddPage(w, w->GetName(), false, 0);
+                  }
                   else {
                      IntPair &top = *stack.rbegin();
-                     mCategories->InsertSubPage(top.first, w, w->GetName(), false, 0);
+                     if (w)
+                        mCategories->InsertSubPage(top.first,
+                           w, w->GetName(), false, 0);
                      if (--top.second == 0) {
                         // Expand all nodes before the layout calculation
                         mCategories->ExpandNode(top.first, true);
@@ -509,18 +514,21 @@ PrefsDialog::PrefsDialog(
          const auto &node = factories[0];
          const auto &factory = node.factory;
          mUniquePage = factory(S.GetParent(), wxID_ANY, pProject);
-         wxWindow * uniquePageWindow = S.Prop(1)
-            .Position(wxEXPAND)
-            .AddWindow(mUniquePage);
-         // We're not in the wxTreebook, so add the accelerator here
-         wxAcceleratorEntry entries[1];
+         node.enabled = (mUniquePage != nullptr);
+         if (mUniquePage) {
+            wxWindow * uniquePageWindow = S.Prop(1)
+               .Position(wxEXPAND)
+               .AddWindow(mUniquePage);
+            // We're not in the wxTreebook, so add the accelerator here
+            wxAcceleratorEntry entries[1];
 #if defined(__WXMAC__)
-         // Is there a standard shortcut on Mac?
+            // Is there a standard shortcut on Mac?
 #else
-         entries[0].Set(wxACCEL_NORMAL, (int) WXK_F1, wxID_HELP);
+            entries[0].Set(wxACCEL_NORMAL, (int) WXK_F1, wxID_HELP);
 #endif
-         wxAcceleratorTable accel(1, entries);
-         uniquePageWindow->SetAcceleratorTable(accel);
+            wxAcceleratorTable accel(1, entries);
+            uniquePageWindow->SetAcceleratorTable(accel);
+         }
       }
    }
    S.EndVerticalLay();
@@ -548,8 +556,10 @@ PrefsDialog::PrefsDialog(
    {
       int iPage = 0;
       for (auto it = factories.begin(), end = factories.end();
-         it != end; ++it, ++iPage)
-         mCategories->ExpandNode(iPage, it->expanded);
+         it != end; ++it) {
+         if (it->enabled)
+            mCategories->ExpandNode(iPage++, it->expanded);
+      }
    }
 
    // This ASSERT was originally used to limit us to 800 x 600.
@@ -599,7 +609,7 @@ int PrefsDialog::ShowModal()
          selected = 0;  // clamp to available range of tabs
       mCategories->SetSelection(selected);
    }
-   else {
+   else if (mUniquePage) {
       auto Temp = mTitlePrefix;
       Temp.Join( Verbatim( mUniquePage->GetLabel() ), wxT(" ") );
       SetTitle(Temp);
@@ -618,7 +628,7 @@ void PrefsDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
          ((PrefsPanel *)mCategories->GetPage(i))->Cancel();
       }
    }
-   else
+   else if (mUniquePage)
       mUniquePage->Cancel();
 
    // Remember modified dialog size, even if cancelling.
@@ -667,7 +677,8 @@ void PrefsDialog::ShuttleAll( ShuttleGui & S)
    else
    {
       S.ResetId();
-      mUniquePage->PopulateOrExchange( S );
+      if (mUniquePage)
+         mUniquePage->PopulateOrExchange( S );
    }
 }
 
@@ -713,7 +724,7 @@ void PrefsDialog::OnOK(wxCommandEvent & WXUNUSED(event))
          panel->Commit();
       }
    }
-   else {
+   else if (mUniquePage) {
       mUniquePage->Preview();
       mUniquePage->Commit();
    }
@@ -820,8 +831,10 @@ void PrefsDialog::RecordExpansionState()
    {
       int iPage = 0;
       for (auto it = mFactories.begin(), end = mFactories.end();
-         it != end; ++it, ++iPage)
-         it->expanded = mCategories->IsNodeExpanded(iPage);
+         it != end; ++it) {
+         if (it->enabled)
+            it->expanded = mCategories->IsNodeExpanded(iPage++);
+      }
    }
    else
       mFactories[0].expanded = true;
