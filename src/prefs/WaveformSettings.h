@@ -14,6 +14,7 @@ Paul Licameli
 #include "../Audacity.h"
 #include "../Internat.h" // for TranslatableStrings
 #include "../Prefs.h"
+#include "../tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 
 class EnumValueSymbols;
 
@@ -65,6 +66,8 @@ public:
    };
 
    static const EnumValueSymbols &GetScaleNames();
+
+   static WaveTrackViewConstants::SampleDisplay SampleViewChoice();
 
    ScaleType scaleType;
    int dBRange;
