@@ -247,7 +247,7 @@ function( audacity_module NAME SOURCES IMPORT_TARGETS
          FOLDER "modules"
    )
 
-   list( TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/" )
+#   list( TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/" )
 
    organize_source( "${TARGET_ROOT}" "" "${SOURCES}" )
    target_sources( ${TARGET} PRIVATE ${SOURCES} )
