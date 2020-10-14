@@ -67,7 +67,7 @@ namespace
                                wxInt64 trackTopEdge,
                                int trackHeight)
    {
-      const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+      const SpectrogramSettings &settings = SpectrogramSettings::Get(*wt);
       float minFreq, maxFreq;
       wt->GetSpectrumBounds(&minFreq, &maxFreq);
       const NumberScale numberScale(settings.GetScale(minFreq, maxFreq));
@@ -93,7 +93,7 @@ namespace
           trackTopEdge + trackHeight - mouseYCoordinate < FREQ_SNAP_DISTANCE)
          return -1;
 
-      const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+      const SpectrogramSettings &settings = SpectrogramSettings::Get(*wt);
       float minFreq, maxFreq;
       wt->GetSpectrumBounds(&minFreq, &maxFreq);
       const NumberScale numberScale(settings.GetScale(minFreq, maxFreq));
@@ -127,7 +127,7 @@ namespace
             pTrackView->FindTrack() &&
             pTrackView->FindTrack()->TypeSwitch< bool >(
                   [&](const WaveTrack *wt) {
-                     const SpectrogramSettings &settings = wt->GetSpectrogramSettings();
+                     const SpectrogramSettings &settings = SpectrogramSettings::Get(*wt);
                      return settings.SpectralSelectionEnabled();
                   });
    }
@@ -157,8 +157,8 @@ BrushHandle::BrushHandle
 
    mRect = st.rect;
    mBrushRadius = pSettings.GetBrushRadius();
-   mFreqUpperBound = wt->GetSpectrogramSettings().maxFreq - 1;
-   mFreqLowerBound = wt->GetSpectrogramSettings().minFreq + 1;
+   mFreqUpperBound = SpectrogramSettings::Get(*wt).maxFreq - 1;
+   mFreqLowerBound = SpectrogramSettings::Get(*wt).minFreq + 1;
    mIsSmartSelection = pSettings.IsSmartSelection();
    mIsOvertones = pSettings.IsOvertones();
    // Borrowed from TimeToLongSample

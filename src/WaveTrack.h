@@ -166,7 +166,6 @@ private:
    SpectrogramSettings &GetIndependentSpectrogramSettings();
    void SetSpectrogramSettings(std::unique_ptr<SpectrogramSettings> &&pSettings);
 
-   void UseSpectralPrefs( bool bUse=true );
    //
    // High-level editing
    //
@@ -555,6 +554,7 @@ private:
    wxCriticalSection mAppendCriticalSection;
    double mLegacyProjectFileOffset;
 
+   friend SpectrogramSettings;
    std::unique_ptr<SpectrogramSettings> mpSpectrumSettings;
 };
 
