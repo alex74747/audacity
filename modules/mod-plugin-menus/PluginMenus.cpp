@@ -1,29 +1,28 @@
 
 
 #include "AudioIO.h"
-#include "../Benchmark.h"
+#include "Benchmark.h"
 #include "CommonCommandFlags.h"
 #include "Journal.h"
 #include "Menus.h"
 #include "PluginManager.h"
-#include "../PluginRegistrationDialog.h"
+#include "PluginRegistrationDialog.h"
 #include "Prefs.h"
 #include "Project.h"
-#include "../ProjectCommandManager.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
+#include "ProjectCommandManager.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
-#include "../ProjectSelectionManager.h"
-#include "../ReloadPreferences.h"
-#include "../toolbars/ToolManager.h"
+#include "ProjectSelectionManager.h"
+#include "ReloadPreferences.h"
+#include "toolbars/ToolManager.h"
 #include "TempDirectory.h"
 #include "UndoManager.h"
 #include "CommandContext.h"
-#include "CommandManager.h"
-#include "../effects/EffectManager.h"
-#include "../effects/EffectUI.h"
+#include "effects/EffectManager.h"
+#include "effects/EffectUI.h"
 #include "RealtimeEffectManager.h"
-#include "../prefs/EffectsPrefs.h"
+#include "prefs/EffectsPrefs.h"
 #include "PrefsDialog.h"
 #include "widgets/AudacityMessageBox.h"
 
@@ -987,3 +986,6 @@ AttachedItem sAttachment4{
 }
 
 #undef FN
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

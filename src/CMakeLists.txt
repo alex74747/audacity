@@ -115,8 +115,6 @@ list( APPEND SOURCES
       NoteTrack.h
       PitchName.cpp
       PitchName.h
-      PluginRegistrationDialog.cpp
-      PluginRegistrationDialog.h
       Profiler.cpp
       Profiler.h
       ProjectAudioManager.cpp
@@ -304,7 +302,6 @@ list( APPEND SOURCES
       menus/ExtraMenus.cpp
       menus/FileMenus.cpp
       menus/LabelMenus.cpp
-      menus/PluginMenus.cpp
       menus/TransportMenus.cpp
 
       # Preferences

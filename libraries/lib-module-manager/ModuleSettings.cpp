@@ -53,7 +53,8 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-import-export",
       "mod-tags-ui",
       "mod-tags",
-   };
+      "mod-plugin-menus",
+  };
    return modules;
 }
 
