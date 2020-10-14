@@ -2,24 +2,24 @@
 #include "Menus.h"
 #include "Prefs.h"
 #include "Project.h"
-#include "../ProjectCommandManager.h"
 #include "ProjectHistory.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
 #include "Track.h"
 #include "TrackArtist.h"
-#include "../TrackInfo.h"
-#include "../TrackPanel.h"
+#include "TrackInfo.h"
+#include "TrackPanel.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../prefs/GUIPrefs.h"
-#include "../prefs/TracksPrefs.h"
+#include "ProjectCommandManager.h"
+#include "prefs/GUIPrefs.h"
+#include "prefs/TracksPrefs.h"
 #include "TrackView.h"
 
 #ifdef EXPERIMENTAL_EFFECTS_RACK
-#include "../effects/EffectUI.h"
+#include "effects/EffectUI.h"
 #endif
 
 #include <wx/app.h>
@@ -489,3 +489,6 @@ AttachedItem sAttachment1{
 }
 
 #undef FN
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
