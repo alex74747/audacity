@@ -165,8 +165,6 @@ list( APPEND SOURCES
       PlaybackSchedule.h
       PluginManager.cpp
       PluginManager.h
-      PluginRegistrationDialog.cpp
-      PluginRegistrationDialog.h
       Prefs.cpp
       Prefs.h
       Profiler.cpp
@@ -529,7 +527,6 @@ list( APPEND SOURCES
       menus/ExtraMenus.cpp
       menus/FileMenus.cpp
       menus/LabelMenus.cpp
-      menus/PluginMenus.cpp
       menus/TransportMenus.cpp
 
       # Preferences
