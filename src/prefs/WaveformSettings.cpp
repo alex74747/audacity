@@ -106,9 +106,31 @@ bool WaveformSettings::Validate(bool /* quiet */)
    return true;
 }
 
+namespace {
+static EnumSetting< WaveformSettings::ScaleTypeValues > waveformScaleSetting{
+   TracksPrefs::WaveformScaleKey(),
+   {
+      { XO("Linear") },
+      { TracksPrefs::DBValueString(), XO("Logarithmic (dB)") },
+   },
+
+   0, // linear
+   
+   {
+      WaveformSettings::stLinear,
+      WaveformSettings::stLogarithmic,
+   }
+};
+
+WaveformSettings::ScaleTypeValues WaveformScaleChoice()
+{
+   return waveformScaleSetting.ReadEnum();
+}
+}
+
 void WaveformSettings::LoadPrefs()
 {
-   scaleType = TracksPrefs::WaveformScaleChoice();
+   scaleType = WaveformScaleChoice();
 
    dBRange = DecibelScaleCutoff.Read();
 
@@ -130,7 +152,7 @@ void WaveformSettings::Update()
 void WaveformSettings::UpdatePrefs()
 {
    if (scaleType == defaults().scaleType) {
-      scaleType = TracksPrefs::WaveformScaleChoice();
+      scaleType = WaveformScaleChoice();
    }
 
    if (dBRange == defaults().dBRange){
@@ -228,4 +250,17 @@ int WaveformSettingsCache::ZeroLevelYCoordinate(wxRect rect) const
 {
    return rect.GetTop() +
       (int)((mDisplayMax / (mDisplayMax - mDisplayMin)) * rect.height);
+}
+
+// Attach things to Tracks preferences page
+#include "../ShuttleGui.h"
+
+namespace {
+void AddScale( ShuttleGui &S )
+{
+   S.TieChoice(XXO("Default Waveform scale:"),
+               waveformScaleSetting );
+}
+
+TracksPrefs::RegisteredControls reg{ wxT("Scale"), 1u, AddScale };
 }
