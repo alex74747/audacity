@@ -13,6 +13,7 @@ Paul Licameli
 
 #include "ClientData.h" // to inherit
 #include "Prefs.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 
 class wxRect;
 
@@ -82,6 +83,8 @@ public:
    };
 
    static const EnumValueSymbols &GetScaleNames();
+
+   static WaveTrackViewConstants::SampleDisplay SampleViewChoice();
 
    ScaleType scaleType;
    int dBRange;

@@ -163,29 +163,6 @@ WaveTrackViewConstants::Display TracksPrefs::ViewModeChoice()
 }
 
 //////////
-static EnumSetting< WaveTrackViewConstants::SampleDisplay >
-sampleDisplaySetting{
-   wxT("/GUI/SampleViewChoice"),
-   {
-      { wxT("ConnectDots"), XO("Connect dots") },
-      { wxT("StemPlot"), XO("Stem plot") }
-   },
-   1, // StemPlot
-
-   // for migrating old preferences:
-   {
-      WaveTrackViewConstants::LinearInterpolate,
-      WaveTrackViewConstants::StemPlot
-   },
-   wxT("/GUI/SampleView")
-};
-
-WaveTrackViewConstants::SampleDisplay TracksPrefs::SampleViewChoice()
-{
-   return sampleDisplaySetting.ReadEnum();
-}
-
-//////////
 static const std::initializer_list<EnumValueSymbol> choicesZoom{
    { wxT("FitToWidth"), XO("Fit to Width") },
    { wxT("ZoomToSelection"), XO("Zoom to Selection") },
@@ -394,9 +371,6 @@ void TracksPrefs::PopulateOrExchange(ShuttleGui & S)
             MyVisitor visitor{ S, 1u };
             Registry::Visit( visitor, &top, &PopulatorItem::Registry() );
          }
-
-         S.TieChoice(XXO("Display &samples:"),
-                     sampleDisplaySetting );
 
          S.TieTextBox(XXO("Default audio track &name:"),
                       AudioTrackNameSetting,

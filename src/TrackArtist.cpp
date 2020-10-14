@@ -48,14 +48,12 @@ audio tracks.
 #include "TrackPanelDrawingContext.h"
 
 #include "Decibels.h"
-#include "prefs/TracksPrefs.h"
 
 TrackArtist::TrackArtist( TrackPanel *parent_ )
    : parent( parent_ )
 {
    mdBrange = DecibelScaleCutoff.GetDefault();
    mShowClipping = false;
-   mSampleDisplay = 1;// Stem plots by default.
 
    SetColours(0);
 
@@ -129,7 +127,6 @@ void TrackArtist::UpdateSelectedPrefs( int id )
 void TrackArtist::UpdatePrefs()
 {
    mdBrange = DecibelScaleCutoff.Read();
-   mSampleDisplay = TracksPrefs::SampleViewChoice();
 
    UpdateSelectedPrefs( ShowClippingPrefsID() );
    UpdateSelectedPrefs( ShowTrackNameInWaveformPrefsID() );
