@@ -432,13 +432,19 @@ bool SetTrackVisualsCommand::ApplyInner(const CommandContext & context, Track * 
    }
 
    if( wt && bHasUseSpecPrefs   ){
-      wt->UseSpectralPrefs( bUseSpecPrefs );
+      if( bUseSpecPrefs ){
+         // reset it, and next we will be getting the defaults.
+         SpectrogramSettings::Reset(*wt);
+      }
+      else {
+         SpectrogramSettings::Own(*wt);
+      }
    }
    if( wt && bHasSpectralSelect ){
-      wt->GetSpectrogramSettings().spectralSelection = bSpectralSelect;
+      SpectrogramSettings::Get(*wt).spectralSelection = bSpectralSelect;
    }
    if( wt && bHasGrayScale ){
-      wt->GetSpectrogramSettings().isGrayscale = bGrayScale;
+      SpectrogramSettings::Get(*wt).isGrayscale = bGrayScale;
    }
 
    return true;

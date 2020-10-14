@@ -575,7 +575,7 @@ bool NyquistEffect::Init()
             ) );
          }
          if ( !hasSpectral ||
-             !(t->GetSpectrogramSettings().SpectralSelectionEnabled())) {
+             !(SpectrogramSettings::Get(*t).SpectralSelectionEnabled())) {
             bAllowSpectralEditing = false;
             break;
          }
@@ -1141,7 +1141,8 @@ bool NyquistEffect::ProcessOne()
       mCurTrack[0]->TypeSwitch(
          [&](const WaveTrack *wt) {
             type = wxT("wave");
-            spectralEditp = mCurTrack[0]->GetSpectrogramSettings().SpectralSelectionEnabled()? wxT("T") : wxT("NIL");
+            spectralEditp = SpectrogramSettings::Get(*mCurTrack[0])
+               .SpectralSelectionEnabled()? wxT("T") : wxT("NIL");
             view = wxT("NIL");
             // Find() not Get() to avoid creation-on-demand of views in case we are
             // only previewing
