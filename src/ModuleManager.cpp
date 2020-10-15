@@ -84,8 +84,8 @@ wxWindow * MakeHijackPanel()
 static tpRegScriptServerFunc scriptFn;
 
 Module::Module(const FilePath & name)
+   : mName{ name }
 {
-   mName = name;
    mLib = std::make_unique<wxDynamicLibrary>();
    mDispatch = NULL;
 }
@@ -264,7 +264,8 @@ void ModuleManager::FindModules(FilePaths &files)
    #endif
 }
 
-void ModuleManager::TryLoadModules(const FilePaths &files)
+void ModuleManager::TryLoadModules(
+   const FilePaths &files, FilePaths &decided, DelayedErrors &errors)
 {
    FilePaths checked;
    wxString saveOldCWD = ::wxGetCwd();
@@ -282,6 +283,9 @@ void ModuleManager::TryLoadModules(const FilePaths &files)
       if( checked.Index( ShortName, false ) != wxNOT_FOUND )
          continue;
       checked.Add( ShortName );
+
+      if( decided.Index( ShortName, false ) != wxNOT_FOUND )
+         continue;
 
 #ifdef EXPERIMENTAL_MODULE_PREFS
       int iModuleStatus = ModulePrefs::GetModuleStatus( file );
@@ -322,6 +326,8 @@ void ModuleManager::TryLoadModules(const FilePaths &files)
          }
 #endif
          if(action == 1){   // "No"
+            decided.Add( ShortName );
+
             continue;
          }
       }
@@ -335,6 +341,7 @@ void ModuleManager::TryLoadModules(const FilePaths &files)
       auto umodule = std::make_unique<Module>(file);
          if (umodule->Load(Error))   // it will get rejected if there  are version problems
       {
+         decided.Add( ShortName );
          auto module = umodule.get();
 
          {
@@ -375,7 +382,11 @@ void ModuleManager::TryLoadModules(const FilePaths &files)
          }
       }
       else if (!Error.empty()) {
-         umodule->ShowLoadFailureError(Error);
+         // Module is not yet decided in this pass.
+         // Maybe it depends on another which has not yet been loaded.
+         // But don't ask again, if already asked once and answer was yes.
+         ModulePrefs::SetModuleStatus( file, kModuleEnabled );
+         errors.emplace_back( std::move( umodule ), Error );
       }
    }
 }
@@ -386,7 +397,25 @@ void ModuleManager::Initialize(CommandHandler &cmdHandler)
    FilePaths files;
    FindModules(files);
 
-   TryLoadModules(files);
+   FilePaths decided;
+   DelayedErrors errors;
+   size_t numDecided = 0;
+
+   // Multiple passes give modules multiple chances to load in case they
+   // depend on some other module not yet loaded
+   do {
+      numDecided = decided.size();
+      errors.clear();
+      TryLoadModules(files, decided, errors);
+   }
+   while ( errors.size() && numDecided < decided.size() );
+
+   // Only now show accumulated errors of modules that failed to load
+   for ( const auto &pair : errors ) {
+      auto &pModule = pair.first;
+      pModule->ShowLoadFailureError(pair.second);
+      ModulePrefs::SetModuleStatus( pModule->GetName(), kModuleFailed );
+   }
 
    // After loading all the modules, we may have a registered scripting function.
    if(scriptFn)
