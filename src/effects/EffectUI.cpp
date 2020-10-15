@@ -2116,3 +2116,32 @@ void EffectDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
 
    return;
 }
+
+// Extend the textual command dispatcher
+
+#include "../commands/CommandDispatch.h"
+
+static bool HandleEffectName(
+   const CommandID & Str, const CommandContext & context)
+{
+   // Not one of the singleton commands.
+   // We could/should try all the list-style commands.
+   // instead we only try the effects.
+   PluginManager & pm = PluginManager::Get();
+   EffectManager & em = EffectManager::Get();
+   const PluginDescriptor *plug = pm.GetFirstPlugin(PluginTypeEffect);
+   while (plug)
+   {
+      if (em.GetCommandIdentifier(plug->GetID()) == Str)
+      {
+         return EffectUI::DoEffect(
+            plug->GetID(), context,
+            EffectManager::kConfigured);
+      }
+      plug = pm.GetNextPlugin(PluginTypeEffect);
+   }
+
+   return false;
+}
+
+static RegisteredTextualCommandHandler reg{ HandleEffectName };
