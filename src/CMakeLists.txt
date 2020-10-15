@@ -221,8 +221,6 @@ list( APPEND SOURCES
       SampleBlock.h
       SampleFormat.cpp
       SampleFormat.h
-      Screenshot.cpp
-      Screenshot.h
       SelectUtilities.cpp
       SelectUtilities.h
       SelectedRegion.cpp
@@ -346,8 +344,6 @@ list( APPEND SOURCES
       commands/LoadCommands.h
       commands/ResponseQueue.cpp
       commands/ResponseQueue.h
-      commands/ScreenshotCommand.cpp
-      commands/ScreenshotCommand.h
       commands/ScriptCommandRelay.cpp
       commands/ScriptCommandRelay.h
       commands/Validators.h
