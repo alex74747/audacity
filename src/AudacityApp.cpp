@@ -91,7 +91,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "ProjectManager.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
-#include "Screenshot.h"
 #include "Sequence.h"
 #include "TempDirectory.h"
 #include "Track.h"
@@ -417,7 +416,6 @@ static void QuitAudacity(bool bForce)
 #ifdef EXPERIMENTAL_SCOREALIGN
    CloseScoreAlignDialog();
 #endif
-   CloseScreenshotTools();
 
    //print out profile if we have one by deleting it
    //temporarily commented out till it is added to all projects
