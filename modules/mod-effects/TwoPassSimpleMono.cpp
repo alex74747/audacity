@@ -18,7 +18,6 @@ doing the second pass over all selected tracks.
 *//*******************************************************************/
 
 
-
 #include "TwoPassSimpleMono.h"
 
 #include "WaveTrack.h"

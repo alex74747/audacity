@@ -15,7 +15,6 @@
 
 *//*******************************************************************/
 
-
 #include "Effect.h"
 #include "TimeWarper.h"
 
@@ -27,24 +26,24 @@
 
 #include "AudioIO.h"
 #include "wxWidgetsWindowPlacement.h"
-#include "../LabelTrack.h"
+#include "LabelTrack.h"
 #include "MixAndRender.h"
 #include "PluginManager.h"
-#include "../ProjectAudioManager.h"
-#include "../ProjectSettings.h"
+#include "ProjectAudioManager.h"
+#include "ProjectSettings.h"
 #include "QualitySettings.h"
 #include "SelectFile.h"
-#include "../ShuttleAutomation.h"
+#include "ShuttleAutomation.h"
 #include "ShuttleGui.h"
 #include "SyncLock.h"
 #include "TransactionScope.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 #include "NumericTextCtrl.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/VetoDialogHook.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/VetoDialogHook.h"
 
 #include <unordered_map>
 

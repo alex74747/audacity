@@ -72,7 +72,7 @@ using PluginID = wxString;
 // TODO:  can't be done until after all effects are using the NEW API.
 
 //! An Effect object is at once host and client:  it is self-hosting.
-class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
+class EFFECTS_API Effect /* not final */ : public wxEvtHandler,
    public EffectUIClientInterface,
    public EffectUIHostInterface
 {
@@ -337,7 +337,7 @@ protected:
 
    // For the use of analyzers, which don't need to make output wave tracks,
    // but may need to add label tracks.
-   class AUDACITY_DLL_API AddedAnalysisTrack {
+   class EFFECTS_API AddedAnalysisTrack {
       friend Effect;
       AddedAnalysisTrack(Effect *pEffect, const wxString &name);
       AddedAnalysisTrack(const AddedAnalysisTrack&) PROHIBITED;
@@ -367,7 +367,7 @@ protected:
 
    // For the use of analyzers, which don't need to make output wave tracks,
    // but may need to modify label tracks.
-   class AUDACITY_DLL_API ModifiedAnalysisTrack {
+   class EFFECTS_API ModifiedAnalysisTrack {
       friend Effect;
       ModifiedAnalysisTrack
          (Effect *pEffect, const LabelTrack *pOrigTrack, const wxString &name);

@@ -24,8 +24,6 @@
 #include "WaveTrack.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "effects/EffectManager.h"
-#include "effects/EffectUI.h"
 #include "QualitySettings.h"
 #include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
 #include "toolbars/ToolManager.h"

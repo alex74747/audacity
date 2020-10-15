@@ -12,6 +12,7 @@ set( SOURCES
 )
 set( LIBRARIES
    mod-import-export-interface
+   mod-effects-interface
 )
 audacity_module( mod-macros "${SOURCES}" "${LIBRARIES}"
    "" "" )

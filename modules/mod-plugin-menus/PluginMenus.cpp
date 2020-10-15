@@ -19,10 +19,10 @@
 #include "TempDirectory.h"
 #include "UndoManager.h"
 #include "CommandContext.h"
-#include "effects/EffectManager.h"
-#include "effects/EffectUI.h"
+#include "EffectManager.h"
+#include "EffectUI.h"
 #include "RealtimeEffectManager.h"
-#include "prefs/EffectsPrefs.h"
+#include "EffectsPrefs.h"
 #include "PrefsDialog.h"
 #include "widgets/AudacityMessageBox.h"
 

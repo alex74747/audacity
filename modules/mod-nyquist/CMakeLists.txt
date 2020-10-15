@@ -5,7 +5,7 @@ set( SOURCES
    Nyquist.h
 )
 set( LIBRARIES
-   Audacity
+   mod-effects-interface
    libnyquist
 )
 audacity_module( mod-nyquist "${SOURCES}" "${LIBRARIES}"

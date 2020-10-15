@@ -18,18 +18,17 @@ effects.
 
 *//*******************************************************************/
 
-
 #include "EffectManager.h"
 
 #include "Effect.h"
 
 #include <algorithm>
 
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
-#include "../ShuttleGetDefinition.h"
+#include "ShuttleGetDefinition.h"
 #include "CommandContext.h"
-#include "../commands/AudacityCommand.h"
+#include "commands/AudacityCommand.h"
 #include "PluginManager.h"
 
 

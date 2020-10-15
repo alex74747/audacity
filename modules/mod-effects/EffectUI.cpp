@@ -11,7 +11,6 @@
 
 **********************************************************************/
 
-
 #include "EffectUI.h"
 
 #include "BasicMenu.h"
@@ -21,7 +20,7 @@
 #include "PluginManager.h"
 #include "ProjectHistory.h"
 #include "ProjectWindowBase.h"
-#include "../TrackPanelAx.h"
+#include "TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
 #include "wxWidgetsWindowPlacement.h"
 #include "MenuHandle.h"
@@ -49,11 +48,11 @@ static PluginID GetID(Effect &effect)
 #include <wx/tglbtn.h>
 
 #include "CommandContext.h"
-#include "../Prefs.h"
-#include "../Project.h"
-#include "../widgets/wxPanelWrapper.h"
+#include "Prefs.h"
+#include "Project.h"
+#include "wxPanelWrapper.h"
 
-#include "../../images/EffectRack/EffectRack.h"
+#include "images/EffectRack/EffectRack.h"
 
 #define COL_POWER    0
 #define COL_EDITOR   1
@@ -652,18 +651,18 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "../../images/Effect.h"
+#include "../images/Effect.h"
 #include "AudioIO.h"
 #include "CommonCommandFlags.h"
 #include "Menus.h"
-#include "../prefs/GUISettings.h" // for RTL_WORKAROUND
+#include "prefs/GUISettings.h" // for RTL_WORKAROUND
 #include "Project.h"
-#include "../ProjectAudioManager.h"
+#include "ProjectAudioManager.h"
 #include "ShuttleGui.h"
 #include "ViewInfo.h"
-#include "../commands/AudacityCommand.h"
+#include "commands/AudacityCommand.h"
 #include "CommandContext.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 #include "HelpSystem.h"
 
 #include <wx/bmpbuttn.h>
@@ -1793,9 +1792,9 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
 
 #include "PluginManager.h"
 #include "ProjectRate.h"
-#include "../ProjectWindow.h"
-#include "../SelectUtilities.h"
-#include "../TrackPanel.h"
+#include "ProjectWindow.h"
+#include "SelectUtilities.h"
+#include "TrackPanel.h"
 #include "WaveTrack.h"
 #include "CommandManager.h"
 
@@ -2071,7 +2070,7 @@ void EffectDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
 
 // Extend the textual command dispatcher
 
-#include "../commands/CommandDispatch.h"
+#include "commands/CommandDispatch.h"
 
 static bool HandleEffectName(
    const CommandID & Str, const CommandContext & context)
@@ -2094,3 +2093,7 @@ static bool HandleEffectName(
 }
 
 static RegisteredTextualCommandHandler reg{ HandleEffectName };
+
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

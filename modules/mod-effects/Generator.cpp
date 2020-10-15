@@ -21,11 +21,11 @@
 #include "SyncLock.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "../prefs/TracksBehaviorsPrefs.h"
+#include "prefs/TracksBehaviorsPrefs.h"
 
 #include "TimeWarper.h"
 
-#include "../widgets/AudacityMessageBox.h"
+#include "widgets/AudacityMessageBox.h"
 
 bool Generator::Process()
 {

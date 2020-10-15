@@ -42,7 +42,7 @@ class EffectRack;
 class AudacityCommand;
 
 
-class AUDACITY_DLL_API EffectManager
+class EFFECTS_API EffectManager
 {
 public:
 

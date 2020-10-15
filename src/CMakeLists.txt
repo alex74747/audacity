@@ -139,8 +139,6 @@ list( APPEND SOURCES
       SelectUtilities.h
       ShuttleAutomation.cpp
       ShuttleAutomation.h
-      ShuttleGetDefinition.cpp
-      ShuttleGetDefinition.h
       Snap.cpp
       Snap.h
       SoundActivatedRecord.cpp
@@ -214,22 +212,8 @@ list( APPEND SOURCES
 
       # Built-in Effects
 
-      effects/Effect.cpp
-      effects/Effect.h
-      effects/EffectManager.cpp
-      effects/EffectManager.h
-      effects/EffectUI.cpp
-      effects/EffectUI.h
-      effects/Generator.cpp
-      effects/Generator.h
-      effects/LoadEffects.cpp
-      effects/LoadEffects.h
       effects/ScoreAlignDialog.cpp
       effects/ScoreAlignDialog.h
-      effects/SimpleMono.cpp
-      effects/SimpleMono.h
-      effects/TwoPassSimpleMono.cpp
-      effects/TwoPassSimpleMono.h
 
       # Menus
 
@@ -245,8 +229,6 @@ list( APPEND SOURCES
       prefs/DevicePrefs.h
       prefs/DirectoriesPrefs.cpp
       prefs/DirectoriesPrefs.h
-      prefs/EffectsPrefs.cpp
-      prefs/EffectsPrefs.h
       prefs/GUIPrefs.cpp
       prefs/GUIPrefs.h
       prefs/GUISettings.cpp
