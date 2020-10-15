@@ -807,6 +807,8 @@ list( APPEND SOURCES
       widgets/ReadOnlyText.h
       widgets/Ruler.cpp
       widgets/Ruler.h
+      widgets/VetoDialogHook.cpp
+      widgets/VetoDialogHook.h
       widgets/Warning.cpp
       widgets/Warning.h
       widgets/WindowAccessible.cpp
