@@ -26,6 +26,7 @@
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/VetoDialogHook.h"
 #include "ViewInfo.h"
+#include "widgets/VetoDialogHook.h"
 
 #include <cmath>
 #include <limits>
