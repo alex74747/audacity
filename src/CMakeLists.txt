@@ -228,8 +228,6 @@ list( APPEND SOURCES
       effects/ScoreAlignDialog.h
       effects/SimpleMono.cpp
       effects/SimpleMono.h
-      effects/StereoToMono.cpp
-      effects/StereoToMono.h
       effects/TwoPassSimpleMono.cpp
       effects/TwoPassSimpleMono.h
 
