@@ -146,8 +146,6 @@ list( APPEND SOURCES
       ProjectWindow.h
       ReloadPreferences.cpp
       ReloadPreferences.h
-      Screenshot.cpp
-      Screenshot.h
       ScrubState.cpp
       ScrubState.h
       SelectUtilities.cpp
@@ -229,8 +227,6 @@ list( APPEND SOURCES
       commands/LoadCommands.h
       commands/ResponseQueue.cpp
       commands/ResponseQueue.h
-      commands/ScreenshotCommand.cpp
-      commands/ScreenshotCommand.h
       commands/ScriptCommandRelay.cpp
       commands/ScriptCommandRelay.h
       commands/Validators.h
