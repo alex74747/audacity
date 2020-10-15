@@ -26,7 +26,7 @@
 
 #include "Audacity.h"
 #include "Compressor.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 

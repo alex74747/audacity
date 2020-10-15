@@ -18,7 +18,7 @@
 
 #include "Audacity.h"
 #include "AutoDuck.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 #include <float.h>

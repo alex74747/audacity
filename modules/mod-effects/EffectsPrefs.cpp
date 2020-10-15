@@ -17,16 +17,16 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "EffectsPrefs.h"
 
 #include <wx/choice.h>
 #include <wx/defs.h>
 
-#include "../Languages.h"
-#include "../PluginManager.h"
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
+#include "Languages.h"
+#include "PluginManager.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
 
 EffectsPrefs::EffectsPrefs(wxWindow * parent, wxWindowID winid)
 :  PrefsPanel(parent, winid, XO("Effects"))

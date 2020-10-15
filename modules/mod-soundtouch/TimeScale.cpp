@@ -17,7 +17,7 @@
 
 #if USE_SBSMS
 #include "TimeScale.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 

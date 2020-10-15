@@ -45,8 +45,8 @@
 #include "ProjectWindow.h"
 #include "SelectUtilities.h"
 #include "commands/CommandManager.h"
-#include "effects/Effect.h"
-#include "effects/EffectUI.h"
+#include "Effect.h"
+#include "EffectUI.h"
 #include "../images/Arrow.xpm"
 #include "../images/Empty9x16.xpm"
 #include "UndoManager.h"
@@ -1379,7 +1379,7 @@ void MacrosWindow::UpdatePrefs()
 
 #include "CommonCommandFlags.h"
 #include "commands/CommandContext.h"
-#include "effects/EffectManager.h"
+#include "EffectManager.h"
 namespace {
 
 AudacityProject::AttachedWindows::RegisteredFactory sMacrosWindowKey{

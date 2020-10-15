@@ -20,7 +20,7 @@ frequency changes smoothly during the tone.
 
 #include "Audacity.h"
 #include "ToneGen.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 #include <float.h>

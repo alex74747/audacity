@@ -15,7 +15,7 @@
 
 #include "Audacity.h"
 #include "StereoToMono.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include "Mix.h"
 #include "Project.h"
@@ -226,8 +226,8 @@ bool EffectStereoToMono::IsHidden()
 #include "CommonCommandFlags.h"
 #include "PluginManager.h"
 #include "commands/CommandManager.h"
-#include "effects/EffectManager.h"
-#include "effects/EffectUI.h"
+#include "EffectManager.h"
+#include "EffectUI.h"
 
 namespace {
 struct Handler : CommandHandlerObject {

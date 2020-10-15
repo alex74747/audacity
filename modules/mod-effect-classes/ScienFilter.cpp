@@ -34,7 +34,7 @@ a graph for EffectScienFilter.
 
 #include "Audacity.h"
 #include "ScienFilter.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 #include <float.h>

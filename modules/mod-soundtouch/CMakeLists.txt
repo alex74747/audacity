@@ -17,7 +17,7 @@ list( APPEND SOURCES
    TimeScale.h
 )
 list( APPEND LIBS
-   Audacity
+   mod-effects-interface
    libsbsms
    soundtouch
 )

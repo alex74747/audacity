@@ -12,7 +12,7 @@
 #ifndef __AUDACITY_EFFECT__
 #define __AUDACITY_EFFECT__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
 #include <functional>
 #include <set>
@@ -28,11 +28,11 @@ class wxWindow;
 #include "audacity/ConfigInterface.h"
 #include "audacity/EffectInterface.h"
 
-#include "../SelectedRegion.h"
+#include "SelectedRegion.h"
 
-#include "../Track.h"
+#include "Track.h"
 
-#include "../widgets/wxPanelWrapper.h" // to inherit
+#include "widgets/wxPanelWrapper.h" // to inherit
 
 class wxArrayString;
 class ShuttleGui;
@@ -64,7 +64,7 @@ class WaveTrack;
 // TODO:  Much more cleanup of old methods and variables is needed, but
 // TODO:  can't be done until after all effects are using the NEW API.
 
-class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
+class EFFECTS_API Effect /* not final */ : public wxEvtHandler,
                                 public EffectClientInterface,
                                 public EffectUIClientInterface,
                                 public EffectHostInterface
@@ -371,7 +371,7 @@ protected:
 
    // For the use of analyzers, which don't need to make output wave tracks,
    // but may need to add label tracks.
-   class AUDACITY_DLL_API AddedAnalysisTrack {
+   class EFFECTS_API AddedAnalysisTrack {
       friend Effect;
       AddedAnalysisTrack(Effect *pEffect, const wxString &name);
       AddedAnalysisTrack(const AddedAnalysisTrack&) PROHIBITED;
@@ -401,7 +401,7 @@ protected:
 
    // For the use of analyzers, which don't need to make output wave tracks,
    // but may need to modify label tracks.
-   class AUDACITY_DLL_API ModifiedAnalysisTrack {
+   class EFFECTS_API ModifiedAnalysisTrack {
       friend Effect;
       ModifiedAnalysisTrack
          (Effect *pEffect, const LabelTrack *pOrigTrack, const wxString &name);

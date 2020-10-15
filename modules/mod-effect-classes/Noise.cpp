@@ -15,7 +15,7 @@
 
 #include "Audacity.h"
 #include "Noise.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 

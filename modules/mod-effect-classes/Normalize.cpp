@@ -17,7 +17,7 @@
 
 #include "Audacity.h" // for rint from configwin.h
 #include "Normalize.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 

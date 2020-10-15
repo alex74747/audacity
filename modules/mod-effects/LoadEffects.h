@@ -11,13 +11,13 @@
 #ifndef __AUDACITY_LOAD_EFFECTS__
 #define __AUDACITY_LOAD_EFFECTS__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "audacity/ModuleInterface.h"
 
 #include <functional>
 #include <memory>
 #include <unordered_map>
-#include "../MemoryX.h"
+#include "MemoryX.h"
 
 class Effect;
 
@@ -27,13 +27,13 @@ class Effect;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class AUDACITY_DLL_API BuiltinEffectsModule final : public ModuleInterface
+class EFFECTS_API BuiltinEffectsModule final : public ModuleInterface
 {
 public:
    BuiltinEffectsModule(const wxString *path);
    virtual ~BuiltinEffectsModule();
 
-   struct AUDACITY_DLL_API Init{ Init(); };
+   struct EFFECTS_API Init{ Init(); };
 
    using Factory = std::function< std::unique_ptr<Effect> () >;
 

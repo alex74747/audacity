@@ -21,7 +21,7 @@
 
 #include "Audacity.h"
 #include "Echo.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <float.h>
 

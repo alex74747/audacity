@@ -15,7 +15,7 @@
 
 #include "Audacity.h"
 #include "Silence.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include "ShuttleGui.h"
 #include "WaveTrack.h"

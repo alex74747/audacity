@@ -16,10 +16,10 @@
 #include "UndoManager.h"
 #include "commands/CommandContext.h"
 #include "commands/CommandManager.h"
-#include "effects/EffectManager.h"
-#include "effects/EffectUI.h"
+#include "EffectManager.h"
+#include "EffectUI.h"
 #include "effects/RealtimeEffectManager.h"
-#include "prefs/EffectsPrefs.h"
+#include "EffectsPrefs.h"
 #include "prefs/PrefsDialog.h"
 
 // private helper classes and functions

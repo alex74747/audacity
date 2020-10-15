@@ -31,7 +31,7 @@
 #include "widgets/valnum.h"
 #include "widgets/ProgressDialog.h"
 
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 enum kNormalizeTargets
 {

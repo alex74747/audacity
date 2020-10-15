@@ -20,7 +20,7 @@
 
 #include "Audacity.h"
 #include "Amplify.h"
-#include "effects/LoadEffects.h"
+#include "LoadEffects.h"
 
 #include <math.h>
 #include <float.h>
