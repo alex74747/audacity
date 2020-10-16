@@ -15,7 +15,7 @@ Paul Licameli
 #include "ClientData.h" // to inherit
 #include "Internat.h" // for TranslatableStrings
 #include "Prefs.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
+#include "WaveTrackViewConstants.h"
 
 class wxRect;
 

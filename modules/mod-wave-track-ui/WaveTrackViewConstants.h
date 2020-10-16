@@ -11,8 +11,8 @@ Paul Licameli split from class WaveTrack
 #ifndef __AUDACITY_WAVE_TRACK_VIEW_CONSTANTS__
 #define __AUDACITY_WAVE_TRACK_VIEW_CONSTANTS__
 
-#include "../../../../Audacity.h"
-#include "../../../../Registry.h"
+#include "Audacity.h"
+#include "Registry.h"
 #include "audacity/ComponentInterface.h" // for EnumValueSymbol
 
 namespace WaveTrackViewConstants
@@ -38,12 +38,12 @@ namespace WaveTrackViewConstants
    };
 
    //! String identifier for a preference for one of each type of view
-   extern AUDACITY_DLL_API const EnumValueSymbol MultiViewSymbol;
+   extern WAVE_TRACK_UI_API const EnumValueSymbol MultiViewSymbol;
 }
 
 #include <vector>
 
-struct AUDACITY_DLL_API WaveTrackSubViewType {
+struct WAVE_TRACK_UI_API WaveTrackSubViewType {
 
    struct TypeItem;
 
@@ -58,14 +58,14 @@ struct AUDACITY_DLL_API WaveTrackSubViewType {
    { return name == other.name; }
 
    // Typically a file scope statically constructed object
-   struct AUDACITY_DLL_API Registration final
+   struct WAVE_TRACK_UI_API Registration final
       : public Registry::RegisteredItem<TypeItem>
    {
       Registration( WaveTrackSubViewType type,
          const Registry::Placement &placement = { wxEmptyString, {} });
       ~Registration();
 
-      struct AUDACITY_DLL_API Init{ Init(); };
+      struct WAVE_TRACK_UI_API Init{ Init(); };
    };
 
    //! Discover all registered types
@@ -75,7 +75,7 @@ struct AUDACITY_DLL_API WaveTrackSubViewType {
    static Identifier Default();
 };
 
-struct AUDACITY_DLL_API WaveTrackSubViewType::TypeItem final
+struct WAVE_TRACK_UI_API WaveTrackSubViewType::TypeItem final
    : ::Registry::SingleItem {
    static ::Registry::GroupItem &Registry();
    TypeItem( WaveTrackSubViewType type );

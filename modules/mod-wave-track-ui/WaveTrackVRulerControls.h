@@ -11,17 +11,17 @@ Paul Licameli split from TrackPanel.cpp
 #ifndef __AUDACITY_WAVE_TRACK_VRULER_CONTROLS__
 #define __AUDACITY_WAVE_TRACK_VRULER_CONTROLS__
 
-#include "../../../../Audacity.h"
-#include "../../../ui/TrackVRulerControls.h"
+#include "Audacity.h"
+#include "tracks/ui/TrackVRulerControls.h"
 
 class Ruler;
 class WaveTrack;
 
 namespace WaveTrackVRulerControls
 {
-   AUDACITY_DLL_API Ruler &ScratchRuler();
+   WAVE_TRACK_UI_API Ruler &ScratchRuler();
 
-   AUDACITY_DLL_API void DoDraw( TrackVRulerControls &controls,
+   WAVE_TRACK_UI_API void DoDraw( TrackVRulerControls &controls,
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass );
 };

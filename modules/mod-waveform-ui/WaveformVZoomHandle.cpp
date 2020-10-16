@@ -11,7 +11,7 @@ Paul Licameli split from WaveTrackVZoomHandle.cpp
 #include "Audacity.h"
 #include "WaveformVZoomHandle.h"
 
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackVZoomHandle.h"
+#include "WaveTrackVZoomHandle.h"
 
 #include "HitTestResult.h"
 #include "NumberScale.h"

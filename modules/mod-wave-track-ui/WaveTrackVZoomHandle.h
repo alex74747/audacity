@@ -14,20 +14,20 @@ Paul Licameli split from TrackPanel.cpp
 class wxMouseState;
 class PopupMenuTable;
 class WaveTrack;
-#include "../../../../Audacity.h"
+#include "Audacity.h"
 #include "WaveTrackViewConstants.h"
-#include "../../../../UIHandle.h"
-#include "../../../../Prefs.h"
+#include "UIHandle.h"
+#include "Prefs.h"
 
 namespace WaveTrackVZoomHandle
 {
    // See RefreshCode.h for bit flags:
    using Result = unsigned;
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    HitTestPreview HitPreview(const wxMouseState &state);
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    bool IsDragZooming(int zoomStart, int zoomEnd);
 
    using DoZoomFunction = void (*)( AudacityProject *pProject,
@@ -36,31 +36,31 @@ namespace WaveTrackVZoomHandle
        const wxRect &rect, int zoomStart, int zoomEnd,
        bool fixedMousePoint);
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    Result DoDrag(
       const TrackPanelMouseEvent &event, AudacityProject *pProject,
       int zoomStart, int &zoomEnd );
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    Result DoRelease(
       const TrackPanelMouseEvent &event, AudacityProject *pProject,
       wxWindow *pParent, WaveTrack *pTrack, const wxRect &mRect,
       DoZoomFunction doZoom, PopupMenuTable &table,
       int zoomStart, int zoomEnd );
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    void DoDraw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass, int zoomStart, int zoomEnd );
 
-   AUDACITY_DLL_API
+   WAVE_TRACK_UI_API
    wxRect DoDrawingArea(
       const wxRect &rect, const wxRect &panelRect, unsigned iPass );
 };
 
-#include "../../../../widgets/PopupMenuTable.h" // to inherit
+#include "widgets/PopupMenuTable.h" // to inherit
 
-class AUDACITY_DLL_API WaveTrackVRulerMenuTable
+class WAVE_TRACK_UI_API WaveTrackVRulerMenuTable
    : public PopupMenuTable
    , private PrefsListener
 {

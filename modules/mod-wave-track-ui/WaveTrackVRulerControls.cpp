@@ -8,19 +8,19 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-#include "../../../../Audacity.h"
+#include "Audacity.h"
 #include "WaveTrackVRulerControls.h"
 
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackPanelMouseEvent.h"
-#include "../../../../WaveTrack.h"
+#include "RefreshCode.h"
+#include "TrackPanelMouseEvent.h"
+#include "WaveTrack.h"
 
-#include "../../../../AColor.h"
-#include "../../../../AllThemeResources.h"
-#include "../../../../Theme.h"
-#include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelDrawingContext.h"
-#include "../../../../widgets/Ruler.h"
+#include "AColor.h"
+#include "AllThemeResources.h"
+#include "Theme.h"
+#include "TrackArtist.h"
+#include "TrackPanelDrawingContext.h"
+#include "widgets/Ruler.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 Ruler &WaveTrackVRulerControls::ScratchRuler()

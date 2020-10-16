@@ -222,6 +222,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-label-track-ui",
       "mod-waveform-ui",
       "mod-spectrum-ui",
+      "mod-wave-track-ui",
    };
    return modules;
 }
