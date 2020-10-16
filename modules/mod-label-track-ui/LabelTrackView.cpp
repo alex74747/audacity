@@ -8,14 +8,13 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "LabelTrackView.h"
 
 #include "LabelTrackVRulerControls.h"
 #include "LabelGlyphHandle.h"
 #include "LabelTextHandle.h"
 
-#include "../../../LabelTrack.h"
+#include "LabelTrack.h"
 
 #include "AColor.h"
 #include "BasicMenu.h"
@@ -24,16 +23,16 @@ Paul Licameli split from TrackPanel.cpp
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectRate.h"
-#include "../../../ProjectSettings.h"
-#include "../../../ProjectWindow.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "RefreshCode.h"
 #include "SyncLock.h"
 #include "Theme.h"
-#include "../../../TrackArt.h"
+#include "TrackArt.h"
 #include "TrackArtist.h"
-#include "../../../TrackPanelAx.h"
-#include "../../../TrackPanel.h"
+#include "TrackPanelAx.h"
+#include "TrackPanel.h"
 #include "TrackPanelMouseEvent.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
@@ -2274,7 +2273,7 @@ void LabelTrackView::CreateCustomGlyphs()
    mbGlyphsReady=true;
 }
 
-#include "../../../LabelDialog.h"
+#include "LabelDialog.h"
 
 void LabelTrackView::DoEditLabels
 (AudacityProject &project, LabelTrack *lt, int index)
@@ -2368,8 +2367,8 @@ DEFINE_ATTACHED_VIRTUAL_OVERRIDE(GetLabelTrackSyncLockPolicy) {
    return [](auto &) { return SyncLockPolicy::EndSeparator; };
 }
 
-   // Install cut-copy-paste hooks
-#include "../../../EditUtilities.h"
+// Install cut-copy-paste hooks
+#include "EditUtilities.h"
 
 namespace {
 
@@ -2460,3 +2459,6 @@ RegisterCopyPasteMethods regMethods{
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

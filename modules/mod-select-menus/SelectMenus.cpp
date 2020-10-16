@@ -22,7 +22,7 @@
 #include "CommandManager.h"
 #include "ControlToolBar.h"
 #include "tracks/ui/SelectHandle.h"
-#include "tracks/labeltrack/ui/LabelTrackView.h"
+#include "LabelTrackView.h"
 #include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
 #include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
 

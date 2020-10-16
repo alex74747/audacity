@@ -8,13 +8,12 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "LabelTrackControls.h"
 
 #include "LabelTrackView.h"
 #include "HitTestResult.h"
-#include "../../../LabelTrack.h"
-#include "../../../widgets/PopupMenuTable.h"
+#include "LabelTrack.h"
+#include "widgets/PopupMenuTable.h"
 #include "Prefs.h"
 #include "RefreshCode.h"
 #include "ShuttleGui.h"

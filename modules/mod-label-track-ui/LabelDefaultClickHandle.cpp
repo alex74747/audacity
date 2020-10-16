@@ -8,12 +8,11 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "LabelDefaultClickHandle.h"
 
 #include "LabelTrackView.h"
 #include "HitTestResult.h"
-#include "../../../LabelTrack.h"
+#include "LabelTrack.h"
 #include "RefreshCode.h"
 #include "TrackPanelMouseEvent.h"
 
