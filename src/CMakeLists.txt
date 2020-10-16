@@ -93,6 +93,8 @@ list( APPEND SOURCES
       Diags.cpp
       Diags.h
       DropoutDetector.cpp
+      EditUtilities.cpp
+      EditUtilities.h
       EnvelopeEditor.cpp
       EnvelopeEditor.h
       HelpUtilities.cpp
