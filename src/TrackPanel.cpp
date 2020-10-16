@@ -55,6 +55,7 @@ is time to refresh some aspect of the screen.
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
 #include "ProjectHistory.h"
+#include "ProjectManager.h"
 #include "ProjectWindows.h"
 #include "ProjectSettings.h"
 #include "ProjectStatus.h"
@@ -220,6 +221,16 @@ AttachedWindows::RegisteredFactory sKey{
    }
 };
 
+struct FactoryInstaller {
+   FactoryInstaller() {
+      prevFactory = ProjectManager::InstallMainPanelFactory(
+         [](AudacityProject &project, wxWindow*, wxWindowID) -> CellularPanel& {
+            return TrackPanel::Get(project); });
+   }
+   ~FactoryInstaller() { ProjectManager::InstallMainPanelFactory(prevFactory); }
+   ProjectManager::MainPanelFactory prevFactory;
+} factoryInstaller;
+
 }
 
 TrackPanel &TrackPanel::Get( AudacityProject &project )
@@ -232,13 +243,10 @@ const TrackPanel &TrackPanel::Get( const AudacityProject &project )
    return Get( const_cast< AudacityProject & >( project ) );
 }
 
-void TrackPanel::Destroy( AudacityProject &project )
+bool TrackPanel::Destroy()
 {
-   auto *pPanel = GetAttachedWindows(project).Find<TrackPanel>( sKey );
-   if (pPanel) {
-      pPanel->wxWindow::Destroy();
-      GetAttachedWindows(project).Assign(sKey, nullptr);
-   }
+   GetAttachedWindows(*GetProject()).Assign(sKey, nullptr);
+   return CellularPanel::Destroy();
 }
 
 // Don't warn us about using 'this' in the base member initializer list.
