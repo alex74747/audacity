@@ -14,12 +14,12 @@ Paul Licameli split from TrackPanel.cpp
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
 #include "ProjectHistory.h"
+#include "ProjectWindows.h"
 #include "SelectUtilities.h"
 #include "RefreshCode.h"
 #include "Track.h"
 #include "TrackPanelAx.h"
 #include "TrackInfo.h"
-#include "TrackPanel.h"
 #include "TrackUtilities.h"
 #include "CommandManager.h"
 #include "TrackView.h"
@@ -218,7 +218,7 @@ MenuButtonHandle::~MenuButtonHandle()
 UIHandle::Result MenuButtonHandle::CommitChanges
 (const wxMouseEvent &, AudacityProject *pProject, wxWindow *WXUNUSED(pParent))
 {
-   auto &trackPanel = TrackPanel::Get( *pProject );
+   auto &trackPanel = GetProjectPanel( *pProject );
    auto pCell = mpCell.lock();
    if (!pCell)
       return RefreshCode::Cancelled;
@@ -227,7 +227,9 @@ UIHandle::Result MenuButtonHandle::CommitChanges
    if (!pTrack)
       return RefreshCode::Cancelled;
    trackPanel.CallAfter(
-      [&trackPanel,pTrack]{ trackPanel.OnTrackMenu( pTrack.get() ); } );
+      [&trackPanel,pTrack]{
+         trackPanel.DoContextMenu( &TrackView::Get( *pTrack ) );
+   } );
    return RefreshCode::RefreshNone;
 }
 

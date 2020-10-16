@@ -11,6 +11,7 @@
 #include "PluginManager.h"
 #include "ProjectStatus.h"
 #include "ProjectWindow.h"
+#include "ProjectWindows.h"
 #include "SelectUtilities.h"
 #include "ShuttleGui.h"
 #include "SyncLock.h"
@@ -1068,9 +1069,9 @@ void OnTrackGainDec(const CommandContext &context)
 void OnTrackMenu(const CommandContext &context)
 {
    auto &project = context.project;
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
 
-   trackPanel.OnTrackMenu();
+   trackPanel.DoContextMenu( nullptr );
 }
 
 void OnTrackMute(const CommandContext &context)

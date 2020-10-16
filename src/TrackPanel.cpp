@@ -965,11 +965,6 @@ void TrackPanel::UpdateVRulerSize()
    Refresh(false);
 }
 
-void TrackPanel::OnTrackMenu(Track *t)
-{
-   CellularPanel::DoContextMenu( t ? &TrackView::Get( *t ) : nullptr );
-}
-
 // Tracks have been removed from the list.
 void TrackPanel::OnEnsureVisible(const TrackListEvent & e)
 {
