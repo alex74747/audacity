@@ -824,7 +824,7 @@ void LabelTrackView::Draw
       DrawGlyphs( dc, labelStruct, r, GlyphLeft, GlyphRight );
    }}
 
-   auto &project = *artist->parent.GetProject();
+   auto &project = artist->project;
 
    // Draw the label boxes.
    {
