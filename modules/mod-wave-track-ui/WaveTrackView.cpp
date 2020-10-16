@@ -22,7 +22,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "WaveClip.h"
 #include "WaveTrack.h"
 
-#include "../../../../../images/Cursors.h"
+#include "../images/Cursors.h"
 #include "AllThemeResources.h"
 
 #include "CommandContext.h"
@@ -31,19 +31,19 @@ Paul Licameli split from TrackPanel.cpp
 #include "RefreshCode.h"
 #include "SyncLock.h"
 #include "TrackArtist.h"
-#include "../../../../TrackPanel.h"
-#include "../../../../TrackPanelAx.h"
+#include "TrackPanel.h"
+#include "TrackPanelAx.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"
-#include "../../../../TrackPanelResizeHandle.h"
+#include "TrackPanelResizeHandle.h"
 #include "ViewInfo.h"
-#include "../../../../prefs/TracksPrefs.h"
+#include "prefs/TracksPrefs.h"
 
-#include "../../../ui/TimeShiftHandle.h"
-#include "../../../ui/ButtonHandle.h"
-#include "../../../../TrackInfo.h"
+#include "tracks/ui/TimeShiftHandle.h"
+#include "tracks/ui/ButtonHandle.h"
+#include "TrackInfo.h"
 #include "WaveTrackViewConstants.h"
-#include "../WaveTrackUtils.h"
+#include "WaveTrackUtils.h"
 #include "WaveTrackAffordanceControls.h"
 #include "WaveTrackAffordanceHandle.h"
 #include "WaveClipTrimHandle.h"
@@ -1911,7 +1911,7 @@ DEFINE_ATTACHED_VIRTUAL_OVERRIDE(GetWaveTrackSyncLockPolicy) {
 
 // Additions to Tracks preferences page
 #include "ShuttleGui.h"
-#include "../../../../prefs/TracksPrefs.h"
+#include "prefs/TracksPrefs.h"
 namespace {
 void AddCollapse( ShuttleGui &S )
 {
@@ -2013,3 +2013,6 @@ RegisterCopyPasteMethods regMethods{
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

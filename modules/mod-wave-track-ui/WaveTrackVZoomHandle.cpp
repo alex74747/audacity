@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "WaveTrackVZoomHandle.h"
 
 #include "TrackVRulerControls.h"
@@ -19,7 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "WaveTrack.h"
-#include "../../../../../images/Cursors.h"
+#include "../images/Cursors.h"
 #include "MenuHandle.h"
 
 #include <wx/window.h>

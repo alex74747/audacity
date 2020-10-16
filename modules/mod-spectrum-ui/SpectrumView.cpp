@@ -17,8 +17,8 @@ Paul Licameli split from WaveTrackView.cpp
 #include "Spectrum.h"
 
 #include "SpectrumVRulerControls.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h"
+#include "WaveTrackView.h"
+#include "WaveTrackViewConstants.h"
 
 #include "BrushHandle.h"
 
@@ -936,7 +936,7 @@ static const WaveTrackSubViews::RegisteredFactory key{
 // The following attaches the spectrogram settings item to the wave track popup
 // menu.  It is appropriate only to spectrum view and so is kept in this
 // source file with the rest of the spectrum view implementation.
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
+#include "WaveTrackControls.h"
 #include "AudioIOBase.h"
 #include "Menus.h"
 #include "ProjectHistory.h"

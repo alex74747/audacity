@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "WaveTrackVRulerControls.h"
 
 #include "RefreshCode.h"

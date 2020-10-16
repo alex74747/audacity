@@ -15,7 +15,7 @@
 #include "SampleTrackCache.h"
 #include "SpectrogramSettings.h"
 #include "Spectrum.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveClipUtilities.h"
+#include "WaveClipUtilities.h"
 #include "WaveTrack.h"
 
 class WaveTrack;

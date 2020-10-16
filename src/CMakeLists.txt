@@ -172,8 +172,6 @@ list( APPEND SOURCES
       TransportUtilities.h
       UndoRedoMenu.cpp
       UndoRedoMenu.h
-      WaveTrackLocation.cpp
-      WaveTrackLocation.h
 
       # Commands
 
@@ -266,32 +264,6 @@ list( APPEND SOURCES
       tracks/playabletrack/ui/PlayableTrackButtonHandles.h
       tracks/playabletrack/ui/PlayableTrackControls.cpp
       tracks/playabletrack/ui/PlayableTrackControls.h
-      tracks/playabletrack/wavetrack/ui/CutlineHandle.cpp
-      tracks/playabletrack/wavetrack/ui/CutlineHandle.h
-      tracks/playabletrack/wavetrack/ui/WaveClipTrimHandle.h
-      tracks/playabletrack/wavetrack/ui/WaveClipTrimHandle.cpp
-      tracks/playabletrack/wavetrack/ui/WaveClipUtilities.cpp
-      tracks/playabletrack/wavetrack/ui/WaveClipUtilities.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackAffordanceControls.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackAffordanceControls.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackAffordanceHandle.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackAffordanceHandle.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackControls.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackControls.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackMenuItems.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackShifter.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackVRulerControls.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackVRulerControls.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackVZoomHandle.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackVZoomHandle.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackView.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackView.h
-      tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.cpp
-      tracks/playabletrack/wavetrack/ui/WaveTrackViewConstants.h
-      tracks/playabletrack/wavetrack/WaveTrackUtils.cpp
-      tracks/playabletrack/wavetrack/WaveTrackUtils.h
 
       # Tracks UI
 

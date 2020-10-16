@@ -24,7 +24,6 @@
 #include "CommandManager.h"
 #include "TimeWarper.h"
 #include "PrefsDialog.h"
-#include "../tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/VetoDialogHook.h"
 

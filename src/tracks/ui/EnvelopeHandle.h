@@ -25,9 +25,6 @@ class ViewInfo;
 
 class AUDACITY_DLL_API EnvelopeHandle final : public UIHandle
 {
-   EnvelopeHandle(const EnvelopeHandle&) = delete;
-   EnvelopeHandle &operator=(const EnvelopeHandle&) = delete;
-
 public:
    struct Data {
       Data() = default;
@@ -41,7 +38,7 @@ public:
    };
    explicit EnvelopeHandle( Data data );
 
-   EnvelopeHandle(EnvelopeHandle&&) = default;
+   EnvelopeHandle& operator=(const EnvelopeHandle&) = default;
    EnvelopeHandle& operator=(EnvelopeHandle&&) = default;
 
    static UIHandlePtr HitEnvelope(

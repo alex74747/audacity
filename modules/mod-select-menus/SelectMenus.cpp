@@ -21,9 +21,8 @@
 #include "CommandManager.h"
 #include "ControlToolBar.h"
 #include "tracks/ui/SelectHandle.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
+#include "WaveTrackView.h"
 #include "LabelTrackView.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
 
 // private helper classes and functions
 namespace {

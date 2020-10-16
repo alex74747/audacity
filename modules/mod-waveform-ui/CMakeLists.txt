@@ -16,5 +16,5 @@ list( APPEND SOURCES
    WaveformView.cpp
    WaveformView.h
 )
-audacity_module( mod-waveform-ui "${SOURCES}" "Audacity"
+audacity_module( mod-waveform-ui "${SOURCES}" "mod-wave-track-ui-interface"
    "" "" )

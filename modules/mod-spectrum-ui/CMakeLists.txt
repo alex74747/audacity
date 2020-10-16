@@ -20,6 +20,7 @@ set( SOURCES
    SpectrogramSettings.h
 )
 set( LIBRARIES
+   mod-wave-track-ui-interface
    Audacity
 )
 audacity_module( mod-spectrum-ui "${SOURCES}" "${LIBRARIES}"

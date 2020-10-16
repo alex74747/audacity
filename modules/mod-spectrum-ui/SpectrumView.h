@@ -14,7 +14,7 @@ Paul Licameli split from WaveTrackView.h
 #include <functional>
 #include <map>
 #include <set>
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h" // to inherit
+#include "WaveTrackView.h" // to inherit
 
 
 class WaveTrack;

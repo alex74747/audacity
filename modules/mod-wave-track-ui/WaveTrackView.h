@@ -11,10 +11,9 @@ Paul Licameli split from class WaveTrack
 #ifndef __AUDACITY_WAVE_TRACK_VIEW__
 #define __AUDACITY_WAVE_TRACK_VIEW__
 
-#include "../../../ui/CommonTrackView.h"
+#include "tracks/ui/CommonTrackView.h"
 #include "ClientData.h"
 #include "SampleCount.h"
-namespace WaveTrackViewConstants{ enum Display : int; }
 struct WaveTrackSubViewType;
 
 class CutlineHandle;
@@ -38,7 +37,7 @@ namespace {
 
 class wxDC;
 
-class AUDACITY_DLL_API WaveTrackSubView : public CommonTrackView
+class WAVE_TRACK_UI_API WaveTrackSubView : public CommonTrackView
 {
 public:
 
@@ -93,7 +92,7 @@ using WaveTrackSubViews = ClientData::Site<
    WaveTrackView, WaveTrackSubView, ClientData::SkipCopying, std::shared_ptr
 >;
 
-class AUDACITY_DLL_API WaveTrackView final
+class WAVE_TRACK_UI_API WaveTrackView final
    : public CommonTrackView
    , public WaveTrackSubViews
 {
@@ -229,7 +228,7 @@ class SelectedRegion;
 class WaveClip;
 class ZoomInfo;
 
-struct AUDACITY_DLL_API ClipParameters
+struct WAVE_TRACK_UI_API ClipParameters
 {
    // Do a bunch of calculations common to waveform and spectrum drawing.
    ClipParameters(

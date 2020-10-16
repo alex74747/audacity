@@ -25,7 +25,7 @@
 #include "CommandContext.h"
 #include "CommandManager.h"
 #include "QualitySettings.h"
-#include "tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
+#include "WaveTrackControls.h"
 #include "toolbars/ToolManager.h"
 #include "ASlider.h"
 #include "widgets/AudacityMessageBox.h"
