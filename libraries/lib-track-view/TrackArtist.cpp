@@ -51,7 +51,7 @@ audio tracks.
 #include <wx/utils.h>
 
 TrackArtist::TrackArtist( AudacityProject &project,
-   TrackPanel &parent, const ZoomInfo &zoomInfo,
+   wxWindow &parent, const ZoomInfo &zoomInfo,
    const SelectedRegion &selectedRegion )
    : project{ project }
    , parent{ parent }
