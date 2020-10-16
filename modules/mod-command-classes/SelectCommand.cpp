@@ -36,7 +36,6 @@ explicitly code all three.
 
 #include "LoadCommands.h"
 #include "ProjectSelectionManager.h"
-#include "TrackPanel.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "Effect.h"
@@ -91,7 +90,7 @@ void SelectTimeCommand::PopulateOrExchange(ShuttleGui & S)
 bool SelectTimeCommand::Apply(const CommandContext & context){
    // Many commands need focus on track panel.
    // No harm in setting it with a scripted select.
-   TrackPanel::Get( context.project ).SetFocus();
+   GetProjectPanel( context.project ).SetFocus();
    if( !bHasT0 && !bHasT1 )
       return true;
 

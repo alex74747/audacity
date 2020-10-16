@@ -7,7 +7,6 @@
 #include "ProjectWindow.h"
 #include "Track.h"
 #include "SelectionState.h"
-#include "TrackPanel.h"
 #include "TrackPanelAx.h"
 #include "commands/CommandContext.h"
 #include "commands/CommandManager.h"
@@ -38,7 +37,7 @@ void NextOrPrevFrame(AudacityProject &project, bool forward)
 
    wxWindow *const begin [rotationSize] = {
       ProjectWindow::Get( project ).GetTopPanel(),
-      &TrackPanel::Get( project ),
+      &GetProjectPanel( project ),
       botDock,
    };
 

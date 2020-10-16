@@ -10,7 +10,6 @@
 #include "Track.h"
 #include "TrackArtist.h"
 #include "TrackInfo.h"
-#include "TrackPanel.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
 #include "commands/CommandContext.h"
@@ -165,7 +164,7 @@ struct Handler final
 void OnZoomIn(const CommandContext &context)
 {
    auto &project = context.project;
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &window = ProjectWindow::Get( project );
    window.ZoomInByFactor( 2.0 );
    trackPanel.Refresh(false);
@@ -174,7 +173,7 @@ void OnZoomIn(const CommandContext &context)
 void OnZoomNormal(const CommandContext &context)
 {
    auto &project = context.project;
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &window = ProjectWindow::Get( project );
 
    window.Zoom(ZoomInfo::GetDefaultZoom());
@@ -202,7 +201,7 @@ void OnZoomToggle(const CommandContext &context)
 {
    auto &project = context.project;
    auto &viewInfo = ViewInfo::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &window = ProjectWindow::Get( project );
 
 //   const double origLeft = viewInfo.h;
@@ -320,7 +319,7 @@ void OnShowClipping(const CommandContext &context)
 {
    auto &project = context.project;
    auto &commandManager = CommandManager::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
 
    bool checked = !gPrefs->Read(wxT("/GUI/ShowClipping"), 0L);
    gPrefs->Write(wxT("/GUI/ShowClipping"), checked);

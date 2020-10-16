@@ -29,7 +29,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "SelectionState.h"
 #include "TempDirectory.h"
 #include "TrackPanelAx.h"
-#include "TrackPanel.h"
 #include "UndoManager.h"
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
@@ -884,7 +883,7 @@ bool ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
    auto &history = ProjectHistory::Get( project );
    auto &projectFileIO = ProjectFileIO::Get( project );
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &window = ProjectWindow::Get( project );
 
    // On Win32, we may be given a short (DOS-compatible) file name on rare

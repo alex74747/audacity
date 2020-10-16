@@ -64,7 +64,7 @@ int DoAddLabel(
 {
    auto &tracks = TrackList::Get( project );
    auto &trackFocus = TrackFocus::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
 
    wxString title;      // of label
 
@@ -330,7 +330,7 @@ void OnPasteNewLabel(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
 
    bool bPastedSomething = false;
