@@ -117,13 +117,9 @@ class AUDACITY_DLL_API TrackPanel final
    void UpdateTrackVRuler(Track *t);
    void UpdateVRulerSize();
 
- protected:
+protected:
    bool IsAudioActive();
 
-public:
-   size_t GetSelectedTrackCount() const;
-
-protected:
    void UpdateSelectionDisplay();
 
 public:

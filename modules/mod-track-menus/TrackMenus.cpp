@@ -10,6 +10,7 @@
 #include "ProjectSettings.h"
 #include "PluginManager.h"
 #include "ProjectStatus.h"
+#include "ProjectWindows.h"
 #include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "SelectUtilities.h"
