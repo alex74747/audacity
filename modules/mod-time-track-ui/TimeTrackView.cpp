@@ -9,7 +9,7 @@ Paul Licameli split from TrackPanel.cpp
 **********************************************************************/
 
 #include "TimeTrackView.h"
-#include "../../../TimeTrack.h"
+#include "TimeTrack.h"
 
 #include "TimeTrackControls.h"
 
@@ -18,7 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "AllThemeResources.h"
 #include "Decibels.h"
 #include "Envelope.h"
-#include "../../../EnvelopeEditor.h"
+#include "EnvelopeEditor.h"
 #include "HitTestResult.h"
 #include "Theme.h"
 #include "TrackArtist.h"
@@ -27,7 +27,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "ViewInfo.h"
 #include "Ruler.h"
 
-#include "../../ui/EnvelopeHandle.h"
+#include "tracks/ui/EnvelopeHandle.h"
 
 #include <wx/dc.h>
 
@@ -207,3 +207,6 @@ void TimeTrackView::Draw(
       DrawTimeTrack( context, *tt, GetRuler(), rect );
    }
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

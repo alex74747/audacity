@@ -15,6 +15,7 @@
 
 
 #include "ClientData.h"
+#include "SampleCount.h"
 #include "SampleFormat.h"
 #include "XMLTagHandler.h"
 #include "SampleCount.h"
