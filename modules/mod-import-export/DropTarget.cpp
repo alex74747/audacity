@@ -16,7 +16,7 @@
 #include "FileNames.h"
 #include "Project.h"
 #include "ProjectWindow.h"
-#include "TrackPanel.h"
+#include "ProjectWindows.h"
 #include "Import.h"
 
 #if wxUSE_DRAG_AND_DROP
@@ -186,7 +186,7 @@ static const AudacityProject::AttachedObjects::RegisteredFactory key{
       //   SetDropTarget(safenew AudacityDropTarget(this));
       //   mTrackPanel->SetDropTarget(safenew AudacityDropTarget(this));
       
-      TrackPanel::Get( project )
+      GetProjectPanel( project )
          .SetDropTarget(
             // SetDropTarget takes ownership
             safenew DropTarget( &project ) );

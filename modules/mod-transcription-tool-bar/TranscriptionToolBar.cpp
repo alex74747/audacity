@@ -844,7 +844,6 @@ void TranscriptionToolBar::OnCalibrate(wxCommandEvent & WXUNUSED(event))
 
 #include "LabelTrack.h"
 #include "ProjectHistory.h"
-#include "TrackPanel.h"
 #include "TrackPanelAx.h"
 #include "tracks/labeltrack/ui/LabelTrackView.h"
 namespace {
@@ -853,7 +852,7 @@ int DoAddLabel(
 {
    auto &tracks = TrackList::Get( project );
    auto &trackFocus = TrackFocus::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &window = ProjectWindow::Get( project );
 
    wxString title;      // of label

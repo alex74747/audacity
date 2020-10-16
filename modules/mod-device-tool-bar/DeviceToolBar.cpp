@@ -34,8 +34,6 @@
 #include <wx/tooltip.h>
 #endif
 
-#include "TrackPanel.h"
-
 #include "AColor.h"
 #include "AllThemeResources.h"
 #include "AudioIOBase.h"
@@ -43,6 +41,7 @@
 #include "KeyboardCapture.h"
 #include "Prefs.h"
 #include "Project.h"
+#include "ProjectWindows.h"
 #include "ShuttleGui.h"
 #include "Grabber.h"
 #include "DeviceManager.h"
@@ -367,7 +366,7 @@ void DeviceToolBar::EnableDisableButtons()
       if (audioStreamActive) {
          wxWindow *focus = wxWindow::FindFocus();
          if (focus == mHost || focus == mInput || focus == mOutput || focus == mInputChannels)
-            TrackPanel::Get( mProject ).SetFocus();
+            GetProjectPanel( mProject ).SetFocus();
       }
 
       mHost->Enable(!audioStreamActive);

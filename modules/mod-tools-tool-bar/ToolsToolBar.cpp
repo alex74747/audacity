@@ -50,6 +50,7 @@
 #include "Project.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
+#include "ProjectWindows.h"
 #include "tracks/ui/Scrubbing.h"
 
 #include "AButton.h"
@@ -270,8 +271,6 @@ AttachedToolBarMenuItem sAttachment{
 
 // Following code injects menu items for changing the current tool
 
-#include "TrackPanel.h"
-
 // private helper classes and functions
 namespace {
 
@@ -281,7 +280,7 @@ void SetTool(AudacityProject &project, int tool)
    auto toolbar = &ToolsToolBar::Get( project );
    if (toolbar) {
       ProjectSettings::Get(project).SetTool(tool);
-      TrackPanel::Get( project ).Refresh(false);
+      GetProjectPanel( project ).Refresh(false);
    }
 }
 
@@ -327,7 +326,7 @@ void OnMultiTool(const CommandContext &context)
 void OnPrevTool(const CommandContext &context)
 {
    auto &project = context.project;
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &settings = ProjectSettings::Get( project );
 
    settings.SetTool(
@@ -338,7 +337,7 @@ void OnPrevTool(const CommandContext &context)
 void OnNextTool(const CommandContext &context)
 {
    auto &project = context.project;
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &settings = ProjectSettings::Get( project );
 
    settings.SetTool( (settings.GetTool() + 1) % ToolCodes::numTools );
