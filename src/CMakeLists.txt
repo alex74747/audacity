@@ -1340,3 +1340,14 @@ if( NOT "${CMAKE_GENERATOR}" MATCHES "Xcode|Visual Studio*" )
    endif()
 endif()
 
+# collect dependency information
+list( APPEND GRAPH_EDGES "Audacity [shape=house]" )
+foreach( LIBRARY ${LIBRARIES} )
+   if (NOT LIBRARY MATCHES "PUBLIC|PRIVATE|INTERFACE")
+      string( REGEX REPLACE ".*>.*:(.*)>" "\\1" LIBRARY "${LIBRARY}" )
+      string( REGEX REPLACE "^-(l|framework )" "" LIBRARY "${LIBRARY}" )
+      list( APPEND GRAPH_EDGES "\"${TARGET}\" -> \"${LIBRARY}\"" )
+   endif()
+endforeach()
+
+set( GRAPH_EDGES "${GRAPH_EDGES}" PARENT_SCOPE )

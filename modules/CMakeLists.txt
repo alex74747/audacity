@@ -15,3 +15,4 @@ if( NOT CMAKE_SYSTEM_NAME MATCHES "Darwin" )
    endif()
 endif()
 
+set( GRAPH_EDGES "${GRAPH_EDGES}" PARENT_SCOPE )
