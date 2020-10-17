@@ -14,9 +14,9 @@
 #include "Audacity.h"
 
 class wxMouseEvent;
+class wxDC;
 class wxRect;
 class Envelope;
-struct TrackPanelDrawingContext;
 class ZoomInfo;
 
 // A class that holds state for the duration of dragging
@@ -26,7 +26,8 @@ class COMMON_TRACK_UI_API EnvelopeEditor
 public:
    static void DrawPoints(
       const Envelope &env,
-      TrackPanelDrawingContext &context,
+      wxDC &dc,
+      const ZoomInfo &zoomInfo,
       const wxRect & r,
       bool dB, double dBRange,
       float zoomMin, float zoomMax, bool mirrored);
