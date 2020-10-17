@@ -11,7 +11,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "Audacity.h"
 #include "WaveTrackControls.h"
 
-#include "tracks/playabletrack/ui/PlayableTrackButtonHandles.h"
+#include "PlayableTrackButtonHandles.h"
 #include "WaveTrackSliderHandles.h"
 
 #include "WaveTrackView.h"

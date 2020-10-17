@@ -24,5 +24,5 @@ list( APPEND SOURCES
    StretchHandle.cpp
    StretchHandle.h
 )
-audacity_module( mod-note-track-ui "${SOURCES}" "Audacity;portsmf"
+audacity_module( mod-note-track-ui "${SOURCES}" "mod-playable-track-ui-interface;portsmf"
    "" "" )

@@ -12,7 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_WAVE_TRACK_CONTROLS__
 
 #include "Audacity.h"
-#include "tracks/playabletrack/ui/PlayableTrackControls.h" // to inherit
+#include "PlayableTrackControls.h" // to inherit
 
 class CellularPanel;
 class LWSlider;
