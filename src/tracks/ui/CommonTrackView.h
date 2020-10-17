@@ -16,6 +16,7 @@ Paul Licameli split from class TrackView
 
 class SelectHandle;
 class TimeShiftHandle;
+class ZoomHandle;
 
 class AUDACITY_DLL_API CommonTrackView /* not final */ : public TrackView
 {
@@ -53,6 +54,7 @@ protected:
 
 public:
    std::weak_ptr<TimeShiftHandle> mTimeShiftHandle;
+   mutable std::weak_ptr<ZoomHandle> mZoomHandle;
 };
 
 #endif
