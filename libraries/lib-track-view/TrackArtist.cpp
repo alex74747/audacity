@@ -50,8 +50,11 @@ audio tracks.
 
 #include <wx/utils.h>
 
-TrackArtist::TrackArtist( TrackPanel *parent_ )
-   : parent( parent_ )
+TrackArtist::TrackArtist( TrackPanel &parent, const ZoomInfo &zoomInfo,
+   const SelectedRegion &selectedRegion )
+   : parent{ parent }
+   , zoomInfo{ zoomInfo }
+   , selectedRegion{ selectedRegion }
 {
    mdBrange = DecibelScaleCutoff.GetDefault();
    mShowClipping = false;

@@ -19,6 +19,8 @@ list( APPEND SOURCES
    TextEditHelper.h
    TimeShiftHandle.cpp
    TimeShiftHandle.h
+   TrackArt.cpp
+   TrackArt.h
    TrackButtonHandles.cpp
    TrackButtonHandles.h
    TrackInfo.cpp

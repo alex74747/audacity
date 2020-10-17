@@ -121,7 +121,7 @@ void DrawHorzRulerAndCurve
 {
    auto &dc = context.dc;
    const auto artist = TrackArtist::Get( context );
-   const auto &zoomInfo = *artist->pZoomInfo;
+   const auto &zoomInfo = artist->zoomInfo;
    
    bool highlight = false;
 #ifdef EXPERIMENTAL_TRACK_PANEL_HIGHLIGHTING
@@ -193,7 +193,7 @@ void DrawTimeTrack(TrackPanelDrawingContext &context,
       upper = LINEAR_TO_DB(std::max(1.0e-7, upper)) / dbRange + 1.0;
    }
    EnvelopeEditor::DrawPoints( *track.GetEnvelope(),
-        context, envRect,
+        context.dc, artist->zoomInfo, envRect,
         track.GetDisplayLog(), dbRange, lower, upper, false );
 }
 }

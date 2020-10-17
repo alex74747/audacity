@@ -171,7 +171,8 @@ wxString TrackArt::TruncateText(wxDC& dc, const wxString& text, const int maxWid
    return wxEmptyString;
 }
 
-void TrackArt::DrawClipAffordance(wxDC& dc, const wxRect& rect, const wxString& title, bool highlight, bool selected)
+void TrackArt::DrawClipAffordance(wxDC& dc, const wxRect& rect,
+   const wxString& title, bool highlight, bool selected)
 {
    //To make sure that roundings do not overlap each other
    auto clipFrameRadius = std::min(ClipFrameRadius, rect.width / 2);
@@ -203,7 +204,6 @@ void TrackArt::DrawClipAffordance(wxDC& dc, const wxRect& rect, const wxString& 
       AColor::UseThemeColour(&dc, clrClipAffordanceStroke, clrClipAffordanceStroke);
       dc.DrawRoundedRectangle(strokeRect, clipFrameRadius);
    }
-
    AColor::UseThemeColour(&dc, highlight ? clrClipAffordanceActiveBrush : clrClipAffordanceInactiveBrush, clrClipAffordanceOutlinePen);
    dc.DrawRoundedRectangle(
       wxRect(
@@ -413,8 +413,8 @@ void TrackArt::DrawBackgroundWithSelection(
 {
    const auto dc = &context.dc;
    const auto artist = TrackArtist::Get( context );
-   const auto &selectedRegion = *artist->pSelectedRegion;
-   const auto &zoomInfo = *artist->pZoomInfo;
+   const auto &selectedRegion = artist->selectedRegion;
+   const auto &zoomInfo = artist->zoomInfo;
 
    //MM: Draw background. We should optimize that a bit more.
    const double sel0 = useSelection ? selectedRegion.t0() : 0.0;
@@ -490,11 +490,11 @@ void TrackArt::DrawCursor(TrackPanelDrawingContext& context,
 {
    const auto dc = &context.dc;
    const auto artist = TrackArtist::Get(context);
-   const auto& selectedRegion = *artist->pSelectedRegion;
+   const auto& selectedRegion = artist->selectedRegion;
    
    if (selectedRegion.isPoint())
    {
-       const auto& zoomInfo = *artist->pZoomInfo;
+       const auto& zoomInfo = artist->zoomInfo;
        auto x = static_cast<int>(zoomInfo.TimeToPosition(selectedRegion.t0(), rect.x));
        if (x >= rect.GetLeft() && x <= rect.GetRight())
        {

@@ -196,7 +196,7 @@ void VelocitySliderDrawFunction
    bool captured = hit && target->IsClicked();
 
    const auto artist = TrackArtist::Get( context );
-   auto pParent = FindProjectFrame( artist->parent->GetProject() );
+   auto pParent = FindProjectFrame( artist->parent.GetProject() );
 
    SliderDrawFunction(
       &NoteTrackControls::VelocitySlider, dc, rect, pTrack,
