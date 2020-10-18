@@ -1760,10 +1760,10 @@ void WaveTrackView::Draw(
    TrackPanelDrawingContext &context,
    const wxRect &rect, unsigned iPass )
 {
+   CommonTrackView::Draw( context, rect, iPass );
+
    // Should not come here, drawing is now delegated to sub-views
    wxASSERT( false );
-
-   CommonTrackView::Draw( context, rect, iPass );
 }
 
 using GetWaveTrackSyncLockPolicy =

@@ -1077,6 +1077,7 @@ void WaveformView::DoDraw(TrackPanelDrawingContext &context,
 void WaveformView::Draw(
    TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
 {
+   WaveTrackSubView::Draw( context, rect, iPass );
    if ( iPass == TrackArtist::PassTracks ) {
       auto &dc = context.dc;
       // Update cache for locations, e.g. cutlines and merge points
@@ -1113,7 +1114,6 @@ void WaveformView::Draw(
       dc.GetGraphicsContext()->SetAntialiasMode(aamode);
 #endif
    }
-   WaveTrackSubView::Draw( context, rect, iPass );
 }
 
 static const WaveTrackSubViews::RegisteredFactory key{
