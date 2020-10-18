@@ -633,6 +633,7 @@ void SpectrumView::DoDraw( TrackPanelDrawingContext &context,
 void SpectrumView::Draw(
    TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
 {
+   CommonTrackView::Draw( context, rect, iPass );
    if ( iPass == TrackArtist::PassTracks ) {
       auto &dc = context.dc;
       // Update cache for locations, e.g. cutlines and merge points
@@ -660,7 +661,6 @@ void SpectrumView::Draw(
       dc.GetGraphicsContext()->SetAntialiasMode(aamode);
 #endif
    }
-   CommonTrackView::Draw( context, rect, iPass );
 }
 
 static const WaveTrackSubViews::RegisteredFactory key{

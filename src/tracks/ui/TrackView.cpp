@@ -10,6 +10,10 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "TrackView.h"
 #include "../../Track.h"
+#include "TrackVRulerControls.h"
+#include "../../AColor.h"
+#include "../../TrackPanelDrawingContext.h"
+#include <wx/dc.h>
 
 #include "../../ClientData.h"
 #include "../../Project.h"
@@ -161,6 +165,33 @@ void TrackView::DoSetHeight(int h)
    mHeight = h;
 }
 
+std::vector<UIHandlePtr> TrackView::HitTest(
+   const TrackPanelMouseState &state, const AudacityProject *)
+{
+   return {};
+}
+
+void TrackView::Draw(
+   TrackPanelDrawingContext &context, const wxRect &rect, unsigned iPass )
+{
+   if (iPass == 0) {
+      auto &dc = context.dc;
+      auto pTrack = FindTrack();
+      AColor::MediumTrackInfo(&dc, pTrack && pTrack->GetSelected() );
+      dc.DrawRectangle(rect);
+   }
+}
+
+std::shared_ptr<TrackVRulerControls> TrackView::DoGetVRulerControls()
+{
+   return std::make_shared<TrackVRulerControls>(shared_from_this());
+}
+
+int TrackView::GetMinimizedHeight() const
+{
+   return 100;
+}
+
 namespace {
 
 // Attach an object to each project.  It receives track list events and updates
@@ -214,9 +245,13 @@ static const AudacityProject::AttachedObjects::RegisteredFactory key{
 }
 
 DEFINE_ATTACHED_VIRTUAL(DoGetView) {
-   return nullptr;
+   return [](Track &track){
+      return std::make_shared<TrackView>(track.shared_from_this());
+   };
 }
 
 DEFINE_ATTACHED_VIRTUAL(GetDefaultTrackHeight) {
-   return nullptr;
+   return [](auto &track){
+      return 100;
+   };
 }

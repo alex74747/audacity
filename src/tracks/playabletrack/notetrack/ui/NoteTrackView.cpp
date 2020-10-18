@@ -713,6 +713,7 @@ void NoteTrackView::Draw(
    TrackPanelDrawingContext &context,
    const wxRect &rect, unsigned iPass )
 {
+   CommonTrackView::Draw( context, rect, iPass );
    if ( iPass == TrackArtist::PassTracks ) {
       const auto nt = std::static_pointer_cast<const NoteTrack>(
          FindTrack()->SubstitutePendingChangedTrack());
@@ -724,6 +725,5 @@ void NoteTrackView::Draw(
 #endif
       DrawNoteTrack( context, nt.get(), rect, muted );
    }
-   CommonTrackView::Draw( context, rect, iPass );
 }
 #endif
