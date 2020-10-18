@@ -12,7 +12,7 @@
 #define __AUDACITY_PLAYABLE_TRACK_CONTROLS__
 
 #include "Audacity.h"
-#include "tracks/ui/CommonTrackControls.h"
+#include "CommonTrackControls.h"
 
 class wxRect;
 class Track;

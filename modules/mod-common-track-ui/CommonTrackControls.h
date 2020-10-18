@@ -12,7 +12,7 @@ Paul Licameli split from TrackControls.h
 #define __AUDACITY_COMMON_TRACK_CONTROLS__
 
 #include "Audacity.h"
-#include "TrackControls.h" // to inherit
+#include "tracks/ui/TrackControls.h" // to inherit
 
 class CloseButtonHandle;
 class MenuButtonHandle;
@@ -24,7 +24,8 @@ class TrackSelectHandle;
 namespace TrackInfo{ struct TCPLine; }
 using TCPLines = std::vector< TrackInfo::TCPLine >;
 
-class AUDACITY_DLL_API CommonTrackControls /* not final */ : public TrackControls
+class COMMON_TRACK_UI_API CommonTrackControls /* not final */
+   : public TrackControls
 {
 public:
    using TrackControls::TrackControls;

@@ -12,7 +12,7 @@ Paul Licameli split from class WaveTrack
 #define __AUDACITY_WAVE_TRACK_VIEW__
 
 #include "Audacity.h"
-#include "tracks/ui/CommonTrackView.h"
+#include "CommonTrackView.h"
 #include "ClientData.h"
 struct WaveTrackSubViewType;
 

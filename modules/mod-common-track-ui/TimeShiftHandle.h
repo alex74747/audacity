@@ -15,8 +15,8 @@ Paul Licameli
 #include <functional>
 #include <unordered_map>
 
-#include "../../AttachedVirtualFunction.h"
-#include "../../UIHandle.h"
+#include "AttachedVirtualFunction.h"
+#include "UIHandle.h"
 
 class SnapManager;
 class Track;
@@ -29,7 +29,7 @@ class TrackInterval;
 class ViewInfo;
 
 //! Abstract base class for policies to manipulate a track type with the Time Shift tool
-class AUDACITY_DLL_API TrackShifter {
+class COMMON_TRACK_UI_API TrackShifter {
 public:
    TrackShifter();
    TrackShifter(const TrackShifter&) = delete;
@@ -197,11 +197,11 @@ private:
 struct MakeTrackShifterTag;
 using MakeTrackShifter = AttachedVirtualFunction<
    MakeTrackShifterTag, std::unique_ptr<TrackShifter>, Track, AudacityProject&>;
-DECLARE_EXPORTED_ATTACHED_VIRTUAL(AUDACITY_DLL_API, MakeTrackShifter);
+DECLARE_EXPORTED_ATTACHED_VIRTUAL(COMMON_TRACK_UI_API, MakeTrackShifter);
 
 class ViewInfo;
 
-struct AUDACITY_DLL_API ClipMoveState {
+struct COMMON_TRACK_UI_API ClipMoveState {
    ClipMoveState() = default;
 
    ClipMoveState(const ClipMoveState&) = delete;
@@ -253,7 +253,7 @@ struct AUDACITY_DLL_API ClipMoveState {
    }
 };
 
-class AUDACITY_DLL_API TimeShiftHandle final : public UIHandle
+class COMMON_TRACK_UI_API TimeShiftHandle final : public UIHandle
 {
    TimeShiftHandle(const TimeShiftHandle&) = delete;
    static HitTestPreview HitPreview

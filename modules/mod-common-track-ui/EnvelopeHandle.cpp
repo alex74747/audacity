@@ -8,21 +8,21 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-#include "../../Audacity.h"
+#include "Audacity.h"
 #include "EnvelopeHandle.h"
 
-#include "TrackView.h"
+#include "tracks/ui/TrackView.h"
 
-#include "../../Envelope.h"
-#include "../../EnvelopeEditor.h"
-#include "../../HitTestResult.h"
-#include "../../ProjectAudioIO.h"
-#include "../../ProjectHistory.h"
-#include "../../RefreshCode.h"
-#include "../../TrackArt.h"
-#include "../../TrackPanelMouseEvent.h"
-#include "../../ViewInfo.h"
-#include "../../../images/Cursors.h"
+#include "Envelope.h"
+#include "EnvelopeEditor.h"
+#include "HitTestResult.h"
+#include "ProjectAudioIO.h"
+#include "ProjectHistory.h"
+#include "RefreshCode.h"
+#include "TrackArt.h"
+#include "TrackPanelMouseEvent.h"
+#include "ViewInfo.h"
+#include "../images/Cursors.h"
 
 EnvelopeHandle::EnvelopeHandle( Data data )
    : mData{ std::move(data) }
