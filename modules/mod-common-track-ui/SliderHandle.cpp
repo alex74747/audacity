@@ -8,7 +8,6 @@ Paul Licameli
 
 **********************************************************************/
 
-
 #include "SliderHandle.h"
 
 #include "ASlider.h"

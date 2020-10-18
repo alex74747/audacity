@@ -23,7 +23,7 @@ class Envelope;
 class EnvelopeEditor;
 class ViewInfo;
 
-class AUDACITY_DLL_API EnvelopeHandle final : public UIHandle
+class COMMON_TRACK_UI_API EnvelopeHandle final : public UIHandle
 {
 public:
    struct Data {

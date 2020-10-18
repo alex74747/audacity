@@ -19,7 +19,7 @@ class TimeShiftHandle;
 class ZoomHandle;
 class ZoomInfo;
 
-class AUDACITY_DLL_API CommonTrackView /* not final */ : public TrackView
+class COMMON_TRACK_UI_API CommonTrackView /* not final */ : public TrackView
 {
 public:
    using TrackView::TrackView;

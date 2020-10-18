@@ -62,7 +62,6 @@ is time to refresh some aspect of the screen.
 #include "ProjectWindow.h"
 #include "SyncLock.h"
 #include "Theme.h"
-#include "TrackArt.h"
 #include "TrackPanelMouseEvent.h"
 #include "TrackPanelResizeHandle.h"
 //#define DEBUG_DRAW_TIMING 1
@@ -1383,6 +1382,25 @@ struct HorizontalGroup final : TrackPanelGroup {
 };
 
 
+static void DrawCursor(TrackPanelDrawingContext& context,
+   const wxRect& rect, const Track* track)
+{
+   const auto dc = &context.dc;
+   const auto artist = TrackArtist::Get(context);
+   const auto& selectedRegion = *artist->pSelectedRegion;
+   
+   if (selectedRegion.isPoint())
+   {
+       const auto& zoomInfo = *artist->pZoomInfo;
+       auto x = static_cast<int>(zoomInfo.TimeToPosition(selectedRegion.t0(), rect.x));
+       if (x >= rect.GetLeft() && x <= rect.GetRight())
+       {
+          AColor::CursorColor(dc);
+          AColor::Line(*dc, x, rect.GetTop(), x, rect.GetBottom());
+       }
+   }
+}
+
 // optional affordance areas, and n channels with vertical rulers,
 // alternating with n - 1 resizers;
 // each channel-ruler pair might be divided into multiple views
@@ -1457,7 +1475,7 @@ struct ChannelGroup final : TrackPanelGroup {
                yy,
                rect.GetRight() - mLeftOffset,
                height - kChannelSeparatorThickness);
-            TrackArt::DrawCursor(context, trackRect, mpTrack.get());
+            DrawCursor(context, trackRect, mpTrack.get());
             yy += height;
          }
       }

@@ -14,7 +14,7 @@
 
 #include "Observer.h"
 #include "CommonTrackPanelCell.h"
-#include "tracks/ui/TextEditHelper.h"
+#include "TextEditHelper.h"
 
 
 struct TrackListEvent;

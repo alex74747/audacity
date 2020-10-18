@@ -33,7 +33,6 @@ Paul Licameli split from WaveTrackView.cpp
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
-#include "tracks/ui/SelectHandle.h"
 #include "SpectralSelectHandle.h"
 #include "SpectrogramSettings.h"
 #include "SampleTrackCache.h"
@@ -1105,7 +1104,7 @@ unsigned SpectrumView::Char(
 
 #ifdef EXPERIMENTAL_SPECTRAL_EDITING
 // Attach some related menu items
-#include "tracks/ui/SelectHandle.h"
+#include "SelectHandle.h"
 #include "CommonCommandFlags.h"
 #include "Project.h"
 #include "SpectrumAnalyst.h"

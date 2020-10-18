@@ -18,16 +18,16 @@ Paul Licameli split from TrackControls.cpp
 #include "ProjectHistory.h"
 #include "ProjectWindows.h"
 #include "TrackArtist.h"
-#include "../../TrackInfo.h"
+#include "TrackInfo.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"
-#include "../../TrackUtilities.h"
+#include "TrackUtilities.h"
 #include <wx/textdlg.h>
-#include "../../commands/AudacityCommand.h"
+#include "commands/AudacityCommand.h"
 #include "CommandManager.h"
 #include "ShuttleGui.h"
 #include "Track.h"
-#include "../../widgets/PopupMenuTable.h"
+#include "widgets/PopupMenuTable.h"
 #include "MenuHandle.h"
 
 #include <wx/dc.h>

@@ -10,7 +10,7 @@
 #include "WaveTrack.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "tracks/ui/TimeShiftHandle.h"
+#include "TimeShiftHandle.h"
 
 // private helper classes and functions
 namespace {

@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "TimeShiftHandle.h"
 
 #include "TrackView.h"
@@ -16,9 +15,9 @@ Paul Licameli split from TrackPanel.cpp
 #include "HitTestResult.h"
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
-#include "../../ProjectSettings.h"
+#include "ProjectSettings.h"
 #include "RefreshCode.h"
-#include "../../Snap.h"
+#include "Snap.h"
 #include "SyncLock.h"
 #include "Track.h"
 #include "TrackArtist.h"
@@ -26,7 +25,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackPanelMouseEvent.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
-#include "../../../images/Cursors.h"
+#include "../images/Cursors.h"
 
 TimeShiftHandle::TimeShiftHandle
 ( const std::shared_ptr<Track> &pTrack, bool gripHit )

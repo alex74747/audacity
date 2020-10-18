@@ -8,7 +8,6 @@ Paul Licameli
 
 **********************************************************************/
 
-
 #include "ButtonHandle.h"
 
 #include "HitTestResult.h"

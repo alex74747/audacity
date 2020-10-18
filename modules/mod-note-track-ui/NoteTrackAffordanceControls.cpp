@@ -12,8 +12,8 @@
 
 #include <wx/dc.h>
 
-#include "tracks/ui/AffordanceHandle.h"
-#include "tracks/ui/SelectHandle.h"
+#include "AffordanceHandle.h"
+#include "SelectHandle.h"
 #include "TrackView.h"
 #include "AllThemeResources.h"
 #include "AColor.h"

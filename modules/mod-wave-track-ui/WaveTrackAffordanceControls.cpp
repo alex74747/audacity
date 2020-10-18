@@ -30,9 +30,8 @@
 #include "ShuttleGui.h"
 #include "ProjectWindows.h"
 #include "commands/AudacityCommand.h"
-
-#include "tracks/ui/TextEditHelper.h"
-#include "tracks/ui/SelectHandle.h"
+#include "TextEditHelper.h"
+#include "SelectHandle.h"
 #include "WaveTrackView.h"//need only ClipParameters
 #include "WaveTrackAffordanceHandle.h"
 

@@ -13,7 +13,7 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "UIHandle.h"
 #include "SelectedRegion.h"
-#include "../../Snap.h"
+#include "Snap.h"
 
 #include <vector>
 
@@ -31,7 +31,7 @@ enum SelectionBoundary {
    SBLeft, SBRight,
 };
 
-class AUDACITY_DLL_API SelectHandle : public UIHandle
+class COMMON_TRACK_UI_API SelectHandle : public UIHandle
 {
    SelectHandle(const SelectHandle&);
 

@@ -17,7 +17,7 @@
 #include "SelectionState.h"
 #include "TrackPanelMouseEvent.h"
 #include "Track.h"
-#include "../../../images/Cursors.h"
+#include "../images/Cursors.h"
 
 #include <wx/cursor.h>
 

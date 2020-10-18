@@ -119,7 +119,7 @@ static const TCPLines &commonTrackTCPLines()
    return theLines;
 }
 
-#include "tracks/ui/CommonTrackControls.h"
+#include "CommonTrackControls.h"
 const TCPLines &CommonTrackControls::StaticTCPLines()
 {
    return commonTrackTCPLines();
@@ -263,7 +263,7 @@ void TrackInfo::DrawItems
    }
 }
 
-#include "tracks/ui/TrackButtonHandles.h"
+#include "TrackButtonHandles.h"
 void TrackInfo::DrawCloseButton(
    TrackPanelDrawingContext &context, const wxRect &bev,
    const Track *pTrack, ButtonHandle *target )

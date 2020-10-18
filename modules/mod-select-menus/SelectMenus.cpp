@@ -20,7 +20,7 @@
 #include "CommandContext.h"
 #include "CommandManager.h"
 #include "ControlToolBar.h"
-#include "tracks/ui/SelectHandle.h"
+#include "SelectHandle.h"
 #include "WaveTrackView.h"
 #include "LabelTrackView.h"
 

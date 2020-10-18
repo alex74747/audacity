@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "tracks/ui/AffordanceHandle.h"
+#include "AffordanceHandle.h"
 
 class WaveClip;
 

@@ -23,7 +23,8 @@ class TrackSelectHandle;
 namespace TrackInfo{ struct TCPLine; }
 using TCPLines = std::vector< TrackInfo::TCPLine >;
 
-class AUDACITY_DLL_API CommonTrackControls /* not final */ : public TrackControls
+class COMMON_TRACK_UI_API CommonTrackControls /* not final */
+   : public TrackControls
 {
 public:
    using TrackControls::TrackControls;
