@@ -50,6 +50,7 @@
 #include <wx/filectrl.h>
 
 #include "../FileDialog.h"
+#include "audacity/Types.h"
 
 #include <shlobj.h>
 
@@ -1155,7 +1156,7 @@ int FileDialog::ShowModal()
       m_path = fileNameBuffer;
       m_fileName = wxFileNameFromPath(fileNameBuffer);
       m_fileNames.Add(m_fileName);
-      m_dir = wxPathOnly( FilePath{ fileNameBuffer } ).GET();
+      m_dir = wxPathOnly( FilePath{ fileNameBuffer }.GET() );
    }
    
    return wxID_OK;
