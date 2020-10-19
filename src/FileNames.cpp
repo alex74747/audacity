@@ -710,7 +710,7 @@ char *FileNames::VerifyFilename(const wxString &s, bool input)
                : FileType{ {}, { ext } }
             },
             wxFD_SAVE | wxRESIZE_BORDER,
-            wxGetTopLevelParent(NULL));
+            wxGetTopLevelParent(NULL)).GET();
       }
    }
 
