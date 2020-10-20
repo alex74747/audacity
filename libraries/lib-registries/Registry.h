@@ -26,8 +26,8 @@ namespace Registry {
       // item is delegated to (by a SharedItem, ComputedItem, or nameless
       // transparent group), the delegating item's hint will be used instead
       enum Type : int {
-         Before, After,
          Begin, End,
+         Before, After,
          Unspecified // keep this last
       } type{ Unspecified };
 
@@ -298,8 +298,8 @@ namespace Registry {
    // seen in the registry for the first time is placed somehere, and that
    // ordering should be kept the same thereafter in later runs (which may add
    // yet other previously unknown items).
-// Computed registry items' lifetimes last until visitor is destroyed or
-// passed again to Visit().
+   // Computed registry items' lifetimes last until visitor is destroyed or
+   // passed again to Visit().
    REGISTRIES_API void Visit(
       Visitor &visitor,
       BaseItem *pTopItem,
