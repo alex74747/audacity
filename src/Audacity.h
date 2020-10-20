@@ -66,21 +66,21 @@
 #define AUDACITY_MODLEVEL  0
 
 #if defined(IS_BETA)
-   #define AUDACITY_SUFFIX wxT("-beta-") __TDATE__
+   #define AUDACITY_SUFFIX L"-beta-" __DATE__
 #elif defined(IS_ALPHA)
-   #define AUDACITY_SUFFIX wxT("-alpha-") __TDATE__
+   #define AUDACITY_SUFFIX L"-alpha-" __DATE__
 #else
-   #define AUDACITY_SUFFIX    wxT("") // for a stable release
-   //#define AUDACITY_SUFFIX wxT("x  ") __TDATE__
+   #define AUDACITY_SUFFIX    L"" // for a stable release
+   //#define AUDACITY_SUFFIX L"x  " __DATE__
 #endif
 
 #define AUDACITY_MAKESTR( x ) #x
 #define AUDACITY_QUOTE( x ) AUDACITY_MAKESTR( x )
 
 // Version string for visual display
-#define AUDACITY_VERSION_STRING wxT( AUDACITY_QUOTE( AUDACITY_VERSION ) ) wxT(".") \
-                                wxT( AUDACITY_QUOTE( AUDACITY_RELEASE ) ) wxT(".") \
-                                wxT( AUDACITY_QUOTE( AUDACITY_REVISION ) ) \
+#define AUDACITY_VERSION_STRING AUDACITY_QUOTE( AUDACITY_VERSION ) L"." \
+                                AUDACITY_QUOTE( AUDACITY_RELEASE ) L"." \
+                                AUDACITY_QUOTE( AUDACITY_REVISION ) \
                                 AUDACITY_SUFFIX
 
 // DA: x on end of version string.
