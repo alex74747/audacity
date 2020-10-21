@@ -79,11 +79,11 @@
 // TODO:  Unfortunately we have some dependencies on Audacity provided 
 //        dialogs, widgets and other stuff.  This will need to be cleaned up.
 
+#include "EffectHostInterface.h"
 #include "FileNames.h"
 #include "PlatformCompatibility.h"
 #include "SelectFile.h"
 #include "ShuttleGui.h"
-#include "../../effects/Effect.h"
 #include "valnum.h"
 #include "../../widgets/AudacityMessageBox.h"
 #include "NumericTextCtrl.h"
