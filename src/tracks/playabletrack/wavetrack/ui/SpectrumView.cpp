@@ -52,7 +52,7 @@ static WaveTrackSubView::Type sType{
    { wxT("Spectrogram"), XXO("&Spectrogram") }
 };
 
-static WaveTrackSubViewType::RegisteredType reg{ sType };
+static WaveTrackSubViewType::Registration reg{ sType };
 
 SpectrumView::SpectrumView(WaveTrackView &waveTrackView) : WaveTrackSubView(waveTrackView) {
    auto wt = static_cast<WaveTrack*>( FindTrack().get() );
