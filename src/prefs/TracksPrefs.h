@@ -60,7 +60,7 @@ class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
    static const wxChar *WaveformScaleKey();
    static const wxChar *DBValueString();
 
-   static WaveTrackViewConstants::Display ViewModeChoice();
+   static Identifier ViewModeChoice();
    static WaveTrackViewConstants::ZoomPresets Zoom1Choice();
    static WaveTrackViewConstants::ZoomPresets Zoom2Choice();
 

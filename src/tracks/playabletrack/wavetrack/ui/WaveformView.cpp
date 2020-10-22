@@ -40,9 +40,10 @@ Paul Licameli split from WaveTrackView.cpp
 #include <wx/graphics.h>
 #include <wx/dc.h>
 
+static const Identifier WaveformId = wxT("Waveform");
+
 static WaveTrackSubView::Type sType{
-   WaveTrackViewConstants::Waveform,
-   { wxT("Waveform"), XXO("Wa&veform") }
+   { WaveformId, XXO("Wa&veform") }
 };
 
 static WaveTrackSubViewType::Registration reg{ sType };
@@ -1238,7 +1239,7 @@ PopupMenuTable::AttachedItem sAttachment{
             const auto displays = view.GetDisplays();
             bool hasWaveform = (displays.end() != std::find(
                displays.begin(), displays.end(),
-               WaveTrackSubView::Type{ WaveTrackViewConstants::Waveform, {} }
+               WaveTrackSubView::Type{ { WaveformId, {} } }
             ) );
             if( hasWaveform )
                return Registry::Shared( WaveColorMenuTable::Instance()

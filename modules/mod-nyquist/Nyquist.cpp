@@ -573,7 +573,7 @@ bool NyquistEffect::Init()
             const auto displays = pView->GetDisplays();
             if (displays.end() != std::find(
                displays.begin(), displays.end(),
-               WaveTrackSubView::Type{ WaveTrackViewConstants::Spectrum, {} }))
+               WaveTrackSubView::Type{ { wxT("Spectrogram"), {} } }))
                hasSpectral = true;
          }
          if ( hasSpectral &&

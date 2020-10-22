@@ -42,7 +42,6 @@ class AUDACITY_DLL_API WaveTrackSubView : public CommonTrackView
 {
 public:
 
-   using Display = WaveTrackViewConstants::Display;
    using Type = WaveTrackSubViewType;
 
    explicit
@@ -104,8 +103,6 @@ class AUDACITY_DLL_API WaveTrackView final
 public:
    static constexpr int kChannelSeparatorThickness{ 8 };
 
-   using Display = WaveTrackViewConstants::Display;
-
    static WaveTrackView &Get( WaveTrack &track );
    static const WaveTrackView &Get( const WaveTrack &track );
    static WaveTrackView *Find( WaveTrack *pTrack );
@@ -131,7 +128,7 @@ public:
       CommonTrackView &view);
 
    std::vector< WaveTrackSubView::Type > GetDisplays() const;
-   void SetDisplay(Display display, bool exclusive = true);
+   void SetDisplay(Identifier Display, bool exclusive = true);
 
    const WaveTrackSubViewPlacements &SavePlacements() const
       { return mPlacements; }
@@ -140,7 +137,7 @@ public:
 
    // Return true if successful.  Fails if you try to toggle off the only
    // sub-view.
-   bool ToggleSubView( Display id );
+   bool ToggleSubView( Identifier id );
 
    // Get all the sub-views, in a sequence that is unspecified but in
    // correspondence with the result of SavePlacements
@@ -193,7 +190,7 @@ public:
 
 private:
    void BuildSubViews() const;
-   void DoSetDisplay(Display display, bool exclusive = true);
+   void DoSetDisplay(Identifier display, bool exclusive = true);
    bool SelectNextClip(ViewInfo& viewInfo, AudacityProject* project, bool forward);
 
    std::vector<UIHandlePtr> DetailedHitTest
