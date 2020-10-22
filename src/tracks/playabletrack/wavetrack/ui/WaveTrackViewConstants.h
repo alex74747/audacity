@@ -17,6 +17,7 @@ Paul Licameli split from class WaveTrack
 
 namespace WaveTrackViewConstants
 {
+   // This type is used only in old configuration files
    enum Display : int {
 
       MultiView = -1, //!< "Multi" is special, not really a view type on par with the others.
@@ -94,11 +95,6 @@ struct AUDACITY_DLL_API WaveTrackSubViewType {
 
    struct TypeItem;
 
-   using Display = WaveTrackViewConstants::Display;
-
-   // Identifies the type session-wide, and determines relative position in
-   // menus listing all types
-   Display id;
    // The translation is suitable for the track control panel drop-down,
    // and it may contain a menu accelerator
    EnumValueSymbol name;
@@ -107,7 +103,7 @@ struct AUDACITY_DLL_API WaveTrackSubViewType {
    bool operator < ( const WaveTrackSubViewType &other ) const;
 
    bool operator == ( const WaveTrackSubViewType &other ) const
-   { return id == other.id; }
+   { return name == other.name; }
 
    // Typically a file scope statically constructed object
    struct AUDACITY_DLL_API Registration final
@@ -124,7 +120,7 @@ struct AUDACITY_DLL_API WaveTrackSubViewType {
    static const std::vector<WaveTrackSubViewType> &All();
 
    //! Return a preferred type
-   static Display Default();
+   static Identifier Default();
 };
 
 struct AUDACITY_DLL_API WaveTrackSubViewType::TypeItem final
