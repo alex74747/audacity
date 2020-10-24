@@ -79,6 +79,10 @@ public:
    Result Click
       (const TrackPanelMouseEvent &event, AudacityProject *pProject) override;
 
+   virtual void ModifiedClick(
+      const TrackPanelMouseEvent &event, AudacityProject *pProject,
+      bool bShiftDown, bool bCtrlDown);
+
    /*!
    @return true if starting a new selection
     */
