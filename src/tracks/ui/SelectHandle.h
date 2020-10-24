@@ -107,6 +107,7 @@ private:
        Track *pTrack);
    void AssignSelection(ViewInfo &viewInfo, double selend, Track *pTrack);
 
+protected:
    void StartFreqSelection
       (ViewInfo &viewInfo, int mouseYCoordinate, int trackTopEdge,
       int trackHeight, TrackView *pTrackView);
@@ -125,11 +126,6 @@ private:
       (AudacityProject *pProject, ViewInfo &viewInfo, int mouseYCoordinate,
        int trackTopEdge,
        int trackHeight, TrackView *pTrackView);
-public:
-   // This is needed to implement a command assignable to keystrokes
-   static void SnapCenterOnce
-      (SpectrumAnalyst &analyst,
-       ViewInfo &viewInfo, const WaveTrack *pTrack, bool up);
 private:
 
    // TrackPanelDrawable implementation
