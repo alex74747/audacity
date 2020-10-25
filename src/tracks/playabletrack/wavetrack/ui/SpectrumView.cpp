@@ -65,11 +65,6 @@ SpectrumView::SpectrumView(WaveTrackView &waveTrackView) : WaveTrackSubView(wave
 
 SpectrumView::~SpectrumView() = default;
 
-bool SpectrumView::IsSpectral() const
-{
-   return true;
-}
-
 class SpectrumView::SpectralDataSaver : public BrushHandle::StateSaver {
 public:
    explicit SpectralDataSaver( SpectrumView &view )

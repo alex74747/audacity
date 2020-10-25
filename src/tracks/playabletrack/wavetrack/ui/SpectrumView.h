@@ -124,8 +124,6 @@ public:
 
    std::shared_ptr<SpectralData> GetSpectralData();
 
-   bool IsSpectral() const override;
-
    static int mBrushRadius;
 
    void CopyToSubView( WaveTrackSubView *destSubView ) const override;

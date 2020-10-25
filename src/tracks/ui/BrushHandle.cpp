@@ -25,6 +25,7 @@ Edward Hui
 #include "../../SelectUtilities.h"
 #include "SelectionState.h"
 #include "../../SpectralDataManager.h"
+#include "../playabletrack/wavetrack/ui/SpectrumView.h" // uh oh cycle
 #include "TrackArtist.h"
 #include "../../TrackPanelAx.h"
 #include "../../TrackPanel.h"
@@ -121,10 +122,10 @@ namespace
    }
 
    // This returns true if we're a spectral editing track.
-   inline bool isSpectralSelectionView(const TrackView *pTrackView) {
+   inline bool isSpectralSelectionView(const TrackView *pView) {
+      auto pTrackView = dynamic_cast<const SpectrumView*>(pView);
       return
             pTrackView &&
-            pTrackView->IsSpectral() &&
             pTrackView->FindTrack() &&
             pTrackView->FindTrack()->TypeSwitch< bool >(
                   [&](const WaveTrack *wt) {
