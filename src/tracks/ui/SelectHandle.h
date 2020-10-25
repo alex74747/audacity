@@ -143,7 +143,7 @@ protected:
       const wxRect &rect, const wxRect &panelRect, unsigned iPass ) override;
 
 
-   std::weak_ptr<TrackView> mpView;
+   const std::weak_ptr<TrackView> mpView;
    wxRect mRect{};
    SelectedRegion mInitialSelection{};
 
