@@ -25,7 +25,6 @@ class ProgressDialog;
 class SampleBlockFactory;
 using SampleBlockFactoryPtr = std::shared_ptr<SampleBlockFactory>;
 
-class SpectrogramSettings;
 class TimeWarper;
 
 class Sequence;
@@ -159,11 +158,6 @@ private:
    sampleFormat GetSampleFormat() const { return mFormat; }
    void ConvertToSampleFormat(sampleFormat format,
       const std::function<void(size_t)> & progressReport = {});
-
-   const SpectrogramSettings &GetSpectrogramSettings() const;
-   SpectrogramSettings &GetSpectrogramSettings();
-   SpectrogramSettings &GetIndependentSpectrogramSettings();
-   void SetSpectrogramSettings(std::unique_ptr<SpectrogramSettings> &&pSettings);
 
    //
    // High-level editing
@@ -514,9 +508,6 @@ private:
    // Resample track (i.e. all clips in the track)
    void Resample(int rate, ProgressDialog *progress = NULL);
 
-   void GetSpectrumBounds(float *min, float *max) const;
-   void SetSpectrumBounds(float min, float max) const;
-
    class IntervalData final : public Track::IntervalData {
    public:
       explicit IntervalData( const std::shared_ptr<WaveClip> &pClip )
@@ -548,13 +539,6 @@ private:
    float         mOldGain[2];
 
 
-   //
-   // Data that should be part of GUIWaveTrack
-   // and will be taken out of the WaveTrack class:
-   //
-   mutable float         mSpectrumMin;
-   mutable float         mSpectrumMax;
-
    mutable std::vector <Location> mDisplayLocationsCache;
 
    //
@@ -574,9 +558,6 @@ private:
    wxCriticalSection mFlushCriticalSection;
    wxCriticalSection mAppendCriticalSection;
    double mLegacyProjectFileOffset;
-
-   friend SpectrogramSettings;
-   std::unique_ptr<SpectrogramSettings> mpSpectrumSettings;
 };
 
 // This is meant to be a short-lived object, during whose lifetime,
