@@ -12,11 +12,12 @@
 #include "LyricsWindow.h"
 #include "Lyrics.h"
 #include "AudioIO.h"
-#include "CommonCommandFlags.h"
+#include "commands/CommandFlag.h"
 #include "Prefs.h" // for RTL_WORKAROUND
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectFileIO.h"
+#include "Track.h"
 #include "ViewInfo.h"
 
 #include <wx/toolbar.h>
@@ -222,6 +223,12 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 }
 
 // Register that menu item
+const ReservedCommandFlag&
+   LabelTracksExistFlag() { static ReservedCommandFlag flag{
+      [](const AudacityProject &project){
+         return !TrackList::Get( project ).Any<const LabelTrack>().empty();
+      }
+   }; return flag; }
 
 using namespace MenuTable;
 AttachedItem sAttachment{ wxT("View/Windows"),
