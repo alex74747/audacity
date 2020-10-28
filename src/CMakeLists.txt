@@ -421,6 +421,7 @@ list( APPEND SOURCES
       tracks/playabletrack/notetrack/ui/NoteTrackControls.h
       tracks/playabletrack/notetrack/ui/NoteTrackDisplayData.cpp
       tracks/playabletrack/notetrack/ui/NoteTrackDisplayData.h
+      tracks/playabletrack/notetrack/ui/NoteTrackMenuItems.cpp
       tracks/playabletrack/notetrack/ui/NoteTrackShifter.cpp
       tracks/playabletrack/notetrack/ui/NoteTrackSliderHandles.cpp
       tracks/playabletrack/notetrack/ui/NoteTrackSliderHandles.h
@@ -448,6 +449,7 @@ list( APPEND SOURCES
       tracks/playabletrack/wavetrack/ui/SpectrumView.h
       tracks/playabletrack/wavetrack/ui/WaveTrackControls.cpp
       tracks/playabletrack/wavetrack/ui/WaveTrackControls.h
+      tracks/playabletrack/wavetrack/ui/WaveTrackMenuItems.cpp
       tracks/playabletrack/wavetrack/ui/WaveTrackShifter.cpp
       tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.cpp
       tracks/playabletrack/wavetrack/ui/WaveTrackSliderHandles.h
@@ -467,6 +469,7 @@ list( APPEND SOURCES
       tracks/playabletrack/wavetrack/ui/WaveformView.h
       tracks/timetrack/ui/TimeTrackControls.cpp
       tracks/timetrack/ui/TimeTrackControls.h
+      tracks/timetrack/ui/TimeTrackMenuItems.cpp
       tracks/timetrack/ui/TimeTrackVRulerControls.cpp
       tracks/timetrack/ui/TimeTrackVRulerControls.h
       tracks/timetrack/ui/TimeTrackVZoomHandle.cpp
