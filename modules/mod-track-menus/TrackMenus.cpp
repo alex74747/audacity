@@ -1,7 +1,6 @@
 #include "Audacity.h"
 
 #include "CommonCommandFlags.h"
-#include "LabelTrack.h"
 #include "Menus.h"
 #include "Mix.h"
 
@@ -501,8 +500,8 @@ void DoSortTracks( AudacityProject &project, int flags )
             }
             return stime;
          },
-         [&](const LabelTrack* l) {
-            return l->GetStartTime();
+         [&](const Track* t) {
+            return t->GetStartTime();
          }
       );
    };
