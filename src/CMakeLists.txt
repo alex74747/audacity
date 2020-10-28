@@ -101,6 +101,7 @@ list( APPEND SOURCES
       Diags.h
       Dither.cpp
       Dither.h
+      DropoutDetector.cpp
       EditUtilities.cpp
       EditUtilities.h
       Envelope.cpp
