@@ -463,6 +463,13 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 #define FN(X) (& FileActions::Handler :: X)
 
 namespace {
+const ReservedCommandFlag&
+   LabelTracksExistFlag() { static ReservedCommandFlag flag{
+      [](const AudacityProject &project){
+         return !TrackList::Get( project ).Any<const LabelTrack>().empty();
+      }
+   }; return flag; }
+
 using namespace MenuTable;
 
 BaseItemSharedPtr FileMenu()

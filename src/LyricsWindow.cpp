@@ -227,6 +227,12 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 }
 
 // Register that menu item
+const ReservedCommandFlag&
+   LabelTracksExistFlag() { static ReservedCommandFlag flag{
+      [](const AudacityProject &project){
+         return !TrackList::Get( project ).Any<const LabelTrack>().empty();
+      }
+   }; return flag; }
 
 using namespace MenuTable;
 AttachedItem sAttachment{ wxT("View/Windows"),

@@ -16,7 +16,6 @@ Paul Licameli split from Menus.cpp
 #include <wx/frame.h>
 
 #include "AudioIO.h"
-#include "LabelTrack.h"
 #include "Menus.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
@@ -221,12 +220,6 @@ const ReservedCommandFlag&
       }
    }; return flag; };
 
-const ReservedCommandFlag&
-   LabelTracksExistFlag() { static ReservedCommandFlag flag{
-      [](const AudacityProject &project){
-         return !TrackList::Get( project ).Any<const LabelTrack>().empty();
-      }
-   }; return flag; }
 const ReservedCommandFlag&
    UnsavedChangesFlag() { static ReservedCommandFlag flag{
       [](const AudacityProject &project){
