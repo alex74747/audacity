@@ -552,6 +552,8 @@ private:
    double mLegacyProjectFileOffset;
 };
 
+ENUMERATE_TRACK_TYPE(WaveTrack);
+
 // This is meant to be a short-lived object, during whose lifetime,
 // the contents of the WaveTrack are known not to change.  It can replace
 // repeated calls to WaveTrack::Get() (each of which opens and closes at least
