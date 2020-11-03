@@ -13,6 +13,7 @@
 #include "Lyrics.h"
 #include "AudioIO.h"
 #include "commands/CommandFlag.h"
+#include "LabelTrack.h"
 #include "Prefs.h" // for RTL_WORKAROUND
 #include "Project.h"
 #include "ProjectAudioIO.h"
