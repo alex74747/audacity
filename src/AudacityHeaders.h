@@ -47,7 +47,6 @@
 #include "ImageManipulation.h"
 #include "LabelTrack.h"
 #include "Mix.h"
-#include "NoteTrack.h"
 #include "Prefs.h"
 #include "Sequence.h"
 #include "TimeTrack.h"
