@@ -539,8 +539,6 @@ private:
 
 private:
 
-   TrackKind GetKind() const override { return TrackKind::Wave; }
-
    //
    // Private variables
    //
