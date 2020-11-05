@@ -21,6 +21,7 @@ class AudacityProject;
 class NotifyingSelectedRegion;
 class TimeWarper;
 
+class LabelTrack;
 struct LabelTrackHit;
 struct TrackPanelDrawingContext;
 
