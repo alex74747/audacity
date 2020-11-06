@@ -214,8 +214,11 @@ private:
 
    // XMLTagHandler callback methods
    bool HandleXMLTag(const std::string_view& tag, const AttributesList &attrs) override;
+
+public:
    XMLTagHandler *HandleXMLChild(const std::string_view& tag) override;
 
+private:
    void UpdatePrefs() override;
 
    int Exec(const char *query, const ExecCB &callback, bool silent = false);

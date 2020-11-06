@@ -38,6 +38,11 @@ static ProjectFileIORegistry::ObjectReaderEntry readerEntry{
 TimeTrack *TimeTrack::New( AudacityProject &project )
 {
    auto &tracks = TrackList::Get( project );
+   if (*tracks.Any<TimeTrack>().begin())
+      // There is already one time track.
+      // Can come here if importing legacy .aup files into a project.
+      // Maintain uniqueness of the time track.  Ignore XML file data.
+      return nullptr;
    auto &viewInfo = ViewInfo::Get( project );
    auto result = tracks.Add(std::make_shared<TimeTrack>(&viewInfo));
    result->AttachedTrackObjects::BuildAll();

@@ -23,10 +23,6 @@
 #include "Envelope.h"
 #include "FileFormats.h"
 #include "FileNames.h"
-#include "LabelTrack.h"
-#if defined(USE_MIDI)
-#include "NoteTrack.h"
-#endif
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectFileIO.h"
@@ -37,7 +33,6 @@
 #include "ProjectWindows.h"
 #include "Sequence.h"
 #include "Tags.h"
-#include "TimeTrack.h"
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
@@ -62,8 +57,6 @@ static const auto exts = {wxT("aup")};
 
 class AUPImportFileHandle;
 using ImportHandle = std::unique_ptr<ImportFileHandle>;
-
-using NewChannelGroup = std::vector<std::shared_ptr<WaveTrack>>;
 
 class AUPImportPlugin final : public ImportPlugin
 {
@@ -118,18 +111,12 @@ private:
    XMLTagHandler *HandleXMLChild(const std::string_view& tag) override;
 
    bool HandleProject(XMLTagHandler *&handle);
-   bool HandleLabelTrack(XMLTagHandler *&handle);
-   bool HandleNoteTrack(XMLTagHandler *&handle);
-   bool HandleTimeTrack(XMLTagHandler *&handle);
    bool HandleWaveTrack(XMLTagHandler *&handle);
    bool HandleTags(XMLTagHandler *&handle);
    bool HandleTag(XMLTagHandler *&handle);
-   bool HandleLabel(XMLTagHandler *&handle);
    bool HandleWaveClip(XMLTagHandler *&handle);
    bool HandleSequence(XMLTagHandler *&handle);
    bool HandleWaveBlock(XMLTagHandler *&handle);
-   bool HandleEnvelope(XMLTagHandler *&handle);
-   bool HandleControlPoint(XMLTagHandler *&handle);
    bool HandleSimpleBlockFile(XMLTagHandler *&handle);
    bool HandleSilentBlockFile(XMLTagHandler *&handle);
    bool HandlePCMAliasBlockFile(XMLTagHandler *&handle);
@@ -533,6 +520,31 @@ bool AUPImportFileHandle::Open()
 
 XMLTagHandler *AUPImportFileHandle::HandleXMLChild(const std::string_view& tag)
 {
+   if (tag == "envelope") {
+       // Earlier versions of Audacity had a single implied waveclip, so for
+       // these versions, we get or create the only clip in the track.
+       if (mParentTag == "wavetrack")
+          return mWaveTrack->RightmostOrNewClip()->GetEnvelope();
+
+       if (mParentTag == "waveclip")
+         // Delegate envelope handling
+         return mHandlers.back().handler->HandleXMLChild(tag);
+   }
+
+   // Do wavetracks specially
+   if (mCurrentTag == "wavetrack")
+      return this;
+
+   // Do tags specially
+   if (mCurrentTag == "tags")
+      return this;
+
+   // Now let ProjectFileIORegistry preempt
+   if (auto handler = ProjectFileIO::Get(mProject).HandleXMLChild(mCurrentTag))
+      // Handle sub-structure just as when opening a project
+      return handler;
+
+   // No preemption?  Then let me handle it
    return this;
 }
 
@@ -584,18 +596,6 @@ bool AUPImportFileHandle::HandleXMLTag(const std::string_view& tag, const Attrib
    {
       success = HandleProject(handler);
    }
-   else if (mCurrentTag == "labeltrack")
-   {
-      success = HandleLabelTrack(handler);
-   }
-   else if (mCurrentTag == "notetrack")
-   {
-      success = HandleNoteTrack(handler);
-   }
-   else if (mCurrentTag == "timetrack")
-   {
-      success = HandleTimeTrack(handler);
-   }
    else if (mCurrentTag == "wavetrack")
    {
       success = HandleWaveTrack(handler);
@@ -608,10 +608,6 @@ bool AUPImportFileHandle::HandleXMLTag(const std::string_view& tag, const Attrib
    {
       success = HandleTag(handler);
    }
-   else if (mCurrentTag == "label")
-   {
-      success = HandleLabel(handler);
-   }
    else if (mCurrentTag == "waveclip")
    {
       success = HandleWaveClip(handler);
@@ -623,14 +619,6 @@ bool AUPImportFileHandle::HandleXMLTag(const std::string_view& tag, const Attrib
    else if (mCurrentTag == "waveblock")
    {
       success = HandleWaveBlock(handler);
-   }
-   else if (mCurrentTag == "envelope")
-   {
-      success = HandleEnvelope(handler);
-   }
-   else if (mCurrentTag == "controlpoint")
-   {
-      success = HandleControlPoint(handler);
    }
    else if (mCurrentTag == "simpleblockfile")
    {
@@ -853,54 +841,6 @@ bool AUPImportFileHandle::HandleProject(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleLabelTrack(XMLTagHandler *&handler)
-{
-   handler = TrackList::Get(mProject).Add(std::make_shared<LabelTrack>());
-
-   return true;
-}
-
-bool AUPImportFileHandle::HandleNoteTrack(XMLTagHandler *&handler)
-{
-#if defined(USE_MIDI)
-   handler = TrackList::Get(mProject).Add(std::make_shared<NoteTrack>());
-
-   return true;
-#else
-   AudacityMessageBox(
-      XO("MIDI tracks found in project file, but this build of Audacity does not include MIDI support, bypassing track."),
-      XO("Project Import"),
-      wxOK | wxICON_EXCLAMATION | wxCENTRE,
-      &GetProjectFrame(mProject));
-
-   return false;
-#endif
-}
-
-bool AUPImportFileHandle::HandleTimeTrack(XMLTagHandler *&handler)
-{
-   auto &tracks = TrackList::Get(mProject);
-
-   // Bypass this timetrack if the project already has one
-   // (See HandleTimeEnvelope and HandleControlPoint also)
-   if (*tracks.Any<TimeTrack>().begin())
-   {
-      AudacityMessageBox(
-         XO("The active project already has a time track and one was encountered in the project being imported, bypassing imported time track."),
-         XO("Project Import"),
-         wxOK | wxICON_EXCLAMATION | wxCENTRE,
-         &GetProjectFrame(mProject));
-
-      return true;
-   }
-
-   auto &viewInfo = ViewInfo::Get( mProject );
-   handler =
-      TrackList::Get(mProject).Add(std::make_shared<TimeTrack>(&viewInfo));
-
-   return true;
-}
-
 bool AUPImportFileHandle::HandleWaveTrack(XMLTagHandler *&handler)
 {
    auto &trackFactory = WaveTrackFactory::Get(mProject);
@@ -989,19 +929,6 @@ bool AUPImportFileHandle::HandleTag(XMLTagHandler *&handler)
    return true;
 }
 
-bool AUPImportFileHandle::HandleLabel(XMLTagHandler *&handler)
-{
-   if (mParentTag != "labeltrack")
-   {
-      return false;
-   }
-
-   // The parent handler also handles this tag
-   handler = mHandlers.back().handler;
-
-   return true;
-}
-
 bool AUPImportFileHandle::HandleWaveClip(XMLTagHandler *&handler)
 {
    struct node node = mHandlers.back();
@@ -1022,57 +949,6 @@ bool AUPImportFileHandle::HandleWaveClip(XMLTagHandler *&handler)
 
    mClip = static_cast<WaveClip *>(handler);
    mClips.push_back(mClip);
-
-   return true;
-}
-
-bool AUPImportFileHandle::HandleEnvelope(XMLTagHandler *&handler)
-{
-   struct node node = mHandlers.back();
-
-   if (mParentTag == "timetrack")
-   {
-      // If an imported timetrack was bypassed, then we want to bypass the
-      // envelope as well.  (See HandleTimeTrack and HandleControlPoint)
-      if (node.handler)
-      {
-         TimeTrack *timetrack = static_cast<TimeTrack *>(node.handler);
-
-         handler = timetrack->GetEnvelope();
-      }
-   }
-   // Earlier versions of Audacity had a single implied waveclip, so for
-   // these versions, we get or create the only clip in the track.
-   else if (mParentTag == "wavetrack")
-   {
-      handler = mWaveTrack->RightmostOrNewClip()->GetEnvelope();
-   }
-   // Nested wave clips are cut lines
-   else if (mParentTag == "waveclip")
-   {
-      WaveClip *waveclip = static_cast<WaveClip *>(node.handler);
-
-      handler = waveclip->GetEnvelope();
-   }
-
-   return true;
-}
-
-bool AUPImportFileHandle::HandleControlPoint(XMLTagHandler *&handler)
-{
-   struct node node = mHandlers.back();
-
-   if (mParentTag == "envelope")
-   {
-      // If an imported timetrack was bypassed, then we want to bypass the
-      // control points as well.  (See HandleTimeTrack and HandleEnvelope)
-      if (node.handler)
-      {
-         Envelope *envelope = static_cast<Envelope *>(node.handler);
-
-         handler = envelope->HandleXMLChild(mCurrentTag);
-      }
-   }
 
    return true;
 }
