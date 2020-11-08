@@ -34,7 +34,6 @@
 #include "AColor.h"
 #include "Prefs.h"
 #include "Project.h"
-#include "prefs/ImportExportPrefs.h"
 
 #include "InconsistencyException.h"
 
@@ -890,10 +889,51 @@ bool NoteTrack::ExportMIDI(const wxString &f) const
    return rslt;
 }
 
+EnumSetting< bool > AllegroStyleSetting{
+   wxT("/FileFormats/AllegroStyleChoice"),
+   {
+      EnumValueSymbol{ wxT("Seconds"), XXO("&Seconds") },
+      EnumValueSymbol{ wxT("Beats"), XXO("&Beats") },
+   },
+   0, // true
+
+   // for migrating old preferences:
+   {
+      true, false,
+   },
+   wxT("/FileFormats/AllegroStyle"),
+};
+
+#include "ShuttleGui.h"
+#include "prefs/ImportExportPrefs.h"
+namespace {
+void AddControls(ShuttleGui &S)
+{
+   S.StartStatic(XO("Exported Allegro (.gro) files save time as:"));
+   {
+      // Bug 2692: Place button group in panel so tabbing will work and,
+      // on the Mac, VoiceOver will announce as radio buttons.
+      S.StartPanel();
+      {
+         S.StartRadioButtonGroup(AllegroStyleSetting);
+         {
+            S.TieRadioButton();
+            S.TieRadioButton();
+         }
+         S.EndRadioButtonGroup();
+      }
+      S.EndPanel();
+   }
+   S.EndStatic();
+}
+
+ImportExportPrefs::RegisteredControls reg{ wxT("AllegroTimeOption"), AddControls };
+}
+
 bool NoteTrack::ExportAllegro(const wxString &f) const
 {
    double offset = GetOffset();
-   auto in_seconds = ImportExportPrefs::AllegroStyleSetting.ReadEnum();
+   auto in_seconds = AllegroStyleSetting.ReadEnum();
    auto &seq = GetSeq();
    if (in_seconds) {
        seq.convert_to_seconds();
