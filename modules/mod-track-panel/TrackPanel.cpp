@@ -1226,6 +1226,10 @@ struct VRulerAndChannel final : TrackPanelGroup {
          { mLeftOffset, mpView }
       } };
    }
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-VRulerAndChannel");
+   }
    std::shared_ptr< TrackView > mpView;
    wxCoord mLeftOffset;
 };
@@ -1250,6 +1254,11 @@ struct VRulersAndChannels final : TrackPanelGroup {
                subView.second, mLeftOffset ) );
       }
       return { Axis::Y, std::move( refinement ) };
+   }
+
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-VRulersAndChannels");
    }
 
    // TrackPanelDrawable implementation
@@ -1353,6 +1362,10 @@ struct HorizontalGroup final : TrackPanelGroup {
       return { Axis::X, mRefinement };
    }
 
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-HorizontalGroup");
+   }
 };
 
 
@@ -1454,6 +1467,11 @@ struct ChannelGroup final : TrackPanelGroup {
       }
    }
 
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-ChannelGroup");
+   }
+
    std::shared_ptr< Track > mpTrack;
    wxCoord mLeftOffset;
 };
@@ -1471,6 +1489,11 @@ struct LabeledChannelGroup final : TrackPanelGroup {
       { rect.GetLeft() + kTrackInfoWidth,
         std::make_shared< ChannelGroup >( mpTrack, mLeftOffset ) }
    } }; }
+
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-LabeledChannelGroup");
+   }
 
    // TrackPanelDrawable implementation
    void Draw( TrackPanelDrawingContext &context,
@@ -1572,6 +1595,10 @@ struct ResizingChannelGroup final : TrackPanelGroup {
             **TrackList::Channels( mpTrack.get() ).rbegin() ).shared_from_this()
       }
    } }; }
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-ResizingChannelGroup");
+   }
    std::shared_ptr< Track > mpTrack;
    wxCoord mLeftOffset;
 };
@@ -1607,6 +1634,10 @@ struct Subgroup final : TrackPanelGroup {
 
       return { Axis::Y, std::move( refinement ) };
    }
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel-Subgroup");
+   }
    TrackPanel &mPanel;
 };
 
@@ -1619,6 +1650,10 @@ struct MainGroup final : TrackPanelGroup {
       { kLeftMargin, std::make_shared< Subgroup >( mPanel ) },
       { rect.GetRight() + 1 - kRightMargin, EmptyCell::Instance() }
    } }; }
+   Identifier GetName() const override
+   {
+      return wxT("TrackPanel");
+   }
    TrackPanel &mPanel;
 };
 

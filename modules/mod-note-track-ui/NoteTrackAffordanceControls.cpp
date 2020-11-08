@@ -33,6 +33,7 @@
 #include "SelectionState.h"
 #include "SyncLock.h"
 #include "RefreshCode.h"
+#include "SyncLock.h"
 #include "Theme.h"
 
 class NoteTrackAffordanceHandle final : public AffordanceHandle
