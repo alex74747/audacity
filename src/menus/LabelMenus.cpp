@@ -726,7 +726,7 @@ void OnImportLabels(const CommandContext &context)
       wxFileName::SplitPath(fileName, NULL, NULL, &sTrackName, NULL);
       newTrack->SetName(sTrackName);
 
-      newTrack->Import(f);
+      ImportLabelTrack(*newTrack, f);
 
       SelectUtilities::SelectNone( project );
       newTrack->SetSelected(true);
@@ -796,7 +796,7 @@ void OnExportLabels(const CommandContext &context)
    }
 
    for (auto lt : trackRange)
-      lt->Export(f);
+      ExportLabelTrack(*lt, f);
 
    f.Write();
    f.Close();
