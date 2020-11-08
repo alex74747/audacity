@@ -41,6 +41,7 @@ for drawing different aspects of the label and its text box.
 #include "Prefs.h"
 #include "Project.h"
 #include "prefs/ImportExportPrefs.h"
+#include "SyncLock.h"
 
 #include "TimeWarper.h"
 #include "widgets/AudacityMessageBox.h"
@@ -743,9 +744,9 @@ Track::Holder LabelTrack::Copy(double t0, double t1, bool) const
 }
 
 
-bool LabelTrack::PasteOver(double t, const Track * src)
+void LabelTrack::PasteOver(double t, const Track * src)
 {
-   auto result = src->TypeSwitch< bool >( [&](const LabelTrack *sl) {
+   src->TypeSwitch( [&](const LabelTrack *sl) {
       int len = mLabels.size();
       int pos = 0;
 
@@ -761,15 +762,7 @@ bool LabelTrack::PasteOver(double t, const Track * src)
          };
          mLabels.insert(mLabels.begin() + pos++, l);
       }
-
-      return true;
    } );
-
-   if (! result )
-      // THROW_INCONSISTENCY_EXCEPTION; // ?
-      (void)0;// intentionally do nothing
-
-   return result;
 }
 
 void LabelTrack::Paste(double t, const Track *src)
@@ -786,6 +779,32 @@ void LabelTrack::Paste(double t, const Track *src)
    if ( !bOk )
       // THROW_INCONSISTENCY_EXCEPTION; // ?
       (void)0;// intentionally do nothing
+}
+
+void LabelTrack::PasteOver(
+   double t0, double t1, const Track *src, double duration,
+   bool isSyncLocked, bool syncLockSelected)
+{
+   if (src && SameKindAs(*src)) {
+      // Per Bug 293, users expect labels to move on a paste into
+      // a label track.
+      Clear(t0, t1);
+
+      ShiftLabelsOnInsert( duration, t0 );
+
+      PasteOver(t0, src);
+   }
+   else {
+      if (!GetSelected() && !syncLockSelected)
+         return Track::PasteOver(t0, t1, src, duration,
+            isSyncLocked, syncLockSelected);
+
+      Clear(t0, t1);
+
+      // Only shift labels if sync-lock is on.
+      if (isSyncLocked)
+         ShiftLabelsOnInsert(duration, t0);
+   }
 }
 
 // This repeats the labels in a time interval a specified number of times.
