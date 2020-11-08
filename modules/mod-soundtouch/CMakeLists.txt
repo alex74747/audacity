@@ -18,6 +18,7 @@ list( APPEND SOURCES
 )
 list( APPEND LIBS
    mod-effects-interface
+   mod-label-track-interface
    libsbsms
    soundtouch
 )

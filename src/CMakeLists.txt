@@ -129,8 +129,6 @@ list( APPEND SOURCES
       InterpolateAudio.h
       KeyboardCapture.cpp
       KeyboardCapture.h
-      LabelTrack.cpp
-      LabelTrack.h
       LangChoice.cpp
       LangChoice.h
       Languages.cpp
