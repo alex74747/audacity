@@ -98,8 +98,6 @@ list( APPEND SOURCES
       HelpUtilities.h
       KeystrokeHandler.cpp
       KeystrokeHandler.h
-      LabelTrack.cpp
-      LabelTrack.h
       LangChoice.cpp
       LangChoice.h
       Legacy.cpp

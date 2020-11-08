@@ -2,7 +2,6 @@
 #include "Clipboard.h"
 #include "CommonCommandFlags.h"
 #include "../EditUtilities.h"
-#include "../LabelTrack.h"
 #include "Menus.h"
 #include "../NoteTrack.h"
 #include "Project.h"

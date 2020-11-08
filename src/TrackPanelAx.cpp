@@ -30,9 +30,6 @@
 #include "Project.h"
 #include "SyncLock.h"
 #include "Track.h"
-#include "LabelTrack.h"
-#include "NoteTrack.h"
-#include "TimeTrack.h"
 #include "WaveTrack.h"
 
 

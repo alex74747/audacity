@@ -9,6 +9,7 @@ set( LIBRARIES
    libnyquist
    mod-spectrum-ui-interface
    mod-scripting-interface
+   mod-label-track-interface
 )
 audacity_module( mod-nyquist "${SOURCES}" "${LIBRARIES}"
    "" "" )
