@@ -15,6 +15,8 @@ Paul Licameli split from ProjectManager.cpp
 #include "Project.h"
 #include "ComponentInterfaceSymbol.h"
 
+#include <wx/event.h>
+
 class AudacityProject;
 struct ProjectSettingsEvent;
 
