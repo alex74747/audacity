@@ -236,8 +236,6 @@ list( APPEND SOURCES
 
       tracks/ui/BackgroundCell.cpp
       tracks/ui/BackgroundCell.h
-      tracks/ui/PlayIndicatorOverlay.cpp
-      tracks/ui/PlayIndicatorOverlay.h
       tracks/ui/ScrubUI.cpp
       tracks/ui/ScrubUI.h
       tracks/ui/Scrubbing.cpp
