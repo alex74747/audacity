@@ -226,6 +226,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-playable-track-ui",
       "mod-common-track-ui",
       "mod-scripting",
+      "mod-edit-cursor-overlay",
    };
    return modules;
 }
