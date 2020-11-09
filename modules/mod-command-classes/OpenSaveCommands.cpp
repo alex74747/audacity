@@ -60,10 +60,12 @@ bool OpenProjectCommand::Apply(const CommandContext & context){
    if(mFileName.empty())
    {
       auto project = &context.project;
+      // Error check?
       ProjectManager::OpenFiles(project);
    }
    else
    {
+      // Error check?
       ProjectFileManager::Get( context.project )
          .OpenFile(mFileName, mbAddToHistory);
    }

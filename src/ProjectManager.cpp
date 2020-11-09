@@ -35,7 +35,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
 #include "import/Import.h"
-#include "import/ImportMIDI.h"
 #include "prefs/QualityPrefs.h"
 #include "toolbars/MixerToolBar.h"
 #include "toolbars/SelectionBar.h"
@@ -328,14 +327,8 @@ public:
             ProjectWindow::Get( *mProject ).HandleResize(); // Adjust scrollers for NEW track sizes.
          } );
 
-         for (const auto &name : sortednames) {
-#ifdef USE_MIDI
-            if (FileNames::IsMidi(name))
-               DoImportMIDI( *mProject, name );
-            else
-#endif
-               ProjectFileManager::Get( *mProject ).Import(name);
-         }
+         for (const auto &name : sortednames)
+            ProjectFileManager::Get( *mProject ).Import(name);
 
          auto &window = ProjectWindow::Get( *mProject );
          window.ZoomAfterImport(nullptr);
@@ -846,6 +839,7 @@ void ProjectManager::OnOpenAudioFile(wxCommandEvent & event)
    const wxString &cmd = event.GetString();
 
    if (!cmd.empty())
+      // error checking?
       ProjectFileManager::Get( mProject ).OpenFile(cmd);
 
    window.RequestUserAttention();
@@ -909,29 +903,23 @@ AudacityProject *ProjectManager::OpenProject(
       if( pNewProject )
          GetProjectFrame( *pNewProject ).Close(true);
    } );
-#ifdef USE_MIDI
-   if (FileNames::IsMidi(fileNameArg)) {
-      // DoImportMIDI returns success code
-      if (DoImportMIDI( *pProject, fileNameArg ))
-         // Cancel the RAII
-         pNewProject = nullptr;
-      else if( pProject == pNewProject )
-         // Don't return dangling pointer to project
-         pProject = nullptr;
-      return pProject;
+   if (ProjectFileManager::Get( *pProject )
+       .OpenFile( fileNameArg, addtohistory )) {
+      // Cancel the RAII
+      pNewProject = nullptr;
+      auto &projectFileIO = ProjectFileIO::Get( *pProject );
+      if( projectFileIO.IsRecovered() ) {
+         auto &window = ProjectWindow::Get( *pProject );
+         window.Zoom( window.GetZoomOfToFit() );
+         // "Project was recovered" replaces "Create new project"
+         // in Undo History.
+         auto &undoManager = UndoManager::Get( *pProject );
+         undoManager.RemoveStates(0, 1);
+      }
    }
-#endif
-   // OpenFile returns no success code but might throw instead
-   ProjectFileManager::Get( *pProject ).OpenFile( fileNameArg, addtohistory );
-   pNewProject = nullptr;
-   auto &projectFileIO = ProjectFileIO::Get( *pProject );
-   if( projectFileIO.IsRecovered() ) {
-      auto &window = ProjectWindow::Get( *pProject );
-      window.Zoom( window.GetZoomOfToFit() );
-      // "Project was recovered" replaces "Create new project" in Undo History.
-      auto &undoManager = UndoManager::Get( *pProject );
-      undoManager.RemoveStates(0, 1);
-   }
+   else if( pProject == pNewProject )
+      // Don't return dangling pointer to project
+      pProject = nullptr;
 
    return pProject;
 }

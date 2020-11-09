@@ -91,7 +91,8 @@ public:
 
    static bool IsAlreadyOpen(const FilePath &projPathName);
 
-   void OpenFile(const FilePath &fileName, bool addtohistory = true);
+   //! @return false only in case of import failure -- not in case of other kinds of failure
+   bool OpenFile(const FilePath &fileName, bool addtohistory = true);
 
    bool Import(const FilePath &fileName,
                bool addToHistory = true);

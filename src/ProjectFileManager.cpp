@@ -864,7 +864,7 @@ bool ProjectFileManager::IsAlreadyOpen(const FilePath &projPathName)
 
 // FIXME:? TRAP_ERR This should return a result that is checked.
 //    See comment in AudacityApp::MRUOpen().
-void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory)
+bool ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory)
 {
    auto &project = mProject;
    auto &history = ProjectHistory::Get( project );
@@ -882,7 +882,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
                                       XO("Project resides on FAT formatted drive.\n"
                                          "Copy it to another drive to open it.")))
    {
-      return;
+      return true;
    }
 
    // Make sure it isn't already open.
@@ -893,7 +893,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
    //    This was reported in http://bugzilla.audacityteam.org/show_bug.cgi?id=137#c17,
    //    but is not really part of that bug. Anyway, prevent it!
    if (IsAlreadyOpen(fileName))
-      return;
+      return true;
 
    // Data loss may occur if users mistakenly try to open ".aup3.bak" files
    // left over from an unsuccessful save or by previous versions of Audacity.
@@ -906,7 +906,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          XO("Warning - Backup File Detected"),
          wxOK | wxCENTRE,
          &window);
-      return;
+      return true;
    }
 
    if (!::wxFileExists(fileName)) {
@@ -915,7 +915,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          XO("Error Opening File"),
          wxOK | wxCENTRE,
          &window);
-      return;
+      return true;
    }
 
    {
@@ -935,7 +935,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
             XO("Error opening file"),
             wxOK | wxCENTRE,
             &window);
-         return;
+         return true;
       }
 
       char buf[7];
@@ -946,7 +946,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
             XO("Error Opening File or Project"),
             wxOK | wxCENTRE,
             &window);
-         return;
+         return true;
       }
 
       if (wxStrncmp(buf, "SQLite", 6) != 0)
@@ -956,23 +956,15 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          if (PluginManager::Get().DropFile(fileName))
          {
             MenuCreator::RebuildAllMenuBars();
-         }
-         else
-#endif
-#ifdef USE_MIDI
-         if (FileNames::IsMidi(fileName))
-         {
-            DoImportMIDI(project, fileName);
+            return true;
          }
          else
 #endif
          {
-            Import(fileName);
+            bool success = Import(fileName);
+            window.ZoomAfterImport(nullptr);
+            return success;
          }
-
-         window.ZoomAfterImport(nullptr);
-
-         return;
       }
    }
 
@@ -1044,6 +1036,7 @@ void ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
          errorStr,
          results.helpUrl);
    }
+   return true;
 }
 
 void
@@ -1181,6 +1174,13 @@ bool ProjectFileManager::Import(
    const FilePath &fileName,
    bool addToHistory /* = true */)
 {
+#ifdef USE_MIDI
+   if (FileNames::IsMidi(fileName))
+   {
+      return DoImportMIDI(mProject, fileName);
+   }
+#endif
+
    auto &project = mProject;
    auto &projectFileIO = ProjectFileIO::Get(project);
    auto oldTags = Tags::Get( project ).shared_from_this();
