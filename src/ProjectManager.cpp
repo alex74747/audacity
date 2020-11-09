@@ -905,9 +905,23 @@ AudacityProject *ProjectManager::OpenProject(
    if ( ! pProject )
       pProject = pNewProject = New();
    auto cleanup = finally( [&] {
+      // RAII to deallocate failed new project
       if( pNewProject )
          GetProjectFrame( *pNewProject ).Close(true);
    } );
+#ifdef USE_MIDI
+   if (FileNames::IsMidi(fileNameArg)) {
+      // DoImportMIDI returns success code
+      if (DoImportMIDI( *pProject, fileNameArg ))
+         // Cancel the RAII
+         pNewProject = nullptr;
+      else if( pProject == pNewProject )
+         // Don't return dangling pointer to project
+         pProject = nullptr;
+      return pProject;
+   }
+#endif
+   // OpenFile returns no success code but might throw instead
    ProjectFileManager::Get( *pProject ).OpenFile( fileNameArg, addtohistory );
    pNewProject = nullptr;
    auto &projectFileIO = ProjectFileIO::Get( *pProject );
