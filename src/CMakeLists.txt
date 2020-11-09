@@ -146,8 +146,6 @@ list( APPEND SOURCES
       SplashDialog.h
       SseMathFuncs.cpp
       SseMathFuncs.h
-      TimeTrack.cpp
-      TimeTrack.h
       TrackPanel.cpp
       TrackPanel.h
       TrackPanelAx.cpp

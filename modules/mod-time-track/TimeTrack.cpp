@@ -355,3 +355,6 @@ static Mixer::WarpOptions::DefaultWarp::Scope installer{
    else
       return nullptr;
 } };
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
