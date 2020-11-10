@@ -55,8 +55,6 @@ ImportLOF.cpp, and ImportAUP.cpp.
 
 #include "../widgets/ProgressDialog.h"
 
-using NewChannelGroup = std::vector< std::shared_ptr<WaveTrack> >;
-
 // ============================================================================
 //
 // Return reference to singleton
@@ -577,7 +575,7 @@ bool Importer::Import( AudacityProject &project,
          {
             auto end = tracks.end();
             auto iter = std::remove_if( tracks.begin(), end,
-               std::mem_fn( &NewChannelGroup::empty ) );
+               std::mem_fn( &std::vector< std::shared_ptr<Track> >::empty ) );
             if ( iter != end ) {
                // importer shouldn't give us empty groups of channels!
                wxASSERT(false);
