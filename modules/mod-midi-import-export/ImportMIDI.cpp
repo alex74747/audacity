@@ -8,7 +8,7 @@
 
 **********************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 
 #include <wx/defs.h>
 #include <wx/ffile.h>
@@ -22,17 +22,17 @@
 //#include "strparse.h"
 //#include "mfmidi.h"
 
-#include "../import/Import.h"
-#include "../import/ImportPlugin.h"
-#include "../NoteTrack.h"
-#include "../Project.h"
-#include "../ProjectFileIO.h"
-#include "../ProjectHistory.h"
-#include "../ProjectWindow.h"
-#include "../SelectUtilities.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/FileHistory.h"
-#include "../widgets/ProgressDialog.h"
+#include "import/Import.h"
+#include "import/ImportPlugin.h"
+#include "NoteTrack.h"
+#include "Project.h"
+#include "ProjectFileIO.h"
+#include "ProjectHistory.h"
+#include "ProjectWindow.h"
+#include "SelectUtilities.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/FileHistory.h"
+#include "widgets/ProgressDialog.h"
 
 namespace {
 
@@ -258,4 +258,8 @@ Importer::RegisteredImportPlugin registered{ "portsmf",
 };
 
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
+
 #endif
