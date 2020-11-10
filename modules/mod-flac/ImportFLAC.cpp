@@ -82,7 +82,7 @@ extern "C" {
 
 
 class FLACImportFileHandle;
-using NewChannelGroup = std::vector< std::shared_ptr<WaveTrack> >;
+using NewChannelGroup = std::vector< std::shared_ptr<Track> >;
 
 class MyFLACFile final : public FLAC::Decoder::File
 {
@@ -247,12 +247,12 @@ FLAC__StreamDecoderWriteStatus MyFLACFile::write_callback(const FLAC__Frame *fra
                tmp[s]=buffer[chn][s];
             }
 
-            iter->get()->Append((samplePtr)tmp.get(),
+            static_cast<WaveTrack*>(iter->get())->Append((samplePtr)tmp.get(),
                      int16Sample,
                      frame->header.blocksize);
          }
          else {
-            iter->get()->Append((samplePtr)buffer[chn],
+            static_cast<WaveTrack*>(iter->get())->Append((samplePtr)buffer[chn],
                      int24Sample,
                      frame->header.blocksize);
          }
@@ -430,7 +430,7 @@ auto FLACImportFileHandle::Import(WaveTrackFactory *trackFactory,
    }
 
    for (const auto &channel : mChannels)
-      channel->Flush();
+      static_cast<WaveTrack*>(channel.get())->Flush();
 
    if (!mChannels.empty())
       outTracks.push_back(std::move(mChannels));
