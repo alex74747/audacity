@@ -120,8 +120,9 @@ public:
 
    TranslatableString GetFileDescription() override;
    ByteCount GetFileUncompressedBytes() override;
-   ProgressResult Import(WaveTrackFactory *trackFactory, TrackHolders &outTracks,
-              Tags *tags) override;
+   ImportResult Import(
+      WaveTrackFactory *trackFactory, TrackHolders &outTracks,
+      Tags *tags) override;
 
    wxInt32 GetStreamCount() override
    {
@@ -222,9 +223,9 @@ auto OggImportFileHandle::GetFileUncompressedBytes() -> ByteCount
    return 0;
 }
 
-ProgressResult OggImportFileHandle::Import(
+auto OggImportFileHandle::Import(
    WaveTrackFactory *trackFactory, TrackHolders &outTracks,
-   Tags *tags)
+   Tags *tags) -> ImportResult
 {
    outTracks.clear();
 
@@ -346,7 +347,7 @@ ProgressResult OggImportFileHandle::Import(
      res = ProgressResult::Failed;
 
    if (res == ProgressResult::Failed || res == ProgressResult::Cancelled) {
-      return res;
+      return ImportResult::Failed;
    }
 
    for (auto &link : mChannels)
@@ -373,7 +374,9 @@ ProgressResult OggImportFileHandle::Import(
       }
    }
 
-   return res;
+   return (res == ProgressResult::Success)
+      ? (outTracks.empty() ? ImportResult::Retry : ImportResult::Success)
+      : ImportResult::Failed;
 }
 
 OggImportFileHandle::~OggImportFileHandle()

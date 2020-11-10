@@ -140,8 +140,9 @@ public:
 
    TranslatableString GetFileDescription() override;
    ByteCount GetFileUncompressedBytes() override;
-   ProgressResult Import(WaveTrackFactory *trackFactory, TrackHolders &outTracks,
-              Tags *tags) override;
+   ImportResult Import(
+      WaveTrackFactory *trackFactory, TrackHolders &outTracks,
+      Tags *tags) override;
 
    wxInt32 GetStreamCount() override { return 1; }
 
@@ -397,9 +398,9 @@ auto FLACImportFileHandle::GetFileUncompressedBytes() -> ByteCount
 }
 
 
-ProgressResult FLACImportFileHandle::Import(WaveTrackFactory *trackFactory,
-                                 TrackHolders &outTracks,
-                                 Tags *tags)
+auto FLACImportFileHandle::Import(WaveTrackFactory *trackFactory,
+   TrackHolders &outTracks,
+   Tags *tags) -> ImportResult
 {
    outTracks.clear();
 
@@ -425,7 +426,7 @@ ProgressResult FLACImportFileHandle::Import(WaveTrackFactory *trackFactory,
       wxUnusedVar(res);
 
    if (mUpdateResult == ProgressResult::Failed || mUpdateResult == ProgressResult::Cancelled) {
-      return mUpdateResult;
+      return ImportResult::Failed;
    }
 
    for (const auto &channel : mChannels)
@@ -469,7 +470,9 @@ ProgressResult FLACImportFileHandle::Import(WaveTrackFactory *trackFactory,
       }
    }
 
-   return mUpdateResult;
+   return (mUpdateResult == ProgressResult::Success)
+      ? (outTracks.empty() ? ImportResult::Retry : ImportResult::Success)
+      : ImportResult::Failed;
 }
 
 
