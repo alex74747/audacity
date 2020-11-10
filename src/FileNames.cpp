@@ -598,15 +598,6 @@ FileNames::SelectFile(Operation op,
    });
 }
 
-bool FileNames::IsMidi(const FilePath &fName)
-{
-   const auto extension = fName.AfterLast(wxT('.'));
-   return
-      extension.IsSameAs(wxT("gro"), false) ||
-      extension.IsSameAs(wxT("midi"), false) ||
-      extension.IsSameAs(wxT("mid"), false);
-}
-
 static FilePaths sAudacityPathList;
 
 const FilePaths &FileNames::AudacityPathList()

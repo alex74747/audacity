@@ -43,7 +43,7 @@ class ExtImportItem
 {
   public:
   /**
-   * Unique string ID exists for each filter, it is not translateable
+   * Unique string ID exists for each filter, it is not translatable
    * and can be stored in config. This ID is matched internally with a
    * translated name of a filter.
    * Unknown IDs will be presented and saved as-is.
