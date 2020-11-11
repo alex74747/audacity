@@ -115,6 +115,8 @@ list( APPEND SOURCES
       FileNames.h
       HelpText.cpp
       HelpText.h
+      HelpUtilities.cpp
+      HelpUtilities.h
       HiContrastThemeAsCeeCode.h
       HitTestResult.h
       ImageManipulation.cpp
