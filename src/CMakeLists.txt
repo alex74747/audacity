@@ -176,6 +176,7 @@ list( APPEND SOURCES
       MemoryX.h
       Menus.cpp
       Menus.h
+      MIDIPlay.cpp
       Mix.cpp
       Mix.h
       MixerBoard.cpp
