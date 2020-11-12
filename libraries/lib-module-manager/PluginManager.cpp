@@ -21,8 +21,6 @@ for shared and private configs - which need to move out.
 
 #include "PluginManager.h"
 
-
-
 #include <algorithm>
 
 #include <wx/log.h>
