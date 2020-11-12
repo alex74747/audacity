@@ -15,7 +15,6 @@
 #include "AudacityException.h"
 #include "FileNames.h"
 #include "Project.h"
-#include "ProjectFileManager.h"
 #include "ProjectWindow.h"
 #include "TrackPanel.h"
 #include "import/Import.h"

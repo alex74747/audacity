@@ -182,10 +182,6 @@ void ProjectManager::SaveWindowSize()
    sbWindowRectAlreadySaved = true;
 }
 
-#ifdef EXPERIMENTAL_NOTEBOOK
-   extern void AddPages(   AudacityProject * pProj, GuiFactory & Factory,  wxNotebook  * pNotebook );
-#endif
-
 void InitProjectWindow( ProjectWindow &window )
 {
    auto &project = window.GetProject();
