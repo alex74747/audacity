@@ -808,7 +808,7 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
    const FileNames::FileType &extraType )
 {
    // Construct the filter
-   const auto fileTypes = Importer::Get().GetFileTypes( extraType );
+   const auto fileTypes = FileNames::GetFileTypes( extraType );
 
    // Retrieve saved path
    auto path = FileNames::FindDefaultPath(op);
@@ -823,7 +823,7 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
       fileTypes,
       wxFD_OPEN | wxFD_MULTIPLE | wxRESIZE_BORDER);
 
-   dlog.SetFilterIndex( Importer::SelectDefaultOpenType( fileTypes ) );
+   dlog.SetFilterIndex( FileNames::SelectDefaultOpenType( fileTypes ) );
 
    int dialogResult = dlog.ShowModal();
 
@@ -831,8 +831,8 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
    auto index = dlog.GetFilterIndex();
    const auto &saveType = fileTypes[ index ];
 
-   Importer::SetDefaultOpenType( saveType );
-   Importer::SetLastOpenType( saveType );
+   FileNames::SetDefaultOpenType( saveType );
+   FileNames::SetLastOpenType( saveType );
 
    if (dialogResult == wxID_OK) {
       // Return the selected files

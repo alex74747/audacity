@@ -689,7 +689,7 @@ void ProjectManager::OpenFiles(AudacityProject *proj)
    auto selectedFiles =
       ProjectFileManager::ShowOpenDialog(FileNames::Operation::Open);
    if (selectedFiles.size() == 0) {
-      Importer::SetLastOpenType({});
+      FileNames::SetLastOpenType({});
       return;
    }
 
@@ -697,7 +697,7 @@ void ProjectManager::OpenFiles(AudacityProject *proj)
    selectedFiles.Sort(FileNames::CompareNoCase);
 
    auto cleanup = finally( [] {
-      Importer::SetLastOpenType({});
+      FileNames::SetLastOpenType({});
    } );
 
    for (const auto &fileName : selectedFiles) {

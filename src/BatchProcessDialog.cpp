@@ -353,7 +353,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
 
    auto prompt =  XO("Select file(s) for batch processing...");
 
-   const auto fileTypes = Importer::Get().GetFileTypes();
+   const auto fileTypes = FileNames::GetFileTypes();
 
    auto path = FileNames::FindDefaultPath(FileNames::Operation::Open);
    FileDialogWrapper dlog(this,
@@ -363,7 +363,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
       fileTypes,
       wxFD_OPEN | wxFD_MULTIPLE | wxRESIZE_BORDER);
 
-   dlog.SetFilterIndex( Importer::SelectDefaultOpenType( fileTypes ) );
+   dlog.SetFilterIndex( FileNames::SelectDefaultOpenType( fileTypes ) );
    if (dlog.ShowModal() != wxID_OK) {
       Raise();
       return;
