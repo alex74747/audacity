@@ -101,6 +101,7 @@ list( APPEND SOURCES
       Diags.h
       Dither.cpp
       Dither.h
+      DropTarget.cpp
       Envelope.cpp
       Envelope.h
       EnvelopeEditor.cpp
