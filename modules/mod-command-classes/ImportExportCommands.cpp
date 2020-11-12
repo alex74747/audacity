@@ -20,6 +20,7 @@
 #include "ProjectFileManager.h"
 #include "ViewInfo.h"
 #include "export/Export.h"
+#include "import/Import.h"
 #include "SelectUtilities.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
@@ -51,8 +52,7 @@ void ImportCommand::PopulateOrExchange(ShuttleGui & S)
 bool ImportCommand::Apply(const CommandContext & context)
 {
    bool wasEmpty = TrackList::Get( context.project ).Any().empty();
-   bool success = ProjectFileManager::Get( context.project )
-      .Import(mFileName, false);
+   bool success = Importer::Import(context.project, mFileName, false);
 
    if (success && wasEmpty)
    {
