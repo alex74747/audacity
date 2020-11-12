@@ -36,7 +36,7 @@ void DoImport(const CommandContext &context, bool isRaw)
 
    auto selectedFiles = ProjectFileManager::ShowOpenDialog(FileNames::Operation::Import);
    if (selectedFiles.size() == 0) {
-      Importer::SetLastOpenType({});
+      FileNames::SetLastOpenType({});
       return;
    }
 
@@ -49,7 +49,7 @@ void DoImport(const CommandContext &context, bool isRaw)
 
    auto cleanup = finally( [&] {
 
-      Importer::SetLastOpenType({});
+      FileNames::SetLastOpenType({});
       window.ZoomAfterImport(nullptr);
       window.HandleResize(); // Adjust scrollers for NEW track sizes.
    } );

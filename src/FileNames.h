@@ -18,6 +18,8 @@
 #include "Prefs.h"
 #include "MemoryX.h"
 
+#include <functional>
+
 class wxFileName;
 class wxFileNameWrapper;
 
@@ -207,6 +209,40 @@ namespace FileNames
    AUDACITY_DLL_API
    //! Give enough of the path to identify the device.  (On Windows, drive letter plus ':')
    wxString AbbreviatePath(const wxFileName &fileName);
+
+/**
+    * Remember a file type in preferences
+    */
+   AUDACITY_DLL_API void
+   SetLastOpenType( const FileNames::FileType &type );
+
+   /**
+    * Remember a file type in preferences
+    */
+   AUDACITY_DLL_API void
+   SetDefaultOpenType( const FileNames::FileType &type );
+
+   /**
+    * Choose index of preferred type
+    */
+   AUDACITY_DLL_API size_t
+   SelectDefaultOpenType( const FileNames::FileTypes &fileTypes );
+
+   /**
+    * Constructs a list of types, for use by file opening dialogs, that includes
+    * all supported file types
+    */
+   AUDACITY_DLL_API FileTypes
+   GetFileTypes( const FileNames::FileType &extraType = {} );
+
+   //! Type of a function that reports other known file types
+   using FileTypeLister = std::function<FileTypes()>;
+
+   //! Statically constructed instance injects extra file types into open dialogs
+   struct AUDACITY_DLL_API RegisteredFileTypeLister final {
+      RegisteredFileTypeLister(FileTypeLister lister);
+      ~RegisteredFileTypeLister();
+   };
 };
 
 // Use this macro to wrap all filenames and pathnames that get
