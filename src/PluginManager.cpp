@@ -2185,3 +2185,19 @@ TranslatableString ComponentInterface::GetName()
 {
    return GetSymbol().Msgid();
 }
+
+#ifdef EXPERIMENTAL_DRAG_DROP_PLUG_INS
+#include "ProjectFileManager.h"
+#include "Menus.h"
+static ProjectFileManager::RegisteredImportProcedure sProcedure {
+   [](AudacityProject &, const FilePath &fileName) {
+      // Is it a plug-in?
+      if (PluginManager::Get().DropFile(fileName))
+      {
+         MenuCreator::RebuildAllMenuBars();
+         return true;
+      }
+      return false;
+   }
+};
+#endif

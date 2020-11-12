@@ -35,7 +35,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
 #include "export/Export.h"
-#include "import/Import.h"
 #include "toolbars/SelectionBar.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ErrorDialog.h"
@@ -859,6 +858,27 @@ bool ProjectFileManager::IsAlreadyOpen(const FilePath &projPathName)
    return false;
 }
 
+namespace {
+using ImportProcedures = std::vector<ProjectFileManager::ImportProcedure>;
+static ImportProcedures& GetImportProcedures()
+{
+   static ImportProcedures procedures;
+   return procedures;
+}
+}
+
+ProjectFileManager::
+RegisteredImportProcedure::RegisteredImportProcedure(ImportProcedure procedure)
+{
+   GetImportProcedures().push_back(std::move(procedure));
+}
+
+ProjectFileManager::
+RegisteredImportProcedure::~RegisteredImportProcedure()
+{
+   GetImportProcedures().pop_back();
+}
+
 // FIXME:? TRAP_ERR This should return a result that is checked.
 //    See comment in AudacityApp::MRUOpen().
 bool ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory)
@@ -948,20 +968,12 @@ bool ProjectFileManager::OpenFile(const FilePath &fileNameArg, bool addtohistory
 
       if (wxStrncmp(buf, "SQLite", 6) != 0)
       {
-#ifdef EXPERIMENTAL_DRAG_DROP_PLUG_INS
-         // Is it a plug-in?
-         if (PluginManager::Get().DropFile(fileName))
-         {
-            MenuCreator::RebuildAllMenuBars();
-            return true;
+         // Not a project file (of version 3.0.0 format or later)
+         for (auto &procedure : GetImportProcedures()) {
+            if (procedure(mProject, fileName))
+               return true;
          }
-         else
-#endif
-         {
-            bool success = Importer::Import(project, fileName);
-            window.ZoomAfterImport(nullptr);
-            return success;
-         }
+         return false;
       }
    }
 

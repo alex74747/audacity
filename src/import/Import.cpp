@@ -1169,3 +1169,15 @@ AttachedItem sAttachment1{
 };
 #undef FN
 }
+
+//! Hook the Open command
+#include "ProjectFileManager.h"
+#include "ProjectWindow.h"
+static ProjectFileManager::RegisteredImportProcedure sProcedure {
+   [](AudacityProject &project, const FilePath &fileName) {
+      bool success = Importer::Import(project, fileName);
+      auto &window = ProjectWindow::Get( project );
+      window.ZoomAfterImport(nullptr);
+      return success;
+   }
+};
