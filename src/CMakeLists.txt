@@ -195,8 +195,6 @@ list( APPEND SOURCES
       TagsEditor.h
       TimeTrack.cpp
       TimeTrack.h
-      TimerRecordDialog.cpp
-      TimerRecordDialog.h
       TrackArt.cpp
       TrackArt.h
       TrackInfo.cpp
