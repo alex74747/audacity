@@ -94,13 +94,7 @@ public:
    //! @return false only in case of import failure -- not in case of other kinds of failure
    bool OpenFile(const FilePath &fileName, bool addtohistory = true);
 
-   bool Import(const FilePath &fileName,
-               bool addToHistory = true);
-
    void Compact();
-
-   void AddImportedTracks(const FilePath &fileName,
-                     TrackHolders &&newTracks);
 
    bool GetMenuClose() const { return mMenuClose; }
    void SetMenuClose(bool value) { mMenuClose = value; }
