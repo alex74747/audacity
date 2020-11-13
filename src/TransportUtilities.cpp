@@ -18,7 +18,6 @@
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
 #include "ViewInfo.h"
-#include "toolbars/ControlToolBar.h"
 #include "widgets/ProgressDialog.h"
 
 void TransportUtilities::PlayCurrentRegionAndWait(
@@ -152,12 +151,10 @@ bool TransportUtilities::DoStopPlaying(const CommandContext &context)
    auto &project = context.project;
    auto &projectAudioManager = ProjectAudioManager::Get(project);
    auto gAudioIO = AudioIOBase::Get();
-   auto &toolbar = ControlToolBar::Get(project);
    auto token = ProjectAudioIO::Get(project).GetAudioIOToken();
 
    //If this project is playing, stop playing, make sure everything is unpaused.
    if (gAudioIO->IsStreamActive(token)) {
-      toolbar.SetStop();         //Pushes stop down
       projectAudioManager.Stop();
       // Playing project was stopped.  All done.
       return true;
@@ -177,10 +174,8 @@ bool TransportUtilities::DoStopPlaying(const CommandContext &context)
       //stop playing the other project
       if (iter != finish) {
          auto otherProject = *iter;
-         auto &otherToolbar = ControlToolBar::Get(*otherProject);
          auto &otherProjectAudioManager =
             ProjectAudioManager::Get(*otherProject);
-         otherToolbar.SetStop();         //Pushes stop down
          otherProjectAudioManager.Stop();
       }
    }

@@ -28,7 +28,6 @@
 #include "ViewInfo.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../toolbars/ControlToolBar.h"
 #include "../toolbars/ToolManager.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
@@ -50,7 +49,6 @@ namespace {
 /// the stop button.
 bool MakeReadyToPlay(AudacityProject &project)
 {
-   auto &toolbar = ControlToolBar::Get( project );
    wxCommandEvent evt;
 
    // If this project is playing, stop playing
@@ -58,10 +56,6 @@ bool MakeReadyToPlay(AudacityProject &project)
    if (gAudioIO->IsStreamActive(
       ProjectAudioIO::Get( project ).GetAudioIOToken()
    )) {
-      // Make momentary changes of button appearances
-      toolbar.SetPlay(false);        //Pops
-      toolbar.SetStop();         //Pushes stop down
-
       ProjectAudioManager::Get( project ).Stop();
 
       using namespace std::chrono;
