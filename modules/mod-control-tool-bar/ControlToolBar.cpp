@@ -30,7 +30,6 @@
 
 *//*******************************************************************/
 
-
 #include "ControlToolBar.h"
 
 #include <algorithm>
@@ -57,18 +56,18 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
-#include "../ProjectAudioManager.h"
-#include "../ProjectSettings.h"
+#include "ProjectAudioManager.h"
+#include "ProjectSettings.h"
 #include "ProjectStatus.h"
-#include "../ProjectWindow.h"
-#include "../SelectUtilities.h"
+#include "ProjectWindow.h"
+#include "SelectUtilities.h"
 #include "Track.h"
 #include "ViewInfo.h"
 #include "AButton.h"
 #include "FileNames.h"
 
-#include "../tracks/ui/Scrubbing.h"
-#include "../toolbars/ToolManager.h"
+#include "tracks/ui/Scrubbing.h"
+#include "toolbars/ToolManager.h"
 
 IMPLEMENT_CLASS(ControlToolBar, ToolBar);
 
@@ -833,3 +832,6 @@ AttachedToolBarMenuItem sAttachment{
    ControlToolBar::ID(), wxT("ShowTransportTB"), XXO("&Transport Toolbar")
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
