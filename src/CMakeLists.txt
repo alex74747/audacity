@@ -393,8 +393,6 @@ list( APPEND SOURCES
 
       # Toolbars
 
-      toolbars/ControlToolBar.cpp
-      toolbars/ControlToolBar.h
       toolbars/ToolBar.cpp
       toolbars/ToolBar.h
       toolbars/ToolDock.cpp

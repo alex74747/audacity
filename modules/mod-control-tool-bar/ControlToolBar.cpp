@@ -30,7 +30,7 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "ControlToolBar.h"
 
 #include <algorithm>
@@ -49,24 +49,24 @@
 #include <wx/tooltip.h>
 #include <wx/datetime.h>
 
-#include "../AColor.h"
-#include "../AllThemeResources.h"
-#include "../AudioIO.h"
-#include "../ImageManipulation.h"
-#include "../Prefs.h"
-#include "../Project.h"
-#include "../ProjectAudioIO.h"
-#include "../ProjectAudioManager.h"
-#include "../ProjectSettings.h"
-#include "../ProjectStatus.h"
-#include "../ProjectWindow.h"
-#include "../Track.h"
-#include "../widgets/AButton.h"
-#include "../widgets/ErrorDialog.h"
-#include "../FileNames.h"
+#include "AColor.h"
+#include "AllThemeResources.h"
+#include "AudioIO.h"
+#include "ImageManipulation.h"
+#include "Prefs.h"
+#include "Project.h"
+#include "ProjectAudioIO.h"
+#include "ProjectAudioManager.h"
+#include "ProjectSettings.h"
+#include "ProjectStatus.h"
+#include "ProjectWindow.h"
+#include "Track.h"
+#include "widgets/AButton.h"
+#include "widgets/ErrorDialog.h"
+#include "FileNames.h"
 
-#include "../tracks/ui/Scrubbing.h"
-#include "../toolbars/ToolManager.h"
+#include "tracks/ui/Scrubbing.h"
+#include "toolbars/ToolManager.h"
 
 IMPLEMENT_CLASS(ControlToolBar, ToolBar);
 
@@ -816,3 +816,6 @@ AttachedToolBarMenuItem sAttachment{
    ControlToolBar::ID(), wxT("ShowTransportTB"), XXO("&Transport Toolbar")
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
