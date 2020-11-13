@@ -142,14 +142,11 @@ list( APPEND SOURCES
       MemoryX.h
       Menus.cpp
       Menus.h
-      MIDIPlay.cpp
       Mix.cpp
       Mix.h
       ModuleConstants.h
       ModuleManager.cpp
       ModuleManager.h
-      NoteTrack.cpp
-      NoteTrack.h
       NumberScale.h
       PitchName.cpp
       PitchName.h
@@ -546,8 +543,6 @@ list( APPEND LIBRARIES
       libsoxr
       portaudio-v19
       sqlite
-      $<$<BOOL:${USE_MIDI}>:portmidi>
-      $<$<BOOL:${USE_MIDI}>:portsmf>
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GLIB>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GTK>
