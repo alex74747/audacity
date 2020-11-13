@@ -411,6 +411,10 @@ void MenuCreator::CreateMenusAndCommands(
 "ShowSpectralSelectionTB") },
          {wxT("/Tracks/Add/Add"), wxT(
    "NewMonoTrack,NewStereoTrack,NewLabelTrack,NewTimeTrack")},
+         {wxT("/File/Import-Export/Export"), wxT(
+"ExportMp3,ExportWav,ExportOgg,Export,ExportSel,ExportLabels,"
+"ExportMultiple,ExportMIDI"
+          )},
       }
    };
 
