@@ -62,7 +62,7 @@ using QuantizedTimeAndBeat = std::pair< double, double >;
 class StretchHandle;
 class TimeWarper;
 
-class AUDACITY_DLL_API NoteTrack final
+class NOTE_TRACK_API NoteTrack final
    : public NoteTrackBase
 {
 public:
@@ -215,12 +215,11 @@ public:
    std::weak_ptr<StretchHandle> mStretchHandle;
 };
 
-extern AUDACITY_DLL_API StringSetting MIDIPlaybackDevice;
-extern AUDACITY_DLL_API StringSetting MIDIRecordingDevice;
-extern AUDACITY_DLL_API IntSetting MIDISynthLatency_ms;
+extern NOTE_TRACK_API StringSetting MIDIPlaybackDevice;
+extern NOTE_TRACK_API StringSetting MIDIRecordingDevice;
+extern NOTE_TRACK_API IntSetting MIDISynthLatency_ms;
 
 ENUMERATE_TRACK_TYPE(NoteTrack);
-
 #endif // USE_MIDI
 
 #ifndef SONIFY
@@ -245,8 +244,8 @@ ENUMERATE_TRACK_TYPE(NoteTrack);
 
 
 #include "Prefs.h"
-extern AUDACITY_DLL_API EnumSetting< bool > AllegroStyleSetting;
+extern NOTE_TRACK_API EnumSetting< bool > AllegroStyleSetting;
 
-AUDACITY_DLL_API wxString GetMIDIDeviceInfo();
+NOTE_TRACK_API wxString GetMIDIDeviceInfo();
 
 #endif

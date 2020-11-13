@@ -1101,4 +1101,7 @@ StringSetting MIDIPlaybackDevice{ L"/MidiIO/PlaybackDevice", L"" };
 StringSetting MIDIRecordingDevice{ L"/MidiIO/RecordingDevice", L"" };
 IntSetting MIDISynthLatency_ms{ L"/MidiIO/SynthLatency", 5 };
 
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
+
 #endif // USE_MIDI

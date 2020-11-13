@@ -104,10 +104,6 @@ list( APPEND SOURCES
       Legacy.h
       LogWindow.cpp
       LogWindow.h
-      MIDIPlay.cpp
-      MIDIPlay.h
-      NoteTrack.cpp
-      NoteTrack.h
       PitchName.cpp
       PitchName.h
       Profiler.cpp
@@ -375,8 +371,6 @@ list( APPEND LIBRARIES
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag::libid3tag>
       $<$<BOOL:${USE_LIBMAD}>:libmad::libmad>
-      $<$<BOOL:${USE_MIDI}>:PortMidi::PortMidi>
-      $<$<BOOL:${USE_MIDI}>:portsmf>
       $<$<BOOL:${USE_PORTMIXER}>:portmixer>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GLIB>
       $<$<PLATFORM_ID:Linux,FreeBSD,OpenBSD,NetBSD,CYGWIN>:PkgConfig::GTK>
