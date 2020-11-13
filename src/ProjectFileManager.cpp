@@ -44,7 +44,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "WaveTrack.h"
 #include "WaveClip.h"
 #include "wxFileNameWrapper.h"
-#include "export/Export.h"
 #include "toolbars/SelectionBar.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/FileHistory.h"
