@@ -16,7 +16,7 @@
 #include "Audacity.h"
 #include "MessageCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "commands/CommandContext.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"

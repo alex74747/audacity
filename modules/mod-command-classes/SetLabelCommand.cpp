@@ -19,7 +19,7 @@
 #include "Audacity.h"
 #include "SetLabelCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "LabelTrack.h"

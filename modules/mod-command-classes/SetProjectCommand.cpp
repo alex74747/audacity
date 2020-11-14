@@ -20,7 +20,7 @@
 #include "Audacity.h"
 #include "SetProjectCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "Project.h"
 #include "ProjectSettings.h"
 #include "WaveTrack.h"

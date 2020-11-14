@@ -75,7 +75,7 @@ classes derived from it.
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "Command.h"
 
 #include <map>
@@ -83,12 +83,12 @@ classes derived from it.
 #include <wx/variant.h>
 #include <wx/arrstr.h>
 
-#include "CommandTargets.h"
+#include "commands/CommandTargets.h"
 #include "CommandDirectory.h"
 
-#include "CommandContext.h"
+#include "commands/CommandContext.h"
 
-#include "../AudacityException.h"
+#include "AudacityException.h"
 
 
 

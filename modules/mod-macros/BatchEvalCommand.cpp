@@ -17,7 +17,7 @@
 #include "BatchEvalCommand.h"
 
 #include "commands/CommandContext.h"
-#include "commands/CommandDirectory.h"
+#include "CommandDirectory.h"
 #include "Project.h"
 
 static CommandDirectory::RegisterType sRegisterType{

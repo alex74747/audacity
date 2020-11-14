@@ -19,7 +19,7 @@
 #include "Audacity.h"
 #include "GetTrackInfoCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "commands/CommandContext.h"

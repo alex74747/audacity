@@ -19,7 +19,7 @@
 
 #include "Audacity.h"
 #include "CommandSignature.h"
-#include "../commands/AudacityCommand.h"
+#include "commands/AudacityCommand.h"
 
 class AudacityApp;
 class CommandContext;
@@ -73,7 +73,7 @@ public:
 
 };
 
-class AUDACITY_DLL_API CommandImplementation /* not final */
+class SCRIPTING_API CommandImplementation /* not final */
    : public OldStyleCommand
 {
 private:

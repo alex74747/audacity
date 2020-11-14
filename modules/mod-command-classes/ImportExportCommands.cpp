@@ -17,7 +17,7 @@
 #include "Audacity.h"
 #include "ImportExportCommands.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "ViewInfo.h"
 #include "Export.h"
 #include "SelectUtilities.h"

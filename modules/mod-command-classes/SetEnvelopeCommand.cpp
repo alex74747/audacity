@@ -19,7 +19,7 @@
 #include "Audacity.h"
 #include "SetEnvelopeCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
 #include "Envelope.h"

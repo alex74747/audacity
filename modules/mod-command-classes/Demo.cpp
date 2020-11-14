@@ -21,7 +21,7 @@ parameters.  It is for development purposes.
 
 #include "Audacity.h"
 #include "Demo.h"
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 
 #include <float.h>
 

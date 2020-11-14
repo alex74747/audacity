@@ -16,13 +16,14 @@
 #ifndef __COMMANDHANDLER__
 #define __COMMANDHANDLER__
 
-#include "../MemoryX.h"
+#include "MemoryX.h"
 class AudacityApp;
 class AudacityProject;
 class AppCommandEvent;
 class CommandContext;
+#include <wx/event.h>
 
-class CommandHandler
+class CommandHandler : public wxEvtHandler
 {
    public:
       CommandHandler();

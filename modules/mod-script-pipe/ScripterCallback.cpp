@@ -16,7 +16,7 @@
 #include <wx/wx.h>
 #include "ScripterCallback.h"
 #include "Audacity.h"
-#include "commands/ScriptCommandRelay.h"
+#include "ScriptCommandRelay.h"
 
 /*
 There are several functions that can be used in a GUI module.

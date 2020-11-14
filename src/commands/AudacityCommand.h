@@ -11,18 +11,18 @@
 #ifndef __AUDACITY_COMMAND__
 #define __AUDACITY_COMMAND__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
 #include <set>
 
 #include <wx/defs.h>
 
-#include "../widgets/wxPanelWrapper.h" // to inherit
+#include "widgets/wxPanelWrapper.h" // to inherit
 
-#include "../include/audacity/ComponentInterface.h"
-#include "../include/audacity/EffectAutomationParameters.h" // for command automation
+#include "audacity/ComponentInterface.h"
+#include "audacity/EffectAutomationParameters.h" // for command automation
 
-#include "../Registrar.h"
+#include "Registrar.h"
 
 class ShuttleGui;
 

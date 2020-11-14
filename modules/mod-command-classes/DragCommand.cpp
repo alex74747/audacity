@@ -19,7 +19,7 @@
 #include "Audacity.h"
 #include "DragCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "Project.h"
 #include "WaveTrack.h"
 #include "Shuttle.h"

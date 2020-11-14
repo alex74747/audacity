@@ -388,7 +388,7 @@ void ModuleManager::TryLoadModules(
 }
 
 // static
-void ModuleManager::Initialize(CommandHandler &cmdHandler)
+void ModuleManager::Initialize()
 {
    FilePaths files;
    FindModules(files);

@@ -34,7 +34,7 @@ explicitly code all three.
 
 #include <float.h>
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "ProjectSelectionManager.h"
 #include "TrackPanel.h"
 #include "Shuttle.h"

@@ -16,15 +16,16 @@
 #ifndef __APPCOMMANDEVENT__
 #define __APPCOMMANDEVENT__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
 #include <wx/event.h> // to declare custom event types
-#include "../MemoryX.h"
-
-DECLARE_EXPORTED_EVENT_TYPE(AUDACITY_DLL_API, wxEVT_APP_COMMAND_RECEIVED, -1);
+#include "MemoryX.h"
 
 class OldStyleCommand;
 using OldStyleCommandPointer = std::shared_ptr<OldStyleCommand>;
+
+class AppCommandEvent;
+wxDECLARE_EVENT(wxEVT_APP_COMMAND_RECEIVED, AppCommandEvent);
 
 class AppCommandEvent final : public wxCommandEvent
 {
@@ -44,12 +45,5 @@ public:
 private:
    DECLARE_DYNAMIC_CLASS(AppCommandEvent)
 };
-
-typedef void (wxEvtHandler::*wxAppCommandEventFunction)(AppCommandEvent&);
-
-#define wxAppCommandEventHandler(func) \
-    (wxObjectEventFunction)(wxEventFunction)wxStaticCastEvent(wxAppCommandEventFunction, &func)
-
-#define EVT_APP_COMMAND(winid, fn) DECLARE_EVENT_TABLE_ENTRY( wxEVT_APP_COMMAND_RECEIVED, winid, wxID_ANY, wxAppCommandEventHandler(fn), (wxObject *) NULL ),
 
 #endif /* End of include guard: __APPCOMMANDEVENT__ */

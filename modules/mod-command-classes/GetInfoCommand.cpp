@@ -23,7 +23,7 @@ This class now lists
 #include "Audacity.h" // for USE_* macros
 #include "GetInfoCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "Project.h"
 #include "commands/CommandManager.h"
 #include "commands/CommandTargets.h"
