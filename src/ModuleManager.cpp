@@ -12,8 +12,8 @@
 
 \file ModuleManager.cpp
 \brief Based on LoadLadspa, this code loads pluggable Audacity 
-extension modules.  It also has the code to (a) invoke a script
-server and (b) invoke a function returning a replacement window,
+extension modules.  It also has the code to
+invoke a function returning a replacement window,
 i.e. an alternative to the usual interface, for Audacity.
 
 *//*******************************************************************/
@@ -31,8 +31,6 @@ i.e. an alternative to the usual interface, for Audacity.
 #include "FileNames.h"
 #include "PluginManager.h"
 
-#include "commands/ScriptCommandRelay.h"
-
 #include "audacity/PluginInterface.h"
 
 #ifdef EXPERIMENTAL_MODULE_PREFS
@@ -46,7 +44,6 @@ i.e. an alternative to the usual interface, for Audacity.
 
 #define initFnName      "ExtensionModuleInit"
 #define versionFnName   "GetVersionString"
-#define scriptFnName    "RegScriptServerFunc"
 #define mainPanelFnName "MainPanelFunc"
 
 typedef wxWindow * pwxWindow;
@@ -78,10 +75,6 @@ wxWindow * MakeHijackPanel()
       return NULL;
    return pPanelHijack(0);
 }
-
-// This variable will hold the address of a subroutine in a DLL that
-// starts a thread and reads script commands.
-static tpRegScriptServerFunc scriptFn;
 
 Module::Module(const FilePath & name)
    : mName{ name }
@@ -148,8 +141,7 @@ bool Module::Load(wxString &deferredErrorMessage)
    mDispatch = (fnModuleDispatch) mLib->GetSymbol(wxT(ModuleDispatchName));
    if (!mDispatch) {
       // Module does not provide a dispatch function. Special case modules like this could be:
-      // (a) for scripting (RegScriptServerFunc entry point)
-      // (b) for hijacking the entire Audacity panel (MainPanelFunc entry point)
+      // (a) for hijacking the entire Audacity panel (MainPanelFunc entry point)
       return true;
    }
 
@@ -359,20 +351,14 @@ void ModuleManager::TryLoadModules(
             // So look for special case functions:
             wxLogNull logNo; // Don't show wxWidgets errors if we can't do these. (Was: Fix bug 544.)
 
-            // (a) for scripting.
-            if (scriptFn == NULL)
-            {
-               scriptFn = (tpRegScriptServerFunc)(module->GetSymbol(wxT(scriptFnName)));
-            }
-
-            // (b) for hijacking the entire Audacity panel.
+            // (a) for hijacking the entire Audacity panel.
             if (pPanelHijack == NULL)
             {
                pPanelHijack = (tPanelFn)(module->GetSymbol(wxT(mainPanelFnName)));
             }
          }
 
-         if (!module->HasDispatch() && !scriptFn && !pPanelHijack)
+         if (!module->HasDispatch() && !pPanelHijack)
          {
             auto ShortName = wxFileName(file).GetName();
             AudacityMessageBox(
@@ -425,12 +411,6 @@ void ModuleManager::Initialize(CommandHandler &cmdHandler)
       auto &pModule = pair.first;
       pModule->ShowLoadFailureError(pair.second);
       ModulePrefs::SetModuleStatus( pModule->GetName(), kModuleFailed );
-   }
-
-   // After loading all the modules, we may have a registered scripting function.
-   if(scriptFn)
-   {
-      ScriptCommandRelay::StartScriptServer(scriptFn);
    }
 }
 
