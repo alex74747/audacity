@@ -19,7 +19,7 @@
 
 #include "SetProjectCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "Project.h"
 #include "ProjectRate.h"
 #include "ProjectWindows.h"

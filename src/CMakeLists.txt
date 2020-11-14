@@ -169,32 +169,12 @@ list( APPEND SOURCES
 
       # Commands
 
-      commands/AppCommandEvent.cpp
-      commands/AppCommandEvent.h
       commands/AudacityCommand.cpp
       commands/AudacityCommand.h
-      commands/Command.cpp
-      commands/Command.h
-      commands/CommandBuilder.cpp
-      commands/CommandBuilder.h
-      commands/CommandDirectory.cpp
-      commands/CommandDirectory.h
       commands/CommandDispatch.cpp
       commands/CommandDispatch.h
-      commands/CommandHandler.cpp
-      commands/CommandHandler.h
-      commands/CommandMisc.h
-      commands/CommandSignature.cpp
-      commands/CommandSignature.h
-      commands/CommandType.cpp
-      commands/CommandType.h
-      commands/LoadCommands.cpp
-      commands/LoadCommands.h
       commands/ResponseQueue.cpp
       commands/ResponseQueue.h
-      commands/ScriptCommandRelay.cpp
-      commands/ScriptCommandRelay.h
-      commands/Validators.h
 
       # Built-in Effects
 

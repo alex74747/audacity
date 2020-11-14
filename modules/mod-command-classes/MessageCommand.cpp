@@ -15,7 +15,7 @@
 
 #include "MessageCommand.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "CommandContext.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"

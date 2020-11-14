@@ -39,6 +39,7 @@ set( LIBRARIES
    mod-label-track-ui-interface
    mod-waveform-ui-interface
    mod-spectrum-ui-interface
+   mod-scripting-interface
 )
 audacity_module( mod-command-classes "${SOURCES}" "${LIBRARIES}"
    "" "" )

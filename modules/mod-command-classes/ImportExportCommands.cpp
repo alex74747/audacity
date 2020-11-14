@@ -16,7 +16,7 @@
 
 #include "ImportExportCommands.h"
 
-#include "commands/LoadCommands.h"
+#include "LoadCommands.h"
 #include "ProjectFileManager.h"
 #include "ViewInfo.h"
 #include "Export.h"

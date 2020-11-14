@@ -11,8 +11,6 @@
 #ifndef __AUDACITY_COMMAND__
 #define __AUDACITY_COMMAND__
 
-
-
 #include <set>
 
 #include <wx/defs.h>

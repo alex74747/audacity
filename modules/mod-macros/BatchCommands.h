@@ -13,6 +13,7 @@
 #define __AUDACITY_BATCH_COMMANDS_DIALOG__
 
 #include <wx/defs.h>
+#include <wx/arrstr.h>
 
 #include "Export.h"
 #include "CommandFlag.h"
@@ -25,6 +26,7 @@ class CommandContext;
 class CommandManager;
 class AudacityProject;
 class wxArrayStringEx;
+class wxWindow;
 
 using PluginID = wxString;
 
@@ -122,7 +124,6 @@ private:
    bool mAbort;
    wxString mMessage;
 
-   Exporter mExporter;
    wxString mFileName;
 };
 

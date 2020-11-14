@@ -21,7 +21,6 @@ system by constructing BatchCommandEval objects.
 
 *//*******************************************************************/
 
-
 #include "CommandBuilder.h"
 
 #include "CommandDirectory.h"

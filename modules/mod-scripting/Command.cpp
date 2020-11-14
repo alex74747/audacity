@@ -75,7 +75,6 @@ classes derived from it.
 
 *//*******************************************************************/
 
-
 #include "Command.h"
 
 #include <map>

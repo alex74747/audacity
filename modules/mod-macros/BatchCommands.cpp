@@ -35,6 +35,7 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 #include "CommandManager.h"
 #include "EffectManager.h"
 #include "EffectUI.h"
+#include "Export.h"
 #include "FileNames.h"
 #include "Menus.h"
 #include "PluginManager.h"
@@ -54,7 +55,6 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 
 MacroCommands::MacroCommands( AudacityProject &project )
 : mProject{ project }
-, mExporter{ project }
 {
    ResetMacro();
 
