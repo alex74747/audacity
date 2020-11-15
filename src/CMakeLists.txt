@@ -192,8 +192,6 @@ list( APPEND SOURCES
       prefs/GUISettings.h
       prefs/ImportExportPrefs.cpp
       prefs/ImportExportPrefs.h
-      prefs/KeyConfigPrefs.cpp
-      prefs/KeyConfigPrefs.h
       prefs/LibraryPrefs.cpp
       prefs/LibraryPrefs.h
       prefs/ModulePrefs.cpp
@@ -243,8 +241,6 @@ list( APPEND SOURCES
       widgets/FileHistory.h
       widgets/Grabber.cpp
       widgets/Grabber.h
-      widgets/KeyView.cpp
-      widgets/KeyView.h
       widgets/MeterPanel.cpp
       widgets/MeterPanel.h
       widgets/MultiDialog.cpp

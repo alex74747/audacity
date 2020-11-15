@@ -37,6 +37,8 @@ set( LIBRARIES
    mod-import-export-interface
    mod-effects-interface
    mod-label-track-ui-interface
+   mod-note-track-interface
+   mod-time-track-interface
    mod-waveform-ui-interface
    mod-spectrum-ui-interface
    mod-scripting-interface

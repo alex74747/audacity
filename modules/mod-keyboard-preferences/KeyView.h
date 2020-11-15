@@ -9,7 +9,6 @@
 #ifndef __AUDACITY_WIDGETS_KEYVIEW__
 #define __AUDACITY_WIDGETS_KEYVIEW__
 
-
 #include "audacity/Types.h"
 
 #include <vector>

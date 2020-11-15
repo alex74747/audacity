@@ -19,14 +19,13 @@ KeyConfigPrefs and MousePrefs use.
 
 *//*********************************************************************/
 
-
-
 #include "KeyConfigPrefs.h"
 #include "KeystrokeHandler.h"
 
 #include <wx/setup.h> // for wxUSE_* macros
 #include <wx/defs.h>
 #include <wx/ffile.h>
+#include <wx/frame.h>
 #include <wx/button.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
@@ -46,8 +45,8 @@ KeyConfigPrefs and MousePrefs use.
 #include "FileNames.h"
 
 #include "BasicMenu.h"
-#include "../widgets/KeyView.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "KeyView.h"
+#include "widgets/AudacityMessageBox.h"
 #include "wxWidgetsWindowPlacement.h"
 #include "MenuHandle.h"
 
@@ -952,3 +951,41 @@ PrefsPanel::Registration sAttachment{ "KeyConfig",
    KeyConfigPrefsFactory()
 };
 }
+
+#include "ModuleConstants.h"
+#include "PrefsDialog.h"
+#ifdef EXPERIMENTAL_EASY_CHANGE_KEY_BINDINGS
+#include "ProjectWindows.h"
+#include "ProjectCommandManager.h"
+#endif
+
+DEFINE_VERSION_CHECK
+extern "C" DLL_API int ModuleDispatch(ModuleDispatchTypes type)
+{
+   switch (type) {
+   case ModuleInitialize:
+#ifdef EXPERIMENTAL_EASY_CHANGE_KEY_BINDINGS
+     static CommandManager::GlobalMenuHook::Scope scope{
+     [](const CommandID &id){
+         if (::wxGetMouseState().ShiftDown()) {
+            // Only want one page of the preferences
+            PrefsPanel::Factories factories;
+            factories.push_back(KeyConfigPrefsFactory( id ));
+            if (const auto pProject = GetActiveProject().lock()) {
+               auto pWindow = FindProjectFrame( pProject.get() );
+               GlobalPrefsDialog dialog( pWindow, pProject.get(), factories );
+               dialog.ShowModal();
+               ProjectCommandManager::RebuildAllMenuBars();
+               return true;
+            }
+         }
+         return false;
+      } };
+#endif
+      break;
+   default:
+      break;
+   }
+   return 1;
+}
+
