@@ -1,0 +1,27 @@
+/**********************************************************************
+
+Audacity: A Digital Audio Editor
+
+SampleTrack.h
+@brief abstract Track sub-type that maps times to sample values
+
+Paul Licameli split from WaveTrack.h
+
+**********************************************************************/
+
+#ifndef __AUDACITY_SAMPLE_TRACK__
+#define __AUDACITY_SAMPLE_TRACK__
+
+#include "Audacity.h"
+#include "Track.h"
+
+class AUDACITY_DLL_API SampleTrack : public PlayableTrack {
+public:
+   ~SampleTrack() override;
+
+   const TypeInfo &GetTypeInfo() const override;
+   static const TypeInfo &ClassTypeInfo();
+};
+
+#endif
+

@@ -198,6 +198,8 @@ list( APPEND SOURCES
       SampleBlock.h
       SampleFormat.cpp
       SampleFormat.h
+      SampleTrack.cpp
+      SampleTrack.h
       SelectUtilities.cpp
       SelectUtilities.h
       SelectedRegion.cpp
