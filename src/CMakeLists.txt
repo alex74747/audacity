@@ -94,8 +94,6 @@ list( APPEND SOURCES
       HelpUtilities.h
       KeystrokeHandler.cpp
       KeystrokeHandler.h
-      LangChoice.cpp
-      LangChoice.h
       Legacy.cpp
       Legacy.h
       LogWindow.cpp

@@ -76,7 +76,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "CrashReport.h" // for HAS_CRASH_REPORT
 #include "DefaultCommandOutputTargets.h"
 #include "Journal.h"
-//#include "LangChoice.h"
 #include "Languages.h"
 #include "Menus.h"
 #include "PluginManager.h"
