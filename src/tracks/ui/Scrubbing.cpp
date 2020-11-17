@@ -25,8 +25,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ScrubState.h"
 #include "Track.h"
 #include "ViewInfo.h"
-#include "WaveTrack.h"
-#include "MenuHandle.h"
+#include "SampleTrack.h"
 
 #undef USE_TRANSCRIPTION_TOOLBAR
 
@@ -240,8 +239,8 @@ Scrubber::~Scrubber()
 
 static const auto HasWaveDataPred =
    [](const AudacityProject &project){
-      auto range = TrackList::Get( project ).Any<const WaveTrack>()
-         + [](const WaveTrack *pTrack){
+      auto range = TrackList::Get( project ).Any<const SampleTrack>()
+         + [](const SampleTrack *pTrack){
             return pTrack->GetEndTime() > pTrack->GetStartTime();
          };
       return !range.empty();

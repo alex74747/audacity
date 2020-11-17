@@ -20,7 +20,7 @@
 #include "../TransportUtilities.h"
 #include "UndoManager.h"
 #include "WaveClip.h"
-#include "WaveTrack.h"
+#include "SampleTrack.h"
 #include "ViewInfo.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
