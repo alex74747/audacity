@@ -429,7 +429,8 @@ std::unique_ptr<Sequence> Sequence::Copy( const SampleBlockFactoryPtr &pFactory,
       ensureSampleBufferSize(buffer, format, bufferSize, blocklen);
       Get(b0, buffer.ptr(), format, s0, blocklen, true);
 
-      dest->Append(buffer.ptr(), format, blocklen);
+      dest->Append(
+         buffer.ptr(), format, blocklen, 1, mSampleFormats.Effective());
    }
    else
       --b0;
@@ -451,7 +452,8 @@ std::unique_ptr<Sequence> Sequence::Copy( const SampleBlockFactoryPtr &pFactory,
       if (blocklen < (int)sb->GetSampleCount()) {
          ensureSampleBufferSize(buffer, format, bufferSize, blocklen);
          Get(b1, buffer.ptr(), format, block.start, blocklen, true);
-         dest->Append(buffer.ptr(), format, blocklen);
+         dest->Append(
+            buffer.ptr(), format, blocklen, 1, mSampleFormats.Effective());
       }
       else
          // Special case of a whole block
@@ -697,7 +699,8 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
 /*! @excsafety{Strong} */
 void Sequence::SetSilence(sampleCount s0, sampleCount len)
 {
-   SetSamples(NULL, mSampleFormats.Stored(), s0, len);
+   // Exact zeroes won't need dithering
+   SetSamples(nullptr, mSampleFormats.Stored(), s0, len, narrowestSampleFormat);
 }
 
 /*! @excsafety{Strong} */
@@ -1143,11 +1146,12 @@ bool Sequence::Get(int b, samplePtr buffer, sampleFormat format,
    return result;
 }
 
-// Pass NULL to set silence
+// Pass nullptr to set silence
 /*! @excsafety{Strong} */
 void Sequence::SetSamples(constSamplePtr buffer, sampleFormat format,
-                   sampleCount start, sampleCount len)
+   sampleCount start, sampleCount len, sampleFormat effectiveFormat)
 {
+   effectiveFormat = std::min(effectiveFormat, format);
    auto &factory = *mpFactory;
 
    const auto size = mBlock.size();
@@ -1207,7 +1211,9 @@ void Sequence::SetSamples(constSamplePtr buffer, sampleFormat format,
       {
          // To do: remove the extra movement.
          // Note: we ensured temp can hold fileLength.  blen is not more
-         CopySamples(buffer, format, temp.ptr(), dstFormat, blen);
+         CopySamples(buffer, format, temp.ptr(), dstFormat, blen,
+            (dstFormat < effectiveFormat
+               ? gHighQualityDither : DitherType::none));
          useBuffer = temp.ptr();
       }
 
@@ -1254,6 +1260,8 @@ void Sequence::SetSamples(constSamplePtr buffer, sampleFormat format,
    std::copy( mBlock.begin() + b, mBlock.end(), std::back_inserter(newBlock) );
 
    CommitChangesIfConsistent( newBlock, mNumSamples, wxT("SetSamples") );
+   
+   mSampleFormats.UpdateEffective(effectiveFormat);
 }
 
 namespace {
@@ -1515,7 +1523,11 @@ size_t Sequence::GetIdealAppendLen() const
 SeqBlock::SampleBlockPtr Sequence::AppendNewBlock(
    constSamplePtr buffer, sampleFormat format, size_t len)
 {
-   return DoAppend( buffer, format, len, false );
+   // Come here only when importing old .aup projects
+   auto result = DoAppend( buffer, format, len, false );
+   // Change our effective format now that DoAppend didn't throw
+   mSampleFormats.UpdateEffective(format);
+   return result;
 }
 
 /*! @excsafety{Strong} */
@@ -1544,8 +1556,10 @@ void Sequence::AppendSharedBlock(const SeqBlock::SampleBlockPtr &pBlock)
 
 /*! @excsafety{Strong} */
 bool Sequence::Append(
-   constSamplePtr buffer, sampleFormat format, size_t len, size_t stride)
+   constSamplePtr buffer, sampleFormat format, size_t len, size_t stride,
+   sampleFormat effectiveFormat)
 {
+   effectiveFormat = std::min(effectiveFormat, format);
    const auto seqFormat = mSampleFormats.Stored();
    if (!mAppendBuffer.ptr())
       mAppendBuffer.Allocate(mMaxSamples, seqFormat);
@@ -1556,7 +1570,10 @@ bool Sequence::Append(
       if (mAppendBufferLen >= blockSize) {
          // flush some previously appended contents
          // use Strong-guarantee
+         // Already dithered if needed when accumulated into mAppendBuffer
          DoAppend(mAppendBuffer.ptr(), seqFormat, blockSize, true);
+         // Change our effective format now that DoAppend didn't throw
+         mSampleFormats.UpdateEffective(mAppendEffectiveFormat);
          result = true;
 
          // use No-fail-guarantee for rest of this "if"
@@ -1574,13 +1591,17 @@ bool Sequence::Append(
       wxASSERT(mAppendBufferLen <= mMaxSamples);
       auto toCopy = std::min(len, mMaxSamples - mAppendBufferLen);
 
+      // If dithering of appended material is done at all, it happens here
       CopySamples(buffer, format,
                   mAppendBuffer.ptr()
                      + mAppendBufferLen * SAMPLE_SIZE(seqFormat),
                   seqFormat,
                   toCopy,
-                  gHighQualityDither,
+                  (seqFormat < effectiveFormat
+                     ? gHighQualityDither : DitherType::none),
                   stride);
+      mAppendEffectiveFormat =
+         std::max(mAppendEffectiveFormat, effectiveFormat);
 
       mAppendBufferLen += toCopy;
       buffer += toCopy * SAMPLE_SIZE(format) * stride;
@@ -1606,10 +1627,14 @@ void Sequence::Flush()
          // Use No-fail-guarantee of these steps.
          mAppendBufferLen = 0;
          mAppendBuffer.Free();
+         mAppendEffectiveFormat = narrowestSampleFormat; // defaulted again
       } );
 
+      // Already dithered if needed when accumulated into mAppendBuffer:
       DoAppend(mAppendBuffer.ptr(), mSampleFormats.Stored(),
          mAppendBufferLen, true);
+      // Change our effective format now that DoAppend didn't throw
+      mSampleFormats.UpdateEffective(mAppendEffectiveFormat);
    }
 }
 
@@ -1647,13 +1672,14 @@ SeqBlock::SampleBlockPtr Sequence::DoAppend(
       const SeqBlock &lastBlock = *pLastBlock;
       const auto addLen = std::min(mMaxSamples - length, len);
 
+      // Reading same format as was saved before causes no dithering
       Read(buffer2.ptr(), dstFormat, lastBlock, 0, length, true);
 
       CopySamples(buffer,
                   format,
                   buffer2.ptr() + length * SAMPLE_SIZE(dstFormat),
                   dstFormat,
-                  addLen);
+                  addLen, DitherType::none);
 
       const auto newLastBlockLen = length + addLen;
       SampleBlockPtr pBlock = factory.Create(
@@ -1683,7 +1709,8 @@ SeqBlock::SampleBlockPtr Sequence::DoAppend(
          result = pBlock;
       }
       else {
-         CopySamples(buffer, format, buffer2.ptr(), dstFormat, addedLen);
+         CopySamples(buffer, format, buffer2.ptr(), dstFormat,
+            addedLen, DitherType::none);
          pBlock = factory.Create(buffer2.ptr(), addedLen, dstFormat);
       }
 

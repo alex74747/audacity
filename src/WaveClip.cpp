@@ -125,7 +125,7 @@ WaveClip::WaveClip(const SampleBlockFactoryPtr &factory,
    mRate = rate;
    mColourIndex = colourIndex;
    mSequence = std::make_unique<Sequence>( factory,
-      SampleFormats{format, format});
+      SampleFormats{narrowestSampleFormat, format});
 
    mEnvelope = std::make_unique<Envelope>(true, 1e-7, 2.0, 1.0);
 
@@ -223,10 +223,11 @@ bool WaveClip::GetSamples(samplePtr buffer, sampleFormat format,
 
 /*! @excsafety{Strong} */
 void WaveClip::SetSamples(constSamplePtr buffer, sampleFormat format,
-                   sampleCount start, size_t len)
+   sampleCount start, size_t len, sampleFormat effectiveFormat)
 {
    // use Strong-guarantee
-   mSequence->SetSamples(buffer, format, start + TimeToSamples(mTrimLeft), len);
+   mSequence->SetSamples(buffer, format,
+      start + TimeToSamples(mTrimLeft), len, effectiveFormat);
 
    // use No-fail-guarantee
    MarkChanged();
@@ -1140,7 +1141,7 @@ void WaveClip::AppendSharedBlock(const std::shared_ptr<SampleBlock> &pBlock)
  -- Some prefix (maybe none) of the buffer is appended,
 and no content already flushed to disk is lost. */
 bool WaveClip::Append(constSamplePtr buffer, sampleFormat format,
-                      size_t len, unsigned int stride)
+   size_t len, unsigned int stride, sampleFormat effectiveFormat)
 {
    //wxLogDebug(wxT("Append: len=%lli"), (long long) len);
    auto cleanup = finally( [&] {
@@ -1149,7 +1150,7 @@ bool WaveClip::Append(constSamplePtr buffer, sampleFormat format,
       MarkChanged();
    } );
 
-   return mSequence->Append(buffer, format, len, stride);
+   return mSequence->Append(buffer, format, len, stride, effectiveFormat);
 }
 
 /*! @excsafety{Mixed} */
@@ -1690,7 +1691,9 @@ void WaveClip::Resample(int rate, ProgressDialog *progress)
       }
 
       newSequence->Append((samplePtr)outBuffer.get(), floatSample,
-                          outGenerated);
+         outGenerated, 1,
+         widestSampleFormat /* computed samples need dither */
+      );
 
       if (progress)
       {
