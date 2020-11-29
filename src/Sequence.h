@@ -119,8 +119,17 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    void Paste(sampleCount s0, const Sequence *src);
 
    size_t GetIdealAppendLen() const;
-   /*! @excsafety{Strong} */
-   void Append(constSamplePtr buffer, sampleFormat format, size_t len);
+
+   /*!
+       Samples may be retained in a memory buffer, pending Flush()
+   
+       @return true if at least one sample block was added
+       @excsafety{Strong}
+    */
+   bool Append( constSamplePtr buffer, sampleFormat format, size_t len,
+      size_t stride = 1);
+
+   void Flush();
 
    //! Append data, not coalescing blocks, returning a pointer to the new block.
    /*! @excsafety{Strong} */
@@ -196,6 +205,9 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
    BlockArray &GetBlockArray() { return mBlock; }
    const BlockArray &GetBlockArray() const { return mBlock; }
 
+   size_t GetAppendBufferLen() const { return mAppendBufferLen; }
+   constSamplePtr GetAppendBuffer() const { return mAppendBuffer.ptr(); }
+
  private:
 
    //
@@ -218,6 +230,9 @@ class PROFILE_DLL_API Sequence final : public XMLTagHandler{
 
    size_t   mMinSamples; // min samples per block
    size_t   mMaxSamples; // max samples per block
+
+   SampleBuffer  mAppendBuffer {};
+   size_t        mAppendBufferLen { 0 };
 
    bool          mErrorOpening{ false };
 
