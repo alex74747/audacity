@@ -446,7 +446,7 @@ bool WaveClip::GetWaveDisplay(WaveDisplay &display, double t0,
       // Handle the columns that land in the append buffer.
       //compute the values that are outside the overlap from scratch.
       if (a < p1) {
-         sampleFormat seqFormat = mSequence->GetSampleFormat();
+         sampleFormat seqFormat = mSequence->GetSampleFormats().Stored();
          bool didUpdate = false;
          for(auto i = a; i < p1; i++) {
             auto left = std::max(sampleCount{ 0 },
@@ -1237,9 +1237,13 @@ XMLTagHandler *WaveClip::HandleXMLChild(const std::string_view& tag)
    else if (tag == "waveclip")
    {
       // Nested wave clips are cut lines
+      auto format = mSequence->GetSampleFormats().Stored();
+      // The format is not stored in WaveClip itself but passed to
+      // Sequence::Sequence; but then the Sequence will deserialize format
+      // again
       mCutLines.push_back(
          std::make_unique<WaveClip>(mSequence->GetFactory(),
-            mSequence->GetSampleFormat(), mRate, 0 /*colourindex*/));
+            format, mRate, 0 /*colourindex*/));
       return mCutLines.back().get();
    }
    else
@@ -1270,7 +1274,8 @@ void WaveClip::Paste(double t0, const WaveClip* other)
 {
    const bool clipNeedsResampling = other->mRate != mRate;
    const bool clipNeedsNewFormat =
-      other->mSequence->GetSampleFormat() != mSequence->GetSampleFormat();
+      other->mSequence->GetSampleFormats().Stored()
+         != mSequence->GetSampleFormats().Stored();
    std::unique_ptr<WaveClip> newClip;
 
    t0 = std::clamp(t0, GetPlayStartTime(), GetPlayEndTime());
@@ -1308,7 +1313,7 @@ void WaveClip::Paste(double t0, const WaveClip* other)
           copy->Resample(mRate);
       if (clipNeedsNewFormat)
          // Force sample formats to match.
-          copy->ConvertToSampleFormat(mSequence->GetSampleFormat());
+          copy->ConvertToSampleFormat(mSequence->GetSampleFormats().Stored());
       newClip = std::move(copy);
    }
 
@@ -1650,8 +1655,9 @@ void WaveClip::Resample(int rate, ProgressDialog *progress)
    int outGenerated = 0;
    auto numSamples = mSequence->GetNumSamples();
 
-   auto newSequence =
-      std::make_unique<Sequence>(mSequence->GetFactory(), mSequence->GetSampleFormat());
+   // This sequence is appended to below
+   auto newSequence = std::make_unique<Sequence>(
+      mSequence->GetFactory(), mSequence->GetSampleFormats().Stored());
 
    /**
     * We want to keep going as long as we have something to feed the resampler
