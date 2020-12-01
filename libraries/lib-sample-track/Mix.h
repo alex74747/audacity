@@ -147,6 +147,8 @@ class SAMPLE_TRACK_API Mixer {
 
    void MakeResamplers();
 
+   bool NeedsDither(const SampleTrackConstArray &inputTracks) const;
+
  private:
 
     // Input
@@ -186,6 +188,7 @@ class SAMPLE_TRACK_API Mixer {
    std::vector<double> mMinFactor, mMaxFactor;
 
    const bool       mMayThrow;
+   bool             mNeedsDither;
 };
 
 #endif
