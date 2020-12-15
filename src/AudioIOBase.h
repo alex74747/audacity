@@ -315,7 +315,7 @@ protected:
       PRCrossfadeData mCrossfadeData;
 
       // These are initialized by the main thread, then updated
-      // only by the thread calling FillBuffers:
+      // only by the thread calling TrackBufferExchange:
       double mPosition{};
       bool mLatencyCorrected{};
 
