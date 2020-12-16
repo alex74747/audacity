@@ -2798,7 +2798,6 @@ void AudioIO::FillBuffers()
                // The mixer here isn't actually mixing: it's just doing
                // resampling, format conversion, and possibly time track
                // warping
-               samplePtr warpedSamples;
 
                if (frames > 0)
                {
@@ -2806,7 +2805,7 @@ void AudioIO::FillBuffers()
                   if ( toProcess )
                      processed = mPlaybackMixers[i]->Process( toProcess );
                   //wxASSERT(processed <= toProcess);
-                  warpedSamples = mPlaybackMixers[i]->GetBuffer();
+                  auto warpedSamples = mPlaybackMixers[i]->GetBuffer();
                   const auto put = mPlaybackBuffers[i]->Put(
                      warpedSamples, floatSample, processed, frames - processed);
                   // wxASSERT(put == frames);
@@ -3604,15 +3603,15 @@ void AudioIO::AILAProcess(double maxPeak) {
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
-static void DoSoftwarePlaythrough(const void *inputBuffer,
+static void DoSoftwarePlaythrough(constSamplePtr inputBuffer,
                                   sampleFormat inputFormat,
                                   unsigned inputChannels,
                                   float *outputBuffer,
                                   int len)
 {
    for (unsigned int i=0; i < inputChannels; i++) {
-      samplePtr inputPtr = ((samplePtr)inputBuffer) + (i * SAMPLE_SIZE(inputFormat));
-      samplePtr outputPtr = ((samplePtr)outputBuffer) + (i * SAMPLE_SIZE(floatSample));
+      auto inputPtr = inputBuffer + (i * SAMPLE_SIZE(inputFormat));
+      auto outputPtr = outputBuffer + i;
 
       CopySamples(inputPtr, inputFormat,
                   (samplePtr)outputPtr, floatSample,
@@ -3632,7 +3631,7 @@ int audacityAudioCallback(const void *inputBuffer, void *outputBuffer,
 {
    auto gAudioIO = AudioIO::Get();
    return gAudioIO->AudioCallback(
-      inputBuffer, outputBuffer, framesPerBuffer,
+      (constSamplePtr)inputBuffer, (float*)outputBuffer, framesPerBuffer,
       timeInfo, statusFlags, userData);
 }
 
@@ -3755,7 +3754,7 @@ void AudioIoCallback::CheckSoundActivatedRecordingLevel(
 void AudioIoCallback::AddToOutputChannel( unsigned int chan,
    float * outputMeterFloats,
    float * outputFloats,
-   float * tempBuf,
+   const float * tempBuf,
    bool drop,
    unsigned long len,
    WaveTrack *vt
@@ -3803,8 +3802,9 @@ void ClampBuffer(float * pBuffer, unsigned long len){
 // Mix and copy to PortAudio's output buffer
 //
 bool AudioIoCallback::FillOutputBuffers(
-   void *outputBuffer,
-   unsigned long framesPerBuffer, float *outputMeterFloats
+   float *outputBuffer,
+   unsigned long framesPerBuffer,
+   float *outputMeterFloats
 )
 {
    const auto numPlaybackTracks = mPlaybackTracks.size();
@@ -3821,7 +3821,7 @@ bool AudioIoCallback::FillOutputBuffers(
    if(numPlaybackChannels <= 0) 
       return false;
 
-   float *outputFloats = (float *)outputBuffer;
+   float *outputFloats = outputBuffer;
 
 #ifdef EXPERIMENTAL_SCRUBBING_SUPPORT
    // While scrubbing, ignore seek requests
@@ -4015,7 +4015,7 @@ void AudioIoCallback::UpdateTimePosition(unsigned long framesPerBuffer)
 // Copy from PortAudio to our input buffers.
 //
 void AudioIoCallback::FillInputBuffers(
-   const void *inputBuffer, 
+   constSamplePtr inputBuffer,
    unsigned long framesPerBuffer,
    const PaStreamCallbackFlags statusFlags,
    float * tempFloats
@@ -4102,7 +4102,7 @@ void AudioIoCallback::FillInputBuffers(
 
       switch(mCaptureFormat) {
          case floatSample: {
-            float *inputFloats = (float *)inputBuffer;
+            auto inputFloats = (const float *)inputBuffer;
             for(unsigned i = 0; i < len; i++)
                tempFloats[i] =
                   inputFloats[numCaptureChannels*i+t];
@@ -4115,7 +4115,7 @@ void AudioIoCallback::FillInputBuffers(
             wxASSERT(false);
             break;
          case int16Sample: {
-            short *inputShorts = (short *)inputBuffer;
+            auto inputShorts = (const short *)inputBuffer;
             short *tempShorts = (short *)tempFloats;
             for( unsigned i = 0; i < len; i++) {
                float tmp = inputShorts[numCaptureChannels*i+t];
@@ -4172,8 +4172,8 @@ void OldCodeToCalculateLatency()
 // return true, IFF we have fully handled the callback.
 // Prime the output buffer with 0's, optionally adding in the playthrough.
 void AudioIoCallback::DoPlaythrough(
-      const void *inputBuffer, 
-      void *outputBuffer,
+      constSamplePtr inputBuffer,
+      float *outputBuffer,
       unsigned long framesPerBuffer,
       float *outputMeterFloats
    )
@@ -4187,14 +4187,14 @@ void AudioIoCallback::DoPlaythrough(
    if( numPlaybackChannels <= 0 )
       return;
 
-   float *outputFloats = (float *)outputBuffer;
+   float *outputFloats = outputBuffer;
    for(unsigned i = 0; i < framesPerBuffer*numPlaybackChannels; i++)
       outputFloats[i] = 0.0;
 
    if (inputBuffer && mSoftwarePlaythrough) {
       DoSoftwarePlaythrough(inputBuffer, mCaptureFormat,
                               numCaptureChannels,
-                              (float *)outputBuffer, (int)framesPerBuffer);
+                              outputBuffer, (int)framesPerBuffer);
    }
 
    // Copy the results to outputMeterFloats if necessary
@@ -4208,8 +4208,8 @@ void AudioIoCallback::DoPlaythrough(
 /* Send data to recording VU meter if applicable */
 // Also computes rms
 void AudioIoCallback::SendVuInputMeterData(
-   float *inputSamples,
-   unsigned long framesPerBuffer   
+   const float *inputSamples,
+   unsigned long framesPerBuffer
    )
 {
    const auto numCaptureChannels = mNumCaptureChannels;
@@ -4241,7 +4241,7 @@ void AudioIoCallback::SendVuInputMeterData(
 
 /* Send data to playback VU meter if applicable */
 void AudioIoCallback::SendVuOutputMeterData(
-   float *outputMeterFloats,
+   const float *outputMeterFloats,
    unsigned long framesPerBuffer)
 {
    const auto numPlaybackChannels = mNumPlaybackChannels;
@@ -4352,10 +4352,11 @@ AudioIoCallback::~AudioIoCallback()
 }
 
 
-int AudioIoCallback::AudioCallback(const void *inputBuffer, void *outputBuffer,
-                          unsigned long framesPerBuffer,
-                          const PaStreamCallbackTimeInfo *timeInfo,
-                          const PaStreamCallbackFlags statusFlags, void * WXUNUSED(userData) )
+int AudioIoCallback::AudioCallback(
+   constSamplePtr inputBuffer, float *outputBuffer,
+   unsigned long framesPerBuffer,
+   const PaStreamCallbackTimeInfo *timeInfo,
+   const PaStreamCallbackFlags statusFlags, void * WXUNUSED(userData) )
 {
    mbHasSoloTracks = CountSoloingTracks() > 0 ;
    mCallbackReturn = paContinue;
@@ -4391,7 +4392,7 @@ int AudioIoCallback::AudioCallback(const void *inputBuffer, void *outputBuffer,
    // something new.
    float *outputMeterFloats = bVolEmulationActive ?
          (float *)alloca(framesPerBuffer*numPlaybackChannels * sizeof(float)) :
-         (float *)outputBuffer;
+         outputBuffer;
    // ----- END of MEMORY ALLOCATIONS ------------------------------------------
 
    if (inputBuffer && numCaptureChannels) {
@@ -4449,7 +4450,7 @@ int AudioIoCallback::AudioCallback(const void *inputBuffer, void *outputBuffer,
 
    // To capture input into track (sound from microphone)
    FillInputBuffers(
-      inputBuffer, 
+      inputBuffer,
       framesPerBuffer,
       statusFlags,
       tempFloats);
