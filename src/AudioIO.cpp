@@ -2588,6 +2588,16 @@ finished:
    return retval;
 }
 
+double AudioIO::GetStreamTime()
+{
+   // Track time readout for the main thread
+
+   if( !IsStreamActive() )
+      return BAD_STREAM_TIME;
+
+   return mPlaybackSchedule.NormalizeTrackTime();
+}
+
 
 //////////////////////////////////////////////////////////////////////
 //

@@ -1142,7 +1142,7 @@ void Scrubber::DoKeyboardScrub(bool backwards, bool keyUp)
    if (keyUp) {
       auto &scrubber = Scrubber::Get(project);
       if (scrubber.IsKeyboardScrubbing() && scrubber.IsBackwards() == backwards) {
-         auto gAudioIO = AudioIOBase::Get();
+         auto gAudioIO = AudioIO::Get();
          auto time = gAudioIO->GetStreamTime();
          auto &viewInfo = ViewInfo::Get(project);
          auto &selection = viewInfo.selectedRegion;
