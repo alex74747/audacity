@@ -16,6 +16,7 @@
 #include "Audacity.h" // for USE_* macros
 
 #include "AudioIOBase.h" // to inherit
+#include "PlaybackSchedule.h" // member variable
 
 
 
