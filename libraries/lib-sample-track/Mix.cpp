@@ -208,9 +208,14 @@ void Mixer::Clear()
    }
 }
 
-static void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
-                const float *src, Floats *dests,
-                int len, bool interleaved)
+namespace {
+
+// Accumulate len samples at src into each of the numChannels sample sequences
+// in dests (except those for which corresponding channelFlags is false),
+// weighting by corresponding value in gains
+void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
+    const float *src, Floats *dests,
+    int len, bool interleaved)
 {
    for (unsigned int c = 0; c < numChannels; c++) {
       if (!channelFlags[c])
@@ -235,7 +240,6 @@ static void MixBuffers(unsigned numChannels, int *channelFlags, float *gains,
    }
 }
 
-namespace {
    //Note: The meaning of this function has changed (December 2012)
    //Previously this function did something that was close to the opposite (but not entirely accurate).
    /** @brief Compute the integral warp factor between two non-warped time points
