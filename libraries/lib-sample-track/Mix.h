@@ -111,12 +111,9 @@ class SAMPLE_TRACK_API Mixer {
    /// more samples that must be processed.
    size_t Process(size_t maxSamples);
 
-   /// Restart processing at beginning of buffer next time
-   /// Process() is called.
-   void Restart();
-
    /// Reposition processing to absolute time next time
    /// Process() is called.
+   //! @par bSkipping if `true`, then restart resampling too
    void Reposition(double t, bool bSkipping = false);
 
    // Used in scrubbing and other nonuniform playback policies.

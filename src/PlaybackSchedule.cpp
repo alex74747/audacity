@@ -359,6 +359,7 @@ bool NewDefaultPlaybackPolicy::RepositionPlayback(
       for (auto &pMixer : playbackMixers)
          pMixer->SetTimesAndSpeed(
             schedule.mT0, schedule.mT1, mLastPlaySpeed, true );
+         //pMixer->Reposition(schedule.mT0, true);
       schedule.RealTimeRestart();
    }
    else if (kicked)
