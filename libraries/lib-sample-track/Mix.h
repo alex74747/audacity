@@ -141,7 +141,7 @@ class SAMPLE_TRACK_API Mixer {
    // Used in scrubbing and other nonuniform playback policies.
    void SetTimesAndSpeed(
       double t0, double t1, double speed, bool bSkipping = false);
-   void SetSpeedForKeyboardScrubbing(double speed, double startTime);
+   void SetSpeed(double speed, const double *pStartTime = nullptr);
 
    /// Current time in seconds (unwarped, i.e. always between startTime and stopTime)
    /// This value is not accurate, it's useful for progress bars and indicators, but nothing else.

@@ -446,7 +446,7 @@ bool ScrubbingPlaybackPolicy::RepositionPlayback(
          {
             for (auto &pMixer : playbackMixers) {
                if (mOptions.isKeyboardScrubbing)
-                  pMixer->SetSpeedForKeyboardScrubbing(mScrubSpeed, startTime);
+                  pMixer->SetSpeed(mScrubSpeed, &startTime);
                else
                   pMixer->SetTimesAndSpeed(
                      startTime, endTime, fabs( mScrubSpeed ));
