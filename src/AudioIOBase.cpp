@@ -17,6 +17,7 @@ Paul Licameli split from AudioIO.cpp
 #include <wx/sstream.h>
 #include <wx/txtstrm.h>
 
+#include "AudioIOExt.h"
 #include "Prefs.h"
 #include "widgets/MeterPanelBase.h"
 
@@ -90,29 +91,12 @@ wxString AudioIOBase::HostName(const PaDeviceInfo* info)
 
 std::unique_ptr<AudioIOBase> AudioIOBase::ugAudioIO;
 
-auto AudioIOExt::GetFactories() -> Factories &
-{
-   static Factories factories;
-   return factories;
-}
-
-AudioIOExt::RegisteredFactory::RegisteredFactory(Factory factory)
-{
-   GetFactories().push_back(std::move(factory));
-}
-
-AudioIOExt::RegisteredFactory::~RegisteredFactory()
-{
-   GetFactories().pop_back();
-}
-
-AudioIOExt::~AudioIOExt() = default;
-
 AudioIOBase *AudioIOBase::Get()
 {
    return ugAudioIO.get();
 }
 
+AudioIOBase::AudioIOBase() = default;
 AudioIOBase::~AudioIOBase() = default;
 
 void AudioIOBase::SetMixer(int inputSource)
