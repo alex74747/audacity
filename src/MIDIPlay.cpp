@@ -577,7 +577,12 @@ void MIDIPlay::ProduceCompleteEntry(Entry &entry, size_t frames,
    entry.frames = frames;
 
    auto lastTime = entry.trackStartTime;
+   bool reversed = leftLimit < lastTime;
    entry.trackEndTime = leftLimit;
+
+   if (reversed)
+      // New reversed slice can't share.
+      mIterator.reset();
 
    // Share an iterator if we can with earlier slices.  Only in
    // the case of forward play without discontinuity.
@@ -585,8 +590,7 @@ void MIDIPlay::ProduceCompleteEntry(Entry &entry, size_t frames,
       PrepareMidiIterator(
          // Send initial update events from this thread only the first time the
          // iterator is constructed:
-         !mSentControls,
-         lastTime);
+         !mSentControls, lastTime, leftLimit);
       mSentControls = true;
    }
    entry.iterator = mIterator;
@@ -670,6 +674,7 @@ size_t MIDIPlay::ConsumePartOfEntry(const Entry &entry,
    const auto t0 = entry.trackStartTime;
    const auto t1 = entry.trackEndTime;
    const auto duration = t1 - t0;
+   const bool reversed = duration < 0;
 
    const auto available = entry.frames - mNextFrame;
    const auto used = std::min(frames - total, available);
@@ -685,15 +690,15 @@ size_t MIDIPlay::ConsumePartOfEntry(const Entry &entry,
          // be some stretching of track times to actual elapsed time.
          auto tlast =
             t1 - duration * (entry.frames - mNextFrame) / entry.frames;
-         auto limitTime =
-            t1 - duration * (entry.frames - (mNextFrame + used))
+         auto limitTime = reversed ? tlast
+            : t1 - duration * (entry.frames - (mNextFrame + used))
                / entry.frames;
          double time;
          while (pIterator->mNextEvent &&
                 (time = pIterator->GetNextEventTime()) < limitTime) {
             auto rawTime = audioTime +
                (entry.frames * (time - tlast) / duration) / rate;
-            pIterator->OutputEvent(rawTime, false, hasSolo);
+            pIterator->OutputEvent(rawTime, false, hasSolo, reversed);
             pIterator->GetNextEvent(limitTime);
          }
       }
@@ -823,20 +828,23 @@ PmTimestamp MidiTime(void *pInfo)
 // Sends MIDI control changes up to the starting point mT0
 // if send is true. Output is delayed by offset to facilitate
 // looping (each iteration is delayed more).
-void MIDIPlay::PrepareMidiIterator(bool send, double startTime)
+void MIDIPlay::PrepareMidiIterator(bool send, double startTime, double endTime)
 {
    mIterator = std::make_shared<Iterator>(mPlaybackSchedule, *this,
-      mMidiPlaybackTracks, startTime, send);
+      mMidiPlaybackTracks, startTime, endTime, send);
 }
 
 Iterator::Iterator(
    const PlaybackSchedule &schedule, MIDIPlay &midiPlay,
    NoteTrackConstArray &midiPlaybackTracks,
-   double startTime, bool send )
+   double startTime, double endTime, bool send )
    : mPlaybackSchedule{ schedule }
    , mMIDIPlay{ midiPlay }
    , it{ nullptr, false }
+   , mReversed{ startTime > endTime }
 {
+   if (mReversed)
+      std::swap(startTime, endTime);
    // instead of initializing with an Alg_seq, we use begin_seq()
    // below to add ALL Alg_seq's.
    // Iterator not yet initialized, must add each track...
@@ -872,8 +880,10 @@ void Iterator::Prime(bool send, double startTime)
           "Fast-forward" all update events from the start of track to the given
           play start time so the notes sound with correct timbre whenever
           turned on.
+
+          reversed argument likewise doesn't matter.
           */
-         OutputEvent(0, true, false);
+         OutputEvent(0, true, false, false);
       GetNextEvent();
    }
 }
@@ -1043,7 +1053,8 @@ bool Iterator::Unmuted(bool hasSolo) const
    return !channelIsMute;
 }
 
-bool Iterator::OutputEvent(double rawTime, bool midiStateOnly, bool hasSolo)
+bool Iterator::OutputEvent(
+   double rawTime, bool midiStateOnly, bool hasSolo, bool reversed)
 {
    int channel = (mNextEvent->chan) & 0xF; // must be in [0..15]
    int command = -1;
@@ -1102,7 +1113,7 @@ bool Iterator::OutputEvent(double rawTime, bool midiStateOnly, bool hasSolo)
    // in the non-pause case.
    const bool sendIt = [&]{
       const bool isNote = mNextEvent->is_note();
-      if (!(isNote && mNextIsNoteOn))
+      if (!isNote || mNextIsNoteOn == reversed)
          // Regardless of channel visibility state,
          // always send note-off events,
          // and update events (program change, control change, pressure, bend)
@@ -1115,14 +1126,15 @@ bool Iterator::OutputEvent(double rawTime, bool midiStateOnly, bool hasSolo)
       if (mNextEvent->is_note() && !midiStateOnly) {
          // Pitch and velocity
          data1 = mNextEvent->get_pitch();
-         if (mNextIsNoteOn) {
+         if (mNextIsNoteOn == !reversed) {
             data2 = mNextEvent->get_loud(); // get velocity
             int offset = mNextEventTrack->GetVelocity();
             data2 += offset; // offset comes from per-track slider
             // clip velocity to insure a legal note-on value
             data2 = (data2 < 1 ? 1 : (data2 > 127 ? 127 : data2));
             // since we are going to play this note, we need to get a note_off
-            it.request_note_off();
+            if (!reversed)
+               it.request_note_off();
 
 #ifdef AUDIO_IO_GB_MIDI_WORKAROUND
             mMIDIPlay.mPendingNotesOff.push_back(std::make_pair(channel, data1));
@@ -1223,6 +1235,8 @@ void Iterator::GetNextEvent(double limitTime)
       return;
 
    if (!mNextEvent || mNextEventTime >= GetNotesOffTime()) {
+      if (mReversed)
+         mFinished = true;
       if (mFinished)
          mNextEvent = nullptr;
       else {

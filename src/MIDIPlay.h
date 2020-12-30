@@ -44,7 +44,7 @@ struct Iterator {
    Iterator(
       const PlaybackSchedule &schedule, MIDIPlay &midiPlay,
       NoteTrackConstArray &midiPlaybackTracks,
-      double startTime, bool send );
+      double startTime, double endTime, bool send );
    ~Iterator();
 
    void Prime(bool send, double startTime);
@@ -58,7 +58,7 @@ struct Iterator {
       /// when true, sendMidiState means send only updates, not note-ons,
       /// used to send state changes that precede the selected notes
       bool sendMidiState,
-      bool hasSolo);
+      bool hasSolo, bool reversed);
    void GetNextEvent(
       double limitTime = std::numeric_limits<double>::infinity());
 
@@ -91,6 +91,7 @@ struct Iterator {
    std::atomic<bool> mSkipping{ false };
 
    bool             mFinished = false;
+   bool             mReversed = false;
 
 private:
    /// Real time at which the next event should be output, measured in seconds.
@@ -216,7 +217,7 @@ struct MIDIPlay : AudioIOExt, NonInterferingBase
    bool mSentControls = false;
    void ProduceCompleteEntry(Entry &entry, size_t frames,
       double leftLimit, bool end, bool continuous);
-   void PrepareMidiIterator(bool send, double startTime);
+   void PrepareMidiIterator(bool send, double startTime, double endTime);
    //! @}
 
    //! @name For Consumer's use only
