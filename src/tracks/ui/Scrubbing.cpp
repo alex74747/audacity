@@ -238,10 +238,10 @@ Scrubber::~Scrubber()
 #endif
 }
 
-static const auto HasWaveDataPred =
+static const auto HasScrubbableTracksPred =
    [](const AudacityProject &project){
-      auto range = TrackList::Get( project ).Any<const WaveTrack>()
-         + [](const WaveTrack *pTrack){
+      auto range = TrackList::Get( project ).Any<const PlayableTrack>()
+         + [](const Track *pTrack){
             return pTrack->GetEndTime() > pTrack->GetStartTime();
          };
       return !range.empty();
@@ -249,7 +249,7 @@ static const auto HasWaveDataPred =
 
 static const ReservedCommandFlag
 &HasWaveDataFlag() { static ReservedCommandFlag flag{
-   HasWaveDataPred
+   HasScrubbableTracksPred
 }; return flag; } // jkc
 
 namespace {
@@ -419,7 +419,6 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
                return ScrubPollInterval_ms;
             };
 #endif
-            options.playNonWaveTracks = false;
             options.envelope = nullptr;
             mOptions.delay = (ScrubPollInterval_ms / 1000.0);
             mOptions.isKeyboardScrubbing = false;
@@ -521,7 +520,6 @@ bool Scrubber::StartKeyboardScrubbing(double time0, bool backwards)
    };
 #endif
 
-   options.playNonWaveTracks = false;
    options.envelope = nullptr;
 
    // delay and minStutterTime are used in AudioIO::AllocateBuffers() for setting the
@@ -1049,7 +1047,7 @@ bool Scrubber::CanScrub() const
    // Recheck the same condition as enables the Scrub/Seek menu item.
    auto gAudioIO = AudioIO::Get();
    return !( gAudioIO->IsBusy() && gAudioIO->GetNumCaptureChannels() > 0 ) &&
-      HasWaveDataPred( *mProject );
+      HasScrubbableTracksPred( *mProject );
 }
 
 void Scrubber::DoKeyboardScrub(bool backwards, bool keyUp)
