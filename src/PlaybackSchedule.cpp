@@ -123,11 +123,6 @@ bool PlaybackPolicy::RepositionPlayback(
    return true;
 }
 
-bool PlaybackPolicy::Looping(const PlaybackSchedule &) const
-{
-   return false;
-}
-
 namespace {
 //! The old default playback policy plays once and consumes no messages
 struct OldDefaultPlaybackPolicy final : PlaybackPolicy {
@@ -377,11 +372,6 @@ bool NewDefaultPlaybackPolicy::RepositionPlayback(
       }
    }
    return false;
-}
-
-bool NewDefaultPlaybackPolicy::Looping( const PlaybackSchedule & ) const
-{
-   return mLoopEnabled;
 }
 
 void NewDefaultPlaybackPolicy::OnPlayRegionChange( PlayRegionEvent &evt)
