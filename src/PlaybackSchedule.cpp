@@ -87,8 +87,8 @@ PlaybackPolicy::GetPlaybackSlice(PlaybackSchedule &schedule, size_t available)
       const double extraRealTime = (TimeQueueGrainSize + 1) / mRate;
       auto extra = std::min( extraRealTime, deltat - realTimeRemaining );
       auto realTime = realTimeRemaining + extra;
-      frames = realTime * mRate;
-      toProduce = realTimeRemaining * mRate;
+      frames = realTime * mRate + 0.5;
+      toProduce = std::max( 0.0, realTimeRemaining * mRate + 0.5 );
       schedule.RealTimeAdvance( realTime );
    }
    else
