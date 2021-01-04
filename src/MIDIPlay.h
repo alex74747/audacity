@@ -122,10 +122,12 @@ struct MIDIPlay : AudioIOExt, NonInterferingBase
    void Prime(double newTrackTime) override;
 
    double AudioTime(double rate) const
-   { return mPlaybackSchedule.mT0 + mNumFrames / rate; }
+   { return mT0 + mNumFrames / rate; }
 
    const PlaybackSchedule &mPlaybackSchedule;
    NoteTrackConstArray mMidiPlaybackTracks;
+
+   double           mT0 = 0;
 
    /// mMidiStreamActive tells when mMidiStream is open for output and not in process of shutdown
    static std::atomic<bool> mMidiStreamActive;

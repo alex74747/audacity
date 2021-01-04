@@ -769,8 +769,10 @@ MIDIPlay::~MIDIPlay()
 }
 
 bool MIDIPlay::StartOtherStream(const TransportTracks &tracks,
-   const PaStreamInfo* info, double, double rate)
+   const PaStreamInfo* info, double startTime, double rate)
 {
+   mT0 = startTime;
+
    mMidiPlaybackTracks.clear();
    for (const auto &pTrack : tracks.otherPlayableTracks) {
       pTrack->TypeSwitch( [&](const NoteTrack *pNoteTrack){
@@ -1391,7 +1393,7 @@ void MIDIPlay::ComputeOtherTimings(double rate, bool paused,
 
    if (mCallbackCount++ == 0) {
        // This is effectively mSystemMinusAudioTime when the buffer is empty:
-       mStartTime = SystemTime(mUsingAlsa) - mPlaybackSchedule.mT0;
+       mStartTime = SystemTime(mUsingAlsa) - mT0;
        // later, mStartTime - mSystemMinusAudioTime will tell us latency
    }
 
