@@ -47,11 +47,14 @@ struct Iterator {
       double startTime, double endTime, bool send );
    ~Iterator();
 
-   void Prime(bool send, double startTime);
+   void Prime(bool send, double startTime, double endTime);
 
    double GetNextEventTime() const;
 
    bool Unmuted(bool hasSolo) const;
+
+   void RequestNoteOff(bool midiStateOnly, bool hasSolo, bool reversed,
+      double *pThresholdTime = nullptr);
 
    // Returns true after outputting all-notes-off
    bool OutputEvent(double rawTime,
@@ -59,7 +62,7 @@ struct Iterator {
       /// used to send state changes that precede the selected notes
       bool sendMidiState,
       bool hasSolo, bool reversed);
-   void GetNextEvent(
+   void GetNextEvent( bool priming,
       double limitTime = std::numeric_limits<double>::infinity());
 
    // These may update future ending behavior of an iterator that is being used
@@ -80,6 +83,9 @@ struct Iterator {
    Alg_iterator it;
    /// The next event to play (or null)
    Alg_event    *mNextEvent = nullptr;
+
+   // Used when scrubbing backwards:
+   std::vector<std::tuple<Alg_event *, NoteTrack *, bool>> mEvents;
 
    /// Track of next event
    NoteTrack        *mNextEventTrack = nullptr;
