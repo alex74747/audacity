@@ -87,6 +87,9 @@ struct MIDIPlay : AudioIOExt
    explicit MIDIPlay(const PlaybackSchedule &schedule);
    ~MIDIPlay() override;
 
+   void ForceShutdown(unsigned bit);
+   bool Shutdown(unsigned bit);
+
    void Producer(std::pair<double, double> newTrackTimes,
       size_t nFrames) override;
 
@@ -101,11 +104,15 @@ struct MIDIPlay : AudioIOExt
    const PlaybackSchedule &mPlaybackSchedule;
    NoteTrackConstArray mMidiPlaybackTracks;
 
-   /// True when output reaches mT1
-   static bool      mMidiOutputComplete;
+   /// mMidiStreamActive tells when mMidiStream is open for output and not in process of shutdown
+   static std::atomic<bool> mMidiStreamActive;
 
-   /// mMidiStreamActive tells when mMidiStream is open for output
-   static bool      mMidiStreamActive;
+   /// Zero when the queue of events is inactive
+   static std::atomic<unsigned> mMidiOutputInProgress;
+
+   // Use a cv when changing the above
+   std::condition_variable mMidiOutputCompleteCV;
+   std::mutex mMidiOutputCompleteMutex;
 
    PmStream        *mMidiStream = nullptr;
    int              mLastPmError = 0;
@@ -185,6 +192,7 @@ struct MIDIPlay : AudioIOExt
    void FillOtherBuffers(double rate, unsigned long pauseFrames,
       bool paused, bool hasSolo) override;
    void StopOtherStream() override;
+   void DestroyOtherStream() override;
 
    AudioIODiagnostics Dump() const override;
 };
