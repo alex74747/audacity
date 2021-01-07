@@ -1365,6 +1365,11 @@ void AudioIO::StopStream()
       RealtimeEffectManager::Get().RealtimeFinalize();
    }
 
+   // Send this message to the "consumer" side of playback,
+   // before we halt the Portaudio thread
+   for( auto &ext : Extensions() )
+      ext.StopOtherStream();
+
    //
    // We got here in one of two ways:
    //
@@ -1430,14 +1435,14 @@ void AudioIO::StopStream()
       mPortStreamV19 = NULL;
    }
 
-   for( auto &ext : Extensions() )
-      ext.StopOtherStream();
-
    auto pListener = GetListener();
    
    // If there's no token, we were just monitoring, so we can
    // skip this next part...
    if (mStreamToken > 0) {
+      /* Cleanup in the TrackBufferExchange thread, which produces playback
+       and consumes recording */
+
       // In either of the above cases, we want to make sure that any
       // capture data that made it into the PortAudio callback makes it
       // to the target WaveTrack.  To do this, we ask the audio thread to
@@ -1457,6 +1462,9 @@ void AudioIO::StopStream()
       // Everything is taken care of.  Now, just free all the resources
       // we allocated in StartStream()
       //
+
+      for( auto &ext : Extensions() )
+         ext.DestroyOtherStream();
 
       if (mPlaybackTracks.size() > 0)
       {
@@ -1795,7 +1803,10 @@ void AudioIO::FillPlayBuffers()
    // full mMaxPlaybackSecsToCopy.  This improves performance
    // by not always trying to process tiny chunks, eating the
    // CPU unnecessarily.
-   if (nAvailable < mPlaybackSamplesToCopy)
+   // An exception is when we must force one loop pass, allowing shut-down
+   // messages to reach AudioIOExt
+   if (!mAudioThreadShouldCallTrackBufferExchangeOnce &&
+       nAvailable < mPlaybackSamplesToCopy)
       return;
 
    auto &policy = mPlaybackSchedule.GetPolicy();
