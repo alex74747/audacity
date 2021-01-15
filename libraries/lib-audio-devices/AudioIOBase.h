@@ -11,9 +11,6 @@ Paul Licameli split from AudioIO.h
 #ifndef __AUDACITY_AUDIO_IO_BASE__
 #define __AUDACITY_AUDIO_IO_BASE__
 
-
-
-
 #include <cfloat>
 #include <functional>
 #include <optional>
@@ -107,9 +104,8 @@ public:
 
    AudioIOBase();
    virtual ~AudioIOBase();
-
    AudioIOBase(const AudioIOBase &) = delete;
-   AudioIOBase &operator=(const AudioIOBase &) = delete;
+   AudioIOBase& operator=(const AudioIOBase &) = delete;
 
    void SetCaptureMeter(
       const std::shared_ptr<AudacityProject> &project, const std::weak_ptr<Meter> &meter);
