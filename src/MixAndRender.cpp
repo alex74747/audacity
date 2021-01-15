@@ -125,7 +125,7 @@ void MixAndRender(TrackList *tracks, WaveTrackFactory *trackFactory,
       // Throw to abort mix-and-render if read fails:
       true,
       Mixer::WarpOptions{*tracks},
-      startTime, endTime, mono ? 1 : 2, maxBlockLen, false,
+      Mixer::Times{ startTime, endTime }, mono ? 1 : 2, maxBlockLen, false,
       rate, format);
 
    ::wxSafeYield();

@@ -85,7 +85,7 @@ Mixer::WarpOptions::WarpOptions(double min, double max, double initial)
 Mixer::Mixer(const SampleTrackConstArray &inputTracks,
              bool mayThrow,
              const WarpOptions &warpOptions,
-             double startTime, double stopTime,
+             Times times,
              unsigned numOutChannels, size_t outBufferSize, bool outInterleaved,
              double outRate, sampleFormat outFormat,
              bool highQuality, MixerSpec *mixerSpec, bool applyTrackGains)
@@ -98,9 +98,9 @@ Mixer::Mixer(const SampleTrackConstArray &inputTracks,
    , mSamplePos( mNumInputTracks )
 
    , mApplyTrackGains{ applyTrackGains }
-   , mT0{ startTime }
-   , mT1{ stopTime }
-   , mTime{ startTime }
+   , mT0{ times.mT0 }
+   , mT1{ times.mT1 }
+   , mTime{ times.mTime }
 
    , mResample( mNumInputTracks )
 
@@ -141,7 +141,7 @@ Mixer::Mixer(const SampleTrackConstArray &inputTracks,
 {
    for(size_t i=0; i<mNumInputTracks; i++) {
       mInputTrack[i].SetTrack(inputTracks[i]);
-      mSamplePos[i] = inputTracks[i]->TimeToLongSamples(startTime);
+      mSamplePos[i] = inputTracks[i]->TimeToLongSamples(mTime);
    }
    if( mixerSpec && mixerSpec->GetNumChannels() == mNumChannels &&
          mixerSpec->GetNumTracks() == mNumInputTracks )

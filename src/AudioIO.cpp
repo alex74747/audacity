@@ -1202,8 +1202,7 @@ bool AudioIO::AllocateBuffers(
                   // Don't throw for read errors, just play silence:
                   false,
                   warpOptions,
-                  startTime,
-                  endTime,
+                  Mixer::Times{ startTime, endTime },
                   1,
                   std::max( mPlaybackSamplesToCopy, mPlaybackQueueMinimum ),
                   false,
