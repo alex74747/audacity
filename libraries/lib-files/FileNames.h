@@ -44,6 +44,7 @@
 
 class wxFileName;
 class wxFileNameWrapper;
+struct StringSetting;
 
 namespace FileNames
 {
@@ -166,7 +167,13 @@ namespace FileNames
       LastUsed
    };
 
-   FILES_API wxString PreferenceKey(FileNames::Operation op, FileNames::PathType type);
+   /*!
+    @return nullptr only in case op == _None
+    */
+   FILES_API StringSetting *
+      PreferenceSetting(FileNames::Operation op, FileNames::PathType type);
+   FILES_API wxString
+      PreferenceKey(FileNames::Operation op, FileNames::PathType type);
 
    FILES_API FilePath FindDefaultPath(Operation op);
    FILES_API void UpdateDefaultPath(Operation op, const FilePath &path);
