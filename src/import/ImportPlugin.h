@@ -56,6 +56,7 @@ class ProgressDialog;
 enum class ProgressResult : unsigned;
 class WaveTrackFactory;
 class Track;
+class TranslatableString;
 class Tags;
 
 class ImportFileHandle;
@@ -78,6 +79,10 @@ public:
    // import.  If a filename matches any of these extensions,
    // this importer will get first dibs on importing it.
    virtual FileExtensions GetSupportedExtensions();
+
+   //! User visible message suggesting what to do when a file type isn't recognized; default empty string
+   /*! Should end with one newline if not empty */
+   virtual TranslatableString FailureHint() const;
 
    bool SupportsExtension(const FileExtension &extension);
 
