@@ -21,25 +21,29 @@ Wherever GET is used to fetch the underlying wxString, there should be a comment
 class STRINGS_API Identifier
 {
 public:
+   using value_type = std::wstring;
+   using char_type = value_type::value_type;
 
    Identifier() = default;
 
    //! Allow implicit conversion to this class, but not from
-   Identifier(const wxString &str) : value{ str } {}
+   Identifier(const value_type &str);
 
    //! Allow implicit conversion to this class, but not from
-   Identifier(const wxChar *str) : value{ str } {}
+   Identifier(const wxString &str);
 
-   //! Allow implicit conversion to this class, but not from
-   Identifier(const char *str) : value{ str } {}
+   // Allow implicit conversion to this class, but not from
+   Identifier(const char_type *str);
+
+   // Allow implicit conversion to this class, but not from
+   Identifier(const char *str);
 
    // Copy construction and assignment
    Identifier( const Identifier & ) = default;
    Identifier &operator = ( const Identifier& ) = default;
 
    // Move construction and assignment
-   Identifier( wxString && str )
-      { value.swap( str ); }
+   Identifier( wxString && str );
    Identifier( Identifier && id )
       { swap( id ); }
    Identifier &operator= ( Identifier&& id )
@@ -55,31 +59,29 @@ public:
    //! Convenience for building concatenated identifiers.
    /*! The list must have at least two members (so you don't easily circumvent the restrictions on
     interconversions intended in TaggedIdentifier below) */
-   explicit
-   Identifier(std::initializer_list<Identifier> components, wxChar separator);
+   explicit Identifier(
+      std::initializer_list<Identifier> components, char_type separator);
 
    bool empty() const { return value.empty(); }
    size_t size() const { return value.size(); }
    size_t length() const { return value.length(); }
 
    //! Explicit conversion to wxString, meant to be ugly-looking and demanding of a comment why it's correct
-   const wxString &GET() const { return value; }
+   wxString GET() const;
 
-   std::vector< Identifier > split( wxChar separator ) const;
+   std::vector< Identifier > split( char_type separator ) const;
 
 private:
-   wxString value;
+   value_type value;
 };
 
 //! Comparisons of Identifiers are case-sensitive
-inline bool operator == ( const Identifier &x, const Identifier &y )
-{ return x.GET() == y.GET(); }
+bool operator == ( const Identifier &x, const Identifier &y );
 
 inline bool operator != ( const Identifier &x, const Identifier &y )
 { return !(x == y); }
 
-inline bool operator < ( const Identifier &x, const Identifier &y )
-{ return x.GET() < y.GET(); }
+bool operator < ( const Identifier &x, const Identifier &y );
 
 inline bool operator > ( const Identifier &x, const Identifier &y )
 { return y < x; }
@@ -94,7 +96,7 @@ namespace std
 {
    template<> struct hash< Identifier > {
       size_t operator () ( const Identifier &id ) const // noexcept
-       { return hash<wxString>{}( id.GET() ); }
+      ;
    };
 }
 
@@ -103,7 +105,7 @@ inline bool wxFromString(const wxString& str, Identifier *id)
    { if (id) { *id = str; return true; } else return false; }
 
 //! This lets you pass Identifier into wxFileConfig::Write
-inline wxString wxToString( const Identifier& str ) { return str.GET(); }
+wxString wxToString( const Identifier& str );
 
 //! Template generates different TaggedIdentifier classes that don't interconvert implicitly
 /*! The second template parameter determines whether comparisons are case
