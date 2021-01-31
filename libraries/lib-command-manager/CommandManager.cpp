@@ -83,7 +83,6 @@ CommandManager.  It holds the callback for one command.
 #include <wx/defs.h>
 #include <wx/hash.h>
 #include <wx/log.h>
-#include <wx/weakref.h>
 
 #include "BasicUI.h"
 #include "Journal.h"
