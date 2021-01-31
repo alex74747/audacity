@@ -18,6 +18,8 @@ Paul Licameli split from AudacityProject.h
 #include "Identifier.h"
 #include "Observer.h"
 
+#include <wx/event.h>
+
 class wxTimer;
 class wxTimerEvent;
 

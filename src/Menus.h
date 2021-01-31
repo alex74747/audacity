@@ -12,7 +12,6 @@
 
 #include "Identifier.h"
 
-#include <wx/string.h> // member variable
 #include "Prefs.h"
 #include "Project.h"
 #include "commands/CommandFlag.h"

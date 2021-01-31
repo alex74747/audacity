@@ -25,7 +25,6 @@
 #include "XMLWriter.h"
 #include "XMLAttributeValueView.h"
 
-
 class XML_API XMLValueChecker
 {
 public:

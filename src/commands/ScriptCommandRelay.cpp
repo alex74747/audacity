@@ -26,9 +26,8 @@ code out of ModuleManager.
 #include "ActiveProject.h"
 #include "AppCommandEvent.h"
 #include "Project.h"
-#include <wx/app.h>
-#include <wx/string.h>
 #include <thread>
+#include <wx/app.h>
 
 /// This is the function which actually obeys one command.
 static int ExecCommand(wxString *pIn, wxString *pOut, bool fromMain)

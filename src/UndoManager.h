@@ -53,6 +53,7 @@
 #include <wx/event.h> // to declare custom event types
 #include "Project.h"
 #include "SelectedRegion.h"
+#include <wx/event.h>
 
 // Events emitted by AudacityProject for the use of listeners
 
