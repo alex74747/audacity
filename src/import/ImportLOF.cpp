@@ -71,9 +71,6 @@
 
 #include "../Audacity.h" // for USE_* macros
 
-#include <wx/string.h>
-#include <wx/utils.h>
-#include <wx/intl.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
 

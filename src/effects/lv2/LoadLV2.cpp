@@ -24,7 +24,6 @@ Functions that find and load all LV2 plugins on the system.
 
 #include "LoadLV2.h"
 
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -32,7 +31,6 @@ Functions that find and load all LV2 plugins on the system.
 #include <wx/dynlib.h>
 #include <wx/filename.h>
 #include <wx/log.h>
-#include <wx/string.h>
 
 #include "../../Internat.h"
 

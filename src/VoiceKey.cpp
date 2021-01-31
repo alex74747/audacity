@@ -21,12 +21,9 @@ or "OFF" point
 #include "Audacity.h"
 #include "VoiceKey.h"
 
-#include <wx/string.h>
 #include <math.h>
-#include <stdio.h>
 
 #include <wx/textfile.h>
-#include <wx/intl.h>
 #include <iostream>
 
 #include "WaveTrack.h"

@@ -12,7 +12,6 @@
 
 #include "audacity/Types.h"
 #include <unordered_map>
-#include <wx/string.h>
 
 
 namespace ProjectFileIORegistry {

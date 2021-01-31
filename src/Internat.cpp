@@ -26,7 +26,6 @@ and on Mac OS X for the filesystem.
 #include "MemoryX.h"
 
 #include <wx/log.h>
-#include <wx/intl.h>
 #include <wx/filename.h>
 
 #include <locale.h>
