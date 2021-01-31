@@ -12,7 +12,7 @@ Paul Licameli split from AudacityProject.h
 #define __AUDACITY_PROJECT_SETTINGS__
 
 #include <atomic>
-#include <wx/event.h> // to declare custom event type
+#include <wx/event.h>
 
 #include "ClientData.h" // to inherit
 #include "Prefs.h" // to inherit

@@ -16,10 +16,8 @@
 #include <functional>
 #include <memory>
 
-#include <wx/event.h> // to declare custom event types
+#include <wx/event.h>
 #include <wx/setup.h> // for wxUSE_* macros
-
-#include <wx/string.h> // member variable
 
 #if wxUSE_ACCESSIBILITY
 #include "widgets/WindowAccessible.h" // to inherit

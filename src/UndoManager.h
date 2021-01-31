@@ -50,7 +50,7 @@
 #define __AUDACITY_UNDOMANAGER__
 
 #include <vector>
-#include <wx/event.h> // to declare custom event types
+#include <wx/event.h>
 #include "ClientData.h"
 #include "SelectedRegion.h"
 

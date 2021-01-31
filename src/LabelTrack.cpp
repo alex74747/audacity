@@ -31,6 +31,9 @@ for drawing different aspects of the label and its text box.
 
 #include "LabelTrack.h"
 
+#include "tracks/ui/TrackView.h"
+#include "tracks/ui/TrackControls.h"
+
 #include <algorithm>
 #include <limits.h>
 #include <float.h>

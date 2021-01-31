@@ -409,7 +409,7 @@ L"ShowTransportTB,ShowToolsTB,ShowRecordMeterTB,ShowPlayMeterTB,"
 //"ShowMeterTB,"
 "ShowMixerTB,"
 "ShowEditTB,ShowTranscriptionTB,ShowScrubbingTB,ShowDeviceTB,ShowSelectionTB,"
-"ShowSpectralSelectionTB") },
+"ShowSpectralSelectionTB" },
          {L"/Tracks/Add/Add", wxT(
    "NewMonoTrack,NewStereoTrack,NewLabelTrack,NewTimeTrack")},
       }

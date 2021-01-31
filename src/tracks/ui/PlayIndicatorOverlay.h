@@ -12,6 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_PLAY_INDICATOR_OVERLAY__
 
 #include <memory>
+#include <wx/event.h>
 #include "ClientData.h"
 #include "../../widgets/Overlay.h" // to inherit
 #include "Observer.h"

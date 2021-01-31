@@ -12,8 +12,8 @@ Paul Licameli split from AudacityProject.h
 #define __AUDACITY_PROJECT_MANAGER__
 
 #include <memory>
+#include <wx/event.h>
 
-#include <wx/event.h> // to inherit
 #include "ClientData.h" // to inherit
 #include "Identifier.h"
 #include "Observer.h"

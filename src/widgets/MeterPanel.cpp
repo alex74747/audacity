@@ -41,10 +41,10 @@
 #include "MeterPanel.h"
 
 #include <algorithm>
+#include <wx/app.h>
 #include <wx/setup.h> // for wxUSE_* macros
 #include <wx/wxcrtvararg.h>
 #include <wx/defs.h>
-#include <wx/dialog.h>
 #include <wx/dcbuffer.h>
 #include <wx/frame.h>
 #include <wx/settings.h>

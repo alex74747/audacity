@@ -30,10 +30,8 @@ It handles initialization and termination by subclassing wxApp.
 #include <wx/wxcrtvararg.h>
 #include <wx/defs.h>
 #include <wx/evtloop.h>
-#include <wx/app.h>
 #include <wx/bitmap.h>
 #include <wx/docview.h>
-#include <wx/event.h>
 #include <wx/ipc.h>
 #include <wx/window.h>
 #include <wx/snglinst.h>
@@ -43,7 +41,6 @@ It handles initialization and termination by subclassing wxApp.
 #include <wx/fontmap.h>
 
 #include <wx/fs_zip.h>
-#include <wx/image.h>
 
 #include <wx/dir.h>
 #include <wx/file.h>

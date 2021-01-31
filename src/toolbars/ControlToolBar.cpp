@@ -36,20 +36,17 @@
 #include <algorithm>
 #include <cfloat>
 
+#include <wx/app.h>
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
 #include <wx/setup.h> // for wxUSE_* macros
 
 #ifndef WX_PRECOMP
-#include <wx/app.h>
 #include <wx/dc.h>
-#include <wx/event.h>
-#include <wx/image.h>
-#include <wx/intl.h>
 #include <wx/sizer.h>
 #include <wx/statusbr.h>
-#include <wx/timer.h>
 #endif
 #include <wx/tooltip.h>
 #include <wx/datetime.h>
