@@ -435,7 +435,7 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
    int iRow;
    // Rows are the 'same' height as icons or as the text,
    // whichever is taller.
-   const int yRowHeight = wxMax(mTextHeight,mIconHeight)+3;// pixels.
+   const int yRowHeight = std::max(mTextHeight,mIconHeight)+3;// pixels.
    // Extra space at end of rows.
    // We allow space for one half icon at the start and two
    // half icon widths for extra x for the text frame.
@@ -444,7 +444,7 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
    const int xExtra= (3 * mIconWidth)/2;
 
    bool bAvoidName = false;
-   const int nRows = wxMin((r.height / yRowHeight) + 1, MAX_NUM_ROWS);
+   const int nRows = std::min((r.height / yRowHeight) + 1, MAX_NUM_ROWS);
    if( nRows > 2 )
       bAvoidName = gPrefs->ReadBool(L"/GUI/ShowTrackNameInWaveform", false);
    // Initially none of the rows have been used.
@@ -622,8 +622,8 @@ void LabelTrackView::DrawText(wxDC & dc, const LabelStruct &ls, const wxRect & r
    // We draw it half an icon width left of the text itself.
    {
       auto &xText = ls.xText;
-      const int xStart=wxMax(r.x,xText-mIconWidth/2);
-      const int xEnd=wxMin(r.x+r.width,xText+ls.width+mIconWidth/2);
+      const int xStart=std::max(r.x,xText-mIconWidth/2);
+      const int xEnd=std::min(r.x+r.width,xText+ls.width+mIconWidth/2);
       const int xWidth = xEnd-xStart;
 
       if( (xStart < (r.x+r.width)) && (xEnd > r.x) && (xWidth>0))

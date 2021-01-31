@@ -67,7 +67,6 @@
 #include <wx/stattext.h>
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
-#include <wx/utils.h>
 
 #if defined(__WXMSW__)
 #include <shlwapi.h>
@@ -2829,7 +2828,7 @@ void VSTEffect::BuildPlain()
       auto mainSizer = std::make_unique<wxBoxSizer>(wxVERTICAL);
 
       // Try to give the window a sensible default/minimum size
-      scroller->SetMinSize(wxSize(wxMax(600, mParent->GetSize().GetWidth() * 2 / 3),
+      scroller->SetMinSize(wxSize(std::max(600, mParent->GetSize().GetWidth() * 2 / 3),
          mParent->GetSize().GetHeight() / 2));
       scroller->SetScrollRate(0, 20);
 

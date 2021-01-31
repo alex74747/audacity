@@ -288,7 +288,7 @@ void ApplyMacroDialog::ApplyMacroToProject( int iMacro, bool bHasGui )
    // Avoid overlap with progress.
    int x,y;
    activityWin.GetPosition( &x, &y );
-   activityWin.Move(wxMax(0,x-300), 0);
+   activityWin.Move(std::max(0,x-300), 0);
    activityWin.Show();
 
    // Without this the newly created dialog may not show completely.
@@ -413,7 +413,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    // Set the column size for the files list.
    fileList->SetColumnWidth(0, wxLIST_AUTOSIZE);
 
-   int width = wxMin( fileList->GetColumnWidth(0), 1000);
+   int width = std::min( fileList->GetColumnWidth(0), 1000);
    wxSize sz = fileList->GetClientSize();
    if (sz.GetWidth() < width ) {
       sz.SetWidth(width);
@@ -428,7 +428,7 @@ void ApplyMacroDialog::OnApplyToFiles(wxCommandEvent & WXUNUSED(event))
    // Avoid overlap with progress.
    int x,y;
    activityWin.GetPosition( &x, &y );
-   activityWin.Move(wxMax(0,x-300), 0);
+   activityWin.Move(std::max(0,x-300), 0);
    activityWin.Show();
 
    // Without this the newly created dialog may not show completely.
@@ -926,7 +926,7 @@ void MacrosWindow::FitColumns()
       width += 2 * 4;    // 2 * kItemPadding - see listctrl_mac.cpp
       width += 16;       // kIconWidth - see listctrl_mac.cpp
 
-      mList->SetColumnWidth(c, wxMax(width, mList->GetColumnWidth(c)));
+      mList->SetColumnWidth(c, std::max(width, mList->GetColumnWidth(c)));
    }
 
    // Looks strange, but it forces the horizontal scrollbar to get

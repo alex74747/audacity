@@ -820,8 +820,8 @@ void ProjectWindow::OnScrollLeft()
    auto &viewInfo = ViewInfo::Get( project );
    wxInt64 pos = mHsbar->GetThumbPosition();
    // move at least one scroll increment
-   pos -= wxMax((wxInt64)(sbarHjump * viewInfo.sbarScale), 1);
-   pos = wxMax(pos, 0);
+   pos -= std::max<wxInt64>(sbarHjump * viewInfo.sbarScale, 1);
+   pos = std::max<wxInt64>(pos, 0);
    viewInfo.sbarH -= sbarHjump;
    viewInfo.sbarH = std::max(viewInfo.sbarH,
       -(wxInt64) PixelWidthBeforeTime(0.0));
@@ -844,9 +844,9 @@ void ProjectWindow::OnScrollRight()
    wxInt64 pos = mHsbar->GetThumbPosition();
    // move at least one scroll increment
    // use wxInt64 for calculation to prevent temporary overflow
-   pos += wxMax((wxInt64)(sbarHjump * viewInfo.sbarScale), 1);
+   pos += std::max<wxInt64>(sbarHjump * viewInfo.sbarScale, 1);
    wxInt64 max = mHsbar->GetRange() - mHsbar->GetThumbSize();
-   pos = wxMin(pos, max);
+   pos = std::min(pos, max);
    viewInfo.sbarH += sbarHjump;
    viewInfo.sbarH = std::min(viewInfo.sbarH,
       viewInfo.sbarTotal
@@ -868,8 +868,8 @@ void ProjectWindow::OnScrollLeftButton(wxScrollEvent & /*event*/)
    auto &viewInfo = ViewInfo::Get( project );
    wxInt64 pos = mHsbar->GetThumbPosition();
    // move at least one scroll increment
-   pos -= wxMax((wxInt64)(sbarHjump * viewInfo.sbarScale), 1);
-   pos = wxMax(pos, 0);
+   pos -= std::max<wxInt64>(sbarHjump * viewInfo.sbarScale, 1);
+   pos = std::max<wxInt64>(pos, 0);
    viewInfo.sbarH -= sbarHjump;
    viewInfo.sbarH = std::max(viewInfo.sbarH,
       - (wxInt64) PixelWidthBeforeTime(0.0));
@@ -890,9 +890,9 @@ void ProjectWindow::OnScrollRightButton(wxScrollEvent & /*event*/)
    wxInt64 pos = mHsbar->GetThumbPosition();
    // move at least one scroll increment
    // use wxInt64 for calculation to prevent temporary overflow
-   pos += wxMax((wxInt64)(sbarHjump * viewInfo.sbarScale), 1);
+   pos += std::max<wxInt64>(sbarHjump * viewInfo.sbarScale, 1);
    wxInt64 max = mHsbar->GetRange() - mHsbar->GetThumbSize();
-   pos = wxMin(pos, max);
+   pos = std::min(pos, max);
    viewInfo.sbarH += sbarHjump;
    viewInfo.sbarH = std::min(viewInfo.sbarH,
       viewInfo.sbarTotal

@@ -586,8 +586,8 @@ KeyView::RecalcExtents()
       }
 
       // Finish calc for command column
-      mLineHeight = wxMax(mLineHeight, y);
-      mCommandWidth = wxMax(mCommandWidth, x);
+      mLineHeight = std::max(mLineHeight, y);
+      mCommandWidth = std::max(mCommandWidth, x);
    }
 
    // Update horizontal scrollbar
@@ -720,8 +720,8 @@ KeyView::RefreshBindings(const CommandIDs & names,
 
             // Measure category
             GetTextExtent(cat, &x, &y);
-            mLineHeight = wxMax(mLineHeight, y);
-            mCommandWidth = wxMax(mCommandWidth, x);
+            mLineHeight = std::max(mLineHeight, y);
+            mCommandWidth = std::max(mCommandWidth, x);
          }
       }
 
@@ -793,8 +793,8 @@ KeyView::RefreshBindings(const CommandIDs & names,
 
       // Measure key
       GetTextExtent(node.key.Display().GET(), &x, &y);
-      mLineHeight = wxMax(mLineHeight, y);
-      mKeyWidth = wxMax(mKeyWidth, x);
+      mLineHeight = std::max(mLineHeight, y);
+      mKeyWidth = std::max(mKeyWidth, x);
 
       // Prepend prefix for all view types to determine maximum
       // column widths
@@ -806,8 +806,8 @@ KeyView::RefreshBindings(const CommandIDs & names,
 
       // Measure label
       GetTextExtent(label, &x, &y);
-      mLineHeight = wxMax(mLineHeight, y);
-      mCommandWidth = wxMax(mCommandWidth, x);
+      mLineHeight = std::max(mLineHeight, y);
+      mCommandWidth = std::max(mCommandWidth, x);
    }
 
 #if 0
@@ -1186,7 +1186,7 @@ KeyView::OnDrawBackground(wxDC & dc, const wxRect & rect, size_t line) const
    // extend the background to the right edge of the client view.  Otherwise,
    // go all the way to the end of the line width...this will draw past the
    // right edge, but that's what we want.
-   r.width = wxMax(mWidth, r.width);
+   r.width = std::max(mWidth, r.width);
    r2.width = mKeyWidth;
 
    // Selected lines get a solid background
