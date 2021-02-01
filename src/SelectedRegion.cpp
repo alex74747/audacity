@@ -18,8 +18,8 @@ const wxChar *SelectedRegion::sDefaultT0Name = L"selStart";
 const wxChar *SelectedRegion::sDefaultT1Name = L"selEnd";
 
 namespace {
-const wxChar *sDefaultF0Name = L"selLow";
-const wxChar *sDefaultF1Name = L"selHigh";
+const auto sDefaultF0Name = L"selLow";
+const auto sDefaultF1Name = L"selHigh";
 }
 
 void SelectedRegion::WriteXMLAttributes

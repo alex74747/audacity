@@ -802,8 +802,8 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       // loop through attrs, which is a null-terminated list of attribute-value pairs
       while(*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {
@@ -837,8 +837,8 @@ bool Sequence::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    {
       while(*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {

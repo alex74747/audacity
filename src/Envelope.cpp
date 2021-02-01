@@ -311,8 +311,8 @@ bool Envelope::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    long nValue = -1;
 
    while (*attrs) {
-      const wxChar *attr = *attrs++;
-      const wxChar *value = *attrs++;
+      const auto attr = *attrs++;
+      const auto value = *attrs++;
       if (!value)
          break;
       const wxString strValue = value;

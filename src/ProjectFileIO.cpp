@@ -1536,8 +1536,8 @@ bool ProjectFileIO::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    // attribute-value pairs
    while (*attrs)
    {
-      const wxChar *attr = *attrs++;
-      const wxChar *value = *attrs++;
+      const auto attr = *attrs++;
+      const auto value = *attrs++;
 
       if (!value || !XMLValueChecker::IsGoodString(value))
       {

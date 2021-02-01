@@ -3709,8 +3709,8 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    {
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {
@@ -3750,8 +3750,8 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {
@@ -3825,8 +3825,8 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    {
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {
@@ -3881,8 +3881,8 @@ bool VSTEffect::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       double val = -1.0;
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
          {

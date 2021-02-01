@@ -1297,8 +1297,8 @@ bool WaveClip::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       long longValue;
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
             break;

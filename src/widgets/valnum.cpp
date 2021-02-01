@@ -244,7 +244,7 @@ void NumValidatorBase::OnPaste(wxClipboardTextEvent& event)
 
    for (size_t i = 0, cnt = toPaste.length(); i < cnt; i++)
    {
-      const wxChar ch = toPaste[i];
+      const auto ch = toPaste[i];
 
       // Check if this character is allowed in the current state.
       if ( IsCharOk(val, pos, ch) )
@@ -435,7 +435,7 @@ FloatingPointValidatorBase::IsCharOk(const wxString& val,
       return true;
    }
 
-   const wxChar separator = NumberFormatter::GetDecimalSeparator();
+   const auto separator = NumberFormatter::GetDecimalSeparator();
    if ( ch == separator )
    {
       if ( val.find(separator) != wxString::npos )

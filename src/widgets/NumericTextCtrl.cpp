@@ -848,7 +848,7 @@ void NumericConverter::ParseFormatString(
          bool goToFrac = false;
 
          if (!inFrac) {
-            wxChar delim = delimStr[delimStr.length()-1];
+            auto delim = delimStr[delimStr.length()-1];
             if (delim=='<' || delim=='>') {
                goToFrac = true;
                if (delimStr.length() > 1)
@@ -1432,7 +1432,7 @@ void NumericTextCtrl::UpdateAutoFocus()
 
    mFocusedDigit = 0;
    while (mFocusedDigit < ((int)mDigits.size() - 1)) {
-      wxChar dgt = mValueString[mDigits[mFocusedDigit].pos];
+      auto dgt = mValueString[mDigits[mFocusedDigit].pos];
       if (dgt != '0') {
          break;
       }

@@ -1157,7 +1157,7 @@ bool FFmpegPresets::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
    {
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
+         const auto attr = *attrs++;
          wxString value = *attrs++;
 
          if (!value)
@@ -1200,8 +1200,8 @@ bool FFmpegPresets::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       long id = -1;
       while (*attrs)
       {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
             break;

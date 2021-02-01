@@ -1714,7 +1714,7 @@ bool LabelTrackView::DoChar(
    bool updated = false;
 
    // Cache the character
-   wxChar charCode = event.GetUnicodeKey();
+   auto charCode = event.GetUnicodeKey();
 
    // Skip if it's not a valid unicode character or a control character
    if (charCode == 0 || wxIscntrl(charCode)) {

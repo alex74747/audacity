@@ -645,8 +645,8 @@ bool AUPImportFileHandle::HandleProject(XMLTagHandler *&handler)
 
    while (*mAttrs)
    {
-      const wxChar *attr = *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr = *mAttrs++;
+      const auto value = *mAttrs++;
       double dValue;
 
       if (!value)
@@ -916,8 +916,8 @@ bool AUPImportFileHandle::HandleTags(XMLTagHandler *&handler)
    // Support for legacy tags
    while(*mAttrs)
    {
-      const wxChar *attr = *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr = *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1110,8 +1110,8 @@ bool AUPImportFileHandle::HandleSequence(XMLTagHandler *&handler)
 
    while(*mAttrs)
    {
-      const wxChar *attr = *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr = *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1169,8 +1169,8 @@ bool AUPImportFileHandle::HandleWaveBlock(XMLTagHandler *&handler)
 {
    while(*mAttrs)
    {
-      const wxChar *attr = *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr = *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1202,8 +1202,8 @@ bool AUPImportFileHandle::HandleSimpleBlockFile(XMLTagHandler *&handler)
    
    while (*mAttrs)
    {
-      const wxChar *attr =  *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr =  *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1254,8 +1254,8 @@ bool AUPImportFileHandle::HandleSilentBlockFile(XMLTagHandler *&handler)
    
    while (*mAttrs)
    {
-      const wxChar *attr =  *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr =  *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1294,8 +1294,8 @@ bool AUPImportFileHandle::HandlePCMAliasBlockFile(XMLTagHandler *&handler)
 
    while (*mAttrs)
    {
-      const wxChar *attr =  *mAttrs++;
-      const wxChar *value = *mAttrs++;
+      const auto attr =  *mAttrs++;
+      const auto value = *mAttrs++;
 
       if (!value)
       {
@@ -1434,8 +1434,8 @@ bool AUPImportFileHandle::HandleImport(XMLTagHandler *&handler)
       pAttr = mAttrs;
       while (*pAttr)
       {
-         const wxChar *attr = *pAttr++;
-         const wxChar *value = *pAttr++;
+         const auto attr = *pAttr++;
+         const auto value = *pAttr++;
          const wxString strValue = value;
          if (!wxStrcmp(attr, L"offset") &&
                XMLValueChecker::IsGoodString(strValue) &&

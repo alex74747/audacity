@@ -110,8 +110,8 @@ enum
 
 #define UNINITIALIZED_CONTROL ((double)99999999.99)
 
-static const wxChar *KEY_Command = L"Command";
-static const wxChar *KEY_Parameters = L"Parameters";
+static const auto KEY_Command = L"Command";
+static const auto KEY_Parameters = L"Parameters";
 
 ///////////////////////////////////////////////////////////////////////////////
 //

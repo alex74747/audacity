@@ -2210,8 +2210,8 @@ bool EffectEqualization::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       while( *attrs )
       {
          // Cache attr/value and bump to next
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          // Create a NEW curve and name it
          if( !wxStrcmp( attr, L"name" ) )
@@ -2259,8 +2259,8 @@ bool EffectEqualization::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       double dblValue;
       while( *attrs )
       {   // Cache attr/value and bump to next
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          const wxString strValue = value;
 

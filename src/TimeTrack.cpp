@@ -222,8 +222,8 @@ bool TimeTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       mRescaleXMLValues = true; // will be set to false if upper/lower is found
       long nValue;
       while(*attrs) {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
             break;

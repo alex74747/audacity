@@ -889,8 +889,8 @@ bool NoteTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 {
    if (!wxStrcmp(tag, L"notetrack")) {
       while (*attrs) {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
          if (!value)
             break;
          const wxString strValue = value;

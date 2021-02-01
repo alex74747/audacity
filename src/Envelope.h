@@ -41,8 +41,8 @@ public:
    {
       if (!wxStrcmp(tag, L"controlpoint")) {
          while (*attrs) {
-            const wxChar *attr = *attrs++;
-            const wxChar *value = *attrs++;
+            const auto attr = *attrs++;
+            const auto value = *attrs++;
             if (!wxStrcmp(attr, L"t"))
                SetT(Internat::CompatibleToDouble(value));
             else if (!wxStrcmp(attr, L"val"))

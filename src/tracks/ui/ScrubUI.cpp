@@ -161,7 +161,7 @@ void ScrubbingOverlay::OnTimer(wxCommandEvent &event)
                 .PositionToTime(position.x, viewInfo.GetLeftOffset()))
          : maxScrubSpeed;
 
-      const wxChar *format =
+      const auto format =
          scrubber.IsScrollScrubbing()
          ? seeking
             ? L"%+.2fX"

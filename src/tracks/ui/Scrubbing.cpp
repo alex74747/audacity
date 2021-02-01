@@ -1020,7 +1020,7 @@ void Scrubber::OnSeek(const CommandContext&)
 
 #if 1
 namespace {
-   static const wxChar *scrubEnabledPrefName = L"/QuickPlay/ScrubbingEnabled";
+   static const auto scrubEnabledPrefName = L"/QuickPlay/ScrubbingEnabled";
 
    bool ReadScrubEnabledPref()
    {

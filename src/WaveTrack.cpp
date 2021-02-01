@@ -1622,8 +1622,8 @@ bool WaveTrack::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
       double dblValue;
       long nValue;
       while(*attrs) {
-         const wxChar *attr = *attrs++;
-         const wxChar *value = *attrs++;
+         const auto attr = *attrs++;
+         const auto value = *attrs++;
 
          if (!value)
             break;
