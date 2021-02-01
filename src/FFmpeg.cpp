@@ -807,7 +807,7 @@ bool FFmpegLibs::InitLibs(const wxString &libpath_format, bool WXUNUSED(showerr)
    wxString fmtdirsc = fmtdir + wxT(";");
    wxString scfmtdir = wxT(";") + fmtdir;
 
-   if (syspath.Left(1) == wxT(';'))
+   if (syspath.Left(1) == L';')
    {
       wxLogMessage(wxT("Temporarily prepending '%s' to PATH..."), fmtdir);
       syspath.Prepend(scfmtdir);
