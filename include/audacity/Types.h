@@ -94,11 +94,7 @@ public:
 
    long long as_long_long() const { return value; }
 
-   size_t as_size_t() const {
-      wxASSERT(value >= 0);
-      wxASSERT(static_cast<std::make_unsigned<type>::type>(value) <= std::numeric_limits<size_t>::max());
-      return value;
-   }
+   size_t as_size_t() const;
 
    sampleCount &operator += (sampleCount b) { value += b.value; return *this; }
    sampleCount &operator -= (sampleCount b) { value -= b.value; return *this; }

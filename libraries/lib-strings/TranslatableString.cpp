@@ -149,4 +149,4 @@ TranslatableString &TranslatableString::Join(
    return *this;
 }
 
-const TranslatableString TranslatableString::Inaudible{ wxT("\a") };
+const TranslatableString TranslatableString::Inaudible{ L"\a" };
