@@ -107,10 +107,10 @@ public:
       if (Read(key, &str))
       {
          struct lconv *info = localeconv();
-         wxString dec = info ? wxString::FromUTF8(info->decimal_point) : wxT(".");
+         wxString dec = info ? wxString::FromUTF8(info->decimal_point) : L".";
 
-         str.Replace(wxT(","), dec);
-         str.Replace(wxT("."), dec);
+         str.Replace(L",", dec);
+         str.Replace(L".", dec);
 
          return str.ToDouble(pd);
       }
@@ -130,7 +130,7 @@ public:
 
    virtual bool DoWriteDouble(const wxString & key, double value) override
    {
-      return DoWriteString(key, wxString::Format(wxT("%.8g"), value));
+      return DoWriteString(key, wxString::Format(L"%.8g", value));
    }
 
    bool ReadFloat(const wxString & key, float *pf) const
@@ -258,7 +258,7 @@ public:
 
    bool GetParameters(wxString & parms)
    {
-      wxFileConfig::SetPath(wxT("/"));
+      wxFileConfig::SetPath(L"/");
 
       wxString str;
       wxString key;
@@ -273,7 +273,7 @@ public:
             return false;
          }
 
-         str += key + wxT("=\"") + Escape(val) + wxT("\" ");
+         str += key + L"=\"" + Escape(val) + L"\" ";
 
          res = wxFileConfig::GetNextEntry(key, ndx);
       }
@@ -286,7 +286,7 @@ public:
 
    bool SetParameters(const wxString & parms)
    {
-      wxFileConfig::SetPath(wxT("/"));
+      wxFileConfig::SetPath(L"/");
 
       auto parsed = wxCmdLineParser::ConvertStringToArgs(parms);
 
@@ -309,29 +309,29 @@ public:
       wxString cleaned = name;
 
       cleaned.Trim(true).Trim(false);
-      cleaned.Replace(wxT(" "), wxT("_"));
-      cleaned.Replace(wxT("/"), wxT("_"));
-      cleaned.Replace(wxT("\\"), wxT("_"));
-      cleaned.Replace(wxT(":"), wxT("_"));
-      cleaned.Replace(wxT("="), wxT("_"));
+      cleaned.Replace(L" ", L"_");
+      cleaned.Replace(L"/", L"_");
+      cleaned.Replace(L"\\", L"_");
+      cleaned.Replace(L":", L"_");
+      cleaned.Replace(L"=", L"_");
 
       return cleaned;
    }
 
    wxString Escape(wxString val)
    {
-      val.Replace(wxT("\\"), wxT("\\\\"), true);
-      val.Replace(wxT("\""), wxT("\\\""), true);
-      val.Replace(wxT("\n"), wxT("\\n"), true);
+      val.Replace(L"\\", L"\\\\", true);
+      val.Replace(L"\"", L"\\\"", true);
+      val.Replace(L"\n", L"\\n", true);
 
       return val;
    }
 
    wxString Unescape(wxString val)
    {
-      val.Replace(wxT("\\n"), wxT("\n"), true);
-      val.Replace(wxT("\\\""), wxT("\""), true);
-      val.Replace(wxT("\\\\"), wxT("\\"), true);
+      val.Replace(L"\\n", L"\n", true);
+      val.Replace(L"\\\"", L"\"", true);
+      val.Replace(L"\\\\", L"\\", true);
 
       return val;
    }
