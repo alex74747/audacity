@@ -117,7 +117,7 @@ Identifier GetSystemLanguageCode(const FilePaths &pathList)
    if (info) {
       wxString fullCode = info->CanonicalName;
       if (fullCode.length() < 2)
-         return wxT("en");
+         return L"en";
 
       wxString code = fullCode.Left(2);
       unsigned int i;
@@ -131,7 +131,7 @@ Identifier GetSystemLanguageCode(const FilePaths &pathList)
       }
    }
 
-   return wxT("en");
+   return L"en";
 }
 
 void GetLanguages( FilePaths pathList,
@@ -272,12 +272,12 @@ void GetLanguages( FilePaths pathList,
       if (!tempHash[code].empty())
          continue;
 
-      if (TranslationExists(pathList, code) || code==wxT("en")) {
+      if (TranslationExists(pathList, code) || code==L"en") {
          tempCodes.push_back(code);
          tempNames.push_back(name);
          tempHash[code] = name;
 
-/*         wxLogDebug(wxT("code=%s name=%s fullCode=%s name=%s -> %s"),
+/*         wxLogDebug(L"code=%s name=%s fullCode=%s name=%s -> %s",
                       code, localLanguageName[code],
                       fullCode, localLanguageName[fullCode],
                       name);*/
@@ -287,7 +287,7 @@ void GetLanguages( FilePaths pathList,
    // JKC: Adding language for simplified audacity.
    {
       wxString code;
-      code = wxT("en-simple");
+      code = L"en-simple";
       auto name = XO("Simplified");
       if (TranslationExists(pathList, code) ) {
          tempCodes.push_back(code);
@@ -310,7 +310,7 @@ void GetLanguages( FilePaths pathList,
 
    // Add system language
    langNames.push_back(XO("System"));
-   langCodes.push_back(wxT("System"));
+   langCodes.push_back(L"System");
 
    for(j=0; j<tempNames.size(); j++) {
       langNames.push_back(tempNames[j]);
@@ -335,11 +335,11 @@ Identifier SetLang( const FilePaths &pathList, const Identifier & lang )
    // because conversion to Japanese from "?" doesn't return a
    // valid length, so make OSX happy by defining/overriding
    // the LANG environment variable with U.S. English for now.
-   wxSetEnv(wxT("LANG"), wxT("en_US.UTF-8"));
+   wxSetEnv(L"LANG", L"en_US.UTF-8");
 #endif
 
    const wxLanguageInfo *info = NULL;
-   if (!lang.empty() && lang != wxT("System")) {
+   if (!lang.empty() && lang != L"System") {
       // Try to find the given language
       info = wxLocale::FindLanguageInfo(lang.GET());
    }
@@ -361,7 +361,7 @@ Identifier SetLang( const FilePaths &pathList, const Identifier & lang )
    // LL:  Must add the wxWidgets catalog manually since the search
    //      paths were not set up when mLocale was created.  The
    //      catalogs are search in LIFO order, so add wxstd first.
-   sLocale->AddCatalog(wxT("wxstd"));
+   sLocale->AddCatalog(L"wxstd");
 
    // Must match TranslationExists() in Languages.cpp
    sLocale->AddCatalog("audacity");

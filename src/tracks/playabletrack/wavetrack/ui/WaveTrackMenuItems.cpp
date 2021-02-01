@@ -84,12 +84,12 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 }
 
 #define FN(X) (&Handler :: X)
-AttachedItem sAttachment{ wxT("Tracks/Add/Add"),
+AttachedItem sAttachment{ L"Tracks/Add/Add",
    ( FinderScope{ findCommandHandler },
    Items( "",
-      Command( wxT("NewMonoTrack"), XXO("&Mono Track"), FN(OnNewWaveTrack),
-         AudioIONotBusyFlag(), wxT("Ctrl+Shift+N") ),
-      Command( wxT("NewStereoTrack"), XXO("&Stereo Track"),
+      Command( L"NewMonoTrack", XXO("&Mono Track"), FN(OnNewWaveTrack),
+         AudioIONotBusyFlag(), L"Ctrl+Shift+N" ),
+      Command( L"NewStereoTrack", XXO("&Stereo Track"),
          FN(OnNewStereoTrack), AudioIONotBusyFlag() )
    ) )
 };

@@ -25,7 +25,7 @@ Identifier GUISettings::SetLang( const Identifier & lang )
 
 #ifdef EXPERIMENTAL_CEE_NUMBERS_OPTION
    bool forceCeeNumbers;
-   gPrefs->Read(wxT("/Locale/CeeNumberFormat"), &forceCeeNumbers, false);
+   gPrefs->Read(L"/Locale/CeeNumberFormat", &forceCeeNumbers, false);
    if( forceCeeNumbers )
       Internat::SetCeeNumberFormat();
 #endif

@@ -308,7 +308,7 @@ bool WaveTrack::LinkConsistencyCheck()
       {
          //next track is not a wave track, fix and report error
           wxLogWarning(
-             wxT("Right track %s is expected to be a WaveTrack.\n Removing link from left wave track %s."),
+             L"Right track %s is expected to be a WaveTrack.\n Removing link from left wave track %s.",
              next->GetName(), GetName());
          SetLinkType(LinkType::None);
          SetChannel(MonoChannel);
@@ -1952,23 +1952,23 @@ XMLTagHandler *WaveTrack::HandleXMLChild(const std::string_view& tag)
 void WaveTrack::WriteXML(XMLWriter &xmlFile) const
 // may throw
 {
-   xmlFile.StartTag(wxT("wavetrack"));
+   xmlFile.StartTag(L"wavetrack");
    this->Track::WriteCommonXMLAttributes( xmlFile );
-   xmlFile.WriteAttr(wxT("channel"), mChannel);
-   xmlFile.WriteAttr(wxT("linked"), static_cast<int>(GetLinkType()));
+   xmlFile.WriteAttr(L"channel", mChannel);
+   xmlFile.WriteAttr(L"linked", static_cast<int>(GetLinkType()));
    this->WritableSampleTrack::WriteXMLAttributes(xmlFile);
-   xmlFile.WriteAttr(wxT("rate"), mRate);
-   xmlFile.WriteAttr(wxT("gain"), (double)mGain);
-   xmlFile.WriteAttr(wxT("pan"), (double)mPan);
-   xmlFile.WriteAttr(wxT("colorindex"), mWaveColorIndex );
-   xmlFile.WriteAttr(wxT("sampleformat"), static_cast<long>(mFormat) );
+   xmlFile.WriteAttr(L"rate", mRate);
+   xmlFile.WriteAttr(L"gain", (double)mGain);
+   xmlFile.WriteAttr(L"pan", (double)mPan);
+   xmlFile.WriteAttr(L"colorindex", mWaveColorIndex );
+   xmlFile.WriteAttr(L"sampleformat", static_cast<long>(mFormat) );
 
    for (const auto &clip : mClips)
    {
       clip->WriteXML(xmlFile);
    }
 
-   xmlFile.EndTag(wxT("wavetrack"));
+   xmlFile.EndTag(L"wavetrack");
 }
 
 bool WaveTrack::GetErrorOpening()
@@ -2138,7 +2138,7 @@ bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
       }
       else
       {
-         wxFAIL_MSG(wxT("Invalid fill format"));
+         wxFAIL_MSG(L"Invalid fill format");
       }
    }
 
@@ -2846,11 +2846,11 @@ StringSetting AudioTrackNameSetting{
 bool GetEditClipsCanMove()
 {
    bool mIsSyncLocked;
-   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &mIsSyncLocked, false);
+   gPrefs->Read(L"/GUI/SyncLockTracks", &mIsSyncLocked, false);
    if( mIsSyncLocked )
       return true;
    bool editClipsCanMove;
-   gPrefs->Read(wxT("/GUI/EditClipCanMove"), &editClipsCanMove, false);
+   gPrefs->Read(L"/GUI/EditClipCanMove", &editClipsCanMove, false);
    return editClipsCanMove;
 }
 

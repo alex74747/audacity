@@ -212,7 +212,7 @@ bool Sequence::ConvertToSampleFormat(sampleFormat format,
 
    // Commit the changes to block file array
    CommitChangesIfConsistent
-      (newBlockArray, mNumSamples, wxT("Sequence::ConvertToSampleFormat()"));
+      (newBlockArray, mNumSamples, L"Sequence::ConvertToSampleFormat()");
 
    // Commit the other changes
    bSuccess = true;
@@ -444,7 +444,7 @@ std::unique_ptr<Sequence> Sequence::Copy( const SampleBlockFactoryPtr &pFactory,
          // Increase ref count or duplicate file
    }
 
-   dest->ConsistencyCheck(wxT("Sequence::Copy()"));
+   dest->ConsistencyCheck(L"Sequence::Copy()");
 
    return dest;
 }
@@ -478,7 +478,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
    if ((s < 0) || (s > mNumSamples))
    {
       wxLogError(
-         wxT("Sequence::Paste: sampleCount s %s is < 0 or > mNumSamples %s)."),
+         L"Sequence::Paste: sampleCount s %s is < 0 or > mNumSamples %s).",
          // PRL:  Why bother with Internat when the above is just wxT?
          Internat::ToString(s.as_double(), 0),
          Internat::ToString(mNumSamples.as_double(), 0));
@@ -489,7 +489,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
    if (Overflows((mNumSamples.as_double()) + (src->mNumSamples.as_double())))
    {
       wxLogError(
-         wxT("Sequence::Paste: mNumSamples %s + src->mNumSamples %s would overflow."),
+         L"Sequence::Paste: mNumSamples %s + src->mNumSamples %s would overflow.",
          // PRL:  Why bother with Internat when the above is just wxT?
          Internat::ToString(mNumSamples.as_double(), 0),
          Internat::ToString(src->mNumSamples.as_double(), 0));
@@ -499,7 +499,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
    if (src->mSampleFormat != mSampleFormat)
    {
       wxLogError(
-         wxT("Sequence::Paste: Sample format to be pasted, %s, does not match destination format, %s."),
+         L"Sequence::Paste: Sample format to be pasted, %s, does not match destination format, %s.",
          GetSampleFormatStr(src->mSampleFormat).Debug(),
          GetSampleFormatStr(mSampleFormat).Debug());
       THROW_INCONSISTENCY_EXCEPTION;
@@ -536,7 +536,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
             newBlock, samples, srcBlock[i]);
 
       CommitChangesIfConsistent
-         (newBlock, samples, wxT("Paste branch one"));
+         (newBlock, samples, L"Paste branch one");
       return;
    }
 
@@ -584,7 +584,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
 
       // This consistency check won't throw, it asserts.
       // Proof that we kept consistency is not hard.
-      ConsistencyCheck(wxT("Paste branch two"), false);
+      ConsistencyCheck(L"Paste branch two", false);
       return;
    }
 
@@ -670,7 +670,7 @@ void Sequence::Paste(sampleCount s, const Sequence *src)
       newBlock.push_back(mBlock[i].Plus(addedLen));
 
    CommitChangesIfConsistent
-      (newBlock, mNumSamples + addedLen, wxT("Paste branch three"));
+      (newBlock, mNumSamples + addedLen, L"Paste branch three");
 }
 
 /*! @excsafety{Strong} */
@@ -905,9 +905,9 @@ void Sequence::HandleXMLEndTag(const std::string_view& tag)
       if (block.start != numSamples)
       {
          wxLogWarning(
-            wxT("Gap detected in project file.\n")
-            wxT("   Start (%s) for block file %lld is not one sample past end of previous block (%s).\n")
-            wxT("   Moving start so blocks are contiguous."),
+            L"Gap detected in project file.\n"
+            L"   Start (%s) for block file %lld is not one sample past end of previous block (%s).\n"
+            L"   Moving start so blocks are contiguous.",
             // PRL:  Why bother with Internat when the above is just wxT?
             Internat::ToString(block.start.as_double(), 0),
             block.sb->GetBlockID(),
@@ -921,7 +921,7 @@ void Sequence::HandleXMLEndTag(const std::string_view& tag)
    if (mNumSamples != numSamples)
    {
       wxLogWarning(
-         wxT("Gap detected in project file. Correcting sequence sample count from %s to %s."),
+         L"Gap detected in project file. Correcting sequence sample count from %s to %s.",
          // PRL:  Why bother with Internat when the above is just wxT?
          Internat::ToString(mNumSamples.as_double(), 0),
          Internat::ToString(numSamples.as_double(), 0));
@@ -946,11 +946,11 @@ void Sequence::WriteXML(XMLWriter &xmlFile) const
 {
    unsigned int b;
 
-   xmlFile.StartTag(wxT("sequence"));
+   xmlFile.StartTag(L"sequence");
 
-   xmlFile.WriteAttr(wxT("maxsamples"), mMaxSamples);
-   xmlFile.WriteAttr(wxT("sampleformat"), (size_t)mSampleFormat);
-   xmlFile.WriteAttr(wxT("numsamples"), mNumSamples.as_long_long() );
+   xmlFile.WriteAttr(L"maxsamples", mMaxSamples);
+   xmlFile.WriteAttr(L"sampleformat", (size_t)mSampleFormat);
+   xmlFile.WriteAttr(L"numsamples", mNumSamples.as_long_long() );
 
    for (b = 0; b < mBlock.size(); b++) {
       const SeqBlock &bb = mBlock[b];
@@ -977,15 +977,15 @@ void Sequence::WriteXML(XMLWriter &xmlFile) const
 //         bb.sb->SetLength(mMaxSamples);
       }
 
-      xmlFile.StartTag(wxT("waveblock"));
-      xmlFile.WriteAttr(wxT("start"), bb.start.as_long_long() );
+      xmlFile.StartTag(L"waveblock");
+      xmlFile.WriteAttr(L"start", bb.start.as_long_long() );
 
       bb.sb->SaveXML(xmlFile);
 
-      xmlFile.EndTag(wxT("waveblock"));
+      xmlFile.EndTag(L"waveblock");
    }
 
-   xmlFile.EndTag(wxT("sequence"));
+   xmlFile.EndTag(L"sequence");
 }
 
 int Sequence::FindBlock(sampleCount pos) const
@@ -1051,7 +1051,7 @@ bool Sequence::Read(samplePtr buffer, sampleFormat format,
 
    if (result != len)
    {
-      wxLogWarning(wxT("Expected to read %ld samples, got %ld samples."),
+      wxLogWarning(L"Expected to read %ld samples, got %ld samples.",
                    len, result);
       return false;
    }
@@ -1208,7 +1208,7 @@ void Sequence::SetSamples(constSamplePtr buffer, sampleFormat format,
 
    std::copy( mBlock.begin() + b, mBlock.end(), std::back_inserter(newBlock) );
 
-   CommitChangesIfConsistent( newBlock, mNumSamples, wxT("SetSamples") );
+   CommitChangesIfConsistent( newBlock, mNumSamples, L"SetSamples" );
 }
 
 size_t Sequence::GetIdealAppendLen() const
@@ -1247,13 +1247,13 @@ void Sequence::AppendSharedBlock(const SeqBlock::SampleBlockPtr &pBlock)
    auto newNumSamples = mNumSamples + len;
 
    AppendBlocksIfConsistent(newBlock, false,
-                            newNumSamples, wxT("Append"));
+                            newNumSamples, L"Append");
 
 // JKC: During generate we use Append again and again.
 // If generating a long sequence this test would give O(n^2)
 // performance - not good!
 #ifdef VERY_SLOW_CHECKING
-   ConsistencyCheck(wxT("Append"));
+   ConsistencyCheck(L"Append");
 #endif
 }
 
@@ -1344,13 +1344,13 @@ SeqBlock::SampleBlockPtr Sequence::DoAppend(
    }
 
    AppendBlocksIfConsistent(newBlock, replaceLast,
-                            newNumSamples, wxT("Append"));
+                            newNumSamples, L"Append");
 
 // JKC: During generate we use Append again and again.
 // If generating a long sequence this test would give O(n^2)
 // performance - not good!
 #ifdef VERY_SLOW_CHECKING
-   ConsistencyCheck(wxT("Append"));
+   ConsistencyCheck(L"Append");
 #endif
 
    return result;
@@ -1447,7 +1447,7 @@ void Sequence::Delete(sampleCount start, sampleCount len)
 
       // This consistency check won't throw, it asserts.
       // Proof that we kept consistency is not hard.
-      ConsistencyCheck(wxT("Delete - branch one"), false);
+      ConsistencyCheck(L"Delete - branch one", false);
       return;
    }
 
@@ -1553,7 +1553,7 @@ void Sequence::Delete(sampleCount start, sampleCount len)
       newBlock.push_back(mBlock[i].Plus(-len));
 
    CommitChangesIfConsistent
-      (newBlock, mNumSamples - len, wxT("Delete - branch two"));
+      (newBlock, mNumSamples - len, L"Delete - branch two");
 }
 
 void Sequence::ConsistencyCheck(const wxChar *whereStr, bool mayThrow) const
@@ -1596,14 +1596,14 @@ void Sequence::ConsistencyCheck
 
    if ( ex )
    {
-      wxLogError(wxT("*** Consistency check failed at %d after %s. ***"),
+      wxLogError(L"*** Consistency check failed at %d after %s. ***",
                  ex->GetLine(), whereStr);
       wxString str;
       DebugPrintf(mBlock, mNumSamples, &str);
-      wxLogError(wxT("%s"), str);
-      wxLogError(wxT("*** Please report this error to https://forum.audacityteam.org/. ***\n\n")
-                 wxT("Recommended course of action:\n")
-                 wxT("Undo the failed operation(s), then export or save your work and quit."));
+      wxLogError(L"%s", str);
+      wxLogError(L"*** Please report this error to https://forum.audacityteam.org/. ***\n\n"
+                 L"Recommended course of action:\n"
+                 L"Undo the failed operation(s), then export or save your work and quit.");
 
       //if (mayThrow)
          //throw *ex;
@@ -1676,7 +1676,7 @@ void Sequence::DebugPrintf
    for (i = 0; i < mBlock.size(); i++) {
       const SeqBlock &seqBlock = mBlock[i];
       *dest += wxString::Format
-         (wxT("   Block %3u: start %8lld, len %8lld, refs %ld, id %lld"),
+         (L"   Block %3u: start %8lld, len %8lld, refs %ld, id %lld",
           i,
           seqBlock.start.as_long_long(),
           seqBlock.sb ? (long long) seqBlock.sb->GetSampleCount() : 0,
@@ -1684,16 +1684,16 @@ void Sequence::DebugPrintf
           seqBlock.sb ? (long long) seqBlock.sb->GetBlockID() : 0);
 
       if ((pos != seqBlock.start) || !seqBlock.sb)
-         *dest += wxT("      ERROR\n");
+         *dest += L"      ERROR\n";
       else
-         *dest += wxT("\n");
+         *dest += L"\n";
 
       if (seqBlock.sb)
          pos += seqBlock.sb->GetSampleCount();
    }
    if (pos != mNumSamples)
       *dest += wxString::Format
-         (wxT("ERROR mNumSamples = %lld\n"), mNumSamples.as_long_long());
+         (L"ERROR mNumSamples = %lld\n", mNumSamples.as_long_long());
 }
 
 // static

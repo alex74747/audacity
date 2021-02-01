@@ -55,7 +55,7 @@ void SoundActivatedRecordDialog::PopulateOrExchange(ShuttleGui & S)
       S.SetStretchyCol(1);
       S.TieSlider(
          XXO("Activation level (dB):"),
-         {wxT("/AudioIO/SilenceLevel"), -50},
+         {L"/AudioIO/SilenceLevel", -50},
          0, -DecibelScaleCutoff.Read()
       )->SetMinSize(wxSize(300, wxDefaultCoord));
       S.EndMultiColumn();

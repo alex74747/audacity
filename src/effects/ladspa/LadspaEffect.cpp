@@ -71,7 +71,7 @@ effects from this one class.
 // ============================================================================
 const static wxChar *kShippedEffects[] =
 {
-   wxT("sc4_1882.dll"),
+   L"sc4_1882.dll",
 };
 
 // ============================================================================
@@ -231,17 +231,17 @@ PluginPaths LadspaEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 #if defined(__WXMAC__)
 
    // Recursively scan for all shared objects
-   pm.FindFilesInPathList(wxT("*.so"), pathList, files, true);
+   pm.FindFilesInPathList(L"*.so", pathList, files, true);
 
 #elif defined(__WXMSW__)
 
    // Recursively scan for all DLLs
-   pm.FindFilesInPathList(wxT("*.dll"), pathList, files, true);
+   pm.FindFilesInPathList(L"*.dll", pathList, files, true);
 
 #else
    
    // Recursively scan for all shared objects
-   pm.FindFilesInPathList(wxT("*.so"), pathList, files, true);
+   pm.FindFilesInPathList(L"*.so", pathList, files, true);
 
 #endif
 
@@ -256,7 +256,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    // Since we now have builtin VST support, ignore the VST bridge as it
    // causes duplicate menu entries to appear.
    wxFileName ff(path);
-   if (ff.GetName().CmpNoCase(wxT("vst-bridge")) == 0) {
+   if (ff.GetName().CmpNoCase(L"vst-bridge") == 0) {
       errMsg = XO("Audacity no longer uses vst-bridge");
       return 0;
    }
@@ -265,8 +265,8 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    // open other plug-ins, we set the current working
    // directory to be the plug-in's directory.
    wxString envpath;
-   bool hadpath = wxGetEnv(wxT("PATH"), &envpath);
-   wxSetEnv(wxT("PATH"), ff.GetPath() + wxFILE_SEP_PATH + envpath);
+   bool hadpath = wxGetEnv(L"PATH", &envpath);
+   wxSetEnv(L"PATH", ff.GetPath() + wxFILE_SEP_PATH + envpath);
    wxString saveOldCWD = ff.GetCwd();
    ff.SetCwd();
 
@@ -278,7 +278,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
    if (lib.Load(path, wxDL_NOW)) {
       wxLogNull logNo;
 
-      mainFn = (LADSPA_Descriptor_Function) lib.GetSymbol(wxT("ladspa_descriptor"));
+      mainFn = (LADSPA_Descriptor_Function) lib.GetSymbol(L"ladspa_descriptor");
 #else
    void *lib = dlopen((const char *)path.ToUTF8(), RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
    if (lib) {
@@ -320,7 +320,7 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
 #endif
 
    wxSetWorkingDirectory(saveOldCWD);
-   hadpath ? wxSetEnv(wxT("PATH"), envpath) : wxUnsetEnv(wxT("PATH"));
+   hadpath ? wxSetEnv(L"PATH", envpath) : wxUnsetEnv(L"PATH");
 
    return nLoaded;
 }
@@ -363,7 +363,7 @@ FilePaths LadspaEffectsModule::GetSearchPaths()
    }
 
 #if defined(__WXMAC__)
-#define LADSPAPATH wxT("/Library/Audio/Plug-Ins/LADSPA")
+#define LADSPAPATH L"/Library/Audio/Plug-Ins/LADSPA"
 
    // Look in ~/Library/Audio/Plug-Ins/LADSPA and /Library/Audio/Plug-Ins/LADSPA
    pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + LADSPAPATH);
@@ -375,14 +375,14 @@ FilePaths LadspaEffectsModule::GetSearchPaths()
 
 #else
 
-   pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + wxT(".ladspa"));
+   pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + L".ladspa");
 #if defined(__LP64__)
-   pathList.push_back(wxT("/usr/local/lib64/ladspa"));
-   pathList.push_back(wxT("/usr/lib64/ladspa"));
+   pathList.push_back(L"/usr/local/lib64/ladspa");
+   pathList.push_back(L"/usr/lib64/ladspa");
 #endif
-   pathList.push_back(wxT("/usr/local/lib/ladspa"));
-   pathList.push_back(wxT("/usr/lib/ladspa"));
-   pathList.push_back(wxT(LIBDIR) wxT("/ladspa"));
+   pathList.push_back(L"/usr/local/lib/ladspa");
+   pathList.push_back(L"/usr/lib/ladspa");
+   pathList.push_back(wxT(LIBDIR) L"/ladspa");
 
 #endif
 
@@ -425,7 +425,7 @@ LadspaEffectOptionsDialog::LadspaEffectOptionsDialog(wxWindow * parent,
 , mEffect{ effect }
 {
    GetConfig(mEffect,
-      PluginSettings::Shared, wxT("Options"), wxT("UseLatency"),
+      PluginSettings::Shared, L"Options", L"UseLatency",
       mUseLatency, true);
 
    ShuttleGui S(this, eIsCreating);
@@ -483,8 +483,8 @@ void LadspaEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
    ShuttleGui S(this, eIsGettingFromDialog);
    PopulateOrExchange(S);
 
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseLatency"), mUseLatency);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseLatency", mUseLatency);
 
    EndModal(wxID_OK);
 }
@@ -644,7 +644,7 @@ LadspaEffect::~LadspaEffect()
 
 PluginPath LadspaEffect::GetPath()
 {
-   return wxString::Format(wxT("%s;%d"), mPath, mIndex);
+   return wxString::Format(L"%s;%d", mPath, mIndex);
 }
 
 ComponentInterfaceSymbol LadspaEffect::GetSymbol()
@@ -871,18 +871,18 @@ bool LadspaEffect::SetHost(EffectHostInterface *host)
    // mHost will be null during registration
    if (mHost)
    {
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
 
       bool haveDefaults;
       GetConfig(*this, PluginSettings::Private,
-         mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), haveDefaults,
+         mHost->GetFactoryDefaultsGroup(), L"Initialized", haveDefaults,
          false);
       if (!haveDefaults)
       {
          SaveParameters(mHost->GetFactoryDefaultsGroup());
          SetConfig(*this, PluginSettings::Private,
-            mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), true);
+            mHost->GetFactoryDefaultsGroup(), L"Initialized", true);
       }
 
       LoadParameters(mHost->GetCurrentSettingsGroup());
@@ -1190,8 +1190,8 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
       w->SetScrollRate(0, 20);
 
       // This fools NVDA into not saying "Panel" when the dialog gets focus
-      w->SetName(wxT("\a"));
-      w->SetLabel(wxT("\a"));
+      w->SetName(L"\a");
+      w->SetLabel(L"\a");
 
       mainSizer->Add(w, 1, wxEXPAND);
       mParent->SetSizer(mainSizer.release());
@@ -1248,7 +1248,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
 
             if (LADSPA_IS_HINT_TOGGLED(hint.HintDescriptor))
             {
-               mToggles[p] = safenew wxCheckBox(w, ID_Toggles + p, wxT(""));
+               mToggles[p] = safenew wxCheckBox(w, ID_Toggles + p, L"");
                mToggles[p]->SetName(labelText);
                mToggles[p]->SetValue(mInputControls[p] > 0);
                gridSizer->Add(mToggles[p], 0, wxALL, 5);
@@ -1312,7 +1312,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
             {
                if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
                {
-                  str.Printf(wxT("%d"), (int)(lower + 0.5));
+                  str.Printf(L"%d", (int)(lower + 0.5));
                }
                else
                {
@@ -1341,7 +1341,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
             {
                if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
                {
-                  str.Printf(wxT("%d"), (int)(upper + 0.5));
+                  str.Printf(L"%d", (int)(upper + 0.5));
                }
                else
                {
@@ -1357,7 +1357,7 @@ bool LadspaEffect::PopulateUI(ShuttleGui &S)
 
             if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
             {
-               fieldText.Printf(wxT("%d"), (int)(mInputControls[p] + 0.5));
+               fieldText.Printf(L"%d", (int)(mInputControls[p] + 0.5));
 
                IntegerValidator<float> vld(&mInputControls[p]);
                vld.SetRange(haslo ? lower : INT_MIN,
@@ -1546,8 +1546,8 @@ void LadspaEffect::ShowOptions()
    if (dlg.ShowModal())
    {
       // Reinitialize configuration options
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
    }
 }
 
@@ -1564,8 +1564,8 @@ bool LadspaEffect::Load()
 
    wxFileName ff = mPath;
    wxString envpath;
-   bool hadpath = wxGetEnv(wxT("PATH"), &envpath);
-   wxSetEnv(wxT("PATH"), ff.GetPath() + wxFILE_SEP_PATH + envpath);
+   bool hadpath = wxGetEnv(L"PATH", &envpath);
+   wxSetEnv(L"PATH", ff.GetPath() + wxFILE_SEP_PATH + envpath);
    wxString saveOldCWD = ff.GetCwd();
    ff.SetCwd();
 
@@ -1575,7 +1575,7 @@ bool LadspaEffect::Load()
    {
       wxLogNull logNo;
 
-      mainFn = (LADSPA_Descriptor_Function) mLib.GetSymbol(wxT("ladspa_descriptor"));
+      mainFn = (LADSPA_Descriptor_Function) mLib.GetSymbol(L"ladspa_descriptor");
       if (mainFn)
       {
          mData = mainFn(mIndex);
@@ -1589,7 +1589,7 @@ bool LadspaEffect::Load()
    }
 
    wxSetWorkingDirectory(saveOldCWD);
-   hadpath ? wxSetEnv(wxT("PATH"), envpath) : wxUnsetEnv(wxT("PATH"));
+   hadpath ? wxSetEnv(L"PATH", envpath) : wxUnsetEnv(L"PATH");
 
    return false;
 }
@@ -1605,7 +1605,7 @@ void LadspaEffect::Unload()
 bool LadspaEffect::LoadParameters(const RegistryPath & group)
 {
    wxString parms;
-   if (!GetConfig(*this, PluginSettings::Private, group, wxT("Parameters"),
+   if (!GetConfig(*this, PluginSettings::Private, group, L"Parameters",
       parms, wxEmptyString))
    {
       return false;
@@ -1635,7 +1635,7 @@ bool LadspaEffect::SaveParameters(const RegistryPath & group)
    }
 
    return SetConfig(*this, PluginSettings::Private,
-      group, wxT("Parameters"), parms);
+      group, L"Parameters", parms);
 }
 
 LADSPA_Handle LadspaEffect::InitInstance(float sampleRate)
@@ -1715,7 +1715,7 @@ void LadspaEffect::OnSlider(wxCommandEvent & evt)
 
    wxString str;
    if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
-      str.Printf(wxT("%d"), (int)(val + 0.5));
+      str.Printf(L"%d", (int)(val + 0.5));
    else
       str = Internat::ToDisplayString(val);
 
@@ -1799,7 +1799,7 @@ void LadspaEffect::RefreshControls(bool outputOnly)
 
       if (LADSPA_IS_HINT_INTEGER(hint.HintDescriptor) || forceint)
       {
-         fieldText.Printf(wxT("%d"), (int)(mInputControls[p] + 0.5));
+         fieldText.Printf(L"%d", (int)(mInputControls[p] + 0.5));
       }
       else
       {

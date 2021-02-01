@@ -32,8 +32,9 @@ void OnMidiDeviceInfo(const CommandContext &context)
    auto gAudioIO = AudioIOBase::Get();
    auto info = GetMIDIDeviceInfo();
    ShowDiagnostics( project, info,
-      XO("MIDI Device Info"), wxT("midideviceinfo.txt") );
+      XO("MIDI Device Info"), L"midideviceinfo.txt" );
 }
+#endif
 };
 
 static CommandHandlerObject &findCommandHandler(AudacityProject &) {
@@ -46,14 +47,13 @@ static CommandHandlerObject &findCommandHandler(AudacityProject &) {
 using namespace MenuTable;
 #define FN(X) (& Handler :: X)
 AttachedItem sAttachment{
-   { wxT("Help/Other/Diagnostics"),
-      { OrderingHint::After, wxT("DeviceInfo") } },
+   { L"Help/Other/Diagnostics",
+      { OrderingHint::After, L"DeviceInfo" } },
    ( FinderScope{ findCommandHandler },
-      Command( wxT("MidiDeviceInfo"), XXO("&MIDI Device Info..."),
+      Command( L"MidiDeviceInfo", XXO("&MIDI Device Info..."),
          FN(OnMidiDeviceInfo),
          AudioIONotBusyFlag() )
    )
 };
 #undef FN
 }
-#endif

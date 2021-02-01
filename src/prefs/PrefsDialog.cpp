@@ -153,9 +153,9 @@ public:
    // of this object.
    // Acceptable values:
    // - a null variant (IsNull() returns TRUE)
-   // - a list variant (GetType() == wxT("list"))
+   // - a list variant (GetType() == L"list")
    // - an integer representing the selected child element,
-   //   or 0 if this object is selected (GetType() == wxT("long"))
+   //   or 0 if this object is selected (GetType() == L"long")
    // - a "void*" pointer to a wxAccessible child object
    //wxAccStatus GetSelections(wxVariant *selections) override;
    // leave unimplemented
@@ -406,7 +406,7 @@ int wxTreebookExt::ChangeSelection(size_t n) {
 int wxTreebookExt::SetSelection(size_t n)
 {
    int i = wxTreebook::SetSelection(n);
-   auto Temp = mTitlePrefix.Translation() + wxT(" ") + GetPageText( n );
+   auto Temp = mTitlePrefix.Translation() + L" " + GetPageText( n );
    static_cast<wxDialog*>(GetParent())->SetTitle( Temp );
    static_cast<wxDialog*>(GetParent())->SetName( Temp );
 
@@ -573,14 +573,14 @@ PrefsDialog::PrefsDialog(
    // Use scrollers when necessary to ensure that preference pages will
    // be fully visible.
    wxRect screenRect(wxGetClientDisplayRect());
-   wxASSERT_MSG(sz.x <= screenRect.width && sz.y <= screenRect.height, wxT("Preferences dialog exceeds max size"));
+   wxASSERT_MSG(sz.x <= screenRect.width && sz.y <= screenRect.height, L"Preferences dialog exceeds max size");
 
    sz.DecTo(screenRect.GetSize());
 
    if( !mUniquePage ){
       int prefWidth, prefHeight;
-      gPrefs->Read(wxT("/Prefs/Width"), &prefWidth, sz.x);
-      gPrefs->Read(wxT("/Prefs/Height"), &prefHeight, wxMax(480,sz.y));
+      gPrefs->Read(L"/Prefs/Width", &prefWidth, sz.x);
+      gPrefs->Read(L"/Prefs/Height", &prefHeight, wxMax(480,sz.y));
 
       wxSize prefSize = wxSize(prefWidth, prefHeight);
       prefSize.DecTo(screenRect.GetSize());
@@ -616,7 +616,7 @@ int PrefsDialog::ShowModal()
    }
    else {
       auto Temp = mTitlePrefix;
-      Temp.Join( Verbatim( mUniquePage->GetLabel() ), wxT(" ") );
+      Temp.Join( Verbatim( mUniquePage->GetLabel() ), L" " );
       SetTitle(Temp);
       SetName(Temp);
    }
@@ -639,8 +639,8 @@ void PrefsDialog::OnCancel(wxCommandEvent & WXUNUSED(event))
    // Remember modified dialog size, even if cancelling.
    if( !mUniquePage ){
       wxSize sz = GetSize();
-      gPrefs->Write(wxT("/Prefs/Width"), sz.x);
-      gPrefs->Write(wxT("/Prefs/Height"), sz.y);
+      gPrefs->Write(L"/Prefs/Width", sz.x);
+      gPrefs->Write(L"/Prefs/Height", sz.y);
    }
    gPrefs->Flush();
 
@@ -718,8 +718,8 @@ void PrefsDialog::OnOK(wxCommandEvent & WXUNUSED(event))
 
    if( !mUniquePage ){
       wxSize sz = GetSize();
-      gPrefs->Write(wxT("/Prefs/Width"), sz.x);
-      gPrefs->Write(wxT("/Prefs/Height"), sz.y);
+      gPrefs->Write(L"/Prefs/Width", sz.x);
+      gPrefs->Write(L"/Prefs/Height", sz.y);
    }
    gPrefs->Flush();
 
@@ -812,13 +812,13 @@ GlobalPrefsDialog::~GlobalPrefsDialog()
 
 long GlobalPrefsDialog::GetPreferredPage()
 {
-   long prefscat = gPrefs->Read(wxT("/Prefs/PrefsCategory"), 0L);
+   long prefscat = gPrefs->Read(L"/Prefs/PrefsCategory", 0L);
    return prefscat;
 }
 
 void GlobalPrefsDialog::SavePreferredPage()
 {
-   gPrefs->Write(wxT("/Prefs/PrefsCategory"), (long)GetSelectedPage());
+   gPrefs->Write(L"/Prefs/PrefsCategory", (long)GetSelectedPage());
    gPrefs->Flush();
 }
 

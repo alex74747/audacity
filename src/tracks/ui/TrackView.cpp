@@ -103,8 +103,8 @@ void TrackView::SetMinimized(bool isMinimized)
 
 void TrackView::WriteXMLAttributes( XMLWriter &xmlFile ) const
 {
-   xmlFile.WriteAttr(wxT("height"), GetExpandedHeight());
-   xmlFile.WriteAttr(wxT("minimized"), GetMinimized());
+   xmlFile.WriteAttr(L"height", GetExpandedHeight());
+   xmlFile.WriteAttr(L"minimized", GetMinimized());
 }
 
 bool TrackView::HandleXMLAttribute(

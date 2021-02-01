@@ -89,7 +89,7 @@ void MidiIOPrefs::Populate()
 #ifdef EXPERIMENTAL_MIDI_IN
    mRecordDevice = MIDIRecordingDevice.Read();
 #endif
-//   mRecordChannels = gPrefs->Read(wxT("/MidiIO/RecordChannels"), 2L);
+//   mRecordChannels = gPrefs->Read(L"/MidiIO/RecordChannels", 2L);
 
    //------------------------- Main section --------------------
    // Now construct the GUI itself.
@@ -126,7 +126,7 @@ void MidiIOPrefs::GetNamesAndLabels() {
 
    if (nDevices == 0) {
       mHostNames.push_back(XO("No MIDI interfaces"));
-      mHostLabels.push_back(wxT("No MIDI interfaces"));
+      mHostLabels.push_back(L"No MIDI interfaces");
    }
 }
 
@@ -144,7 +144,7 @@ void MidiIOPrefs::PopulateOrExchange( ShuttleGui & S ) {
          /* i18n-hint: (noun) */
          mHost = S.TieChoice( XXO("&Host:"),
             {
-               wxT("/MidiIO/Host"),
+               L"/MidiIO/Host",
                { ByColumns, mHostNames, mHostLabels }
             }
          );
@@ -213,7 +213,7 @@ void MidiIOPrefs::OnHost(wxCommandEvent & WXUNUSED(e))
       wxString interf = wxSafeConvertMB2WX(info->interf);
       if (itemAtIndex == interf) {
          wxString name = wxSafeConvertMB2WX(info->name);
-         wxString device = wxString::Format(wxT("%s: %s"),
+         wxString device = wxString::Format(L"%s: %s",
                                             interf,
                                             name);
          if (info->output) {
@@ -270,7 +270,7 @@ bool MidiIOPrefs::Commit()
    info = (const PmDeviceInfo *) mPlay->GetClientData(mPlay->GetSelection());
    if (info) {
       MIDIPlaybackDevice.Write(
-         wxString::Format(wxT("%s: %s"),
+         wxString::Format(L"%s: %s",
             wxString(wxSafeConvertMB2WX(info->interf)),
             wxString(wxSafeConvertMB2WX(info->name))));
    }
@@ -278,7 +278,7 @@ bool MidiIOPrefs::Commit()
    info = (const PmDeviceInfo *) mRecord->GetClientData(mRecord->GetSelection());
    if (info) {
       MidiRecordingDevice.Write(
-         wxString::Format(wxT("%s: %s"),
+         wxString::Format(L"%s: %s",
             wxString(wxSafeConvertMB2WX(info->interf)),
             wxString(wxSafeConvertMB2WX(info->name))));
    }

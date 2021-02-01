@@ -1273,8 +1273,8 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
 
    mIsRecording = false;
 
-   mTimelineToolTip = !!gPrefs->Read(wxT("/QuickPlay/ToolTips"), 1L);
-   mPlayRegionDragsSelection = (gPrefs->Read(wxT("/QuickPlay/DragSelection"), 0L) == 1)? true : false; 
+   mTimelineToolTip = !!gPrefs->Read(L"/QuickPlay/ToolTips", 1L);
+   mPlayRegionDragsSelection = (gPrefs->Read(L"/QuickPlay/DragSelection", 0L) == 1)? true : false; 
 
 #if wxUSE_TOOLTIPS
    wxToolTip::Enable(true);
@@ -1319,7 +1319,7 @@ void AdornedRulerPanel::UpdatePrefs()
    // Update button texts for language change
    UpdateButtonStates();
 
-   mTimelineToolTip = !!gPrefs->Read(wxT("/QuickPlay/ToolTips"), 1L);
+   mTimelineToolTip = !!gPrefs->Read(L"/QuickPlay/ToolTips", 1L);
 
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
 #ifdef EXPERIMENTAL_TWO_TONE_TIME_RULER
@@ -2172,7 +2172,7 @@ void AdornedRulerPanel::UpdateButtonStates()
       // Bug 1584: Tooltip now shows what clicking will do.
       // Bug 2357: Action of button (and hence tooltip wording) updated.
       const auto label = XO("Timeline Options");
-      common(*pinButton, wxT("PinnedHead"), label);
+      common(*pinButton, L"PinnedHead", label);
    }
 }
 
@@ -2266,7 +2266,7 @@ void AdornedRulerPanel::ShowScrubMenu(const wxPoint & pos)
 void AdornedRulerPanel::OnSyncSelToQuickPlay()
 {
    mPlayRegionDragsSelection = (mPlayRegionDragsSelection)? false : true;
-   gPrefs->Write(wxT("/QuickPlay/DragSelection"), mPlayRegionDragsSelection);
+   gPrefs->Write(L"/QuickPlay/DragSelection", mPlayRegionDragsSelection);
    gPrefs->Flush();
 }
 
@@ -2299,7 +2299,7 @@ void AdornedRulerPanel::HandleSnapping(size_t index)
 void AdornedRulerPanel::OnTimelineToolTips(wxCommandEvent&)
 {
    mTimelineToolTip = (mTimelineToolTip)? false : true;
-   gPrefs->Write(wxT("/QuickPlay/ToolTips"), mTimelineToolTip);
+   gPrefs->Write(L"/QuickPlay/ToolTips", mTimelineToolTip);
    gPrefs->Flush();
 }
 #endif
@@ -2307,9 +2307,9 @@ void AdornedRulerPanel::OnTimelineToolTips(wxCommandEvent&)
 void AdornedRulerPanel::OnAutoScroll()
 {
    if (mViewInfo->bUpdateTrackIndicator)
-      gPrefs->Write(wxT("/GUI/A utoScroll"), false);
+      gPrefs->Write(L"/GUI/A utoScroll", false);
    else
-      gPrefs->Write(wxT("/GUI/AutoScroll"), true);
+      gPrefs->Write(L"/GUI/AutoScroll", true);
 
    gPrefs->Flush();
 

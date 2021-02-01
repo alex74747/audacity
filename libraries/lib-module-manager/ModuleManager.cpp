@@ -68,7 +68,7 @@ void Module::ShowLoadFailureError(const wxString &Error)
    DoMessageBox(
       XO("Unable to load the \"%s\" module.\n\nError: %s")
          .Format(ShortName, Error));
-   wxLogMessage(wxT("Unable to load the module \"%s\". Error: %s"), mName, Error);
+   wxLogMessage(L"Unable to load the module \"%s\". Error: %s", mName, Error);
 }
 
 bool Module::Load(wxString &deferredErrorMessage)
@@ -100,7 +100,7 @@ bool Module::Load(wxString &deferredErrorMessage)
       DoMessageBox(
          XO("The module \"%s\" does not provide a version string.\n\nIt will not be loaded.")
             .Format( ShortName));
-      wxLogMessage(wxT("The module \"%s\" does not provide a version string. It will not be loaded."), mName);
+      wxLogMessage(L"The module \"%s\" does not provide a version string. It will not be loaded.", mName);
       mLib->Unload();
       return false;
    }
@@ -110,7 +110,7 @@ bool Module::Load(wxString &deferredErrorMessage)
       DoMessageBox(
          XO("The module \"%s\" is matched with Audacity version \"%s\".\n\nIt will not be loaded.")
             .Format(ShortName, moduleVersion));
-      wxLogMessage(wxT("The module \"%s\" is matched with Audacity version \"%s\". It will not be loaded."), mName, moduleVersion);
+      wxLogMessage(L"The module \"%s\" is matched with Audacity version \"%s\". It will not be loaded.", mName, moduleVersion);
       mLib->Unload();
       return false;
    }
@@ -133,7 +133,7 @@ bool Module::Load(wxString &deferredErrorMessage)
    DoMessageBox(
       XO("The module \"%s\" failed to initialize.\n\nIt will not be loaded.")
          .Format(ShortName));
-   wxLogMessage(wxT("The module \"%s\" failed to initialize.\nIt will not be loaded."), mName);
+   wxLogMessage(L"The module \"%s\" failed to initialize.\nIt will not be loaded.", mName);
    mLib->Unload();
 
    return false;
@@ -222,13 +222,13 @@ void ModuleManager::FindModules(FilePaths &files)
    wxString pathVar;
 
    // Code from LoadLadspa that might be useful in load modules.
-   pathVar = wxGetenv(wxT("AUDACITY_MODULES_PATH"));
+   pathVar = wxGetenv(L"AUDACITY_MODULES_PATH");
    if (!pathVar.empty())
       FileNames::AddMultiPathsToPathList(pathVar, pathList);
 
    for (const auto &path : audacityPathList) {
       wxString prefix = path + wxFILE_SEP_PATH;
-      FileNames::AddUniquePathToPathList(prefix + wxT("modules"),
+      FileNames::AddUniquePathToPathList(prefix + L"modules",
                                          pathList);
       if (files.size()) {
          break;
@@ -236,9 +236,9 @@ void ModuleManager::FindModules(FilePaths &files)
    }
 
    #if defined(__WXMSW__)
-   FileNames::FindFilesInPathList(wxT("*.dll"), pathList, files);
+   FileNames::FindFilesInPathList(L"*.dll", pathList, files);
    #else
-   FileNames::FindFilesInPathList(wxT("*.so"), pathList, files);
+   FileNames::FindFilesInPathList(L"*.so", pathList, files);
    #endif
 }
 
@@ -328,7 +328,7 @@ void ModuleManager::TryLoadModules(
             DoMessageBox(
                XO("The module \"%s\" does not provide any of the required functions.\n\nIt will not be loaded.")
                   .Format(ShortName));
-            wxLogMessage(wxT("The module \"%s\" does not provide any of the required functions. It will not be loaded."), file);
+            wxLogMessage(L"The module \"%s\" does not provide any of the required functions. It will not be loaded.", file);
             module->Unload();
          }
          else
@@ -410,7 +410,7 @@ wxString ModuleManager::GetPluginTypeString()
 
 PluginID ModuleManager::GetID(ModuleInterface *module)
 {
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
+   return wxString::Format(L"%s_%s_%s_%s_%s",
                            GetPluginTypeString(),
                            wxEmptyString,
                            module->GetVendor().Internal(),
@@ -441,11 +441,11 @@ bool ModuleManager::DiscoverProviders()
    }
 
 #if defined(__WXMSW__)
-   FileNames::FindFilesInPathList(wxT("*.dll"), pathList, provList);
+   FileNames::FindFilesInPathList(L"*.dll", pathList, provList);
 #elif defined(__WXMAC__)
-   FileNames::FindFilesInPathList(wxT("*.dylib"), pathList, provList);
+   FileNames::FindFilesInPathList(L"*.dylib", pathList, provList);
 #else
-   FileNames::FindFilesInPathList(wxT("*.so"), pathList, provList);
+   FileNames::FindFilesInPathList(L"*.so", pathList, provList);
 #endif
 
    for ( const auto &path : provList )

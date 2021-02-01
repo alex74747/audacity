@@ -577,7 +577,7 @@ bool ProjectSerializer::Decode(BufferedStreamReader& in, XMLTagHandler* handler)
             return FastStringConvert<char32_t>(bytes.data(), len);
 
          default:
-            wxASSERT_MSG(false, wxT("Characters size not 1, 2, or 4"));
+            wxASSERT_MSG(false, L"Characters size not 1, 2, or 4");
          break;
       }
 

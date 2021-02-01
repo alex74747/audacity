@@ -42,7 +42,7 @@
 // Define keys, defaults, minimums, and maximums for the effect parameters
 //
 //     Name    Type  Key             Def  Min   Max      Scale
-Param( Count,  int,  wxT("Count"),    1,  1,    INT_MAX, 1  );
+Param( Count,  int,  L"Count",    1,  1,    INT_MAX, 1  );
 
 const ComponentInterfaceSymbol EffectRepeat::Symbol
 { XO("Repeat") };
@@ -184,7 +184,7 @@ void EffectRepeat::PopulateOrExchange(ShuttleGui & S)
             &repeatCount, NumValidatorStyle::DEFAULT,
             MIN_Count, 2147483647 / mProjectRate
          )
-         .AddTextBox(XXO("&Number of repeats to add:"), wxT(""), 12);
+         .AddTextBox(XXO("&Number of repeats to add:"), L"", 12);
    }
    S.EndHorizontalLay();
 
@@ -199,7 +199,7 @@ void EffectRepeat::PopulateOrExchange(ShuttleGui & S)
 
 bool EffectRepeat::TransferDataToWindow()
 {
-   mRepeatCount->ChangeValue(wxString::Format(wxT("%d"), repeatCount));
+   mRepeatCount->ChangeValue(wxString::Format(L"%d", repeatCount));
 
    DisplayNewTime();
 

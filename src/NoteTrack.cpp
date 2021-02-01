@@ -343,7 +343,7 @@ void NoteTrack::DrawLabelControls
          wxCoord w;
          wxCoord h;
 
-         text.Printf(wxT("%d"), chanName);
+         text.Printf(L"%d", chanName);
          dc.GetTextExtent(text, &w, &h);
 
          dc.DrawText(text, box.x + (box.width - w) / 2, box.y + (box.height - h) / 2);
@@ -969,19 +969,19 @@ void NoteTrack::WriteXML(XMLWriter &xmlFile) const
       saveme = static_cast<NoteTrack*>(holder.get());
    }
    saveme->GetSeq().write(data, true);
-   xmlFile.StartTag(wxT("notetrack"));
+   xmlFile.StartTag(L"notetrack");
    saveme->Track::WriteCommonXMLAttributes( xmlFile );
    this->NoteTrackBase::WriteXMLAttributes(xmlFile);
-   xmlFile.WriteAttr(wxT("offset"), saveme->GetOffset());
-   xmlFile.WriteAttr(wxT("visiblechannels"), saveme->mVisibleChannels);
+   xmlFile.WriteAttr(L"offset", saveme->GetOffset());
+   xmlFile.WriteAttr(L"visiblechannels", saveme->mVisibleChannels);
 
 #ifdef EXPERIMENTAL_MIDI_OUT
-   xmlFile.WriteAttr(wxT("velocity"), (double) saveme->mVelocity);
+   xmlFile.WriteAttr(L"velocity", (double) saveme->mVelocity);
 #endif
-   xmlFile.WriteAttr(wxT("bottomnote"), saveme->mBottomNote);
-   xmlFile.WriteAttr(wxT("topnote"), saveme->mTopNote);
-   xmlFile.WriteAttr(wxT("data"), wxString(data.str().c_str(), wxConvUTF8));
-   xmlFile.EndTag(wxT("notetrack"));
+   xmlFile.WriteAttr(L"bottomnote", saveme->mBottomNote);
+   xmlFile.WriteAttr(L"topnote", saveme->mTopNote);
+   xmlFile.WriteAttr(L"data", wxString(data.str().c_str(), wxConvUTF8));
+   xmlFile.EndTag(L"notetrack");
 }
 
 void NoteTrack::SetBottomNote(int note)
@@ -1193,9 +1193,9 @@ wxString GetMIDIDeviceInfo()
    int cnt = Pm_CountDevices();
 
    // PRL:  why only into the log?
-   wxLogDebug(wxT("PortMidi reports %d MIDI devices"), cnt);
+   wxLogDebug(L"PortMidi reports %d MIDI devices", cnt);
 
-   s << wxT("==============================\n");
+   s << L"==============================\n";
    s << XO("Default recording device number: %d\n").Format( recDeviceNum );
    s << XO("Default playback device number: %d\n").Format( playDeviceNum );
 
@@ -1209,7 +1209,7 @@ wxString GetMIDIDeviceInfo()
    }
 
    for (int i = 0; i < cnt; i++) {
-      s << wxT("==============================\n");
+      s << L"==============================\n";
 
       const PmDeviceInfo* info = Pm_GetDeviceInfo(i);
       if (!info) {
@@ -1248,7 +1248,7 @@ wxString GetMIDIDeviceInfo()
    bool haveRecDevice = (recDeviceNum >= 0);
    bool havePlayDevice = (playDeviceNum >= 0);
 
-   s << wxT("==============================\n");
+   s << L"==============================\n";
    if (haveRecDevice)
       s << XO("Selected MIDI recording device: %d - %s\n").Format( recDeviceNum, recDevice );
    else
@@ -1263,16 +1263,16 @@ wxString GetMIDIDeviceInfo()
 #ifdef IS_ALPHA
 
    // Not internationalizing these alpha-only messages
-   s << wxT("==============================\n");
+   s << L"==============================\n";
 #ifdef EXPERIMENTAL_MIDI_OUT
-   s << wxT("EXPERIMENTAL_MIDI_OUT is enabled\n");
+   s << L"EXPERIMENTAL_MIDI_OUT is enabled\n";
 #else
-   s << wxT("EXPERIMENTAL_MIDI_OUT is NOT enabled\n");
+   s << L"EXPERIMENTAL_MIDI_OUT is NOT enabled\n";
 #endif
 #ifdef EXPERIMENTAL_MIDI_IN
-   s << wxT("EXPERIMENTAL_MIDI_IN is enabled\n");
+   s << L"EXPERIMENTAL_MIDI_IN is enabled\n";
 #else
-   s << wxT("EXPERIMENTAL_MIDI_IN is NOT enabled\n");
+   s << L"EXPERIMENTAL_MIDI_IN is NOT enabled\n";
 #endif
 
 #endif

@@ -27,10 +27,10 @@ class ShuttleGui;
    XC("Recording", "preference") \
 }
 
-#define AUDIO_PRE_ROLL_KEY (wxT("/AudioIO/PreRoll"))
+#define AUDIO_PRE_ROLL_KEY (L"/AudioIO/PreRoll")
 #define DEFAULT_PRE_ROLL_SECONDS 5.0
 
-#define AUDIO_ROLL_CROSSFADE_KEY (wxT("/AudioIO/Crossfade"))
+#define AUDIO_ROLL_CROSSFADE_KEY (L"/AudioIO/Crossfade")
 #define DEFAULT_ROLL_CROSSFADE_MS 10.0
 
 class RecordingPrefs final : public PrefsPanel

@@ -101,9 +101,9 @@ public:
    // of this object.
    // Acceptable values:
    // - a null variant (IsNull() returns TRUE)
-   // - a list variant (GetType() == wxT("list"))
+   // - a list variant (GetType() == L"list")
    // - an integer representing the selected child element,
-   //   or 0 if this object is selected (GetType() == wxT("long"))
+   //   or 0 if this object is selected (GetType() == L"long")
    // - a "void*" pointer to a wxAccessible child object
    wxAccStatus GetSelections(wxVariant *selections) override;
 
@@ -232,7 +232,7 @@ KeyView::GetFullLabel(int index) const
    // Prepend the prefix if available
    if (!node.prefix.empty())
    {
-      label = node.prefix + wxT(" - ") + label;
+      label = node.prefix + L" - " + label;
    }
 
    return label;
@@ -578,7 +578,7 @@ KeyView::RecalcExtents()
          wxString label = node.label;
          if (mViewType != ViewByTree && !node.prefix.empty())
          {
-            label = node.prefix + wxT(" - ") + label;
+            label = node.prefix + L" - " + label;
          }
 
          // Measure the label
@@ -672,7 +672,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
       // Append "Menu" this node is for a menu title
       if (cat != CommandTranslated)
       {
-         cat.Append(wxT(" "));
+         cat.Append(L" ");
          cat += _("Menu");
       }
 
@@ -768,11 +768,11 @@ KeyView::RefreshBindings(const CommandIDs & names,
       // Labels for undo and redo change according to the last command
       // which can be undone/redone, so give them a special check in order
       // not to confuse users
-      if (name == wxT("Undo"))
+      if (name == L"Undo")
       {
          node.label = _("Undo");
       }
-      else if (name == wxT("Redo"))
+      else if (name == L"Redo")
       {
          node.label = _("Redo");
       }
@@ -801,7 +801,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
       wxString label = node.label;
       if (!node.prefix.empty())
       {
-         label = node.prefix + wxT(" - ") + label;
+         label = node.prefix + L" - " + label;
       }
 
       // Measure label
@@ -815,7 +815,7 @@ KeyView::RefreshBindings(const CommandIDs & names,
    for (int j = 0; j < mNodes.size(); j++)
    {
       KeyNode & node = mNodes[j];
-      wxLogDebug(wxT("NODE line %4d index %4d depth %1d open %1d parent %1d cat %1d pfx %1d name %s STR %s | %s | %s"),
+      wxLogDebug(L"NODE line %4d index %4d depth %1d open %1d parent %1d cat %1d pfx %1d name %s STR %s | %s | %s",
          node.line,
          node.index,
          node.depth,
@@ -880,7 +880,7 @@ KeyView::RefreshLines(bool bSort)
             // to appear in the filter itself.
             case ViewByTree:
                searchit = node.label.Lower() +
-                          wxT("\01x") +
+                          L"\01x" +
                           node.key.Display().GET().Lower();
             break;
 
@@ -905,7 +905,7 @@ KeyView::RefreshLines(bool bSort)
                (mFilter.length() == 1) &&
                (mFilter.GET().Lower() != searchit.Last() ||
                   ((searchit.length() > 1) &&
-                     ((wxString)(searchit.GetChar(searchit.length() - 2)) != wxT("+")))))
+                     ((wxString)(searchit.GetChar(searchit.length() - 2)) != L"+"))))
          {
             // Not suitable so continue to next node
             continue;
@@ -1075,7 +1075,7 @@ KeyView::RefreshLines(bool bSort)
    for (int j = 0; j < mLines.size(); j++)
    {
       KeyNode & node = *mLines[j];
-      wxLogDebug(wxT("LINE line %4d index %4d depth %1d open %1d parent %1d cat %1d pfx %1d name %s STR %s | %s | %s"),
+      wxLogDebug(L"LINE line %4d index %4d depth %1d open %1d parent %1d cat %1d pfx %1d name %s STR %s | %s | %s",
          node.line,
          node.index,
          node.depth,
@@ -1300,7 +1300,7 @@ KeyView::OnDrawItem(wxDC & dc, const wxRect & rect, size_t line) const
       // Prepend prefix if available
       if (!node->prefix.empty())
       {
-         label = node->prefix + wxT(" - ") + label;
+         label = node->prefix + L" - " + label;
       }
 
       // don't swap the columns based on view type
@@ -1837,11 +1837,11 @@ KeyView::GetValue(int line)
    {
       if (mViewType == ViewByKey)
       {
-         value = key + wxT(" ") + value;
+         value = key + L" " + value;
       }
       else
       {
-         value = value + wxT(" ") + key;
+         value = value + L" " + key;
       }
    }
 
@@ -2167,9 +2167,9 @@ KeyViewAx::GetRole(int childId, wxAccRole *role)
 // of this object.
 // Acceptable values:
 // - a null variant (IsNull() returns TRUE)
-// - a list variant (GetType() == wxT("list"))
+// - a list variant (GetType() == L"list")
 // - an integer representing the selected child element,
-//   or 0 if this object is selected (GetType() == wxT("long"))
+//   or 0 if this object is selected (GetType() == L"long")
 // - a "void*" pointer to a wxAccessible child object
 wxAccStatus
 KeyViewAx::GetSelections(wxVariant *selections)
@@ -2256,7 +2256,7 @@ KeyViewAx::GetValue(int childId, wxString *strValue)
    if (mView->GetViewType() == ViewByTree)
    {
       KeyNode *node = mView->mLines[line];
-      strValue->Printf(wxT("%d"), node->depth - 1);
+      strValue->Printf(L"%d", node->depth - 1);
    }
 
    // Don't set a value for the other view types

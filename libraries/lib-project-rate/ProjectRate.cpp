@@ -65,7 +65,7 @@ void ProjectRate::SetRate(double rate)
 
 static ProjectFileIORegistry::AttributeWriterEntry entry {
 [](const AudacityProject &project, XMLWriter &xmlFile){
-   xmlFile.WriteAttr(wxT("rate"), ProjectRate::Get(project).GetRate());
+   xmlFile.WriteAttr(L"rate", ProjectRate::Get(project).GetRate());
 }
 };
 

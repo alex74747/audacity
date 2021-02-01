@@ -75,7 +75,7 @@ enum {
 static const EnumValueSymbol kTypes[nTypes] =
 {
    { XO("Commands") },
-   //{ wxT("CommandsPlus"), XO("Commands Plus") },
+   //{ L"CommandsPlus", XO("Commands Plus") },
    { XO("Menus") },
    { XO("Preferences") },
    { XO("Tracks") },
@@ -106,8 +106,8 @@ static const EnumValueSymbol kFormats[nFormats] =
 
 
 bool GetInfoCommand::DefineParams( ShuttleParams & S ){
-   S.DefineEnum( mInfoType, wxT("Type"), 0, kTypes, nTypes );
-   S.DefineEnum( mFormat, wxT("Format"), 0, kFormats, nFormats );
+   S.DefineEnum( mInfoType, L"Type", 0, kTypes, nTypes );
+   S.DefineEnum( mFormat, L"Format", 0, kFormats, nFormats );
    return true;
 }
 

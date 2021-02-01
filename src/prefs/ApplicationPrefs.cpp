@@ -90,7 +90,7 @@ void ApplicationPrefs::PopulateOrExchange(ShuttleGui & S)
 
          privacyPolicy.FormatLink(
             /* i18n-hint: Title of hyperlink to the privacy policy. This is an object of "See". */
-            wxT("%s"), XO("our Privacy Policy"),
+            L"%s", XO("our Privacy Policy"),
             "https://www.audacityteam.org/about/desktop-privacy-notice/");
 
          privacyPolicy.Populate(S);

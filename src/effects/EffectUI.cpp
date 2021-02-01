@@ -161,7 +161,7 @@ EffectRack::EffectRack( AudacityProject &project )
    }
 
    wxString oldPath = gPrefs->GetPath();
-   gPrefs->SetPath(wxT("/EffectsRack"));
+   gPrefs->SetPath(L"/EffectsRack");
    size_t cnt = gPrefs->GetNumberOfEntries();
    gPrefs->SetPath(oldPath);
 
@@ -169,12 +169,12 @@ EffectRack::EffectRack( AudacityProject &project )
    for (size_t i = 0; i < cnt; i++)
    {
       wxString slot;
-      gPrefs->Read(wxString::Format(wxT("/EffectsRack/Slot%02d"), i), &slot);
+      gPrefs->Read(wxString::Format(L"/EffectsRack/Slot%02d", i), &slot);
 
       Effect *effect = em.GetEffect(slot.AfterFirst(L','));
       if (effect)
       {
-         Add(effect, slot.BeforeFirst(L',') == wxT("1"), true);
+         Add(effect, slot.BeforeFirst(L',') == L"1", true);
       }
    }
 
@@ -183,15 +183,15 @@ EffectRack::EffectRack( AudacityProject &project )
 
 EffectRack::~EffectRack()
 {
-   gPrefs->DeleteGroup(wxT("/EffectsRack"));
+   gPrefs->DeleteGroup(L"/EffectsRack");
 
    for (size_t i = 0, cnt = mEffects.size(); i < cnt; i++)
    {
       if (mFavState[i])
       {
          Effect *effect = mEffects[i];
-         gPrefs->Write(wxString::Format(wxT("/EffectsRack/Slot%02d"), i),
-            wxString::Format(wxT("%d,%s"), mPowerState[i], GetID(*effect)));
+         gPrefs->Write(wxString::Format(L"/EffectsRack/Slot%02d", i),
+            wxString::Format(L"%d,%s", mPowerState[i], GetID(*effect)));
       }
    }
 }
@@ -1364,7 +1364,7 @@ void EffectUIHost::OnRewind(wxCommandEvent & WXUNUSED(evt))
    {
       auto gAudioIO = AudioIO::Get();
       double seek;
-      gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &seek, 1.0);
+      gPrefs->Read(L"/AudioIO/SeekShortPeriod", &seek, 1.0);
       
       double pos = gAudioIO->GetStreamTime();
       if (pos - seek < mRegion.t0())
@@ -1385,7 +1385,7 @@ void EffectUIHost::OnFFwd(wxCommandEvent & WXUNUSED(evt))
    if (mPlaying)
    {
       double seek;
-      gPrefs->Read(wxT("/AudioIO/SeekShortPeriod"), &seek, 1.0);
+      gPrefs->Read(L"/AudioIO/SeekShortPeriod", &seek, 1.0);
       
       auto gAudioIO = AudioIO::Get();
       double pos = gAudioIO->GetStreamTime();
@@ -1895,23 +1895,23 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
          auto& menuManager = MenuManager::Get(project);
          switch ( type ) {
          case EffectTypeGenerate:
-            commandManager.Modify(wxT("RepeatLastGenerator"), lastEffectDesc);
+            commandManager.Modify(L"RepeatLastGenerator", lastEffectDesc);
             menuManager.mLastGenerator = ID;
             menuManager.mRepeatGeneratorFlags = EffectManager::kConfigured;
             break;
          case EffectTypeProcess:
-            commandManager.Modify(wxT("RepeatLastEffect"), lastEffectDesc);
+            commandManager.Modify(L"RepeatLastEffect", lastEffectDesc);
             menuManager.mLastEffect = ID;
             menuManager.mRepeatEffectFlags = EffectManager::kConfigured;
             break;
          case EffectTypeAnalyze:
-            commandManager.Modify(wxT("RepeatLastAnalyzer"), lastEffectDesc);
+            commandManager.Modify(L"RepeatLastAnalyzer", lastEffectDesc);
             menuManager.mLastAnalyzer = ID;
             menuManager.mLastAnalyzerRegistration = MenuCreator::repeattypeplugin;
             menuManager.mRepeatAnalyzerFlags = EffectManager::kConfigured;
             break;
          case EffectTypeTool:
-            commandManager.Modify(wxT("RepeatLastTool"), lastEffectDesc);
+            commandManager.Modify(L"RepeatLastTool", lastEffectDesc);
             menuManager.mLastTool = ID;
             menuManager.mLastToolRegistration = MenuCreator::repeattypeplugin;
             menuManager.mRepeatToolFlags = EffectManager::kConfigured;

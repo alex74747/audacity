@@ -204,7 +204,7 @@ auto ProjectFileManager::ReadProjectFile(
          if (t->GetErrorOpening())
          {
             wxLogWarning(
-               wxT("Track %s had error reading clip values from project file."),
+               L"Track %s had error reading clip values from project file.",
                t->GetName());
             err = true;
          }
@@ -447,7 +447,7 @@ bool ProjectFileManager::SaveAs(bool allowOverwrite /* = false */)
 'Save Project' is for an Audacity project, not an audio file.\n\
 For an audio file that will open in other apps, use 'Export'.\n");
 
-   if (ShowWarningDialog(&window, wxT("FirstProjectSave"), message, true) != wxID_OK) {
+   if (ShowWarningDialog(&window, L"FirstProjectSave", message, true) != wxID_OK) {
       return false;
    }
 
@@ -463,7 +463,7 @@ For an audio file that will open in other apps, use 'Export'.\n");
             title,
             filename.GetPath(),
             filename.GetFullName(),
-            wxT("aup3"),
+            L"aup3",
             { FileNames::AudacityProjects },
             wxFD_SAVE | wxRESIZE_BORDER,
             &window);
@@ -474,7 +474,7 @@ For an audio file that will open in other apps, use 'Export'.\n");
          filename = fName;
       };
 
-      filename.SetExt(wxT("aup3"));
+      filename.SetExt(L"aup3");
 
       if ((!bPrompt || !allowOverwrite) && filename.FileExists()) {
          // Saving a copy of the project should never overwrite an existing project.
@@ -556,7 +556,7 @@ For an audio file that will open in other apps, use 'Export'.\n");
    return(success);
 }
 
-bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = wxT("") */)
+bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = L"" */)
 {
    auto &project = mProject;
    auto &projectFileIO = ProjectFileIO::Get(project);
@@ -603,7 +603,7 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = wxT("") */)
                                        title,
                                        filename.GetPath(),
                                        filename.GetFullName(),
-                                       wxT("aup3"),
+                                       L"aup3",
                                        { FileNames::AudacityProjects },
                                        wxFD_SAVE | wxRESIZE_BORDER,
                                        &window);
@@ -616,7 +616,7 @@ bool ProjectFileManager::SaveCopy(const FilePath &fileName /* = wxT("") */)
          filename = fName;
       };
 
-      filename.SetExt(wxT("aup3"));
+      filename.SetExt(L"aup3");
 
       if (TempDirectory::FATFilesystemDenied(filename.GetFullPath(), XO("Projects cannot be saved to FAT drives.")))
       {
@@ -820,7 +820,7 @@ wxArrayString ProjectFileManager::ShowOpenDialog(FileNames::Operation op,
    FileDialogWrapper dlog(nullptr,
       XO("Select one or more files"),
       path,
-      wxT(""),
+      L"",
       fileTypes,
       wxFD_OPEN | wxFD_MULTIPLE | wxRESIZE_BORDER);
 
@@ -890,7 +890,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
    // Data loss may occur if users mistakenly try to open ".aup3.bak" files
    // left over from an unsuccessful save or by previous versions of Audacity.
    // So we always refuse to open such files.
-   if (fileName.Lower().EndsWith(wxT(".aup3.bak")))
+   if (fileName.Lower().EndsWith(L".aup3.bak"))
    {
       AudacityMessageBox(
          XO(
@@ -912,7 +912,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
 
    // Following block covers cases other than a project file:
    {
-      wxFFile ff(fileName, wxT("rb"));
+      wxFFile ff(fileName, L"rb");
 
       auto cleanup = finally([&]
       {
@@ -969,7 +969,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
          if (Get(project).Import(fileName)) {
             // Undo history is incremented inside this:
             // Bug 2743: Don't zoom with lof.
-            if (!fileName.AfterLast('.').IsSameAs(wxT("lof"), false))
+            if (!fileName.AfterLast('.').IsSameAs(L"lof", false))
                ProjectWindow::Get(project).ZoomAfterImport(nullptr);
             return &project;
          }
@@ -1061,7 +1061,7 @@ AudacityProject *ProjectFileManager::OpenProjectFile(
 
       tracks.Clear(); //tracks.Clear(true);
 
-      wxLogError(wxT("Could not parse file \"%s\". \nError: %s"), fileName, errorStr.Debug());
+      wxLogError(L"Could not parse file \"%s\". \nError: %s", fileName, errorStr.Debug());
 
       projectFileIO.ShowError( *ProjectFramePlacement(&project),
          XO("Error Opening Project"),
@@ -1220,7 +1220,7 @@ bool ProjectFileManager::Import(
 
 #ifdef EXPERIMENTAL_IMPORT_AUP3
    // Handle AUP3 ("project") files directly
-   if (fileName.AfterLast('.').IsSameAs(wxT("aup3"), false)) {
+   if (fileName.AfterLast('.').IsSameAs(L"aup3", false)) {
       if (ImportProject(project, fileName)) {
          auto &history = ProjectHistory::Get(project);
 
@@ -1248,7 +1248,7 @@ bool ProjectFileManager::Import(
          // Additional help via a Help button links to the manual.
          ShowErrorDialog( *ProjectFramePlacement(&project),
             XO("Error Importing"),
-            errorMessage, wxT("Importing_Audio"));
+            errorMessage, L"Importing_Audio");
       }
 
       return false;
@@ -1267,11 +1267,11 @@ bool ProjectFileManager::Import(
 
 #ifndef EXPERIMENTAL_IMPORT_AUP3
       // Handle AUP3 ("project") files specially
-      if (fileName.AfterLast('.').IsSameAs(wxT("aup3"), false)) {
+      if (fileName.AfterLast('.').IsSameAs(L"aup3", false)) {
          BasicUI::ShowErrorDialog( *ProjectFramePlacement(&project),
             XO("Error Importing"),
             XO( "Cannot import AUP3 format.  Use File > Open instead"),
-            wxT("File_Menu"));
+            L"File_Menu");
          return false;
       }
 #endif
@@ -1284,7 +1284,7 @@ bool ProjectFileManager::Import(
          // Error message derived from Importer::Import
          // Additional help via a Help button links to the manual.
          BasicUI::ShowErrorDialog( *ProjectFramePlacement(&project),
-            XO("Error Importing"), errorMessage, wxT("Importing_Audio"));
+            XO("Error Importing"), errorMessage, L"Importing_Audio");
       }
       if (!success)
          return false;
@@ -1299,7 +1299,7 @@ bool ProjectFileManager::Import(
 
    // for LOF ("list of files") files, do not import the file as if it
    // were an audio file itself
-   if (fileName.AfterLast('.').IsSameAs(wxT("lof"), false)) {
+   if (fileName.AfterLast('.').IsSameAs(L"lof", false)) {
       // PRL: don't redundantly do the steps below, because we already
       // did it in case of LOF, because of some weird recursion back to this
       // same function.  I think this should be untangled.
@@ -1309,7 +1309,7 @@ bool ProjectFileManager::Import(
    }
 
    // Handle AUP ("legacy project") files directly
-   if (fileName.AfterLast('.').IsSameAs(wxT("aup"), false)) {
+   if (fileName.AfterLast('.').IsSameAs(L"aup", false)) {
       // If the project was clean and temporary (not permanently saved), then set
       // the filename to the just imported path.
       if (initiallyEmpty && projectFileIO.IsTemporary()) {

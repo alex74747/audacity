@@ -263,8 +263,8 @@ wxFont LabelTrackView::GetFont(const wxString &faceName, int size)
 void LabelTrackView::ResetFont()
 {
    mFontHeight = -1;
-   wxString facename = gPrefs->Read(wxT("/GUI/LabelFontFacename"), wxT(""));
-   int size = gPrefs->Read(wxT("/GUI/LabelFontSize"), DefaultFontSize);
+   wxString facename = gPrefs->Read(L"/GUI/LabelFontFacename", L"");
+   int size = gPrefs->Read(L"/GUI/LabelFontSize", DefaultFontSize);
    msFont = GetFont(facename, size);
 }
 
@@ -446,7 +446,7 @@ void LabelTrackView::ComputeLayout(const wxRect & r, const ZoomInfo &zoomInfo) c
    bool bAvoidName = false;
    const int nRows = wxMin((r.height / yRowHeight) + 1, MAX_NUM_ROWS);
    if( nRows > 2 )
-      bAvoidName = gPrefs->ReadBool(wxT("/GUI/ShowTrackNameInWaveform"), false);
+      bAvoidName = gPrefs->ReadBool(L"/GUI/ShowTrackNameInWaveform", false);
    // Initially none of the rows have been used.
    // So set a value that is less than any valid value.
    {
@@ -696,7 +696,7 @@ void LabelTrackView::DrawHighlight( wxDC & dc, const LabelStruct &ls,
    
    dc.SetPen(*wxTRANSPARENT_PEN);
    wxBrush curBrush = dc.GetBrush();
-   curBrush.SetColour(wxString(wxT("BLUE")));
+   curBrush.SetColour(wxString(L"BLUE"));
    auto top = ls.y + TextFrameYOffset - (LabelBarHeight + yFrameHeight) / 2 + (yFrameHeight - charHeight) / 2;
    if (xPos1 < xPos2)
       dc.DrawRectangle(xPos1-1, top, xPos2-xPos1+1, charHeight);
@@ -1031,7 +1031,7 @@ void LabelTrackView::calculateFontHeight(wxDC & dc)
    int charLeading;
 
    // Calculate the width of the substring and add it to Xpos
-   dc.GetTextExtent(wxT("(Test String)|[yp]"), NULL, &mFontHeight, &charDescent, &charLeading);
+   dc.GetTextExtent(L"(Test String)|[yp]", NULL, &mFontHeight, &charDescent, &charLeading);
 
    // The cursor will have height charHeight.  We don't include the descender as
    // part of the height because for phonetic fonts this leads to cursors which are
@@ -1385,7 +1385,7 @@ bool LabelTrackView::DoCaptureKey(
    }
    else {
       bool typeToCreateLabel;
-      gPrefs->Read(wxT("/GUI/TypeToCreateLabel"), &typeToCreateLabel, false);
+      gPrefs->Read(L"/GUI/TypeToCreateLabel", &typeToCreateLabel, false);
       if (IsGoodLabelFirstKey(event) && typeToCreateLabel) {
 
 
@@ -1842,7 +1842,7 @@ bool LabelTrackView::DoChar(
          return false;
       }
       bool useDialog;
-      gPrefs->Read(wxT("/GUI/DialogForNameNewLabel"), &useDialog, false);
+      gPrefs->Read(L"/GUI/DialogForNameNewLabel", &useDialog, false);
       auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
       if (useDialog) {
          wxString title;

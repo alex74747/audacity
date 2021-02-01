@@ -199,7 +199,7 @@ IMPLEMENT_DYNAMIC_CLASS(VSTSubEntry, wxModule);
 //----------------------------------------------------------------------------
 // VSTSubProcess
 //----------------------------------------------------------------------------
-#define OUTPUTKEY wxT("<VSTLOADCHK>-")
+#define OUTPUTKEY L"<VSTLOADCHK>-"
 enum InfoKeys
 {
    kKeySubIDs,
@@ -420,7 +420,7 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
    }
 
 #if defined(__WXMAC__)  
-#define VSTPATH wxT("/Library/Audio/Plug-Ins/VST")
+#define VSTPATH L"/Library/Audio/Plug-Ins/VST"
 
    // Look in ~/Library/Audio/Plug-Ins/VST and /Library/Audio/Plug-Ins/VST
    pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + VSTPATH);
@@ -428,13 +428,13 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
    // Recursively search all paths for Info.plist files.  This will identify all
    // bundles.
-   pm.FindFilesInPathList(wxT("Info.plist"), pathList, files, true);
+   pm.FindFilesInPathList(L"Info.plist", pathList, files, true);
 
    // Remove the 'Contents/Info.plist' portion of the names
    for (size_t i = 0; i < files.size(); i++)
    {
       files[i] = wxPathOnly(wxPathOnly(files[i]));
-      if (!files[i].EndsWith(wxT(".vst")))
+      if (!files[i].EndsWith(L".vst"))
       {
          files.erase( files.begin() + i-- );
       }
@@ -448,8 +448,8 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
    // Try HKEY_CURRENT_USER registry key first
    len = WXSIZEOF(tpath);
-   if (SHRegGetUSValue(wxT("Software\\VST"),
-                       wxT("VSTPluginsPath"),
+   if (SHRegGetUSValue(L"Software\\VST",
+                       L"VSTPluginsPath",
                        NULL,
                        tpath,
                        &len,
@@ -465,8 +465,8 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
    // Then try HKEY_LOCAL_MACHINE registry key
    len = WXSIZEOF(tpath);
-   if (SHRegGetUSValue(wxT("Software\\VST"),
-                       wxT("VSTPluginsPath"),
+   if (SHRegGetUSValue(L"Software\\VST",
+                       L"VSTPluginsPath",
                        NULL,
                        tpath,
                        &len,
@@ -482,13 +482,13 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
 
    // Add the default path last
    dpath[0] = 0;
-   ExpandEnvironmentStrings(wxT("%ProgramFiles%\\Steinberg\\VSTPlugins"),
+   ExpandEnvironmentStrings(L"%ProgramFiles%\\Steinberg\\VSTPlugins",
                             dpath,
                             WXSIZEOF(dpath));
    pathList.push_back(dpath);
 
    // Recursively scan for all DLLs
-   pm.FindFilesInPathList(wxT("*.dll"), pathList, files, true);
+   pm.FindFilesInPathList(L"*.dll", pathList, files, true);
 
 #else
 
@@ -496,16 +496,16 @@ PluginPaths VSTEffectsModule::FindPluginPaths(PluginManagerInterface & pm)
    if (vstpath.empty())
    {
       // We add this "non-default" one
-      pathList.push_back(wxT(LIBDIR) wxT("/vst"));
+      pathList.push_back(wxT(LIBDIR) L"/vst");
 
       // These are the defaults used by other hosts
-      pathList.push_back(wxT("/usr/lib/vst"));
-      pathList.push_back(wxT("/usr/local/lib/vst"));
-      pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + wxT(".vst"));
+      pathList.push_back(L"/usr/lib/vst");
+      pathList.push_back(L"/usr/local/lib/vst");
+      pathList.push_back(wxGetHomeDir() + wxFILE_SEP_PATH + L".vst");
    }
 
    // Recursively scan for all shared objects
-   pm.FindFilesInPathList(wxT("*.so"), pathList, files, true);
+   pm.FindFilesInPathList(L"*.so", pathList, files, true);
 
 #endif
 
@@ -522,8 +522,8 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
    // TODO:  Fix this for external usage
    const auto &cmdpath = PlatformCompatibility::GetExecutablePath();
 
-   wxString effectIDs = wxT("0;");
-   wxStringTokenizer effectTzr(effectIDs, wxT(";"));
+   wxString effectIDs = L"0;";
+   wxStringTokenizer effectTzr(effectIDs, L";");
 
    std::optional<ProgressDialog> progress{};
    size_t idCnt = 0;
@@ -536,7 +536,7 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
       wxString effectID = effectTzr.GetNextToken();
 
       wxString cmd;
-      cmd.Printf(wxT("\"%s\" %s \"%s;%s\""), cmdpath, VSTCMDKEY, path, effectID);
+      cmd.Printf(L"\"%s\" %s \"%s;%s\"", cmdpath, VSTCMDKEY, path, effectID);
 
       VSTSubProcess proc;
       try
@@ -549,7 +549,7 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
       }
       catch (...)
       {
-         wxLogMessage(wxT("VST plugin registration failed for %s\n"), path);
+         wxLogMessage(L"VST plugin registration failed for %s\n", path);
          error = true;
       }
 
@@ -559,7 +559,7 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
 
       int keycount = 0;
       bool haveBegin = false;
-      wxStringTokenizer tzr(output, wxT("\n"));
+      wxStringTokenizer tzr(output, L"\n");
       while (tzr.HasMoreTokens())
       {
          wxString line = tzr.GetNextToken();
@@ -639,12 +639,12 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
             break;
 
             case kKeyInteractive:
-               proc.mInteractive = val == wxT("1");
+               proc.mInteractive = val == L"1";
                keycount++;
             break;
 
             case kKeyAutomatable:
-               proc.mAutomatable = val == wxT("1");
+               proc.mAutomatable = val == L"1";
                keycount++;
             break;
 
@@ -731,24 +731,24 @@ void VSTEffectsModule::Check(const wxChar *path)
 
          for (size_t i = 0, cnt = effectIDs.size(); i < cnt; i++)
          {
-            subids += wxString::Format(wxT("%d;"), effectIDs[i]);
+            subids += wxString::Format(L"%d;", effectIDs[i]);
          }
 
-         out = wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeySubIDs, subids.RemoveLast());
+         out = wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeySubIDs, subids.RemoveLast());
       }
       else
       {
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyBegin, wxEmptyString);
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyPath, effect.GetPath());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyName, effect.GetSymbol().Internal());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyVendor,
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyBegin, wxEmptyString);
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyPath, effect.GetPath());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyName, effect.GetSymbol().Internal());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyVendor,
                                  effect.GetVendor().Internal());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyVersion, effect.GetVersion());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyDescription, effect.GetDescription().Translation());
-         out += wxString::Format(wxT("%s%d=%d\n"), OUTPUTKEY, kKeyEffectType, effect.GetType());
-         out += wxString::Format(wxT("%s%d=%d\n"), OUTPUTKEY, kKeyInteractive, effect.IsInteractive());
-         out += wxString::Format(wxT("%s%d=%d\n"), OUTPUTKEY, kKeyAutomatable, effect.SupportsAutomation());
-         out += wxString::Format(wxT("%s%d=%s\n"), OUTPUTKEY, kKeyEnd, wxEmptyString);
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyVersion, effect.GetVersion());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyDescription, effect.GetDescription().Translation());
+         out += wxString::Format(L"%s%d=%d\n", OUTPUTKEY, kKeyEffectType, effect.GetType());
+         out += wxString::Format(L"%s%d=%d\n", OUTPUTKEY, kKeyInteractive, effect.IsInteractive());
+         out += wxString::Format(L"%s%d=%d\n", OUTPUTKEY, kKeyAutomatable, effect.SupportsAutomation());
+         out += wxString::Format(L"%s%d=%s\n", OUTPUTKEY, kKeyEnd, wxEmptyString);
       }
 
       // We want to output info in one chunk to prevent output
@@ -798,12 +798,12 @@ VSTEffectOptionsDialog::VSTEffectOptionsDialog(wxWindow * parent,
 {
    mHost = host;
 
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("BufferSize"), mBufferSize, 8192);
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseLatency"), mUseLatency, true);
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseGUI"), mUseGUI, true);
+   GetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"BufferSize", mBufferSize, 8192);
+   GetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseLatency", mUseLatency, true);
+   GetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseGUI", mUseGUI, true);
 
    ShuttleGui S(this, eIsCreating);
    PopulateOrExchange(S);
@@ -896,12 +896,12 @@ void VSTEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
    ShuttleGui S(this, eIsGettingFromDialog);
    PopulateOrExchange(S);
 
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("BufferSize"), mBufferSize);
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseLatency"), mUseLatency);
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseGUI"), mUseGUI);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"BufferSize", mBufferSize);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseLatency", mUseLatency);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseGUI", mUseGUI);
 
    EndModal(wxID_OK);
 }
@@ -1081,9 +1081,9 @@ intptr_t VSTEffect::AudioMaster(AEffect * effect,
 
 #if defined(VST_DEBUG)
 #if defined(__WXMSW__)
-         wxLogDebug(wxT("VST canDo: %s"), wxString::FromAscii((char *)ptr));
+         wxLogDebug(L"VST canDo: %s", wxString::FromAscii((char *)ptr));
 #else
-         wxPrintf(wxT("VST canDo: %s\n"), wxString::FromAscii((char *)ptr));
+         wxPrintf(L"VST canDo: %s\n", wxString::FromAscii((char *)ptr));
 #endif
 #endif
 
@@ -1114,10 +1114,10 @@ intptr_t VSTEffect::AudioMaster(AEffect * effect,
 
 #if defined(VST_DEBUG)
 #if defined(__WXMSW__)
-   wxLogDebug(wxT("vst: %p opcode: %d index: %d value: %p ptr: %p opt: %f user: %p"),
+   wxLogDebug(L"vst: %p opcode: %d index: %d value: %p ptr: %p opt: %f user: %p",
               effect, (int) opcode, (int) index, (void *) value, ptr, opt, vst);
 #else
-   wxPrintf(wxT("vst: %p opcode: %d index: %d value: %p ptr: %p opt: %f user: %p\n"),
+   wxPrintf(L"vst: %p opcode: %d index: %d value: %p ptr: %p opt: %f user: %p\n",
             effect, (int) opcode, (int) index, (void *) value, ptr, opt, vst);
 #endif
 #endif
@@ -1230,8 +1230,8 @@ wxString VSTEffect::GetVersion()
       int dig = (mVersion >> s) & 0xff;
       if (dig != 0 || !skipping)
       {
-         version += !skipping ? wxT(".") : wxT("");
-         version += wxString::Format(wxT("%d"), dig);
+         version += !skipping ? L"." : L"";
+         version += wxString::Format(L"%d", dig);
          skipping = false;
       }
    }
@@ -1330,23 +1330,23 @@ bool VSTEffect::SetHost(EffectHostInterface *host)
    if (mHost)
    {
       int userBlockSize;
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("BufferSize"), userBlockSize, 8192);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"BufferSize", userBlockSize, 8192);
       mUserBlockSize = std::max( 1, userBlockSize );
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
 
       mBlockSize = mUserBlockSize;
 
       bool haveDefaults;
       GetConfig(*this, PluginSettings::Private,
-         mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), haveDefaults,
+         mHost->GetFactoryDefaultsGroup(), L"Initialized", haveDefaults,
          false);
       if (!haveDefaults)
       {
          SaveParameters(mHost->GetFactoryDefaultsGroup());
          SetConfig(*this, PluginSettings::Private,
-            mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), true);
+            mHost->GetFactoryDefaultsGroup(), L"Initialized", true);
       }
 
       LoadParameters(mHost->GetCurrentSettingsGroup());
@@ -1620,7 +1620,7 @@ bool VSTEffect::GetAutomationParameters(CommandParameters & parms)
       wxString name = GetString(effGetParamName, i);
       if (name.empty())
       {
-         name.Printf(wxT("parm_%d"), i);
+         name.Printf(L"parm_%d", i);
       }
 
       float value = callGetParameter(i);
@@ -1641,7 +1641,7 @@ bool VSTEffect::SetAutomationParameters(CommandParameters & parms)
       wxString name = GetString(effGetParamName, i);
       if (name.empty())
       {
-         name.Printf(wxT("parm_%d"), i);
+         name.Printf(L"parm_%d", i);
       }
 
       double d = 0.0;
@@ -1732,8 +1732,8 @@ bool VSTEffect::PopulateUI(ShuttleGui &S)
    mParent->PushEventHandler(this);
 
    // Determine if the VST editor is supposed to be used or not
-   GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-                          wxT("UseGUI"),
+   GetConfig(*this, PluginSettings::Shared, L"Options",
+                          L"UseGUI",
                           mGui,
                           true);
    mGui = mAEffect->flags & effFlagsHasEditor ? mGui : false;
@@ -1827,12 +1827,12 @@ void VSTEffect::ExportPresets()
    path = SelectFile(FileNames::Operation::Presets,
       XO("Save VST Preset As:"),
       wxEmptyString,
-      wxT("preset"),
-      wxT("xml"),
+      L"preset",
+      L"xml",
       {
-        { XO("Standard VST bank file"), { wxT("fxb") }, true },
-        { XO("Standard VST program file"), { wxT("fxp") }, true },
-        { XO("Audacity VST preset file"), { wxT("xml") }, true },
+        { XO("Standard VST bank file"), { L"fxb" }, true },
+        { XO("Standard VST program file"), { L"fxp" }, true },
+        { XO("Audacity VST preset file"), { L"xml" }, true },
       },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
       NULL);
@@ -1845,15 +1845,15 @@ void VSTEffect::ExportPresets()
 
    wxFileName fn(path);
    wxString ext = fn.GetExt();
-   if (ext.CmpNoCase(wxT("fxb")) == 0)
+   if (ext.CmpNoCase(L"fxb") == 0)
    {
       SaveFXB(fn);
    }
-   else if (ext.CmpNoCase(wxT("fxp")) == 0)
+   else if (ext.CmpNoCase(L"fxp") == 0)
    {
       SaveFXP(fn);
    }
-   else if (ext.CmpNoCase(wxT("xml")) == 0)
+   else if (ext.CmpNoCase(L"xml") == 0)
    {
       // may throw
       SaveXML(fn);
@@ -1884,11 +1884,11 @@ void VSTEffect::ImportPresets()
    path = SelectFile(FileNames::Operation::Presets,
       XO("Load VST Preset:"),
       wxEmptyString,
-      wxT("preset"),
-      wxT("xml"),
+      L"preset",
+      L"xml",
       { {
          XO("VST preset files"),
-         { wxT("fxb"), wxT("fxp"), wxT("xml") },
+         { L"fxb", L"fxp", L"xml" },
          true
       } },
       wxFD_OPEN | wxRESIZE_BORDER,
@@ -1903,15 +1903,15 @@ void VSTEffect::ImportPresets()
    wxFileName fn(path);
    wxString ext = fn.GetExt();
    bool success = false;
-   if (ext.CmpNoCase(wxT("fxb")) == 0)
+   if (ext.CmpNoCase(L"fxb") == 0)
    {
       success = LoadFXB(fn);
    }
-   else if (ext.CmpNoCase(wxT("fxp")) == 0)
+   else if (ext.CmpNoCase(L"fxp") == 0)
    {
       success = LoadFXP(fn);
    }
-   else if (ext.CmpNoCase(wxT("xml")) == 0)
+   else if (ext.CmpNoCase(L"xml") == 0)
    {
       success = LoadXML(fn);
    }
@@ -1955,11 +1955,11 @@ void VSTEffect::ShowOptions()
    {
       // Reinitialize configuration settings
       int userBlockSize;
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("BufferSize"), userBlockSize, 8192);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"BufferSize", userBlockSize, 8192);
       mUserBlockSize = std::max( 1, userBlockSize );
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
    }
 }
 
@@ -2073,10 +2073,10 @@ bool VSTEffect::Load()
          return false;
 
       // Try to find the entry point, while suppressing error messages
-      pluginMain = (vstPluginMain) lib->GetSymbol(wxT("VSTPluginMain"));
+      pluginMain = (vstPluginMain) lib->GetSymbol(L"VSTPluginMain");
       if (pluginMain == NULL)
       {
-         pluginMain = (vstPluginMain) lib->GetSymbol(wxT("main"));
+         pluginMain = (vstPluginMain) lib->GetSymbol(L"main");
          if (pluginMain == NULL)
             return false;
       }
@@ -2136,7 +2136,7 @@ bool VSTEffect::Load()
    }
    catch (...)
    {
-      wxLogMessage(wxT("VST plugin initialization failed\n"));
+      wxLogMessage(L"VST plugin initialization failed\n");
       mAEffect = NULL;
    }
 
@@ -2293,11 +2293,11 @@ bool VSTEffect::LoadParameters(const RegistryPath & group)
    wxString value;
 
    VstPatchChunkInfo info = {1, mAEffect->uniqueID, mAEffect->version, mAEffect->numParams, ""};
-   GetConfig(*this, PluginSettings::Private, group, wxT("UniqueID"),
+   GetConfig(*this, PluginSettings::Private, group, L"UniqueID",
       info.pluginUniqueID, info.pluginUniqueID);
-   GetConfig(*this, PluginSettings::Private, group, wxT("Version"),
+   GetConfig(*this, PluginSettings::Private, group, L"Version",
       info.pluginVersion, info.pluginVersion);
-   GetConfig(*this, PluginSettings::Private, group, wxT("Elements"),
+   GetConfig(*this, PluginSettings::Private, group, L"Elements",
       info.numElements, info.numElements);
 
    if ((info.pluginUniqueID != mAEffect->uniqueID) ||
@@ -2308,7 +2308,7 @@ bool VSTEffect::LoadParameters(const RegistryPath & group)
    }
 
    if (GetConfig(*this,
-      PluginSettings::Private, group, wxT("Chunk"), value, wxEmptyString))
+      PluginSettings::Private, group, L"Chunk", value, wxEmptyString))
    {
       ArrayOf<char> buf{ value.length() / 4 * 3 };
 
@@ -2323,7 +2323,7 @@ bool VSTEffect::LoadParameters(const RegistryPath & group)
 
    wxString parms;
    if (!GetConfig(*this,
-      PluginSettings::Private, group, wxT("Parameters"), parms, wxEmptyString))
+      PluginSettings::Private, group, L"Parameters", parms, wxEmptyString))
    {
       return false;
    }
@@ -2339,11 +2339,11 @@ bool VSTEffect::LoadParameters(const RegistryPath & group)
 
 bool VSTEffect::SaveParameters(const RegistryPath & group)
 {
-   SetConfig(*this, PluginSettings::Private, group, wxT("UniqueID"),
+   SetConfig(*this, PluginSettings::Private, group, L"UniqueID",
       mAEffect->uniqueID);
-   SetConfig(*this, PluginSettings::Private, group, wxT("Version"),
+   SetConfig(*this, PluginSettings::Private, group, L"Version",
       mAEffect->version);
-   SetConfig(*this, PluginSettings::Private, group, wxT("Elements"),
+   SetConfig(*this, PluginSettings::Private, group, L"Elements",
       mAEffect->numParams);
 
    if (mAEffect->flags & effFlagsProgramChunks)
@@ -2355,7 +2355,7 @@ bool VSTEffect::SaveParameters(const RegistryPath & group)
          return false;
       }
 
-      SetConfig(*this, PluginSettings::Private, group, wxT("Chunk"),
+      SetConfig(*this, PluginSettings::Private, group, L"Chunk",
          VSTEffect::b64encode(chunk, clen));
       return true;
    }
@@ -2373,7 +2373,7 @@ bool VSTEffect::SaveParameters(const RegistryPath & group)
    }
 
    return SetConfig(*this, PluginSettings::Private,
-      group, wxT("Parameters"), parms);
+      group, L"Parameters", parms);
 }
 
 void VSTEffect::OnTimer()
@@ -2638,7 +2638,7 @@ void VSTEffect::callSetChunk(bool isPgm, int len, void *buf, VstPatchChunkInfo *
 ////////////////////////////////////////////////////////////////////////////////
 
 // Lookup table for encoding
-const static wxChar cset[] = wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+const static wxChar cset[] = L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const static char padc = L'=';
 
 wxString VSTEffect::b64encode(const void *in, int len)
@@ -2837,8 +2837,8 @@ void VSTEffect::BuildPlain()
       scroller->SetScrollRate(0, 20);
 
       // This fools NVDA into not saying "Panel" when the dialog gets focus
-      scroller->SetName(wxT("\a"));
-      scroller->SetLabel(wxT("\a"));
+      scroller->SetName(L"\a");
+      scroller->SetLabel(L"\a");
 
       mainSizer->Add(scroller, 1, wxEXPAND | wxALL, 5);
       mParent->SetSizer(mainSizer.release());
@@ -2895,7 +2895,7 @@ void VSTEffect::BuildPlain()
             }
          }
 
-         scroller->GetTextExtent(wxT("HHHHHHHH"), &w, &h);
+         scroller->GetTextExtent(L"HHHHHHHH", &w, &h);
 
          for (int i = 0; i < mAEffect->numParams; i++)
          {
@@ -2981,16 +2981,16 @@ void VSTEffect::RefreshParameters(int skip)
       text = GetString(effGetParamDisplay, i);
       if (text.empty())
       {
-         text.Printf(wxT("%.5g"),callGetParameter(i));
+         text.Printf(L"%.5g",callGetParameter(i));
       }
-      mDisplays[i]->SetLabel(wxString::Format(wxT("%8s"), text));
+      mDisplays[i]->SetLabel(wxString::Format(L"%8s", text));
       name += L' ' + text;
 
       text = GetString(effGetParamDisplay, i);
       if (!text.empty())
       {
-         text.Printf(wxT("%-8s"), GetString(effGetParamLabel, i));
-         mLabels[i]->SetLabel(wxString::Format(wxT("%8s"), text));
+         text.Printf(L"%-8s", GetString(effGetParamLabel, i));
+         mLabels[i]->SetLabel(wxString::Format(L"%8s", text));
          name += L' ' + text;
       }
 
@@ -3035,7 +3035,7 @@ bool VSTEffect::LoadFXB(const wxFileName & fn)
    bool ret = false;
 
    // Try to open the file...will be closed automatically when method returns
-   wxFFile f(fn.GetFullPath(), wxT("rb"));
+   wxFFile f(fn.GetFullPath(), L"rb");
    if (!f.IsOpened())
    {
       return false;
@@ -3208,7 +3208,7 @@ bool VSTEffect::LoadFXP(const wxFileName & fn)
    bool ret = false;
 
    // Try to open the file...will be closed automatically when method returns
-   wxFFile f(fn.GetFullPath(), wxT("rb"));
+   wxFFile f(fn.GetFullPath(), L"rb");
    if (!f.IsOpened())
    {
       return false;
@@ -3445,7 +3445,7 @@ void VSTEffect::SaveFXB(const wxFileName & fn)
 {
    // Create/Open the file
    const wxString fullPath{fn.GetFullPath()};
-   wxFFile f(fullPath, wxT("wb"));
+   wxFFile f(fullPath, L"wb");
    if (!f.IsOpened())
    {
       AudacityMessageBox(
@@ -3532,7 +3532,7 @@ void VSTEffect::SaveFXP(const wxFileName & fn)
 {
    // Create/Open the file
    const wxString fullPath{ fn.GetFullPath() };
-   wxFFile f(fullPath, wxT("wb"));
+   wxFFile f(fullPath, L"wb");
    if (!f.IsOpened())
    {
       AudacityMessageBox(
@@ -3627,18 +3627,18 @@ void VSTEffect::SaveXML(const wxFileName & fn)
 {
    XMLFileWriter xmlFile{ fn.GetFullPath(), XO("Error Saving Effect Presets") };
 
-   xmlFile.StartTag(wxT("vstprogrampersistence"));
-   xmlFile.WriteAttr(wxT("version"), wxT("2"));
+   xmlFile.StartTag(L"vstprogrampersistence");
+   xmlFile.WriteAttr(L"version", L"2");
 
-   xmlFile.StartTag(wxT("effect"));
+   xmlFile.StartTag(L"effect");
    // Use internal name only in persistent information
-   xmlFile.WriteAttr(wxT("name"), GetSymbol().Internal());
-   xmlFile.WriteAttr(wxT("uniqueID"), mAEffect->uniqueID);
-   xmlFile.WriteAttr(wxT("version"), mAEffect->version);
-   xmlFile.WriteAttr(wxT("numParams"), mAEffect->numParams);
+   xmlFile.WriteAttr(L"name", GetSymbol().Internal());
+   xmlFile.WriteAttr(L"uniqueID", mAEffect->uniqueID);
+   xmlFile.WriteAttr(L"version", mAEffect->version);
+   xmlFile.WriteAttr(L"numParams", mAEffect->numParams);
 
-   xmlFile.StartTag(wxT("program"));
-   xmlFile.WriteAttr(wxT("name"), wxEmptyString); //mProgram->GetValue());
+   xmlFile.StartTag(L"program");
+   xmlFile.WriteAttr(L"name", wxEmptyString); //mProgram->GetValue());
 
    int clen = 0;
    if (mAEffect->flags & effFlagsProgramChunks)
@@ -3648,9 +3648,9 @@ void VSTEffect::SaveXML(const wxFileName & fn)
       clen = (int) callDispatcher(effGetChunk, 1, 0, &chunk, 0.0);
       if (clen != 0)
       {
-         xmlFile.StartTag(wxT("chunk"));
+         xmlFile.StartTag(L"chunk");
          xmlFile.WriteSubTree(VSTEffect::b64encode(chunk, clen) + L'\n');
-         xmlFile.EndTag(wxT("chunk"));
+         xmlFile.EndTag(L"chunk");
       }
    }
 
@@ -3658,24 +3658,24 @@ void VSTEffect::SaveXML(const wxFileName & fn)
    {
       for (int i = 0; i < mAEffect->numParams; i++)
       {
-         xmlFile.StartTag(wxT("param"));
+         xmlFile.StartTag(L"param");
 
-         xmlFile.WriteAttr(wxT("index"), i);
-         xmlFile.WriteAttr(wxT("name"),
+         xmlFile.WriteAttr(L"index", i);
+         xmlFile.WriteAttr(L"name",
                            GetString(effGetParamName, i));
-         xmlFile.WriteAttr(wxT("value"),
-                           wxString::Format(wxT("%f"),
+         xmlFile.WriteAttr(L"value",
+                           wxString::Format(L"%f",
                            callGetParameter(i)));
 
-         xmlFile.EndTag(wxT("param"));
+         xmlFile.EndTag(L"param");
       }
    }
 
-   xmlFile.EndTag(wxT("program"));
+   xmlFile.EndTag(L"program");
 
-   xmlFile.EndTag(wxT("effect"));
+   xmlFile.EndTag(L"effect");
 
-   xmlFile.EndTag(wxT("vstprogrampersistence"));
+   xmlFile.EndTag(L"vstprogrampersistence");
 
    xmlFile.Commit();
 }

@@ -57,27 +57,27 @@ ProjectSettings::ProjectSettings(AudacityProject &project)
    : mProject{ project }
    , mSelectionFormat{ NumericTextCtrl::LookupFormat(
       NumericConverter::TIME,
-      gPrefs->Read(wxT("/SelectionFormat"), wxT("")))
+      gPrefs->Read(L"/SelectionFormat", L""))
 }
 , mAudioTimeFormat{ NumericTextCtrl::LookupFormat(
    NumericConverter::TIME,
-   gPrefs->Read(wxT("/AudioTimeFormat"), wxT("hh:mm:ss")))
+   gPrefs->Read(L"/AudioTimeFormat", L"hh:mm:ss"))
 }
 , mFrequencySelectionFormatName{ NumericTextCtrl::LookupFormat(
    NumericConverter::FREQUENCY,
-   gPrefs->Read(wxT("/FrequencySelectionFormatName"), wxT("")) )
+   gPrefs->Read(L"/FrequencySelectionFormatName", L"") )
 }
 , mBandwidthSelectionFormatName{ NumericTextCtrl::LookupFormat(
    NumericConverter::BANDWIDTH,
-   gPrefs->Read(wxT("/BandwidthSelectionFormatName"), wxT("")) )
+   gPrefs->Read(L"/BandwidthSelectionFormatName", L"") )
 }
-, mSnapTo( gPrefs->Read(wxT("/SnapTo"), SNAP_OFF) )
+, mSnapTo( gPrefs->Read(L"/SnapTo", SNAP_OFF) )
 , mCurrentBrushRadius ( 5 )
 {
-   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &mIsSyncLocked, false);
+   gPrefs->Read(L"/GUI/SyncLockTracks", &mIsSyncLocked, false);
 
    bool multiToolActive = false;
-   gPrefs->Read(wxT("/GUI/ToolBars/Tools/MultiToolActive"), &multiToolActive);
+   gPrefs->Read(L"/GUI/ToolBars/Tools/MultiToolActive", &multiToolActive);
 
    if (multiToolActive)
       mCurrentTool = ToolCodes::multiTool;
@@ -89,16 +89,16 @@ ProjectSettings::ProjectSettings(AudacityProject &project)
 
 void ProjectSettings::UpdatePrefs()
 {
-   gPrefs->Read(wxT("/AudioFiles/ShowId3Dialog"), &mShowId3Dialog, true);
-   gPrefs->Read(wxT("/GUI/EmptyCanBeDirty"), &mEmptyCanBeDirty, true);
-   gPrefs->Read(wxT("/GUI/ShowSplashScreen"), &mShowSplashScreen, true);
+   gPrefs->Read(L"/AudioFiles/ShowId3Dialog", &mShowId3Dialog, true);
+   gPrefs->Read(L"/GUI/EmptyCanBeDirty", &mEmptyCanBeDirty, true);
+   gPrefs->Read(L"/GUI/ShowSplashScreen", &mShowSplashScreen, true);
    mSoloPref = TracksBehaviorsSolo.Read();
    // Update the old default to the NEW default.
-   if (mSoloPref == wxT("Standard"))
-      mSoloPref = wxT("Simple");
-   gPrefs->Read(wxT("/GUI/TracksFitVerticallyZoomed"),
+   if (mSoloPref == L"Standard")
+      mSoloPref = L"Simple";
+   gPrefs->Read(L"/GUI/TracksFitVerticallyZoomed",
       &mTracksFitVerticallyZoomed, false);
-   //   gPrefs->Read(wxT("/GUI/UpdateSpectrogram"),
+   //   gPrefs->Read(L"/GUI/UpdateSpectrogram",
    //     &mViewInfo.bUpdateSpectrogram, true);
 
    // This code to change an empty projects rate is currently disabled, after
@@ -198,12 +198,12 @@ void ProjectSettings::SetSyncLock(bool flag)
 static ProjectFileIORegistry::AttributeWriterEntry entry {
 [](const AudacityProject &project, XMLWriter &xmlFile){
    auto &settings = ProjectSettings::Get(project);
-   xmlFile.WriteAttr(wxT("snapto"), settings.GetSnapTo() ? wxT("on") : wxT("off"));
-   xmlFile.WriteAttr(wxT("selectionformat"),
+   xmlFile.WriteAttr(L"snapto", settings.GetSnapTo() ? L"on" : L"off");
+   xmlFile.WriteAttr(L"selectionformat",
                      settings.GetSelectionFormat().Internal());
-   xmlFile.WriteAttr(wxT("frequencyformat"),
+   xmlFile.WriteAttr(L"frequencyformat",
                      settings.GetFrequencySelectionFormatName().Internal());
-   xmlFile.WriteAttr(wxT("bandwidthformat"),
+   xmlFile.WriteAttr(L"bandwidthformat",
                      settings.GetBandwidthSelectionFormatName().Internal());
 }
 };
@@ -215,7 +215,7 @@ static ProjectFileIORegistry::AttributeReaderEntries entries {
    // Maybe that should be abandoned.  Enough to save changes in the user
    // preference file.
    { "snapto", [](auto &settings, auto value){
-      settings.SetSnapTo(value.ToWString() == wxT("on") ? true : false);
+      settings.SetSnapTo(value.ToWString() == L"on" ? true : false);
    } },
    { "selectionformat", [](auto &settings, auto value){
       settings.SetSelectionFormat(NumericConverter::LookupFormat(

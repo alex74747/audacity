@@ -231,7 +231,7 @@ and no content already flushed to disk is lost. */
 bool WaveClip::Append(constSamplePtr buffer, sampleFormat format,
                       size_t len, unsigned int stride)
 {
-   //wxLogDebug(wxT("Append: len=%lli"), (long long) len);
+   //wxLogDebug(L"Append: len=%lli", (long long) len);
    bool result = false;
 
    auto maxBlockSize = mSequence->GetMaxBlockSize();
@@ -291,9 +291,9 @@ bool WaveClip::Append(constSamplePtr buffer, sampleFormat format,
 clip gets appended; no previously flushed contents are lost. */
 void WaveClip::Flush()
 {
-   //wxLogDebug(wxT("WaveClip::Flush"));
-   //wxLogDebug(wxT("   mAppendBufferLen=%lli"), (long long) mAppendBufferLen);
-   //wxLogDebug(wxT("   previous sample count %lli"), (long long) mSequence->GetNumSamples());
+   //wxLogDebug(L"WaveClip::Flush");
+   //wxLogDebug(L"   mAppendBufferLen=%lli", (long long) mAppendBufferLen);
+   //wxLogDebug(L"   previous sample count %lli", (long long) mSequence->GetNumSamples());
 
    if (mAppendBufferLen > 0) {
 
@@ -311,7 +311,7 @@ void WaveClip::Flush()
          mAppendBufferLen);
    }
 
-   //wxLogDebug(wxT("now sample count %lli"), (long long) mSequence->GetNumSamples());
+   //wxLogDebug(L"now sample count %lli", (long long) mSequence->GetNumSamples());
 }
 
 bool WaveClip::HandleXMLTag(const std::string_view& tag, const AttributesList &attrs)
@@ -388,12 +388,12 @@ XMLTagHandler *WaveClip::HandleXMLChild(const std::string_view& tag)
 void WaveClip::WriteXML(XMLWriter &xmlFile) const
 // may throw
 {
-   xmlFile.StartTag(wxT("waveclip"));
-   xmlFile.WriteAttr(wxT("offset"), mSequenceOffset, 8);
-   xmlFile.WriteAttr(wxT("trimLeft"), mTrimLeft, 8);
-   xmlFile.WriteAttr(wxT("trimRight"), mTrimRight, 8);
-   xmlFile.WriteAttr(wxT("name"), mName);
-   xmlFile.WriteAttr(wxT("colorindex"), mColourIndex );
+   xmlFile.StartTag(L"waveclip");
+   xmlFile.WriteAttr(L"offset", mSequenceOffset, 8);
+   xmlFile.WriteAttr(L"trimLeft", mTrimLeft, 8);
+   xmlFile.WriteAttr(L"trimRight", mTrimRight, 8);
+   xmlFile.WriteAttr(L"name", mName);
+   xmlFile.WriteAttr(L"colorindex", mColourIndex );
 
    mSequence->WriteXML(xmlFile);
    mEnvelope->WriteXML(xmlFile);
@@ -401,7 +401,7 @@ void WaveClip::WriteXML(XMLWriter &xmlFile) const
    for (const auto &clip: mCutLines)
       clip->WriteXML(xmlFile);
 
-   xmlFile.EndTag(wxT("waveclip"));
+   xmlFile.EndTag(L"waveclip");
 }
 
 /*! @excsafety{Strong} */

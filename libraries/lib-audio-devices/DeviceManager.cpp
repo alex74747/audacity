@@ -54,7 +54,7 @@ wxString MakeDeviceSourceString(const DeviceSourceMap *map)
    wxString ret;
    ret = map->deviceString;
    if (map->totalSources > 1)
-      ret += wxT(": ") + map->sourceString;
+      ret += L": " + map->sourceString;
 
    return ret;
 }
@@ -75,7 +75,7 @@ DeviceSourceMap* DeviceManager::GetDefaultDevice(int hostIndex, int isInput)
          return &maps[i];
    }
 
-   wxLogDebug(wxT("GetDefaultDevice() no default device"));
+   wxLogDebug(L"GetDefaultDevice() no default device");
    return NULL;
 }
 
@@ -227,8 +227,8 @@ static void AddSources(int deviceIndex, int rate, std::vector<DeviceSourceMap> *
    }
 
    if(error) {
-      wxLogDebug(wxT("PortAudio stream error creating device list: ") +
-                 map.hostString + wxT(":") + map.deviceString + wxT(": ") +
+      wxLogDebug(L"PortAudio stream error creating device list: " +
+                 map.hostString + L":" + map.deviceString + L": " +
                  wxString(wxSafeConvertMB2WX(Pa_GetErrorText((PaError)error))));
    }
 }

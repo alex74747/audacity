@@ -12,7 +12,7 @@
 #include "Identifier.h"
 #include <wx/translation.h>
 
-const wxChar *const TranslatableString::NullContextName = wxT("*");
+const wxChar *const TranslatableString::NullContextName = L"*";
 
 Identifier TranslatableString::MSGID() const
 {
@@ -72,10 +72,10 @@ TranslatableString &TranslatableString::Strip( unsigned codes ) &
                }
             }
             if ( codes & Ellipses ) {
-               if (result.EndsWith(wxT("...")))
+               if (result.EndsWith(L"..."))
                   result = result.Left( result.length() - 3 );
                // Also check for the single-character Unicode ellipsis
-               else if (result.EndsWith(wxT("\u2026")))
+               else if (result.EndsWith(L"\u2026"))
                   result = result.Left( result.length() - 1 );
             }
             return result;
@@ -149,4 +149,4 @@ TranslatableString &TranslatableString::Join(
    return *this;
 }
 
-const TranslatableString TranslatableString::Inaudible{ wxT("\a") };
+const TranslatableString TranslatableString::Inaudible{ L"\a" };

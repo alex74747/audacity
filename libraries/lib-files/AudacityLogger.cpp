@@ -81,10 +81,10 @@ void AudacityLogger::DoLogText(const wxString & str)
 
       TimeStamp(&stamp);
 
-      mBuffer << stamp << _TS("Audacity ") << AUDACITY_VERSION_STRING << wxT("\n");
+      mBuffer << stamp << _TS("Audacity ") << AUDACITY_VERSION_STRING << L"\n";
    }
 
-   mBuffer << str << wxT("\n");
+   mBuffer << str << L"\n";
 
    mUpdated = true;
 
@@ -97,7 +97,7 @@ void AudacityLogger::DoLogText(const wxString & str)
 
 bool AudacityLogger::SaveLog(const wxString &fileName) const
 {
-   wxFFile file(fileName, wxT("w"));
+   wxFFile file(fileName, L"w");
 
    if (file.IsOpened()) {
       file.Write(mBuffer);
@@ -111,7 +111,7 @@ bool AudacityLogger::SaveLog(const wxString &fileName) const
 bool AudacityLogger::ClearLog()
 {
    mBuffer = wxEmptyString;
-   DoLogText(wxT("Log Cleared."));
+   DoLogText(L"Log Cleared.");
 
    return true;
 }
@@ -125,7 +125,7 @@ wxString AudacityLogger::GetLog(int count)
 
    wxString buffer;
 
-   auto lines = wxStringTokenize(mBuffer, wxT("\r\n"), wxTOKEN_RET_DELIMS);
+   auto lines = wxStringTokenize(mBuffer, L"\r\n", wxTOKEN_RET_DELIMS);
    for (int index = lines.size() - 1; index >= 0 && count > 0; --index, --count)
    {
       buffer.Prepend(lines[index]);

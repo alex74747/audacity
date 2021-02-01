@@ -39,7 +39,7 @@ static AudacityProject::AttachedObjects::RegisteredFactory sKey {
             pTrack->AddLabel(
                SelectedRegion{ interval.first,
                   interval.first + interval.second },
-               wxString::Format(wxT("%ld"), counter++));
+               wxString::Format(L"%ld", counter++));
 
          auto &history = ProjectHistory::Get( project );
          history.ModifyState( true ); // this might fail and throw
@@ -49,7 +49,7 @@ static AudacityProject::AttachedObjects::RegisteredFactory sKey {
          // entering StopStream() recursively
          auto &window = GetProjectFrame( project );
          wxTheApp->CallAfter( [&window] {
-            ShowWarningDialog(&window, wxT("DropoutDetected"), XO("\
+            ShowWarningDialog(&window, L"DropoutDetected", XO("\
 Recorded audio was lost at the labeled locations. Possible causes:\n\
 \n\
 Other applications are competing with Audacity for processor time\n\

@@ -388,7 +388,7 @@ std::vector<long> AudioIOBase::GetSupportedPlaybackRates(int devIndex, double ra
 
    if (!devInfo)
    {
-      wxLogDebug(wxT("GetSupportedPlaybackRates() Could not get device info!"));
+      wxLogDebug(L"GetSupportedPlaybackRates() Could not get device info!");
       return supported;
    }
 
@@ -453,7 +453,7 @@ std::vector<long> AudioIOBase::GetSupportedCaptureRates(int devIndex, double rat
 
    if (!devInfo)
    {
-      wxLogDebug(wxT("GetSupportedCaptureRates() Could not get device info!"));
+      wxLogDebug(L"GetSupportedCaptureRates() Could not get device info!");
       return supported;
    }
 
@@ -707,9 +707,9 @@ wxString AudioIOBase::GetDeviceInfo() const
    int cnt = Pa_GetDeviceCount();
 
    // PRL:  why only into the log?
-   wxLogDebug(wxT("Portaudio reports %d audio devices"),cnt);
+   wxLogDebug(L"Portaudio reports %d audio devices",cnt);
    
-   s << wxT("==============================\n");
+   s << L"==============================\n";
    s << XO("Default recording device number: %d\n").Format( recDeviceNum );
    s << XO("Default playback device number: %d\n").Format( playDeviceNum);
 
@@ -726,7 +726,7 @@ wxString AudioIOBase::GetDeviceInfo() const
    const PaDeviceInfo* info;
 
    for (j = 0; j < cnt; j++) {
-      s << wxT("==============================\n");
+      s << L"==============================\n";
 
       info = Pa_GetDeviceInfo(j);
       if (!info) {
@@ -750,7 +750,7 @@ wxString AudioIOBase::GetDeviceInfo() const
       /* i18n-hint: Supported, meaning made available by the system */
       s << XO("Supported Rates:\n");
       for (int k = 0; k < (int) rates.size(); k++) {
-         s << wxT("    ") << (int)rates[k] << wxT("\n");
+         s << L"    " << (int)rates[k] << L"\n";
       }
 
       if (name == playDevice && info->maxOutputChannels > 0)
@@ -772,7 +772,7 @@ wxString AudioIOBase::GetDeviceInfo() const
    bool haveRecDevice = (recDeviceNum >= 0);
    bool havePlayDevice = (playDeviceNum >= 0);
 
-   s << wxT("==============================\n");
+   s << L"==============================\n";
    if (haveRecDevice)
       s << XO("Selected recording device: %d - %s\n").Format( recDeviceNum, recDevice );
    else
@@ -790,7 +790,7 @@ wxString AudioIOBase::GetDeviceInfo() const
 
       s << XO("Supported Rates:\n");
       for (int k = 0; k < (int) supportedSampleRates.size(); k++) {
-         s << wxT("    ") << (int)supportedSampleRates[k] << wxT("\n");
+         s << L"    " << (int)supportedSampleRates[k] << L"\n";
       }
    }
    else {
@@ -866,7 +866,7 @@ wxString AudioIOBase::GetDeviceInfo() const
          return o.GetString();
       }
 
-      s << wxT("==============================\n");
+      s << L"==============================\n";
       s << XO("Available mixers:\n");
 
       // FIXME: ? PortMixer errors on query not reported in GetDeviceInfo
@@ -876,7 +876,7 @@ wxString AudioIOBase::GetDeviceInfo() const
          s << XO("%d - %s\n").Format( i, name );
       }
 
-      s << wxT("==============================\n");
+      s << L"==============================\n";
       s << XO("Available recording sources:\n");
       cnt = Px_GetNumInputSources(PortMixer);
       for (int i = 0; i < cnt; i++) {
@@ -884,7 +884,7 @@ wxString AudioIOBase::GetDeviceInfo() const
          s << XO("%d - %s\n").Format( i, name );
       }
 
-      s << wxT("==============================\n");
+      s << L"==============================\n";
       s << XO("Available playback volumes:\n");
       cnt = Px_GetNumOutputVolumes(PortMixer);
       for (int i = 0; i < cnt; i++) {
@@ -907,7 +907,7 @@ wxString AudioIOBase::GetDeviceInfo() const
 
       Pa_CloseStream(stream);
 
-      s << wxT("==============================\n");
+      s << L"==============================\n";
       s << ( EmulateMixerInputVol
          ? XO("Recording volume is emulated\n")
          : XO("Recording volume is native\n") );
@@ -923,7 +923,7 @@ auto AudioIOBase::GetAllDeviceInfo() -> std::vector<AudioIODiagnostics>
 {
    std::vector<AudioIODiagnostics> result;
    result.push_back({
-      wxT("audiodev.txt"), GetDeviceInfo(), wxT("Audio Device Info") });
+      L"audiodev.txt", GetDeviceInfo(), L"Audio Device Info" });
    for( auto &pExt : mAudioIOExt )
       if ( pExt )
          result.emplace_back(pExt->Dump());

@@ -54,7 +54,7 @@
 
 #define DESC XO("AUP project files (*.aup)")
 
-static const auto exts = {wxT("aup")};
+static const auto exts = {L"aup"};
 
 #include <wx/dir.h>
 #include <wx/ffile.h>
@@ -252,7 +252,7 @@ AUPImportPlugin::~AUPImportPlugin()
 
 wxString AUPImportPlugin::GetPluginStringID()
 {
-   return wxT("legacyaup");
+   return L"legacyaup";
 }
    
 TranslatableString AUPImportPlugin::GetPluginFormatDescription()
@@ -491,7 +491,7 @@ void AUPImportFileHandle::SetStreamUsage(wxInt32 WXUNUSED(StreamID), bool WXUNUS
 
 bool AUPImportFileHandle::Open()
 {
-   wxFFile ff(mFilename, wxT("rb"));
+   wxFFile ff(mFilename, L"rb");
    if (ff.IsOpened())
    {
       char buf[256];
@@ -502,7 +502,7 @@ bool AUPImportFileHandle::Open()
 
       buf[sizeof(buf) - 1] = '\0';
 
-      if (!wxStrncmp(buf, wxT("AudacityProject"), 15))
+      if (!wxStrncmp(buf, L"AudacityProject", 15))
       {
          AudacityMessageBox(
             XO("This project was saved by Audacity version 1.0 or earlier. The format has\n"
@@ -753,7 +753,7 @@ bool AUPImportFileHandle::HandleProject(XMLTagHandler *&handler)
          requiredTags++;
 
          mProjDir = mFilename;
-         wxString altname = mProjDir.GetName() + wxT("_data");
+         wxString altname = mProjDir.GetName() + L"_data";
          mProjDir.SetFullName(wxEmptyString);
 
          wxString projName = value.ToWString();
@@ -928,7 +928,7 @@ bool AUPImportFileHandle::HandleTags(XMLTagHandler *&handler)
       }
       else if (attr == "track")
       {
-         n = wxT("TRACKNUMBER");
+         n = L"TRACKNUMBER";
       }
       else
       {
@@ -971,7 +971,7 @@ bool AUPImportFileHandle::HandleTag(XMLTagHandler *&handler)
       }
    }
 
-   if (n == wxT("id3v2"))
+   if (n == L"id3v2")
    {
       // LLL:  This is obsolete, but it must be handled and ignored.
    }
@@ -1334,12 +1334,12 @@ bool AUPImportFileHandle::HandleImport(XMLTagHandler *&handler)
       wxFileNameWrapper fileName0{ mFilename };
       fileName0.SetExt({});
       wxFileNameWrapper fileName{
-         fileName0.GetFullPath() + wxT("_data"), strAttr };
+         fileName0.GetFullPath() + L"_data", strAttr };
       if (XMLValueChecker::IsGoodFileName(strAttr, fileName.GetPath(wxPATH_GET_VOLUME)))
          strAttr = fileName.GetFullPath();
       else
       {
-         wxLogWarning(wxT("Could not import file: %s"), strAttr);
+         wxLogWarning(L"Could not import file: %s", strAttr);
          return false;
       }
    }

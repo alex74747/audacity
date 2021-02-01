@@ -916,7 +916,7 @@ HitTestPreview SelectHandle::Preview
          // Look up the current key binding for Preferences.
          // (Don't assume it's the default!)
          auto keyStr =
-            CommandManager::Get( *pProject ).GetKeyFromName(wxT("Preferences"))
+            CommandManager::Get( *pProject ).GetKeyFromName(L"Preferences")
             .Display( true );
          if (keyStr.empty())
             // No keyboard preference defined for opening Preferences dialog
@@ -981,7 +981,7 @@ HitTestPreview SelectHandle::Preview
    if (HasEscape(pProject) && mUseSnap) {
       tip.Join(
 /* i18n-hint: "Snapping" means automatic alignment of selection edges to any nearby label or clip boundaries */
-        XO("(snapping)"), wxT(" ")
+        XO("(snapping)"), L" "
       );
    }
    return { tip, pCursor };

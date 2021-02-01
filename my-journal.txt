@@ -1,0 +1,5 @@
+#Journal recorded by Paul Licameli on Tuesday, 03 August 2021 at 23:06:33
+Version,1
+CM,NewStereoTrack
+CM,Undo
+CM,Exit

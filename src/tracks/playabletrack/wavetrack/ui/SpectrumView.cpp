@@ -46,7 +46,7 @@ class SpectralData;
 
 static WaveTrackSubView::Type sType{
    WaveTrackViewConstants::Spectrum,
-   { wxT("Spectrogram"), XXO("&Spectrogram") }
+   { L"Spectrogram", XXO("&Spectrogram") }
 };
 
 static WaveTrackSubViewType::RegisteredType reg{ sType };
@@ -192,7 +192,7 @@ void SpectrumView::DoSetMinimized( bool minimized )
 
 #ifdef EXPERIMENTAL_HALF_WAVE
    bool bHalfWave;
-   gPrefs->Read(wxT("/GUI/CollapseToHalfWave"), &bHalfWave, false);
+   gPrefs->Read(L"/GUI/CollapseToHalfWave", &bHalfWave, false);
    if( bHalfWave && minimized)
    {
       // It is all right to set the top of scale to a huge number,

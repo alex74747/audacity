@@ -58,11 +58,11 @@ void TracksBehaviorsPrefs::Populate()
 }
 
 ChoiceSetting TracksBehaviorsSolo{
-   wxT("/GUI/Solo"),
+   L"/GUI/Solo",
    {
       ByColumns,
       { XO("Simple"),  XO("Multi-track"), XO("None") },
-      { wxT("Simple"), wxT("Multi"),      wxT("None") }
+      { L"Simple", L"Multi",      L"None" }
    },
    0, // "Simple"
 };
@@ -75,33 +75,33 @@ void TracksBehaviorsPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Behaviors"));
    {
       S.TieCheckBox(XXO("&Select all audio, if selection required"),
-                    {wxT("/GUI/SelectAllOnNone"),
+                    {L"/GUI/SelectAllOnNone",
                      false});
       /* i18n-hint: Cut-lines are lines that can expand to show the cut audio.*/
       S.TieCheckBox(XXO("Enable cut &lines"),
-                    {wxT("/GUI/EnableCutLines"),
+                    {L"/GUI/EnableCutLines",
                      false});
       S.TieCheckBox(XXO("Enable &dragging selection edges"),
-                    {wxT("/GUI/AdjustSelectionEdges"),
+                    {L"/GUI/AdjustSelectionEdges",
                      true});
       S
          .TieCheckBox(XXO("Editing a clip can &move other clips"),
             EditClipsCanMove);
       S.TieCheckBox(XXO("\"Move track focus\" c&ycles repeatedly through tracks"),
-                    {wxT("/GUI/CircularTrackNavigation"),
+                    {L"/GUI/CircularTrackNavigation",
                      false});
       S.TieCheckBox(XXO("&Type to create a label"),
-                    {wxT("/GUI/TypeToCreateLabel"),
+                    {L"/GUI/TypeToCreateLabel",
                      false});
       S.TieCheckBox(XXO("Use dialog for the &name of a new label"),
-                    {wxT("/GUI/DialogForNameNewLabel"),
+                    {L"/GUI/DialogForNameNewLabel",
                      false});
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
       S.TieCheckBox(XXO("Enable scrolling left of &zero"),
                     ScrollingPreference);
 #endif
       S.TieCheckBox(XXO("Advanced &vertical zooming"),
-                    {wxT("/GUI/VerticalZooming"),
+                    {L"/GUI/VerticalZooming",
                      false});
 
       S.AddSpace(10);

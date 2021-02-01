@@ -26,7 +26,7 @@ SelectFile(FileNames::Operation op,
    return WithDefaultPath(op, default_path, [&](const FilePath &path) {
       wxString filter;
       if ( !default_extension.empty() )
-         filter = wxT("*.") + default_extension;
+         filter = L"*." + default_extension;
       return FileSelector(
             message.Translation(), path, default_filename, filter,
             FormatWildcard( fileTypes ),

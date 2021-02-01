@@ -162,7 +162,7 @@ TimerRecordDialog::TimerRecordDialog(
 
    m_DateTime_Start = wxDateTime::UNow();
    long seconds; // default duration is 1 hour = 3600 seconds
-   gPrefs->Read(wxT("/TimerRecord/LastDuration"), &seconds, 3600);
+   gPrefs->Read(L"/TimerRecord/LastDuration", &seconds, 3600);
    m_TimeSpan_Duration = wxTimeSpan::Seconds(seconds);
    m_DateTime_End = m_DateTime_Start + m_TimeSpan_Duration;
 
@@ -308,7 +308,7 @@ void TimerRecordDialog::OnAutoSavePathButton_Click(wxCommandEvent& WXUNUSED(even
       XO("Save Timer Recording As"),
       m_fnAutoSaveFile.GetPath(),
       m_fnAutoSaveFile.GetFullName(),
-      wxT("aup3"),
+      L"aup3",
       { FileNames::AudacityProjects },
       wxFD_SAVE | wxRESIZE_BORDER,
       this);
@@ -334,7 +334,7 @@ would overwrite another project.\nPlease try again and select an original name."
    m_bProjectAlreadySaved = projectFileIO.GetFileName() == fName? true : false;
 
    m_fnAutoSaveFile = fName;
-   m_fnAutoSaveFile.SetExt(wxT("aup3"));
+   m_fnAutoSaveFile.SetExt(L"aup3");
    this->UpdateTextBoxControls();
 }
 
@@ -443,7 +443,7 @@ void TimerRecordDialog::OnOK(wxCommandEvent& WXUNUSED(event))
    this->EndModal(wxID_OK);
    wxLongLong duration = m_TimeSpan_Duration.GetSeconds();
    // this will assert if the duration won't fit in a long
-   gPrefs->Write(wxT("/TimerRecord/LastDuration"), duration.ToLong());
+   gPrefs->Write(L"/TimerRecord/LastDuration", duration.ToLong());
    gPrefs->Flush();
 }
 
@@ -720,15 +720,15 @@ TranslatableString TimerRecordDialog::GetDisplayDate( wxDateTime & dt )
                             wxStringBuffer(s, len),
                             len);
       if (len > 0) {
-         s += wxT(" ") + dt.FormatTime();
+         s += L" " + dt.FormatTime();
          return Verbatim( s );
       }
    }
 #endif
 
    // Use default formatting
-wxPrintf(wxT("%s\n"), dt.Format());
-   return Verbatim( dt.FormatDate() + wxT(" ") + dt.FormatTime() );
+wxPrintf(L"%s\n", dt.Format());
+   return Verbatim( dt.FormatDate() + L" " + dt.FormatTime() );
 }
 
 wxTextCtrlWrapper * TimerRecordDialog::NewPathControl(

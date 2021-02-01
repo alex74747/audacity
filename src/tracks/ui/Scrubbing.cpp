@@ -274,7 +274,7 @@ namespace {
          "Scrubbing" is variable-speed playback, ...
          "Seeking" is normal speed playback but with skips, ...
        */
-      { wxT("Scrub"),       XXO("&Scrub"),           XO("Scrubbing"),
+      { L"Scrub",       XXO("&Scrub"),           XO("Scrubbing"),
          CaptureNotBusyFlag() | HasWaveDataFlag(),
          &Scrubber::OnScrub,       false,      &Scrubber::Scrubs,
       },
@@ -283,7 +283,7 @@ namespace {
          "Scrubbing" is variable-speed playback, ...
          "Seeking" is normal speed playback but with skips, ...
        */
-      { wxT("Seek"),        XXO("See&k"),            XO("Seeking"),
+      { L"Seek",        XXO("See&k"),            XO("Seeking"),
          CaptureNotBusyFlag() | HasWaveDataFlag(),
          &Scrubber::OnSeek,        true,       &Scrubber::Seeks,
       },
@@ -292,7 +292,7 @@ namespace {
          "Scrubbing" is variable-speed playback, ...
          "Seeking" is normal speed playback but with skips, ...
        */
-      { wxT("ToggleScrubRuler"),            XXO("Scrub &Ruler"),   {},
+      { L"ToggleScrubRuler",            XXO("Scrub &Ruler"),   {},
          AlwaysEnabledFlag,
          &Scrubber::OnToggleScrubRuler, false,    &Scrubber::ShowsBar,
       },
@@ -946,7 +946,7 @@ void Scrubber::OnSeek(const CommandContext&)
 
 #if 1
 namespace {
-   static const wxChar *scrubEnabledPrefName = wxT("/QuickPlay/ScrubbingEnabled");
+   static const wxChar *scrubEnabledPrefName = L"/QuickPlay/ScrubbingEnabled";
 
    bool ReadScrubEnabledPref()
    {
@@ -1132,7 +1132,7 @@ BaseItemSharedPtr ToolbarMenu()
 
    static BaseItemSharedPtr menu { (
    FinderScope{ finder },
-   Menu( wxT("Scrubbing"),
+   Menu( L"Scrubbing",
       XXO("Scru&bbing"),
       []{
          BaseItemPtrs ptrs;
@@ -1157,7 +1157,7 @@ BaseItemSharedPtr ToolbarMenu()
 }
 
 AttachedItem sAttachment{
-   wxT("Transport/Basic"),
+   L"Transport/Basic",
    Shared( ToolbarMenu() )
 };
 
@@ -1167,21 +1167,21 @@ BaseItemSharedPtr KeyboardScrubbingItems()
 
    static BaseItemSharedPtr items{
    ( FinderScope{ finder },
-   Items( wxT("KeyboardScrubbing"),
-      Command(wxT("KeyboardScrubBackwards"), XXO("Scrub Bac&kwards"),
+   Items( L"KeyboardScrubbing",
+      Command(L"KeyboardScrubBackwards", XXO("Scrub Bac&kwards"),
          &Scrubber::OnKeyboardScrubBackwards,
          CaptureNotBusyFlag() | CanStopAudioStreamFlag(),
-         Options{ wxT("U") }.WantKeyUp() ),
-      Command(wxT("KeyboardScrubForwards"), XXO("Scrub For&wards"),
+         Options{ L"U" }.WantKeyUp() ),
+      Command(L"KeyboardScrubForwards", XXO("Scrub For&wards"),
          &Scrubber::OnKeyboardScrubForwards,
          CaptureNotBusyFlag() | CanStopAudioStreamFlag(),
-         Options{ wxT("I") }.WantKeyUp() )
+         Options{ L"I" }.WantKeyUp() )
    ) ) };
    return items;
 }
 
 AttachedItem sAttachment2{
-   wxT("Optional/Extra/Part1/Transport"),
+   L"Optional/Extra/Part1/Transport",
    Shared( KeyboardScrubbingItems() )
 };
 

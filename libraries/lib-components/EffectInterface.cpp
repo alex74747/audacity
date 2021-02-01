@@ -17,7 +17,7 @@ Identifier EffectDefinitionInterface::GetSquashedName(const Identifier &ident)
    if (name.empty())
       return {};
 
-   wxStringTokenizer st(name, wxT(" "));
+   wxStringTokenizer st(name, L" ");
    wxString id;
 
    // CamelCase the name

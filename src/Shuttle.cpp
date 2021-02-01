@@ -86,7 +86,7 @@ bool Shuttle::TransferBool( const wxString & Name, bool & bValue, const bool & b
    }
    else
    {
-      mValueString = (bValue==0) ? wxT("no"):wxT("yes");
+      mValueString = (bValue==0) ? L"no":L"yes";
       return ExchangeWithMaster( Name );
    }
    return true;
@@ -105,7 +105,7 @@ bool Shuttle::TransferFloat( const wxString & Name, float & fValue, const float 
    }
    else
    {
-      mValueString = wxString::Format(wxT("%f"),fValue);
+      mValueString = wxString::Format(L"%f",fValue);
       return ExchangeWithMaster( Name );
    }
    return true;
@@ -125,7 +125,7 @@ bool Shuttle::TransferDouble( const wxString & Name, double & dValue, const doub
    else
    {
       //%f is format string for double
-      mValueString = wxString::Format(wxT("%f"),dValue);
+      mValueString = wxString::Format(L"%f",dValue);
       return ExchangeWithMaster( Name );
    }
    return true;
@@ -143,7 +143,7 @@ bool Shuttle::TransferInt( const wxString & Name, int & iValue, const int & iDef
    }
    else
    {
-      mValueString = wxString::Format(wxT("%i"),iValue);
+      mValueString = wxString::Format(L"%i",iValue);
       return ExchangeWithMaster( Name );
    }
    return true;
@@ -168,7 +168,7 @@ bool Shuttle::TransferLongLong( const wxString & Name, wxLongLong_t & iValue, co
    else
    {
       /// \todo Fix for long long values.
-      mValueString = wxString::Format(wxT("%lld"), (long long) iValue);
+      mValueString = wxString::Format(L"%lld", (long long) iValue);
       return ExchangeWithMaster( Name );
    }
    return true;
@@ -268,16 +268,16 @@ bool ShuttleCli::ExchangeWithMaster(const wxString & Name)
 {
    if( !mbStoreInClient )
    {
-      mParams += wxT(" ");
+      mParams += L" ";
       mParams +=Name;
-      mParams += wxT("=");
+      mParams += L"=";
       mParams +=mValueString;
    }
    else
    {
       int i;
-      mParams = wxT(" ")+mParams;
-      i=mParams.Find( wxT(" ")+Name+wxT("=") );
+      mParams = L" "+mParams;
+      i=mParams.Find( L" "+Name+L"=" );
       if( i>=0 )
       {
          int j=i+2+Name.length();

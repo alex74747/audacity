@@ -386,7 +386,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
 {
    SelectedRegion sr;
    wxString title;
-   static const wxString continuation{ wxT("\\") };
+   static const wxString continuation{ L"\\" };
 
    wxString firstLine = file.GetLine(index++);
 
@@ -394,7 +394,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
       // Assume tab is an impossible character within the exported text
       // of the label, so can be only a delimiter.  But other white space may
       // be part of the label text.
-      wxStringTokenizer toker { firstLine, wxT("\t") };
+      wxStringTokenizer toker { firstLine, L"\t" };
 
       //get the timepoint of the left edge of the label.
       auto token = toker.GetNextToken();
@@ -433,7 +433,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
       ++index;
 
    if (index2 < index) {
-      wxStringTokenizer toker { file.GetLine(index2++), wxT("\t") };
+      wxStringTokenizer toker { file.GetLine(index2++), L"\t" };
       auto token = toker.GetNextToken();
       if (token != continuation)
          throw BadFormatException{};
@@ -456,7 +456,7 @@ LabelStruct LabelStruct::Import(wxTextFile &file, int &index)
 
 void LabelStruct::Export(wxTextFile &file) const
 {
-   file.AddLine(wxString::Format(wxT("%s\t%s\t%s"),
+   file.AddLine(wxString::Format(L"%s\t%s\t%s",
       Internat::ToString(getT0(), FLT_DIG),
       Internat::ToString(getT1(), FLT_DIG),
       title
@@ -472,7 +472,7 @@ void LabelStruct::Export(wxTextFile &file) const
 
    // Write a \ character at the start of a second line,
    // so that earlier versions of Audacity ignore it.
-   file.AddLine(wxString::Format(wxT("\\\t%s\t%s"),
+   file.AddLine(wxString::Format(L"\\\t%s\t%s",
       Internat::ToString(f0, FLT_DIG),
       Internat::ToString(f1, FLT_DIG)
    ));
@@ -487,7 +487,7 @@ auto LabelStruct::RegionRelation(
    bool retainLabels = false;
 
    wxASSERT(reg_t0 <= reg_t1);
-   gPrefs->Read(wxT("/GUI/RetainLabels"), &retainLabels);
+   gPrefs->Read(L"/GUI/RetainLabels", &retainLabels);
 
    if(retainLabels) {
 
@@ -626,7 +626,7 @@ bool LabelTrack::HandleXMLTag(const std::string_view& tag, const AttributesList 
          {
             if (nValue < 0)
             {
-               wxLogWarning(wxT("Project shows negative number of labels: %d"), nValue);
+               wxLogWarning(L"Project shows negative number of labels: %d", nValue);
                return false;
             }
             mLabels.clear();
@@ -653,20 +653,20 @@ void LabelTrack::WriteXML(XMLWriter &xmlFile) const
 {
    int len = mLabels.size();
 
-   xmlFile.StartTag(wxT("labeltrack"));
+   xmlFile.StartTag(L"labeltrack");
    this->Track::WriteCommonXMLAttributes( xmlFile );
-   xmlFile.WriteAttr(wxT("numlabels"), len);
+   xmlFile.WriteAttr(L"numlabels", len);
 
    for (auto &labelStruct: mLabels) {
-      xmlFile.StartTag(wxT("label"));
+      xmlFile.StartTag(L"label");
       labelStruct.getSelectedRegion()
          .WriteXMLAttributes(xmlFile, "t", "t1");
       // PRL: to do: write other selection fields
-      xmlFile.WriteAttr(wxT("title"), labelStruct.title);
-      xmlFile.EndTag(wxT("label"));
+      xmlFile.WriteAttr(L"title", labelStruct.title);
+      xmlFile.EndTag(L"label");
    }
 
-   xmlFile.EndTag(wxT("labeltrack"));
+   xmlFile.EndTag(L"labeltrack");
 }
 
 Track::Holder LabelTrack::Cut(double t0, double t1)

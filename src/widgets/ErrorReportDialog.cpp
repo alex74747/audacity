@@ -148,7 +148,7 @@ ErrorReportDialog::ErrorReportDialog(
 
                privacyPolicy.FormatLink(
                   /* i18n-hint: Title of hyperlink to the privacy policy. This is an object of "See". */
-                  wxT("%s"),
+                  L"%s",
                   XO("our Privacy Policy"),
                   "https://www.audacityteam.org/about/desktop-privacy-notice/");
 
@@ -265,7 +265,7 @@ void ErrorReportDialog::OnDontSend(wxCommandEvent& event)
 void ErrorReportDialog::OnHelp(wxCommandEvent& event)
 {
    const auto &helpUrl = mHelpUrl.GET();
-   if (helpUrl.StartsWith(wxT("innerlink:")))
+   if (helpUrl.StartsWith(L"innerlink:"))
    {
       HelpSystem::ShowHtmlText(
          this, TitleText(helpUrl.Mid(10)), HelpText(helpUrl.Mid(10)), false,

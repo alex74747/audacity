@@ -42,7 +42,7 @@ RegisteredCommand::RegisteredCommand(
 {
    if ( !sDictionary().insert( { name, dispatcher } ).second ) {
       wxLogDebug( wxString::Format (
-         wxT("Duplicated registration of Journal command name %s"),
+         L"Duplicated registration of Journal command name %s",
          name
       ) );
       // Cause failure of startup of journalling and graceful exit

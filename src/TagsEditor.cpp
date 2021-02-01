@@ -240,10 +240,10 @@ TagsEditorDialog::TagsEditorDialog(wxWindow * parent,
 
    // Override size and position with last saved
    wxRect r = GetRect();
-   gPrefs->Read(wxT("/TagsEditorDialog/x"), &r.x, r.x);
-   gPrefs->Read(wxT("/TagsEditorDialog/y"), &r.y, r.y);
-   gPrefs->Read(wxT("/TagsEditorDialog/width"), &r.width, r.width);
-   gPrefs->Read(wxT("/TagsEditorDialog/height"), &r.height, r.height);
+   gPrefs->Read(L"/TagsEditorDialog/x", &r.x, r.x);
+   gPrefs->Read(L"/TagsEditorDialog/y", &r.y, r.y);
+   gPrefs->Read(L"/TagsEditorDialog/width", &r.width, r.width);
+   gPrefs->Read(L"/TagsEditorDialog/height", &r.height, r.height);
    //On multi-monitor systems, there's a chance the last saved window position is
    //on a monitor that has been removed or is unavailable.
    if (IsWindowRectValid(&r))
@@ -283,7 +283,7 @@ TagsEditorDialog::~TagsEditorDialog()
 void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
 {
    bool bShow;
-   gPrefs->Read(wxT("/AudioFiles/ShowId3Dialog"), &bShow, true );
+   gPrefs->Read(L"/AudioFiles/ShowId3Dialog", &bShow, true );
 
    S.StartVerticalLay();
    {
@@ -300,7 +300,7 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
                           wxDefaultSize,
                           wxSUNKEN_BORDER);
 
-         mGrid->RegisterDataType(wxT("Combo"),
+         mGrid->RegisterDataType(L"Combo",
             (mStringRenderer = safenew wxGridCellStringRenderer),
             (mComboEditor = safenew ComboEditor(wxArrayString(), true)));
 
@@ -317,7 +317,7 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
          mGrid->SetColLabelValue(1, _("Value"));
 
          // Resize the name column and set default row height.
-         wxComboBox tc(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, cs);
+         wxComboBox tc(this, wxID_ANY, L"", wxDefaultPosition, wxDefaultSize, cs);
          mGrid->SetColSize(0, tc.GetSize().x);
          mGrid->SetColMinimalWidth(0, tc.GetSize().x);
       }
@@ -374,7 +374,7 @@ void TagsEditorDialog::PopulateOrExchange(ShuttleGui & S)
 void TagsEditorDialog::OnDontShow( wxCommandEvent & Evt )
 {
    bool bShow = !Evt.IsChecked();
-   gPrefs->Write(wxT("/AudioFiles/ShowId3Dialog"), bShow );
+   gPrefs->Write(L"/AudioFiles/ShowId3Dialog", bShow );
    gPrefs->Flush();
 }
 
@@ -553,7 +553,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
 
    S.StartVerticalLay(true);
    {
-      tc = S.AddTextWindow(wxT(""));
+      tc = S.AddTextWindow(L"");
    }
    S.EndVerticalLay();
 
@@ -567,7 +567,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
    std::sort( g.begin(), g.end() );
 
    for (int i = 0; i < cnt; i++) {
-      tc->AppendText(g[i] + wxT("\n"));
+      tc->AppendText(g[i] + L"\n");
    }
 
    dlg.Center();
@@ -575,7 +575,7 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
       return;
    }
 
-   wxFileName fn(FileNames::DataDir(), wxT("genres.txt"));
+   wxFileName fn(FileNames::DataDir(), L"genres.txt");
    wxFile f(fn.GetFullPath(), wxFile::write);
    if (!f.IsOpened() || !f.Write(tc->GetValue())) {
       AudacityMessageBox(
@@ -601,7 +601,7 @@ void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
    }
    mLocal.LoadDefaultGenres();
 
-   wxFileName fn(FileNames::DataDir(), wxT("genres.txt"));
+   wxFileName fn(FileNames::DataDir(), L"genres.txt");
    wxTextFile tf(fn.GetFullPath());
 
    bool open = (tf.Exists() && tf.Open()) ||
@@ -649,8 +649,8 @@ void TagsEditorDialog::OnLoad(wxCommandEvent & WXUNUSED(event))
    fn = SelectFile(FileNames::Operation::_None,
       XO("Load Metadata As:"),
       FileNames::DataDir(),
-      wxT("Tags.xml"),
-      wxT("xml"),
+      L"Tags.xml",
+      L"xml",
       { FileNames::XMLFiles },
       wxFD_OPEN | wxRESIZE_BORDER,
       this);
@@ -707,8 +707,8 @@ void TagsEditorDialog::OnSave(wxCommandEvent & WXUNUSED(event))
    fn = SelectFile(FileNames::Operation::_None,
       XO("Save Metadata As:"),
       FileNames::DataDir(),
-      wxT("Tags.xml"),
-      wxT("xml"),
+      L"Tags.xml",
+      L"xml",
       { FileNames::XMLFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
       this);
@@ -775,13 +775,13 @@ void TagsEditorDialog::OnSaveDefaults(wxCommandEvent & WXUNUSED(event))
    }
 
    // Remove any previous defaults
-   gPrefs->DeleteGroup(wxT("/Tags"));
+   gPrefs->DeleteGroup(L"/Tags");
 
    // Write out each tag
    for (const auto &pair : mLocal.GetRange()) {
       const auto &n = pair.first;
       const auto &v = pair.second;
-      gPrefs->Write(wxT("/Tags/") + n, v);
+      gPrefs->Write(L"/Tags/" + n, v);
    }
    gPrefs->Flush();
 
@@ -842,10 +842,10 @@ void TagsEditorDialog::OnOk(wxCommandEvent & WXUNUSED(event))
    *mTags = mLocal;
 
    wxRect r = GetRect();
-   gPrefs->Write(wxT("/TagsEditorDialog/x"), r.x);
-   gPrefs->Write(wxT("/TagsEditorDialog/y"), r.y);
-   gPrefs->Write(wxT("/TagsEditorDialog/width"), r.width);
-   gPrefs->Write(wxT("/TagsEditorDialog/height"), r.height);
+   gPrefs->Write(L"/TagsEditorDialog/x", r.x);
+   gPrefs->Write(L"/TagsEditorDialog/y", r.y);
+   gPrefs->Write(L"/TagsEditorDialog/width", r.width);
+   gPrefs->Write(L"/TagsEditorDialog/height", r.height);
    gPrefs->Flush();
 
    EndModal(wxID_OK);
@@ -893,7 +893,7 @@ void TagsEditorDialog::SetEditors()
       wxString label = mGrid->GetCellValue(i, 0);
       if (label.CmpNoCase(LABEL_GENRE.Translation()) == 0) {
          // This use of GetDefaultEditorForType does not require DecRef.
-         mGrid->SetCellEditor(i, 1, mGrid->GetDefaultEditorForType(wxT("Combo")));
+         mGrid->SetCellEditor(i, 1, mGrid->GetDefaultEditorForType(L"Combo"));
       }
       else {
          mGrid->SetCellEditor(i, 1, NULL); //mGrid->GetDefaultEditor());
@@ -914,12 +914,12 @@ void TagsEditorDialog::PopulateGenres()
    std::sort( g.begin(), g.end() );
 
    for (i = 0; i < cnt; i++) {
-      parm = parm + (i == 0 ? wxT("") : wxT(",")) + g[i];
+      parm = parm + (i == 0 ? L"" : L",") + g[i];
    }
 
    // Here was a memory leak!  wxWidgets docs for wxGrid::GetDefaultEditorForType() say:
    // "The caller must call DecRef() on the returned pointer."
-   auto editor = mGrid->GetDefaultEditorForType(wxT("Combo"));
+   auto editor = mGrid->GetDefaultEditorForType(L"Combo");
    editor->SetParameters(parm);
    editor->DecRef();
 }

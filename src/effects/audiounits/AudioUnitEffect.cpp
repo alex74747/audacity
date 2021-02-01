@@ -65,11 +65,11 @@
 #define PRESET_FORMAT kCFPropertyListBinaryFormat_v1_0
 
 // Name of the settings key to use for the above value
-#define PRESET_KEY wxT("Data")
+#define PRESET_KEY L"Data"
 
 // Where the presets are located
-#define PRESET_LOCAL_PATH wxT("/Library/Audio/Presets")
-#define PRESET_USER_PATH wxT("~/Library/Audio/Presets")
+#define PRESET_LOCAL_PATH L"/Library/Audio/Presets"
+#define PRESET_USER_PATH L"~/Library/Audio/Presets"
 
 static const struct
 {
@@ -166,7 +166,7 @@ public:
          name.Replace(idEnd, L'_');
          name.Append(idSep);
       }
-      name = wxString::Format(wxT("%c%s%x%c"),
+      name = wxString::Format(L"%c%s%x%c",
                               idBeg,
                               name,
                               parmID,
@@ -203,7 +203,7 @@ public:
             clumpName.Replace(idEnd, L'_');
             clumpName.Append(idSep);
          }
-         name = wxString::Format(wxT("%c%s%x%c%s"),
+         name = wxString::Format(L"%c%s%x%c%s",
                                  idBeg,
                                  clumpName,
                                  info.clumpID,
@@ -422,7 +422,7 @@ void AudioUnitEffectsModule::LoadAudioUnitsOfType(OSType inAUType,
          {
             wxString path;
 
-            path.Printf(wxT("%-4.4s/%-4.4s/%-4.4s/%s"),
+            path.Printf(L"%-4.4s/%-4.4s/%-4.4s/%s",
                         FromOSType(found.componentManufacturer),
                         FromOSType(found.componentType),
                         FromOSType(found.componentSubType),
@@ -434,7 +434,7 @@ void AudioUnitEffectsModule::LoadAudioUnitsOfType(OSType inAUType,
                    BlackList[i].componentSubType == found.componentSubType &&
                    BlackList[i].componentManufacturer == found.componentManufacturer)
                {
-                  wxLogDebug(wxT("Blacklisted AU skipped: %s"), path);
+                  wxLogDebug(L"Blacklisted AU skipped: %s", path);
                   result = !noErr;
                   break;
                }
@@ -454,7 +454,7 @@ void AudioUnitEffectsModule::LoadAudioUnitsOfType(OSType inAUType,
 AudioComponent AudioUnitEffectsModule::FindAudioUnit(const PluginPath & path,
                                                      wxString & name)
 {
-   wxStringTokenizer tokens(path, wxT("/"));
+   wxStringTokenizer tokens(path, L"/");
 
    AudioComponentDescription desc;
 
@@ -527,13 +527,13 @@ AudioUnitEffectOptionsDialog::AudioUnitEffectOptionsDialog(wxWindow * parent,
 , mHost{ host }
 , mEffect{ effect }
 {
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseLatency"), mUseLatency, true);
+   GetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseLatency", mUseLatency, true);
 
    // Expect one of three string values from the config file
    wxString uiType;
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UIType"), uiType, wxT("Full"));
+   GetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UIType", uiType, L"Full");
 
    // Get the localization of the string for display to the user
    mUIType = TranslatableString{ uiType, {} };
@@ -624,10 +624,10 @@ void AudioUnitEffectOptionsDialog::OnOk(wxCommandEvent & WXUNUSED(evt))
    // un-translate the type
    auto uiType = mUIType.MSGID().GET();
 
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UseLatency"), mUseLatency);
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Options"),
-      wxT("UIType"), uiType);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UseLatency", mUseLatency);
+   SetConfig(mEffect, PluginSettings::Shared, L"Options",
+      L"UIType", uiType);
 
    EndModal(wxID_OK);
 }
@@ -702,7 +702,7 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
 
    // Generate the local domain path
    wxString path;
-   path.Printf(wxT("%s/%s/%s"),
+   path.Printf(L"%s/%s/%s",
                PRESET_LOCAL_PATH,
                mEffect->mVendor,
                mEffect->mName);
@@ -710,10 +710,10 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    fn.Normalize();
    
    // Get all presets in the local domain for this effect
-   wxDir::GetAllFiles(fn.GetFullPath(), &presets, wxT("*.aupreset"));
+   wxDir::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
 
    // Generate the user domain path
-   path.Printf(wxT("%s/%s/%s"),
+   path.Printf(L"%s/%s/%s",
                PRESET_USER_PATH,
                mEffect->mVendor,
                mEffect->mName);
@@ -721,7 +721,7 @@ void AudioUnitEffectImportDialog::PopulateOrExchange(ShuttleGui & S)
    fn.Normalize();
 
    // Get all presets in the user domain for this effect
-   wxDir::GetAllFiles(fn.GetFullPath(), &presets, wxT("*.aupreset"));
+   wxDir::GetAllFiles(fn.GetFullPath(), &presets, L"*.aupreset");
    
    presets.Sort();
 
@@ -756,12 +756,12 @@ TranslatableString AudioUnitEffectImportDialog::Import(
 {
    // Generate the path
    wxString fullPath;
-   fullPath.Printf(wxT("%s/%s.aupreset"),
+   fullPath.Printf(L"%s/%s.aupreset",
                     path,
                     name);
 
    // Open the preset
-   wxFFile f(fullPath, wxT("r"));
+   wxFFile f(fullPath, L"r");
    if (!f.IsOpened())
    {
       return XO("Couldn't open \"%s\"").Format(fullPath);
@@ -899,7 +899,7 @@ wxString AudioUnitEffect::GetVersion()
 
    OSStatus result = AudioComponentGetVersion(mComponent, &version);
 
-   return wxString::Format(wxT("%d.%d.%d"),
+   return wxString::Format(L"%d.%d.%d",
                            (version >> 16) & 0xffff,
                            (version >> 8) & 0xff,
                            version & 0xff);
@@ -1042,19 +1042,19 @@ bool AudioUnitEffect::SetHost(EffectHostInterface *host)
    // mHost will be null during registration
    if (mHost)
    {
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UIType"), mUIType, wxT("Full"));
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UIType", mUIType, L"Full");
 
       bool haveDefaults;
       GetConfig(*this, PluginSettings::Private,
-         mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), haveDefaults, false);
+         mHost->GetFactoryDefaultsGroup(), L"Initialized", haveDefaults, false);
       if (!haveDefaults)
       {
          SavePreset(mHost->GetFactoryDefaultsGroup());
          SetConfig(*this, PluginSettings::Private,
-            mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), true);
+            mHost->GetFactoryDefaultsGroup(), L"Initialized", true);
       }
 
       LoadPreset(mHost->GetCurrentSettingsGroup());
@@ -1677,7 +1677,7 @@ bool AudioUnitEffect::PopulateUI(ShuttleGui &S)
    }
 
 #if defined(HAVE_AUDIOUNIT_BASIC_SUPPORT)
-   if (mUIType == wxT("Basic"))
+   if (mUIType == L"Basic")
    {
       if (!CreatePlain(mParent))
       {
@@ -1693,7 +1693,7 @@ bool AudioUnitEffect::PopulateUI(ShuttleGui &S)
          return false;
       }
 
-      if (!pControl->Create(container, mComponent, mUnit, mUIType == wxT("Full")))
+      if (!pControl->Create(container, mComponent, mUnit, mUIType == L"Full"))
       {
          return false;
       }
@@ -1724,7 +1724,7 @@ bool AudioUnitEffect::PopulateUI(ShuttleGui &S)
 
 bool AudioUnitEffect::IsGraphicalUI()
 {
-   return mUIType != wxT("Plain");
+   return mUIType != L"Plain";
 }
 
 bool AudioUnitEffect::ValidateUI()
@@ -1800,7 +1800,7 @@ void AudioUnitEffect::ExportPresets()
 
    if (!fn.Mkdir(fn.GetFullPath(), 0755, wxPATH_MKDIR_FULL))
    {
-      wxLogError(wxT("Couldn't create the \"%s\" directory"), fn.GetPath());
+      wxLogError(L"Couldn't create the \"%s\" directory", fn.GetPath());
       return;
    }
 
@@ -1812,9 +1812,9 @@ void AudioUnitEffect::ExportPresets()
       XO("Export Audio Unit Preset As %s:").Format(fn.GetFullPath()),
       fn.GetFullPath(),
       wxEmptyString,
-      wxT("aupreset"),
+      L"aupreset",
       {
-        { XO("Standard Audio Unit preset file"), { wxT("aupreset") }, true },
+        { XO("Standard Audio Unit preset file"), { L"aupreset" }, true },
       },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
       NULL);
@@ -1854,9 +1854,9 @@ void AudioUnitEffect::ImportPresets()
       XO("Import Audio Unit Preset As %s:").Format(fn.GetFullPath()),
       fn.GetFullPath(),
       wxEmptyString,
-      wxT("aupreset"),
+      L"aupreset",
       {
-        { XO("Standard Audio Unit preset file"), { wxT("aupreset") }, true },
+        { XO("Standard Audio Unit preset file"), { L"aupreset" }, true },
       },
       wxFD_OPEN | wxRESIZE_BORDER,
       NULL);
@@ -1889,10 +1889,10 @@ void AudioUnitEffect::ShowOptions()
    if (dlg.ShowModal())
    {
       // Reinitialize configuration settings
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UseLatency"), mUseLatency, true);
-      GetConfig(*this, PluginSettings::Shared, wxT("Options"),
-         wxT("UIType"), mUIType, wxT("Full"));
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UseLatency", mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Options",
+         L"UIType", mUIType, L"Full");
    }
 }
 
@@ -1906,7 +1906,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
 
    // Attempt to load old preset parameters and resave using new method
    if (GetConfig(*this,
-      PluginSettings::Private, group, wxT("Parameters"),
+      PluginSettings::Private, group, L"Parameters",
       parms, wxEmptyString))
    {
       CommandParameters eap;
@@ -1917,7 +1917,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
             if (SavePreset(group))
             {
                RemoveConfig(*this, PluginSettings::Private,
-                  group, wxT("Parameters"));
+                  group, L"Parameters");
             }
          }
       }
@@ -1931,7 +1931,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    {
       // Commented "CurrentSettings" gets tried a lot and useless messages appear
       // in the log
-      //wxLogError(wxT("Preset key \"%s\" not found in group \"%s\""), PRESET_KEY, group);
+      //wxLogError(L"Preset key \"%s\" not found in group \"%s\"", PRESET_KEY, group);
       return false;
    }
    
@@ -1940,7 +1940,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    size_t bufLen = buf.GetDataLen();
    if (!bufLen)
    {
-      wxLogError(wxT("Failed to decode \"%s\" preset"), group);
+      wxLogError(L"Failed to decode \"%s\" preset", group);
       return false;
    }
    const uint8_t *bufPtr = (uint8_t *) buf.GetData();
@@ -1955,7 +1955,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    };
    if (!data)
    {
-      wxLogError(wxT("Failed to convert \"%s\" preset to internal format"), group);
+      wxLogError(L"Failed to convert \"%s\" preset to internal format", group);
       return false;
    }
 
@@ -1970,7 +1970,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
    };
    if (!content)
    {
-      wxLogError(wxT("Failed to create property list for \"%s\" preset"), group);
+      wxLogError(L"Failed to create property list for \"%s\" preset", group);
       return false;
    }
    CFunique_ptr<char /* CFPropertyList */> ucontent { (char *) content };
@@ -1991,7 +1991,7 @@ bool AudioUnitEffect::LoadPreset(const RegistryPath & group)
                                  sizeof(content));
    if (result != noErr)
    {
-      wxLogError(wxT("Failed to set class info for \"%s\" preset"), group);
+      wxLogError(L"Failed to set class info for \"%s\" preset", group);
       return false;
    }
 
@@ -2245,7 +2245,7 @@ void AudioUnitEffect::SetChannelCount(unsigned numChannels)
 TranslatableString AudioUnitEffect::Export(const wxString & path)
 {
    // Create the file
-   wxFFile f(path, wxT("wb"));
+   wxFFile f(path, L"wb");
    if (!f.IsOpened())
    {
       return XO("Couldn't open \"%s\"").Format(path);
@@ -2322,7 +2322,7 @@ TranslatableString AudioUnitEffect::Export(const wxString & path)
 TranslatableString AudioUnitEffect::Import(const wxString & path)
 {
    // Open the preset
-   wxFFile f(path, wxT("r"));
+   wxFFile f(path, L"r");
    if (!f.IsOpened())
    {
       return XO("Couldn't open \"%s\"").Format(path);

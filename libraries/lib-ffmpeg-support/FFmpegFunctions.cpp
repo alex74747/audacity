@@ -317,18 +317,18 @@ std::vector<wxString> FFmpegFunctions::GetSearchPaths(bool fromUserPathOnly)
       return paths;
 
 #if defined(__WXMSW__)
-   wxRegKey reg(wxT("HKEY_LOCAL_MACHINE\\Software\\FFmpeg for Audacity"));
+   wxRegKey reg(L"HKEY_LOCAL_MACHINE\\Software\\FFmpeg for Audacity");
    wxString path;
 
    if (reg.Exists())
-      reg.QueryValue(wxT("InstallPath"), path);
+      reg.QueryValue(L"InstallPath", path);
 
    if (!path.empty())
       paths.emplace_back(path);
 
 #elif defined(__WXMAC__)
-   paths.emplace_back(wxT("/Library/Application Support/audacity/libs"));
-   paths.emplace_back(wxT("/usr/local/lib/audacity"));
+   paths.emplace_back(L"/Library/Application Support/audacity/libs");
+   paths.emplace_back(L"/usr/local/lib/audacity");
 #endif
 
    return paths;

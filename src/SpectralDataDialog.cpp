@@ -480,9 +480,9 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 
 using namespace MenuTable;
 MenuTable::AttachedItem sAttachment{
-   wxT("View/Other/Toolbars/Toolbars/Other"),
+   L"View/Other/Toolbars/Toolbars/Other",
    ( FinderScope{ findCommandHandler },
-      Command( wxT("ShowSpectralSelectionPanel"),
+      Command( L"ShowSpectralSelectionPanel",
          XXO("Spectra&l Selection Panel"),
          &Handler::OnSpectralEditingPanel,
          AlwaysEnabledFlag,

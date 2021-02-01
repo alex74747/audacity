@@ -275,7 +275,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
          mForegroundRMSText = S.Id(ID_FOREGROUNDDB_TEXT)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
-            .AddTextBox( {}, wxT(""), 17);
+            .AddTextBox( {}, L"", 17);
 
          //Background
          S.AddFixedText(XO("&Background:"));
@@ -309,7 +309,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
          mBackgroundRMSText = S.Id(ID_BACKGROUNDDB_TEXT)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
-            .AddTextBox( {}, wxT(""), 17);
+            .AddTextBox( {}, L"", 17);
       }
       S.EndMultiColumn();
    }
@@ -326,7 +326,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
             .Name(label)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
-            .AddTextBox( {}, wxT(""), 50);
+            .AddTextBox( {}, L"", 50);
          m_pButton_Reset = S.Id(ID_BUTTON_RESET).AddButton(XXO("R&eset"));
 
          label = XO("&Difference:");
@@ -335,7 +335,7 @@ ContrastDialog::ContrastDialog(wxWindow * parent, wxWindowID id,
             .Name(label)
             .ConnectRoot(wxEVT_KEY_DOWN,
                          &ContrastDialog::OnChar)
-            .AddTextBox( {}, wxT(""), 50);
+            .AddTextBox( {}, L"", 50);
          m_pButton_Export = S.Id(ID_BUTTON_EXPORT).AddButton(XXO("E&xport..."));
       }
       S.EndMultiColumn();
@@ -424,7 +424,7 @@ namespace {
 
       if ( pValue ) {
          if( fabs( *pValue ) != std::numeric_limits<float>::infinity() ) {
-            auto number = wxString::Format( wxT("%.2f"), *pValue );
+            auto number = wxString::Format( L"%.2f", *pValue );
             value = format1.Format( number );
          }
          else
@@ -469,9 +469,9 @@ namespace {
 
 void ContrastDialog::results()
 {
-   mPassFailText->SetName(wxT(""));
-   mPassFailText->ChangeValue(wxT(""));
-   mDiffText->ChangeValue(wxT(""));
+   mPassFailText->SetName(L"");
+   mPassFailText->ChangeValue(L"");
+   mDiffText->ChangeValue(L"");
 
    // foreground and background defined.
    if(mForegroundIsDefined && mBackgroundIsDefined) {
@@ -509,7 +509,7 @@ void ContrastDialog::results()
    }
    else {
       mForegroundRMSText->SetName(_("No foreground measured"));   // Read by screen-readers
-      mForegroundRMSText->ChangeValue(wxT(""));
+      mForegroundRMSText->ChangeValue(L"");
       mPassFailText->ChangeValue(_("Foreground not yet measured"));
    }
 
@@ -522,7 +522,7 @@ void ContrastDialog::results()
    }
    else {
       mBackgroundRMSText->SetName(_("No background measured"));
-      mBackgroundRMSText->ChangeValue(wxT(""));
+      mBackgroundRMSText->ChangeValue(L"");
       mPassFailText->ChangeValue(_("Background not yet measured"));
    }
 }
@@ -531,13 +531,13 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 {
    // TODO: Handle silence checks better (-infinity dB)
    auto project = FindProjectFromWindow( this );
-   wxString fName = wxT("contrast.txt");
+   wxString fName = L"contrast.txt";
 
    fName = SelectFile(FileNames::Operation::Export,
       XO("Export Contrast Result As:"),
       wxEmptyString,
       fName,
-      wxT("txt"),
+      L"txt",
       { FileNames::TextFiles, FileNames::AllFiles },
       wxFD_SAVE | wxRESIZE_BORDER,
       this);
@@ -555,7 +555,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
    wxTextOutputStream ss(ffStream);
 
    ss
-      << wxT("===================================") << '\n'
+      << L"===================================" << '\n'
    /* i18n-hint: WCAG abbreviates Web Content Accessibility Guidelines */
       << XO("WCAG 2.0 Success Criteria 1.4.7 Contrast Results") << '\n'
       << '\n'
@@ -629,7 +629,7 @@ void ContrastDialog::OnExport(wxCommandEvent & WXUNUSED(event))
 
    ss <<
       sNow << '\n'
-      << wxT("===================================") << '\n'
+      << L"===================================" << '\n'
       << '\n';
 }
 
@@ -644,10 +644,10 @@ void ContrastDialog::OnReset(wxCommandEvent & /*event*/)
 
    mForegroundRMSText->SetName(_("No foreground measured"));   // Read by screen-readers
    mBackgroundRMSText->SetName(_("No background measured"));
-   mForegroundRMSText->ChangeValue(wxT("")); // Displayed value
-   mBackgroundRMSText->ChangeValue(wxT(""));
-   mPassFailText->ChangeValue(wxT(""));
-   mDiffText->ChangeValue(wxT(""));
+   mForegroundRMSText->ChangeValue(L""); // Displayed value
+   mBackgroundRMSText->ChangeValue(L"");
+   mPassFailText->ChangeValue(L"");
+   mDiffText->ChangeValue(L"");
 }
 
 // Remaining code hooks this add-on into the application
@@ -695,12 +695,12 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 // Register that menu item
 
 using namespace MenuTable;
-AttachedItem sAttachment{ wxT("Analyze/Analyzers/Windows"),
+AttachedItem sAttachment{ L"Analyze/Analyzers/Windows",
    ( FinderScope{ findCommandHandler },
-      Command( wxT("ContrastAnalyser"), XXO("Contrast..."),
+      Command( L"ContrastAnalyser", XXO("Contrast..."),
          &Handler::OnContrast,
          AudioIONotBusyFlag() | WaveTracksSelectedFlag() | TimeSelectedFlag(),
-         wxT("Ctrl+Shift+T") ) )
+         L"Ctrl+Shift+T" ) )
 };
 
 }

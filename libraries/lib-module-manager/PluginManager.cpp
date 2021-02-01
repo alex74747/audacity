@@ -283,41 +283,41 @@ void PluginDescriptor::SetImporterExtensions( FileExtensions extensions )
 ///////////////////////////////////////////////////////////////////////////////
 
 // Registry has the list of plug ins
-#define REGVERKEY wxString(wxT("/pluginregistryversion"))
-#define REGVERCUR wxString(wxT("1.1"))
-#define REGROOT wxString(wxT("/pluginregistry/"))
+#define REGVERKEY wxString(L"/pluginregistryversion")
+#define REGVERCUR wxString(L"1.1")
+#define REGROOT wxString(L"/pluginregistry/")
 
 // Settings has the values of the plug in settings.
-#define SETVERKEY wxString(wxT("/pluginsettingsversion"))
-#define SETVERCUR wxString(wxT("1.0"))
-#define SETROOT wxString(wxT("/pluginsettings/"))
+#define SETVERKEY wxString(L"/pluginsettingsversion")
+#define SETVERCUR wxString(L"1.0")
+#define SETROOT wxString(L"/pluginsettings/")
 
-#define KEY_ID                         wxT("ID")
-#define KEY_PATH                       wxT("Path")
-#define KEY_SYMBOL                     wxT("Symbol")
-#define KEY_NAME                       wxT("Name")
-#define KEY_VENDOR                     wxT("Vendor")
-#define KEY_VERSION                    wxT("Version")
-#define KEY_DESCRIPTION                wxT("Description")
-#define KEY_LASTUPDATED                wxT("LastUpdated")
-#define KEY_ENABLED                    wxT("Enabled")
-#define KEY_VALID                      wxT("Valid")
-#define KEY_PROVIDERID                 wxT("ProviderID")
-#define KEY_EFFECTTYPE                 wxT("EffectType")
-#define KEY_EFFECTFAMILY               wxT("EffectFamily")
-#define KEY_EFFECTDEFAULT              wxT("EffectDefault")
-#define KEY_EFFECTINTERACTIVE          wxT("EffectInteractive")
-#define KEY_EFFECTREALTIME             wxT("EffectRealtime")
-#define KEY_EFFECTAUTOMATABLE          wxT("EffectAutomatable")
-#define KEY_EFFECTTYPE_NONE            wxT("None")
-#define KEY_EFFECTTYPE_ANALYZE         wxT("Analyze")
-#define KEY_EFFECTTYPE_GENERATE        wxT("Generate")
-#define KEY_EFFECTTYPE_PROCESS         wxT("Process")
-#define KEY_EFFECTTYPE_TOOL            wxT("Tool")
-#define KEY_EFFECTTYPE_HIDDEN          wxT("Hidden")
-#define KEY_IMPORTERIDENT              wxT("ImporterIdent")
-//#define KEY_IMPORTERFILTER             wxT("ImporterFilter")
-#define KEY_IMPORTEREXTENSIONS         wxT("ImporterExtensions")
+#define KEY_ID                         L"ID"
+#define KEY_PATH                       L"Path"
+#define KEY_SYMBOL                     L"Symbol"
+#define KEY_NAME                       L"Name"
+#define KEY_VENDOR                     L"Vendor"
+#define KEY_VERSION                    L"Version"
+#define KEY_DESCRIPTION                L"Description"
+#define KEY_LASTUPDATED                L"LastUpdated"
+#define KEY_ENABLED                    L"Enabled"
+#define KEY_VALID                      L"Valid"
+#define KEY_PROVIDERID                 L"ProviderID"
+#define KEY_EFFECTTYPE                 L"EffectType"
+#define KEY_EFFECTFAMILY               L"EffectFamily"
+#define KEY_EFFECTDEFAULT              L"EffectDefault"
+#define KEY_EFFECTINTERACTIVE          L"EffectInteractive"
+#define KEY_EFFECTREALTIME             L"EffectRealtime"
+#define KEY_EFFECTAUTOMATABLE          L"EffectAutomatable"
+#define KEY_EFFECTTYPE_NONE            L"None"
+#define KEY_EFFECTTYPE_ANALYZE         L"Analyze"
+#define KEY_EFFECTTYPE_GENERATE        L"Generate"
+#define KEY_EFFECTTYPE_PROCESS         L"Process"
+#define KEY_EFFECTTYPE_TOOL            L"Tool"
+#define KEY_EFFECTTYPE_HIDDEN          L"Hidden"
+#define KEY_IMPORTERIDENT              L"ImporterIdent"
+//#define KEY_IMPORTERFILTER             L"ImporterFilter"
+#define KEY_IMPORTEREXTENSIONS         L"ImporterExtensions"
 
 // ============================================================================
 //
@@ -367,7 +367,7 @@ RegistryPath PluginManager::GetPluginEnabledSetting(
          if ( family.empty() ) // as for built-in effect and command modules
             return {};
          else
-            return L'/' + family + wxT("/Enable");
+            return L'/' + family + L"/Enable";
       }
       case PluginTypeEffect:
          // do NOT use GetEffectFamily() for this descriptor, but instead,
@@ -468,7 +468,7 @@ void PluginManager::FindFilesInPathList(const wxString & pattern,
    // just remove the MacOSX part.
    ff.RemoveLastDir();
 #endif
-   ff.AppendDir(wxT("plug-ins"));
+   ff.AppendDir(L"plug-ins");
    paths.push_back(ff.GetPath());
 
    // Weed out duplicates
@@ -734,7 +734,7 @@ bool PluginManager::DropFile(const wxString &fileName)
                   "plug-ins"
                )( nIds );
                for (const auto &name : names)
-                  message.Join( Verbatim( name ), wxT("\n") );
+                  message.Join( Verbatim( name ), L"\n" );
                bool enable = (MessageBoxResult::Yes == ShowMessageBox(
                   message,
                   MessageBoxOptions{}
@@ -1063,7 +1063,7 @@ void PluginManager::LoadGroup(FileConfig *pRegistry, PluginType type)
                continue;
             }
             FileExtensions extensions;
-            wxStringTokenizer tkr(strVal, wxT(":"));
+            wxStringTokenizer tkr(strVal, L":");
             while (tkr.HasMoreTokens())
             {
                extensions.push_back(tkr.GetNextToken());
@@ -1196,7 +1196,7 @@ void PluginManager::SaveGroup(FileConfig *pRegistry, PluginType type)
             wxString strExt;
             for (size_t i = 0, cnt = extensions.size(); i < cnt; i++)
             {
-               strExt += extensions[i] + wxT(":");
+               strExt += extensions[i] + L":";
             }
             strExt.RemoveLast(1);
             pRegistry->Write(KEY_IMPORTEREXTENSIONS, strExt);
@@ -1271,7 +1271,7 @@ void PluginManager::CheckForUpdates(bool bFast)
                wxString path = paths[i].BeforeFirst(L';');;
                if ( ! make_iterator_range( pathIndex ).contains( path ) )
                {
-                  PluginID ID = plugID + wxT("_") + path;
+                  PluginID ID = plugID + L"_" + path;
                   PluginDescriptor & plug2 = mPlugins[ID];  // This will create a NEW descriptor
                   plug2.SetPluginType(PluginTypeStub);
                   plug2.SetID(ID);
@@ -1447,7 +1447,7 @@ PluginID PluginManager::GetID(ModuleInterface *module)
 
 PluginID PluginManager::GetID(ComponentInterface *command)
 {
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
+   return wxString::Format(L"%s_%s_%s_%s_%s",
                            GetPluginTypeString(PluginTypeAudacityCommand),
                            wxEmptyString,
                            command->GetVendor().Internal(),
@@ -1457,7 +1457,7 @@ PluginID PluginManager::GetID(ComponentInterface *command)
 
 PluginID PluginManager::GetID(EffectDefinitionInterface *effect)
 {
-   return wxString::Format(wxT("%s_%s_%s_%s_%s"),
+   return wxString::Format(L"%s_%s_%s_%s_%s",
                            GetPluginTypeString(PluginTypeEffect),
                            effect->GetFamily().Internal(),
                            effect->GetVendor().Internal(),
@@ -1475,22 +1475,22 @@ wxString PluginManager::GetPluginTypeString(PluginType type)
    {
    default:
    case PluginTypeNone:
-      str = wxT("Placeholder");
+      str = L"Placeholder";
       break;
    case PluginTypeStub:
-      str = wxT("Stub");
+      str = L"Stub";
       break;
    case PluginTypeEffect:
-      str = wxT("Effect");
+      str = L"Effect";
       break;
    case PluginTypeAudacityCommand:
-      str = wxT("Generic");
+      str = L"Generic";
       break;
    case PluginTypeExporter:
-      str = wxT("Exporter");
+      str = L"Exporter";
       break;
    case PluginTypeImporter:
-      str = wxT("Importer");
+      str = L"Importer";
       break;
    case PluginTypeModule:
       str = ModuleManager::GetPluginTypeString();
@@ -1643,17 +1643,17 @@ RegistryPath PluginManager::SettingsPath(
       const PluginDescriptor & plug = iter->second;
       
       wxString id = GetPluginTypeString(plug.GetPluginType()) +
-                    wxT("_") +
+                    L"_" +
                     plug.GetEffectFamily() + // is empty for non-Effects
-                    wxT("_") +
+                    L"_" +
                     plug.GetVendor() +
-                    wxT("_") +
+                    L"_" +
                     (shared ? wxString{} : plug.GetSymbol().Internal());
 
       return SETROOT +
              ConvertID(id) +
              wxCONFIG_PATH_SEPARATOR +
-             (shared ? wxT("shared") : wxT("private")) +
+             (shared ? L"shared" : L"private") +
              wxCONFIG_PATH_SEPARATOR;
    }
 }
@@ -1690,7 +1690,7 @@ RegistryPath PluginManager::Key(ConfigurationType type, const PluginID & ID,
 // is converted to XML.  We use base64 encoding to preserve case.
 wxString PluginManager::ConvertID(const PluginID & ID)
 {
-   if (ID.StartsWith(wxT("base64:")))
+   if (ID.StartsWith(L"base64:"))
    {
       wxString id = ID.Mid(7);
       ArrayOf<char> buf{ id.length() / 4 * 3 };
@@ -1699,7 +1699,7 @@ wxString PluginManager::ConvertID(const PluginID & ID)
    }
 
    const wxCharBuffer & buf = ID.ToUTF8();
-   return wxT("base64:") + b64encode(buf, strlen(buf));
+   return L"base64:" + b64encode(buf, strlen(buf));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1712,7 +1712,7 @@ wxString PluginManager::ConvertID(const PluginID & ID)
 ////////////////////////////////////////////////////////////////////////////////
 
 // Lookup table for encoding
-const static wxChar cset[] = wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+const static wxChar cset[] = L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const static char padc = L'=';
 
 wxString PluginManager::b64encode(const void *in, int len)

@@ -260,7 +260,7 @@ ViewInfo::ViewInfo(double start, double screenDuration, double pixelsPerSecond)
 void ViewInfo::UpdateSelectedPrefs( int id )
 {
    if (id == UpdateScrollPrefsID())
-      gPrefs->Read(wxT("/GUI/AutoScroll"), &bUpdateTrackIndicator,
+      gPrefs->Read(L"/GUI/AutoScroll", &bUpdateTrackIndicator,
                    true);
    ZoomInfo::UpdateSelectedPrefs( id );
 }
@@ -271,7 +271,7 @@ void ViewInfo::UpdatePrefs()
 #ifdef EXPERIMENTAL_SCROLLING_LIMITS
    bScrollBeyondZero = ScrollingPreference.Read();
 #endif
-   gPrefs->Read(wxT("/GUI/AdjustSelectionEdges"), &bAdjustSelectionEdges,
+   gPrefs->Read(L"/GUI/AdjustSelectionEdges", &bAdjustSelectionEdges,
       true);
 
    UpdateSelectedPrefs( UpdateScrollPrefsID() );
@@ -289,9 +289,9 @@ void ViewInfo::WriteXMLAttributes(XMLWriter &xmlFile) const
 // may throw
 {
    selectedRegion.WriteXMLAttributes(xmlFile, "sel0", "sel1");
-   xmlFile.WriteAttr(wxT("vpos"), vpos);
-   xmlFile.WriteAttr(wxT("h"), h, 10);
-   xmlFile.WriteAttr(wxT("zoom"), zoom, 10);
+   xmlFile.WriteAttr(L"vpos", vpos);
+   xmlFile.WriteAttr(L"h", h, 10);
+   xmlFile.WriteAttr(L"zoom", zoom, 10);
 }
 
 //! Construct once at static intialization time to hook project file IO

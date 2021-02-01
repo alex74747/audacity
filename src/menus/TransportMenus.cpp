@@ -355,7 +355,7 @@ void OnPunchAndRoll(const CommandContext &context)
    auto &viewInfo = ViewInfo::Get( project );
 
    static const auto url =
-      wxT("Punch_and_Roll_Record#Using_Punch_and_Roll_Record");
+      L"Punch_and_Roll_Record#Using_Punch_and_Roll_Record";
 
    auto gAudioIO = AudioIO::Get();
    if (gAudioIO->IsBusy())
@@ -549,8 +549,8 @@ void OnSoundActivated(const CommandContext &context)
 void OnToggleSoundActivated(const CommandContext &WXUNUSED(context) )
 {
    bool pause;
-   gPrefs->Read(wxT("/AudioIO/SoundActivatedRecord"), &pause, false);
-   gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
+   gPrefs->Read(L"/AudioIO/SoundActivatedRecord", &pause, false);
+   gPrefs->Write(L"/AudioIO/SoundActivatedRecord", !pause);
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -564,11 +564,11 @@ void OnTogglePlayRecording(const CommandContext &WXUNUSED(context) )
 {
    bool Duplex;
 #ifdef EXPERIMENTAL_DA
-   gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, false);
+   gPrefs->Read(L"/AudioIO/Duplex", &Duplex, false);
 #else
-   gPrefs->Read(wxT("/AudioIO/Duplex"), &Duplex, true);
+   gPrefs->Read(L"/AudioIO/Duplex", &Duplex, true);
 #endif
-   gPrefs->Write(wxT("/AudioIO/Duplex"), !Duplex);
+   gPrefs->Write(L"/AudioIO/Duplex", !Duplex);
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -576,8 +576,8 @@ void OnTogglePlayRecording(const CommandContext &WXUNUSED(context) )
 void OnToggleSWPlaythrough(const CommandContext &WXUNUSED(context) )
 {
    bool SWPlaythrough;
-   gPrefs->Read(wxT("/AudioIO/SWPlaythrough"), &SWPlaythrough, false);
-   gPrefs->Write(wxT("/AudioIO/SWPlaythrough"), !SWPlaythrough);
+   gPrefs->Read(L"/AudioIO/SWPlaythrough", &SWPlaythrough, false);
+   gPrefs->Write(L"/AudioIO/SWPlaythrough", !SWPlaythrough);
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -588,8 +588,8 @@ void OnToggleAutomatedInputLevelAdjustment(
 {
    bool AVEnabled;
    gPrefs->Read(
-      wxT("/AudioIO/AutomatedInputLevelAdjustment"), &AVEnabled, false);
-   gPrefs->Write(wxT("/AudioIO/AutomatedInputLevelAdjustment"), !AVEnabled);
+      L"/AudioIO/AutomatedInputLevelAdjustment", &AVEnabled, false);
+   gPrefs->Write(L"/AudioIO/AutomatedInputLevelAdjustment", !AVEnabled);
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
 }
@@ -681,7 +681,7 @@ void OnPlayBeforeSelectionStart(const CommandContext &context)
 
    double t0 = selectedRegion.t0();
    double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -703,7 +703,7 @@ void OnPlayAfterSelectionStart(const CommandContext &context)
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
    double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -730,7 +730,7 @@ void OnPlayBeforeSelectionEnd(const CommandContext &context)
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
    double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -756,7 +756,7 @@ void OnPlayAfterSelectionEnd(const CommandContext &context)
 
    double t1 = selectedRegion.t1();
    double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -779,9 +779,9 @@ void OnPlayBeforeAndAfterSelectionStart
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
    double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
    double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -809,9 +809,9 @@ void OnPlayBeforeAndAfterSelectionEnd
    double t0 = selectedRegion.t0();
    double t1 = selectedRegion.t1();
    double beforeLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
    double afterLen;
-   gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+   gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
 
    auto playOptions = DefaultPlayOptions( project );
 
@@ -954,31 +954,31 @@ BaseItemSharedPtr TransportMenu()
    ( FinderScope{ findCommandHandler },
    /* i18n-hint: 'Transport' is the name given to the set of controls that
       play, record, pause etc. */
-   Menu( wxT("Transport"), XXO("Tra&nsport"),
+   Menu( L"Transport", XXO("Tra&nsport"),
       Section( "Basic",
-         Menu( wxT("Play"), XXO("Pl&aying"),
+         Menu( L"Play", XXO("Pl&aying"),
             /* i18n-hint: (verb) Start or Stop audio playback*/
-            Command( wxT("DefaultPlayStop"), XXO("Pl&ay/Stop"), FN(OnPlayDefaultOrStop),
-               CanStopAudioStreamFlag(), wxT("Space") ),
-            Command( wxT("PlayStopSelect"), XXO("Play/Stop and &Set Cursor"),
-               FN(OnPlayStopSelect), CanStopAudioStreamFlag(), wxT("X") ),
-            Command( wxT("OncePlayStop"), XXO("Play &Once/Stop"), FN(OnPlayOnceOrStop),
-               CanStopAudioStreamFlag(), wxT("Shift+Space") ),
-            Command( wxT("Pause"), XXO("&Pause"), FN(OnPause),
-               CanStopAudioStreamFlag(), wxT("P") )
+            Command( L"DefaultPlayStop", XXO("Pl&ay/Stop"), FN(OnPlayDefaultOrStop),
+               CanStopAudioStreamFlag(), L"Space" ),
+            Command( L"PlayStopSelect", XXO("Play/Stop and &Set Cursor"),
+               FN(OnPlayStopSelect), CanStopAudioStreamFlag(), L"X" ),
+            Command( L"OncePlayStop", XXO("Play &Once/Stop"), FN(OnPlayOnceOrStop),
+               CanStopAudioStreamFlag(), L"Shift+Space" ),
+            Command( L"Pause", XXO("&Pause"), FN(OnPause),
+               CanStopAudioStreamFlag(), L"P" )
          ),
 
-         Menu( wxT("Record"), XXO("&Recording"),
+         Menu( L"Record", XXO("&Recording"),
             /* i18n-hint: (verb)*/
-            Command( wxT("Record1stChoice"), XXO("&Record"), FN(OnRecord),
-               CanStopFlags, wxT("R") ),
+            Command( L"Record1stChoice", XXO("&Record"), FN(OnRecord),
+               CanStopFlags, L"R" ),
 
             // The OnRecord2ndChoice function is: if normal record records beside,
             // it records below, if normal record records below, it records beside.
             // TODO: Do 'the right thing' with other options like TimerRecord.
             // Delayed evaluation in case gPrefs is not yet defined
             [](const AudacityProject&)
-            { return Command( wxT("Record2ndChoice"),
+            { return Command( L"Record2ndChoice",
                // Our first choice is bound to R (by default)
                // and gets the prime position.
                // We supply the name for the 'other one' here.
@@ -986,69 +986,69 @@ BaseItemSharedPtr TransportMenu()
                (gPrefs->ReadBool("/GUI/PreferNewTrackRecord", false)
                 ? XXO("&Append Record") : XXO("Record &New Track")),
                FN(OnRecord2ndChoice), CanStopFlags,
-               wxT("Shift+R"),
+               L"Shift+R",
                findCommandHandler
             ); },
 
-            Command( wxT("TimerRecord"), XXO("&Timer Record..."),
-               FN(OnTimerRecord), CanStopFlags, wxT("Shift+T") ),
+            Command( L"TimerRecord", XXO("&Timer Record..."),
+               FN(OnTimerRecord), CanStopFlags, L"Shift+T" ),
 
    #ifdef EXPERIMENTAL_PUNCH_AND_ROLL
-            Command( wxT("PunchAndRoll"), XXO("Punch and Rol&l Record"),
+            Command( L"PunchAndRoll", XXO("Punch and Rol&l Record"),
                FN(OnPunchAndRoll),
-               WaveTracksExistFlag() | AudioIONotBusyFlag(), wxT("Shift+D") ),
+               WaveTracksExistFlag() | AudioIONotBusyFlag(), L"Shift+D" ),
    #endif
 
             // JKC: I decided to duplicate this between play and record,
             // rather than put it at the top level.
             // CommandManger::AddItem can now cope with simple duplicated items.
             // PRL:  caution, this is a duplicated command name!
-            Command( wxT("Pause"), XXO("&Pause"), FN(OnPause),
-               CanStopAudioStreamFlag(), wxT("P") )
+            Command( L"Pause", XXO("&Pause"), FN(OnPause),
+               CanStopAudioStreamFlag(), L"P" )
          )
       ),
 
       Section( "Other",
          Section( "",
-            Menu( wxT("PlayRegion"), XXO("&Looping"),
-               Command( wxT("TogglePlayRegion"), LoopToggleText,
+            Menu( L"PlayRegion", XXO("&Looping"),
+               Command( L"TogglePlayRegion", LoopToggleText,
                   FN(OnTogglePlayRegion), AlwaysEnabledFlag,
                      Options(L"L").CheckTest([](const AudacityProject& project){
                          return IsLoopingEnabled(project);
                      } )),
-               Command( wxT("ClearPlayRegion"), XXO("&Clear Loop"),
+               Command( L"ClearPlayRegion", XXO("&Clear Loop"),
                   FN(OnClearPlayRegion), AlwaysEnabledFlag, L"Shift+Alt+L" ),
-               Command( wxT("SetPlayRegionToSelection"),
+               Command( L"SetPlayRegionToSelection",
                   XXO("&Set Loop to Selection"),
                   FN(OnSetPlayRegionToSelection), AlwaysEnabledFlag,
                      L"Shift+L" ),
-               Command( wxT("SetPlayRegionIn"),
+               Command( L"SetPlayRegionIn",
                   SetLoopInTitle,
                   FN(OnSetPlayRegionIn), AlwaysEnabledFlag ),
-               Command( wxT("SetPlayRegionOut"),
+               Command( L"SetPlayRegionOut",
                   SetLoopOutTitle,
                   FN(OnSetPlayRegionOut), AlwaysEnabledFlag )
             )
          ),
 
-         Command( wxT("RescanDevices"), XXO("R&escan Audio Devices"),
+         Command( L"RescanDevices", XXO("R&escan Audio Devices"),
             FN(OnRescanDevices), AudioIONotBusyFlag() | CanStopAudioStreamFlag() ),
 
-         Menu( wxT("Options"), XXO("Transport &Options"),
+         Menu( L"Options", XXO("Transport &Options"),
             Section( "",
                // Sound Activated recording options
-               Command( wxT("SoundActivationLevel"),
+               Command( L"SoundActivationLevel",
                   XXO("Sound Activation Le&vel..."), FN(OnSoundActivated),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag() ),
-               Command( wxT("SoundActivation"),
+               Command( L"SoundActivation",
                   XXO("Sound A&ctivated Recording (on/off)"),
                   FN(OnToggleSoundActivated),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest(wxT("/AudioIO/SoundActivatedRecord"), false) )
+                  Options{}.CheckTest(L"/AudioIO/SoundActivatedRecord", false) )
             ),
 
             Section( "",
-               Command( wxT("PinnedHead"), XXO("Pinned Play/Record &Head (on/off)"),
+               Command( L"PinnedHead", XXO("Pinned Play/Record &Head (on/off)"),
                   FN(OnTogglePinnedHead),
                   // Switching of scrolling on and off is permitted
                   // even during transport
@@ -1056,30 +1056,30 @@ BaseItemSharedPtr TransportMenu()
                   Options{}.CheckTest([](const AudacityProject&){
                      return TracksPrefs::GetPinnedHeadPreference(); } ) ),
 
-               Command( wxT("Overdub"), XXO("&Overdub (on/off)"),
+               Command( L"Overdub", XXO("&Overdub (on/off)"),
                   FN(OnTogglePlayRecording),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest( wxT("/AudioIO/Duplex"),
+                  Options{}.CheckTest( L"/AudioIO/Duplex",
 #ifdef EXPERIMENTAL_DA
                      false
 #else
                      true
 #endif
                   ) ),
-               Command( wxT("SWPlaythrough"), XXO("So&ftware Playthrough (on/off)"),
+               Command( L"SWPlaythrough", XXO("So&ftware Playthrough (on/off)"),
                   FN(OnToggleSWPlaythrough),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
-                  Options{}.CheckTest( wxT("/AudioIO/SWPlaythrough"), false ) )
+                  Options{}.CheckTest( L"/AudioIO/SWPlaythrough", false ) )
 
 
       #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
                ,
-               Command( wxT("AutomatedInputLevelAdjustmentOnOff"),
+               Command( L"AutomatedInputLevelAdjustmentOnOff",
                   XXO("A&utomated Recording Level Adjustment (on/off)"),
                   FN(OnToggleAutomatedInputLevelAdjustment),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
                   Options{}.CheckTest(
-                     wxT("/AudioIO/AutomatedInputLevelAdjustment"), false ) )
+                     L"/AudioIO/AutomatedInputLevelAdjustment", false ) )
       #endif
             )
          )
@@ -1089,7 +1089,7 @@ BaseItemSharedPtr TransportMenu()
 }
 
 AttachedItem sAttachment1{
-   wxT(""),
+   L"",
    Shared( TransportMenu() )
 };
 
@@ -1097,48 +1097,48 @@ BaseItemSharedPtr ExtraTransportMenu()
 {
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
-   Menu( wxT("Transport"), XXO("T&ransport"),
+   Menu( L"Transport", XXO("T&ransport"),
       // PlayStop is already in the menus.
       /* i18n-hint: (verb) Start playing audio*/
-      Command( wxT("Play"), XXO("Pl&ay Once"), FN(OnPlayOnceOrStop),
+      Command( L"Play", XXO("Pl&ay Once"), FN(OnPlayOnceOrStop),
          WaveTracksExistFlag() | AudioIONotBusyFlag() ),
       /* i18n-hint: (verb) Stop playing audio*/
-      Command( wxT("Stop"), XXO("Sto&p"), FN(OnStop),
+      Command( L"Stop", XXO("Sto&p"), FN(OnStop),
          AudioIOBusyFlag() | CanStopAudioStreamFlag() ),
-      Command( wxT("PlayOneSec"), XXO("Play &One Second"), FN(OnPlayOneSecond),
-         CaptureNotBusyFlag(), wxT("1") ),
-      Command( wxT("PlayToSelection"), XXO("Play to &Selection"),
+      Command( L"PlayOneSec", XXO("Play &One Second"), FN(OnPlayOneSecond),
+         CaptureNotBusyFlag(), L"1" ),
+      Command( L"PlayToSelection", XXO("Play to &Selection"),
          FN(OnPlayToSelection),
-         CaptureNotBusyFlag(), wxT("B") ),
-      Command( wxT("PlayBeforeSelectionStart"),
+         CaptureNotBusyFlag(), L"B" ),
+      Command( L"PlayBeforeSelectionStart",
          XXO("Play &Before Selection Start"), FN(OnPlayBeforeSelectionStart),
-         CaptureNotBusyFlag(), wxT("Shift+F5") ),
-      Command( wxT("PlayAfterSelectionStart"),
+         CaptureNotBusyFlag(), L"Shift+F5" ),
+      Command( L"PlayAfterSelectionStart",
          XXO("Play Af&ter Selection Start"), FN(OnPlayAfterSelectionStart),
-         CaptureNotBusyFlag(), wxT("Shift+F6") ),
-      Command( wxT("PlayBeforeSelectionEnd"),
+         CaptureNotBusyFlag(), L"Shift+F6" ),
+      Command( L"PlayBeforeSelectionEnd",
          XXO("Play Be&fore Selection End"), FN(OnPlayBeforeSelectionEnd),
-         CaptureNotBusyFlag(), wxT("Shift+F7") ),
-      Command( wxT("PlayAfterSelectionEnd"),
+         CaptureNotBusyFlag(), L"Shift+F7" ),
+      Command( L"PlayAfterSelectionEnd",
          XXO("Play Aft&er Selection End"), FN(OnPlayAfterSelectionEnd),
-         CaptureNotBusyFlag(), wxT("Shift+F8") ),
-      Command( wxT("PlayBeforeAndAfterSelectionStart"),
+         CaptureNotBusyFlag(), L"Shift+F8" ),
+      Command( L"PlayBeforeAndAfterSelectionStart",
          XXO("Play Before a&nd After Selection Start"),
          FN(OnPlayBeforeAndAfterSelectionStart), CaptureNotBusyFlag(),
-         wxT("Ctrl+Shift+F5") ),
-      Command( wxT("PlayBeforeAndAfterSelectionEnd"),
+         L"Ctrl+Shift+F5" ),
+      Command( L"PlayBeforeAndAfterSelectionEnd",
          XXO("Play Before an&d After Selection End"),
          FN(OnPlayBeforeAndAfterSelectionEnd), CaptureNotBusyFlag(),
-         wxT("Ctrl+Shift+F7") ),
-      Command( wxT("PlayCutPreview"), XXO("Play C&ut Preview"),
+         L"Ctrl+Shift+F7" ),
+      Command( L"PlayCutPreview", XXO("Play C&ut Preview"),
          FN(OnPlayCutPreview),
-         CaptureNotBusyFlag(), wxT("C") )
+         CaptureNotBusyFlag(), L"C" )
    ) ) };
    return menu;
 }
 
 AttachedItem sAttachment2{
-   wxT("Optional/Extra/Part1"),
+   L"Optional/Extra/Part1",
    Shared( ExtraTransportMenu() )
 };
 
@@ -1146,26 +1146,26 @@ BaseItemSharedPtr ExtraPlayAtSpeedMenu()
 {
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
-   Menu( wxT("PlayAtSpeed"), XXO("&Play-at-Speed"),
+   Menu( L"PlayAtSpeed", XXO("&Play-at-Speed"),
       /* i18n-hint: 'Normal Play-at-Speed' doesn't loop or cut preview. */
-      Command( wxT("PlayAtSpeedLooped"), XXO("&Play-at-Speed"),
+      Command( L"PlayAtSpeedLooped", XXO("&Play-at-Speed"),
          FN(OnPlayAtSpeedLooped), CaptureNotBusyFlag() ),
-      Command( wxT("PlayAtSpeed"), XXO("Play-at-Speed &Once"),
+      Command( L"PlayAtSpeed", XXO("Play-at-Speed &Once"),
          FN(OnPlayAtSpeed), CaptureNotBusyFlag() ),
-      Command( wxT("PlayAtSpeedCutPreview"), XXO("Play C&ut Preview-at-Speed"),
+      Command( L"PlayAtSpeedCutPreview", XXO("Play C&ut Preview-at-Speed"),
          FN(OnPlayAtSpeedCutPreview), CaptureNotBusyFlag() ),
-      Command( wxT("SetPlaySpeed"), XXO("Ad&just Playback Speed..."),
+      Command( L"SetPlaySpeed", XXO("Ad&just Playback Speed..."),
          FN(OnSetPlaySpeed), CaptureNotBusyFlag() ),
-      Command( wxT("PlaySpeedInc"), XXO("&Increase Playback Speed"),
+      Command( L"PlaySpeedInc", XXO("&Increase Playback Speed"),
          FN(OnPlaySpeedInc), CaptureNotBusyFlag() ),
-      Command( wxT("PlaySpeedDec"), XXO("&Decrease Playback Speed"),
+      Command( L"PlaySpeedDec", XXO("&Decrease Playback Speed"),
          FN(OnPlaySpeedDec), CaptureNotBusyFlag() )
    ) ) };
    return menu;
 }
 
 AttachedItem sAttachment3{
-   wxT("Optional/Extra/Part1"),
+   L"Optional/Extra/Part1",
    Shared( ExtraPlayAtSpeedMenu() )
 };
 
@@ -1174,19 +1174,19 @@ BaseItemSharedPtr ExtraSelectionItems()
    using Options = CommandManager::Options;
    static BaseItemSharedPtr items{
    (FinderScope{ findCommandHandler },
-   Items(wxT("MoveToLabel"),
-      Command(wxT("MoveToPrevLabel"), XXO("Move to Pre&vious Label"),
+   Items(L"MoveToLabel",
+      Command(L"MoveToPrevLabel", XXO("Move to Pre&vious Label"),
          FN(OnMoveToPrevLabel),
-         CaptureNotBusyFlag() | TrackPanelHasFocus(), wxT("Alt+Left")),
-      Command(wxT("MoveToNextLabel"), XXO("Move to Ne&xt Label"),
+         CaptureNotBusyFlag() | TrackPanelHasFocus(), L"Alt+Left"),
+      Command(L"MoveToNextLabel", XXO("Move to Ne&xt Label"),
          FN(OnMoveToNextLabel),
-         CaptureNotBusyFlag() | TrackPanelHasFocus(), wxT("Alt+Right"))
+         CaptureNotBusyFlag() | TrackPanelHasFocus(), L"Alt+Right")
    )) };
    return items;
 }
 
 AttachedItem sAttachment4{
-  { wxT("Optional/Extra/Part1/Select"), { OrderingHint::End, {} } },
+  { L"Optional/Extra/Part1/Select", { OrderingHint::End, {} } },
   Shared(ExtraSelectionItems())
 };
 

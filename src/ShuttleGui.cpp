@@ -302,7 +302,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBox( const TranslatableString &Prompt, bool
    if( mpbOptionalFlag )
    {
       AddPrompt( {} );
-      //realPrompt = wxT("");
+      //realPrompt = L"";
    }
 
    UseUpId();
@@ -321,7 +321,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBox( const TranslatableString &Prompt, bool
       // so that name can be set on a standard control
       pCheckBox->SetAccessible(safenew WindowAccessible(pCheckBox));
 #endif
-      pCheckBox->SetName(wxT("\a"));      // non-empty string which screen readers do not read
+      pCheckBox->SetName(L"\a");      // non-empty string which screen readers do not read
    }
    UpdateSizers();
    return pCheckBox;
@@ -339,7 +339,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBoxOnRight( const TranslatableString &Promp
       return wxDynamicCast(wxWindow::FindWindowById( miId, mpState -> mpDlg), wxCheckBox);
    wxCheckBox * pCheckBox;
    miProp=0;
-   mpWind = pCheckBox = safenew wxCheckBox(GetParent(), miId, wxT(""), wxDefaultPosition, mItem.mWindowSize,
+   mpWind = pCheckBox = safenew wxCheckBox(GetParent(), miId, L"", wxDefaultPosition, mItem.mWindowSize,
       GetStyle( 0 ));
    pCheckBox->SetValue(Selected);
    pCheckBox->SetName(Prompt.Stripped().Translation());
@@ -911,7 +911,7 @@ wxStaticBox * ShuttleGuiBase::StartStatic(const TranslatableString &Str, int iPr
       // so that name can be set on a standard control
       pBox->SetAccessible(safenew WindowAccessible(pBox));
 #endif
-      pBox->SetName(wxT("\a"));      // non-empty string which screen readers do not read
+      pBox->SetName(L"\a");      // non-empty string which screen readers do not read
    }
    else
       pBox->SetName( wxStripMenuCodes( translated ) );
@@ -952,8 +952,8 @@ wxScrolledWindow * ShuttleGuiBase::StartScroller(int iStyle)
    pScroller->SetScrollRate( 20,20 );
 
    // This fools NVDA into not saying "Panel" when the dialog gets focus
-   pScroller->SetName(wxT("\a"));
-   pScroller->SetLabel(wxT("\a"));
+   pScroller->SetName(L"\a");
+   pScroller->SetLabel(L"\a");
 
    SetProportions( 1 );
    if( iStyle==2 )
@@ -1618,7 +1618,7 @@ void ShuttleGuiBase::EndRadioButtonGroup()
    if( mpState -> mShuttleMode == eIsGettingFromDialog )
       DoDataShuttle( mRadioSettingName, *mRadioValue );
    mRadioValue.reset();// Clear it out...
-   mRadioSettingName = wxT("");
+   mRadioSettingName = L"";
    mRadioCount = -1; // So we detect a problem.
    mRadioLabels.clear();
    mRadioValues.clear();
@@ -1772,7 +1772,7 @@ Identifier ShuttleGuiBase::TranslateFromIndex(
    {
       return Choices[n];
    }
-   return wxT("");
+   return L"";
 }
 
 //-----------------------------------------------------------------------//
@@ -2617,7 +2617,7 @@ void ShuttleGuiBase::SetMinSize( wxWindow *window, const std::vector<int> & item
 
    for( size_t i = 0; i < items.size(); i++ )
    {
-      strs.Add( wxString::Format( wxT("%d"), items[i] ) );
+      strs.Add( wxString::Format( L"%d", items[i] ) );
    }
 
    SetMinSize( window, strs );

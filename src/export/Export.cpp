@@ -281,7 +281,7 @@ BEGIN_EVENT_TABLE(Exporter, wxEvtHandler)
 END_EVENT_TABLE()
 
 namespace {
-const auto PathStart = wxT("Exporters");
+const auto PathStart = L"Exporters";
 
 static Registry::GroupItem &sRegistry()
 {
@@ -323,7 +323,7 @@ Exporter::Exporter( AudacityProject &project )
    using namespace Registry;
    static OrderingPreferenceInitializer init{
       PathStart,
-      { {wxT(""), wxT("PCM,MP3,OGG,FLAC,MP2,CommandLine,FFmpeg") } },
+      { {L"", L"PCM,MP3,OGG,FLAC,MP2,CommandLine,FFmpeg" } },
    };
 
    mMixerSpec = NULL;
@@ -418,7 +418,7 @@ bool Exporter::DoEditMetadata(AudacityProject &project,
          ProjectHistory::Get( project ).PushState( title, shortUndoDescription);
       }
       bool bShowInFuture;
-      gPrefs->Read(wxT("/AudioFiles/ShowId3Dialog"), &bShowInFuture, true);
+      gPrefs->Read(L"/AudioFiles/ShowId3Dialog", &bShowInFuture, true);
       settings.SetShowId3Dialog( bShowInFuture );
       return true;
    }
@@ -470,7 +470,7 @@ bool Exporter::Process(bool selectedOnly, double t0, double t1)
 
    if (success) {
       if (mFormatName.empty()) {
-         gPrefs->Write(wxT("/Export/Format"), mPlugins[mFormat]->GetFormat(mSubFormat));
+         gPrefs->Write(L"/Export/Format", mPlugins[mFormat]->GetFormat(mSubFormat));
       }
 
       FileNames::UpdateDefaultPath(FileNames::Operation::Export, mFilename.GetPath());
@@ -590,7 +590,7 @@ bool Exporter::ExamineTracks()
       // Previously we always skipped initial silent space.
       // Now skipping it is an opt-in option.
       bool skipSilenceAtBeginning;
-      gPrefs->Read(wxT("/AudioFiles/SkipSilenceAtBeginning"),
+      gPrefs->Read(L"/AudioFiles/SkipSilenceAtBeginning",
                                       &skipSilenceAtBeginning, false);
       if (skipSilenceAtBeginning)
          mT0 = earliestBegin;
@@ -610,8 +610,8 @@ bool Exporter::GetFilename()
    FileNames::FileTypes fileTypes;
    auto defaultFormat = mFormatName;
    if( defaultFormat.empty() )
-      defaultFormat = gPrefs->Read(wxT("/Export/Format"),
-                                         wxT("WAV"));
+      defaultFormat = gPrefs->Read(L"/Export/Format",
+                                         L"WAV");
 
    mFilterIndex = 0;
 
@@ -673,7 +673,7 @@ bool Exporter::GetFilename()
          }
 
          mFilename = fd.GetPath();
-         if (mFilename == wxT("")) {
+         if (mFilename == L"") {
             return false;
          }
 
@@ -711,7 +711,7 @@ bool Exporter::GetFilename()
          // Make sure the user doesn't accidentally save the file
          // as an extension with no name, like just plain ".wav".
          //
-         if (mFilename.GetName().Left(1) == wxT(".")) {
+         if (mFilename.GetName().Left(1) == L".") {
             auto prompt =
                XO("Are you sure you want to export the file as \"%s\"?\n")
                   .Format( mFilename.GetFullName() );
@@ -793,7 +793,7 @@ bool Exporter::CheckFilename()
    int suffix = 0;
    while (mFilename.FileExists()) {
       mFilename.SetName(mActualName.GetName() +
-                        wxString::Format(wxT("%d"), suffix));
+                        wxString::Format(L"%d", suffix));
       suffix++;
    }
 
@@ -856,28 +856,28 @@ bool Exporter::CheckMix(bool prompt /*= true*/ )
 
       if (numLeft > 1 || numRight > 1 || mNumLeft + mNumRight + mNumMono > mChannels) {
          wxString exportFormat = mPlugins[mFormat]->GetFormat(mSubFormat);
-         if (exportFormat != wxT("CL") && exportFormat != wxT("FFMPEG") && exportedChannels == -1)
+         if (exportFormat != L"CL" && exportFormat != L"FFMPEG" && exportedChannels == -1)
             exportedChannels = mChannels;
 
          if (prompt) {
             auto pWindow = ProjectWindow::Find(mProject);
             if (exportedChannels == 1) {
                if (ShowWarningDialog(pWindow,
-                  wxT("MixMono"),
+                  L"MixMono",
                   XO("Your tracks will be mixed down and exported as one mono file."),
                   true) == wxID_CANCEL)
                   return false;
             }
             else if (exportedChannels == 2) {
                if (ShowWarningDialog(pWindow,
-                  wxT("MixStereo"),
+                  L"MixStereo",
                   XO("Your tracks will be mixed down and exported as one stereo file."),
                   true) == wxID_CANCEL)
                   return false;
             }
             else {
                if (ShowWarningDialog(pWindow,
-                  wxT("MixUnknownChannels"),
+                  L"MixUnknownChannels",
                   XO("Your tracks will be mixed down to one exported file according to the encoder settings."),
                   true) == wxID_CANCEL)
                   return false;
@@ -1253,8 +1253,8 @@ void ExportMixerPanel::OnPaint(wxPaintEvent & WXUNUSED(event))
    angle = ( asin( mHeight / ( 2.0 * radius ) ) * 2.0 ) /
       ( mMixerSpec->GetNumChannels() + 1 );
 
-   SetFont( memDC, wxT( "Channel: XX" ), mBoxWidth, mChannelHeight );
-   memDC.GetTextExtent( wxT( "Channel: XX" ), &w, &h );
+   SetFont( memDC, L"Channel: XX", mBoxWidth, mChannelHeight );
+   memDC.GetTextExtent( L"Channel: XX", &w, &h );
 
    for( unsigned int i = 0; i < mMixerSpec->GetNumChannels(); i++ )
    {

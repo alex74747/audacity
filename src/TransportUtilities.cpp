@@ -48,7 +48,7 @@ void TransportUtilities::PlayCurrentRegionAndWait(
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(wxT("Playing interrupted"));
+               context.Error(L"Playing interrupted");
             }
             break;
          }
@@ -90,7 +90,7 @@ void TransportUtilities::PlayPlayRegionAndWait(
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(wxT("Playing interrupted"));
+               context.Error(L"Playing interrupted");
             }
             break;
          }
@@ -130,7 +130,7 @@ void TransportUtilities::RecordAndWait(
          if (result != ProgressResult::Success) {
             projectAudioManager.Stop();
             if (result != ProgressResult::Stopped) {
-               context.Error(wxT("Recording interrupted"));
+               context.Error(L"Recording interrupted");
             }
             break;
          }

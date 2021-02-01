@@ -53,15 +53,15 @@ void Generate(wxDebugReport::Context ctx)
       std::atomic_bool done = {false};
       auto thread = std::thread([&]
       {
-         wxFileNameWrapper fn{ FileNames::DataDir(), wxT("audacity.cfg") };
+         wxFileNameWrapper fn{ FileNames::DataDir(), L"audacity.cfg" };
          rpt.AddFile(fn.GetFullPath(), _TS("Audacity Configuration"));
-         rpt.AddFile(FileNames::PluginRegistry(), wxT("Plugin Registry"));
-         rpt.AddFile(FileNames::PluginSettings(), wxT("Plugin Settings"));
+         rpt.AddFile(FileNames::PluginRegistry(), L"Plugin Registry");
+         rpt.AddFile(FileNames::PluginSettings(), L"Plugin Settings");
    
          if (ctx == wxDebugReport::Context_Current)
          {
             auto saveLang = Languages::GetLangShort();
-            GUISettings::SetLang( wxT("en") );
+            GUISettings::SetLang( L"en" );
             auto cleanup = finally( [&]{ GUISettings::SetLang( saveLang ); } );
       
             auto gAudioIO = AudioIOBase::Get();
@@ -71,14 +71,14 @@ void Generate(wxDebugReport::Context ctx)
             auto project = GetActiveProject().lock();
             if (project) {
                auto &projectFileIO = ProjectFileIO::Get( *project );
-               rpt.AddText(wxT("project.txt"), projectFileIO.GenerateDoc(), wxT("Active project doc"));
+               rpt.AddText(L"project.txt", projectFileIO.GenerateDoc(), L"Active project doc");
             }
          }
    
          auto logger = AudacityLogger::Get();
          if (logger)
          {
-            rpt.AddText(wxT("log.txt"), logger->GetLog(), _TS("Audacity Log"));
+            rpt.AddText(L"log.txt", logger->GetLog(), _TS("Audacity Log"));
          }
    
          done = true;
@@ -110,7 +110,7 @@ void Generate(wxDebugReport::Context ctx)
       dlg.SetName(dlg.GetTitle());
       dlg.ShowModal();
       
-      wxLogMessage(wxT("Report generated to: %s"),
+      wxLogMessage(L"Report generated to: %s",
                    rpt.GetCompressedFileName());
       
       rpt.Reset();

@@ -138,113 +138,113 @@ void AboutDialog::CreateCreditsList()
 
    // The Audacity Team: developers and support
 
-   AddCredit(wxT("Peter Jonas"), developerFormat, roleTeamMember);
-   AddCredit(wxT("Martin Keary"), roleTeamMember);
-   AddCredit(wxT("Paul Licameli"), developerFormat, roleTeamMember);
-   AddCredit(wxT("Pavel Penikov"), testerFormat, roleTeamMember);
-   AddCredit(wxT("Anita Sudan"), roleTeamMember);
-   AddCredit(wxT("Vitaly Sverchinsky"), developerFormat, roleTeamMember);
-   AddCredit(wxT("Dmitry Vedenko"), developerFormat, roleTeamMember);
-   AddCredit(wxT("Leo Wattenberg"), documentationAndSupportFormat, roleTeamMember);
+   AddCredit(L"Peter Jonas", developerFormat, roleTeamMember);
+   AddCredit(L"Martin Keary", roleTeamMember);
+   AddCredit(L"Paul Licameli", developerFormat, roleTeamMember);
+   AddCredit(L"Pavel Penikov", testerFormat, roleTeamMember);
+   AddCredit(L"Anita Sudan", roleTeamMember);
+   AddCredit(L"Vitaly Sverchinsky", developerFormat, roleTeamMember);
+   AddCredit(L"Dmitry Vedenko", developerFormat, roleTeamMember);
+   AddCredit(L"Leo Wattenberg", documentationAndSupportFormat, roleTeamMember);
    
    // Former Musers
-   AddCredit(wxT("Anton Gerasimov"), developerFormat, roleExMuse);
-   AddCredit(wxT("Jouni Helminen"), designerFormat, roleExMuse);
+   AddCredit(L"Anton Gerasimov", developerFormat, roleExMuse);
+   AddCredit(L"Jouni Helminen", designerFormat, roleExMuse);
    
    // Emeritus: people who were "lead developers" or made an
    // otherwise distinguished contribution, but who are no
    // longer active.
    AddCredit(
-      wxT("[[https://wiki.audacityteam.org/wiki/User:Galeandrews|Gale Andrews]]"),
+      L"[[https://wiki.audacityteam.org/wiki/User:Galeandrews|Gale Andrews]]",
       qualityAssuranceFormat, roleEmeritusTeam);
-   AddCredit(wxT("Richard Ash"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Christian Brochec"),
+   AddCredit(L"Richard Ash", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Christian Brochec",
       documentationAndSupportFrenchFormat, roleEmeritusTeam);
-   AddCredit(wxT("Matt Brubeck"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Arturo \"Buanzo\" Busleiman"), sysAdminFormat, roleEmeritusTeam);
-   AddCredit(wxT("Michael Chinen"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("James Crook"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Roger Dannenberg"), coFounderFormat, roleEmeritusTeam);
-   AddCredit(wxT("Steve Daulton"), roleEmeritusTeam);
-   AddCredit(wxT("Al Dimond"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Benjamin Drung"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Joshua Haberman"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Ruslan Ijbulatov"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Vaughan Johnson"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Greg Kozikowski"), documentationAndSupportFormat, roleEmeritusTeam);
-   AddCredit(wxT("Leland Lucius"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Dominic Mazzoni"), coFounderFormat, roleEmeritusTeam);
-   AddCredit(wxT("Markus Meyer"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Monty Montgomery"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Shane Mueller"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Tony Oetzmann"), documentationAndSupportFormat, roleEmeritusTeam);
-   AddCredit(wxT("Alexandre Prokoudine"), documentationAndSupportFormat, roleEmeritusTeam);
-   AddCredit(wxT("Peter Sampson"), qaDocumentationAndSupportFormat, roleEmeritusTeam);
-   AddCredit(wxT("Martyn Shaw"), developerFormat, roleEmeritusTeam);
-   AddCredit(wxT("Bill Wharrie"), documentationAndSupportFormat, roleEmeritusTeam);
+   AddCredit(L"Matt Brubeck", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Arturo \"Buanzo\" Busleiman", sysAdminFormat, roleEmeritusTeam);
+   AddCredit(L"Michael Chinen", developerFormat, roleEmeritusTeam);
+   AddCredit(L"James Crook", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Roger Dannenberg", coFounderFormat, roleEmeritusTeam);
+   AddCredit(L"Steve Daulton", roleEmeritusTeam);
+   AddCredit(L"Al Dimond", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Benjamin Drung", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Joshua Haberman", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Ruslan Ijbulatov", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Vaughan Johnson", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Greg Kozikowski", documentationAndSupportFormat, roleEmeritusTeam);
+   AddCredit(L"Leland Lucius", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Dominic Mazzoni", coFounderFormat, roleEmeritusTeam);
+   AddCredit(L"Markus Meyer", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Monty Montgomery", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Shane Mueller", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Tony Oetzmann", documentationAndSupportFormat, roleEmeritusTeam);
+   AddCredit(L"Alexandre Prokoudine", documentationAndSupportFormat, roleEmeritusTeam);
+   AddCredit(L"Peter Sampson", qaDocumentationAndSupportFormat, roleEmeritusTeam);
+   AddCredit(L"Martyn Shaw", developerFormat, roleEmeritusTeam);
+   AddCredit(L"Bill Wharrie", documentationAndSupportFormat, roleEmeritusTeam);
 
    // Contributors
-   AddCredit(wxT("Lynn Allan"), developerFormat, roleContributor);
-   AddCredit(wxT("Brian Armstrong"), developerFormat, roleContributor);
-   AddCredit(wxT("David Avery"), developerFormat, roleContributor);
-   AddCredit(wxT("David Bailes"), accessibilityAdvisorFormat, roleContributor);
-   AddCredit(wxT("William Bland"), developerFormat, roleContributor);
-   AddCredit(wxT("Sami Boukortt"), developerFormat, roleContributor);
-   AddCredit(wxT("Jeremy R. Brown"), developerFormat, roleContributor);
-   AddCredit(wxT("Alex S. Brown"), developerFormat, roleContributor);
-   AddCredit(wxT("Chris Cannam"), developerFormat, roleContributor);
-   AddCredit(wxT("Cory Cook"), developerFormat, roleContributor);
-   AddCredit(wxT("Craig DeForest"), developerFormat, roleContributor);
-   AddCredit(wxT("Edgar Franke (Edgar-RFT)"), developerFormat, roleContributor);
-   AddCredit(wxT("Mitch Golden"), developerFormat, roleContributor);
-   AddCredit(wxT("Brian Gunlogson"), developerFormat, roleContributor);
-   AddCredit(wxT("Andrew Hallendorff"), developerFormat, roleContributor);
-   AddCredit(wxT("Robert H\u00E4nggi"), developerFormat, roleContributor);
-   AddCredit(wxT("Daniel Horgan"), developerFormat, roleContributor);
-   AddCredit(wxT("David Hostetler"), developerFormat, roleContributor);
-   AddCredit(wxT("Edward Hui"), developerFormat, roleContributor);
-   AddCredit(wxT("Steve Jolly"), developerFormat, roleContributor);
-   AddCredit(wxT("Steven Jones"), developerFormat, roleContributor);
-   AddCredit(wxT("Henric Jungheim"), developerFormat, roleContributor);
-   AddCredit(wxT("Myungchul Keum"), developerFormat, roleContributor);
-   AddCredit(wxT("Arun Kishore"), developerFormat, roleContributor);
-   AddCredit(wxT("Paul Livesey"), developerFormat, roleContributor);
-   AddCredit(wxT("Harvey Lubin"), graphicArtistFormat, roleContributor);
-   AddCredit(wxT("Max Maisel"), developerFormat, roleContributor);
-   AddCredit(wxT("Greg Mekkes"), developerFormat, roleContributor);
-   AddCredit(wxT("Abe Milde"), developerFormat, roleContributor);
-   AddCredit(wxT("Paul Nasca"), developerFormat, roleContributor);
-   AddCredit(wxT("Clayton Otey"), developerFormat, roleContributor);
-   AddCredit(wxT("Mark Phillips"), developerFormat, roleContributor);
-   AddCredit(wxT("Andr\u00E9 Pinto"), developerFormat, roleContributor);
-   AddCredit(wxT("Jean Claude Risset"), composerFormat, roleContributor);
-   AddCredit(wxT("Augustus Saunders"), developerFormat, roleContributor);
-   AddCredit(wxT("Benjamin Schwartz"), developerFormat, roleContributor);
-   AddCredit(wxT("Cliff Scott"), testerFormat, roleContributor);
-   AddCredit(wxT("David R. Sky"), NyquistPluginsFormat, roleContributor);
-   AddCredit(wxT("Rob Sykes"), developerFormat, roleContributor);
-   AddCredit(wxT("Mike Underwood"), developerFormat, roleContributor);
-   AddCredit(wxT("Philip Van Baren"), developerFormat, roleContributor);
-   AddCredit(wxT("Salvo Ventura"), developerFormat, roleContributor);
-   AddCredit(wxT("Darrell Walisser"), developerFormat, roleContributor);
-   AddCredit(wxT("Jun Wan"), developerFormat, roleContributor);
-   AddCredit(wxT("Daniel Winzen"), developerFormat, roleContributor);
-   AddCredit(wxT("Tom Woodhams"), developerFormat, roleContributor);
-   AddCredit(wxT("Mark Young"), developerFormat, roleContributor);
-   AddCredit(wxT("Wing Yu"), developerFormat, roleContributor);
+   AddCredit(L"Lynn Allan", developerFormat, roleContributor);
+   AddCredit(L"Brian Armstrong", developerFormat, roleContributor);
+   AddCredit(L"David Avery", developerFormat, roleContributor);
+   AddCredit(L"David Bailes", accessibilityAdvisorFormat, roleContributor);
+   AddCredit(L"William Bland", developerFormat, roleContributor);
+   AddCredit(L"Sami Boukortt", developerFormat, roleContributor);
+   AddCredit(L"Jeremy R. Brown", developerFormat, roleContributor);
+   AddCredit(L"Alex S. Brown", developerFormat, roleContributor);
+   AddCredit(L"Chris Cannam", developerFormat, roleContributor);
+   AddCredit(L"Cory Cook", developerFormat, roleContributor);
+   AddCredit(L"Craig DeForest", developerFormat, roleContributor);
+   AddCredit(L"Edgar Franke (Edgar-RFT)", developerFormat, roleContributor);
+   AddCredit(L"Mitch Golden", developerFormat, roleContributor);
+   AddCredit(L"Brian Gunlogson", developerFormat, roleContributor);
+   AddCredit(L"Andrew Hallendorff", developerFormat, roleContributor);
+   AddCredit(L"Robert H\u00E4nggi", developerFormat, roleContributor);
+   AddCredit(L"Daniel Horgan", developerFormat, roleContributor);
+   AddCredit(L"David Hostetler", developerFormat, roleContributor);
+   AddCredit(L"Edward Hui", developerFormat, roleContributor);
+   AddCredit(L"Steve Jolly", developerFormat, roleContributor);
+   AddCredit(L"Steven Jones", developerFormat, roleContributor);
+   AddCredit(L"Henric Jungheim", developerFormat, roleContributor);
+   AddCredit(L"Myungchul Keum", developerFormat, roleContributor);
+   AddCredit(L"Arun Kishore", developerFormat, roleContributor);
+   AddCredit(L"Paul Livesey", developerFormat, roleContributor);
+   AddCredit(L"Harvey Lubin", graphicArtistFormat, roleContributor);
+   AddCredit(L"Max Maisel", developerFormat, roleContributor);
+   AddCredit(L"Greg Mekkes", developerFormat, roleContributor);
+   AddCredit(L"Abe Milde", developerFormat, roleContributor);
+   AddCredit(L"Paul Nasca", developerFormat, roleContributor);
+   AddCredit(L"Clayton Otey", developerFormat, roleContributor);
+   AddCredit(L"Mark Phillips", developerFormat, roleContributor);
+   AddCredit(L"Andr\u00E9 Pinto", developerFormat, roleContributor);
+   AddCredit(L"Jean Claude Risset", composerFormat, roleContributor);
+   AddCredit(L"Augustus Saunders", developerFormat, roleContributor);
+   AddCredit(L"Benjamin Schwartz", developerFormat, roleContributor);
+   AddCredit(L"Cliff Scott", testerFormat, roleContributor);
+   AddCredit(L"David R. Sky", NyquistPluginsFormat, roleContributor);
+   AddCredit(L"Rob Sykes", developerFormat, roleContributor);
+   AddCredit(L"Mike Underwood", developerFormat, roleContributor);
+   AddCredit(L"Philip Van Baren", developerFormat, roleContributor);
+   AddCredit(L"Salvo Ventura", developerFormat, roleContributor);
+   AddCredit(L"Darrell Walisser", developerFormat, roleContributor);
+   AddCredit(L"Jun Wan", developerFormat, roleContributor);
+   AddCredit(L"Daniel Winzen", developerFormat, roleContributor);
+   AddCredit(L"Tom Woodhams", developerFormat, roleContributor);
+   AddCredit(L"Mark Young", developerFormat, roleContributor);
+   AddCredit(L"Wing Yu", developerFormat, roleContributor);
 
    // Website and Graphics
-   AddCredit(wxT("Shinta Carolinasari"), webDeveloperFormat, roleGraphics);
-   AddCredit(wxT("Bayu Rizaldhan Rayes"), graphicsFormat, roleGraphics);
+   AddCredit(L"Shinta Carolinasari", webDeveloperFormat, roleGraphics);
+   AddCredit(L"Bayu Rizaldhan Rayes", graphicsFormat, roleGraphics);
 
    // Libraries
 
-   AddCredit(wxT("[[https://libexpat.github.io/|expat]]"), roleLibrary);
-   AddCredit(wxT("[[https://xiph.org/flac/|FLAC]]"), roleLibrary);
-   AddCredit(wxT("[[http://lame.sourceforge.net/|LAME]]"), roleLibrary);
-   AddCredit(wxT("[[https://www.underbit.com/products/mad/|libmad]]"), roleLibrary);
-   AddCredit(wxT("[[http://www.mega-nerd.com/libsndfile/|libsndfile]]"), roleLibrary);
-   AddCredit(wxT("[[https://sourceforge.net/p/soxr/wiki/Home/|libsoxr]]"), roleLibrary);
+   AddCredit(L"[[https://libexpat.github.io/|expat]]", roleLibrary);
+   AddCredit(L"[[https://xiph.org/flac/|FLAC]]", roleLibrary);
+   AddCredit(L"[[http://lame.sourceforge.net/|LAME]]", roleLibrary);
+   AddCredit(L"[[https://www.underbit.com/products/mad/|libmad]]", roleLibrary);
+   AddCredit(L"[[http://www.mega-nerd.com/libsndfile/|libsndfile]]", roleLibrary);
+   AddCredit(L"[[https://sourceforge.net/p/soxr/wiki/Home/|libsoxr]]", roleLibrary);
    AddCredit(
       XO("%s (incorporating %s, %s, %s, %s and %s)")
          .Format(
@@ -256,40 +256,40 @@ void AboutDialog::CreateCreditsList()
             "sratom"
          ).Translation(),
       roleLibrary);
-   AddCredit(wxT("[[https://www.cs.cmu.edu/~music/nyquist/|Nyquist]]"), roleLibrary);
-   AddCredit(wxT("[[https://xiph.org/vorbis/|Ogg Vorbis]]"), roleLibrary);
-   AddCredit(wxT("[[http://www.portaudio.com/|PortAudio]]"), roleLibrary);
-   AddCredit(wxT("[[http://www.portmedia.sourceforge.net/portmidi/|PortMidi]]"), roleLibrary);
-   AddCredit(wxT("[[https://sourceforge.net/p/portmedia/wiki/portsmf/|portsmf]]"), roleLibrary);
-   AddCredit(wxT("[[http://sbsms.sourceforge.net/|sbsms]]"), roleLibrary);
-   AddCredit(wxT("[[https://www.surina.net/soundtouch/|SoundTouch]]"), roleLibrary);
-   AddCredit(wxT("[[http://www.twolame.org/|TwoLAME]]"), roleLibrary);
-   AddCredit(wxT("[[http://www.vamp-plugins.org/|Vamp]]"), roleLibrary);
-   AddCredit(wxT("[[https://wxwidgets.org/|wxWidgets]]"), roleLibrary);
+   AddCredit(L"[[https://www.cs.cmu.edu/~music/nyquist/|Nyquist]]", roleLibrary);
+   AddCredit(L"[[https://xiph.org/vorbis/|Ogg Vorbis]]", roleLibrary);
+   AddCredit(L"[[http://www.portaudio.com/|PortAudio]]", roleLibrary);
+   AddCredit(L"[[http://www.portmedia.sourceforge.net/portmidi/|PortMidi]]", roleLibrary);
+   AddCredit(L"[[https://sourceforge.net/p/portmedia/wiki/portsmf/|portsmf]]", roleLibrary);
+   AddCredit(L"[[http://sbsms.sourceforge.net/|sbsms]]", roleLibrary);
+   AddCredit(L"[[https://www.surina.net/soundtouch/|SoundTouch]]", roleLibrary);
+   AddCredit(L"[[http://www.twolame.org/|TwoLAME]]", roleLibrary);
+   AddCredit(L"[[http://www.vamp-plugins.org/|Vamp]]", roleLibrary);
+   AddCredit(L"[[https://wxwidgets.org/|wxWidgets]]", roleLibrary);
 
    // Thanks
 
-   AddCredit(wxT("Dave Beydler"), roleThanks);
-   AddCredit(wxT("Brian Cameron"), roleThanks);
-   AddCredit(wxT("Jason Cohen"), roleThanks);
-   AddCredit(wxT("Dave Fancella"), roleThanks);
-   AddCredit(wxT("Steve Harris"), roleThanks);
-   AddCredit(wxT("Daniel James"), roleThanks);
-   AddCredit(wxT("Daniil Kolpakov"), roleThanks);
-   AddCredit(wxT("Robert Leidle"), roleThanks);
-   AddCredit(wxT("Logan Lewis"), roleThanks);
-   AddCredit(wxT("David Luff"), roleThanks);
-   AddCredit(wxT("Jason Pepas"), roleThanks);
-   AddCredit(wxT("Jonathan Ryshpan"), roleThanks);
-   AddCredit(wxT("Michael Schwendt"), roleThanks);
-   AddCredit(wxT("Patrick Shirkey"), roleThanks);
-   AddCredit(wxT("Tuomas Suutari"), roleThanks);
-   AddCredit(wxT("Mark Tomlinson"), roleThanks);
-   AddCredit(wxT("David Topper"), roleThanks);
-   AddCredit(wxT("Rudy Trubitt"), roleThanks);
-   AddCredit(wxT("StreetIQ.com"), roleThanks);
-   AddCredit(wxT("UmixIt Technologies, LLC"), roleThanks);
-   AddCredit(wxT("Verilogix, Inc."), roleThanks);
+   AddCredit(L"Dave Beydler", roleThanks);
+   AddCredit(L"Brian Cameron", roleThanks);
+   AddCredit(L"Jason Cohen", roleThanks);
+   AddCredit(L"Dave Fancella", roleThanks);
+   AddCredit(L"Steve Harris", roleThanks);
+   AddCredit(L"Daniel James", roleThanks);
+   AddCredit(L"Daniil Kolpakov", roleThanks);
+   AddCredit(L"Robert Leidle", roleThanks);
+   AddCredit(L"Logan Lewis", roleThanks);
+   AddCredit(L"David Luff", roleThanks);
+   AddCredit(L"Jason Pepas", roleThanks);
+   AddCredit(L"Jonathan Ryshpan", roleThanks);
+   AddCredit(L"Michael Schwendt", roleThanks);
+   AddCredit(L"Patrick Shirkey", roleThanks);
+   AddCredit(L"Tuomas Suutari", roleThanks);
+   AddCredit(L"Mark Tomlinson", roleThanks);
+   AddCredit(L"David Topper", roleThanks);
+   AddCredit(L"Rudy Trubitt", roleThanks);
+   AddCredit(L"StreetIQ.com", roleThanks);
+   AddCredit(L"UmixIt Technologies, LLC", roleThanks);
+   AddCredit(L"Verilogix, Inc.", roleThanks);
 }
 
 // ----------------------------------------------------------------------------
@@ -358,127 +358,127 @@ void AboutDialog::PopulateAudacityPage( ShuttleGui & S )
       // We're in an English locale
       translatorCredits.clear();
    else
-      translatorCredits += wxT("<br>");
+      translatorCredits += L"<br>";
 
    wxStringOutputStream o;
    wxTextOutputStream informationStr( o );   // string to build up list of information in
    informationStr
-      << wxT("<center>")
+      << L"<center>"
 // DA: Description and provenance in About box
 #ifdef EXPERIMENTAL_DA
       #undef _
       #define _(s) wxGetTranslation((s))
-      << wxT("<h3>DarkAudacity ")
+      << L"<h3>DarkAudacity "
       << wxString(AUDACITY_VERSION_STRING)
-      << wxT("</center></h3>")
-      << wxT("Customised version of the Audacity free, open source, cross-platform software " )
-      << wxT("for recording and editing sounds.")
-      << wxT("<p><br>&nbsp; &nbsp; <b>Audacity<sup>&reg;</sup></b> software is copyright &copy; 1999-2021 Audacity Team.<br>")
-      << wxT("&nbsp; &nbsp; The name <b>Audacity</b> is a registered trademark.<br><br>")
+      << L"</center></h3>"
+      << L"Customised version of the Audacity free, open source, cross-platform software "
+      << L"for recording and editing sounds."
+      << L"<p><br>&nbsp; &nbsp; <b>Audacity<sup>&reg;</sup></b> software is copyright &copy; 1999-2021 Audacity Team.<br>"
+      << L"&nbsp; &nbsp; The name <b>Audacity</b> is a registered trademark.<br><br>"
 
 #else
       << XO("<h3>")
       << ProgramName
-      << wxT(" ")
+      << L" "
       << wxString(AUDACITY_VERSION_STRING)
-      << wxT("</center></h3>")
+      << L"</center></h3>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("%s the free, open source, cross-platform software for recording and editing sounds.")
             .Format(ProgramName)
 #endif
 
-      << wxT("<h3>")
+      << L"<h3>"
       << XO("Credits")
-      << wxT("</h3>")
-      << wxT("<p>")
+      << L"</h3>"
+      << L"<p>"
 
 // DA: Customisation credit
 #ifdef EXPERIMENTAL_DA
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("DarkAudacity Customisation")
-      << wxT("</b><br>")
-      << wxT("James Crook, art, coding &amp; design<br>")
+      << L"</b><br>"
+      << L"James Crook, art, coding &amp; design<br>"
 #endif
 
-      << wxT("<p><b>")
+      << L"<p><b>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("%s Team Members").Format( ProgramName )
-      << wxT("</b><br>")
+      << L"</b><br>"
       << GetCreditsByRole(roleTeamMember)
 	  
-	  << wxT("<p><b>")
+	  << L"<p><b>"
       << XO("Former Musers")
-      << wxT("</b><br>")
+      << L"</b><br>"
       << GetCreditsByRole(roleExMuse)
 
-      << wxT("<p><b> ")
+      << L"<p><b> "
       << XO("Emeritus:")
-      << wxT("</b><br>")
+      << L"</b><br>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("Distinguished %s Team members, not currently active")
          .Format( ProgramName )
-      << wxT("<br><br>")
+      << L"<br><br>"
       << GetCreditsByRole(roleEmeritusTeam)
 
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("Contributors")
-      << wxT("</b><br>")
+      << L"</b><br>"
       << GetCreditsByRole(roleContributor)
 
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("Website and Graphics")
-      << wxT("</b><br>")
+      << L"</b><br>"
       << GetCreditsByRole(roleGraphics)
    ;
 
    if(!translatorCredits.empty()) informationStr
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("Translators")
-      << wxT("</b><br>")
+      << L"</b><br>"
       << translatorCredits
    ;
 
    informationStr
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("Libraries")
-      << wxT("</b><br>")
+      << L"</b><br>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("%s includes code from the following projects:").Format( ProgramName )
-      << wxT("<br><br>")
+      << L"<br><br>"
       << GetCreditsByRole(roleLibrary)
 
-      << wxT("<p><b>")
+      << L"<p><b>"
       << XO("Special thanks:")
-      << wxT("</b><br>")
+      << L"</b><br>"
       << GetCreditsByRole(roleThanks)
 
-      << wxT("<p><br>")
+      << L"<p><br>"
       /* i18n-hint: The program's name substitutes for %s */
       << XO("%s website: ").Format( ProgramName )
-      << wxT("[[https://www.audacityteam.org/|https://www.audacityteam.org/]]")
+      << L"[[https://www.audacityteam.org/|https://www.audacityteam.org/]]"
 
 // DA: Link for DA url too
 #ifdef EXPERIMENTAL_DA
-      << wxT("<br>DarkAudacity website: [[http://www.darkaudacity.com/|https://www.darkaudacity.com/]]")
+      << L"<br>DarkAudacity website: [[http://www.darkaudacity.com/|https://www.darkaudacity.com/]]"
 #else
-      << wxT("<p><br>&nbsp; &nbsp; ")
+      << L"<p><br>&nbsp; &nbsp; "
       /* i18n-hint Audacity's name substitutes for first and third %s,
        and a "copyright" symbol for the second */
       << XO("%s software is copyright %s 1999-2021 %s Team.")
          .Format(
             Verbatim("<b>%s<sup>&reg;</sup></b>").Format( ProgramName ),
-            wxT("&copy;"),
+            L"&copy;",
             ProgramName )
-      << wxT("<br>")
+      << L"<br>"
 
-      << wxT("&nbsp; &nbsp; ")
+      << L"&nbsp; &nbsp; "
       /* i18n-hint Audacity's name substitutes for %s */
       << XO("The name %s is a registered trademark.")
          .Format( Verbatim("<b>%s</b>").Format( ProgramName ) )
-      << wxT("<br><br>")
+      << L"<br><br>"
 #endif
 
-      << wxT("</center>")
+      << L"</center>"
    ;
 
    auto pPage = S.StartNotebookPage( ProgramName );
@@ -549,16 +549,16 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
    /* this builds up the list of information to go in the window in the string
     * informationStr */
    informationStr
-      << wxT("<h2><center>")
+      << L"<h2><center>"
       << XO("Build Information")
-      << wxT("</center></h2>\n")
+      << L"</center></h2>\n"
       << VerCheckHtml();
  
    informationStr
-      << wxT("<h3>")
+      << L"<h3>"
    /* i18n-hint: Information about when audacity was compiled follows */
       << XO("The Build")
-      << wxT("</h3>\n<table>"); // start build info table
+      << L"</h3>\n<table>"; // start build info table
 
    // Current date
    AddBuildinfoRow(&informationStr, XO("Program build date:"), __TDATE__);
@@ -583,19 +583,19 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
 
 #ifdef _MSC_FULL_VER
    AddBuildinfoRow(&informationStr, XO("Compiler:"),
-	   wxString::Format(wxT("MSVC %02d.%02d.%05d.%02d"), _MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 100000, _MSC_BUILD));
+	   wxString::Format(L"MSVC %02d.%02d.%05d.%02d", _MSC_VER / 100, _MSC_VER % 100, _MSC_FULL_VER % 100000, _MSC_BUILD));
 #endif
 
 #ifdef __GNUC_PATCHLEVEL__
 #ifdef __MINGW32__
-   AddBuildinfoRow(&informationStr, XO("Compiler:"), wxT("MinGW ") wxMAKE_VERSION_DOT_STRING_T(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__));
+   AddBuildinfoRow(&informationStr, XO("Compiler:"), L"MinGW " wxMAKE_VERSION_DOT_STRING_T(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__));
 #else
-   AddBuildinfoRow(&informationStr, XO("Compiler:"), wxT("GCC ") wxMAKE_VERSION_DOT_STRING_T(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__));
+   AddBuildinfoRow(&informationStr, XO("Compiler:"), L"GCC " wxMAKE_VERSION_DOT_STRING_T(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__));
 #endif
 #endif
 
 #ifdef __clang_version__
-   AddBuildinfoRow(&informationStr, XO("Compiler:"), wxT("clang ") __clang_version__);
+   AddBuildinfoRow(&informationStr, XO("Compiler:"), L"clang " __clang_version__);
 #endif
 
    // Install prefix
@@ -609,184 +609,184 @@ void AboutDialog::PopulateInformationPage( ShuttleGui & S )
    AddBuildinfoRow(&informationStr, XO("Settings folder:"), \
       FileNames::DataDir());
 
-   informationStr << wxT("</table>\n"); // end of build info table
+   informationStr << L"</table>\n"; // end of build info table
 
 
    informationStr
-      << wxT("<h3>")
+      << L"<h3>"
       /* i18n-hint: Libraries that are essential to audacity */
       << XO("Core Libraries")
-      << wxT("</h3>\n<table>");  // start table of core libraries
+      << L"</h3>\n<table>";  // start table of core libraries
 
-   AddBuildinfoRow(&informationStr, wxT("wxWidgets"),
+   AddBuildinfoRow(&informationStr, L"wxWidgets",
          XO("Cross-platform GUI library"), Verbatim(wxVERSION_NUM_DOT_STRING_T));
 
-   AddBuildinfoRow(&informationStr, wxT("PortAudio"),
-         XO("Audio playback and recording"), Verbatim(wxT("v19")));
+   AddBuildinfoRow(&informationStr, L"PortAudio",
+         XO("Audio playback and recording"), Verbatim(L"v19"));
 
-   AddBuildinfoRow(&informationStr, wxT("libsoxr"),
+   AddBuildinfoRow(&informationStr, L"libsoxr",
          XO("Sample rate conversion"), enabled);
 
-   informationStr << wxT("</table>\n"); // end table of core libraries
+   informationStr << L"</table>\n"; // end table of core libraries
 
    informationStr
-      << wxT("<h3>")
+      << L"<h3>"
       << XO("File Format Support")
-      << wxT("</h3>\n<p>");
+      << L"</h3>\n<p>";
 
    informationStr
-      << wxT("<table>");   // start table of file formats supported
+      << L"<table>";   // start table of file formats supported
 
 
    #ifdef USE_LIBMAD
    /* i18n-hint: This is what the library (libmad) does - imports MP3 files */
-   AddBuildinfoRow(&informationStr, wxT("libmad"), XO("MP3 Importing"), enabled);
+   AddBuildinfoRow(&informationStr, L"libmad", XO("MP3 Importing"), enabled);
    #else
-   AddBuildinfoRow(&informationStr, wxT("libmad"), XO("MP3 Importing"), disabled);
+   AddBuildinfoRow(&informationStr, L"libmad", XO("MP3 Importing"), disabled);
    #endif
 
    #ifdef USE_LIBVORBIS
-   AddBuildinfoRow(&informationStr, wxT("libvorbis"),
+   AddBuildinfoRow(&informationStr, L"libvorbis",
    /* i18n-hint: Ogg is the container format. Vorbis is the compression codec.
     * Both are proper nouns and shouldn't be translated */
          XO("Ogg Vorbis Import and Export"), enabled);
    #else
-   AddBuildinfoRow(&informationStr, wxT("libvorbis"),
+   AddBuildinfoRow(&informationStr, L"libvorbis",
          XO("Ogg Vorbis Import and Export"), disabled);
    #endif
 
    #ifdef USE_LIBID3TAG
-   AddBuildinfoRow(&informationStr, wxT("libid3tag"), XO("ID3 tag support"),
+   AddBuildinfoRow(&informationStr, L"libid3tag", XO("ID3 tag support"),
          enabled);
    #else
-   AddBuildinfoRow(&informationStr, wxT("libid3tag"), XO("ID3 tag support"),
+   AddBuildinfoRow(&informationStr, L"libid3tag", XO("ID3 tag support"),
          disabled);
    #endif
 
    # if USE_LIBFLAC
    /* i18n-hint: FLAC stands for Free Lossless Audio Codec, but is effectively
     * a proper noun and so shouldn't be translated */
-   AddBuildinfoRow(&informationStr, wxT("libflac"), XO("FLAC import and export"),
+   AddBuildinfoRow(&informationStr, L"libflac", XO("FLAC import and export"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("libflac"), XO("FLAC import and export"),
+   AddBuildinfoRow(&informationStr, L"libflac", XO("FLAC import and export"),
          disabled);
    # endif
 
    # if USE_LIBTWOLAME
-   AddBuildinfoRow(&informationStr, wxT("libtwolame"), XO("MP2 export"),
+   AddBuildinfoRow(&informationStr, L"libtwolame", XO("MP2 export"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("libtwolame"), XO("MP2 export"),
+   AddBuildinfoRow(&informationStr, L"libtwolame", XO("MP2 export"),
          disabled);
    # endif
 
    # if USE_QUICKTIME
-   AddBuildinfoRow(&informationStr, wxT("QuickTime"), XO("Import via QuickTime"),
+   AddBuildinfoRow(&informationStr, L"QuickTime", XO("Import via QuickTime"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("QuickTime"), XO("Import via QuickTime"),
+   AddBuildinfoRow(&informationStr, L"QuickTime", XO("Import via QuickTime"),
          disabled);
    # endif
 
    #ifdef USE_FFMPEG
-   AddBuildinfoRow(&informationStr, wxT("ffmpeg"), XO("FFmpeg Import/Export"), enabled);
+   AddBuildinfoRow(&informationStr, L"ffmpeg", XO("FFmpeg Import/Export"), enabled);
    #else
-   AddBuildinfoRow(&informationStr, wxT("ffmpeg"), XO("FFmpeg Import/Export"), disabled);
+   AddBuildinfoRow(&informationStr, L"ffmpeg", XO("FFmpeg Import/Export"), disabled);
    #endif
 
    #ifdef USE_GSTREAMER
-   AddBuildinfoRow(&informationStr, wxT("gstreamer"), XO("Import via GStreamer"), enabled);
+   AddBuildinfoRow(&informationStr, L"gstreamer", XO("Import via GStreamer"), enabled);
    #else
-   AddBuildinfoRow(&informationStr, wxT("gstreamer"), XO("Import via GStreamer"), disabled);
+   AddBuildinfoRow(&informationStr, L"gstreamer", XO("Import via GStreamer"), disabled);
    #endif
 
-   informationStr << wxT("</table>\n");  //end table of file formats supported
+   informationStr << L"</table>\n";  //end table of file formats supported
 
    informationStr
-      << wxT("<h3>")
+      << L"<h3>"
       << XO("Features")
-      << wxT("</h3>\n<table>");  // start table of features
+      << L"</h3>\n<table>";  // start table of features
 
 #ifdef EXPERIMENTAL_DA
-   AddBuildinfoRow(&informationStr, wxT("Theme"), XO("Dark Theme Extras"), enabled);
+   AddBuildinfoRow(&informationStr, L"Theme", XO("Dark Theme Extras"), enabled);
 #else
-   AddBuildinfoRow(&informationStr, wxT("Theme"), XO("Dark Theme Extras"), disabled);
+   AddBuildinfoRow(&informationStr, L"Theme", XO("Dark Theme Extras"), disabled);
 #endif
 
    # if USE_NYQUIST
-   AddBuildinfoRow(&informationStr, wxT("Nyquist"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Nyquist", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("Nyquist"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Nyquist", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_LADSPA
-   AddBuildinfoRow(&informationStr, wxT("LADSPA"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"LADSPA", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("LADSPA"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"LADSPA", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_VAMP
-   AddBuildinfoRow(&informationStr, wxT("Vamp"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Vamp", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("Vamp"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Vamp", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_AUDIO_UNITS
-   AddBuildinfoRow(&informationStr, wxT("Audio Units"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Audio Units", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("Audio Units"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"Audio Units", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_VST
-   AddBuildinfoRow(&informationStr, wxT("VST"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"VST", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("VST"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"VST", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_LV2
-   AddBuildinfoRow(&informationStr, wxT("LV2"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"LV2", XO("Plug-in support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("LV2"), XO("Plug-in support"),
+   AddBuildinfoRow(&informationStr, L"LV2", XO("Plug-in support"),
          disabled);
    # endif
 
    # if USE_PORTMIXER
-   AddBuildinfoRow(&informationStr, wxT("PortMixer"), XO("Sound card mixer support"),
+   AddBuildinfoRow(&informationStr, L"PortMixer", XO("Sound card mixer support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("PortMixer"), XO("Sound card mixer support"),
+   AddBuildinfoRow(&informationStr, L"PortMixer", XO("Sound card mixer support"),
          disabled);
    # endif
 
    # if USE_SOUNDTOUCH
-   AddBuildinfoRow(&informationStr, wxT("SoundTouch"), XO("Pitch and Tempo Change support"),
+   AddBuildinfoRow(&informationStr, L"SoundTouch", XO("Pitch and Tempo Change support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("SoundTouch"), XO("Pitch and Tempo Change support"),
+   AddBuildinfoRow(&informationStr, L"SoundTouch", XO("Pitch and Tempo Change support"),
          disabled);
    # endif
 
    # if USE_SBSMS
-   AddBuildinfoRow(&informationStr, wxT("SBSMS"), XO("Extreme Pitch and Tempo Change support"),
+   AddBuildinfoRow(&informationStr, L"SBSMS", XO("Extreme Pitch and Tempo Change support"),
          enabled);
    # else
-   AddBuildinfoRow(&informationStr, wxT("SBSMS"), XO("Extreme Pitch and Tempo Change support"),
+   AddBuildinfoRow(&informationStr, L"SBSMS", XO("Extreme Pitch and Tempo Change support"),
          disabled);
    # endif
 
-   informationStr << wxT("</table>\n");   // end of table of features
+   informationStr << L"</table>\n";   // end of table of features
 
    html->SetPage( FormatHtmlText( o.GetString() ) );   // push the page into the html renderer
    S.Prop(2)
@@ -824,7 +824,7 @@ void AboutDialog::PopulateLicensePage( ShuttleGui & S )
 
       privacyPolicy.FormatLink(
          /* i18n-hint: Title of hyperlink to the privacy policy. This is an object of "See". */
-         wxT("%s"), XO("our Privacy Policy"),
+         L"%s", XO("our Privacy Policy"),
          "https://www.audacityteam.org/about/desktop-privacy-notice/");
 
       privacyPolicy.Populate(S);
@@ -872,12 +872,12 @@ wxString AboutDialog::GetCreditsByRole(AboutDialog::Role role)
       if (item.role == role)
       {
          s += item.description.Translation();
-         s += wxT("<br>");
+         s += L"<br>";
       }
    }
 
    // Strip last <br>, if any
-   if (s.Right(4) == wxT("<br>"))
+   if (s.Right(4) == L"<br>")
       s = s.Left(s.length() - 4);
 
    return s;
@@ -892,13 +892,13 @@ void AboutDialog::AddBuildinfoRow(
    const TranslatableString &libdesc, const TranslatableString &status)
 {
    *str
-      << wxT("<tr><td>")
+      << L"<tr><td>"
       << libname
-      << wxT("</td><td>(")
+      << L"</td><td>("
       << libdesc
-      << wxT(")</td><td>")
+      << L")</td><td>"
       << status
-      << wxT("</td></tr>");
+      << L"</td></tr>";
 }
 
 /** \brief Add a table row saying if a library is used or not
@@ -910,11 +910,11 @@ void AboutDialog::AddBuildinfoRow(
    const TranslatableString &description, const wxChar *spec)
 {
    *str
-      << wxT("<tr><td>")
+      << L"<tr><td>"
       << description
-      << wxT("</td><td>")
+      << L"</td><td>"
       << spec
-      << wxT("</td></tr>");
+      << L"</td></tr>";
 }
 
 AboutDialog::~AboutDialog()

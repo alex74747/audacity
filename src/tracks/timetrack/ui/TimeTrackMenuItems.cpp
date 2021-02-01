@@ -60,9 +60,9 @@ CommandHandlerObject &findCommandHandler(AudacityProject &) {
 }
 
 #define FN(X) (&Handler :: X)
-AttachedItem sAttachment{ wxT("Tracks/Add/Add"),
+AttachedItem sAttachment{ L"Tracks/Add/Add",
    ( FinderScope{ findCommandHandler },
-     Command( wxT("NewTimeTrack"), XXO("&Time Track"),
+     Command( L"NewTimeTrack", XXO("&Time Track"),
         FN(OnNewTimeTrack), AudioIONotBusyFlag() )
  )
 };

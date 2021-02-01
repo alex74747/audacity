@@ -66,14 +66,14 @@ void GUIPrefs::GetRangeChoices(
    int *pDefaultRangeIndex )
 {
    static const Identifiers sCodes = {
-      wxT("36") ,
-      wxT("48") ,
-      wxT("60") ,
-      wxT("72") ,
-      wxT("84") ,
-      wxT("96") ,
-      wxT("120") ,
-      wxT("145") ,
+      L"36" ,
+      L"48" ,
+      L"60" ,
+      L"72" ,
+      L"84" ,
+      L"96" ,
+      L"120" ,
+      L"145" ,
    };
    if (pCodes)
       *pCodes = sCodes;
@@ -127,11 +127,11 @@ void GUIPrefs::Populate()
 }
 
 ChoiceSetting GUIManualLocation{
-   wxT("/GUI/Help"),
+   L"/GUI/Help",
    {
       ByColumns,
       { XO("Local") ,  XO("From Internet") , },
-      { wxT("Local") , wxT("FromInternet") , }
+      { L"Local" , L"FromInternet" , }
    },
    0 // "Local"
 };
@@ -148,7 +148,7 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
 
          S.TieChoice( XXO("&Language:"),
             {
-               wxT("/Locale/Language"),
+               L"/Locale/Language",
                { ByColumns, mLangNames, mLangCodes }
             }
          );
@@ -174,23 +174,23 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
    {
       // Start wording of options with a verb, if possible.
       S.TieCheckBox(XXO("Show 'How to Get &Help' at launch"),
-                    {wxT("/GUI/ShowSplashScreen"),
+                    {L"/GUI/ShowSplashScreen",
                      true});
       S.TieCheckBox(XXO("Show e&xtra menus"),
-                    {wxT("/GUI/ShowExtraMenus"),
+                    {L"/GUI/ShowExtraMenus",
                      false});
 #ifdef EXPERIMENTAL_THEME_PREFS
       // We do not want to make this option mainstream.  It's a 
       // convenience for developers.
       S.TieCheckBox(XXO("Show alternative &styling (Mac vs PC)"),
-                    {wxT("/GUI/ShowMac"),
+                    {L"/GUI/ShowMac",
                      false});
 #endif
       S.TieCheckBox(XXO("&Beep on completion of longer activities"),
-                    {wxT("/GUI/BeepOnCompletion"),
+                    {L"/GUI/BeepOnCompletion",
                      false});
       S.TieCheckBox(XXO("Re&tain labels if selection snaps to a label"),
-                    {wxT("/GUI/RetainLabels"),
+                    {L"/GUI/RetainLabels",
                      false});
       S.TieCheckBox(XXO("B&lend system and Audacity theme"),
                      GUIBlendThemes);
@@ -202,7 +202,7 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
 #endif
 #ifdef EXPERIMENTAL_CEE_NUMBERS_OPTION
       S.TieCheckBox(XXO("Never use comma as decimal point"),
-                    {wxT("/Locale/CeeNumberFormat"),
+                    {L"/Locale/CeeNumberFormat",
                      false});
 #endif
    }
@@ -211,10 +211,10 @@ void GUIPrefs::PopulateOrExchange(ShuttleGui & S)
    S.StartStatic(XO("Timeline"));
    {
       S.TieCheckBox(XXO("Show Timeline Tooltips"),
-                    {wxT("/QuickPlay/ToolTips"),
+                    {L"/QuickPlay/ToolTips",
                      true});
       S.TieCheckBox(XXO("Show Scrub Ruler"),
-                    {wxT("/QuickPlay/ScrubbingEnabled"),
+                    {L"/QuickPlay/ScrubbingEnabled",
                      false});
    }
    S.EndStatic();
@@ -228,12 +228,12 @@ bool GUIPrefs::Commit()
    PopulateOrExchange(S);
 
    // If language has changed, we want to change it now, not on the next reboot.
-   Identifier lang = gPrefs->Read(wxT("/Locale/Language"), wxT(""));
+   Identifier lang = gPrefs->Read(L"/Locale/Language", L"");
    auto usedLang = GUISettings::SetLang(lang);
    // Bug 1523: Previously didn't check no-language (=System Language)
    if (!(lang.empty() || lang == L"System") && (lang != usedLang)) {
       // lang was not usable and is not system language.  We got overridden.
-      gPrefs->Write(wxT("/Locale/Language"), usedLang);
+      gPrefs->Write(L"/Locale/Language", usedLang);
       gPrefs->Flush();
    }
 

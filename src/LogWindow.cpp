@@ -211,7 +211,7 @@ void OnSave(wxCommandEvent & WXUNUSED(e))
       XO("Save log to:"),
       wxEmptyString,
       fName,
-      wxT("txt"),
+      L"txt",
       { FileNames::TextFiles },
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
       sFrame.get());

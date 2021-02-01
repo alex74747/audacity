@@ -49,157 +49,157 @@
 
 static const wxChar *DefaultGenres[] =
 {
-   wxT("Blues"),
-   wxT("Classic Rock"),
-   wxT("Country"),
-   wxT("Dance"),
-   wxT("Disco"),
-   wxT("Funk"),
-   wxT("Grunge"),
-   wxT("Hip-Hop"),
-   wxT("Jazz"),
-   wxT("Metal"),
-   wxT("New Age"),
-   wxT("Oldies"),
-   wxT("Other"),
-   wxT("Pop"),
-   wxT("R&B"),
-   wxT("Rap"),
-   wxT("Reggae"),
-   wxT("Rock"),
-   wxT("Techno"),
-   wxT("Industrial"),
-   wxT("Alternative"),
-   wxT("Ska"),
-   wxT("Death Metal"),
-   wxT("Pranks"),
-   wxT("Soundtrack"),
-   wxT("Euro-Techno"),
-   wxT("Ambient"),
-   wxT("Trip-Hop"),
-   wxT("Vocal"),
-   wxT("Jazz+Funk"),
-   wxT("Fusion"),
-   wxT("Trance"),
-   wxT("Classical"),
-   wxT("Instrumental"),
-   wxT("Acid"),
-   wxT("House"),
-   wxT("Game"),
-   wxT("Sound Clip"),
-   wxT("Gospel"),
-   wxT("Noise"),
-   wxT("Alt. Rock"),
-   wxT("Bass"),
-   wxT("Soul"),
-   wxT("Punk"),
-   wxT("Space"),
-   wxT("Meditative"),
-   wxT("Instrumental Pop"),
-   wxT("Instrumental Rock"),
-   wxT("Ethnic"),
-   wxT("Gothic"),
-   wxT("Darkwave"),
-   wxT("Techno-Industrial"),
-   wxT("Electronic"),
-   wxT("Pop-Folk"),
-   wxT("Eurodance"),
-   wxT("Dream"),
-   wxT("Southern Rock"),
-   wxT("Comedy"),
-   wxT("Cult"),
-   wxT("Gangsta Rap"),
-   wxT("Top 40"),
-   wxT("Christian Rap"),
-   wxT("Pop/Funk"),
-   wxT("Jungle"),
-   wxT("Native American"),
-   wxT("Cabaret"),
-   wxT("New Wave"),
-   wxT("Psychedelic"),
-   wxT("Rave"),
-   wxT("Showtunes"),
-   wxT("Trailer"),
-   wxT("Lo-Fi"),
-   wxT("Tribal"),
-   wxT("Acid Punk"),
-   wxT("Acid Jazz"),
-   wxT("Polka"),
-   wxT("Retro"),
-   wxT("Musical"),
-   wxT("Rock & Roll"),
-   wxT("Hard Rock"),
-   wxT("Folk"),
-   wxT("Folk/Rock"),
-   wxT("National Folk"),
-   wxT("Swing"),
-   wxT("Fast-Fusion"),
-   wxT("Bebob"),
-   wxT("Latin"),
-   wxT("Revival"),
-   wxT("Celtic"),
-   wxT("Bluegrass"),
-   wxT("Avantgarde"),
-   wxT("Gothic Rock"),
-   wxT("Progressive Rock"),
-   wxT("Psychedelic Rock"),
-   wxT("Symphonic Rock"),
-   wxT("Slow Rock"),
-   wxT("Big Band"),
-   wxT("Chorus"),
-   wxT("Easy Listening"),
-   wxT("Acoustic"),
-   wxT("Humour"),
-   wxT("Speech"),
-   wxT("Chanson"),
-   wxT("Opera"),
-   wxT("Chamber Music"),
-   wxT("Sonata"),
-   wxT("Symphony"),
-   wxT("Booty Bass"),
-   wxT("Primus"),
-   wxT("Porn Groove"),
-   wxT("Satire"),
-   wxT("Slow Jam"),
-   wxT("Club"),
-   wxT("Tango"),
-   wxT("Samba"),
-   wxT("Folklore"),
-   wxT("Ballad"),
-   wxT("Power Ballad"),
-   wxT("Rhythmic Soul"),
-   wxT("Freestyle"),
-   wxT("Duet"),
-   wxT("Punk Rock"),
-   wxT("Drum Solo"),
-   wxT("A Cappella"),
-   wxT("Euro-House"),
-   wxT("Dance Hall"),
-   wxT("Goa"),
-   wxT("Drum & Bass"),
-   wxT("Club-House"),
-   wxT("Hardcore"),
-   wxT("Terror"),
-   wxT("Indie"),
-   wxT("BritPop"),
+   L"Blues",
+   L"Classic Rock",
+   L"Country",
+   L"Dance",
+   L"Disco",
+   L"Funk",
+   L"Grunge",
+   L"Hip-Hop",
+   L"Jazz",
+   L"Metal",
+   L"New Age",
+   L"Oldies",
+   L"Other",
+   L"Pop",
+   L"R&B",
+   L"Rap",
+   L"Reggae",
+   L"Rock",
+   L"Techno",
+   L"Industrial",
+   L"Alternative",
+   L"Ska",
+   L"Death Metal",
+   L"Pranks",
+   L"Soundtrack",
+   L"Euro-Techno",
+   L"Ambient",
+   L"Trip-Hop",
+   L"Vocal",
+   L"Jazz+Funk",
+   L"Fusion",
+   L"Trance",
+   L"Classical",
+   L"Instrumental",
+   L"Acid",
+   L"House",
+   L"Game",
+   L"Sound Clip",
+   L"Gospel",
+   L"Noise",
+   L"Alt. Rock",
+   L"Bass",
+   L"Soul",
+   L"Punk",
+   L"Space",
+   L"Meditative",
+   L"Instrumental Pop",
+   L"Instrumental Rock",
+   L"Ethnic",
+   L"Gothic",
+   L"Darkwave",
+   L"Techno-Industrial",
+   L"Electronic",
+   L"Pop-Folk",
+   L"Eurodance",
+   L"Dream",
+   L"Southern Rock",
+   L"Comedy",
+   L"Cult",
+   L"Gangsta Rap",
+   L"Top 40",
+   L"Christian Rap",
+   L"Pop/Funk",
+   L"Jungle",
+   L"Native American",
+   L"Cabaret",
+   L"New Wave",
+   L"Psychedelic",
+   L"Rave",
+   L"Showtunes",
+   L"Trailer",
+   L"Lo-Fi",
+   L"Tribal",
+   L"Acid Punk",
+   L"Acid Jazz",
+   L"Polka",
+   L"Retro",
+   L"Musical",
+   L"Rock & Roll",
+   L"Hard Rock",
+   L"Folk",
+   L"Folk/Rock",
+   L"National Folk",
+   L"Swing",
+   L"Fast-Fusion",
+   L"Bebob",
+   L"Latin",
+   L"Revival",
+   L"Celtic",
+   L"Bluegrass",
+   L"Avantgarde",
+   L"Gothic Rock",
+   L"Progressive Rock",
+   L"Psychedelic Rock",
+   L"Symphonic Rock",
+   L"Slow Rock",
+   L"Big Band",
+   L"Chorus",
+   L"Easy Listening",
+   L"Acoustic",
+   L"Humour",
+   L"Speech",
+   L"Chanson",
+   L"Opera",
+   L"Chamber Music",
+   L"Sonata",
+   L"Symphony",
+   L"Booty Bass",
+   L"Primus",
+   L"Porn Groove",
+   L"Satire",
+   L"Slow Jam",
+   L"Club",
+   L"Tango",
+   L"Samba",
+   L"Folklore",
+   L"Ballad",
+   L"Power Ballad",
+   L"Rhythmic Soul",
+   L"Freestyle",
+   L"Duet",
+   L"Punk Rock",
+   L"Drum Solo",
+   L"A Cappella",
+   L"Euro-House",
+   L"Dance Hall",
+   L"Goa",
+   L"Drum & Bass",
+   L"Club-House",
+   L"Hardcore",
+   L"Terror",
+   L"Indie",
+   L"BritPop",
 
    // Standard name is offensive (see "http://www.audacityteam.org/forum/viewtopic.php?f=11&t=3924").
-   wxT("Offensive"), // wxT("Negerpunk"),
+   L"Offensive", // L"Negerpunk",
 
-   wxT("Polsk Punk"),
-   wxT("Beat"),
-   wxT("Christian Gangsta Rap"),
-   wxT("Heavy Metal"),
-   wxT("Black Metal"),
-   wxT("Crossover"),
-   wxT("Contemporary Christian"),
-   wxT("Christian Rock"),
-   wxT("Merengue"),
-   wxT("Salsa"),
-   wxT("Thrash Metal"),
-   wxT("Anime"),
-   wxT("JPop"),
-   wxT("Synthpop")
+   L"Polsk Punk",
+   L"Beat",
+   L"Christian Gangsta Rap",
+   L"Heavy Metal",
+   L"Black Metal",
+   L"Crossover",
+   L"Contemporary Christian",
+   L"Christian Rock",
+   L"Merengue",
+   L"Salsa",
+   L"Thrash Metal",
+   L"Anime",
+   L"JPop",
+   L"Synthpop"
 };
 
 static ProjectFileIORegistry::ObjectReaderEntry readerEntry{
@@ -273,14 +273,14 @@ void Tags::LoadDefaults()
 
    // Set the parent group
    path = gPrefs->GetPath();
-   gPrefs->SetPath(wxT("/Tags"));
+   gPrefs->SetPath(L"/Tags");
 
    // Process all entries in the group
    cont = gPrefs->GetFirstEntry(name, ndx);
    while (cont) {
-      gPrefs->Read(name, &value, wxT(""));
+      gPrefs->Read(name, &value, L"");
 
-      if (name == wxT("ID3V2")) {
+      if (name == L"ID3V2") {
          // LLL:  This is obsolute, but it must be handled and ignored.
       }
       else {
@@ -355,7 +355,7 @@ void Tags::LoadDefaultGenres()
 
 void Tags::LoadGenres()
 {
-   wxFileName fn(FileNames::DataDir(), wxT("genres.txt"));
+   wxFileName fn(FileNames::DataDir(), L"genres.txt");
    wxTextFile tf(fn.GetFullPath());
 
    if (!tf.Exists() || !tf.Open()) {
@@ -377,7 +377,7 @@ wxString Tags::GetUserGenre(int i)
       return mGenres[i];
    }
 
-   return wxT("");
+   return L"";
 }
 
 wxString Tags::GetGenre(int i)
@@ -388,7 +388,7 @@ wxString Tags::GetGenre(int i)
       return DefaultGenres[i];
    }
 
-   return wxT("");
+   return L"";
 }
 
 int Tags::GetGenre(const wxString & name)
@@ -495,7 +495,7 @@ void Tags::SetTag(const wxString & name, const wxString & value, const bool bSpe
 
 void Tags::SetTag(const wxString & name, const int & value)
 {
-   SetTag(name, wxString::Format(wxT("%d"), value));
+   SetTag(name, wxString::Format(L"%d", value));
 }
 
 bool Tags::HandleXMLTag(const std::string_view& tag, const AttributesList &attrs)
@@ -520,7 +520,7 @@ bool Tags::HandleXMLTag(const std::string_view& tag, const AttributesList &attrs
          }
       }
 
-      if (n == wxT("id3v2")) {
+      if (n == L"id3v2") {
          // LLL:  This is obsolete, but it must be handled and ignored.
       }
       else {
@@ -549,18 +549,18 @@ XMLTagHandler *Tags::HandleXMLChild(const std::string_view& tag)
 void Tags::WriteXML(XMLWriter &xmlFile) const
 // may throw
 {
-   xmlFile.StartTag(wxT("tags"));
+   xmlFile.StartTag(L"tags");
 
    for (const auto &pair : GetRange()) {
       const auto &n = pair.first;
       const auto &v = pair.second;
-      xmlFile.StartTag(wxT("tag"));
-      xmlFile.WriteAttr(wxT("name"), n);
-      xmlFile.WriteAttr(wxT("value"), v);
-      xmlFile.EndTag(wxT("tag"));
+      xmlFile.StartTag(L"tag");
+      xmlFile.WriteAttr(L"name", n);
+      xmlFile.WriteAttr(L"value", v);
+      xmlFile.EndTag(L"tag");
    }
 
-   xmlFile.EndTag(wxT("tags"));
+   xmlFile.EndTag(L"tags");
 }
 
 static ProjectFileIORegistry::ObjectWriterEntry entry {

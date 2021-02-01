@@ -410,8 +410,8 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
          const double tless = std::min(t0, t1);
          const double tgreater = std::max(t0, t1);
          double beforeLen, afterLen;
-         gPrefs->Read(wxT("/AudioIO/CutPreviewBeforeLen"), &beforeLen, 2.0);
-         gPrefs->Read(wxT("/AudioIO/CutPreviewAfterLen"), &afterLen, 1.0);
+         gPrefs->Read(L"/AudioIO/CutPreviewBeforeLen", &beforeLen, 2.0);
+         gPrefs->Read(L"/AudioIO/CutPreviewAfterLen", &afterLen, 1.0);
          double tcp0 = tless-beforeLen;
          const double diff = tgreater - tless;
          double tcp1 = tgreater+afterLen;
@@ -454,7 +454,7 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
             ShowErrorDialog( *ProjectFramePlacement(&mProject),
                XO("Error"),
                XO("Error opening sound device.\nTry changing the audio host, playback device and the project sample rate."),
-               wxT("Error_opening_sound_device"),
+               L"Error_opening_sound_device",
                ErrorDialogOptions{ ErrorDialogType::ModalErrorReport } );
          });
       }
@@ -762,7 +762,7 @@ void ProjectAudioManager::OnRecord(bool altAppearance)
 bool ProjectAudioManager::UseDuplex()
 {
    bool duplex;
-   gPrefs->Read(wxT("/AudioIO/Duplex"), &duplex,
+   gPrefs->Read(L"/AudioIO/Duplex", &duplex,
 #ifdef EXPERIMENTAL_DA
       false
 #else
@@ -870,12 +870,12 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
 
          auto recordingChannels = std::max(1, AudioIORecordChannels.Read());
 
-         gPrefs->Read(wxT("/GUI/TrackNames/RecordingNameCustom"), &recordingNameCustom, false);
-         gPrefs->Read(wxT("/GUI/TrackNames/TrackNumber"), &useTrackNumber, false);
-         gPrefs->Read(wxT("/GUI/TrackNames/DateStamp"), &useDateStamp, false);
-         gPrefs->Read(wxT("/GUI/TrackNames/TimeStamp"), &useTimeStamp, false);
+         gPrefs->Read(L"/GUI/TrackNames/RecordingNameCustom", &recordingNameCustom, false);
+         gPrefs->Read(L"/GUI/TrackNames/TrackNumber", &useTrackNumber, false);
+         gPrefs->Read(L"/GUI/TrackNames/DateStamp", &useDateStamp, false);
+         gPrefs->Read(L"/GUI/TrackNames/TimeStamp", &useTimeStamp, false);
          defaultTrackName = WaveTrack::GetDefaultAudioTrackNamePreference();
-         gPrefs->Read(wxT("/GUI/TrackNames/RecodingTrackName"), &defaultRecordingTrackName, defaultTrackName);
+         gPrefs->Read(L"/GUI/TrackNames/RecodingTrackName", &defaultRecordingTrackName, defaultTrackName);
 
          wxString baseTrackName = recordingNameCustom? defaultRecordingTrackName : defaultTrackName;
 
@@ -894,28 +894,28 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
             }
 
             newTrack->SetOffset(t0);
-            wxString nameSuffix = wxString(wxT(""));
+            wxString nameSuffix = wxString(L"");
 
             if (useTrackNumber) {
-               nameSuffix += wxString::Format(wxT("%d"), 1 + (int) numTracks + c);
+               nameSuffix += wxString::Format(L"%d", 1 + (int) numTracks + c);
             }
 
             if (useDateStamp) {
                if (!nameSuffix.empty()) {
-                  nameSuffix += wxT("_");
+                  nameSuffix += L"_";
                }
                nameSuffix += wxDateTime::Now().FormatISODate();
             }
 
             if (useTimeStamp) {
                if (!nameSuffix.empty()) {
-                  nameSuffix += wxT("_");
+                  nameSuffix += L"_";
                }
                nameSuffix += wxDateTime::Now().FormatISOTime();
             }
 
             // ISO standard would be nice, but ":" is unsafe for file name.
-            nameSuffix.Replace(wxT(":"), wxT("-"));
+            nameSuffix.Replace(L":", L"-");
 
             if (baseTrackName.empty()) {
                newTrack->SetName(nameSuffix);
@@ -924,7 +924,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
                newTrack->SetName(baseTrackName);
             }
             else {
-               newTrack->SetName(baseTrackName + wxT("_") + nameSuffix);
+               newTrack->SetName(baseTrackName + L"_" + nameSuffix);
             }
             //create a new clip with a proper name before recording is started
             newTrack->CreateClip(t0, makeNewClipName(newTrack.get()));
@@ -965,7 +965,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
             .Format( gAudioIO->LastPaErrorString() );
          using namespace BasicUI;
          ShowErrorDialog( *ProjectFramePlacement(&mProject),
-            XO("Error"), msg, wxT("Error_opening_sound_device"),
+            XO("Error"), msg, L"Error_opening_sound_device",
             ErrorDialogOptions{ ErrorDialogType::ModalErrorReport } );
       }
    }

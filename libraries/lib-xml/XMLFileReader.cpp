@@ -42,7 +42,7 @@ XMLFileReader::~XMLFileReader()
 bool XMLFileReader::Parse(XMLTagHandler *baseHandler,
                           const FilePath &fname)
 {
-   wxFFile theXMLFile(fname, wxT("rb"));
+   wxFFile theXMLFile(fname, L"rb");
    if (!theXMLFile.IsOpened()) {
       mErrorStr = XO("Could not open file: \"%s\"").Format( fname );
       return false;
@@ -258,7 +258,7 @@ bool XMLFileReader::ParseBuffer(
                         (long unsigned int)XML_GetCurrentLineNumber(mParser));
 
       wxLogMessage(
-         wxT("ParseString error: %s\n===begin===%s\n===end==="),
+         L"ParseString error: %s\n===begin===%s\n===end===",
          mErrorStr.Debug(), buffer);
 
       return false;

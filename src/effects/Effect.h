@@ -42,7 +42,7 @@ class wxArrayString;
 class ShuttleGui;
 class AudacityCommand;
 
-#define BUILTIN_EFFECT_PREFIX wxT("Built-in Effect: ")
+#define BUILTIN_EFFECT_PREFIX L"Built-in Effect: "
 
 namespace BasicUI { class ProgressDialog; }
 
@@ -64,7 +64,7 @@ using FloatBuffers = ArraysOf<float>;
  name into another alphabet.  */
 #define NYQUISTEFFECTS_FAMILY ( EffectFamilySymbol{ XO("Nyquist") } )
 
-#define NYQUIST_WORKER_ID wxT("Nyquist Worker")
+#define NYQUIST_WORKER_ID L"Nyquist Worker"
 
 // TODO:  Apr-06-2015
 // TODO:  Much more cleanup of old methods and variables is needed, but

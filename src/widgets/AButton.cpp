@@ -101,9 +101,9 @@ public:
    // of this object.
    // Acceptable values:
    // - a null variant (IsNull() returns TRUE)
-   // - a list variant (GetType() == wxT("list"))
+   // - a list variant (GetType() == L"list")
    // - an integer representing the selected child element,
-   //   or 0 if this object is selected (GetType() == wxT("long"))
+   //   or 0 if this object is selected (GetType() == L"long")
    // - a "void*" pointer to a wxAccessible child object
    wxAccStatus GetSelections(wxVariant *selections) override;
 
@@ -800,9 +800,9 @@ wxAccStatus AButtonAx::GetRole(int WXUNUSED(childId), wxAccRole* role)
 // of this object.
 // Acceptable values:
 // - a null variant (IsNull() returns TRUE)
-// - a list variant (GetType() == wxT("list"))
+// - a list variant (GetType() == L"list")
 // - an integer representing the selected child element,
-//   or 0 if this object is selected (GetType() == wxT("long"))
+//   or 0 if this object is selected (GetType() == L"long")
 // - a "void*" pointer to a wxAccessible child object
 wxAccStatus AButtonAx::GetSelections( wxVariant * WXUNUSED(selections) )
 {

@@ -61,7 +61,7 @@ void ShowDiagnostics(
          fileDialogTitle,
          wxEmptyString,
          defaultPath,
-         wxT("txt"),
+         L"txt",
          { FileNames::TextFiles },
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxRESIZE_BORDER,
          &window);

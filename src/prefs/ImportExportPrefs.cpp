@@ -72,7 +72,7 @@ EnumLabelSetting< bool > ImportExportPrefs::ExportDownMixSetting{
    {
       true, false,
    },
-   wxT("/FileFormats/ExportDownMix"),
+   L"/FileFormats/ExportDownMix",
 };
 
 EnumLabelSetting< bool > ImportExportPrefs::LabelStyleSetting{
@@ -100,7 +100,7 @@ EnumLabelSetting< bool > ImportExportPrefs::AllegroStyleSetting{
    {
       true, false,
    },
-   wxT("/FileFormats/AllegroStyle"),
+   L"/FileFormats/AllegroStyle",
 };
 
 void ImportExportPrefs::PopulateOrExchange(ShuttleGui & S)
@@ -124,11 +124,11 @@ void ImportExportPrefs::PopulateOrExchange(ShuttleGui & S)
       S.EndPanel();
 
       S.TieCheckBox(XXO("S&how Metadata Tags editor before export"),
-                    {wxT("/AudioFiles/ShowId3Dialog"),
+                    {L"/AudioFiles/ShowId3Dialog",
                      true});
       /* i18n-hint 'blank space' is space on the tracks with no audio in it*/
       S.TieCheckBox(XXO("&Ignore blank space at the beginning"),
-                    {wxT("/AudioFiles/SkipSilenceAtBeginning"),
+                    {L"/AudioFiles/SkipSilenceAtBeginning",
                      false});
    }
    S.EndStatic();

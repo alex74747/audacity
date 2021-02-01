@@ -86,9 +86,9 @@ public:
    // of this object.
    // Acceptable values:
    // - a null variant (IsNull() returns TRUE)
-   // - a list variant (GetType() == wxT("list"))
+   // - a list variant (GetType() == L"list")
    // - an integer representing the selected child element,
-   //   or 0 if this object is selected (GetType() == wxT("long"))
+   //   or 0 if this object is selected (GetType() == L"long")
    // - a "void*" pointer to a wxAccessible child object
    wxAccStatus GetSelections( wxVariant *selections ) override;
 
@@ -269,9 +269,9 @@ wxAccStatus CheckListAx::GetRole( int childId, wxAccRole *role )
 // of this object.
 // Acceptable values:
 // - a null variant (IsNull() returns TRUE)
-// - a list variant (GetType() == wxT("list"))
+// - a list variant (GetType() == L"list")
 // - an integer representing the selected child element,
-//   or 0 if this object is selected (GetType() == wxT("long"))
+//   or 0 if this object is selected (GetType() == L"long")
 // - a "void*" pointer to a wxAccessible child object
 wxAccStatus CheckListAx::GetSelections( wxVariant * WXUNUSED(selections) )
 {
@@ -895,9 +895,9 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
       }
    }
 
-   wxString last3 = mLongestPath + wxT("\n") +
-                    mLongestPath + wxT("\n") +
-                    mLongestPath + wxT("\n");
+   wxString last3 = mLongestPath + L"\n" +
+                    mLongestPath + L"\n" +
+                    mLongestPath + L"\n";
 
    auto msg = XO("Enabling effects or commands:\n\n%s").Format( last3 );
 
@@ -917,7 +917,7 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
 
          if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
          {
-            last3 = last3.AfterFirst(L'\n') + item.path + wxT("\n");
+            last3 = last3.AfterFirst(L'\n') + item.path + L"\n";
             auto status = progress.Update(++i, enableCount,
                XO("Enabling effect or command:\n\n%s").Format( last3 ));
             if (status == ProgressResult::Cancelled)
@@ -936,7 +936,7 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
                {
                   for (auto plug : item.plugs)
                      pm.UnregisterPlugin(
-                        plug->GetProviderID() + wxT("_") + path);
+                        plug->GetProviderID() + L"_" + path);
                   // Bug 1893.  We've found a provider that works.
                   // Error messages from any that failed are no longer useful.
                   errMsgs = {};

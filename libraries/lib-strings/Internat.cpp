@@ -82,7 +82,7 @@ void Internat::Init()
    if (localeInfo)
       mDecimalSeparator = wxString(wxSafeConvertMB2WX(localeInfo->decimal_point)).GetChar(0);
 
-//   wxLogDebug(wxT("Decimal separator set to '%c'"), mDecimalSeparator);
+//   wxLogDebug(L"Decimal separator set to '%c'", mDecimalSeparator);
 
    // Setup list of characters that aren't allowed in file names
    // Hey!  The default wxPATH_NATIVE does not do as it should.
@@ -136,8 +136,8 @@ bool Internat::CompatibleToDouble(const wxString& stringToConvert, double* resul
    // Regardless of the locale, always respect comma _and_ point
    wxString s = stringToConvert;
    // Convert to C locale decimal point for stable parsing.
-   s.Replace(wxT(","), wxT("."));
-   s.Replace(wxString(GetDecimalSeparator()), wxT("."));
+   s.Replace(L",", L".");
+   s.Replace(wxString(GetDecimalSeparator()), L".");
    return s.ToCDouble(result);
 }
 
@@ -154,7 +154,7 @@ wxString Internat::ToString(double numberToConvert,
    wxString result = ToDisplayString(
       numberToConvert, digitsAfterDecimalPoint);
 
-   result.Replace(wxString(GetDecimalSeparator()), wxT("."));
+   result.Replace(wxString(GetDecimalSeparator()), L".");
 
    return result;
 }
@@ -167,11 +167,11 @@ wxString Internat::ToDisplayString(double numberToConvert,
 
    if (digitsAfterDecimalPoint == -1)
    {
-      result.Printf(wxT("%f"), numberToConvert);
+      result.Printf(L"%f", numberToConvert);
 
       // Not all libcs respect the decimal separator, so always convert
       // any dots found to the decimal separator.
-      result.Replace(wxT("."), decSep);
+      result.Replace(L".", decSep);
 
       if (result.Find(decSep) != -1)
       {
@@ -190,12 +190,12 @@ wxString Internat::ToDisplayString(double numberToConvert,
    else
    {
       wxString format;
-      format.Printf(wxT("%%.%if"), digitsAfterDecimalPoint);
+      format.Printf(L"%%.%if", digitsAfterDecimalPoint);
       result.Printf(format, numberToConvert);
 
       // Not all libcs respect the decimal separator, so always convert
       // any dots found to the decimal separator
-      result.Replace(wxT("."), decSep);
+      result.Replace(L".", decSep);
    }
 
    return result;
@@ -254,7 +254,7 @@ bool Internat::SanitiseFilename(wxString &name, const wxString &sub)
    // '/' is permitted in file names as seen in dialogs, even though it is
    // the path separator.  The "real" filename as seen in the terminal has ':'.
    // Do NOT return true if this is the only substitution.
-   name.Replace(wxT("/"), wxT(":"));
+   name.Replace(L"/", L":");
 #endif
 
    return result;

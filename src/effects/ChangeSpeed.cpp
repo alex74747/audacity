@@ -68,7 +68,7 @@ static const TranslatableStrings kVinylStrings{
 // Define keys, defaults, minimums, and maximums for the effect parameters
 //
 //     Name          Type     Key               Def   Min      Max      Scale
-Param( Percentage,   double,  wxT("Percentage"), 0.0,  -99.0,   4900.0,  1  );
+Param( Percentage,   double,  L"Percentage", 0.0,  -99.0,   4900.0,  1  );
 
 // We warp the slider to go up to 400%, but user can enter higher values
 static const double kSliderMax = 100.0;         // warped above zero to actually go up to 400%
@@ -181,12 +181,12 @@ double EffectChangeSpeed::CalcPreviewInputLength(double previewLength)
 
 bool EffectChangeSpeed::Startup()
 {
-   wxString base = wxT("/Effects/ChangeSpeed/");
+   wxString base = L"/Effects/ChangeSpeed/";
 
    // Migrate settings from 2.1.0 or before
 
    // Already migrated, so bail
-   if (gPrefs->Exists(base + wxT("Migrated")))
+   if (gPrefs->Exists(base + L"Migrated"))
    {
       return true;
    }
@@ -195,27 +195,27 @@ bool EffectChangeSpeed::Startup()
    if (gPrefs->Exists(base))
    {
       // Retrieve last used control values
-      gPrefs->Read(base + wxT("PercentChange"), &m_PercentChange, 0);
+      gPrefs->Read(base + L"PercentChange", &m_PercentChange, 0);
 
       wxString format;
-      gPrefs->Read(base + wxT("TimeFormat"), &format, wxString{});
+      gPrefs->Read(base + L"TimeFormat", &format, wxString{});
       mFormat = NumericConverter::LookupFormat( NumericConverter::TIME, format );
 
-      gPrefs->Read(base + wxT("VinylChoice"), &mFromVinyl, 0);
+      gPrefs->Read(base + L"VinylChoice", &mFromVinyl, 0);
       if (mFromVinyl == kVinyl_NA)
       {
          mFromVinyl = kVinyl_33AndAThird;
       }
 
       SetConfig(GetDefinition(), PluginSettings::Private,
-         GetCurrentSettingsGroup(), wxT("TimeFormat"), mFormat.Internal());
+         GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
       SetConfig(GetDefinition(), PluginSettings::Private,
-         GetCurrentSettingsGroup(), wxT("VinylChoice"), mFromVinyl);
+         GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl);
 
       SaveUserPreset(GetCurrentSettingsGroup());
 
       // Do not migrate again
-      gPrefs->Write(base + wxT("Migrated"), true);
+      gPrefs->Write(base + L"Migrated", true);
       gPrefs->Flush();
    }
 
@@ -299,13 +299,13 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
       wxString formatId;
       GetConfig(GetDefinition(), PluginSettings::Private,
          GetCurrentSettingsGroup(),
-         wxT("TimeFormat"), formatId, mFormat.Internal());
+         L"TimeFormat", formatId, mFormat.Internal());
       mFormat = NumericConverter::LookupFormat(
          NumericConverter::TIME, formatId );
    }
    GetConfig(GetDefinition(), PluginSettings::Private,
       GetCurrentSettingsGroup(),
-      wxT("VinylChoice"), mFromVinyl, mFromVinyl);
+      L"VinylChoice", mFromVinyl, mFromVinyl);
 
    S.SetBorder(5);
 
@@ -324,7 +324,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
                NumValidatorStyle::THREE_TRAILING_ZEROES,
                MIN_Percentage / 100.0, ((MAX_Percentage / 100.0) + 1)
             )
-            .AddTextBox(XXO("&Speed Multiplier:"), wxT(""), 12);
+            .AddTextBox(XXO("&Speed Multiplier:"), L"", 12);
 
          mpTextCtrl_PercentChange = S.Id(ID_PercentChange)
             .Validator<FloatingPointValidator<double>>(
@@ -332,7 +332,7 @@ void EffectChangeSpeed::PopulateOrExchange(ShuttleGui & S)
                NumValidatorStyle::THREE_TRAILING_ZEROES,
                MIN_Percentage, MAX_Percentage
             )
-            .AddTextBox(XXO("Percent C&hange:"), wxT(""), 12);
+            .AddTextBox(XXO("Percent C&hange:"), L"", 12);
       }
       S.EndMultiColumn();
 
@@ -464,9 +464,9 @@ bool EffectChangeSpeed::TransferDataFromWindow()
    m_PercentChange = exactPercent;
 
    SetConfig(GetDefinition(), PluginSettings::Private,
-      GetCurrentSettingsGroup(), wxT("TimeFormat"), mFormat.Internal());
+      GetCurrentSettingsGroup(), L"TimeFormat", mFormat.Internal());
    SetConfig(GetDefinition(), PluginSettings::Private,
-      GetCurrentSettingsGroup(), wxT("VinylChoice"), mFromVinyl);
+      GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl);
 
    return true;
 }
@@ -671,7 +671,7 @@ void EffectChangeSpeed::OnChoice_Vinyl(wxCommandEvent & WXUNUSED(evt))
    // Use this as the 'preferred' choice.
    if (mFromVinyl != kVinyl_NA) {
       SetConfig(GetDefinition(), PluginSettings::Private,
-         GetCurrentSettingsGroup(), wxT("VinylChoice"), mFromVinyl);
+         GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl);
    }
 
    // If mFromVinyl & mToVinyl are set, then there's a NEW percent change.
@@ -782,7 +782,7 @@ void EffectChangeSpeed::Update_Vinyl()
          } else {
             // Use the last saved option.
             GetConfig(GetDefinition(), PluginSettings::Private,
-               GetCurrentSettingsGroup(), wxT("VinylChoice"), mFromVinyl, 0);
+               GetCurrentSettingsGroup(), L"VinylChoice", mFromVinyl, 0);
             mpChoice_FromVinyl->SetSelection(mFromVinyl);
             mpChoice_ToVinyl->SetSelection(mFromVinyl);
          }

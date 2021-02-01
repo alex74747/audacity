@@ -355,7 +355,7 @@ void ScreenshotBigDialog::PopulateOrExchange(ShuttleGui & S)
             mDirectoryTextBox =
             S.Id(IdDirectory).AddTextBox(
                XXO("Save images to:"),
-               gPrefs->Read(wxT("/ScreenshotPath"), wxFileName::GetHomeDir()),
+               gPrefs->Read(L"/ScreenshotPath", wxFileName::GetHomeDir()),
                30
             );
             S.Id(IdDirChoose).AddButton(XXO("Choose..."));
@@ -542,7 +542,7 @@ bool ScreenshotBigDialog::ProcessEvent(wxEvent & e)
 void ScreenshotBigDialog::OnCloseWindow(wxCloseEvent &  WXUNUSED(event))
 {
    if (mDirectoryTextBox->IsModified()) {
-      gPrefs->Write(wxT("/ScreenshotPath"), mDirectoryTextBox->GetValue());
+      gPrefs->Write(L"/ScreenshotPath", mDirectoryTextBox->GetValue());
       gPrefs->Flush();
    }
 
@@ -552,7 +552,7 @@ void ScreenshotBigDialog::OnCloseWindow(wxCloseEvent &  WXUNUSED(event))
 void ScreenshotBigDialog::OnClose(wxCommandEvent &  WXUNUSED(event))
 {
    if (mDirectoryTextBox->IsModified()) {
-      gPrefs->Write(wxT("/ScreenshotPath"), mDirectoryTextBox->GetValue());
+      gPrefs->Write(L"/ScreenshotPath", mDirectoryTextBox->GetValue());
       gPrefs->Flush();
    }
 
@@ -605,7 +605,7 @@ void ScreenshotBigDialog::OnDirChoose(wxCommandEvent & WXUNUSED(event))
       tmpDirPath.AssignDir(dlog.GetPath());
       wxString path = tmpDirPath.GetPath(wxPATH_GET_VOLUME|wxPATH_GET_SEPARATOR);
       mDirectoryTextBox->SetValue(path);
-      gPrefs->Write(wxT("/ScreenshotPath"), path);
+      gPrefs->Write(L"/ScreenshotPath", path);
       gPrefs->Flush();
       mCommand->mPath = path;
    }
@@ -646,8 +646,8 @@ void ScreenshotBigDialog::DoCapture(int captureMode)
 {
    Hide();
    wxYieldIfNeeded();
-   //mCommand->SetParameter(wxT("FilePath"), mDirectoryTextBox->GetValue());
-   //mCommand->SetParameter(wxT("CaptureMode"), captureMode);
+   //mCommand->SetParameter(L"FilePath", mDirectoryTextBox->GetValue());
+   //mCommand->SetParameter(L"CaptureMode", captureMode);
    mCommand->mBack = mWhite->GetValue()
       ? ScreenshotCommand::kWhite
       : mBlue->GetValue()

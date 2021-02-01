@@ -267,8 +267,8 @@ void PlayableTrack::SetSolo( bool s  )
 // Serialize, not with tags of its own, but as attributes within a tag.
 void PlayableTrack::WriteXMLAttributes(XMLWriter &xmlFile) const
 {
-   xmlFile.WriteAttr(wxT("mute"), mMute);
-   xmlFile.WriteAttr(wxT("solo"), mSolo);
+   xmlFile.WriteAttr(L"mute", mMute);
+   xmlFile.WriteAttr(L"solo", mSolo);
    AudioTrack::WriteXMLAttributes(xmlFile);
 }
 
@@ -328,7 +328,7 @@ bool Track::LinkConsistencyCheck()
          if (link->HasLinkedTrack())
          {
             wxLogWarning(
-               wxT("Left track %s had linked right track %s with extra right track link.\n   Removing extra link from right track."),
+               L"Left track %s had linked right track %s with extra right track link.\n   Removing extra link from right track.",
                GetName(), link->GetName());
             err = true;
             link->SetLinkType(LinkType::None);
@@ -341,7 +341,7 @@ bool Track::LinkConsistencyCheck()
                      link->GetChannel() == Track::LeftChannel) ) )
          {
             wxLogWarning(
-               wxT("Track %s and %s had left/right track links out of order. Setting tracks to not be linked."),
+               L"Track %s and %s had left/right track links out of order. Setting tracks to not be linked.",
                GetName(), link->GetName());
             err = true;
             SetLinkType(LinkType::None);
@@ -350,7 +350,7 @@ bool Track::LinkConsistencyCheck()
       else
       {
          wxLogWarning(
-            wxT("Track %s had link to NULL track. Setting it to not be linked."),
+            L"Track %s had link to NULL track. Setting it to not be linked.",
             GetName());
          err = true;
          SetLinkType(LinkType::None);
@@ -1120,8 +1120,8 @@ void Track::WriteCommonXMLAttributes(
    XMLWriter &xmlFile, bool includeNameAndSelected) const
 {
    if (includeNameAndSelected) {
-      xmlFile.WriteAttr(wxT("name"), GetName());
-      xmlFile.WriteAttr(wxT("isSelected"), this->GetSelected());
+      xmlFile.WriteAttr(L"name", GetName());
+      xmlFile.WriteAttr(L"isSelected", this->GetSelected());
    }
    AttachedTrackObjects::ForEach([&](auto &attachment){
       attachment.WriteXMLAttributes( xmlFile );

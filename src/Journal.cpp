@@ -64,7 +64,7 @@ wxArrayStringEx PeekTokens()
    return tokens;
 }
 
-constexpr auto VersionToken = wxT("Version");
+constexpr auto VersionToken = L"Version";
 
 // Numbers identifying the journal format version
 int journalVersionNumbers[] = {
@@ -170,7 +170,7 @@ bool Begin( const FilePath &dataDir )
       else {
          // Generate a header
          Comment( wxString::Format(
-            wxT("Journal recorded by %s on %s")
+            L"Journal recorded by %s on %s"
                , wxGetUserName()
                , wxDateTime::Now().Format()
          ) );

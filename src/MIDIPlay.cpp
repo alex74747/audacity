@@ -694,14 +694,14 @@ bool MIDIPlay::StartPortMidiStream(double rate)
    PmDeviceID playbackDevice = Pm_GetDefaultOutputDeviceID();
    auto playbackDeviceName = MIDIPlaybackDevice.Read();
    mSynthLatency = MIDISynthLatency_ms.Read();
-   if (wxStrcmp(playbackDeviceName, wxT("")) != 0) {
+   if (wxStrcmp(playbackDeviceName, L"") != 0) {
       for (i = 0; i < Pm_CountDevices(); i++) {
          const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
          if (!info) continue;
          if (!info->output) continue;
          wxString interf = wxSafeConvertMB2WX(info->interf);
          wxString name = wxSafeConvertMB2WX(info->name);
-         interf.Append(wxT(": ")).Append(name);
+         interf.Append(L": ").Append(name);
          if (wxStrcmp(interf, playbackDeviceName) == 0) {
             playbackDevice = i;
          }
@@ -1212,9 +1212,9 @@ bool MIDIPlay::IsOtherStreamActive() const
 AudioIODiagnostics MIDIPlay::Dump() const
 {
    return {
-      wxT("mididev.txt"),
+      L"mididev.txt",
       GetMIDIDeviceInfo(),
-      wxT("MIDI Device Info")
+      L"MIDI Device Info"
    };
 }
 

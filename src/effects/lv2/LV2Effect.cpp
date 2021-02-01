@@ -223,12 +223,12 @@ LV2EffectSettingsDialog::LV2EffectSettingsDialog(
 :  wxDialogWrapper(parent, wxID_ANY, XO("LV2 Effect Settings"))
 , mEffect{ effect }
 {
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("BufferSize"), mBufferSize, 8192);
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("UseLatency"), mUseLatency, true);
-   GetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("UseGUI"), mUseGUI, true);
+   GetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"BufferSize", mBufferSize, 8192);
+   GetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"UseLatency", mUseLatency, true);
+   GetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"UseGUI", mUseGUI, true);
 
    ShuttleGui S(this, eIsCreating);
    PopulateOrExchange(S);
@@ -329,12 +329,12 @@ void LV2EffectSettingsDialog::OnOk(wxCommandEvent &WXUNUSED(evt))
    ShuttleGui S(this, eIsGettingFromDialog);
    PopulateOrExchange(S);
 
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("BufferSize"), mBufferSize);
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("UseLatency"), mUseLatency);
-   SetConfig(mEffect, PluginSettings::Shared, wxT("Settings"),
-      wxT("UseGUI"), mUseGUI);
+   SetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"BufferSize", mBufferSize);
+   SetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"UseLatency", mUseLatency);
+   SetConfig(mEffect, PluginSettings::Shared, L"Settings",
+      L"UseGUI", mUseGUI);
 
    EndModal(wxID_OK);
 }
@@ -455,7 +455,7 @@ VendorSymbol LV2Effect::GetVendor()
 
 wxString LV2Effect::GetVersion()
 {
-   return wxT("1.0");
+   return L"1.0";
 }
 
 TranslatableString LV2Effect::GetDescription()
@@ -937,25 +937,25 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
    if (mHost)
    {
       int userBlockSize;
-      GetConfig(*this, PluginSettings::Shared, wxT("Settings"),
-         wxT("BufferSize"), userBlockSize, 8192);
+      GetConfig(*this, PluginSettings::Shared, L"Settings",
+         L"BufferSize", userBlockSize, 8192);
       mUserBlockSize = std::max(1, userBlockSize);
-      GetConfig(*this, PluginSettings::Shared, wxT("Settings"),
-         wxT("UseLatency"), mUseLatency, true);
-      GetConfig(*this, PluginSettings::Shared, wxT("Settings"), wxT("UseGUI"),
+      GetConfig(*this, PluginSettings::Shared, L"Settings",
+         L"UseLatency", mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Settings", L"UseGUI",
          mUseGUI, true);
 
       mBlockSize = mUserBlockSize;
 
       bool haveDefaults;
       GetConfig(*this, PluginSettings::Private,
-         mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), haveDefaults,
+         mHost->GetFactoryDefaultsGroup(), L"Initialized", haveDefaults,
          false);
       if (!haveDefaults)
       {
          SaveParameters(mHost->GetFactoryDefaultsGroup());
          SetConfig(*this, PluginSettings::Private,
-            mHost->GetFactoryDefaultsGroup(), wxT("Initialized"), true);
+            mHost->GetFactoryDefaultsGroup(), L"Initialized", true);
       }
 
       LoadParameters(mHost->GetCurrentSettingsGroup());
@@ -1143,7 +1143,7 @@ size_t LV2Effect::ProcessBlock(float **inbuf, float **outbuf, size_t size)
             else
             {
                zix_ring_skip(ring, atom.size);
-               wxLogError(wxT("LV2 sequence buffer overflow"));
+               wxLogError(L"LV2 sequence buffer overflow");
             }
          }
 
@@ -1311,7 +1311,7 @@ bool LV2Effect::RealtimeProcessStart()
             else
             {
                zix_ring_skip(ring, atom.size);
-               wxLogError(wxT("LV2 sequence buffer overflow"));
+               wxLogError(L"LV2 sequence buffer overflow");
             }
          }
          lv2_atom_forge_pop(&mForge, &seqFrame);
@@ -1319,7 +1319,7 @@ bool LV2Effect::RealtimeProcessStart()
          LV2_ATOM_SEQUENCE_FOREACH(seq, ev)
          {
             LV2_Atom_Object *o = (LV2_Atom_Object *) &ev->body;
-            wxLogDebug(wxT("ev = %lld ev.size %d ev.type %d"), ev->time.frames, ev->body.size, ev->body.type);
+            wxLogDebug(L"ev = %lld ev.size %d ev.type %d", ev->time.frames, ev->body.size, ev->body.type);
          }
 #endif
       }
@@ -1536,8 +1536,8 @@ bool LV2Effect::PopulateUI(ShuttleGui &S)
    }
 
    // Determine if the GUI editor is supposed to be used or not
-   GetConfig(*this, PluginSettings::Shared, wxT("Settings"),
-                          wxT("UseGUI"),
+   GetConfig(*this, PluginSettings::Shared, L"Settings",
+                          L"UseGUI",
                           mUseGUI,
                           true);
 
@@ -1752,11 +1752,11 @@ void LV2Effect::ShowOptions()
    {
       // Reinitialize configuration settings
       int userBlockSize;
-      GetConfig(*this, PluginSettings::Shared, wxT("Settings"),
-         wxT("BufferSize"), userBlockSize, DEFAULT_BLOCKSIZE);
+      GetConfig(*this, PluginSettings::Shared, L"Settings",
+         L"BufferSize", userBlockSize, DEFAULT_BLOCKSIZE);
       mUserBlockSize = std::max(1, userBlockSize);
-      GetConfig(*this, PluginSettings::Shared, wxT("Settings"),
-         wxT("UseLatency"), mUseLatency, true);
+      GetConfig(*this, PluginSettings::Shared, L"Settings",
+         L"UseLatency", mUseLatency, true);
    }
 }
 
@@ -1768,7 +1768,7 @@ bool LV2Effect::LoadParameters(const RegistryPath &group)
 {
    wxString parms;
    if (!GetConfig(*this,
-      PluginSettings::Private, group, wxT("Parameters"), parms, wxEmptyString))
+      PluginSettings::Private, group, L"Parameters", parms, wxEmptyString))
    {
       return false;
    }
@@ -1797,7 +1797,7 @@ bool LV2Effect::SaveParameters(const RegistryPath &group)
    }
 
    return SetConfig(*this,
-      PluginSettings::Private, group, wxT("Parameters"), parms);
+      PluginSettings::Private, group, L"Parameters", parms);
 }
 
 size_t LV2Effect::AddOption(LV2_URID key, uint32_t size, LV2_URID type, const void *value)
@@ -1883,7 +1883,7 @@ bool LV2Effect::CheckFeatures(const LilvNode *subject, const LilvNode *predicate
             {
                if (required)
                {
-                  wxLogError(wxT("%s requires unsupported feature %s"), lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
+                  wxLogError(L"%s requires unsupported feature %s", lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
                   printf(_("%s requires unsupported feature %s\n"), lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
                   break;
                }
@@ -1947,7 +1947,7 @@ bool LV2Effect::CheckOptions(const LilvNode *subject, const LilvNode *predicate,
             {
                if (required)
                {
-                  wxLogError(wxT("%s requires unsupported option %s"), lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
+                  wxLogError(L"%s requires unsupported option %s", lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
                   printf(_("%s requires unsupported option %s\n"), lilv_node_as_string(lilv_plugin_get_uri(mPlug)), uri);
                   break;
                }
@@ -2294,8 +2294,8 @@ bool LV2Effect::BuildPlain()
       w->SetScrollRate(0, 20);
 
       // This fools NVDA into not saying "Panel" when the dialog gets focus
-      w->SetName(wxT("\a"));
-      w->SetLabel(wxT("\a"));
+      w->SetName(L"\a");
+      w->SetLabel(L"\a");
 
       outerSizer->Add(w, 1, wxEXPAND);
 
@@ -2349,7 +2349,7 @@ bool LV2Effect::BuildPlain()
                wxString labelText = port->mName;
                if (!port->mUnits.empty())
                {
-                  labelText += wxT(" (") + port->mUnits + wxT(")");
+                  labelText += L" (" + port->mUnits + L")";
                }
 
                if (port->mTrigger)
@@ -2367,14 +2367,14 @@ bool LV2Effect::BuildPlain()
                   continue;
                }
 
-               wxWindow *item = safenew wxStaticText(w, wxID_ANY, labelText + wxT(":"),
+               wxWindow *item = safenew wxStaticText(w, wxID_ANY, labelText + L":",
                                                      wxDefaultPosition, wxDefaultSize,
                                                      wxALIGN_RIGHT);
                gridSizer->Add(item, 0, wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT);
 
                if (port->mToggle)
                {
-                  wxCheckBox *c = safenew wxCheckBox(w, ID_Toggles + p, wxT(""));
+                  wxCheckBox *c = safenew wxCheckBox(w, ID_Toggles + p, L"");
                   c->SetName(labelText);
                   c->SetValue(port->mVal > 0);
                   gridSizer->Add(c, 0, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
@@ -2424,7 +2424,7 @@ bool LV2Effect::BuildPlain()
                }
                else
                {
-                  wxTextCtrl *t = safenew wxTextCtrl(w, ID_Texts + p, wxT(""));
+                  wxTextCtrl *t = safenew wxTextCtrl(w, ID_Texts + p, L"");
                   t->SetName(labelText);
                   gridSizer->Add(t, 0, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
                   port->mText = t;
@@ -2463,7 +2463,7 @@ bool LV2Effect::BuildPlain()
                      wxString str;
                      if (port->mInteger || port->mSampleRate)
                      {
-                        str.Printf(wxT("%d"), (int) lrintf(port->mLo));
+                        str.Printf(L"%d", (int) lrintf(port->mLo));
                      }
                      else
                      {
@@ -2490,7 +2490,7 @@ bool LV2Effect::BuildPlain()
                      wxString str;
                      if (port->mInteger || port->mSampleRate)
                      {
-                        str.Printf(wxT("%d"), (int) lrintf(port->mHi));
+                        str.Printf(L"%d", (int) lrintf(port->mHi));
                      }
                      else
                      {
@@ -2801,7 +2801,7 @@ void LV2Effect::OnIdle(wxIdleEvent &evt)
             else
             {
                zix_ring_skip(ring, atom->size);
-               wxLogError(wxT("LV2 sequence buffer overflow"));
+               wxLogError(L"LV2 sequence buffer overflow");
             }
          }
          free(atom);
@@ -3025,7 +3025,7 @@ int LV2Effect::LogVPrintf(LV2_URID type, const char *fmt, va_list ap)
 
       wxString text(msg);
 
-      wxLogGeneric(level, wxT("%s: %s"), GetSymbol().Msgid().Translation(), text);
+      wxLogGeneric(level, L"%s: %s", GetSymbol().Msgid().Translation(), text);
 
       free(msg);
    }

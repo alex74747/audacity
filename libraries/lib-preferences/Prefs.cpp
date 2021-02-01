@@ -140,7 +140,7 @@ static void CopyEntry(wxString path, wxConfigBase *src, wxConfigBase *dst, wxStr
    switch(src->GetEntryType(entry)) {
    case wxConfigBase::Type_Unknown:
    case wxConfigBase::Type_String: {
-      wxString value = src->Read(entry, wxT(""));
+      wxString value = src->Read(entry, L"");
       dst->Write(path + entry, value);
       break;
    }
@@ -185,7 +185,7 @@ static void CopyEntriesRecursive(wxString path, wxConfigBase *src, wxConfigBase 
 
    groupKeepGoing = src->GetFirstGroup(groupName, groupIndex);
    while (groupKeepGoing) {
-      wxString subPath = path+groupName+wxT("/");
+      wxString subPath = path+groupName+L"/";
       src->SetPath(subPath);
       CopyEntriesRecursive(subPath, src, dst);
       src->SetPath(path);
@@ -622,7 +622,7 @@ bool EnumLabelSettingBase::WriteInt( int code ) // you flush gPrefs afterward
 
 wxString WarningDialogKey(const wxString &internalDialogName)
 {
-   return wxT("/Warnings/") + internalDialogName;
+   return L"/Warnings/" + internalDialogName;
 }
 
 ByColumns_t ByColumns{};

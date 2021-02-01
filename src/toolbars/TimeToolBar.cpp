@@ -50,7 +50,7 @@ BEGIN_EVENT_TABLE(TimeToolBar, ToolBar)
 END_EVENT_TABLE()
 
 TimeToolBar::TimeToolBar(AudacityProject &project)
-:  ToolBar(project, TimeBarID, XO("Time"), wxT("Time"), true),
+:  ToolBar(project, TimeBarID, XO("Time"), L"Time", true),
    mListener(NULL),
    mAudioTime(NULL)
 {
@@ -383,7 +383,7 @@ namespace {
 AttachedToolBarMenuItem sAttachment
 {
    TimeBarID,
-   wxT("ShowTimeTB"),
+   L"ShowTimeTB",
    /* i18n-hint: Clicking this menu item shows the toolbar
       for viewing actual time of the cursor */
    XXO("&Time Toolbar"),

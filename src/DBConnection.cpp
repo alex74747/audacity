@@ -386,7 +386,7 @@ int DBConnection::ModeConfig(sqlite3 *db, const char *schema, const char *config
 
    // Replace all schema "keywords" with the schema name
    wxString sql = config;
-   sql.Replace(wxT("<schema>"), schema);
+   sql.Replace(L"<schema>", schema);
 
    // Set the configuration
    rc = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
@@ -619,7 +619,7 @@ bool DBConnectionTransactionScopeImpl::TransactionStart(const wxString &name)
    char *errmsg = nullptr;
 
    int rc = sqlite3_exec(mConnection.DB(),
-                         wxT("SAVEPOINT ") + name + wxT(";"),
+                         L"SAVEPOINT " + name + L";",
                          nullptr,
                          nullptr,
                          &errmsg);
@@ -643,7 +643,7 @@ bool DBConnectionTransactionScopeImpl::TransactionCommit(const wxString &name)
    char *errmsg = nullptr;
 
    int rc = sqlite3_exec(mConnection.DB(),
-                         wxT("RELEASE ") + name + wxT(";"),
+                         L"RELEASE " + name + L";",
                          nullptr,
                          nullptr,
                          &errmsg);
@@ -667,7 +667,7 @@ bool DBConnectionTransactionScopeImpl::TransactionRollback(const wxString &name)
    char *errmsg = nullptr;
 
    int rc = sqlite3_exec(mConnection.DB(),
-                         wxT("ROLLBACK TO ") + name + wxT(";"),
+                         L"ROLLBACK TO " + name + L";",
                          nullptr,
                          nullptr,
                          &errmsg);
@@ -694,7 +694,7 @@ bool DBConnectionTransactionScopeImpl::TransactionRollback(const wxString &name)
 
 ConnectionPtr::~ConnectionPtr()
 {
-   wxASSERT_MSG(!mpConnection, wxT("Project file was not closed at shutdown"));
+   wxASSERT_MSG(!mpConnection, L"Project file was not closed at shutdown");
    if (mpConnection)
    {
       wxLogMessage("Project file was not closed at connection destruction");

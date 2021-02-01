@@ -57,7 +57,7 @@ UnwritableLocationErrorDialog::UnwritableLocationErrorDialog(wxWindow* parent, c
 
             preferencesMessage.FormatLink(
                /* i18n-hint: Hyperlink title that opens Preferences dialog on Directories page. */
-               wxT("%s"), XO("Preferences > Directories"), [parent, this]() {
+               L"%s", XO("Preferences > Directories"), [parent, this]() {
                   EndModal(wxID_OK);
 
                   GlobalPrefsDialog dialog(parent, nullptr);

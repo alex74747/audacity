@@ -73,7 +73,7 @@ END_EVENT_TABLE()
 
 //Standard constructor
 ToolsToolBar::ToolsToolBar( AudacityProject &project )
-: ToolBar(project, ToolsBarID, XO("Tools"), wxT("Tools"))
+: ToolBar(project, ToolsBarID, XO("Tools"), L"Tools")
 {
    using namespace ToolCodes;
 
@@ -84,7 +84,7 @@ ToolsToolBar::ToolsToolBar( AudacityProject &project )
    wxASSERT( drawTool     == drawTool     - firstTool );
    wxASSERT( multiTool    == multiTool    - firstTool );
    bool multiToolActive = false;
-   gPrefs->Read(wxT("/GUI/ToolBars/Tools/MultiToolActive"), &multiToolActive);
+   gPrefs->Read(L"/GUI/ToolBars/Tools/MultiToolActive", &multiToolActive);
 
    if (multiToolActive)
       mCurrentTool = multiTool;
@@ -146,11 +146,11 @@ void ToolsToolBar::RegenerateTooltips()
       CommandID commandName;
       TranslatableString untranslatedLabel;
    } table[] = {
-      { selectTool,   wxT("SelectTool"),    XO("Selection Tool")  },
-      { envelopeTool, wxT("EnvelopeTool"),  XO("Envelope Tool")   },
-      { zoomTool,     wxT("ZoomTool"),      XO("Zoom Tool")       },
-      { drawTool,     wxT("DrawTool"),      XO("Draw Tool")       },
-      { multiTool,    wxT("MultiTool"),     XO("Multi-Tool")      },
+      { selectTool,   L"SelectTool",    XO("Selection Tool")  },
+      { envelopeTool, L"EnvelopeTool",  XO("Envelope Tool")   },
+      { zoomTool,     L"ZoomTool",      XO("Zoom Tool")       },
+      { drawTool,     L"DrawTool",      XO("Draw Tool")       },
+      { multiTool,    L"MultiTool",     XO("Multi-Tool")      },
    };
 
    for (const auto &entry : table) {
@@ -242,7 +242,7 @@ void ToolsToolBar::DoToolChanged()
       else
          mTool[i]->PopUp();
 
-   gPrefs->Write(wxT("/GUI/ToolBars/Tools/MultiToolActive"),
+   gPrefs->Write(L"/GUI/ToolBars/Tools/MultiToolActive",
                  mTool[multiTool]->IsDown());
    gPrefs->Flush();
 }
@@ -262,7 +262,7 @@ namespace {
 AttachedToolBarMenuItem sAttachment{
    /* i18n-hint: Clicking this menu item shows a toolbar
       that has some tools in it */
-   ToolsBarID, wxT("ShowToolsTB"), XXO("T&ools Toolbar"),
+   ToolsBarID, L"ShowToolsTB", XXO("T&ools Toolbar"),
 };
 }
 
@@ -359,21 +359,21 @@ BaseItemSharedPtr ExtraToolsMenu()
 {
    static BaseItemSharedPtr menu{
    ( FinderScope{ findCommandHandler },
-   Menu( wxT("Tools"), XXO("T&ools"),
-      Command( wxT("SelectTool"), XXO("&Selection Tool"), FN(OnSelectTool),
-         AlwaysEnabledFlag, wxT("F1") ),
-      Command( wxT("EnvelopeTool"), XXO("&Envelope Tool"),
-         FN(OnEnvelopeTool), AlwaysEnabledFlag, wxT("F2") ),
-      Command( wxT("DrawTool"), XXO("&Draw Tool"), FN(OnDrawTool),
-         AlwaysEnabledFlag, wxT("F3") ),
-      Command( wxT("ZoomTool"), XXO("&Zoom Tool"), FN(OnZoomTool),
-         AlwaysEnabledFlag, wxT("F4") ),
-      Command( wxT("MultiTool"), XXO("&Multi Tool"), FN(OnMultiTool),
-         AlwaysEnabledFlag, wxT("F6") ),
-      Command( wxT("PrevTool"), XXO("&Previous Tool"), FN(OnPrevTool),
-         AlwaysEnabledFlag, wxT("A") ),
-      Command( wxT("NextTool"), XXO("&Next Tool"), FN(OnNextTool),
-         AlwaysEnabledFlag, wxT("D") )
+   Menu( L"Tools", XXO("T&ools"),
+      Command( L"SelectTool", XXO("&Selection Tool"), FN(OnSelectTool),
+         AlwaysEnabledFlag, L"F1" ),
+      Command( L"EnvelopeTool", XXO("&Envelope Tool"),
+         FN(OnEnvelopeTool), AlwaysEnabledFlag, L"F2" ),
+      Command( L"DrawTool", XXO("&Draw Tool"), FN(OnDrawTool),
+         AlwaysEnabledFlag, L"F3" ),
+      Command( L"ZoomTool", XXO("&Zoom Tool"), FN(OnZoomTool),
+         AlwaysEnabledFlag, L"F4" ),
+      Command( L"MultiTool", XXO("&Multi Tool"), FN(OnMultiTool),
+         AlwaysEnabledFlag, L"F6" ),
+      Command( L"PrevTool", XXO("&Previous Tool"), FN(OnPrevTool),
+         AlwaysEnabledFlag, L"A" ),
+      Command( L"NextTool", XXO("&Next Tool"), FN(OnNextTool),
+         AlwaysEnabledFlag, L"D" )
    ) ) };
    return menu;
 }
@@ -381,7 +381,7 @@ BaseItemSharedPtr ExtraToolsMenu()
 #undef FN
 
 AttachedItem sAttachment2{
-   wxT("Optional/Extra/Part1"),
+   L"Optional/Extra/Part1",
    Shared( ExtraToolsMenu() )
 };
 }

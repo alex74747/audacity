@@ -73,17 +73,17 @@ ExportFLACOptions::~ExportFLACOptions()
 }
 
 ChoiceSetting FLACBitDepth{
-   wxT("/FileFormats/FLACBitDepth"),
+   L"/FileFormats/FLACBitDepth",
    {
       ByColumns,
       { XO("16 bit") , XO("24 bit") , },
-      { wxT("16") ,    wxT("24") , }
+      { L"16" ,    L"24" , }
    },
    0 // "16",
 };
 
 ChoiceSetting FLACLevel{
-   wxT("/FileFormats/FLACLevel"),
+   L"/FileFormats/FLACLevel",
    {
       ByColumns,
       {
@@ -98,15 +98,15 @@ ChoiceSetting FLACLevel{
          XO("8 (best)") ,
       },
       {
-         wxT("0") ,
-         wxT("1") ,
-         wxT("2") ,
-         wxT("3") ,
-         wxT("4") ,
-         wxT("5") ,
-         wxT("6") ,
-         wxT("7") ,
-         wxT("8") ,
+         L"0" ,
+         L"1" ,
+         L"2" ,
+         L"3" ,
+         L"4" ,
+         L"5" ,
+         L"6" ,
+         L"7" ,
+         L"8" ,
       }
    },
    5 //"5"
@@ -233,8 +233,8 @@ ExportFLAC::ExportFLAC()
 :  ExportPlugin()
 {
    AddFormat();
-   SetFormat(wxT("FLAC"),0);
-   AddExtension(wxT("flac"),0);
+   SetFormat(L"FLAC",0);
+   AddExtension(L"flac",0);
    SetMaxChannels(FLAC__MAX_CHANNELS,0);
    SetCanMetaData(true,0);
    SetDescription(XO("FLAC Files"),0);
@@ -291,7 +291,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
    } );
 
    sampleFormat format;
-   if (bitDepthPref == wxT("24")) {
+   if (bitDepthPref == L"24") {
       format = int24Sample;
       success = success && encoder.set_bits_per_sample(24);
    } else { //convert float to 16 bits
@@ -337,7 +337,7 @@ ProgressResult ExportFLAC::Export(AudacityProject *project,
 #else
    wxFFile f;     // will be closed when it goes out of scope
    const auto path = fName.GetFullPath();
-   if (!f.Open(path, wxT("w+b"))) {
+   if (!f.Open(path, L"w+b")) {
       AudacityMessageBox( XO("FLAC export couldn't open %s").Format( path ) );
       return ProgressResult::Cancelled;
    }
@@ -453,12 +453,12 @@ bool ExportFLAC::GetMetadata(AudacityProject *project, const Tags *tags)
       n = pair.first;
       const auto &v = pair.second;
       if (n == TAG_YEAR) {
-         n = wxT("DATE");
+         n = L"DATE";
       }
       else if (n == TAG_COMMENTS) {
          // Some apps like Foobar use COMMENT and some like Windows use DESCRIPTION,
          // so add both to try and make everyone happy.
-         n = wxT("COMMENT");
+         n = L"COMMENT";
          FLAC::Metadata::VorbisComment::Entry entry(n.mb_str(wxConvUTF8),
                                                     v.mb_str(wxConvUTF8));
          if (! ::FLAC__metadata_object_vorbiscomment_append_comment(mMetadata.get(),
@@ -466,7 +466,7 @@ bool ExportFLAC::GetMetadata(AudacityProject *project, const Tags *tags)
                                                               true) ) {
             return false;
          }
-         n = wxT("DESCRIPTION");
+         n = L"DESCRIPTION";
       }
       FLAC::Metadata::VorbisComment::Entry entry(n.mb_str(wxConvUTF8),
                                                  v.mb_str(wxConvUTF8));

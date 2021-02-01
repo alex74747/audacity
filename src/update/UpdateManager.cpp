@@ -32,7 +32,7 @@
 static const char* prefsUpdateScheduledTime = "/Update/UpdateScheduledTime";
 
 static BoolSetting
-   prefUpdatesNoticeShown(wxT("/Update/UpdateNoticeShown"), false);
+   prefUpdatesNoticeShown(L"/Update/UpdateNoticeShown", false);
 
 using Clock = std::chrono::system_clock;
 using TimePoint = Clock::time_point;

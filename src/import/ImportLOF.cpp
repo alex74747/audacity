@@ -98,7 +98,7 @@
 #define DESC XO("List of Files in basic text format")
 
 static const auto exts = {
-   wxT("lof")
+   L"lof"
 };
 
 class LOFImportPlugin final : public ImportPlugin
@@ -111,7 +111,7 @@ public:
 
    ~LOFImportPlugin() { }
 
-   wxString GetPluginStringID() override { return wxT("lof"); }
+   wxString GetPluginStringID() override { return L"lof"; }
    TranslatableString GetPluginFormatDescription() override;
    std::unique_ptr<ImportFileHandle> Open(
       const FilePath &Filename, AudacityProject *pProject) override;
@@ -348,16 +348,16 @@ static AudacityProject *DoImportMIDIProject(
  */
 void LOFImportFileHandle::lofOpenFiles(wxString* ln)
 {
-   wxStringTokenizer tok(*ln, wxT(" "));
-   wxStringTokenizer temptok1(*ln, wxT("\""));
-   wxStringTokenizer temptok2(*ln, wxT(" "));
+   wxStringTokenizer tok(*ln, L" ");
+   wxStringTokenizer temptok1(*ln, L"\"");
+   wxStringTokenizer temptok2(*ln, L" ");
    int tokenplace = 0;
 
    wxString targetfile;
    wxString tokenholder = tok.GetNextToken();
 
 
-   if (tokenholder.IsSameAs(wxT("window"), false))
+   if (tokenholder.IsSameAs(L"window", false))
    {
       // set any duration/offset factors for last window, as all files were called
       doDurationAndScrollOffset();
@@ -372,7 +372,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       {
          tokenholder = tok.GetNextToken();
 
-         if (tokenholder.IsSameAs(wxT("offset"), false))
+         if (tokenholder.IsSameAs(L"offset", false))
          {
             if (tok.HasMoreTokens())
                tokenholder = tok.GetNextToken();
@@ -395,7 +395,7 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
                tokenholder = tok.GetNextToken();
          }
 
-         if (tokenholder.IsSameAs(wxT("duration"), false))
+         if (tokenholder.IsSameAs(L"duration", false))
          {
             if (tok.HasMoreTokens())
                tokenholder = tok.GetNextToken();
@@ -415,15 +415,15 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
             }
          }     // End if statement
 
-         if (tokenholder == wxT("#"))
+         if (tokenholder == L"#")
          {
             // # indicates comments; ignore line
-            tok = wxStringTokenizer(wxT(""), wxT(" "));
+            tok = wxStringTokenizer(L"", L" ");
          }
       }     // End while loop
    }        // End if statement handling "window" lines
 
-   else if (tokenholder.IsSameAs(wxT("file"), false))
+   else if (tokenholder.IsSameAs(L"file", false))
    {
       nFilesInGroup++;
       // To identify filename and open it
@@ -471,13 +471,13 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       {
          tokenholder = tok.GetNextToken();
 
-         if (tokenholder == wxT("#"))
+         if (tokenholder == L"#")
          {
             // # indicates comments; ignore line
-            tok = wxStringTokenizer(wxT(""), wxT(" "));
+            tok = wxStringTokenizer(L"", L" ");
          }
 
-         if (tokenholder.IsSameAs(wxT("offset"), false))
+         if (tokenholder.IsSameAs(L"offset", false))
          {
             if (tok.HasMoreTokens())
                tokenholder = tok.GetNextToken();
@@ -499,8 +499,8 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
                if (t == NULL)
                   return;
 #ifdef USE_MIDI
-               if (targetfile.AfterLast(L'.').IsSameAs(wxT("mid"), false) ||
-                   targetfile.AfterLast(L'.').IsSameAs(wxT("midi"), false))
+               if (targetfile.AfterLast(L'.').IsSameAs(L"mid", false) ||
+                   targetfile.AfterLast(L'.').IsSameAs(L"midi", false))
                {
                   AudacityMessageBox(
                      XO("MIDI tracks cannot be offset individually, only audio files can be."),
@@ -530,10 +530,10 @@ void LOFImportFileHandle::lofOpenFiles(wxString* ln)
       }     // End if statement (more tokens after file name)
    }     // End if statement "file" lines
 
-   else if (tokenholder == wxT("#"))
+   else if (tokenholder == L"#")
    {
       // # indicates comments; ignore line
-      tok = wxStringTokenizer(wxT(""), wxT(" "));
+      tok = wxStringTokenizer(L"", L" ");
    }
    else
    {

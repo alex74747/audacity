@@ -283,7 +283,7 @@ bool WaveTrackAffordanceControls::StartEditClipName(AudacityProject* project)
         auto clip = lock.get();
 
         bool useDialog{ false };
-        gPrefs->Read(wxT("/GUI/DialogForNameNewLabel"), &useDialog, false);
+        gPrefs->Read(L"/GUI/DialogForNameNewLabel", &useDialog, false);
 
         if (useDialog)
         {
@@ -592,11 +592,11 @@ using namespace MenuTable;
 
 // Register menu items
 
-AttachedItem sAttachment{ wxT("Edit/Other"),
+AttachedItem sAttachment{ L"Edit/Other",
    ( FinderScope{ findCommandHandler },
       Command( L"RenameClip", XXO("Rename Clip..."),
          &Handler::OnEditClipName, SomeClipIsSelectedFlag(),
-         wxT("Ctrl+F2") ) )
+         L"Ctrl+F2" ) )
 };
 
 }

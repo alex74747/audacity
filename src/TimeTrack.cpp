@@ -305,19 +305,19 @@ XMLTagHandler *TimeTrack::HandleXMLChild(const std::string_view& tag)
 void TimeTrack::WriteXML(XMLWriter &xmlFile) const
 // may throw
 {
-   xmlFile.StartTag(wxT("timetrack"));
+   xmlFile.StartTag(L"timetrack");
    this->Track::WriteCommonXMLAttributes( xmlFile );
 
-   //xmlFile.WriteAttr(wxT("channel"), mChannel);
-   //xmlFile.WriteAttr(wxT("offset"), mOffset, 8);
-   xmlFile.WriteAttr(wxT("rangelower"), GetRangeLower(), 12);
-   xmlFile.WriteAttr(wxT("rangeupper"), GetRangeUpper(), 12);
-   xmlFile.WriteAttr(wxT("displaylog"), GetDisplayLog());
-   xmlFile.WriteAttr(wxT("interpolatelog"), GetInterpolateLog());
+   //xmlFile.WriteAttr(L"channel", mChannel);
+   //xmlFile.WriteAttr(L"offset", mOffset, 8);
+   xmlFile.WriteAttr(L"rangelower", GetRangeLower(), 12);
+   xmlFile.WriteAttr(L"rangeupper", GetRangeUpper(), 12);
+   xmlFile.WriteAttr(L"displaylog", GetDisplayLog());
+   xmlFile.WriteAttr(L"interpolatelog", GetInterpolateLog());
 
    mEnvelope->WriteXML(xmlFile);
 
-   xmlFile.EndTag(wxT("timetrack"));
+   xmlFile.EndTag(L"timetrack");
 }
 
 void TimeTrack::testMe()

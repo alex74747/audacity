@@ -205,13 +205,13 @@ const EnumValueSymbols &SpectrogramSettings::GetColorSchemeNames()
    static const EnumValueSymbols result{
       // Keep in correspondence with enum SpectrogramSettings::ColorScheme:
       /* i18n-hint: New color scheme for spectrograms */
-      { wxT("SpecColorNew"),     XC("Color (default)",   "spectrum prefs") },
+      { L"SpecColorNew",     XC("Color (default)",   "spectrum prefs") },
       /* i18n-hint: Classic color scheme(from theme) for spectrograms */
-      { wxT("SpecColorTheme"),   XC("Color (classic)",   "spectrum prefs") },
+      { L"SpecColorTheme",   XC("Color (classic)",   "spectrum prefs") },
       /* i18n-hint: Grayscale color scheme for spectrograms */
-      { wxT("SpecGrayscale"),    XC("Grayscale",         "spectrum prefs") },
+      { L"SpecGrayscale",    XC("Grayscale",         "spectrum prefs") },
       /* i18n-hint: Inverse grayscale color scheme for spectrograms */
-      { wxT("SpecInvGrayscale"), XC("Inverse grayscale", "spectrum prefs") },
+      { L"SpecInvGrayscale", XC("Inverse grayscale", "spectrum prefs") },
    };
 
    wxASSERT(csNumColorScheme == result.size());
@@ -225,7 +225,7 @@ void SpectrogramSettings::ColorSchemeEnumSetting::Migrate(wxString &value)
 {
    // Migrate old grayscale option to Color scheme choice
    bool isGrayscale = SpectrumGrayscale.Read();
-   if (isGrayscale && !gPrefs->Read(wxT("/Spectrum/ColorScheme"), &value)) {
+   if (isGrayscale && !gPrefs->Read(L"/Spectrum/ColorScheme", &value)) {
       value = GetColorSchemeNames().at(csGrayscale).Internal();
       Write(value);
       gPrefs->Flush();
@@ -233,7 +233,7 @@ void SpectrogramSettings::ColorSchemeEnumSetting::Migrate(wxString &value)
 }
 
 SpectrogramSettings::ColorSchemeEnumSetting SpectrogramSettings::colorSchemeSetting{
-   wxT("/Spectrum/ColorScheme"),
+   L"/Spectrum/ColorScheme",
    GetColorSchemeNames(),
    csColorNew, // default to Color(New)
    { csColorNew, csColorTheme, csGrayscale, csInvGrayscale },
@@ -374,8 +374,8 @@ void SpectrogramSettings::SavePrefs()
    SpectrumMaxFreq.Write(maxFreq);
 
    // Nothing wrote these.  They only varied from the linear scale bounds in-session. -- PRL
-   // gPrefs->Write(wxT("/SpectrumLog/MaxFreq"), logMinFreq);
-   // gPrefs->Write(wxT("/SpectrumLog/MinFreq"), logMaxFreq);
+   // gPrefs->Write(L"/SpectrumLog/MaxFreq", logMinFreq);
+   // gPrefs->Write(L"/SpectrumLog/MinFreq", logMaxFreq);
 
    SpectrumRange.Write(range);
    SpectrumGain.Write(gain);

@@ -87,7 +87,7 @@ TranslatableString GetFFmpegVersion()
    {
       return Verbatim(
          wxString::Format(
-            wxT("F(%d.%d.%d),C(%d.%d.%d),U(%d.%d.%d)"),
+            L"F(%d.%d.%d),C(%d.%d.%d),U(%d.%d.%d)",
             ffmpeg->AVFormatVersion.Major, ffmpeg->AVFormatVersion.Minor, ffmpeg->AVFormatVersion.Micro,
             ffmpeg->AVCodecVersion.Major, ffmpeg->AVCodecVersion.Minor, ffmpeg->AVCodecVersion.Micro,
             ffmpeg->AVUtilVersion.Major, ffmpeg->AVUtilVersion.Minor, ffmpeg->AVUtilVersion.Micro
@@ -181,11 +181,11 @@ public:
    {
       static const FileNames::FileTypes types = {
 #   if defined(__WXMSW__)
-         { XO("Only avformat.dll"), { wxT("avformat-*.dll") } },
+         { XO("Only avformat.dll"), { L"avformat-*.dll" } },
 #   elif defined(__WXMAC__)
-         { XO("Only ffmpeg.*.dylib"), { wxT("ffmpeg.*.dylib"), wxT("libavformat.*.dylib") } },
+         { XO("Only ffmpeg.*.dylib"), { L"ffmpeg.*.dylib", L"libavformat.*.dylib" } },
 #   else
-         { XO("Only libavformat.so"), { wxT("libavformat.so.*") } },
+         { XO("Only libavformat.so"), { L"libavformat.so.*" } },
 #   endif
          FileNames::DynamicLibraries,
          FileNames::AllFiles
@@ -203,7 +203,7 @@ public:
          question,
          mFullPath.GetPath(),
          mFullPath.GetFullName(),
-         wxT(""),
+         L"",
          types,
          wxFD_OPEN | wxRESIZE_BORDER,
          this);
@@ -312,14 +312,14 @@ bool FindFFmpegLibs(wxWindow* parent)
    wxString path;
 
 #if defined(__WXMSW__)
-   const wxString name = wxT("avformat.dll");
+   const wxString name = L"avformat.dll";
 #elif defined(__WXMAC__)
-   const wxString name = wxT("ffmpeg.64bit.dylib");
+   const wxString name = L"ffmpeg.64bit.dylib";
 #else
-   const wxString name = wxT("libavformat.so");
+   const wxString name = L"libavformat.so";
 #endif
 
-   wxLogMessage(wxT("Looking for FFmpeg libraries..."));
+   wxLogMessage(L"Looking for FFmpeg libraries...");
 
    auto searchPaths = FFmpegFunctions::GetSearchPaths(false);
 
@@ -329,7 +329,7 @@ bool FindFFmpegLibs(wxWindow* parent)
    FindFFmpegDialog fd(parent, path, name);
 
    if (fd.ShowModal() == wxID_CANCEL) {
-      wxLogMessage(wxT("User canceled the dialog. Failed to find FFmpeg libraries."));
+      wxLogMessage(L"User canceled the dialog. Failed to find FFmpeg libraries.");
       return false;
    }
 
@@ -340,7 +340,7 @@ bool FindFFmpegLibs(wxWindow* parent)
    if (fileName.FileExists())
       path = fileName.GetPath();
 
-   wxLogMessage(wxT("User-specified path = '%s'"), path);
+   wxLogMessage(L"User-specified path = '%s'", path);
 
    SettingTransaction transaction;
    AVFormatPath.Write(path);
@@ -348,13 +348,13 @@ bool FindFFmpegLibs(wxWindow* parent)
    // Try to load FFmpeg from the user provided path
    if (!FFmpegFunctions::Load(true))
    {
-      wxLogError(wxT("User-specified path does not contain FFmpeg libraries."));
+      wxLogError(L"User-specified path does not contain FFmpeg libraries.");
       return false;
    }
 
    transaction.Commit();
 
-   wxLogMessage(wxT("User-specified FFmpeg file exists. Success."));
+   wxLogMessage(L"User-specified FFmpeg file exists. Success.");
 
    return true;
 }

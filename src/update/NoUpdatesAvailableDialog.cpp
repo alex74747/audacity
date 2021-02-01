@@ -57,7 +57,7 @@ NoUpdatesAvailableDialog::NoUpdatesAvailableDialog(wxWindow* parent)
 
             preferencesMessage.FormatLink(
                /* i18n-hint: Hyperlink title that opens Preferences dialog on Application page and is substituted into "... you can find it in %s." string. */
-               wxT("%s"), XO("Preferences > Application"), [parent, this]() {
+               L"%s", XO("Preferences > Application"), [parent, this]() {
                   EndModal(wxID_OK);
 
                   GlobalPrefsDialog dialog(parent, nullptr);

@@ -339,18 +339,18 @@ void Envelope::WriteXML(XMLWriter &xmlFile) const
 {
    unsigned int ctrlPt;
 
-   xmlFile.StartTag(wxT("envelope"));
-   xmlFile.WriteAttr(wxT("numpoints"), mEnv.size());
+   xmlFile.StartTag(L"envelope");
+   xmlFile.WriteAttr(L"numpoints", mEnv.size());
 
    for (ctrlPt = 0; ctrlPt < mEnv.size(); ctrlPt++) {
       const EnvPoint &point = mEnv[ctrlPt];
-      xmlFile.StartTag(wxT("controlpoint"));
-      xmlFile.WriteAttr(wxT("t"), point.GetT(), 12);
-      xmlFile.WriteAttr(wxT("val"), point.GetVal(), 12);
-      xmlFile.EndTag(wxT("controlpoint"));
+      xmlFile.StartTag(L"controlpoint");
+      xmlFile.WriteAttr(L"t", point.GetT(), 12);
+      xmlFile.WriteAttr(L"val", point.GetVal(), 12);
+      xmlFile.EndTag(L"controlpoint");
    }
 
-   xmlFile.EndTag(wxT("envelope"));
+   xmlFile.EndTag(L"envelope");
 }
 
 void Envelope::Delete( int point )
@@ -727,13 +727,13 @@ int Envelope::InsertOrReplaceRelative(double when, double value)
    if(when > mTrackLen + 0.0000001)
    {
       wxString msg;
-      msg = wxString::Format(wxT("when %.20f mTrackLen %.20f diff %.20f"), when, mTrackLen, when-mTrackLen);
+      msg = wxString::Format(L"when %.20f mTrackLen %.20f diff %.20f", when, mTrackLen, when-mTrackLen);
       wxASSERT_MSG(when <= (mTrackLen), msg);
    }
    if(when < 0)
    {
       wxString msg;
-      msg = wxString::Format(wxT("when %.20f mTrackLen %.20f"), when, mTrackLen);
+      msg = wxString::Format(L"when %.20f mTrackLen %.20f", when, mTrackLen);
       wxASSERT_MSG(when >= 0, msg);
    }
 #endif

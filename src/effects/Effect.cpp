@@ -55,10 +55,10 @@ static const int kPlayID = 20102;
 static const int kRewindID = 20103;
 static const int kFFwdID = 20104;
 
-const wxString Effect::kUserPresetIdent = wxT("User Preset:");
-const wxString Effect::kFactoryPresetIdent = wxT("Factory Preset:");
-const wxString Effect::kCurrentSettingsIdent = wxT("<Current Settings>");
-const wxString Effect::kFactoryDefaultsIdent = wxT("<Factory Defaults>");
+const wxString Effect::kUserPresetIdent = L"User Preset:";
+const wxString Effect::kFactoryPresetIdent = L"Factory Preset:";
+const wxString Effect::kCurrentSettingsIdent = L"<Current Settings>";
+const wxString Effect::kFactoryDefaultsIdent = L"<Factory Defaults>";
 
 using t2bHash = std::unordered_map< void*, bool >;
 
@@ -176,7 +176,7 @@ EffectFamilySymbol Effect::GetFamily()
 
    // Unusually, the internal and visible strings differ for the built-in
    // effect family.
-   return { wxT("Audacity"), XO("Built-in") };
+   return { L"Audacity", XO("Built-in") };
 }
 
 bool Effect::IsInteractive()
@@ -536,7 +536,7 @@ bool Effect::LoadUserPreset(const RegistryPath & name)
 
    wxString parms;
    if (!GetConfig(GetDefinition(), PluginSettings::Private,
-      name, wxT("Parameters"), parms))
+      name, L"Parameters", parms))
    {
       return false;
    }
@@ -556,7 +556,7 @@ bool Effect::SaveUserPreset(const RegistryPath & name)
       return false;
 
    return SetConfig(GetDefinition(), PluginSettings::Private,
-      name, wxT("Parameters"), parms);
+      name, L"Parameters", parms);
 }
 
 RegistryPaths Effect::GetFactoryPresets()
@@ -640,7 +640,7 @@ bool Effect::CanExportPresets()
 static const FileNames::FileTypes &PresetTypes()
 {
    static const FileNames::FileTypes result {
-      { XO("Presets"), { wxT("txt") }, true },
+      { XO("Presets"), { L"txt" }, true },
       FileNames::AllFiles
    };
    return result;
@@ -666,7 +666,7 @@ void Effect::ExportPresets()
    }
 
    // Create/Open the file
-   wxFFile f(path, wxT("wb"));
+   wxFFile f(path, L"wb");
    if (!f.IsOpened())
    {
       AudacityMessageBox(
@@ -798,7 +798,7 @@ void Effect::SetDuration(double seconds)
    if (GetType() == EffectTypeGenerate)
    {
       SetConfig(GetDefinition(), PluginSettings::Private,
-         GetCurrentSettingsGroup(), wxT("LastUsedDuration"), seconds);
+         GetCurrentSettingsGroup(), L"LastUsedDuration", seconds);
    }
 
    mDuration = seconds;
@@ -808,7 +808,7 @@ void Effect::SetDuration(double seconds)
 
 RegistryPath Effect::GetUserPresetsGroup(const RegistryPath & name)
 {
-   RegistryPath group = wxT("UserPresets");
+   RegistryPath group = L"UserPresets";
    if (!name.empty())
    {
       group += wxCONFIG_PATH_SEPARATOR + name;
@@ -819,17 +819,17 @@ RegistryPath Effect::GetUserPresetsGroup(const RegistryPath & name)
 
 RegistryPath Effect::GetCurrentSettingsGroup()
 {
-   return wxT("CurrentSettings");
+   return L"CurrentSettings";
 }
 
 RegistryPath Effect::GetFactoryDefaultsGroup()
 {
-   return wxT("FactoryDefaults");
+   return L"FactoryDefaults";
 }
 
 wxString Effect::GetSavedStateGroup()
 {
-   return wxT("SavedState");
+   return L"SavedState";
 }
 
 // Effect implementation
@@ -852,12 +852,12 @@ bool Effect::Startup(EffectUIClientInterface *client)
 
    bool haveDefaults;
    GetConfig(GetDefinition(), PluginSettings::Private, GetFactoryDefaultsGroup(),
-      wxT("Initialized"), haveDefaults, false);
+      L"Initialized", haveDefaults, false);
    if (!haveDefaults)
    {
       SaveUserPreset(GetFactoryDefaultsGroup());
       SetConfig(GetDefinition(), PluginSettings::Private, GetFactoryDefaultsGroup(),
-         wxT("Initialized"), true);
+         L"Initialized", true);
    }
    LoadUserPreset(GetCurrentSettingsGroup());
 
@@ -1007,7 +1007,7 @@ bool Effect::DoEffect(double projectRate,
    {
       GetConfig(GetDefinition(), PluginSettings::Private,
          GetCurrentSettingsGroup(),
-         wxT("LastUsedDuration"), mDuration, GetDefaultDuration());
+         L"LastUsedDuration", mDuration, GetDefaultDuration());
    }
 
    WaveTrack *newTrack{};
@@ -1059,9 +1059,9 @@ bool Effect::DoEffect(double projectRate,
    mF1 = selectedRegion.f1();
    wxArrayString Names;
    if( mF0 != SelectedRegion::UndefinedFrequency )
-      Names.push_back(wxT("control-f0"));
+      Names.push_back(L"control-f0");
    if( mF1 != SelectedRegion::UndefinedFrequency )
-      Names.push_back(wxT("control-f1"));
+      Names.push_back(L"control-f1");
    SetPresetParameters( &Names, NULL );
 
 #endif
@@ -1374,7 +1374,7 @@ bool Effect::ProcessTrack(int count,
    if (isGenerator)
    {
       if (mIsPreview) {
-         gPrefs->Read(wxT("/AudioIO/EffectsPreviewLen"), &genDur, 6.0);
+         gPrefs->Read(L"/AudioIO/EffectsPreviewLen", &genDur, 6.0);
          genDur = wxMin(mDuration, CalcPreviewInputLength(genDur));
       }
       else {
@@ -2069,7 +2069,7 @@ void Effect::Preview(bool dryOnly)
 
    // Mix a few seconds of audio from all of the tracks
    double previewLen;
-   gPrefs->Read(wxT("/AudioIO/EffectsPreviewLen"), &previewLen, 6.0);
+   gPrefs->Read(L"/AudioIO/EffectsPreviewLen", &previewLen, 6.0);
 
    const double rate = mProjectRate;
 
@@ -2229,7 +2229,7 @@ void Effect::Preview(bool dryOnly)
          ShowErrorDialog(
             wxWidgetsWindowPlacement{ FocusDialog }, XO("Error"),
             XO("Error opening sound device.\nTry changing the audio host, playback device and the project sample rate."),
-            wxT("Error_opening_sound_device"),
+            L"Error_opening_sound_device",
             ErrorDialogOptions{ ErrorDialogType::ModalErrorReport } );
       }
    }

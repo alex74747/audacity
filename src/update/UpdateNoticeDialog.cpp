@@ -81,7 +81,7 @@ UpdateNoticeDialog::UpdateNoticeDialog(wxWindow* parent)
             
             privacyPolicy.FormatLink(
                /* i18n-hint: Title of hyperlink to the privacy policy. This is an object of "See". */
-               wxT("%s"), XO("our Privacy Policy"),
+               L"%s", XO("our Privacy Policy"),
                "https://www.audacityteam.org/about/desktop-privacy-notice/");
 
             privacyPolicy.Populate(S);
@@ -90,7 +90,7 @@ UpdateNoticeDialog::UpdateNoticeDialog(wxWindow* parent)
             
             preferencesMessage.FormatLink(
                // i18n-hint: a page in the Preferences dialog; use same name
-               wxT("%s"), XO("Preferences > Application"), [this]() {
+               L"%s", XO("Preferences > Application"), [this]() {
                   GlobalPrefsDialog dialog(this /* parent */, nullptr);
 
                   dialog.SelectPageByName(XO("Application").Translation());

@@ -77,7 +77,7 @@ void AccessibleLinksFormatter::Populate(ShuttleGui& S) const
 #ifdef __WXGTK__
    // Non empty label is required, as wxHyperlinkCtrl would assert otherwise
    std::unique_ptr<wxHyperlinkCtrl> tempHyperlink
-       = std::make_unique<wxHyperlinkCtrl>(S.GetParent(), wxID_ANY, wxT("temp"), wxString());
+       = std::make_unique<wxHyperlinkCtrl>(S.GetParent(), wxID_ANY, L"temp", wxString());
 
    const wxColour hyperlinkColour = tempHyperlink->GetNormalColour();
 

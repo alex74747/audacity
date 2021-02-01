@@ -293,7 +293,7 @@ EndSection();
 BeginSection( "Zoom" );
    // Accelerators only if zooming enabled.
    bool bVZoom;
-   gPrefs->Read(wxT("/GUI/VerticalZooming"), &bVZoom, false);
+   gPrefs->Read(L"/GUI/VerticalZooming", &bVZoom, false);
 
    AppendItem( "Reset", OnZoomResetID,         XXO("Zoom Reset"),
               POPUP_MENU_FN( OnZoomReset ) );
