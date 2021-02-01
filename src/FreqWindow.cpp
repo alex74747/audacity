@@ -265,7 +265,7 @@ void FrequencyPlotDialog::Populate()
 
    long size;
    // reinterpret one of the verbatim strings above as a number
-   sizeChoices[mSize].MSGID().GET().ToLong(&size);
+   wxString{sizeChoices[mSize].MSGID().GET()}.ToLong(&size);
    mWindowSize = size;
 
    gPrefs->Read(ENV_DB_KEY, &dBRange, ENV_DB_RANGE);

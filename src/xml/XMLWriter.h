@@ -34,7 +34,7 @@ class AUDACITY_DLL_API XMLWriter /* not final */ {
    void WriteAttr(const wxString &name, const Identifier &value)
       // using GET once here, permitting Identifiers in XML,
       // so no need for it at each WriteAttr call
-      { WriteAttr( name, value.GET() ); }
+      { WriteAttr( name, wxString{value.GET()} ); }
 
    virtual void WriteAttr(const wxString &name, const wxString &value);
    virtual void WriteAttr(const wxString &name, const wxChar *value);

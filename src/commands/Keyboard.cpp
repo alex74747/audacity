@@ -58,7 +58,7 @@ wxString NormalizedKeyString::Display(bool usesSpecialChars) const
    (void)usesSpecialChars;//compiler food
    // using GET to manipulate key string as needed for macOS differences
    // in displaying of it
-   auto newkey = this->GET();
+   auto newkey = wxString{this->GET()};
 #if defined(__WXMAC__)
 
    if (!usesSpecialChars) {

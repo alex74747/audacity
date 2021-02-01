@@ -67,9 +67,12 @@ public:
    size_t length() const { return value.length(); }
 
    //! Explicit conversion to wxString, meant to be ugly-looking and demanding of a comment why it's correct
-   wxString GET() const;
+   value_type GET() const;
 
    std::vector< Identifier > split( char_type separator ) const;
+
+   static int Compare(const Identifier &a, const Identifier &b);
+   static int CompareNoCase(const Identifier &a, const Identifier &b);
 
 private:
    value_type value;
@@ -163,9 +166,9 @@ inline bool operator == (
       "TaggedIdentifiers with different tags or sensitivity are not comparable" );
    // This test should be eliminated at compile time:
    if ( b1 )
-      return x.GET(). Cmp ( y.GET() ) == 0;
+      return Identifier::Compare(x, y) == 0;
    else
-      return x.GET(). CmpNoCase ( y.GET() ) == 0;
+      return Identifier::CompareNoCase(x, y) == 0;
 }
 
 template< typename Tag1, typename Tag2, bool b1, bool b2 >
@@ -181,9 +184,9 @@ inline bool operator < (
       "TaggedIdentifiers with different tags or sensitivity are not comparable" );
    // This test should be eliminated at compile time:
    if ( b1 )
-      return x.GET(). Cmp ( y.GET() ) < 0;
+      return Identifier::Compare(x, y)< 0;
    else
-      return x.GET(). CmpNoCase ( y.GET() ) < 0;
+      return Identifier::CompareNoCase(x, y) < 0;
 }
 
 template< typename Tag1, typename Tag2, bool b1, bool b2 >

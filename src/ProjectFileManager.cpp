@@ -117,7 +117,7 @@ wxString FindHelpUrl( const TranslatableString &libraryError )
    if ( !libraryError.empty() ) {
       helpUrl = defaultHelpUrl;
 
-      auto msgid = libraryError.MSGID().GET();
+      auto msgid = wxString{libraryError.MSGID().GET()};
       auto found = std::find_if( begin(helpURLTable), end(helpURLTable),
          [&]( const Pair &pair ) {
             return msgid.Contains( pair.first ); }

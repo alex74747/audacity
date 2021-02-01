@@ -674,7 +674,7 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
 {
    bool excludeFromMacros =
       (options.allowInMacros == 0) ||
-      ((options.allowInMacros == -1) && label.MSGID().GET().Contains("..."));
+      ((options.allowInMacros == -1) && wxString{label.MSGID().GET()}.Contains("..."));
 
    const wxString & accel = options.accel;
    bool bIsEffect = options.bIsEffect;
