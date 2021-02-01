@@ -739,7 +739,7 @@ CommandListEntry *CommandManager::NewIdentifier(const CommandID & nameIn,
       entry->parameter = parameter;
 
 #if defined(__WXMAC__)
-      // See bug #2642 for some history as to why these items 
+      // See bug #2642 for some history as to why these items
       // on Mac have their IDs set explicitly and not others.
       if (name == L"Preferences")
          entry->id = wxID_PREFERENCES;
