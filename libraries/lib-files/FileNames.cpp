@@ -540,7 +540,7 @@ void FileNames::UpdateDefaultPath(Operation op, const FilePath &path)
 
 bool FileNames::IsMidi(const FilePath &fName)
 {
-   const auto extension = fName.AfterLast(wxT('.'));
+   const auto extension = fName.AfterLast(L'.');
    return
       extension.IsSameAs(wxT("gro"), false) ||
       extension.IsSameAs(wxT("midi"), false) ||

@@ -660,7 +660,7 @@ bool TextEditHelper::PasteSelectedText(AudacityProject& project)
         // Convert control characters to blanks
         for (int i = 0; i < (int)text.length(); i++) {
             if (wxIscntrl(text[i])) {
-                text[i] = wxT(' ');
+                text[i] = L' ';
             }
         }
     }

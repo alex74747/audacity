@@ -178,7 +178,7 @@ wxString MacroCommands::ReadMacro(const wxString & macro, wxWindow *parent)
       for (int i = 0; i < lines; i++) {
 
          // Find the command name terminator...ignore line if not found
-         int splitAt = tf[i].Find(wxT(':'));
+         int splitAt = tf[i].Find(L':');
          if (splitAt < 0) {
             continue;
          }
@@ -920,7 +920,7 @@ void MacroCommands::Split(const wxString & str, wxString & command, wxString & p
       return;
    }
 
-   splitAt = str.Find(wxT(':'));
+   splitAt = str.Find(L':');
    if (splitAt < 0) {
       return;
    }

@@ -571,11 +571,11 @@ unsigned VSTEffectsModule::DiscoverPluginsAtPath(
          }
 
          long key;
-         if (!line.Mid(wxStrlen(OUTPUTKEY)).BeforeFirst(wxT('=')).ToLong(&key))
+         if (!line.Mid(wxStrlen(OUTPUTKEY)).BeforeFirst(L'=').ToLong(&key))
          {
             continue;
          }
-         wxString val = line.AfterFirst(wxT('=')).BeforeFirst(wxT('\r'));
+         wxString val = line.AfterFirst(L'=').BeforeFirst(L'\r');
 
          switch (key)
          {
@@ -694,7 +694,7 @@ bool VSTEffectsModule::IsPluginValid(const PluginPath & path, bool bFast)
 {
    if( bFast )
       return true;
-   wxString realPath = path.BeforeFirst(wxT(';'));
+   wxString realPath = path.BeforeFirst(L';');
    return wxFileName::FileExists(realPath) || wxFileName::DirExists(realPath);
 }
 
@@ -1973,8 +1973,8 @@ bool VSTEffect::Load()
    bool success = false;
 
    long effectID = 0;
-   wxString realPath = mPath.BeforeFirst(wxT(';'));
-   mPath.AfterFirst(wxT(';')).ToLong(&effectID);
+   wxString realPath = mPath.BeforeFirst(L';');
+   mPath.AfterFirst(L';').ToLong(&effectID);
    mCurrentEffectID = (intptr_t) effectID;
 
    mModule = NULL;
@@ -2639,7 +2639,7 @@ void VSTEffect::callSetChunk(bool isPgm, int len, void *buf, VstPatchChunkInfo *
 
 // Lookup table for encoding
 const static wxChar cset[] = wxT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
-const static char padc = wxT('=');
+const static char padc = L'=';
 
 wxString VSTEffect::b64encode(const void *in, int len)
 {
@@ -2883,9 +2883,9 @@ void VSTEffect::BuildPlain()
          {
             wxString text = GetString(effGetParamName, i);
 
-            if (text.Right(1) != wxT(':'))
+            if (text.Right(1) != L':')
             {
-               text += wxT(':');
+               text += L':';
             }
 
             scroller->GetTextExtent(text, &w, &h);
@@ -2962,9 +2962,9 @@ void VSTEffect::RefreshParameters(int skip)
 
       wxString name = text;
 
-      if (text.Right(1) != wxT(':'))
+      if (text.Right(1) != L':')
       {
-         text += wxT(':');
+         text += L':';
       }
       mNames[i]->SetLabel(text);
 
@@ -2984,14 +2984,14 @@ void VSTEffect::RefreshParameters(int skip)
          text.Printf(wxT("%.5g"),callGetParameter(i));
       }
       mDisplays[i]->SetLabel(wxString::Format(wxT("%8s"), text));
-      name += wxT(' ') + text;
+      name += L' ' + text;
 
       text = GetString(effGetParamDisplay, i);
       if (!text.empty())
       {
          text.Printf(wxT("%-8s"), GetString(effGetParamLabel, i));
          mLabels[i]->SetLabel(wxString::Format(wxT("%8s"), text));
-         name += wxT(' ') + text;
+         name += L' ' + text;
       }
 
       mSliders[i]->SetName(name);
@@ -3649,7 +3649,7 @@ void VSTEffect::SaveXML(const wxFileName & fn)
       if (clen != 0)
       {
          xmlFile.StartTag(wxT("chunk"));
-         xmlFile.WriteSubTree(VSTEffect::b64encode(chunk, clen) + wxT('\n'));
+         xmlFile.WriteSubTree(VSTEffect::b64encode(chunk, clen) + L'\n');
          xmlFile.EndTag(wxT("chunk"));
       }
    }

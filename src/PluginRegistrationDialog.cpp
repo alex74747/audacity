@@ -917,7 +917,7 @@ void PluginRegistrationDialog::OnOK(wxCommandEvent & WXUNUSED(evt))
 
          if (item.state == STATE_Enabled && item.plugs[0]->GetPluginType() == PluginTypeStub)
          {
-            last3 = last3.AfterFirst(wxT('\n')) + item.path + wxT("\n");
+            last3 = last3.AfterFirst(L'\n') + item.path + wxT("\n");
             auto status = progress.Update(++i, enableCount,
                XO("Enabling effect or command:\n\n%s").Format( last3 ));
             if (status == ProgressResult::Cancelled)

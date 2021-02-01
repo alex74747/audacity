@@ -200,11 +200,11 @@ void ExportCLOptions::OnBrowse(wxCommandEvent& WXUNUSED(event))
       return;
    }
 
-   if (path.Find(wxT(' ')) == wxNOT_FOUND) {
+   if (path.Find(L' ') == wxNOT_FOUND) {
       mCmd->SetValue(path);
    }
    else {
-      mCmd->SetValue(wxT('"') + path + wxT('"'));
+      mCmd->SetValue(L'"' + path + L'"');
    }
 
    mCmd->SetInsertionPointEnd();
@@ -222,7 +222,7 @@ static void Drain(wxInputStream *s, wxString *o)
       char buffer[4096];
 
       s->Read(buffer, WXSIZEOF(buffer) - 1);
-      buffer[s->LastRead()] = wxT('\0');
+      buffer[s->LastRead()] = L'\0';
       *o += LAT1CTOWX(buffer);
    }
 }
