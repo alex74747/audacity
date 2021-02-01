@@ -262,17 +262,17 @@ public:
 
    wxString GetLibAVFormatName()
    {
-      return (L"avformat-" wxT(AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR)) L".dll");
+      return (L"avformat-" AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR) L".dll");
    }
 
    wxString GetLibAVCodecName()
    {
-      return (L"avcodec-" wxT(AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR)) L".dll");
+      return (L"avcodec-" AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR) L".dll");
    }
 
    wxString GetLibAVUtilName()
    {
-      return (L"avutil-" wxT(AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR)) L".dll");
+      return (L"avutil-" AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR) L".dll");
    }
 #elif defined(__WXMAC__)
    /* Library names and file filters for Mac OS only */
@@ -292,22 +292,22 @@ public:
    wxString GetLibAVFormatName()
    {
       if (sizeof(void*) == 8)
-         return (L"ffmpeg." wxT(AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR)) L".64bit.dylib");
-      return (L"libavformat." wxT(AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR)) L".dylib");
+         return (L"ffmpeg." AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR) L".64bit.dylib");
+      return (L"libavformat." AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR) L".dylib");
    }
 
    wxString GetLibAVCodecName()
    {
       if (sizeof(void*) == 8)
-         return (L"ffmpeg_codecs." wxT(AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR)) L".64bit.dylib");
-      return (L"libavcodec." wxT(AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR)) L".dylib");
+         return (L"ffmpeg_codecs." AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR) L".64bit.dylib");
+      return (L"libavcodec." AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR) L".dylib");
    }
 
    wxString GetLibAVUtilName()
    {
       if (sizeof(void*) == 8)
-         return (L"ffmpeg_utils." wxT(AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR)) L".64bit.dylib");
-      return (L"libavutil." wxT(AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR)) L".dylib");
+         return (L"ffmpeg_utils." AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR) L".64bit.dylib");
+      return (L"libavutil." AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR) L".dylib");
    }
 #else
    /* Library names and file filters for other platforms, basically Linux and
@@ -328,17 +328,17 @@ public:
 
    wxString GetLibAVFormatName()
    {
-      return (L"libavformat.so." wxT(AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR)));
+      return (L"libavformat.so." AV_STRINGIFY(LIBAVFORMAT_VERSION_MAJOR));
    }
 
    wxString GetLibAVCodecName()
    {
-      return (L"libavcodec.so." wxT(AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR)));
+      return (L"libavcodec.so." AV_STRINGIFY(LIBAVCODEC_VERSION_MAJOR));
    }
 
    wxString GetLibAVUtilName()
    {
-      return (L"libavutil.so." wxT(AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR)));
+      return (L"libavutil.so." AV_STRINGIFY(LIBAVUTIL_VERSION_MAJOR));
    }
 #endif // (__WXMAC__) || (__WXMSW__)
 
@@ -467,28 +467,28 @@ extern "C" {
 #define FFMPEG_INITDYN(w, f)                                            \
    {                                                                    \
       wxLogNull off;                                                    \
-      *(void**)&f ## _fp = (void*)w->GetSymbol(wxT(#f));                \
+      *(void**)&f ## _fp = (void*)w->GetSymbol(L"" #f);                 \
    }                                                                    \
    if (f ## _fp == NULL)                                                \
    {                                                                    \
-      wxLogError(L"Failed to load symbol " wxT(#f));                \
+      wxLogError(L"Failed to load symbol " #f);                         \
       return false;                                                     \
    }
 
 #define FFMPEG_INITALT(w, f, x, a)                                      \
    {                                                                    \
       wxLogNull off;                                                    \
-      *(void**)&f ## _fp = (void*)w->GetSymbol(wxT(#f));                \
+      *(void**)&f ## _fp = (void*)w->GetSymbol(L"" #f);                 \
    }                                                                    \
    if (f ## _fp == NULL)                                                \
    {                                                                    \
       {                                                                 \
          wxLogNull off;                                                 \
-         *(void**)&f ## _fp = (void*)x->GetSymbol(wxT(#a));             \
+         *(void**)&f ## _fp = (void*)x->GetSymbol(L"" #a);              \
       }                                                                 \
       if (f ## _fp == NULL)                                             \
       {                                                                 \
-         wxLogError(L"Failed to load symbol " wxT(#f));             \
+         wxLogError(L"Failed to load symbol " #f);                      \
          return false;                                                  \
       }                                                                 \
    }
