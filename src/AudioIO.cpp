@@ -134,9 +134,6 @@ time warp info and AudioIOListener and whether the playback is looped.
    #define UPPER_BOUND 1.0
 #endif
 
-using std::max;
-using std::min;
-
 AudioIO *AudioIO::Get()
 {
    return static_cast< AudioIO* >( AudioIOBase::Get() );
@@ -810,7 +807,7 @@ int AudioIO::StartStream(const TransportTracks &tracks,
    mSilenceLevel = DB_TO_LINEAR(silenceLevelDB);  // meter goes -dBRange dB -> 0dB
 
    // Clamp pre-roll so we don't play before time 0
-   const auto preRoll = std::max(0.0, std::min(t0, options.preRoll));
+   const auto preRoll = std::clamp(options.preRoll, 0.0, t0);
    mRecordingSchedule = {};
    mRecordingSchedule.mPreRoll = preRoll;
    mRecordingSchedule.mLatencyCorrection =
@@ -1819,8 +1816,8 @@ void AudioIO::FillPlayBuffers()
    // wxASSERT( nNeeded <= nAvailable );
 
    // Limit maximum buffer size (increases performance)
-   auto available = std::min( nAvailable,
-      std::max( nNeeded, mPlaybackSamplesToCopy ) );
+   auto available =
+      std::clamp( mPlaybackSamplesToCopy, nNeeded, nAvailable );
 
    // msmeyer: When playing a very short selection in looped
    // mode, the selection must be copied to the buffer multiple

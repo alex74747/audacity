@@ -22,7 +22,5 @@ size_t sampleCount::as_size_t() const {
 
 size_t limitSampleBufferSize( size_t bufferSize, sampleCount limit )
 {
-   return
-      std::min( sampleCount( bufferSize ), std::max( sampleCount(0), limit ) )
-         .as_size_t();
+   return std::clamp<sampleCount>( limit, 0, bufferSize ).as_size_t();
 }

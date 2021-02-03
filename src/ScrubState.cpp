@@ -49,8 +49,9 @@ struct ScrubQueue : NonInterferingBase
       Message message( mMessage.Read() );
       if ( !mStarted ) {
          s0Init = llrint( mRate *
-            std::max( message.options.minTime,
-               std::min( message.options.maxTime, mStartTime ) ) );
+            std::clamp(mStartTime ,
+               message.options.minTime,
+               message.options.maxTime) );
 
          // Make some initial silence. This is not needed in the case of
          // keyboard scrubbing or play-at-speed, because the initial speed
@@ -225,7 +226,7 @@ private:
             sampleCount minSample { llrint(options.minTime * rate) };
             sampleCount maxSample { llrint(options.maxTime * rate) };
             auto newDuration = duration;
-            const auto newS1 = std::max(minSample, std::min(maxSample, s1));
+            const auto newS1 = std::clamp(s1, minSample, maxSample);
             if(s1 != newS1)
                newDuration = std::max( sampleCount{ 0 },
                   sampleCount(
