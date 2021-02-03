@@ -511,7 +511,7 @@ private:
    // bottom and top.  Maybe that is out of bounds.
    int ZeroLevelYCoordinate(wxRect rect) const;
 
-   class IntervalData final : public Track::IntervalData {
+   class IntervalData {
    public:
       explicit IntervalData( const std::shared_ptr<WaveClip> &pClip )
       : pClip{ pClip }

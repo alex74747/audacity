@@ -12,6 +12,7 @@
 #ifndef __AUDACITY_TRACK__
 #define __AUDACITY_TRACK__
 
+#include <any>
 #include <utility>
 #include <vector>
 #include <list>
@@ -167,11 +168,6 @@ private:
    long mValue;
 };
 
-//! Optional extra information about an interval, appropriate to a subtype of Track
-struct TRACK_API TrackIntervalData {
-   virtual ~TrackIntervalData();
-};
-
 //! A start and an end time, and non-mutative access to optional extra information
 /*! @invariant `Start() <= End()` */
 class ConstTrackInterval {
@@ -179,8 +175,8 @@ public:
 
    /*! @pre `start <= end` */
    ConstTrackInterval( double start, double end,
-      std::unique_ptr<TrackIntervalData> pExtra = {} )
-   : start{ start }, end{ end }, pExtra{ std::move( pExtra ) }
+      std::any extra = {} )
+   : start{ start }, end{ end }, extra{ move( extra ) }
    {
       wxASSERT( start <= end );
    }
@@ -190,13 +186,14 @@ public:
 
    double Start() const { return start; }
    double End() const { return end; }
-   const TrackIntervalData *Extra() const { return pExtra.get(); }
+
+   template<typename T>
+   const T *Extra() const { return std::any_cast<T>(&extra); }
 
 private:
    double start, end;
 protected:
-   // TODO C++17: use std::any instead
-   std::unique_ptr< TrackIntervalData > pExtra;
+   std::any extra;
 };
 
 //! A start and an end time, and mutative access to optional extra information
@@ -208,7 +205,9 @@ public:
    TrackInterval(TrackInterval&&) = default;
    TrackInterval &operator= (TrackInterval&&) = default;
 
-   TrackIntervalData *Extra() const { return pExtra.get(); }
+   using ConstTrackInterval::Extra;
+   template<typename T>
+   T *Extra() { return std::any_cast<T>(&extra); }
 };
 
 //! Template generated base class for Track lets it host opaque UI related objects
@@ -309,7 +308,6 @@ private:
    // original; else return this track
    std::shared_ptr<const Track> SubstituteOriginalTrack() const;
 
-   using IntervalData = TrackIntervalData;
    using Interval = TrackInterval;
    using Intervals = std::vector< Interval >;
    using ConstInterval = ConstTrackInterval;

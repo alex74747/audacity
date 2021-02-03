@@ -1185,8 +1185,6 @@ auto PlayableTrack::ClassTypeInfo() -> const TypeInfo &
    return info;
 }
 
-TrackIntervalData::~TrackIntervalData() = default;
-
 bool TrackList::HasPendingTracks() const
 {
    if ( !mPendingUpdates.empty() )

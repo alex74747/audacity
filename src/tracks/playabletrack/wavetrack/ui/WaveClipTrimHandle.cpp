@@ -103,8 +103,9 @@ class WaveClipTrimHandle::AdjustBorder final : public WaveClipTrimHandle::ClipTr
             {
                if(isSameTrack)
                {
-                  auto waveTrackIntervalData = dynamic_cast<WaveTrack::IntervalData*>(interval.Extra());
-                  if(waveTrackIntervalData->GetClip().get() == adjustedClip)
+                  auto waveTrackIntervalData = interval.Extra<WaveTrack::IntervalData>();
+                  if (waveTrackIntervalData &&
+                      waveTrackIntervalData->GetClip().get() == adjustedClip)
                   //exclude boundaries of the adjusted clip
                      continue;
                }

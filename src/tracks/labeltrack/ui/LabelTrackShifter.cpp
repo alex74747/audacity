@@ -10,6 +10,9 @@
 
 class LabelTrackShifter final : public TrackShifter {
 public:
+   static inline auto GetIntervalData(TrackInterval &interval)
+   { return interval.Extra<LabelTrack::IntervalData>(); }
+
    LabelTrackShifter( LabelTrack &track, AudacityProject &project )
       : mpTrack{ track.SharedPointer<LabelTrack>() }
       , mProject{ project }
@@ -35,9 +38,7 @@ public:
    
    static inline size_t& GetIndex(TrackInterval &interval)
    {
-      auto pExtra =
-         static_cast<LabelTrack::IntervalData*>( interval.Extra() );
-      return pExtra->index;
+      return GetIntervalData( interval )->index;
    }
 
    static inline size_t GetIndex(const TrackInterval &interval)
@@ -96,7 +97,7 @@ public:
       is stored in a vector in LabelTrack without an extra indirection.
       So the detached intervals handed back to the caller are unlike those
       reported by LabelTrack, but carry the extra information. */
-   struct IntervalData final: Track::IntervalData {
+   struct IntervalData {
       SelectedRegion region;
       wxString title;
       IntervalData(const LabelStruct &label)
@@ -114,7 +115,7 @@ public:
          rindex = -1;
          auto result = TrackInterval{
             interval.Start(), interval.End(),
-            std::make_unique<IntervalData>( *pTrack->GetLabel(index) ) };
+            std::make_any<IntervalData>( *pTrack->GetLabel(index) ) };
          pTrack->DeleteLabel(index);
          return result;
       };
@@ -128,7 +129,7 @@ public:
    }
 
    bool AdjustFit(
-      const Track &, const Intervals &, double &, double ) override
+      const Track &, const MutableIntervals &, double &, double ) override
    {
       // Labels have no overlapping constraints, so just...
       return true;
@@ -138,8 +139,8 @@ public:
    {
       auto pTrack = mpTrack.get();
       std::for_each( intervals.rbegin(), intervals.rend(),
-         [this, pTrack](auto &interval){
-            auto pData = static_cast<IntervalData*>( interval.Extra() );
+         [this, pTrack](TrackInterval &interval){
+            auto pData = interval.Extra<IntervalData>();
             auto index = pTrack->AddLabel(pData->region, pData->title);
             // Recreate the simpler TrackInterval as would be reported by LabelTrack
             mMoving.emplace_back( pTrack->MakeInterval(index) );
@@ -205,7 +206,7 @@ private:
       }
 
       auto update = [=]( TrackInterval &interval ){
-         auto pExtra = static_cast<LabelTrack::IntervalData*>(interval.Extra());
+         auto pExtra = GetIntervalData(interval);
          auto &index = pExtra->index;
          if ( index >= present )
             ++ index;
@@ -230,7 +231,7 @@ private:
       }
 
       auto update = [=]( TrackInterval &interval ){
-         auto pExtra = static_cast<LabelTrack::IntervalData*>(interval.Extra());
+         auto pExtra = GetIntervalData(interval);
          auto &index = pExtra->index;
          if ( index > former )
             -- index;

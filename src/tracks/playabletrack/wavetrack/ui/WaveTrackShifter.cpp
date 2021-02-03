@@ -9,6 +9,12 @@
 #include "../../../../WaveTrack.h"
 #include "WaveTrackView.h"
 
+static inline auto GetIntervalData(const TrackInterval &interval) {
+   return interval.Extra<WaveTrack::IntervalData>(); }
+
+static inline auto GetIntervalData(TrackInterval &interval) {
+   return interval.Extra<WaveTrack::IntervalData>(); }
+
 class WaveTrackShifter final : public TrackShifter {
 public:
    WaveTrackShifter( WaveTrack &track )
@@ -57,10 +63,8 @@ public:
       }
 
       // Select just one interval
-      UnfixIntervals( [&](const auto &interval){
-         return
-            static_cast<WaveTrack::IntervalData*>(interval.Extra())
-               ->GetClip() == pClip;
+      UnfixIntervals( [&](const TrackInterval &interval){
+         return GetIntervalData(interval)->GetClip() == pClip;
       } );
       
       return HitTestResult::Intervals;
@@ -68,11 +72,10 @@ public:
 
    void SelectInterval( const TrackInterval &interval ) override
    {
-      UnfixIntervals( [&](auto &myInterval){
+      UnfixIntervals( [&](const TrackInterval &myInterval){
          // Use a slightly different test from CommonSelectInterval, rounding times
          // to exact samples according to the clip's rate
-         auto data =
-            static_cast<WaveTrack::IntervalData*>( myInterval.Extra() );
+         auto data = GetIntervalData( myInterval );
          auto clip = data->GetClip().get();
          const auto c0 = mpTrack->TimeToLongSamples(clip->GetPlayStartTime());
          const auto c1 = mpTrack->TimeToLongSamples(clip->GetPlayEndTime());
@@ -114,8 +117,7 @@ public:
    {
       std::vector< WaveClip * > movingClips;
       for ( auto &interval : MovingIntervals() ) {
-         auto data =
-            static_cast<WaveTrack::IntervalData*>( interval.Extra() );
+         auto data = GetIntervalData( interval );
          movingClips.push_back(data->GetClip().get());
       }
       double newAmount = 0;
@@ -126,7 +128,7 @@ public:
    Intervals Detach() override
    {
       for ( auto &interval: mMoving ) {
-         auto pData = static_cast<WaveTrack::IntervalData*>( interval.Extra() );
+         auto pData = GetIntervalData( interval );
          auto pClip = pData->GetClip().get();
          // interval will still hold the clip, so ignore the return:
          (void) mpTrack->RemoveAndReturnClip(pClip);
@@ -136,14 +138,13 @@ public:
    }
 
    bool AdjustFit(
-      const Track &otherTrack, const Intervals &intervals,
+      const Track &otherTrack, const MutableIntervals &intervals,
       double &desiredOffset, double tolerance) override
    {
       bool ok = true;
       auto pOtherWaveTrack = static_cast<const WaveTrack*>(&otherTrack);
       for ( auto &interval: intervals ) {
-         auto pData =
-            static_cast<WaveTrack::IntervalData*>( interval.Extra() );
+         auto pData = GetIntervalData( interval );
          auto pClip = pData->GetClip().get();
          ok = pOtherWaveTrack->CanInsertClip(
             pClip, desiredOffset, tolerance );
@@ -156,7 +157,7 @@ public:
    bool Attach( Intervals intervals ) override
    {
       for (auto &interval : intervals) {
-         auto pData = static_cast<WaveTrack::IntervalData*>( interval.Extra() );
+         auto pData = GetIntervalData( interval );
          auto pClip = pData->GetClip();
          if ( !mpTrack->AddClip( pClip ) )
             return false;
@@ -181,8 +182,7 @@ public:
    void DoHorizontalOffset( double offset ) override
    {
       for ( auto &interval : MovingIntervals() ) {
-         auto data =
-            static_cast<WaveTrack::IntervalData*>( interval.Extra() );
+         auto data = GetIntervalData( interval );
          data->GetClip()->Offset( offset );
       }
    }
@@ -195,8 +195,8 @@ public:
       if (MovingIntervals().empty())
          return t0;
       else {
-         auto data = static_cast<WaveTrack::IntervalData*>(MovingIntervals()[0].Extra());
-         auto& clip = data->GetClip();
+         auto data = GetIntervalData(MovingIntervals()[0]);
+         const auto& clip = data->GetClip();
          if (t0 < clip->GetPlayStartTime())
             t0 = clip->GetPlayStartTime();
          if (t0 > clip->GetPlayEndTime())
