@@ -11,6 +11,13 @@
 #ifndef __AUDACITY_RECORDING_SETTINGS__
 #define __AUDACITY_RECORDING_SETTINGS__
 
+
+#include "Prefs.h"
+
+namespace RecordingSettings {
+extern BoolSetting CustomName;
+}
+
 #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
    #define AILA_DEF_TARGET_PEAK 92
    #define AILA_DEF_DELTA_PEAK 2

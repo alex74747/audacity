@@ -20,6 +20,7 @@
 
 
 #include "RecordingPrefs.h"
+#include "RecordingSettings.h"
 #include "AudioIOBase.h"
 
 #include <wx/defs.h>
@@ -45,8 +46,7 @@ RecordingPrefs::RecordingPrefs(wxWindow * parent, wxWindowID winid)
 // i18n-hint: modifier as in "Recording preferences", not progressive verb
 :  PrefsPanel(parent, winid, XC("Recording", "preference"))
 {
-   gPrefs->Read(L"/GUI/TrackNames/RecordingNameCustom", &mUseCustomTrackName, false);
-   mOldNameChoice = mUseCustomTrackName;
+   mUseCustomTrackName = RecordingSettings::CustomName.Read();
 }
 
 RecordingPrefs::~RecordingPrefs()
@@ -152,8 +152,7 @@ void RecordingPrefs::PopulateOrExchange(ShuttleGui & S)
             S
                .Id(UseCustomTrackNameID)
                .TieCheckBox(XXO("Custom Track &Name"),
-                  {L"/GUI/TrackNames/RecordingNameCustom",
-                   mUseCustomTrackName});
+                  RecordingSettings::CustomName);
 
             mToggleCustomName =
             S

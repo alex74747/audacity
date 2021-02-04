@@ -36,6 +36,7 @@ Paul Licameli split from ProjectManager.cpp
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "toolbars/ToolManager.h"
+#include "prefs/RecordingSettings.h"
 #include "prefs/TracksPrefs.h"
 #include "prefs/WarningsPrefs.h"
 #include "tracks/ui/Scrubbing.h"
@@ -871,7 +872,7 @@ bool ProjectAudioManager::DoRecord(AudacityProject &project,
 
          auto recordingChannels = std::max(1, AudioIORecordChannels.Read());
 
-         gPrefs->Read(L"/GUI/TrackNames/RecordingNameCustom", &recordingNameCustom, false);
+         recordingNameCustom = RecordingSettings::CustomName.Read();
          gPrefs->Read(L"/GUI/TrackNames/TrackNumber", &useTrackNumber, false);
          gPrefs->Read(L"/GUI/TrackNames/DateStamp", &useDateStamp, false);
          gPrefs->Read(L"/GUI/TrackNames/TimeStamp", &useTimeStamp, false);

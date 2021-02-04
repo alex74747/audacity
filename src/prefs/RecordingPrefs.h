@@ -50,7 +50,6 @@ class RecordingPrefs final : public PrefsPanel
 
    wxTextCtrl *mToggleCustomName;
    bool mUseCustomTrackName;
-   bool mOldNameChoice;
 
    DECLARE_EVENT_TABLE()
 };
