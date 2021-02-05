@@ -568,3 +568,9 @@ void Tags::WriteXML(XMLWriter &xmlFile) const
 
    xmlFile.EndTag(wxT("tags"));
 }
+
+static ProjectFileIORegistry::WriterEntry entry {
+[](const AudacityProject &project, XMLWriter &xmlFile){
+   Tags::Get(project).WriteXML(xmlFile);
+}
+};
