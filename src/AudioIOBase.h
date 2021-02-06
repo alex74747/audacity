@@ -33,7 +33,8 @@ class AudioIOBase;
 class AudacityProject;
 class AudioIOListener;
 class BoundedEnvelope;
-class MeterPanelBase;
+// Windows requires MeterPanelBase to be a complete type
+#include "widgets/MeterPanelBase.h"
 using PRCrossfadeData = std::vector< std::vector < float > >;
 
 #define BAD_STREAM_TIME (-DBL_MAX)
