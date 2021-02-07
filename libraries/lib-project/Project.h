@@ -85,6 +85,8 @@ using AttachedProjectObjects = ClientData::Site<
    std::shared_ptr
 >;
 
+static constexpr auto  TrackPanelTimerInterval = std::chrono::milliseconds{50};
+
 ///\brief The top-level handle to an Audacity project.  It serves as a source
 /// of events that other objects can bind to, and a container of associated
 /// sub-objects that it treats opaquely.  It stores a filename and a status

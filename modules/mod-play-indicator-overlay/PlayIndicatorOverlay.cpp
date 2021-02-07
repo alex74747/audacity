@@ -185,7 +185,7 @@ void PlayIndicatorOverlay::OnTimer(Observer::Message)
       // Use a small tolerance to avoid flicker of play head pinned all the way
       // left or right
       const auto tolerance = pinned
-         ? 1.5 * std::chrono::duration<double>{kTimerInterval}.count()
+         ? 1.5 * std::chrono::duration<double>{TrackPanelTimerInterval}.count()
          : 0;
       bool onScreen = playPos >= 0.0 &&
          between_incexc(viewInfo.h - tolerance,
