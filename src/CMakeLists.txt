@@ -160,8 +160,6 @@ list( APPEND SOURCES
       SseMathFuncs.h
       Tags.cpp
       Tags.h
-      TagsEditor.cpp
-      TagsEditor.h
       TimeTrack.cpp
       TimeTrack.h
       TrackArt.cpp

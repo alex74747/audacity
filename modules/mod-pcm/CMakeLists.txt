@@ -4,7 +4,6 @@ set( SOURCES
 )
 set( LIBRARIES
    mod-import-export-interface
-   Audacity
    SndFile::sndfile
 )
 if (USE_LIBID3TAG)

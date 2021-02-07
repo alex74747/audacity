@@ -7,7 +7,6 @@ if ( USE_LIBFLAC )
 
    set( LIBRARIES
       mod-import-export-interface
-      Audacity
       FLAC::FLAC
       FLAC::FLAC++
    )

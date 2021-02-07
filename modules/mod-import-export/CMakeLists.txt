@@ -28,7 +28,7 @@ set( SOURCES
    SpecPowerMeter.h
 )
 set( LIBRARIES
-   Audacity
+   mod-tags-ui-interface
    SndFile::sndfile
    libid3tag::libid3tag
 )

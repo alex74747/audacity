@@ -11,7 +11,6 @@ if (USE_FFMPEG)
    )
    set( LIBRARIES
       mod-import-export-interface
-      Audacity
       lib-ffmpeg-support-interface
       SndFile::sndfile
    )

@@ -7,7 +7,6 @@ if ( USE_LIBFLAC AND USE_LIBVORBIS )
 
    set( LIBS
       mod-import-export-interface
-      Audacity
       $<$<BOOL:${USE_LIBOGG}>:Ogg::ogg>
       Vorbis::vorbis
       Vorbis::vorbisfile
