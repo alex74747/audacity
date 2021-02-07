@@ -20,17 +20,6 @@
 #include <wx/display.h>
 #include <wx/scrolbar.h>
 
-bool TagsEditorDialog::ShowEditDialog(Tags &tags, wxWindow *parent, const TranslatableString &title, bool force)
-{
-   if (force) {
-      TagsEditorDialog dlg(parent, title, &tags, true, true);
-
-      return dlg.ShowModal() == wxID_OK;
-   }
-
-   return true;
-}
-
 //
 // ComboEditor - Wrapper to prevent unwanted background erasure
 //
@@ -135,6 +124,12 @@ private:
    wxArrayString   m_choices;
    bool            m_allowOthers;
 };
+
+bool TagsEditorDialog::ShowEditDialog(Tags &tags, wxWindow *parent, const TranslatableString &title)
+{
+   TagsEditorDialog dlg(parent, title, &tags, true, true);
+   return dlg.ShowModal() == wxID_OK;
+}
 
 //
 // Editor
