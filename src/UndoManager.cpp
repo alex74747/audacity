@@ -188,8 +188,6 @@ void UndoManager::ModifyState(const TrackList * l,
       return;
    }
 
-   auto tags = Tags::Get(mProject).shared_from_this();
-
 //   SonifyBeginModifyState();
    // Delete current -- not necessary, but let's reclaim space early
    stack[current]->state.tracks.reset();
@@ -206,7 +204,6 @@ void UndoManager::ModifyState(const TrackList * l,
    // Replace
    stack[current]->state.extensions = GetExtensions(mProject);
    stack[current]->state.tracks = std::move(tracksCopy);
-   stack[current]->state.tags = tags;
 
    stack[current]->state.selectedRegion = selectedRegion;
 //   SonifyEndModifyState();
@@ -260,14 +257,12 @@ void UndoManager::PushState(const TrackList * l,
 
    AbandonRedo();
 
-   auto tags = Tags::Get(mProject).shared_from_this();
-
    // Assume tags was duplicated before any changes.
    // Just save a NEW shared_ptr to it.
    stack.push_back(
       std::make_unique<UndoStackElem>
          (GetExtensions(mProject), std::move(tracksCopy),
-            longDescription, shortDescription, selectedRegion, tags)
+            longDescription, shortDescription, selectedRegion)
    );
 
    current++;

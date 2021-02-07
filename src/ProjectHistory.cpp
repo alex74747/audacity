@@ -11,7 +11,6 @@ Paul Licameli split from ProjectManager.cpp
 #include "ProjectHistory.h"
 
 #include "Project.h"
-#include "Tags.h"
 #include "Track.h"
 #include "TransactionScope.h"
 #include "UndoManager.h"
@@ -137,9 +136,6 @@ void ProjectHistory::PopState(const UndoState &state, bool doAutosave)
    for (auto &pExtension : state.extensions)
       if (pExtension)
          pExtension->RestoreUndoRedoState(project);
-
-   // Restore tags
-   Tags::Set( project, state.tags );
 
    TrackList *const tracks = state.tracks.get();
 

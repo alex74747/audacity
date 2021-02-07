@@ -34,6 +34,7 @@
 #include "XMLTagHandler.h"
 
 #include "ClientData.h"
+#include "UndoManager.h" // To inherit UndoStateExtension
 #include <utility>
 
 #include <memory>
@@ -69,6 +70,7 @@ class AUDACITY_DLL_API Tags final
    : public XMLTagHandler
    , public std::enable_shared_from_this< Tags >
    , public AttachedProjectObject
+   , public UndoStateExtension
 {
 
  public:
@@ -116,6 +118,9 @@ class AUDACITY_DLL_API Tags final
 
    bool IsEmpty();
    void Clear();
+
+   // UndoStateExtension implementation
+   void RestoreUndoRedoState(AudacityProject &) override;
 
    friend bool operator == (const Tags &lhs, const Tags &rhs);
 
