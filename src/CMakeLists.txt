@@ -240,8 +240,6 @@ list( APPEND SOURCES
       SseMathFuncs.h
       Tags.cpp
       Tags.h
-      TagsEditor.cpp
-      TagsEditor.h
       TempDirectory.cpp
       TempDirectory.h
       Theme.cpp

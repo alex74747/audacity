@@ -35,7 +35,7 @@ list( APPEND SOURCES
    SpecPowerMeter.h
 )
 audacity_module( mod-import-export "${SOURCES}"
-   "Audacity;libsndfile;libid3tag"
+   "mod-tags-ui-interface;libsndfile;libid3tag"
    "" "" )
 
 if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
