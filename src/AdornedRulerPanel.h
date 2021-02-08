@@ -55,8 +55,6 @@ public:
 
    void SetLeftOffset(int offset);
 
-   void DrawSelection();
-
    void SetPlayRegion(double playRegionStart, double playRegionEnd);
    void ClearPlayRegion();
    void TogglePinnedHead();
@@ -78,6 +76,7 @@ public:
 
 
 private:
+   void DrawSelection();
    void DoIdle();
    void OnIdle( wxIdleEvent &evt );
    void OnAudioStartStop(AudioIOEvent);
@@ -169,6 +168,7 @@ private:
    void OnTogglePlayRegion(wxCommandEvent &evt);
    void OnClearPlayRegion(wxCommandEvent &evt);
    void OnSetPlayRegionToSelection(wxCommandEvent &evt);
+   void OnTimer(Observer::Message);
 
    void OnPinnedButton(wxCommandEvent & event);
    void OnTogglePinnedState(wxCommandEvent & event);
@@ -238,7 +238,8 @@ private:
    std::shared_ptr<ScrubbingCell> mScrubbingCell;
 
    Observer::Subscription mAudioIOSubscription,
-      mPlayRegionSubscription;
+      mPlayRegionSubscription,
+      mTimerSubscription;
 
    // classes implementing subdivision for CellularPanel
    struct Subgroup;

@@ -428,7 +428,6 @@ void TrackPanel::OnTimer(wxTimerEvent& )
    window.GetPlaybackScroller().OnTimer();
 
    DrawOverlays(false);
-   mRuler->DrawOverlays(false);
 
    if(IsAudioActive() && gAudioIO->GetNumCaptureChannels()) {
 
@@ -620,9 +619,6 @@ void TrackPanel::UpdateSelectionDisplay()
    // Full refresh since the label area may need to indicate
    // newly selected tracks.
    Refresh(false);
-
-   // Make sure the ruler follows suit.
-   mRuler->DrawSelection();
 }
 
 // Counts selected tracks, counting stereo tracks as one track.

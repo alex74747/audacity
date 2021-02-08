@@ -1316,6 +1316,9 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
    // And call it once to initialize it
    DoSelectionChange( mViewInfo->selectedRegion );
 
+   mTimerSubscription = ProjectWindow::Get( *mProject ).GetPlaybackScroller()
+      .Subscribe(*this, &AdornedRulerPanel::OnTimer);
+
    SetLeftOffset(viewinfo->GetLeftOffset());  // bevel on AdornedRuler
 }
 
@@ -2356,6 +2359,15 @@ void AdornedRulerPanel::OnSetPlayRegionToSelection(wxCommandEvent&)
    SelectUtilities::SetPlayRegionToSelection(*mProject);
 }
 
+void AdornedRulerPanel::OnTimer(Observer::Message)
+{
+   auto &viewInfo = ViewInfo::Get( *mProject );
+   const auto &playRegion = viewInfo.playRegion;
+   if( mLastDrawnPlayRegion != std::pair{
+         playRegion.GetLastActiveStart(), playRegion.GetLastActiveEnd() } )
+      DrawSelection();
+   DrawOverlays(false);
+}
 
 void AdornedRulerPanel::ShowContextMenu(
    MenuChoice choice, const wxPoint *pPosition)
