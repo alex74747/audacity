@@ -955,6 +955,8 @@ AdornedRulerPanel::AdornedRulerPanel(AudacityProject* project,
 
    // And call it once to initialize it
    DoSelectionChange( mViewInfo->selectedRegion );
+
+   SetLeftOffset(viewinfo->GetLeftOffset());  // bevel on AdornedRuler
 }
 
 AdornedRulerPanel::~AdornedRulerPanel()
