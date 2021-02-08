@@ -1519,7 +1519,12 @@ void AdornedRulerPanel::DoIdle()
    const auto &selectedRegion = viewInfo.selectedRegion;
    const auto &playRegion = viewInfo.playRegion;
 
+   bool dirtyRulerWidth = mLastDrawnRulerWidth != viewInfo.GetVRulerWidth();
+   if (dirtyRulerWidth)
+      SetLeftOffset(viewInfo.GetLeftOffset());  // bevel on AdornedRuler
+
    changed = changed
+     || dirtyRulerWidth
      || mLastDrawnSelectedRegion != selectedRegion
      || mLastDrawnPlayRegion != std::pair{
          playRegion.GetLastActiveStart(), playRegion.GetLastActiveEnd() }
@@ -1567,6 +1572,7 @@ void AdornedRulerPanel::OnPaint(wxPaintEvent & WXUNUSED(evt))
    mLastDrawnZoom = viewInfo.GetZoom();
    mLastDrawnPlayRegion = playRegionBounds;
    mLastDrawnSelectedRegion = viewInfo.selectedRegion;
+   mLastDrawnRulerWidth = viewInfo.GetVRulerWidth();
    // To do, note other fisheye state when we have that
 
    wxPaintDC dc(this);

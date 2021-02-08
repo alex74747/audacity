@@ -248,6 +248,7 @@ private:
    SelectedRegion mLastDrawnSelectedRegion;
    std::pair<double, double> mLastDrawnPlayRegion{};
    bool mLastPlayRegionActive = false;
+   int mLastDrawnRulerWidth{};
    double mLastDrawnH{};
    double mLastDrawnZoom{};
 };
