@@ -1,6 +1,5 @@
 #include "../Audacity.h"
 
-#include "../AdornedRulerPanel.h"
 #include "../AudioIO.h"
 #include "../CommonCommandFlags.h"
 #include "../DeviceManager.h"
@@ -262,16 +261,6 @@ void OnPunchAndRoll(const CommandContext &context)
 }
 #endif
 
-void OnLockPlayRegion(const CommandContext &context)
-{
-   AdornedRulerPanel::Get( context.project ).LockPlayRegion();
-}
-
-void OnUnlockPlayRegion(const CommandContext &context)
-{
-   AdornedRulerPanel::Get( context.project ).UnlockPlayRegion();
-}
-
 void OnRescanDevices(const CommandContext &WXUNUSED(context) )
 {
    DeviceManager::Instance()->Rescan();
@@ -292,11 +281,6 @@ void OnToggleSoundActivated(const CommandContext &WXUNUSED(context) )
    gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
    gPrefs->Flush();
    MenuManager::ModifyAllProjectToolbarMenus();
-}
-
-void OnTogglePinnedHead(const CommandContext &context)
-{
-   AdornedRulerPanel::Get( context.project ).TogglePinnedHead();
 }
 
 void OnTogglePlayRecording(const CommandContext &WXUNUSED(context) )
@@ -673,20 +657,11 @@ BaseItemSharedPtr TransportMenu()
       ),
 
       Section( "Other",
-         Section( "",
-            Menu( wxT("PlayRegion"), XXO("Pla&y Region"),
-               Command( wxT("LockPlayRegion"), XXO("&Lock"), FN(OnLockPlayRegion),
-                  PlayRegionNotLockedFlag() ),
-               Command( wxT("UnlockPlayRegion"), XXO("&Unlock"),
-                  FN(OnUnlockPlayRegion), PlayRegionLockedFlag() )
-            )
-         ),
-
          Command( wxT("RescanDevices"), XXO("R&escan Audio Devices"),
             FN(OnRescanDevices), AudioIONotBusyFlag() | CanStopAudioStreamFlag() ),
 
          Menu( wxT("Options"), XXO("Transport &Options"),
-            Section( "",
+            Section( "Part1",
                // Sound Activated recording options
                Command( wxT("SoundActivationLevel"),
                   XXO("Sound Activation Le&vel..."), FN(OnSoundActivated),
@@ -698,15 +673,7 @@ BaseItemSharedPtr TransportMenu()
                   Options{}.CheckTest(wxT("/AudioIO/SoundActivatedRecord"), false) )
             ),
 
-            Section( "",
-               Command( wxT("PinnedHead"), XXO("Pinned Play/Record &Head (on/off)"),
-                  FN(OnTogglePinnedHead),
-                  // Switching of scrolling on and off is permitted
-                  // even during transport
-                  AlwaysEnabledFlag,
-                  Options{}.CheckTest([](const AudacityProject&){
-                     return TracksPrefs::GetPinnedHeadPreference(); } ) ),
-
+            Section( "Part2",
                Command( wxT("Overdub"), XXO("&Overdub (on/off)"),
                   FN(OnTogglePlayRecording),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),
