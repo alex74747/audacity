@@ -502,8 +502,6 @@ void CommandManager::UpdateCheckmarks( AudacityProject &project )
    }
 }
 
-
-
 void CommandManager::AddItem(AudacityProject &project,
                              const CommandID &name,
                              const Widgets::MenuItemText &label_in,
