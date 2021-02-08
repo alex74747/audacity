@@ -375,7 +375,6 @@ void ProjectManager::InitProjectWindow( ProjectWindow &window )
    trackPanel.SetFocus();
 
    window.FixScrollbars();
-   ruler.SetLeftOffset(viewInfo.GetLeftOffset());  // bevel on AdornedRuler
 
    //
    // Set the Icon
