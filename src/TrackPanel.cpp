@@ -50,7 +50,6 @@ is time to refresh some aspect of the screen.
 
 #include <wx/setup.h> // for wxUSE_* macros
 
-#include "AdornedRulerPanel.h"
 #include "KeyboardCapture.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
@@ -76,6 +75,7 @@ is time to refresh some aspect of the screen.
 #include "TrackArtist.h"
 #include "TrackPanelAx.h"
 #include "TrackPanelResizerCell.h"
+#include "ViewInfo.h"
 #include "WaveTrack.h"
 
 #include "tracks/ui/TrackControls.h"
@@ -197,7 +197,6 @@ namespace{
 
 AudacityProject::AttachedWindows::RegisteredFactory sKey{
    []( AudacityProject &project ) -> wxWeakRef< wxWindow > {
-      auto &ruler = AdornedRulerPanel::Get( project );
       auto &viewInfo = ViewInfo::Get( project );
       auto &window = ProjectWindow::Get( project );
       auto mainPage = window.GetMainPage();
@@ -210,8 +209,7 @@ AudacityProject::AttachedWindows::RegisteredFactory sKey{
          wxDefaultSize,
          tracks.shared_from_this(),
          &viewInfo,
-         &project,
-         &ruler);
+         &project);
       project.SetPanel( result );
       return result;
    }
@@ -247,13 +245,11 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
                        const wxSize & size,
                        const std::shared_ptr<TrackList> &tracks,
                        ViewInfo * viewInfo,
-                       AudacityProject * project,
-                       AdornedRulerPanel * ruler)
+                       AudacityProject * project)
    : CellularPanel(parent, id, pos, size, viewInfo,
                    wxWANTS_CHARS | wxNO_BORDER),
      mListener( &ProjectWindow::Get( *project ) ),
      mTracks(tracks),
-     mRuler(ruler),
      mTrackArtist(nullptr),
      mRefreshBacking(false)
 #ifndef __WXGTK__   //Get rid if this pragma for gtk
