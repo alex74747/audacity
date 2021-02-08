@@ -1768,12 +1768,15 @@ bool AdornedRulerPanel::SetPanelSize()
 
 void AdornedRulerPanel::DrawBothOverlays()
 {
+   if (IsBeingDeleted())
+      return;
+
    auto pCellularPanel =
       dynamic_cast<CellularPanel*>( &GetProjectPanel( *GetProject() ) );
    if ( !pCellularPanel ) {
       wxASSERT( false );
    }
-   else
+   else if (!pCellularPanel->IsBeingDeleted())
       pCellularPanel->DrawOverlays( false );
    DrawOverlays( false );
 }
@@ -2338,6 +2341,8 @@ void AdornedRulerPanel::UpdateStatusMessage( const TranslatableString &message )
 
 void AdornedRulerPanel::CreateOverlays()
 {
+   if (IsBeingDeleted())
+      return;
    if (!mOverlay) {
       mOverlay =
          std::make_shared<QuickPlayIndicatorOverlay>( mProject );
@@ -2346,7 +2351,7 @@ void AdornedRulerPanel::CreateOverlays()
       if ( !pCellularPanel ) {
          wxASSERT( false );
       }
-      else
+      else if (!pCellularPanel->IsBeingDeleted())
          pCellularPanel->AddOverlay( mOverlay );
       this->AddOverlay( mOverlay->mPartner );
    }
