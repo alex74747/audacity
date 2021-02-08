@@ -971,13 +971,13 @@ extern "C" DLL_API int ModuleDispatch(ModuleDispatchTypes type)
             // Only want one page of the preferences
             PrefsPanel::Factories factories;
             factories.push_back(KeyConfigPrefsFactory( id ));
-            if (const auto pProject = GetActiveProject().lock()) {
-               auto pWindow = FindProjectFrame( pProject.get() );
-               GlobalPrefsDialog dialog( pWindow, pProject.get(), factories );
-               dialog.ShowModal();
-               ProjectCommandManager::RebuildAllMenuBars();
-               return true;
-            }
+            const auto pProject = GetActiveProject().lock();
+            auto pWindow = FindProjectFrame( pProject.get() );
+            // pProject may be null
+            GlobalPrefsDialog dialog( pWindow, pProject.get(), factories );
+            dialog.ShowModal();
+            ProjectCommandManager::RebuildAllMenuBars();
+            return true;
          }
          return false;
       } };

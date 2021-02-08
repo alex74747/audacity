@@ -71,8 +71,6 @@ list( APPEND SOURCES
       AboutDialog.h
       $<$<NOT:$<BOOL:${${_OPT}bundle_gplv3}>>:AboutDialogGPLv2Text.cpp>
       $<$<BOOL:${${_OPT}bundle_gplv3}>:AboutDialogGPLv3Text.cpp>
-      AdornedRulerPanel.cpp
-      AdornedRulerPanel.h
       AudacityApp.cpp
       AudacityApp.h
       $<$<BOOL:${wxIS_MAC}>:AudacityApp.mm>
@@ -226,8 +224,6 @@ list( APPEND SOURCES
 
       tracks/ui/BackgroundCell.cpp
       tracks/ui/BackgroundCell.h
-      tracks/ui/ScrubUI.cpp
-      tracks/ui/ScrubUI.h
       tracks/ui/Scrubbing.cpp
       tracks/ui/Scrubbing.h
 

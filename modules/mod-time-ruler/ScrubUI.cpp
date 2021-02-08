@@ -10,14 +10,14 @@
 
 #include "ScrubUI.h"
 
-#include "Scrubbing.h"
+#include "tracks/ui/Scrubbing.h"
 #include "Overlay.h"
 #include "ClientData.h"
-#include "../../AdornedRulerPanel.h"
+#include "AdornedRulerPanel.h"
 #include "Project.h"
-#include "../../ProjectWindow.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
-#include "../../TrackPanel.h"
+#include "TrackPanel.h"
 
 #include <wx/dcclient.h>
 #include <wx/windowptr.h>
