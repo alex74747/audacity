@@ -1,6 +1,5 @@
 
 
-#include "../AdornedRulerPanel.h"
 #include "AudioIO.h"
 #include "CommonCommandFlags.h"
 #include "DeviceManager.h"
@@ -351,11 +350,6 @@ void OnToggleSoundActivated(const CommandContext &WXUNUSED(context) )
    gPrefs->Write(wxT("/AudioIO/SoundActivatedRecord"), !pause);
    gPrefs->Flush();
    ToolManager::ModifyAllProjectToolbarMenus();
-}
-
-void OnTogglePinnedHead(const CommandContext &context)
-{
-   AdornedRulerPanel::Get( context.project ).TogglePinnedHead();
 }
 
 void OnTogglePlayRecording(const CommandContext &WXUNUSED(context) )
@@ -758,7 +752,7 @@ BaseItemSharedPtr TransportMenu()
             FN(OnRescanDevices), AudioIONotBusyFlag() | CanStopAudioStreamFlag() ),
 
          Menu( wxT("Options"), XXO("Transport &Options"),
-            Section( "",
+            Section( "Part1",
                // Sound Activated recording options
                Command( wxT("SoundActivationLevel"),
                   XXO("Sound Activation Le&vel..."), FN(OnSoundActivated),
@@ -770,15 +764,7 @@ BaseItemSharedPtr TransportMenu()
                   Options{}.CheckTest(wxT("/AudioIO/SoundActivatedRecord"), false) )
             ),
 
-            Section( "",
-               Command( wxT("PinnedHead"), XXO("Pinned Play/Record &Head (on/off)"),
-                  FN(OnTogglePinnedHead),
-                  // Switching of scrolling on and off is permitted
-                  // even during transport
-                  AlwaysEnabledFlag,
-                  Options{}.CheckTest([](const AudacityProject&){
-                     return TracksPrefs::GetPinnedHeadPreference(); } ) ),
-
+            Section( "Part2",
                Command( wxT("Overdub"), XXO("&Overdub (on/off)"),
                   FN(OnTogglePlayRecording),
                   AudioIONotBusyFlag() | CanStopAudioStreamFlag(),

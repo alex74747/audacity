@@ -2835,3 +2835,45 @@ void AdornedRulerPanel::TogglePinnedHead()
    if (scrubber.HasMark())
       scrubber.SetScrollScrubbing(value);
 }
+
+// Attach menu item
+
+#include "CommandContext.h"
+#include "CommandManager.h"
+#include "CommonCommandFlags.h"
+
+namespace {
+struct Handler : CommandHandlerObject {
+void OnTogglePinnedHead(const CommandContext &context)
+{
+   AdornedRulerPanel::Get( context.project ).TogglePinnedHead();
+}
+};
+
+static CommandHandlerObject &findCommandHandler(AudacityProject &) {
+   // Handler is not stateful.  Doesn't need a factory registered with
+   // AudacityProject.
+   static Handler instance;
+   return instance;
+};
+
+using namespace MenuTable;
+using Options = CommandManager::Options;
+#define FN(X) (& Handler :: X)
+
+AttachedItem sAttachment{
+   { wxT("Transport/Other/Options/Part2"), { OrderingHint::Begin, {} } },
+   ( FinderScope{ findCommandHandler },
+      Command( wxT("PinnedHead"), XXO("Pinned Play/Record &Head (on/off)"),
+         FN(OnTogglePinnedHead),
+         // Switching of scrolling on and off is permitted
+         // even during transport
+         AlwaysEnabledFlag,
+         Options{}.CheckTest([](const AudacityProject&){
+            return TracksPrefs::GetPinnedHeadPreference(); } ) )
+   )
+};
+
+#undef FN
+
+}
