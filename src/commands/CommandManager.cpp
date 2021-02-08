@@ -553,6 +553,13 @@ void CommandManager::UpdateCheckmarks( AudacityProject &project )
    }
 }
 
+void CommandManager::UpdateCheckmarksInAllProjects()
+{
+   for (auto pProject : AllProjects{}) {
+      auto &project = *pProject;
+      CommandManager::Get(project).UpdateCheckmarks(project);
+   }
+}
 
 
 void CommandManager::AddItem(AudacityProject &project,
