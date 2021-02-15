@@ -15,4 +15,4 @@ list( APPEND DEFINES
 audacity_module( ${TARGET} "${SOURCES}" "wxWidgets;portaudio-v19;libnyquist"
    "${DEFINES}" "" )
 
-set_target_properties( ${TARGET} PROPERTIES EXCLUDE_FROM_ALL YES )
+#set_target_properties( ${TARGET} PROPERTIES EXCLUDE_FROM_ALL YES )
