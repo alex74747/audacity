@@ -238,8 +238,6 @@ list( APPEND SOURCES
       SqliteSampleBlock.cpp
       SseMathFuncs.cpp
       SseMathFuncs.h
-      Tags.cpp
-      Tags.h
       TempDirectory.cpp
       TempDirectory.h
       Theme.cpp
