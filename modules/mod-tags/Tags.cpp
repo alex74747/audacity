@@ -581,3 +581,6 @@ void Tags::RestoreUndoRedoState(AudacityProject &project)
    // Restore tags
    Tags::Set( project, shared_from_this() );
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

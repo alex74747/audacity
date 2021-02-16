@@ -3,7 +3,7 @@ set( SOURCES
    TagsEditor.h
 )
 set( LIBRARIES
-   Audacity
+   mod-tags-interface
 )
 audacity_module( mod-tags-ui "${SOURCES}" "${LIBRARIES}"
    "" "" )

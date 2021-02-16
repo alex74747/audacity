@@ -158,8 +158,6 @@ list( APPEND SOURCES
       SplashDialog.h
       SseMathFuncs.cpp
       SseMathFuncs.h
-      Tags.cpp
-      Tags.h
       TimeTrack.cpp
       TimeTrack.h
       TrackArt.cpp
