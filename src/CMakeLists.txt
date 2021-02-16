@@ -92,12 +92,9 @@ list( APPEND SOURCES
       DefaultPlaybackPolicy.h
       Diags.cpp
       Diags.h
-      DropTarget.cpp
       DropoutDetector.cpp
       EnvelopeEditor.cpp
       EnvelopeEditor.h
-      FileFormats.cpp
-      FileFormats.h
       HelpUtilities.cpp
       HelpUtilities.h
       KeystrokeHandler.cpp
@@ -305,45 +302,6 @@ list( APPEND SOURCES
       effects/Wahwah.cpp
       effects/Wahwah.h
 
-      # Export
-
-      export/Export.cpp
-      export/Export.h
-
-      # Standard exporters
-      export/ExportCL.cpp
-      export/ExportMultiple.cpp
-      export/ExportMultiple.h
-
-      # Import
-
-      import/FormatClassifier.cpp
-      import/FormatClassifier.h
-      import/Import.cpp
-      import/Import.h
-      import/ImportForwards.h
-      import/MultiFormatReader.cpp
-      import/MultiFormatReader.h
-      import/RawAudioGuess.cpp
-      import/RawAudioGuess.h
-      import/SpecPowerMeter.cpp
-      import/SpecPowerMeter.h
-
-      # Standard importers
-
-      import/ImportAUP.cpp
-      import/ImportLOF.cpp
-      import/ImportPlugin.h
-      import/ImportPlugin.cpp
-      import/ImportRaw.cpp
-      import/ImportRaw.h
-
-      # Optional importers
-
-      $<$<BOOL:${USE_GSTREAMER}>:
-         import/ImportGStreamer.cpp
-      >
-
       # Menus
 
       menus/EditMenus.cpp
@@ -361,8 +319,6 @@ list( APPEND SOURCES
       prefs/DirectoriesPrefs.h
       prefs/EffectsPrefs.cpp
       prefs/EffectsPrefs.h
-      prefs/ExtImportPrefs.cpp
-      prefs/ExtImportPrefs.h
       prefs/GUIPrefs.cpp
       prefs/GUIPrefs.h
       prefs/GUISettings.cpp
@@ -704,7 +660,6 @@ list( APPEND LIBRARIES
       ${CMAKE_REQUIRED_LIBRARIES}
       ZLIB::ZLIB
       wxwidgets::wxwidgets
-      SndFile::sndfile
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag::libid3tag>
       $<$<BOOL:${USE_LIBMAD}>:libmad::libmad>
@@ -847,14 +802,6 @@ else()
    set( MIMETYPES
       application/x-audacity-project
    )
-   if( USE_SNDFILE )
-      list( APPEND MIMETYPES
-         audio/basic
-         audio/x-aiff
-         audio/x-wav
-      )
-   endif()
-
    # Create the desktop file
    configure_file( audacity.desktop.in ${_INTDIR}/audacity.desktop )
 

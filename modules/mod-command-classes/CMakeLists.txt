@@ -34,7 +34,7 @@ set( SOURCES
    SetTrackInfoCommand.h
 )
 set( LIBRARIES
-   Audacity
+   mod-import-export-interface
 )
 audacity_module( mod-command-classes "${SOURCES}" "${LIBRARIES}"
    "" "" )

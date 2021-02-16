@@ -15,7 +15,6 @@
 
 *//********************************************************************/
 
-
 #include "ExportMultiple.h"
 
 #include <wx/defs.h>
@@ -44,12 +43,12 @@
 #include "Prefs.h"
 #include "SelectionState.h"
 #include "ShuttleGui.h"
-#include "../TagsEditor.h"
+#include "TagsEditor.h"
 #include "WaveTrack.h"
 #include "HelpSystem.h"
 #include "widgets/AudacityMessageBox.h"
 #include "AudacityTextEntryDialog.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 
 
 namespace {

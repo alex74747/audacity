@@ -130,8 +130,6 @@ It handles initialization and termination by subclassing wxApp.
 
 #include "ModuleManager.h"
 
-#include "import/Import.h"
-
 #if defined(USE_BREAKPAD)
 #include "BreakpadConfigurer.h"
 #endif
@@ -1565,8 +1563,6 @@ bool AudacityApp::InitPart2()
    UpdateManager::Start();
 #endif
 
-   Importer::Get().Initialize();
-
    // Bug1561: delay the recovery dialog, to avoid crashes.
    CallAfter( [=] () mutable {
       // Remove duplicate shortcuts when there's a change of version
@@ -2315,8 +2311,6 @@ int AudacityApp::OnExit()
    {
       Dispatch();
    }
-
-   Importer::Get().Terminate();
 
    if(gPrefs)
    {

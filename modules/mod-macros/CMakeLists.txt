@@ -11,7 +11,7 @@ set( SOURCES
    BatchProcessDialog.h
 )
 set( LIBRARIES
-   Audacity
+   mod-import-export-interface
 )
 audacity_module( mod-macros "${SOURCES}" "${LIBRARIES}"
    "" "" )

@@ -10,6 +10,7 @@ if (USE_FFMPEG)
       ImportFFmpeg.cpp
    )
    set( LIBRARIES
+      mod-import-export-interface
       Audacity
       lib-ffmpeg-support-interface
       SndFile::sndfile

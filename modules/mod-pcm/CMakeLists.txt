@@ -3,6 +3,7 @@ set( SOURCES
    ImportPCM.cpp
 )
 set( LIBRARIES
+   mod-import-export-interface
    Audacity
    SndFile::sndfile
 )

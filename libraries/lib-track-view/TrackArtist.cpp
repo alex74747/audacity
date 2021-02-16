@@ -46,6 +46,7 @@ audio tracks.
 #include "TrackPanelDrawingContext.h"
 
 #include "Decibels.h"
+#include <wx/utils.h>
 
 #include <wx/utils.h>
 

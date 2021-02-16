@@ -13,7 +13,7 @@
 
 #ifdef USE_LIBVORBIS
 
-#include "export/Export.h"
+#include "Export.h"
 
 #include <wx/log.h>
 #include <wx/slider.h>

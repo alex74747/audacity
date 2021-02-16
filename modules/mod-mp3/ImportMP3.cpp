@@ -29,9 +29,8 @@
 #include <wx/defs.h>
 
 #include "BasicUI.h"
-#include "import/Import.h"
-#include "import/ImportPlugin.h"
-#include "Project.h"
+#include "Import.h"
+#include "ImportPlugin.h"
 
 #define DESC XO("MP3 files")
 

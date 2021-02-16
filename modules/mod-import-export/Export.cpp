@@ -28,7 +28,6 @@
 
 *//********************************************************************/
 
-
 #include "Export.h"
 
 #include <wx/bmpbuttn.h>
@@ -53,19 +52,19 @@
 #include "BasicUI.h"
 #include "Mix.h"
 #include "Prefs.h"
-#include "../prefs/ImportExportPrefs.h"
+#include "prefs/ImportExportPrefs.h"
 #include "Project.h"
 #include "ProjectFileIO.h"
 #include "ProjectHistory.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "ShuttleGui.h"
-#include "../TagsEditor.h"
+#include "TagsEditor.h"
 #include "Theme.h"
 #include "WaveTrack.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/Warning.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/Warning.h"
 #include "HelpSystem.h"
 #include "AColor.h"
 #include "FileNames.h"

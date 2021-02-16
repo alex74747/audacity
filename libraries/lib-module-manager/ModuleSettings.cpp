@@ -50,6 +50,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-screenshot",
       "mod-printing",
       "mod-macros",
+      "mod-import-export",
    };
    return modules;
 }

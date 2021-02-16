@@ -92,7 +92,7 @@
 #include "wxFileNameWrapper.h"
 #include "Project.h"
 
-#include "export/Export.h"
+#include "Export.h"
 
 #include <lame/lame.h>
 

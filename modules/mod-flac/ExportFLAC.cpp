@@ -16,7 +16,7 @@ Joshua Haberman
 
 #ifdef USE_LIBFLAC
 
-#include "export/Export.h"
+#include "Export.h"
 
 #include <wx/ffile.h>
 #include <wx/log.h>

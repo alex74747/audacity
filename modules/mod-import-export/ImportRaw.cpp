@@ -21,20 +21,19 @@ and sample size to help you importing data of an unknown format.
 *//*******************************************************************/
 
 
-
 #include "ImportRaw.h"
 
 #include "ImportPlugin.h"
 
 #include "AudioIOBase.h"
-#include "../FileFormats.h"
+#include "FileFormats.h"
 #include "Prefs.h"
 #include "ProjectRate.h"
 #include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "UserException.h"
 #include "WaveTrack.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 
 #include <cmath>
 #include <stdint.h>
@@ -545,7 +544,7 @@ void ImportRawDialog::OnChoice(wxCommandEvent & WXUNUSED(event))
 #include "CommandManager.h"
 #include "CommandContext.h"
 #include "CommonCommandFlags.h"
-#include "../ProjectWindow.h"
+#include "ProjectWindow.h"
 
 namespace {
 struct Handler : CommandHandlerObject {

@@ -3,7 +3,7 @@ set( SOURCES
    TimerRecordDialog.h
 )
 set( LIBRARIES
-   Audacity
+   mod-import-export-interface
 )
 audacity_module( mod-timer-record "${SOURCES}" "${LIBRARIES}"
    "" "" )
