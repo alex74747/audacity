@@ -270,7 +270,18 @@ function( audacity_module_fn NAME SOURCES IMPORT_TARGETS
    endif()
    add_library( ${TARGET} ${REAL_LIBTYPE} )
 
-   set( LIBRARIES )
+   # Manual propagation seems to be necessary from
+   # interface libraries -- just doing target_link_libaries naming them
+   # doesn't work as promised
+
+   # compute INCLUDES
+   unset( INCLUDES )
+   list( APPEND INCLUDES PUBLIC ${TARGET_ROOT} )
+
+   # compute DEFINES
+   unset( DEFINES )
+   list( APPEND DEFINES ${ADDITIONAL_DEFINES} )
+
    if (LIBTYPE STREQUAL "MODULE")
       set( SHAPE "box" )
       set_target_property_all( ${TARGET} LIBRARY_OUTPUT_DIRECTORY "${_MODDIR}" )
@@ -292,7 +303,6 @@ function( audacity_module_fn NAME SOURCES IMPORT_TARGETS
    export_symbol_define( export_symbol "${TARGET}" )
    import_symbol_define( import_symbol "${TARGET}" )
    list( APPEND DEFINES
-      ${ADDITIONAL_DEFINES}
       PRIVATE "${export_symbol}"
       INTERFACE "${import_symbol}"
    )
@@ -303,7 +313,6 @@ function( audacity_module_fn NAME SOURCES IMPORT_TARGETS
    )
 
    # compute LIBRARIES
-   set( LIBRARIES )
    foreach( IMPORT ${IMPORT_TARGETS} )
       list( APPEND LIBRARIES "${IMPORT}" )
    endforeach()
@@ -339,7 +348,11 @@ function( audacity_module_fn NAME SOURCES IMPORT_TARGETS
       add_library("${INTERFACE_TARGET}" ALIAS "${TARGET}")
    else()
       add_library("${INTERFACE_TARGET}" INTERFACE)
-      foreach(PROP INTERFACE_INCLUDE_DIRECTORIES INTERFACE_COMPILE_DEFINITIONS)
+      foreach(PROP
+         INTERFACE_INCLUDE_DIRECTORIES
+	 INTERFACE_COMPILE_DEFINITIONS
+	 INTERFACE_LINK_LIBRARIES
+      )
          get_target_property( PROPS "${TARGET}" "${PROP}" )
 	 if (PROPS)
             set_target_properties(
