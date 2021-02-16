@@ -254,12 +254,7 @@ function( audacity_module NAME SOURCES IMPORT_TARGETS
    # compute LIBRARIES
    set( LIBRARIES PRIVATE Audacity )
    foreach( IMPORT ${IMPORT_TARGETS} )
-      get_target_property( TYPE "${IMPORT}" TYPE )
-      if( TYPE STREQUAL "INTERFACE_LIBRARY" )
-         list( APPEND LIBRARIES $<$<PLATFORM_ID:Windows,CYGWIN>:${IMPORT}> )
-      else()
-         list( APPEND LIBRARIES "${IMPORT}" )
-      endif()
+      list( APPEND LIBRARIES "${IMPORT}" )
    endforeach()
    list( APPEND LIBRARIES ${ADDITIONAL_LIBRARIES} )
 
