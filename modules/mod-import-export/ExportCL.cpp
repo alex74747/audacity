@@ -11,9 +11,9 @@
 
 **********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
-#include "../ProjectSettings.h"
+#include "ProjectSettings.h"
 
 #include <wx/cmdline.h>
 #include <wx/combobox.h>
@@ -25,20 +25,20 @@
 #include <wx/msw/registry.h> // for wxRegKey
 #endif
 
-#include "../FileNames.h"
+#include "FileNames.h"
 #include "Export.h"
 
-#include "../Mix.h"
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
-#include "../Tags.h"
-#include "../Track.h"
-#include "../float_cast.h"
-#include "../widgets/FileHistory.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ProgressDialog.h"
-#include "../widgets/Warning.h"
-#include "../wxFileNameWrapper.h"
+#include "Mix.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
+#include "Tags.h"
+#include "Track.h"
+#include "float_cast.h"
+#include "widgets/FileHistory.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ProgressDialog.h"
+#include "widgets/Warning.h"
+#include "wxFileNameWrapper.h"
 
 #ifdef USE_LIBID3TAG
    #include <id3tag.h>

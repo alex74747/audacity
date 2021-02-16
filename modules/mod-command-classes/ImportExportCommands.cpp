@@ -19,9 +19,9 @@
 
 #include "commands/LoadCommands.h"
 #include "ViewInfo.h"
-#include "export/Export.h"
+#include "Export.h"
 #include "SelectUtilities.h"
-#include "import/Import.h"
+#include "Import.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
 #include "Track.h"

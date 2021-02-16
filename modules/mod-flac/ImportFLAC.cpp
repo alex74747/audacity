@@ -34,8 +34,8 @@
 
 #include <wx/defs.h>
 
-#include "import/Import.h"
-#include "import/ImportPlugin.h"
+#include "Import.h"
+#include "ImportPlugin.h"
 
 #include "Tags.h"
 #include "widgets/ProgressDialog.h"
@@ -65,7 +65,7 @@ static Importer::RegisteredUnusableImportPlugin registered{
 
 #include "Prefs.h"
 #include "WaveTrack.h"
-#include "import/ImportPlugin.h"
+#include "ImportPlugin.h"
 
 #ifdef USE_LIBID3TAG
 extern "C" {

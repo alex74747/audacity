@@ -21,7 +21,7 @@
 
 #include "Audacity.h" // for USE_* macros
 
-#include "import/Import.h"
+#include "Import.h"
 #include "Tags.h"
 
 #include <wx/wx.h>
@@ -43,7 +43,7 @@
 #include "Prefs.h"
 #include "ShuttleGui.h"
 #include "WaveTrack.h"
-#include "import/ImportPlugin.h"
+#include "ImportPlugin.h"
 
 #include <algorithm>
 

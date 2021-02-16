@@ -30,8 +30,8 @@
 
 #include <wx/defs.h>
 
-#include "import/Import.h"
-#include "import/ImportPlugin.h"
+#include "Import.h"
+#include "ImportPlugin.h"
 #include "Project.h"
 
 #define DESC XO("MP3 files")

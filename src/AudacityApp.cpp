@@ -115,8 +115,6 @@ It handles initialization and termination by subclassing wxApp.
 
 #include "ModuleManager.h"
 
-#include "import/Import.h"
-
 #ifdef EXPERIMENTAL_SCOREALIGN
 #include "effects/ScoreAlignDialog.h"
 #endif
@@ -1459,8 +1457,6 @@ bool AudacityApp::InitPart2()
       SplashDialog::DoHelpWelcome(*project);
    }
 
-   Importer::Get().Initialize();
-
    // Bug1561: delay the recovery dialog, to avoid crashes.
    CallAfter( [=] () mutable {
       // Remove duplicate shortcuts when there's a change of version
@@ -2171,8 +2167,6 @@ int AudacityApp::OnExit()
    {
       Dispatch();
    }
-
-   Importer::Get().Terminate();
 
    if(gPrefs)
    {

@@ -35,7 +35,7 @@ ImportLOF.cpp, and ImportAUP.cpp.
 
 
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "Import.h"
 
 #include "ImportPlugin.h"
@@ -48,24 +48,24 @@ ImportLOF.cpp, and ImportAUP.cpp.
 #include <wx/listbox.h>
 #include <wx/log.h>
 #include <wx/sizer.h>         //for wxBoxSizer
-#include "../FileNames.h"
-#include "../ShuttleGui.h"
-#include "../Project.h"
-#include "../ProjectFileIO.h"
-#include "../ProjectFileManager.h"
-#include "../ProjectHistory.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
-#include "../SelectUtilities.h"
-#include "../Tags.h"
-#include "../WaveTrack.h"
-#include "../toolbars/SelectionBar.h"
-#include "../widgets/FileHistory.h"
-#include "../widgets/ErrorDialog.h"
+#include "FileNames.h"
+#include "ShuttleGui.h"
+#include "Project.h"
+#include "ProjectFileIO.h"
+#include "ProjectFileManager.h"
+#include "ProjectHistory.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
+#include "SelectUtilities.h"
+#include "Tags.h"
+#include "WaveTrack.h"
+#include "toolbars/SelectionBar.h"
+#include "widgets/FileHistory.h"
+#include "widgets/ErrorDialog.h"
 
-#include "../Prefs.h"
+#include "Prefs.h"
 
-#include "../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 
 // ============================================================================
 //
@@ -1135,11 +1135,11 @@ void Importer::DoImport(AudacityProject &project, bool isRaw)
 }
 
 // Register a menu item
-#include "../commands/CommandManager.h"
-#include "../commands/CommandContext.h"
-#include "../CommonCommandFlags.h"
-#include "../ProjectFileManager.h"
-#include "../ProjectWindow.h"
+#include "commands/CommandManager.h"
+#include "commands/CommandContext.h"
+#include "CommonCommandFlags.h"
+#include "ProjectFileManager.h"
+#include "ProjectWindow.h"
 
 namespace {
 struct Handler : CommandHandlerObject {
@@ -1181,3 +1181,21 @@ static ProjectFileManager::RegisteredImportProcedure sProcedure {
       return success;
    }
 };
+
+#include "ModuleConstants.h"
+DEFINE_VERSION_CHECK
+
+extern "C" DLL_API int ModuleDispatch(ModuleDispatchTypes type)
+{
+   switch (type){
+   case AppInitialized:
+      Importer::Get().Initialize();
+      break;
+   case AppQuiting:
+      Importer::Get().Terminate();
+      break;
+   default:
+      break;
+   }
+   return 1;
+}

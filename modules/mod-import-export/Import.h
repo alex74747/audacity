@@ -17,10 +17,10 @@
 #include <vector>
 #include <wx/tokenzr.h> // for enum wxStringTokenizerMode
 
-#include "../widgets/wxPanelWrapper.h" // to inherit
-#include "../FileNames.h" // for FileType
+#include "widgets/wxPanelWrapper.h" // to inherit
+#include "FileNames.h" // for FileType
 
-#include "../Registry.h"
+#include "Registry.h"
 
 class wxArrayString;
 class wxListBox;
@@ -78,13 +78,13 @@ class ExtImportItem
   wxArrayString mime_types;
 };
 
-class AUDACITY_DLL_API Importer {
+class IMPORT_EXPORT_API Importer {
    struct ImporterItem;
 public:
 
    // Objects of this type are statically constructed in files implementing
    // subclasses of ImportPlugin
-   struct AUDACITY_DLL_API RegisteredImportPlugin final
+   struct IMPORT_EXPORT_API RegisteredImportPlugin final
       : public Registry::RegisteredItem<ImporterItem>
    {
       RegisteredImportPlugin(
@@ -92,7 +92,7 @@ public:
          std::unique_ptr<ImportPlugin>,
          const Registry::Placement &placement = { wxEmptyString, {} } );
 
-      struct AUDACITY_DLL_API Init{ Init(); };
+      struct IMPORT_EXPORT_API Init{ Init(); };
    };
 
    // Objects of this type are statically constructed in files, to identify
@@ -101,7 +101,7 @@ public:
       RegisteredUnusableImportPlugin( std::unique_ptr<UnusableImportPlugin> );
       ~RegisteredUnusableImportPlugin();
 
-      struct AUDACITY_DLL_API Init{ Init(); };
+      struct IMPORT_EXPORT_API Init{ Init(); };
 
    private:
       UnusableImportPlugin *mpPlugin = nullptr;
@@ -172,7 +172,7 @@ private:
               Tags *tags,
               TranslatableString &errorMessage);
 
-   struct AUDACITY_DLL_API ImporterItem final : Registry::SingleItem {
+   struct IMPORT_EXPORT_API ImporterItem final : Registry::SingleItem {
 
       static Registry::GroupItem &Registry();
 

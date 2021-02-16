@@ -13,10 +13,10 @@
 
 **********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "RawAudioGuess.h"
 
-#include "../AudacityException.h"
+#include "AudacityException.h"
 
 #include <stdlib.h>
 #include <string.h>

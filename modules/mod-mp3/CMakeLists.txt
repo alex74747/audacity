@@ -12,7 +12,7 @@ list( APPEND SOURCES
 )
  
 list( APPEND LIBS
-   Audacity
+   mod-import-export-interface
 )
 
 if ( USE_LAME )

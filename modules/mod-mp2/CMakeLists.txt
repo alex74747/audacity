@@ -12,7 +12,7 @@ if ( USE_LIBTWOLAME )
    )
 
    list( APPEND LIBS
-      Audacity
+      mod-import-export-interface
       twolame
    )
 

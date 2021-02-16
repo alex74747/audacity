@@ -14,7 +14,7 @@
 
 #include <wx/defs.h>
 
-#include "export/Export.h"
+#include "Export.h"
 #include "audacity/ComponentInterface.h" // for ComponentInterfaceSymbol
 
 class wxArrayString;

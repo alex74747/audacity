@@ -13,7 +13,7 @@ if ( USE_LIBFLAC )
    )
 
    list( APPEND LIBS
-      Audacity
+      mod-import-export-interface
       libflac
    )
 

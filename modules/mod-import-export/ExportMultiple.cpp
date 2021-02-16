@@ -15,7 +15,7 @@
 
 *//********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "ExportMultiple.h"
 
 #include <wx/defs.h>
@@ -34,20 +34,20 @@
 #include <wx/textctrl.h>
 #include <wx/textdlg.h>
 
-#include "../FileNames.h"
-#include "../LabelTrack.h"
-#include "../Project.h"
-#include "../ProjectSettings.h"
-#include "../ProjectWindow.h"
-#include "../Prefs.h"
-#include "../SelectionState.h"
-#include "../ShuttleGui.h"
-#include "../TagsEditor.h"
-#include "../WaveTrack.h"
-#include "../widgets/HelpSystem.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/ErrorDialog.h"
-#include "../widgets/ProgressDialog.h"
+#include "FileNames.h"
+#include "LabelTrack.h"
+#include "Project.h"
+#include "ProjectSettings.h"
+#include "ProjectWindow.h"
+#include "Prefs.h"
+#include "SelectionState.h"
+#include "ShuttleGui.h"
+#include "TagsEditor.h"
+#include "WaveTrack.h"
+#include "widgets/HelpSystem.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/ErrorDialog.h"
+#include "widgets/ProgressDialog.h"
 
 
 namespace {
@@ -1201,10 +1201,10 @@ void MouseEvtHandler::OnMouse(wxMouseEvent& event)
 }
 
 // Register some menu items
-#include "../commands/CommandContext.h"
-#include "../commands/CommandManager.h"
-#include "../CommonCommandFlags.h"
-#include "../ViewInfo.h"
+#include "commands/CommandContext.h"
+#include "commands/CommandManager.h"
+#include "CommonCommandFlags.h"
+#include "ViewInfo.h"
 
 namespace {
 struct Handler : CommandHandlerObject {

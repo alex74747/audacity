@@ -8,7 +8,7 @@ list( APPEND SOURCES
    ImportPCM.cpp
 )
 list( APPEND LIBRARIES
-   Audacity
+   mod-import-export-interface
    libsndfile
 )
 if (USE_LIBID3TAG)
