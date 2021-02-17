@@ -33,6 +33,7 @@
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
+#include <wx/app.h>
 #include <wx/dcclient.h>
 #include <wx/defs.h>
 #include <wx/frame.h>
@@ -415,6 +416,8 @@ ToolManager::ToolManager( AudacityProject *parent )
 
    // It's a little shy
    mIndicator->Hide();
+
+   wxTheApp->Bind(EVT_THEME_CHANGE, &ToolManager::OnThemeChange, this);
 }
 
 void ToolManager::CreateWindows()
@@ -1546,6 +1549,15 @@ void ToolManager::ModifyAllProjectToolbarMenus()
       auto &project = *pProject;
       ToolManager::Get(project).ModifyToolbarMenus(project);
    }
+}
+
+void ToolManager::OnThemeChange(wxCommandEvent & evt)
+{
+   evt.Skip();
+   ForEach([](auto pToolBar){
+      if( pToolBar )
+         pToolBar->ReCreateButtons();
+   });
 }
 
 #include "CommandManager.h"
