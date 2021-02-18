@@ -213,7 +213,8 @@ function( audacity_append_common_compiler_options var )
          $<$<CXX_COMPILER_ID:AppleClang,Clang>:-Werror=return-type>
          $<$<CXX_COMPILER_ID:AppleClang,Clang>:-Werror=dangling-else>
          $<$<CXX_COMPILER_ID:AppleClang,Clang>:-Werror=return-stack-address>
-	 -DWXINTL_NO_GETTEXT_MACRO
+         -DWXINTL_NO_GETTEXT_MACRO
+         $<$<CXX_COMPILER_ID:MSVC>:/D _USE_MATH_DEFINES>
    )
    set( ${var} "${${var}}" PARENT_SCOPE )
 endfunction()
