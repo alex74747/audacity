@@ -12,6 +12,7 @@ set( LIBRARIES
    lib-preferences
    lib-math
    lib-exceptions
+   lib-files
 )
 
 if ( ${_OPT}has_networking )
