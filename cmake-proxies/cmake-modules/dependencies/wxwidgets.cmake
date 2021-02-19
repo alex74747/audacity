@@ -78,6 +78,15 @@ if( ${_OPT}use_wxwidgets STREQUAL "system" OR NOT ${_OPT}conan_enabled )
         make_wxBase(wxwidgets::wxwidgets)
     endif()
 
+    if( NOT TARGET wxGraphics )
+        add_library( wxGraphics ALIAS wxwidgets::wxwidgets )
+    endif()
+# wxGraphics is allowed to use some of those parts of wxCore that are not
+# excluded by wxUSE_GUI=0; but the excluded parts do include wxWindow
+#target_compile_definitions( wxGraphics INTERFACE
+#   "wxUSE_GUI=0"
+#)
+
     if( NOT TARGET wxwidgets::wxwidgets )
         add_library( wxwidgets::wxwidgets ALIAS wxwidgets::wxwidgets )
     endif()
