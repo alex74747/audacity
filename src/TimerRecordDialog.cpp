@@ -54,7 +54,7 @@
 #include "widgets/wxTextCtrlWrapper.h"
 
 #if wxUSE_ACCESSIBILITY
-#include "widgets/WindowAccessible.h"
+#include "WindowAccessible.h"
 #endif
 
 #define TIMER_ID 7000

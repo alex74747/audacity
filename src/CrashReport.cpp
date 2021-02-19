@@ -18,7 +18,7 @@
 #endif
 
 #include "wxFileNameWrapper.h"
-#include "widgets/wxPanelWrapper.h"
+#include "wxPanelWrapper.h"
 #include "ActiveProject.h"
 #include "AudacityLogger.h"
 #include "AudioIOBase.h"
@@ -30,7 +30,7 @@
 #include "Project.h"
 #include "ProjectFileIO.h"
 #include "prefs/GUISettings.h"
-#include "widgets/AudacityTextEntryDialog.h"
+#include "AudacityTextEntryDialog.h"
 
 namespace CrashReport {
 

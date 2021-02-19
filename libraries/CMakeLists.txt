@@ -29,6 +29,7 @@ set( LIBRARIES
    lib-module-manager
    lib-audio-io
    lib-wave-track
+   lib-wx-wrappers
 )
 
 if ( ${_OPT}has_networking )

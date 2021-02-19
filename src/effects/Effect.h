@@ -25,6 +25,7 @@ class wxChoice;
 class wxListBox;
 class wxWindow;
 
+#include "audacity/Types.h"
 #include "ConfigInterface.h"
 #include "EffectHostInterface.h" // to inherit
 #include "EffectInterface.h" // to inherit
@@ -35,7 +36,7 @@ class wxWindow;
 
 #include "Track.h"
 
-#include "../widgets/wxPanelWrapper.h" // to inherit
+#include "wxPanelWrapper.h" // to inherit
 #include <wx/windowptr.h>
 
 class wxArrayString;

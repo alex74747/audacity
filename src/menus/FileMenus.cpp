@@ -27,7 +27,7 @@
 #include "../import/ImportRaw.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/FileHistory.h"
-#include "../widgets/wxPanelWrapper.h"
+#include "wxPanelWrapper.h"
 
 #ifdef USE_MIDI
 #include "../import/ImportMIDI.h"
