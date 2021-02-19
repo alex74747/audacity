@@ -18,8 +18,8 @@
 
 #include "LoadCommands.h"
 #include "CommandContext.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 
 const ComponentInterfaceSymbol MessageCommand::Symbol
 { XO("Message") };

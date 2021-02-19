@@ -29,8 +29,8 @@
 #include "AColor.h"
 #include "AllThemeResources.h"
 #include "Prefs.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 #include "Theme.h"
 #include "../widgets/valnum.h"
 

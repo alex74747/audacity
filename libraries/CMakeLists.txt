@@ -30,6 +30,7 @@ set( LIBRARIES
    lib-audio-io
    lib-wave-track
    lib-wx-wrappers
+   lib-shuttlegui
 )
 
 if ( ${_OPT}has_networking )

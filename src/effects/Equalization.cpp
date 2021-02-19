@@ -83,7 +83,7 @@
 
 #include "AColor.h"
 #include "../ShuttleAutomation.h"
-#include "../ShuttleGui.h"
+#include "ShuttleGui.h"
 #include "PlatformCompatibility.h"
 #include "FileNames.h"
 #include "Envelope.h"

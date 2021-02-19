@@ -27,8 +27,8 @@
 
 #include "Prefs.h"
 #include "../ProjectFileManager.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 #include "WaveTrack.h"
 #include "../widgets/valnum.h"
 #include "../widgets/ProgressDialog.h"

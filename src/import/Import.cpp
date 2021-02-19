@@ -48,7 +48,7 @@ ImportLOF.cpp, and ImportAUP.cpp.
 #include <wx/sizer.h>         //for wxBoxSizer
 #include "../FFmpeg.h"
 #include "FileNames.h"
-#include "../ShuttleGui.h"
+#include "ShuttleGui.h"
 #include "Project.h"
 #include "WaveTrack.h"
 

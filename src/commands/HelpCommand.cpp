@@ -17,9 +17,9 @@
 
 #include "HelpCommand.h"
 
-#include "../Shuttle.h"
+#include "Shuttle.h"
 #include "LoadCommands.h"
-#include "../ShuttleGui.h"
+#include "ShuttleGui.h"
 #include "CommandTargets.h"
 #include "CommandContext.h"
 #include "../effects/EffectManager.h"

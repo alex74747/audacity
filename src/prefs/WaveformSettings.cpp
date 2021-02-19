@@ -278,7 +278,7 @@ int WaveformSettingsCache::ZeroLevelYCoordinate(wxRect rect) const
 }
 
 // Attach things to Tracks preferences page
-#include "../ShuttleGui.h"
+#include "ShuttleGui.h"
 
 namespace {
 void AddScale( ShuttleGui &S )

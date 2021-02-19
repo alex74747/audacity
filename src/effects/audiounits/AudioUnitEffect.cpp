@@ -44,7 +44,7 @@
 
 #include "../../SelectFile.h"
 #include "../../EffectHostInterface.h"
-#include "../../ShuttleGui.h"
+#include "ShuttleGui.h"
 #include "../../widgets/AudacityMessageBox.h"
 #include "../../widgets/valnum.h"
 #include "wxPanelWrapper.h"

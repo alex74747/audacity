@@ -373,7 +373,7 @@ bool EffectManager::HasPresets(const PluginID & ID)
 
 #include <wx/choice.h>
 #include <wx/listbox.h>
-#include "../ShuttleGui.h"
+#include "ShuttleGui.h"
 
 namespace {
 

@@ -26,8 +26,8 @@
 #include <math.h>
 
 
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 #include "../widgets/valnum.h"
 #include "../widgets/AudacityMessageBox.h"
 

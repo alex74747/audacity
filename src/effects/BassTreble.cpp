@@ -26,8 +26,8 @@
 #include <wx/slider.h>
 
 #include "Prefs.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 #include "WaveTrack.h"
 #include "../widgets/valnum.h"
 

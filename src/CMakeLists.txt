@@ -218,16 +218,10 @@ list( APPEND SOURCES
       SelectFile.h
       SelectionState.cpp
       SelectionState.h
-      Shuttle.cpp
-      Shuttle.h
       ShuttleAutomation.cpp
       ShuttleAutomation.h
       ShuttleGetDefinition.cpp
       ShuttleGetDefinition.h
-      ShuttleGui.cpp
-      ShuttleGui.h
-      ShuttlePrefs.cpp
-      ShuttlePrefs.h
       Snap.cpp
       Snap.h
       SoundActivatedRecord.cpp
@@ -292,8 +286,6 @@ list( APPEND SOURCES
       VoiceKey.h
       WaveTrackLocation.cpp
       WaveTrackLocation.h
-      WrappedType.cpp
-      WrappedType.h
 
       # Commands
 
@@ -925,7 +917,6 @@ list( APPEND SOURCES
       widgets/PopupMenuTable.h
       widgets/ProgressDialog.cpp
       widgets/ProgressDialog.h
-      widgets/ReadOnlyText.h
       widgets/Ruler.cpp
       widgets/Ruler.h
       $<$<BOOL:${${_OPT}has_sentry_reporting}>:
@@ -943,7 +934,6 @@ list( APPEND SOURCES
       widgets/numformatter.h
       widgets/valnum.cpp
       widgets/valnum.h
-      widgets/wxTextCtrlWrapper.h
       widgets/wxWidgetsBasicUI.cpp
       widgets/wxWidgetsBasicUI.h
       widgets/wxWidgetsWindowPlacement.cpp
@@ -1331,7 +1321,7 @@ set( AUDACITY_LIBRARIES
    lib-module-manager-interface
    lib-audio-io-interface
    lib-wave-track-interface
-   lib-wx-wrappers-interface
+   lib-shuttlegui-interface
 )
 
 if ( ${_OPT}has_networking )

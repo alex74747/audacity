@@ -38,8 +38,8 @@
 
 #include "AColor.h"
 #include "Prefs.h"
-#include "../Shuttle.h"
-#include "../ShuttleGui.h"
+#include "Shuttle.h"
+#include "ShuttleGui.h"
 #include "Theme.h"
 #include "float_cast.h"
 #include "../widgets/Ruler.h"
