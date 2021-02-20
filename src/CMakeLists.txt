@@ -280,12 +280,14 @@ list( APPEND SOURCES
       TrackPanelResizerCell.h
       TrackUtilities.cpp
       TrackUtilities.h
-      UIHandle.cpp
-      UIHandle.h
       TransportUtilities.cpp
       TransportUtilities.h
+      UIHandle.cpp
+      UIHandle.h
       UndoManager.cpp
       UndoManager.h
+      UndoRedoMenu.cpp
+      UndoRedoMenu.h
       VoiceKey.cpp
       VoiceKey.h
       WaveTrackLocation.cpp

@@ -88,7 +88,6 @@ public:
 
    static void Visit( ToolbarMenuVisitor &visitor );
 
-   static void ModifyUndoMenuItems(AudacityProject &project);
    static void ModifyToolbarMenus(AudacityProject &project);
    // Calls ModifyToolbarMenus() on all projects
    static void ModifyAllProjectToolbarMenus();
@@ -112,8 +111,6 @@ public:
 private:
    void TellUserWhyDisallowed(const TranslatableString & Name, CommandFlag flagsGot,
       CommandFlag flagsRequired);
-
-   void OnUndoRedo( wxCommandEvent &evt );
 
    AudacityProject &mProject;
 
