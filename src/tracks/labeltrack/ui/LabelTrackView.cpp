@@ -20,21 +20,21 @@ Paul Licameli split from TrackPanel.cpp
 #include "AColor.h"
 #include "BasicMenu.h"
 #include "AllThemeResources.h"
-#include "../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectRate.h"
 #include "../../../ProjectSettings.h"
 #include "../../../ProjectWindow.h"
 #include "ProjectWindows.h"
-#include "../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "SyncLock.h"
 #include "Theme.h"
 #include "../../../TrackArt.h"
 #include "../../../TrackArtist.h"
 #include "../../../TrackPanelAx.h"
 #include "../../../TrackPanel.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"
 #include "AudacityTextEntryDialog.h"
@@ -778,7 +778,7 @@ namespace {
    }
 }
 
-#include "../../../TrackPanelDrawingContext.h"
+#include "TrackPanelDrawingContext.h"
 #include "LabelTextHandle.h"
 
 /// Draw calls other functions to draw the LabelTrack.

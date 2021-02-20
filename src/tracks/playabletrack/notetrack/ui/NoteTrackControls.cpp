@@ -17,16 +17,16 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ui/PlayableTrackButtonHandles.h"
 #include "NoteTrackSliderHandles.h"
 
-#include "../../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "../../../../TrackArtist.h"
 #include "../../../../TrackPanel.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "../../../../NoteTrack.h"
 #include "../../../../widgets/PopupMenuTable.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectWindows.h"
-#include "../../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "../../../../prefs/ThemePrefs.h"
 
 #include <mutex>
@@ -144,7 +144,7 @@ PopupMenuTable *NoteTrackControls::GetMenuExtension(Track *)
 // drawing related
 #include "ASlider.h"
 #include "../../../../TrackInfo.h"
-#include "../../../../TrackPanelDrawingContext.h"
+#include "TrackPanelDrawingContext.h"
 #include "ViewInfo.h"
 
 using TCPLine = TrackInfo::TCPLine;

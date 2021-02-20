@@ -44,6 +44,7 @@ set( LIBRARIES
    lib-common-command-flags
    lib-clipboard
    lib-active-project
+   lib-cellular-panel
 )
 
 if ( ${_OPT}has_networking )

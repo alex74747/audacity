@@ -11,10 +11,10 @@ Paul Licameli
 
 #include "ButtonHandle.h"
 
-#include "../../HitTestResult.h"
-#include "../../RefreshCode.h"
+#include "HitTestResult.h"
+#include "RefreshCode.h"
 #include "Track.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 
 #include <wx/event.h>
 

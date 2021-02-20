@@ -20,8 +20,8 @@ Paul Licameli split from class TrackView
 #include "Track.h"
 #include "../../TrackArtist.h"
 #include "../../TrackInfo.h"
-#include "../../TrackPanelDrawingContext.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelDrawingContext.h"
+#include "TrackPanelMouseEvent.h"
 
 #include <wx/dc.h>
 #include <wx/graphics.h>

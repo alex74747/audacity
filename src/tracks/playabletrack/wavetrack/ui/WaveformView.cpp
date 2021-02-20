@@ -28,8 +28,8 @@ Paul Licameli split from WaveTrackView.cpp
 #include "SyncLock.h"
 #include "../../../../TrackArt.h"
 #include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelDrawingContext.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "TrackPanelDrawingContext.h"
+#include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
@@ -1131,7 +1131,7 @@ static const WaveTrackSubViews::RegisteredFactory key{
 #include "../../../../widgets/PopupMenuTable.h"
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
-#include "../../../../RefreshCode.h"
+#include "RefreshCode.h"
 
 //=============================================================================
 // Table class for a sub-menu

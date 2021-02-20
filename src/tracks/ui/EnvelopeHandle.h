@@ -12,7 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_ENVELOPE_HANDLE__
 
 #include "Internat.h"
-#include "../../UIHandle.h"
+#include "UIHandle.h"
 
 #include <vector>
 

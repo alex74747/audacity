@@ -15,7 +15,7 @@
 
 #include "NoteTrackControls.h"
 #include "ProjectHistory.h"
-#include "../../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "../../../../TrackInfo.h"
 #include "../../../../TrackPanel.h"
 #include "../../../../TrackPanelAx.h"

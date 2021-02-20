@@ -16,7 +16,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ProjectAudioManager.h"
 #include "ProjectHistory.h"
 #include "../../SelectUtilities.h"
-#include "../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "Track.h"
 #include "../../TrackPanelAx.h"
 #include "../../TrackInfo.h"

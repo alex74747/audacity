@@ -14,8 +14,8 @@
 #include "ViewInfo.h"
 
 #include "WaveClip.h"
-#include "../../../../RefreshCode.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "RefreshCode.h"
+#include "TrackPanelMouseEvent.h"
 #include "ProjectHistory.h"
 
 #include <wx/event.h>

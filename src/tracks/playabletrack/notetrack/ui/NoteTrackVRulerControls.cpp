@@ -16,15 +16,15 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackDisplayData.h"
 #include "NoteTrackVZoomHandle.h"
 
-#include "../../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "../../../../NoteTrack.h"
 #include "ProjectHistory.h"
-#include "../../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 
 #include "AColor.h"
-#include "../../../../TrackPanelDrawingContext.h"
+#include "TrackPanelDrawingContext.h"
 #include "Ruler.h"
 
 #include <wx/dc.h>

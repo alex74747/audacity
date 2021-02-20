@@ -16,11 +16,11 @@ Paul Licameli split from TrackPanel.cpp
 #include <wx/dc.h>
 #include <wx/gdicmn.h>
 
-#include "../../HitTestResult.h"
-#include "../../RefreshCode.h"
+#include "HitTestResult.h"
+#include "RefreshCode.h"
 #include "../../TrackArtist.h"
-#include "../../TrackPanelDrawingContext.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelDrawingContext.h"
+#include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "../../../images/Cursors.h"
 

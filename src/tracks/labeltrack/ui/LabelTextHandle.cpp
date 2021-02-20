@@ -13,13 +13,13 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "LabelTrackView.h"
 
-#include "../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "../../../LabelTrack.h"
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
-#include "../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "SelectionState.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "../../../../images/Cursors.h"
 

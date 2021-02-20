@@ -106,8 +106,6 @@ list( APPEND SOURCES
       BatchProcessDialog.h
       Benchmark.cpp
       Benchmark.h
-      CellularPanel.cpp
-      CellularPanel.h
       CrashReport.cpp
       CrashReport.h
       DefaultCommandOutputTargets.cpp
@@ -132,7 +130,6 @@ list( APPEND SOURCES
       HelpUtilities.h
       HistoryWindow.cpp
       HistoryWindow.h
-      HitTestResult.h
       KeystrokeHandler.cpp
       KeystrokeHandler.h
       LabelDialog.cpp
@@ -177,7 +174,6 @@ list( APPEND SOURCES
       ProjectSettings.h
       ProjectWindow.cpp
       ProjectWindow.h
-      RefreshCode.h
       ReloadPreferences.cpp
       ReloadPreferences.h
       Screenshot.cpp
@@ -223,14 +219,8 @@ list( APPEND SOURCES
       TrackPanel.h
       TrackPanelAx.cpp
       TrackPanelAx.h
-      TrackPanelCell.cpp
-      TrackPanelCell.h
       TrackPanelConstants.h
-      TrackPanelDrawable.cpp
-      TrackPanelDrawable.h
-      TrackPanelDrawingContext.h
       TrackPanelListener.h
-      TrackPanelMouseEvent.h
       TrackPanelResizeHandle.cpp
       TrackPanelResizeHandle.h
       TrackPanelResizerCell.cpp
@@ -239,8 +229,6 @@ list( APPEND SOURCES
       TrackUtilities.h
       TransportUtilities.cpp
       TransportUtilities.h
-      UIHandle.cpp
-      UIHandle.h
       UndoRedoMenu.cpp
       UndoRedoMenu.h
       VoiceKey.cpp
@@ -815,8 +803,6 @@ list( APPEND SOURCES
 
       widgets/AudacityMessageBox.cpp
       widgets/AudacityMessageBox.h
-      widgets/BackedPanel.cpp
-      widgets/BackedPanel.h
       widgets/ErrorDialog.cpp
       widgets/ErrorDialog.h
       widgets/FileHistory.cpp
@@ -829,10 +815,6 @@ list( APPEND SOURCES
       widgets/MeterPanel.h
       widgets/MultiDialog.cpp
       widgets/MultiDialog.h
-      widgets/Overlay.cpp
-      widgets/Overlay.h
-      widgets/OverlayPanel.cpp
-      widgets/OverlayPanel.h
       widgets/PopupMenuTable.cpp
       widgets/PopupMenuTable.h
       widgets/ProgressDialog.cpp
@@ -1233,6 +1215,7 @@ set( AUDACITY_LIBRARIES
    lib-common-command-flags-interface
    lib-clipboard-interface
    lib-active-project-interface
+   lib-cellular-panel-interface
 )
 
 if ( ${_OPT}has_networking )

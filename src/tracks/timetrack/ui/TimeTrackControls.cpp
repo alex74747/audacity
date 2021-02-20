@@ -11,10 +11,10 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "TimeTrackControls.h"
 
-#include "../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "Project.h"
 #include "ProjectHistory.h"
-#include "../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "../../../TimeTrack.h"
 #include "MenuHandle.h"
 #include "../../../widgets/PopupMenuTable.h"

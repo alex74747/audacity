@@ -18,10 +18,10 @@ Paul Licameli split from TrackPanel.cpp
 #include "BasicUI.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "Menus.h"
-#include "../../RefreshCode.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "RefreshCode.h"
+#include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "wxWidgetsWindowPlacement.h"
 

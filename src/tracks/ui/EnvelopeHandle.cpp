@@ -15,12 +15,12 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "Envelope.h"
 #include "../../EnvelopeEditor.h"
-#include "../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "ProjectAudioIO.h"
 #include "ProjectHistory.h"
-#include "../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "../../TrackArt.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
 #include "../../../images/Cursors.h"
 

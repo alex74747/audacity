@@ -10,12 +10,12 @@
 
 #include "AffordanceHandle.h"
 
-#include "../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "ProjectAudioIO.h"
-#include "../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "ViewInfo.h"
 #include "SelectionState.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "Track.h"
 #include "../../../images/Cursors.h"
 

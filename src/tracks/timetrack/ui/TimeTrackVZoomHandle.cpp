@@ -13,12 +13,12 @@ Paul Licameli split from TimeTrackVZoomHandle.cpp
 #include "TimeTrackVRulerControls.h"
 #include "TimeTrackControls.h"
 
-#include "../../../HitTestResult.h"
+#include "HitTestResult.h"
 #include "NumberScale.h"
 #include "Prefs.h"
 #include "ProjectHistory.h"
-#include "../../../RefreshCode.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "RefreshCode.h"
+#include "TrackPanelMouseEvent.h"
 #include "../../../TimeTrack.h"
 
 #include <wx/window.h>

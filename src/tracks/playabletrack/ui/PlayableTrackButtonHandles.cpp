@@ -15,11 +15,11 @@ Paul Licameli split from TrackPanel.cpp
 #include "CommandManager.h"
 #include "Project.h"
 #include "../../../ProjectSettings.h"
-#include "../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "Track.h"
 #include "../../../TrackPanelAx.h"
 #include "../../../TrackInfo.h"
-#include "../../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 #include "../../../TrackUtilities.h"
 
 MuteButtonHandle::MuteButtonHandle

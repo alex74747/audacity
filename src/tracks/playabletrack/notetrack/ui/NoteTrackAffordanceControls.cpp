@@ -22,8 +22,8 @@
 #include "ViewInfo.h"
 #include "../../../../TrackArt.h"
 #include "../../../../TrackArtist.h"
-#include "../../../../TrackPanelMouseEvent.h"
-#include "../../../../TrackPanelDrawingContext.h"
+#include "TrackPanelMouseEvent.h"
+#include "TrackPanelDrawingContext.h"
 
 #include "../lib-src/header-substitutes/allegro.h"
 
@@ -31,7 +31,7 @@
 #include "ProjectHistory.h"
 #include "SelectionState.h"
 #include "SyncLock.h"
-#include "../../../../RefreshCode.h"
+#include "RefreshCode.h"
 #include "Theme.h"
 
 class NoteTrackAffordanceHandle final : public AffordanceHandle

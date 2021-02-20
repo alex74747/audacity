@@ -16,7 +16,7 @@ Paul Licameli
 #include <vector>
 
 #include "AttachedVirtualFunction.h"
-#include "../../UIHandle.h"
+#include "UIHandle.h"
 
 class SnapManager;
 class Track;

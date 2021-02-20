@@ -12,10 +12,10 @@ Paul Licameli
 #include "SliderHandle.h"
 
 #include "ASlider.h"
-#include "../../HitTestResult.h"
-#include "../../RefreshCode.h"
+#include "HitTestResult.h"
+#include "RefreshCode.h"
 #include "Track.h"
-#include "../../TrackPanelMouseEvent.h"
+#include "TrackPanelMouseEvent.h"
 
 SliderHandle::SliderHandle
 ( SliderFn sliderFn, const wxRect &rect, const std::shared_ptr<Track> &pTrack )

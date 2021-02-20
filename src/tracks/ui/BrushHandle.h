@@ -14,7 +14,7 @@ Paul Licameli split from TrackPanel.cpp
 #include <vector>
 #include "ProjectSettings.h"
 #include "tracks/playabletrack/wavetrack/ui/SpectrumView.h"
-#include "../../UIHandle.h"
+#include "UIHandle.h"
 #include "SelectedRegion.h"
 
 class AudacityProject;
