@@ -58,7 +58,7 @@
 #include "TrackPanel.h"
 #include "WaveTrack.h"
 
-#include "commands/CommandManagerWindowClasses.h"
+#include "CommandManagerWindowClasses.h"
 #include "widgets/AudacityMessageBox.h"
 #include "wxPanelWrapper.h" // to inherit
 

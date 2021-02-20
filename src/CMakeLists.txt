@@ -153,8 +153,6 @@ list( APPEND SOURCES
       JournalRegistry.h
       JournalWindowPaths.cpp
       JournalWindowPaths.h
-      KeyboardCapture.cpp
-      KeyboardCapture.h
       LabelDialog.cpp
       LabelDialog.h
       LabelTrack.cpp
@@ -303,7 +301,6 @@ list( APPEND SOURCES
       commands/CommandHandler.h
       commands/CommandManager.cpp
       commands/CommandManager.h
-      commands/CommandManagerWindowClasses.h
       commands/CommandMisc.h
       commands/CommandSignature.cpp
       commands/CommandSignature.h
@@ -1158,7 +1155,6 @@ elseif( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
    # from precompiled header usage
    set_source_files_properties(
       AudacityApp.mm
-      KeyboardCapture.cpp
       effects/EffectUI.cpp
       effects/VST/VSTControlOSX.mm
       effects/audiounits/AUControl.mm
@@ -1314,6 +1310,7 @@ set( AUDACITY_LIBRARIES
    lib-shuttlegui-interface
    lib-project-history-interface
    lib-project-windows-interface
+   lib-keyboard-capture-interface
 )
 
 if ( ${_OPT}has_networking )

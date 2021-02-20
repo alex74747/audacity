@@ -25,7 +25,7 @@
 #include "CellularPanel.h"
 #include "Observer.h"
 
-#include "commands/CommandManagerWindowClasses.h"
+#include "CommandManagerWindowClasses.h"
 
 
 class wxRect;

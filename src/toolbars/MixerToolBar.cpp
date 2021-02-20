@@ -33,7 +33,7 @@
 #include "AllThemeResources.h"
 #include "AudioIO.h"
 #include "ImageManipulation.h"
-#include "../KeyboardCapture.h"
+#include "KeyboardCapture.h"
 #include "Prefs.h"
 #include "../widgets/ASlider.h"
 #include "../widgets/Grabber.h"

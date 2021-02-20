@@ -33,6 +33,7 @@ set( LIBRARIES
    lib-shuttlegui
    lib-project-history
    lib-project-windows
+   lib-keyboard-capture
 )
 
 if ( ${_OPT}has_networking )

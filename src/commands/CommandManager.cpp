@@ -169,14 +169,6 @@ struct CommandListEntry
    bool useStrictFlags{ false };
 };
 
-NonKeystrokeInterceptingWindow::~NonKeystrokeInterceptingWindow()
-{
-}
-
-TopLevelKeystrokeHandlingWindow::~TopLevelKeystrokeHandlingWindow()
-{
-}
-
 MenuBarListEntry::MenuBarListEntry(const wxString &name_, wxMenuBar *menubar_)
    : name(name_), menubar(menubar_)
 {
@@ -1693,7 +1685,7 @@ void CommandManager::RemoveDuplicateShortcuts()
    }
 }
 
-#include "../KeyboardCapture.h"
+#include "KeyboardCapture.h"
 
 static KeyboardCapture::PreFilter::Scope scope1{
 []( wxKeyEvent & ) {
