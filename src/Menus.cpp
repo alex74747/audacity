@@ -30,12 +30,12 @@
 
 
 
+#include <wx/dialog.h>
 #include <wx/frame.h>
 
 #include "Project.h"
 #include "ProjectWindows.h"
 #include "commands/CommandManager.h"
-#include "widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
 #include "MenuHandle.h"
 
