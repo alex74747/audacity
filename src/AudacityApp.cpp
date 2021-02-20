@@ -1511,11 +1511,11 @@ bool AudacityApp::InitPart2()
 
       Widgets::MenuHandle fileMenu;
       Widgets::MenuHandle recentMenu;
-      fileMenu.Append({{ XXO("&New"), "Ctrl+N" }}, {}, {}, wxID_NEW );
-      fileMenu.Append({{ XXO("&Open..."), "Ctrl+O" }}, {}, {}, wxID_OPEN );
+      fileMenu.Append({{ XXO("&New"), NormalizedKeyString{"Ctrl+N"} }}, {}, {}, wxID_NEW );
+      fileMenu.Append({{ XXO("&Open..."), NormalizedKeyString{"Ctrl+O"} }}, {}, {}, wxID_OPEN );
       fileMenu.AppendSubMenu(std::move( recentMenu ), XXO("Open &Recent..."));
       fileMenu.Append(XXO("&About Audacity..."), {}, {}, wxID_ABOUT);
-      fileMenu.Append({{ XXO("&Preferences..."), "Ctrl+," }}, {}, {}, wxID_PREFERENCES );
+      fileMenu.Append({{ XXO("&Preferences..."), NormalizedKeyString{"Ctrl+,"} }}, {}, {}, wxID_PREFERENCES );
 
       {
          Widgets::MenuBarHandle menuBar;

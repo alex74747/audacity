@@ -149,6 +149,8 @@ list( APPEND SOURCES
       JournalRegistry.h
       JournalWindowPaths.cpp
       JournalWindowPaths.h
+      KeystrokeHandler.cpp
+      KeystrokeHandler.h
       LabelDialog.cpp
       LabelDialog.h
       LabelTrack.cpp

@@ -75,7 +75,4 @@ namespace std
       : hash< NormalizedKeyStringBase > {};
 }
 
-MENUS_API
-NormalizedKeyString KeyEventToKeyString(const wxKeyEvent & keyEvent);
-
 #endif
