@@ -124,8 +124,6 @@ list( APPEND SOURCES
       ScrubState.h
       SelectUtilities.cpp
       SelectUtilities.h
-      ShuttleAutomation.cpp
-      ShuttleAutomation.h
       Snap.cpp
       Snap.h
       SoundActivatedRecord.cpp
@@ -150,8 +148,6 @@ list( APPEND SOURCES
 
       # Commands
 
-      commands/AudacityCommand.cpp
-      commands/AudacityCommand.h
       commands/CommandDispatch.cpp
       commands/CommandDispatch.h
       commands/ResponseQueue.cpp

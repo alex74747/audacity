@@ -3,6 +3,7 @@ list( APPEND SOURCES
    TimeTrack.h
 )
 list( APPEND LIBRARIES
+   lib-active-project
    lib-sample-track-interface
    lib-screen-geometry-interface
    lib-project-rate-interface

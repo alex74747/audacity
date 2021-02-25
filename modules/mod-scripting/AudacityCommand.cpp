@@ -34,12 +34,12 @@ ShuttleGui.
 
 #include "ConfigInterface.h"
 
-#include "../ShuttleAutomation.h"
+#include "ShuttleAutomation.h"
 #include "ShuttleGui.h"
-#include "../widgets/ProgressDialog.h"
+#include "widgets/ProgressDialog.h"
 #include "HelpSystem.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/VetoDialogHook.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/VetoDialogHook.h"
 
 #include <unordered_map>
 

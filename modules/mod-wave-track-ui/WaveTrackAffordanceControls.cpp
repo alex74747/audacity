@@ -29,7 +29,7 @@
 #include "UndoManager.h"
 #include "ShuttleGui.h"
 #include "ProjectWindows.h"
-#include "commands/AudacityCommand.h"
+#include "AudacityCommand.h"
 #include "TextEditHelper.h"
 #include "SelectHandle.h"
 #include "WaveTrackView.h"//need only ClipParameters
