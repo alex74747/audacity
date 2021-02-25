@@ -77,7 +77,7 @@ the mouse around.
 
 #include "WaveTrack.h"
 
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 #include "widgets/AudacityMessageBox.h"
 #include "Ruler.h"
 #include "widgets/VetoDialogHook.h"

@@ -48,7 +48,7 @@
 #include "Prefs.h"
 #include "Track.h"
 #include "NumericTextCtrl.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ProgressDialog.h"
 #include "wxTextCtrlWrapper.h"

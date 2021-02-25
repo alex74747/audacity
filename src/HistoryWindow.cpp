@@ -42,7 +42,7 @@ undo memory so as to free up space.
 #include "ProjectWindows.h"
 #include "ShuttleGui.h"
 #include "widgets/AudacityMessageBox.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 
 #include <unordered_set>
 #include "SampleBlock.h"

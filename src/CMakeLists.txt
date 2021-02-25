@@ -134,8 +134,6 @@ list( APPEND SOURCES
       FileFormats.h
       FreqWindow.cpp
       FreqWindow.h
-      HelpText.cpp
-      HelpText.h
       HelpUtilities.cpp
       HelpUtilities.h
       HistoryWindow.cpp
@@ -837,10 +835,6 @@ list( APPEND SOURCES
       widgets/FileHistory.h
       widgets/Grabber.cpp
       widgets/Grabber.h
-      widgets/HelpSystem.cpp
-      widgets/HelpSystem.h
-      widgets/HtmlWindow.cpp
-      widgets/HtmlWindow.h
       widgets/KeyView.cpp
       widgets/KeyView.h
       widgets/MeterPanel.cpp
@@ -1248,6 +1242,7 @@ set( AUDACITY_LIBRARIES
    lib-keyboard-capture-interface
    lib-project-file-io-interface
    lib-command-manager-interface
+   lib-help-system-interface
 )
 
 if ( ${_OPT}has_networking )

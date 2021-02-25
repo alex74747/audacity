@@ -1336,7 +1336,7 @@ bool ProjectFileManager::Import(
 
 #include "Clipboard.h"
 #include "ShuttleGui.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 
 // Compact dialog
 namespace {

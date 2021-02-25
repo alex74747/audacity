@@ -36,7 +36,7 @@
 #include "widgets/AudacityMessageBox.h"
 #include "AudacityTextEntryDialog.h"
 #include "Grid.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 
 #include "FileNames.h"
 #include <limits>

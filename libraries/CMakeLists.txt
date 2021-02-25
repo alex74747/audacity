@@ -38,6 +38,7 @@ set( LIBRARIES
    lib-menus
    lib-widgets
    lib-command-manager
+   lib-help-system
 )
 
 if ( ${_OPT}has_networking )

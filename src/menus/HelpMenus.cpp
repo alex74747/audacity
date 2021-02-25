@@ -10,7 +10,7 @@
 #include "../CommonCommandFlags.h"
 #include "../CrashReport.h" // for HAS_CRASH_REPORT
 #include "FileNames.h"
-#include "../HelpText.h"
+#include "HelpText.h"
 #include "../HelpUtilities.h"
 #include "../LogWindow.h"
 #include "Menus.h"
@@ -27,7 +27,7 @@
 #include "CommandManager.h"
 #include "../prefs/PrefsDialog.h"
 #include "../widgets/AudacityMessageBox.h"
-#include "../widgets/HelpSystem.h"
+#include "HelpSystem.h"
 
 #if defined(HAVE_UPDATES_CHECK)
 #include "update/UpdateManager.h"

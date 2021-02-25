@@ -59,7 +59,7 @@
 #include "import/Import.h"
 #include "widgets/AudacityMessageBox.h"
 #include "AudacityTextEntryDialog.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"

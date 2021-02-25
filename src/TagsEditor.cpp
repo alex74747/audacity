@@ -14,7 +14,7 @@
 #include "ShuttleGui.h"
 #include "widgets/AudacityMessageBox.h"
 #include "Grid.h"
-#include "widgets/HelpSystem.h"
+#include "HelpSystem.h"
 #include "XMLFileReader.h"
 #include <wx/combobox.h>
 #include <wx/display.h>

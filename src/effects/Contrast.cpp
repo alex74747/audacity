@@ -22,11 +22,11 @@
 #include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "FileNames.h"
-#include "ViewInfo.h"
-#include "../widgets/HelpSystem.h"
+#include "HelpSystem.h"
 #include "NumericTextCtrl.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/VetoDialogHook.h"
+#include "ViewInfo.h"
 
 #include <cmath>
 #include <limits>
