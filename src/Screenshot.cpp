@@ -270,6 +270,8 @@ BEGIN_EVENT_TABLE(ScreenshotBigDialog, wxFrame)
    EVT_BUTTON(IdDirChoose,              ScreenshotBigDialog::OnDirChoose)
 END_EVENT_TABLE();
 
+#include "ProjectCommandManager.h"
+
 // Must not be called before CreateStatusBar!
 std::unique_ptr<ScreenshotCommand> ScreenshotBigDialog::CreateCommand()
 {

@@ -116,6 +116,8 @@ list( APPEND SOURCES
       CommonCommandFlags.h
       CrashReport.cpp
       CrashReport.h
+      DefaultCommandOutputTargets.cpp
+      DefaultCommandOutputTargets.h
       DefaultPlaybackPolicy.cpp
       DefaultPlaybackPolicy.h
       Diags.cpp

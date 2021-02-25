@@ -77,6 +77,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "commands/CommandHandler.h"
 #include "commands/CommandTargets.h"
 #include "commands/AppCommandEvent.h"
+#include "DefaultCommandOutputTargets.h"
 #include "FFmpeg.h"
 #include "Journal.h"
 //#include "LangChoice.h"

@@ -6,16 +6,35 @@
 
   Paul Licameli split from CommandManager.cpp
 
+\class InteractiveOutputTargets
+\brief InteractiveOutputTargets is an output target that pops up a
+dialog, if necessary.
+
+\class MessageDialogTarget
+\brief MessageDialogTarget is a CommandOutputTarget that sends its status
+to the LongMessageDialog.
+
+\class LongMessageDialog
+\brief LongMessageDialog is a dialog with a Text Window in it to
+capture the more lengthy output from some commands.
+
 **********************************************************************/
 
 #include "ProjectCommandManager.h"
 #include "commands/CommandManager.h"
 #include "ActiveProject.h"
+#include "DefaultCommandOutputTargets.h"
 #include "JournalRegistry.h"
 #include "Menus.h"
 #include "Project.h"
 #include "commands/CommandContext.h"
+#include "Project.h"
+#include "ShuttleGui.h"
 #include "commands/CommandTargets.h"
+#include "wxPanelWrapper.h"
+
+#include <wx/app.h>
+#include <wx/statusbr.h>
 
 void ProjectCommandManager::UpdateCheckmarksInAllProjects()
 {
@@ -50,4 +69,9 @@ Journal::RegisteredCommand sCommand{ JournalCode,
 }
 };
 
+}
+
+void StatusBarTarget::Update(const wxString &message)
+{
+   mStatus.SetStatusText(message, 0);
 }
