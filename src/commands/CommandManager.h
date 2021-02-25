@@ -97,7 +97,7 @@ using CommandNumericIDHash = std::unordered_map<int, CommandListEntry*>;
 class AudacityProject;
 class CommandContext;
 
-class AUDACITY_DLL_API CommandManager final
+class AUDACITY_DLL_API CommandManager
    : public XMLTagHandler
    , public AttachedProjectObject
 {

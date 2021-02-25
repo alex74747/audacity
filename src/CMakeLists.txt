@@ -183,6 +183,8 @@ list( APPEND SOURCES
       Profiler.h
       ProjectAudioManager.cpp
       ProjectAudioManager.h
+      ProjectCommandManager.cpp
+      ProjectCommandManager.h
       ProjectFileManager.cpp
       ProjectFileManager.h
       ProjectManager.cpp
