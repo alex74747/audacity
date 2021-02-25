@@ -16,6 +16,7 @@
 class ProjectCommandManager final {
 public:
    static void UpdateCheckmarksInAllProjects();
+   static void RebuildAllMenuBars();
 };
 
 /// Displays messages from a command in a wxStatusBar

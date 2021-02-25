@@ -15,6 +15,7 @@
 #include "EffectUI.h"
 
 #include "BasicMenu.h"
+#include "commands/CommandManager.h"
 #include "Effect.h"
 #include "EffectManager.h"
 #include "PluginManager.h"
@@ -1105,6 +1106,7 @@ void EffectUIHost::OnApply(wxCommandEvent & evt)
       auto flags = AlwaysEnabledFlag;
       bool allowed =
       MenuManager::Get( project ).ReportIfActionNotAllowed(
+         CommandManager::Get(project),
          mEffect.GetName(),
          flags,
          WaveTracksSelectedFlag() | TimeSelectedFlag());
@@ -1847,7 +1849,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
          // For now, we're limiting realtime preview to a single effect, so
          // make sure the menus reflect that fact that one may have just been
          // opened.
-         MenuManager::Get(project).UpdateMenus( false );
+         MenuManager::Get(project).UpdateMenus( false, commandManager );
       }
 
    } );

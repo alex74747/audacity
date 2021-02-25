@@ -10,6 +10,7 @@
 #include "../PluginRegistrationDialog.h"
 #include "Prefs.h"
 #include "Project.h"
+#include "../ProjectCommandManager.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
 #include "ProjectWindows.h"
@@ -56,7 +57,7 @@ void DoManagePluginsMenu(AudacityProject &project, EffectType type)
    auto &window = GetProjectFrame( project );
    auto &pm = PluginManager::Get();
    if (ShowManager(pm, &window, type))
-      MenuCreator::RebuildAllMenuBars();
+      ProjectCommandManager::RebuildAllMenuBars();
 }
 
 template< typename Projection >

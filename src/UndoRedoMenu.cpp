@@ -58,7 +58,7 @@ auto handler = [&mProject](wxEvent &evt){
    evt.Skip();
    ModifyUndoMenuItems( mProject );
    MenuManager::Get(mProject).
-   UpdateMenus();
+   UpdateMenus(true, CommandManager::Get(mProject));
 };
 
    mProject.Bind( EVT_UNDO_OR_REDO, handler);

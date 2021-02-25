@@ -32,10 +32,10 @@
 #include <wx/treectrl.h>
 
 #include "AudioIOBase.h"
+#include "commands/CommandManager.h"
 #include "Prefs.h"
 #include "ProjectWindows.h"
 #include "ShuttleGui.h"
-#include "../commands/CommandManager.h"
 
 #include "PrefsPanel.h"
 
@@ -858,7 +858,8 @@ void DoReloadPreferences( AudacityProject &project )
    //      rebuilding the menus while the PrefsDialog is still in the modal
    //      state.
    for (auto p : AllProjects{}) {
-      MenuManager::Get(*p).RebuildMenuBar(*p);
+      auto &cm = CommandManager::Get(*p);
+      MenuManager::Get(*p).RebuildMenuBar(*p, cm);
 // TODO: The comment below suggests this workaround is obsolete.
 #if defined(__WXGTK__)
       // Workaround for:

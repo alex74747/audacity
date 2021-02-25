@@ -1149,7 +1149,8 @@ void ProjectWindow::FixScrollbars()
       trackPanel.Refresh(false);
    }
 
-   MenuManager::Get( project ).UpdateMenus();
+   MenuManager::Get( project )
+      .UpdateMenus(true, CommandManager::Get(project));
 
    if (oldhstate != newhstate || oldvstate != newvstate) {
       UpdateLayout();
@@ -1507,7 +1508,8 @@ void ProjectWindow::OnMenu(wxCommandEvent & event)
 void ProjectWindow::OnUpdateUI(wxUpdateUIEvent & WXUNUSED(event))
 {
    auto &project = mProject;
-   MenuManager::Get( project ).UpdateMenus();
+   MenuManager::Get( project )
+      .UpdateMenus(true, CommandManager::Get(project));
 }
 
 void ProjectWindow::OnActivate(wxActivateEvent & event)

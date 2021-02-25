@@ -2,6 +2,7 @@
 #include "../Menus.h"
 #include "Prefs.h"
 #include "Project.h"
+#include "../ProjectCommandManager.h"
 #include "ProjectHistory.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
@@ -254,7 +255,7 @@ void OnAdvancedVZoom(const CommandContext &context)
    gPrefs->Write(wxT("/GUI/VerticalZooming"), checked);
    gPrefs->Flush();
    commandManager.Check(wxT("AdvancedVZoom"), checked);
-   MenuCreator::RebuildAllMenuBars();
+   ProjectCommandManager::RebuildAllMenuBars();
 }
 
 void OnCollapseAllTracks(const CommandContext &context)
@@ -318,7 +319,7 @@ void OnShowExtraMenus(const CommandContext &context)
    gPrefs->Write(wxT("/GUI/ShowExtraMenus"), checked);
    gPrefs->Flush();
    commandManager.Check(wxT("ShowExtraMenus"), checked);
-   MenuCreator::RebuildAllMenuBars();
+   ProjectCommandManager::RebuildAllMenuBars();
 }
 
 void OnShowClipping(const CommandContext &context)

@@ -28,7 +28,6 @@ capture the more lengthy output from some commands.
 #include "Menus.h"
 #include "Project.h"
 #include "commands/CommandContext.h"
-#include "Project.h"
 #include "ShuttleGui.h"
 #include "commands/CommandTargets.h"
 #include "wxPanelWrapper.h"
@@ -69,6 +68,25 @@ Journal::RegisteredCommand sCommand{ JournalCode,
 }
 };
 
+}
+
+void ProjectCommandManager::RebuildAllMenuBars()
+{
+   for( auto p : AllProjects{} ) {
+      MenuManager::Get(*p)
+         .RebuildMenuBar(*p, CommandManager::Get(*p));
+#if defined(__WXGTK__)
+      // Workaround for:
+      //
+      //   http://bugzilla.audacityteam.org/show_bug.cgi?id=458
+      //
+      // This workaround should be removed when Audacity updates to wxWidgets 3.x which has a fix.
+      auto &window = GetProjectFrame( *p );
+      wxRect r = window.GetRect();
+      window.SetSize(wxSize(1,1));
+      window.SetSize(r.GetSize());
+#endif
+   }
 }
 
 void StatusBarTarget::Update(const wxString &message)

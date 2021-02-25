@@ -25,6 +25,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "PlatformCompatibility.h"
 #include "PluginManager.h"
 #include "Project.h"
+#include "ProjectCommandManager.h"
 #include "ProjectFileIO.h"
 #include "ProjectFSCK.h"
 #include "ProjectHistory.h"
@@ -949,7 +950,7 @@ AudacityProject *ProjectFileManager::OpenFile( const ProjectChooserFn &chooser,
 #ifdef EXPERIMENTAL_DRAG_DROP_PLUG_INS
          // Is it a plug-in?
          if (PluginManager::Get().DropFile(fileName)) {
-            MenuCreator::RebuildAllMenuBars();
+            ProjectCommandManager::RebuildAllMenuBars();
             // Plug-in installation happened, not really opening of a file,
             // so return null
             return nullptr;

@@ -383,7 +383,8 @@ AudacityProject *ProjectManager::New()
    // This may report an error.
    projectFileManager.OpenNewProject();
 
-   MenuManager::Get( project ).CreateMenusAndCommands( project );
+   MenuManager::Get( project ).CreateMenusAndCommands(
+      project, CommandManager::Get(project) );
    
    projectHistory.InitialState();
    projectManager.RestartTimer();

@@ -13,6 +13,7 @@
 #include "ProjectWindows.h"
 #include "../SelectUtilities.h"
 #include "../SyncLock.h"
+#include "TimeWarper.h"
 #include "../TrackPanel.h"
 #include "../TrackPanelAx.h"
 #include "UndoManager.h"
@@ -938,7 +939,8 @@ void OnPreferences(const CommandContext &context)
    //      rebuilding the menus while the PrefsDialog is still in the modal
    //      state.
    for (auto p : AllProjects{}) {
-      MenuManager::Get(*p).RebuildMenuBar(*p);
+      auto &cm = CommandManager::Get(*p);
+      MenuManager::Get(*p).RebuildMenuBar(*p, cm);
 // TODO: The comment below suggests this workaround is obsolete.
 #if defined(__WXGTK__)
       // Workaround for:

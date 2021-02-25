@@ -87,6 +87,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
+#include "ProjectCommandManager.h"
 #include "ProjectFileIO.h"
 #include "ProjectFileManager.h"
 #include "ProjectHistory.h"
@@ -1581,6 +1582,7 @@ bool AudacityApp::InitPart2()
       if (vMajorInit != AUDACITY_VERSION || vMinorInit != AUDACITY_RELEASE
          || vMicroInit != AUDACITY_REVISION) {
          CommandManager::Get(*project).RemoveDuplicateShortcuts();
+         ProjectCommandManager::RebuildAllMenuBars();
       }
       //
       // Auto-recovery
@@ -1631,7 +1633,7 @@ bool AudacityApp::InitPart2()
          // pProject may be null
          GlobalPrefsDialog dialog( pWindow, pProject.get(), factories );
          dialog.ShowModal();
-         MenuCreator::RebuildAllMenuBars();
+         ProjectCommandManager::RebuildAllMenuBars();
          return true;
       }
       else

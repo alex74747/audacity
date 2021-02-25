@@ -39,10 +39,10 @@ class AUDACITY_DLL_API MenuCreator
 public:
    MenuCreator();
    ~MenuCreator();
-   void CreateMenusAndCommands(AudacityProject &project);
-   void RebuildMenuBar(AudacityProject &project);
-
-   static void RebuildAllMenuBars();
+   void CreateMenusAndCommands(
+      AudacityProject &project, CommandManager &cm);
+   void RebuildMenuBar(
+      AudacityProject &project, CommandManager &cm);
 
 public:
    CommandFlag mLastFlags;
@@ -94,7 +94,7 @@ public:
 
    // checkActive is a temporary hack that should be removed as soon as we
    // get multiple effect preview working
-   void UpdateMenus( bool checkActive = true );
+   void UpdateMenus( bool checkActive, CommandManager &cm );
 
    // If checkActive, do not do complete flags testing on an
    // inactive project as it is needlessly expensive.
@@ -102,7 +102,7 @@ public:
    void UpdatePrefs() override;
 
    // Command Handling
-   bool ReportIfActionNotAllowed(
+   bool ReportIfActionNotAllowed( CommandManager &cm,
       const TranslatableString & Name, CommandFlag & flags, CommandFlag flagsRqd );
    bool TryToMakeActionAllowed(
       CommandFlag & flags, CommandFlag flagsRqd );
