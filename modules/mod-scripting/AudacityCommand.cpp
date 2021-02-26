@@ -38,8 +38,9 @@ ShuttleGui.
 #include "ShuttleAutomation.h"
 #include "ShuttleGui.h"
 #include "HelpSystem.h"
-#include "widgets/AudacityMessageBox.h"
 #include "VetoDialogHook.h"
+#include "widgets/wxWidgetsBasicUI.h"
+#include "wxWidgetsWindowPlacement.h"
 
 #include <unordered_map>
 
@@ -214,14 +215,20 @@ bool AudacityCommand::TransferDataFromWindow()
    return true;
 }
 
-int AudacityCommand::MessageBox(
-   const TranslatableString& message, long style,
+BasicUI::MessageBoxResult AudacityCommand::MessageBox(
+   const TranslatableString& message,
    const TranslatableString &titleStr)
 {
+   using namespace BasicUI;
    auto title = titleStr.empty()
       ? GetName()
       : XO("%s: %s").Format( GetName(), titleStr );
-   return AudacityMessageBox(message, title, style, mUIParent);
+   wxWidgetsWindowPlacement placement{ mUIParent };
+   return ShowMessageBox( message,
+      MessageBoxOptions{}
+         .Caption(title)
+         .Parent(&placement)
+   );
 }
 
 BEGIN_EVENT_TABLE(AudacityCommandDialog, wxDialogWrapper)
