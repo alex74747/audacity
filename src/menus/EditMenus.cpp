@@ -19,8 +19,8 @@
 #include "CommandManager.h"
 #include "TimeWarper.h"
 #include "PrefsDialog.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/VetoDialogHook.h"
+#include "widgets/AudacityMessageBox.h"
+#include "VetoDialogHook.h"
 
 namespace EditActions {
 

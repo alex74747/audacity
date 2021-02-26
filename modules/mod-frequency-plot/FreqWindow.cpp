@@ -80,7 +80,7 @@ the mouse around.
 #include "HelpSystem.h"
 #include "widgets/AudacityMessageBox.h"
 #include "Ruler.h"
-#include "widgets/VetoDialogHook.h"
+#include "VetoDialogHook.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"

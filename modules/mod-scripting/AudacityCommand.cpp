@@ -39,7 +39,7 @@ ShuttleGui.
 #include "ShuttleGui.h"
 #include "HelpSystem.h"
 #include "widgets/AudacityMessageBox.h"
-#include "widgets/VetoDialogHook.h"
+#include "VetoDialogHook.h"
 
 #include <unordered_map>
 
