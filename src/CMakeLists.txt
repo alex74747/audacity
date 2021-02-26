@@ -184,6 +184,8 @@ list( APPEND SOURCES
       ProjectWindow.cpp
       ProjectWindow.h
       RefreshCode.h
+      ReloadPreferences.cpp
+      ReloadPreferences.h
       Screenshot.cpp
       Screenshot.h
       ScrubState.cpp
@@ -623,10 +625,6 @@ list( APPEND SOURCES
       prefs/MousePrefs.h
       prefs/PlaybackPrefs.cpp
       prefs/PlaybackPrefs.h
-      prefs/PrefsDialog.cpp
-      prefs/PrefsDialog.h
-      prefs/PrefsPanel.cpp
-      prefs/PrefsPanel.h
       prefs/QualityPrefs.cpp
       prefs/QualityPrefs.h
       prefs/RecordingPrefs.cpp
@@ -1242,7 +1240,7 @@ set( AUDACITY_LIBRARIES
    lib-keyboard-capture-interface
    lib-project-file-io-interface
    lib-command-manager-interface
-   lib-help-system-interface
+   lib-preferences-dialog-interface
 )
 
 if ( ${_OPT}has_networking )

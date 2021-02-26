@@ -15,6 +15,7 @@
 #include "../ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "../ProjectSelectionManager.h"
+#include "../ReloadPreferences.h"
 #include "../toolbars/ToolManager.h"
 #include "../Screenshot.h"
 #include "TempDirectory.h"
@@ -25,8 +26,8 @@
 #include "../effects/EffectUI.h"
 #include "RealtimeEffectManager.h"
 #include "../prefs/EffectsPrefs.h"
-#include "../prefs/PrefsDialog.h"
-#include "../widgets/AudacityMessageBox.h"
+#include "PrefsDialog.h"
+#include "widgets/AudacityMessageBox.h"
 #include "UndoRedoMenu.h"
 
 #include <wx/log.h>

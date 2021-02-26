@@ -14,7 +14,7 @@
 #include "HelpSystem.h"
 #include "ShuttleGui.h"
 
-#include "prefs/PrefsDialog.h"
+#include "PrefsDialog.h"
 #include "AccessibleLinksFormatter.h"
 
 #include <wx/stattext.h>

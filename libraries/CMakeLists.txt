@@ -39,6 +39,7 @@ set( LIBRARIES
    lib-widgets
    lib-command-manager
    lib-help-system
+   lib-preferences-dialog
 )
 
 if ( ${_OPT}has_networking )

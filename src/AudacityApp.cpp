@@ -101,7 +101,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "TempDirectory.h"
 #include "LoadThemeResources.h"
 #include "Track.h"
-#include "prefs/PrefsDialog.h"
+#include "PrefsDialog.h"
 #include "Theme.h"
 #include "PlatformCompatibility.h"
 #include "AutoRecoveryDialog.h"

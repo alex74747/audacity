@@ -25,7 +25,8 @@
 #include "Theme.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../prefs/PrefsDialog.h"
+#include "PrefsDialog.h"
+#include "../ReloadPreferences.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "HelpSystem.h"
 
