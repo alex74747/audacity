@@ -99,8 +99,6 @@ list( APPEND SOURCES
       Diags.h
       Dither.cpp
       Dither.h
-      EditUtilities.cpp
-      EditUtilities.h
       Envelope.cpp
       Envelope.h
       FFT.cpp
