@@ -90,8 +90,6 @@ list( APPEND SOURCES
       DefaultPlaybackPolicy.h
       Diags.cpp
       Diags.h
-      EditUtilities.cpp
-      EditUtilities.h
       HelpUtilities.cpp
       HelpUtilities.h
       KeystrokeHandler.cpp
