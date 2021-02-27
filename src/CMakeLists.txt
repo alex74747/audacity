@@ -143,6 +143,8 @@ list( APPEND SOURCES
       ModuleConstants.h
       ModuleManager.cpp
       ModuleManager.h
+      ModuleSettings.cpp
+      ModuleSettings.h
       NumberScale.h
       PitchName.cpp
       PitchName.h
