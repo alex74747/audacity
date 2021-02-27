@@ -269,12 +269,6 @@ bool RecordingPrefs::Commit()
    ShuttleGui S(this, eIsSavingToPrefs);
    PopulateOrExchange(S);
 
-   double latencyDuration = DEFAULT_LATENCY_DURATION;
-   gPrefs->Read(wxT("/AudioIO/LatencyDuration"), &latencyDuration);
-   if (latencyDuration < 0) {
-      gPrefs->Write(wxT("/AudioIO/LatencyDuration"), DEFAULT_LATENCY_DURATION);
-   }
-
    #ifdef EXPERIMENTAL_AUTOMATED_INPUT_LEVEL_ADJUSTMENT
       double targetpeak, deltapeak;
       gPrefs->Read(wxT("/AudioIO/TargetPeak"),  &targetpeak);

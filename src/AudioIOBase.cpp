@@ -18,7 +18,6 @@ Paul Licameli split from AudioIO.cpp
 
 #include "Envelope.h"
 #include "Prefs.h"
-#include "prefs/RecordingPrefs.h"
 #include "widgets/MeterPanelBase.h"
 
 #if USE_PORTMIXER
@@ -185,7 +184,8 @@ void AudioIOBase::HandleDeviceChange()
       playbackParameters.suggestedLatency =
          Pa_GetDeviceInfo(playDeviceNum)->defaultLowOutputLatency;
    else
-      playbackParameters.suggestedLatency = DEFAULT_LATENCY_CORRECTION/1000.0;
+      playbackParameters.suggestedLatency =
+         AudioIOLatencyCorrection.GetDefault()/1000.0;
 
    PaStreamParameters captureParameters;
 
@@ -197,7 +197,8 @@ void AudioIOBase::HandleDeviceChange()
       captureParameters.suggestedLatency =
          Pa_GetDeviceInfo(recDeviceNum)->defaultLowInputLatency;
    else
-      captureParameters.suggestedLatency = DEFAULT_LATENCY_CORRECTION/1000.0;
+      captureParameters.suggestedLatency =
+         AudioIOLatencyCorrection.GetDefault()/1000.0;
 
    // try opening for record and playback
    // Not really doing I/O so pass nullptr for the callback function
@@ -257,15 +258,13 @@ void AudioIOBase::HandleDeviceChange()
 
    // Set input source
 #if USE_PORTMIXER
-   int sourceIndex;
-   if (gPrefs->Read(wxT("/AudioIO/RecordingSourceIndex"), &sourceIndex)) {
-      if (sourceIndex >= 0) {
-         //the current index of our source may be different because the stream
-         //is a combination of two devices, so update it.
-         sourceIndex = getRecordSourceIndex(mPortMixer);
-         if (sourceIndex >= 0)
-            SetMixer(sourceIndex);
-      }
+   auto sourceIndex = AudioIORecordingSourceIndex.Read();
+   if (sourceIndex >= 0) {
+      //the current index of our source may be different because the stream
+      //is a combination of two devices, so update it.
+      sourceIndex = getRecordSourceIndex(mPortMixer);
+      if (sourceIndex >= 0)
+         SetMixer(sourceIndex);
    }
 #endif
 
@@ -602,10 +601,9 @@ std::vector<long> AudioIOBase::GetSupportedCaptureRates(int devIndex, double rat
       return supported;
    }
 
-   double latencyDuration = DEFAULT_LATENCY_DURATION;
-   long recordChannels = 1;
-   gPrefs->Read(wxT("/AudioIO/LatencyDuration"), &latencyDuration);
-   gPrefs->Read(wxT("/AudioIO/RecordChannels"), &recordChannels);
+   auto latencyDuration = AudioIOLatencyDuration.Read();
+   // Why not defaulting to 2 as elsewhere?
+   auto recordChannels = AudioIORecordChannels.ReadWithDefault(1);
 
    // LLL: Remove when a proper method of determining actual supported
    //      DirectSound rate is devised.
@@ -714,7 +712,7 @@ int AudioIOBase::GetOptimalSupportedSampleRate()
 int AudioIOBase::getRecordSourceIndex(PxMixer *portMixer)
 {
    int i;
-   wxString sourceName = gPrefs->Read(wxT("/AudioIO/RecordingSource"), wxT(""));
+   auto sourceName = AudioIORecordingSource.Read();
    int numSources = Px_GetNumInputSources(portMixer);
    for (i = 0; i < numSources; i++) {
       if (sourceName == wxString(wxSafeConvertMB2WX(Px_GetInputSourceName(portMixer, i))))
@@ -729,11 +727,9 @@ int AudioIOBase::getPlayDevIndex(const wxString &devNameArg)
    wxString devName(devNameArg);
    // if we don't get given a device, look up the preferences
    if (devName.empty())
-   {
-      devName = gPrefs->Read(wxT("/AudioIO/PlaybackDevice"), wxT(""));
-   }
+      devName = AudioIOPlaybackDevice.Read();
 
-   wxString hostName = gPrefs->Read(wxT("/AudioIO/Host"), wxT(""));
+   auto hostName = AudioIOHost.Read();
    PaHostApiIndex hostCnt = Pa_GetHostApiCount();
    PaHostApiIndex hostNum;
    for (hostNum = 0; hostNum < hostCnt; hostNum++)
@@ -786,11 +782,9 @@ int AudioIOBase::getRecordDevIndex(const wxString &devNameArg)
    wxString devName(devNameArg);
    // if we don't get given a device, look up the preferences
    if (devName.empty())
-   {
-      devName = gPrefs->Read(wxT("/AudioIO/RecordingDevice"), wxT(""));
-   }
+      devName = AudioIORecordingDevice.Read();
 
-   wxString hostName = gPrefs->Read(wxT("/AudioIO/Host"), wxT(""));
+   auto hostName = AudioIOHost.Read();
    PaHostApiIndex hostCnt = Pa_GetHostApiCount();
    PaHostApiIndex hostNum;
    for (hostNum = 0; hostNum < hostCnt; hostNum++)
@@ -863,8 +857,8 @@ wxString AudioIOBase::GetDeviceInfo()
    s << XO("Default recording device number: %d\n").Format( recDeviceNum );
    s << XO("Default playback device number: %d\n").Format( playDeviceNum);
 
-   wxString recDevice = gPrefs->Read(wxT("/AudioIO/RecordingDevice"), wxT(""));
-   wxString playDevice = gPrefs->Read(wxT("/AudioIO/PlaybackDevice"), wxT(""));
+   auto recDevice = AudioIORecordingDevice.Read();
+   auto playDevice = AudioIOPlaybackDevice.Read();
    int j;
 
    // This gets info on all available audio devices (input and output)
@@ -971,9 +965,9 @@ wxString AudioIOBase::GetDeviceInfo()
          playbackParameters.suggestedLatency =
             Pa_GetDeviceInfo(playDeviceNum)->defaultLowOutputLatency;
       }
-      else{
-         playbackParameters.suggestedLatency = DEFAULT_LATENCY_CORRECTION/1000.0;
-      }
+      else
+         playbackParameters.suggestedLatency =
+            AudioIOLatencyCorrection.GetDefault()/1000.0;
 
       PaStreamParameters captureParameters;
 
@@ -984,9 +978,10 @@ wxString AudioIOBase::GetDeviceInfo()
       if (Pa_GetDeviceInfo(recDeviceNum)){
          captureParameters.suggestedLatency =
             Pa_GetDeviceInfo(recDeviceNum)->defaultLowInputLatency;
-      }else{
-         captureParameters.suggestedLatency = DEFAULT_LATENCY_CORRECTION/1000.0;
       }
+      else
+         captureParameters.suggestedLatency =
+            AudioIOLatencyCorrection.GetDefault()/1000.0;
 
       // Not really doing I/O so pass nullptr for the callback function
       error = Pa_OpenStream(&stream,
@@ -1351,3 +1346,20 @@ double AudioIOBase::RecordingSchedule::ToDiscard() const
 {
    return std::max(0.0, -( mPosition + TotalCorrection() ) );
 }
+
+StringSetting AudioIOHost{
+   L"/AudioIO/Host", L"" };
+StringSetting AudioIOPlaybackDevice{
+   L"/AudioIO/PlaybackDevice", L"" };
+DoubleSetting AudioIOLatencyCorrection{
+   L"/AudioIO/LatencyCorrection", -130.0 };
+DoubleSetting AudioIOLatencyDuration{
+   L"/AudioIO/LatencyDuration", 100.0 };
+IntSetting AudioIORecordChannels{
+   L"/AudioIO/RecordChannels", 2 };
+StringSetting AudioIORecordingDevice{
+   L"/AudioIO/RecordingDevice", L"" };
+StringSetting AudioIORecordingSource{
+   L"/AudioIO/RecordingSource", L"" };
+IntSetting AudioIORecordingSourceIndex{
+   L"/AudioIO/RecordingSourceIndex", -1 };
