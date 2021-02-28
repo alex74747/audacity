@@ -32,6 +32,7 @@ set( LIBRARIES
    lib-wx-wrappers
    lib-shuttlegui
    lib-project-history
+   lib-project-windows
 )
 
 if ( ${_OPT}has_networking )

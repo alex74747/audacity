@@ -26,7 +26,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "ProjectRate.h"
 #include "../../../ProjectSettings.h"
 #include "../../../ProjectWindow.h"
-#include "../../../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "../../../RefreshCode.h"
 #include "../../../SyncLock.h"
 #include "Theme.h"

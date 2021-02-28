@@ -15,7 +15,7 @@
 #include "../ProjectManager.h"
 #include "ProjectRate.h"
 #include "../ProjectSettings.h"
-#include "../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "../ProjectWindow.h"
 #include "../SelectUtilities.h"
 #include "../SoundActivatedRecord.h"

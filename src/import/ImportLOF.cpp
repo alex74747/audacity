@@ -85,7 +85,7 @@
 #include "ProjectHistory.h"
 #include "../ProjectManager.h"
 #include "../ProjectWindow.h"
-#include "../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "Prefs.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ProgressDialog.h"

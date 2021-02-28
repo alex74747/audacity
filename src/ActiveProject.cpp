@@ -4,7 +4,7 @@
  
  @file ActiveProject.cpp
  
- Paul Licameli split from Project.cpp
+ Paul Licameli split from Project.cpp  
  
  **********************************************************************/
 

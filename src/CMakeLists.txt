@@ -201,11 +201,7 @@ list( APPEND SOURCES
       ProjectSettings.h
       ProjectWindow.cpp
       ProjectWindow.h
-      ProjectWindowBase.cpp
-      ProjectWindowBase.h
       RefreshCode.h
-      ProjectWindows.cpp
-      ProjectWindows.h
       Screenshot.cpp
       Screenshot.h
       ScrubState.cpp
@@ -1317,6 +1313,7 @@ set( AUDACITY_LIBRARIES
    lib-wave-track-interface
    lib-shuttlegui-interface
    lib-project-history-interface
+   lib-project-windows-interface
 )
 
 if ( ${_OPT}has_networking )

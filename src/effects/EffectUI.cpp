@@ -19,7 +19,7 @@
 #include "EffectManager.h"
 #include "PluginManager.h"
 #include "ProjectHistory.h"
-#include "../ProjectWindowBase.h"
+#include "ProjectWindowBase.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
 #include "widgets/wxWidgetsWindowPlacement.h"

@@ -12,7 +12,7 @@
 #include "Project.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
-#include "../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "../ProjectSelectionManager.h"
 #include "../toolbars/ToolManager.h"
 #include "../Screenshot.h"

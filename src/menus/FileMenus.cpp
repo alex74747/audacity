@@ -10,7 +10,7 @@
 #include "../ProjectFileManager.h"
 #include "ProjectHistory.h"
 #include "../ProjectManager.h"
-#include "../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "../ProjectWindow.h"
 #include "../SelectFile.h"
 #include "../SelectUtilities.h"

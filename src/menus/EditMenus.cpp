@@ -11,7 +11,7 @@
 #include "ProjectRate.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
-#include "../ProjectWindows.h"
+#include "ProjectWindows.h"
 #include "../SelectUtilities.h"
 #include "../SyncLock.h"
 #include "../TrackPanel.h"
