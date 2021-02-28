@@ -32,7 +32,7 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 #include "ProjectHistory.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "effects/EffectManager.h"
 #include "effects/EffectUI.h"
 #include "FileNames.h"
@@ -49,7 +49,7 @@ processing.  See also MacrosWindow and ApplyMacroDialog.
 
 #include "widgets/AudacityMessageBox.h"
 
-#include "commands/CommandContext.h"
+#include "CommandContext.h"
 #include "commands/CommandDispatch.h"
 
 MacroCommands::MacroCommands( AudacityProject &project )

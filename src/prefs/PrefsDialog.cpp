@@ -32,7 +32,7 @@
 #include <wx/treectrl.h>
 
 #include "AudioIOBase.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "Prefs.h"
 #include "ProjectWindows.h"
 #include "ShuttleGui.h"
@@ -839,7 +839,7 @@ void PrefsDialog::RecordExpansionState()
 }
 
 #include <wx/frame.h>
-#include "../Menus.h"
+#include "Menus.h"
 #include "Project.h"
 
 void DoReloadPreferences( AudacityProject &project )

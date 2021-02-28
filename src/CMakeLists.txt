@@ -141,16 +141,6 @@ list( APPEND SOURCES
       HistoryWindow.cpp
       HistoryWindow.h
       HitTestResult.h
-      Journal.cpp
-      Journal.h
-      JournalEvents.cpp
-      JournalEvents.h
-      JournalOutput.cpp
-      JournalOutput.h
-      JournalRegistry.cpp
-      JournalRegistry.h
-      JournalWindowPaths.cpp
-      JournalWindowPaths.h
       KeystrokeHandler.cpp
       KeystrokeHandler.h
       LabelDialog.cpp
@@ -167,8 +157,6 @@ list( APPEND SOURCES
       Lyrics.h
       LyricsWindow.cpp
       LyricsWindow.h
-      Menus.cpp
-      Menus.h
       MIDIPlay.cpp
       MIDIPlay.h
       MixerBoard.cpp
@@ -282,24 +270,15 @@ list( APPEND SOURCES
       commands/Command.h
       commands/CommandBuilder.cpp
       commands/CommandBuilder.h
-      commands/CommandContext.cpp
-      commands/CommandContext.h
       commands/CommandDirectory.cpp
       commands/CommandDirectory.h
-      commands/CommandFlag.cpp
-      commands/CommandFlag.h
-      commands/CommandFunctors.h
       commands/CommandDispatch.cpp
       commands/CommandDispatch.h
       commands/CommandHandler.cpp
       commands/CommandHandler.h
-      commands/CommandManager.cpp
-      commands/CommandManager.h
       commands/CommandMisc.h
       commands/CommandSignature.cpp
       commands/CommandSignature.h
-      commands/CommandTargets.cpp
-      commands/CommandTargets.h
       commands/CommandType.cpp
       commands/CommandType.h
       commands/CompareAudioCommand.cpp
@@ -1268,7 +1247,7 @@ set( AUDACITY_LIBRARIES
    lib-project-windows-interface
    lib-keyboard-capture-interface
    lib-project-file-io-interface
-   lib-widgets-interface
+   lib-command-manager-interface
 )
 
 if ( ${_OPT}has_networking )

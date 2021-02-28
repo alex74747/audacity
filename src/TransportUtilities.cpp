@@ -13,7 +13,7 @@
 
 #include <thread>
 #include "AudioIO.h"
-#include "commands/CommandContext.h"
+#include "CommandContext.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"

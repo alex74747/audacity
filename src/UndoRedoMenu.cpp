@@ -14,7 +14,7 @@
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "UndoManager.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 
 void ModifyUndoMenuItems(AudacityProject &project)
 {

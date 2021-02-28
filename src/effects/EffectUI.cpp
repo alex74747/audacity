@@ -15,7 +15,7 @@
 #include "EffectUI.h"
 
 #include "BasicMenu.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "Effect.h"
 #include "EffectManager.h"
 #include "PluginManager.h"
@@ -48,7 +48,7 @@ static PluginID GetID(Effect &effect)
 #include <wx/stattext.h>
 #include <wx/tglbtn.h>
 
-#include "../commands/CommandContext.h"
+#include "CommandContext.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../widgets/wxPanelWrapper.h"
@@ -655,14 +655,14 @@ private:
 #include "../../images/Effect.h"
 #include "AudioIO.h"
 #include "../CommonCommandFlags.h"
-#include "../Menus.h"
+#include "Menus.h"
 #include "../prefs/GUISettings.h" // for RTL_WORKAROUND
 #include "Project.h"
 #include "../ProjectAudioManager.h"
 #include "ShuttleGui.h"
 #include "ViewInfo.h"
 #include "../commands/AudacityCommand.h"
-#include "../commands/CommandContext.h"
+#include "CommandContext.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "widgets/HelpSystem.h"
 
@@ -1797,7 +1797,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
 #include "../SelectUtilities.h"
 #include "../TrackPanel.h"
 #include "WaveTrack.h"
-#include "../commands/CommandManager.h"
+#include "CommandManager.h"
 
 /// DoEffect() takes a PluginID and executes the associated effect.
 ///

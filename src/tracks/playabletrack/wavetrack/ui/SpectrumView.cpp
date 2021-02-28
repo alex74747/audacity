@@ -25,6 +25,7 @@ Paul Licameli split from WaveTrackView.cpp
 
 #include "AColor.h"
 #include "Prefs.h"
+#include "../../../../ProjectCommandManager.h"
 #include "NumberScale.h"
 #include "../../../../ProjectCommandManager.h"
 #include "../../../../TrackArt.h"
@@ -923,7 +924,7 @@ static const WaveTrackSubViews::RegisteredFactory key{
 // source file with the rest of the spectrum view implementation.
 #include "WaveTrackControls.h"
 #include "AudioIOBase.h"
-#include "../../../../Menus.h"
+#include "Menus.h"
 #include "ProjectHistory.h"
 #include "../../../../RefreshCode.h"
 #include "../../../../prefs/PrefsDialog.h"

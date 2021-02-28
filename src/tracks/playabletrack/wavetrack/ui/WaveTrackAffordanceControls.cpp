@@ -14,10 +14,10 @@
 #include <wx/frame.h>
 
 #include "AllThemeResources.h"
-#include "../../../../commands/CommandContext.h"
-#include "../../../../commands/CommandFlag.h"
-#include "../../../../commands/CommandFunctors.h"
-#include "../../../../commands/CommandManager.h"
+#include "CommandContext.h"
+#include "CommandFlag.h"
+#include "CommandFunctors.h"
+#include "CommandManager.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../TrackArt.h"
 #include "../../../../TrackArtist.h"

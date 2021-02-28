@@ -29,7 +29,7 @@
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 
 namespace {
 

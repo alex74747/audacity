@@ -36,6 +36,7 @@
 #include <wx/settings.h>
 
 #include "Clipboard.h"
+#include "CommandManager.h"
 #include "ShuttleGui.h"
 #include "Menus.h"
 #include "Prefs.h"
@@ -45,7 +46,7 @@
 #include "ProjectManager.h"
 #include "ProjectWindow.h"
 #include "SelectUtilities.h"
-#include "commands/CommandManager.h"
+#include "ProjectCommandManager.h"
 #include "effects/Effect.h"
 #include "../images/Arrow.xpm"
 #include "../images/Empty9x16.xpm"

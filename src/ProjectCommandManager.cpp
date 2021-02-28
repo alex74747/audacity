@@ -21,15 +21,15 @@ capture the more lengthy output from some commands.
 **********************************************************************/
 
 #include "ProjectCommandManager.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "ActiveProject.h"
+#include "CommandContext.h"
 #include "DefaultCommandOutputTargets.h"
 #include "JournalRegistry.h"
 #include "Menus.h"
 #include "Project.h"
-#include "commands/CommandContext.h"
 #include "ShuttleGui.h"
-#include "commands/CommandTargets.h"
+#include "CommandTargets.h"
 #include "wxPanelWrapper.h"
 
 #include <wx/app.h>

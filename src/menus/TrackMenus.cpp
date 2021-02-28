@@ -1,6 +1,6 @@
 #include "../CommonCommandFlags.h"
 #include "../LabelTrack.h"
-#include "../Menus.h"
+#include "Menus.h"
 #include "MixAndRender.h"
 
 #include "Prefs.h"
@@ -22,8 +22,8 @@
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "../commands/CommandContext.h"
-#include "../commands/CommandManager.h"
+#include "CommandContext.h"
+#include "CommandManager.h"
 #include "../effects/EffectManager.h"
 #include "../effects/EffectUI.h"
 #include "QualitySettings.h"

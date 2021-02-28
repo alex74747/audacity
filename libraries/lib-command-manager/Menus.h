@@ -10,11 +10,9 @@
 #ifndef __AUDACITY_MENUS__
 #define __AUDACITY_MENUS__
 
-#include "Identifier.h"
-
 #include "Prefs.h"
 #include "Project.h"
-#include "commands/CommandFlag.h"
+#include "CommandFlag.h"
 #include "Observer.h"
 
 class wxArrayString;
@@ -34,7 +32,7 @@ typedef wxArrayString PluginIDs;
 
 namespace Registry{ class Visitor; }
 
-class AUDACITY_DLL_API MenuCreator
+class COMMAND_MANAGER_API MenuCreator
 {
 public:
    MenuCreator();
@@ -73,7 +71,7 @@ struct ToolbarMenuVisitor;
 //! Sent when menus update (such as for changing enablement of items)
 struct MenuUpdateMessage : Observer::Message {};
 
-class AUDACITY_DLL_API MenuManager final
+class COMMAND_MANAGER_API MenuManager final
    : public MenuCreator
    , public AttachedProjectObject
    , public Observer::Publisher<MenuUpdateMessage>
@@ -86,8 +84,8 @@ public:
 
    explicit
    MenuManager( AudacityProject &project );
-   MenuManager( const MenuManager & ) PROHIBITED;
-   MenuManager &operator=( const MenuManager & ) PROHIBITED;
+   MenuManager( const MenuManager & ) = delete;
+   MenuManager &operator=( const MenuManager & ) = delete;
    ~MenuManager();
 
    static void Visit( ToolbarMenuVisitor &visitor );

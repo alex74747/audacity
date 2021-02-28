@@ -2,7 +2,7 @@
 #define __AUDACITY_DEFAULT_COMMAND_OUTPUT_TARGETS__
 
 #include <memory>
-#include "commands/CommandTargets.h"
+#include "CommandTargets.h"
 
 class InteractiveOutputTargets : public CommandOutputTargets
 {

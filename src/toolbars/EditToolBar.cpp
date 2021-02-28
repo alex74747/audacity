@@ -45,14 +45,14 @@
 
 #include "AllThemeResources.h"
 #include "ImageManipulation.h"
-#include "../Menus.h"
+#include "Menus.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "UndoManager.h"
 #include "AButton.h"
-\
-#include "../commands/CommandContext.h"
-#include "../commands/CommandManager.h"
+
+#include "CommandContext.h"
+#include "CommandManager.h"
 #include "../commands/CommandDispatch.h"
 
 IMPLEMENT_CLASS(EditToolBar, ToolBar);

@@ -75,8 +75,6 @@ CommandManager.  It holds the callback for one command.
 
 *//******************************************************************/
 
-
-
 #include "CommandManager.h"
 
 #include "CommandContext.h"
@@ -87,12 +85,11 @@ CommandManager.  It holds the callback for one command.
 #include <wx/log.h>
 #include <wx/weakref.h>
 
-#include "ActiveProject.h"
 #include "BasicUI.h"
-#include "../Journal.h"
-#include "../JournalOutput.h"
-#include "../JournalRegistry.h"
-#include "../Menus.h"
+#include "Journal.h"
+#include "JournalOutput.h"
+#include "JournalRegistry.h"
+#include "Menus.h"
 #include "Project.h"
 #include "ProjectWindows.h"
 
@@ -1049,6 +1046,7 @@ namespace {
 
 constexpr auto JournalCode = wxT("CM");  // for CommandManager
 
+#if 0 // FIX ME!
 // Register a callback for the journal
 Journal::RegisteredCommand sCommand{ JournalCode,
 []( const wxArrayStringEx &fields )
@@ -1069,6 +1067,7 @@ Journal::RegisteredCommand sCommand{ JournalCode,
    return handled;
 }
 };
+#endif
 
 }
 

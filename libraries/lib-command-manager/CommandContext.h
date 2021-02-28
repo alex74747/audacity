@@ -13,12 +13,11 @@
 
 #include <functional>
 #include <memory>
-#include "Identifier.h"
+#include "CommandID.h"
 
 class AudacityProject;
 class wxEvent;
 class CommandOutputTargets;
-using CommandParameter = CommandID;
 
 class SelectedRegion;
 class Track;
@@ -34,7 +33,7 @@ struct TemporarySelection {
 
 using TargetsFactory = std::function<std::unique_ptr<CommandOutputTargets>()>;
 
-class AUDACITY_DLL_API CommandContext {
+class COMMAND_MANAGER_API CommandContext {
 public:
    //! Replace the global TargetsFactory (returning the previous)
    /*! @pre `newFactory != nullptr` */

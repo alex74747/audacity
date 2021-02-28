@@ -25,9 +25,8 @@
 #include "Observer.h"
 #include "ToolDock.h"
 
-#include "../commands/CommandFunctors.h"
-#include "../commands/CommandManager.h"
-
+#include "CommandFunctors.h"
+#include "CommandManager.h"
 
 class wxCommandEvent;
 class wxFrame;

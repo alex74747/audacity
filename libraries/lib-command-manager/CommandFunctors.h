@@ -18,6 +18,8 @@ class CommandContext;
 // class wxEvtHandler;
 #include <wx/event.h>
 
+#include <functional>
+
 // Base class for objects, to whose member functions, the CommandManager will
 // dispatch.
 //

@@ -14,7 +14,7 @@
 #include "Menus.h"
 #include "Project.h"
 #include "ProjectWindows.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "CommandManagerWindowClasses.h"
 #include "commands/Keyboard.h"
 

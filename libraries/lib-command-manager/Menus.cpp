@@ -25,7 +25,6 @@
 
 *//*******************************************************************/
 
-
 #include "Menus.h"
 
 
@@ -35,7 +34,7 @@
 
 #include "Project.h"
 #include "ProjectWindows.h"
-#include "commands/CommandManager.h"
+#include "CommandManager.h"
 #include "BasicUI.h"
 #include "MenuHandle.h"
 

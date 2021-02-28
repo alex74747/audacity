@@ -19,6 +19,7 @@
 #include "EffectInterface.h"
 #include "EffectHostInterface.h" // for EffectDialogFactory
 #include "Identifier.h"
+#include "CommandID.h"
 
 class AudacityCommand;
 class AudacityProject;

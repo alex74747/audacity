@@ -75,7 +75,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "Clipboard.h"
 #include "CrashReport.h" // for HAS_CRASH_REPORT
 #include "commands/CommandHandler.h"
-#include "commands/CommandTargets.h"
+#include "CommandTargets.h"
 #include "commands/AppCommandEvent.h"
 #include "DefaultCommandOutputTargets.h"
 #include "FFmpeg.h"

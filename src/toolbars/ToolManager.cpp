@@ -27,7 +27,7 @@
 
 #include "ToolManager.h"
 
-#include "../commands/CommandContext.h"
+#include "CommandContext.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -1572,7 +1572,7 @@ void ToolManager::ModifyAllProjectToolbarMenus()
    }
 }
 
-#include "../commands/CommandManager.h"
+#include "CommandManager.h"
 #include "../ProjectSettings.h"
 void ToolManager::ModifyToolbarMenus(AudacityProject &project)
 {

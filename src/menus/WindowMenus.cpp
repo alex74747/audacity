@@ -1,6 +1,6 @@
 
 
-#include "../commands/CommandManager.h"
+#include "CommandManager.h"
 
 // This file collects a few things specific to Mac and requiring some
 // Objective-C++ .  Avoid mixing languages elsewhere.
@@ -11,7 +11,7 @@
 #include "../CommonCommandFlags.h"
 #include "../Menus.h"
 #include "../Project.h"
-#include "../commands/CommandContext.h"
+#include "CommandContext.h"
 #include "../widgets/MenuHandle.h"
 
 #include <wx/frame.h>

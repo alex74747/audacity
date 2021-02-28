@@ -37,6 +37,7 @@ set( LIBRARIES
    lib-project-file-io
    lib-menus
    lib-widgets
+   lib-command-manager
 )
 
 if ( ${_OPT}has_networking )

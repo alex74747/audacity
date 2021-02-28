@@ -25,6 +25,8 @@ class CommandManager;
 class AudacityProject;
 class wxArrayStringEx;
 
+using PluginID = wxString;
+
 class MacroCommandsCatalog {
 public:
    // A triple of user-visible name, internal string identifier and type/help string.
