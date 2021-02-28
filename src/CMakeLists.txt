@@ -232,8 +232,6 @@ list( APPEND SOURCES
       Registrar.h
       Registry.cpp
       Registry.h
-      Resample.cpp
-      Resample.h
       RingBuffer.cpp
       RingBuffer.h
       SampleBlock.cpp
@@ -1080,7 +1078,6 @@ list( APPEND LIBRARIES
       expat::expat
       libmp3lame::libmp3lame
       libsndfile
-      libsoxr
       portaudio-v19
       sqlite
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
