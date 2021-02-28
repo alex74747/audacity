@@ -16,6 +16,11 @@
 
 #include "Export.h"
 #include "ComponentInterface.h" // for ComponentInterfaceSymbol
+<<<<<<< HEAD
+=======
+#include "PluginInterface.h"
+#include "CommandID.h"
+>>>>>>> 8c1c66ecc8 (New library for command manager)
 
 class wxArrayString;
 class Effect;
