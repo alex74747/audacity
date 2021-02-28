@@ -250,6 +250,8 @@ list( APPEND SOURCES
       RingBuffer.h
       SampleBlock.cpp
       SampleBlock.h
+      SampleCount.cpp
+      SampleCount.h
       SampleFormat.cpp
       SampleFormat.h
       Screenshot.cpp
