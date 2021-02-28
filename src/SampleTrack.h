@@ -30,6 +30,10 @@ class AUDACITY_DLL_API SampleTrack /* not final */
    , public SampleTrackCaches
 {
 public:
+   static EnumSetting< sampleFormat > FormatSetting;
+   static inline sampleFormat SampleFormatChoice()
+   { return FormatSetting.ReadEnum(); }
+
    using Caches = SampleTrackCaches;
 
    ~SampleTrack() override;

@@ -33,7 +33,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "ViewInfo.h"
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
-#include "prefs/QualityPrefs.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/FileHistory.h"
 #include "widgets/ErrorDialog.h"
@@ -886,7 +885,7 @@ int ProjectManager::GetEstimatedRecordingMinsLeftOnDisk(long lCaptureChannels) {
    auto &project = mProject;
 
    // Obtain the current settings
-   auto oCaptureFormat = QualityPrefs::SampleFormatChoice();
+   auto oCaptureFormat = SampleTrack::SampleFormatChoice();
    if (lCaptureChannels == 0)
       lCaptureChannels = AudioIORecordChannels.Read();
 

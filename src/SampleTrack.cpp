@@ -42,3 +42,21 @@ double SampleTrack::LongSamplesToTime(sampleCount pos) const
 {
    return pos.as_double() / GetRate();
 }
+
+EnumSetting< sampleFormat > SampleTrack::FormatSetting{
+   wxT("/SamplingRate/DefaultProjectSampleFormatChoice"),
+   {
+      { wxT("Format16Bit"), XO("16-bit") },
+      { wxT("Format24Bit"), XO("24-bit") },
+      { wxT("Format32BitFloat"), XO("32-bit float") }
+   },
+   2, // floatSample
+
+   // for migrating old preferences:
+   {
+      int16Sample,
+      int24Sample,
+      floatSample
+   },
+   wxT("/SamplingRate/DefaultProjectSampleFormat"),
+};

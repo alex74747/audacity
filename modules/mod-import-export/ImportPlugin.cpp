@@ -12,7 +12,6 @@ Paul Licameli split from Import.cpp
 
 #include <wx/filename.h>
 #include "WaveTrack.h"
-#include "prefs/QualityPrefs.h"
 #include "widgets/ProgressDialog.h"
 
 ImportPlugin::ImportPlugin(FileExtensions supportedExtensions):
@@ -59,7 +58,7 @@ void ImportFileHandle::CreateProgress()
 sampleFormat ImportFileHandle::ChooseFormat(sampleFormat effectiveFormat)
 {
    // Consult user preference
-   auto defaultFormat = QualityPrefs::SampleFormatChoice();
+   auto defaultFormat = SampleTrack::SampleFormatChoice();
 
    // Don't choose format narrower than effective or default
    auto format = std::max(effectiveFormat, defaultFormat);

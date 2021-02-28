@@ -18,7 +18,6 @@ Paul Licameli split from TrackMenus.cpp
 #include "WaveTrack.h"
 #include "commands/CommandContext.h"
 #include "commands/CommandManager.h"
-#include "prefs/QualityPrefs.h"
 
 namespace {
 using namespace MenuTable;
@@ -32,7 +31,7 @@ void OnNewWaveTrack(const CommandContext &context)
    auto &trackFactory = WaveTrackFactory::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   auto defaultFormat = QualityPrefs::SampleFormatChoice();
+   auto defaultFormat = SampleTrack::SampleFormatChoice();
 
    auto rate = settings.GetRate();
 
@@ -56,7 +55,7 @@ void OnNewStereoTrack(const CommandContext &context)
    auto &trackFactory = WaveTrackFactory::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   auto defaultFormat = QualityPrefs::SampleFormatChoice();
+   auto defaultFormat = SampleTrack::SampleFormatChoice();
    auto rate = settings.GetRate();
 
    SelectUtilities::SelectNone( project );

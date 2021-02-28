@@ -23,7 +23,6 @@
 #include "WaveTrack.h"
 #include "commands/CommandContext.h"
 #include "commands/CommandManager.h"
-#include "prefs/QualityPrefs.h"
 #include "WaveTrackControls.h"
 #include "ToolManager.h"
 #include "widgets/ASlider.h"
@@ -49,7 +48,7 @@ void DoMixAndRender
    auto &tracks = TrackList::Get( project );
    auto &trackFactory = WaveTrackFactory::Get( project );
    auto rate = settings.GetRate();
-   auto defaultFormat = QualityPrefs::SampleFormatChoice();
+   auto defaultFormat = SampleTrack::SampleFormatChoice();
    auto &trackPanel = TrackPanel::Get( project );
    auto &window = ProjectWindow::Get( project );
 

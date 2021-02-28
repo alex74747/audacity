@@ -26,29 +26,10 @@
 #include "../Dither.h"
 #include "../Prefs.h"
 #include "../Resample.h"
+#include "../SampleTrack.h"
 #include "../ShuttleGui.h"
 
 #define ID_SAMPLE_RATE_CHOICE           7001
-
-//////////
-
-static EnumSetting< sampleFormat > formatSetting{
-   wxT("/SamplingRate/DefaultProjectSampleFormatChoice"),
-   {
-      { wxT("Format16Bit"), XO("16-bit") },
-      { wxT("Format24Bit"), XO("24-bit") },
-      { wxT("Format32BitFloat"), XO("32-bit float") }
-   },
-   2, // floatSample
-
-   // for migrating old preferences:
-   {
-      int16Sample,
-      int24Sample,
-      floatSample
-   },
-   wxT("/SamplingRate/DefaultProjectSampleFormat"),
-};
 
 //////////
 BEGIN_EVENT_TABLE(QualityPrefs, PrefsPanel)
@@ -168,7 +149,7 @@ void QualityPrefs::PopulateOrExchange(ShuttleGui & S)
          S.EndHorizontalLay();
 
          S.TieChoice(XXO("Default Sample &Format:"),
-                     formatSetting);
+                     SampleTrack::FormatSetting);
       }
       S.EndMultiColumn();
    }
@@ -241,10 +222,5 @@ PrefsPanel::Registration sAttachment{ "Quality",
       return safenew QualityPrefs(parent, winid);
    }
 };
-}
-
-sampleFormat QualityPrefs::SampleFormatChoice()
-{
-   return formatSetting.ReadEnum();
 }
 
