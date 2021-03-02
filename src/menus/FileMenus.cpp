@@ -18,7 +18,7 @@
 #include "../TrackPanel.h"
 #include "../UndoManager.h"
 #include "ViewInfo.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
 #include "../export/ExportMP3.h"

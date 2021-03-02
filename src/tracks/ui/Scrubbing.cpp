@@ -25,7 +25,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ScrubState.h"
 #include "Track.h"
 #include "ViewInfo.h"
-#include "../../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../../prefs/PlaybackPrefs.h"
 #include "../../prefs/TracksPrefs.h"
 #include "../../toolbars/ToolManager.h"

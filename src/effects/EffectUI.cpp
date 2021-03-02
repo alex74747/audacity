@@ -1784,7 +1784,7 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
 #include "../ProjectWindow.h"
 #include "../SelectUtilities.h"
 #include "../TrackPanel.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../commands/CommandManager.h"
 
 /// DoEffect() takes a PluginID and executes the associated effect.

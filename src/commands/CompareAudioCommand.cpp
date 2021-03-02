@@ -23,7 +23,7 @@ threshold of difference in two selected tracks
 
 #include "LoadCommands.h"
 #include "ViewInfo.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 
 
 #include <float.h>

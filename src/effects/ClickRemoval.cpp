@@ -40,7 +40,7 @@
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/valnum.h"
 
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 
 enum
 {

@@ -35,7 +35,7 @@
 #include "Theme.h"
 #include "../widgets/valnum.h"
 
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../widgets/AudacityMessageBox.h"
 
 // Define keys, defaults, minimums, and maximums for the effect parameters

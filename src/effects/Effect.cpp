@@ -28,7 +28,7 @@
 #include "AudioIO.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
 #include "../LabelTrack.h"
-#include "../MixAndRender.h"
+#include "MixAndRender.h"
 #include "PluginManager.h"
 #include "../ProjectAudioManager.h"
 #include "../ProjectSettings.h"
@@ -39,7 +39,7 @@
 #include "../SyncLock.h"
 #include "TransactionScope.h"
 #include "ViewInfo.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
 #include "../widgets/ProgressDialog.h"
 #include "../widgets/NumericTextCtrl.h"
@@ -76,7 +76,6 @@ Effect::Effect()
    mPreviewFullSelection = false;
    mNumTracks = 0;
    mNumGroups = 0;
-   mProgress = NULL;
 
    mUIParent = NULL;
 

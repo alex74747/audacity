@@ -33,7 +33,7 @@
 #include "../widgets/AudacityMessageBox.h"
 
 #include "../LabelTrack.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 
 // Define keys, defaults, minimums, and maximums for the effect parameters
 //

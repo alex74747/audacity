@@ -33,7 +33,7 @@
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 #include "../SyncLock.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../widgets/NumericTextCtrl.h"
 #include "../widgets/valnum.h"
 

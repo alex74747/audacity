@@ -23,6 +23,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "Envelope.h"
 #include "../../../../EnvelopeEditor.h"
 #include "../../../../ProjectSettings.h"
+#include "SampleBlock.h"
 #include "SelectedRegion.h"
 #include "../../../../SyncLock.h"
 #include "../../../../TrackArt.h"
@@ -30,8 +31,8 @@ Paul Licameli split from WaveTrackView.cpp
 #include "../../../../TrackPanelDrawingContext.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
-#include "../../../../WaveClip.h"
-#include "../../../../WaveTrack.h"
+#include "WaveClip.h"
+#include "WaveTrack.h"
 #include "../../../../WaveTrackLocation.h"
 #include "../../../../prefs/WaveformSettings.h"
 

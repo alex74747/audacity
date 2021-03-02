@@ -20,7 +20,7 @@
 #include <wx/intl.h>
 
 #include "../ShuttleGui.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../widgets/NumericTextCtrl.h"
 
 const ComponentInterfaceSymbol EffectSilence::Symbol

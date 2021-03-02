@@ -39,7 +39,7 @@ the pitch without changing the tempo.
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 #include "Spectrum.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../widgets/valnum.h"
 #include "TimeWarper.h"
 

@@ -28,6 +28,7 @@ set( LIBRARIES
    lib-sample-track
    lib-module-manager
    lib-audio-io
+   lib-wave-track
 )
 
 if ( ${_OPT}has_networking )

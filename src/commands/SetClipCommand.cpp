@@ -20,8 +20,8 @@
 #include "SetClipCommand.h"
 
 #include "LoadCommands.h"
-#include "../WaveClip.h"
-#include "../WaveTrack.h"
+#include "WaveClip.h"
+#include "WaveTrack.h"
 #include "../Shuttle.h"
 #include "../ShuttleGui.h"
 

@@ -173,8 +173,6 @@ list( APPEND SOURCES
       Menus.h
       MIDIPlay.cpp
       MIDIPlay.h
-      MixAndRender.cpp
-      MixAndRender.h
       MixerBoard.cpp
       MixerBoard.h
       NoteTrack.cpp
@@ -210,8 +208,6 @@ list( APPEND SOURCES
       RefreshCode.h
       ProjectWindows.cpp
       ProjectWindows.h
-      SampleBlock.cpp
-      SampleBlock.h
       Screenshot.cpp
       Screenshot.h
       ScrubState.cpp
@@ -222,8 +218,6 @@ list( APPEND SOURCES
       SelectFile.h
       SelectionState.cpp
       SelectionState.h
-      Sequence.cpp
-      Sequence.h
       Shuttle.cpp
       Shuttle.h
       ShuttleAutomation.cpp
@@ -294,10 +288,6 @@ list( APPEND SOURCES
       UndoManager.h
       VoiceKey.cpp
       VoiceKey.h
-      WaveClip.cpp
-      WaveClip.h
-      WaveTrack.cpp
-      WaveTrack.h
       WaveTrackLocation.cpp
       WaveTrackLocation.h
       WrappedType.cpp
@@ -1355,6 +1345,7 @@ set( AUDACITY_LIBRARIES
    lib-transactions-interface
    lib-module-manager-interface
    lib-audio-io-interface
+   lib-wave-track-interface
 )
 
 if ( ${_OPT}has_networking )

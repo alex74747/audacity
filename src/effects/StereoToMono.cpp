@@ -21,7 +21,7 @@
 
 #include "Mix.h"
 #include "Project.h"
-#include "../WaveTrack.h"
+#include "WaveTrack.h"
 #include "../widgets/ProgressDialog.h"
 
 const ComponentInterfaceSymbol EffectStereoToMono::Symbol

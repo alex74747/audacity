@@ -33,8 +33,8 @@
 #include "../widgets/valnum.h"
 
 #include "TimeWarper.h"
-#include "../WaveClip.h"
-#include "../WaveTrack.h"
+#include "WaveClip.h"
+#include "WaveTrack.h"
 
 enum
 {
