@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_PLUGINMANAGER_H__
 #define __AUDACITY_PLUGINMANAGER_H__
 
+#include "Audacity.h"
 #include <wx/defs.h>
 
 #include "MemoryX.h"

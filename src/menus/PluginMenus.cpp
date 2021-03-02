@@ -5,6 +5,7 @@
 #include "../CommonCommandFlags.h"
 #include "../Menus.h"
 #include "../PluginManager.h"
+#include "../PluginRegistrationDialog.h"
 #include "../Prefs.h"
 #include "../Project.h"
 #include "../ProjectSettings.h"
@@ -24,10 +25,20 @@
 // private helper classes and functions
 namespace {
 
+bool ShowManager(
+   PluginManager &pm, wxWindow *parent, EffectType type)
+{
+   pm.CheckForUpdates();
+
+   PluginRegistrationDialog dlg(parent, type);
+   return dlg.ShowModal() == wxID_OK;
+}
+
 void DoManagePluginsMenu(AudacityProject &project, EffectType type)
 {
    auto &window = GetProjectFrame( project );
-   if (PluginManager::Get().ShowManager(&window, type))
+   auto &pm = PluginManager::Get();
+   if (ShowManager(pm, &window, type))
       MenuCreator::RebuildAllMenuBars();
 }
 
