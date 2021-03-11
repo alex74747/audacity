@@ -127,3 +127,10 @@ ProjectFramePlacement( AudacityProject *project )
    else
       return std::make_unique<BasicUI::WindowPlacement>();
 }
+
+void AttachedProjectObject::Destroy() {}
+
+void AudacityProject::DestroyAllAttachments()
+{
+   AttachedObjects::ForEach( [](auto &object){ object.Destroy(); } );
+}
