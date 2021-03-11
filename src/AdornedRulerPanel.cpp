@@ -36,6 +36,7 @@
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "ProjectAudioManager.h"
+#include "ProjectManager.h"
 #include "ProjectStatus.h"
 #include "ProjectWindow.h"
 #include "RefreshCode.h"
@@ -879,6 +880,11 @@ const AdornedRulerPanel &AdornedRulerPanel::Get( const AudacityProject &project 
 {
    return Get( const_cast< AudacityProject & >( project ) );
 }
+
+static ProjectManager::RegisteredPanel sRegisteredPanel{ "TimeRuler", 0,
+   [](AudacityProject &project, wxWindow *){
+      return &AdornedRulerPanel::Get(project); }
+};
 
 void AdornedRulerPanel::Destroy( AudacityProject &project )
 {
