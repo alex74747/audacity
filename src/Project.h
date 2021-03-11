@@ -82,6 +82,8 @@ private:
 // Abstract base class for attached objects
 struct AUDACITY_DLL_API AttachedProjectObject {
    virtual ~AttachedProjectObject();
+   // Default implementation does nothing
+   virtual void Destroy();
 };
 
 // Container of various objects associated with the project, which is
@@ -148,6 +150,8 @@ class AUDACITY_DLL_API AudacityProject final
    // and use the initial import path
    FilePath GetInitialImportPath() const;
    void SetInitialImportPath(const FilePath &path);
+
+   void DestroyAllAttachments();
 
 private:
 
