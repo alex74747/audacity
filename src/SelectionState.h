@@ -15,13 +15,13 @@ class AudacityProject;
 class Track;
 class TrackList;
 class ViewInfo;
-#include "ClientData.h"
+#include "Project.h"
 #include "MemoryX.h"
 #include <vector>
 
 // State relating to the set of selected tracks
 class AUDACITY_DLL_API SelectionState final
-   : public ClientData::Base
+   : public AttachedProjectObject
 {
 public:
    SelectionState() = default;

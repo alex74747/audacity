@@ -11,13 +11,13 @@ Paul Licameli split from ProjectManager.cpp
 #ifndef __AUDACITY_PROJECT_SELECTION_MANAGER__
 #define __AUDACITY_PROJECT_SELECTION_MANAGER__
 
-#include "ClientData.h" // to inherit
+#include "Project.h"
 
 class AudacityProject;
 
 class AUDACITY_DLL_API ProjectSelectionManager final
    : public wxEvtHandler
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 public:
    static ProjectSelectionManager &Get( AudacityProject &project );

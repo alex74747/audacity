@@ -52,7 +52,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
-#include "ClientData.h"
+#include "Project.h"
 #include "SelectedRegion.h"
 
 // Events emitted by AudacityProject for the use of listeners
@@ -158,7 +158,7 @@ inline UndoPush operator & (UndoPush a, UndoPush b)
 //! Maintain a non-persistent list of states of the project, to support undo and redo commands
 /*! The history should be cleared before destruction */
 class AUDACITY_DLL_API UndoManager final
-   : public ClientData::Base
+   : public AttachedProjectObject
 {
  public:
    static UndoManager &Get( AudacityProject &project );

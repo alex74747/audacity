@@ -12,7 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_PLAY_INDICATOR_OVERLAY__
 
 #include "MemoryX.h"
-#include "ClientData.h"
+#include "Project.h"
 #include "widgets/Overlay.h" // to inherit
 
 class AudacityProject;
@@ -22,7 +22,7 @@ class AudacityProject;
 class PlayIndicatorOverlayBase
    : public wxEvtHandler
    , public Overlay
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 public:
    PlayIndicatorOverlayBase(AudacityProject *project, bool isMaster);

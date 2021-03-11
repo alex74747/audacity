@@ -13,7 +13,7 @@ Paul Licameli split from AudacityProject.h
 
 #include <atomic>
 
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "Prefs.h" // to inherit
 
 class AudacityProject;
@@ -47,7 +47,7 @@ enum {
 ///\brief Holds various per-project settings values, including the sample rate,
 /// and sends events to the project when certain values change
 class AUDACITY_DLL_API ProjectSettings final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , private PrefsListener
 {
 public:

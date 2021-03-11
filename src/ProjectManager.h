@@ -13,7 +13,7 @@ Paul Licameli split from AudacityProject.h
 
 #include <memory>
 
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "Registry.h"
 
 class wxTimer;
@@ -30,7 +30,7 @@ class ProjectWindow;
 /// importing, pushing undo states, and reverting to saved states
 class AUDACITY_DLL_API ProjectManager final
    : public wxEvtHandler
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
    struct InsertedPanelItem;
    static void InitProjectWindow( ProjectWindow &window );
