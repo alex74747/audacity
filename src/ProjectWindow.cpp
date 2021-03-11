@@ -1849,9 +1849,3 @@ void ProjectWindow::DoZoomFit()
    window.Zoom( window.GetZoomOfToFit() );
    window.TP_ScrollWindow(start);
 }
-
-static ToolManager::TopPanelHook::Scope scope {
-[]( wxWindow &window ){
-   auto pProjectWindow = dynamic_cast< ProjectWindow* >( &window );
-   return pProjectWindow ? pProjectWindow->GetTopPanel() : nullptr;
-} };

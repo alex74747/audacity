@@ -55,9 +55,6 @@ class AUDACITY_DLL_API ToolManager final
 {
 
  public:
-   // a hook function to break dependency of ToolManager on ProjectWindow
-   using TopPanelHook = GlobalHook< ToolManager, wxWindow*( wxWindow& ) >;
-
    static ToolManager &Get( AudacityProject &project );
    static const ToolManager &Get( const AudacityProject &project );
 
@@ -66,7 +63,7 @@ class AUDACITY_DLL_API ToolManager final
    ToolManager &operator=( const ToolManager & ) PROHIBITED;
    ~ToolManager();
 
-   void CreateWindows();
+   void CreateWindows(wxWindow *topDockParent);
 
    void LayoutToolBars();
 

@@ -420,7 +420,7 @@ ToolManager::ToolManager( AudacityProject *parent )
    wxTheApp->Bind(EVT_THEME_CHANGE, &ToolManager::OnThemeChange, this);
 }
 
-void ToolManager::CreateWindows()
+void ToolManager::CreateWindows(wxWindow *topDockParent)
 {
    auto parent = mParent;
    auto &window = GetProjectFrame( *parent );
@@ -436,9 +436,6 @@ void ToolManager::CreateWindows()
    window.Bind( wxEVT_MOUSE_CAPTURE_LOST,
                      &ToolManager::OnCaptureLost,
                      this );
-
-   wxWindow *topDockParent = TopPanelHook::Call( window );
-   wxASSERT(topDockParent);
 
    // Create the top and bottom docks
    mTopDock = safenew ToolDock( this, topDockParent, TopDockID );
