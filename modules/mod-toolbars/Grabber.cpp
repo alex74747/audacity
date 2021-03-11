@@ -20,7 +20,6 @@ around to NEW positions.
 
 *//**********************************************************************/
 
-
 #include "Grabber.h"
 
 #include <wx/defs.h>

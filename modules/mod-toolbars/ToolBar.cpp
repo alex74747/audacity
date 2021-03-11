@@ -24,7 +24,6 @@ in which buttons can be placed.
 
 *//**********************************************************************/
 
-
 #include "ToolBar.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -50,7 +49,7 @@ in which buttons can be placed.
 #include "Project.h"
 #include "CommandManager.h"
 #include "AButton.h"
-#include "../widgets/Grabber.h"
+#include "Grabber.h"
 #include "Prefs.h"
 
 ////////////////////////////////////////////////////////////

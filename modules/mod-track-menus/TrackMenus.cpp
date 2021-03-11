@@ -25,7 +25,7 @@
 #include "CommandManager.h"
 #include "QualitySettings.h"
 #include "WaveTrackControls.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 #include "ASlider.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/ProgressDialog.h"

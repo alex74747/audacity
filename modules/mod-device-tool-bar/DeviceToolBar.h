@@ -12,7 +12,7 @@
 #define __AUDACITY_DEVICE_TOOLBAR__
 
 #include <vector>
-#include "toolbars/ToolBar.h"
+#include "ToolBar.h"
 #include "Observer.h"
 
 enum class DeviceChangeMessage : char;

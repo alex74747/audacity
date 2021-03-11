@@ -1,7 +1,7 @@
 #include "ProjectSettings.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 /// Namespace for functions for View Toolbar menu
 namespace ToolbarActions {

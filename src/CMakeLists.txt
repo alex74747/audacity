@@ -209,15 +209,6 @@ list( APPEND SOURCES
       prefs/WarningsPrefs.cpp
       prefs/WarningsPrefs.h
 
-      # Toolbars
-
-      toolbars/ToolBar.cpp
-      toolbars/ToolBar.h
-      toolbars/ToolDock.cpp
-      toolbars/ToolDock.h
-      toolbars/ToolManager.cpp
-      toolbars/ToolManager.h
-
       # Tracks UI
 
       tracks/ui/BackgroundCell.cpp
@@ -233,8 +224,6 @@ list( APPEND SOURCES
       widgets/ErrorDialog.h
       widgets/FileHistory.cpp
       widgets/FileHistory.h
-      widgets/Grabber.cpp
-      widgets/Grabber.h
       widgets/MeterPanel.cpp
       widgets/MeterPanel.h
       widgets/MultiDialog.cpp

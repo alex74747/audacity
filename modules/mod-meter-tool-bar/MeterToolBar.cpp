@@ -290,7 +290,7 @@ static RegisteredToolbarFactory factory3{
             XO("Combined Meter"), MeterToolBar::ID() } }; }
 };
 
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 namespace {
 AttachedToolBarMenuItem sAttachment1{

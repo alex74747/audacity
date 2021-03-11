@@ -14,7 +14,7 @@
 #include <wx/defs.h>
 
 #include "Observer.h"
-#include "toolbars/ToolBar.h"
+#include "ToolBar.h"
 
 class auStaticText;
 
@@ -34,6 +34,7 @@ class auStaticText;
 #endif
 
 
+class auStaticText;
 class wxChoice;
 class wxComboBox;
 class wxCommandEvent;

@@ -16,7 +16,7 @@
 #include "ProjectWindows.h"
 #include "ProjectSelectionManager.h"
 #include "ReloadPreferences.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 #include "TempDirectory.h"
 #include "UndoManager.h"
 #include "CommandContext.h"

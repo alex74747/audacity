@@ -15,7 +15,7 @@
 
 
 #include "DeviceToolBar.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 #include <thread>
 
@@ -44,7 +44,7 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "ShuttleGui.h"
-#include "widgets/Grabber.h"
+#include "Grabber.h"
 #include "DeviceManager.h"
 #include "widgets/AudacityMessageBox.h"
 

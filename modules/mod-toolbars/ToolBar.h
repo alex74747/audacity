@@ -63,7 +63,7 @@ enum { ToolBarFloatMargin = 1 };
 
 class AudacityProject;
 
-class AUDACITY_DLL_API ToolBar /* not final */
+class TOOLBARS_API ToolBar /* not final */
 : public wxPanelWrapper
 , protected PrefsListener
 {
@@ -245,7 +245,7 @@ public:
    friend class ToolBarResizer;
 };
 
-struct AUDACITY_DLL_API RegisteredToolbarFactory {
+struct TOOLBARS_API RegisteredToolbarFactory {
    using Function = std::function< ToolBar::Holder( AudacityProject & ) >;
    using Functions = std::vector< Function >;
 

@@ -35,7 +35,7 @@ small calculations of rectangles.
 #include "ActiveProject.h"
 #include "AdornedRulerPanel.h"
 #include "TrackPanel.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 #include "Prefs.h"
 #include "ProjectWindow.h"
 #include "Shuttle.h"

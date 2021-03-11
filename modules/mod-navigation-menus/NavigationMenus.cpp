@@ -10,7 +10,7 @@
 #include "TrackPanelAx.h"
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 #include "AButton.h"
 #include "ASlider.h"
 #include "widgets/MeterPanel.h"

@@ -24,7 +24,6 @@
 
 *//**********************************************************************/
 
-
 #include "ToolManager.h"
 
 #include "CommandContext.h"
@@ -63,7 +62,7 @@
 #include "AButton.h"
 #include "ASlider.h"
 #include "MeterPanelBase.h"
-#include "widgets/Grabber.h"
+#include "Grabber.h"
 
 ////////////////////////////////////////////////////////////
 /// Methods for ToolFrame
@@ -1719,3 +1718,6 @@ static ProjectManager::RegisteredPanel sRegisteredPanel2{ "BottomToolDock", 1,
       return ToolManager::Get( project ).GetBotDock();
    }
 };
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES
