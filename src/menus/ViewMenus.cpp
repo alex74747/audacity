@@ -163,7 +163,7 @@ namespace ViewActions {
 
 struct Handler final
    : CommandHandlerObject // MUST be the first base class!
-   , ClientData::Base
+   , AttachedProjectObject
 {
 
 void OnZoomIn(const CommandContext &context)

@@ -14,12 +14,12 @@ Paul Licameli split from ProjectSettings.h
 
 class AudacityProject;
 
-#include "ClientData.h"
 #include "Observer.h"
+#include "Project.h"
 
 ///\brief Holds project sample rate
 class PROJECT_RATE_API ProjectRate final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , public Observer::Publisher<double>
 {
 public:

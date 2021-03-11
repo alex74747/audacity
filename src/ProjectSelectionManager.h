@@ -11,7 +11,7 @@ Paul Licameli split from ProjectManager.cpp
 #ifndef __AUDACITY_PROJECT_SELECTION_MANAGER__
 #define __AUDACITY_PROJECT_SELECTION_MANAGER__
 
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "toolbars/SelectionBarListener.h" // to inherit
 #include "toolbars/SpectralSelectionBarListener.h" // to inherit
 #include "ComponentInterfaceSymbol.h"
@@ -19,7 +19,7 @@ Paul Licameli split from ProjectManager.cpp
 class AudacityProject;
 
 class AUDACITY_DLL_API ProjectSelectionManager final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , public SelectionBarListener
    , public SpectralSelectionBarListener
    , public TimeToolBarListener

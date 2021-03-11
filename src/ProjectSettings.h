@@ -14,7 +14,7 @@ Paul Licameli split from AudacityProject.h
 #include <atomic>
 #include <wx/event.h> // to declare custom event type
 
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "Prefs.h" // to inherit
 #include "audacity/Types.h"
 
@@ -55,7 +55,7 @@ enum {
 ///\brief Holds various per-project settings values,
 /// and sends events to the project when certain values change
 class AUDACITY_DLL_API ProjectSettings final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , private PrefsListener
 {
 public:

@@ -28,7 +28,7 @@
 // Specialist in drawing the scrub speed, and listening for certain events
 class ScrubbingOverlay final
    : public Overlay
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 public:
    explicit
@@ -213,7 +213,7 @@ static const AudacityProject::AttachedObjects::RegisteredFactory sOverlayKey{
 // in two places at once.
 struct ScrubForwarder
     : public wxEvtHandler
-    , public ClientData::Base
+    , public AttachedProjectObject
 {
    ScrubForwarder( AudacityProject &project )
       : mProject{ project }

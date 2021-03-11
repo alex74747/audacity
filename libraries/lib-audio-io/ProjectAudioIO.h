@@ -11,8 +11,8 @@ Paul Licameli split from AudacityProject.h
 #ifndef __PROJECT_AUDIO_IO__
 #define __PROJECT_AUDIO_IO__
 
-#include "ClientData.h" // to inherit
 #include "Observer.h" // to inherit
+#include "Project.h"
 #include <wx/weakref.h>
 #include <wx/event.h> // to declare custom event type
 
@@ -26,7 +26,7 @@ struct SpeedChangeMessage {};
 ///\ brief Holds per-project state needed for interaction with AudioIO,
 /// including the audio stream token and pointers to meters
 class AUDIO_IO_API ProjectAudioIO final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , public Observer::Publisher<SpeedChangeMessage>
 {
 public:

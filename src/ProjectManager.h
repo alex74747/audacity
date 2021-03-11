@@ -14,7 +14,7 @@ Paul Licameli split from AudacityProject.h
 #include <memory>
 
 #include <wx/event.h> // to inherit
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "Identifier.h"
 #include "Observer.h"
 
@@ -31,7 +31,7 @@ enum StatusBarField : int;
 /// importing, pushing undo states, and reverting to saved states
 class AUDACITY_DLL_API ProjectManager final
    : public wxEvtHandler
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 public:
    static ProjectManager &Get( AudacityProject &project );

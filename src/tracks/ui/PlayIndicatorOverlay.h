@@ -12,7 +12,7 @@ Paul Licameli split from TrackPanel.cpp
 #define __AUDACITY_PLAY_INDICATOR_OVERLAY__
 
 #include <memory>
-#include "ClientData.h"
+#include "Project.h"
 #include "../../widgets/Overlay.h" // to inherit
 #include "Observer.h"
 
@@ -22,7 +22,7 @@ class AudacityProject;
 // Common class for overlaying track panel or ruler
 class PlayIndicatorOverlayBase
    : public Overlay
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 public:
    PlayIndicatorOverlayBase(AudacityProject *project, bool isMaster);

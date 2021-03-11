@@ -14,7 +14,7 @@
 
 #include <wx/string.h> // member variable
 #include "Prefs.h"
-#include "ClientData.h"
+#include "Project.h"
 #include "commands/CommandFlag.h"
 
 class wxArrayString;
@@ -72,7 +72,7 @@ struct ToolbarMenuVisitor;
 
 class AUDACITY_DLL_API MenuManager final
    : public MenuCreator
-   , public ClientData::Base
+   , public AttachedProjectObject
    , private PrefsListener
 {
 public:

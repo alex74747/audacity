@@ -39,6 +39,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Identifier.h"
+#include "Project.h"
 
 class wxArrayString;
 class wxComboBox;
@@ -67,7 +68,7 @@ using TagMap = std::unordered_map< wxString, wxString >;
 class AUDACITY_DLL_API Tags final
    : public XMLTagHandler
    , public std::enable_shared_from_this< Tags >
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
 
  public:

@@ -306,7 +306,7 @@ namespace NavigationActions {
 
 struct Handler
    : CommandHandlerObject // MUST be the first base class!
-   , ClientData::Base
+   , AttachedProjectObject
    , PrefsListener
 {
 

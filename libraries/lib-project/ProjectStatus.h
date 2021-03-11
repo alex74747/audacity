@@ -14,7 +14,7 @@ Paul Licameli
 
 #include <utility>
 #include <vector>
-#include "ClientData.h" // to inherit
+#include "Project.h"
 #include "Prefs.h"
 #include "Observer.h"
 
@@ -30,7 +30,7 @@ enum StatusBarField : int {
 };
 
 class PROJECT_API ProjectStatus final
-   : public ClientData::Base
+   : public AttachedProjectObject
    , public PrefsListener
    , public Observer::Publisher<StatusBarField>
 {

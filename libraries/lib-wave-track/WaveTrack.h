@@ -550,7 +550,7 @@ void InspectBlocks(const TrackList &tracks, BlockInspector inspector,
 class ProjectRate;
 
 class WAVE_TRACK_API WaveTrackFactory final
-   : public ClientData::Base
+   : public AttachedProjectObject
 {
  public:
    static WaveTrackFactory &Get( AudacityProject &project );

@@ -71,10 +71,16 @@ public:
    static std::mutex &Mutex();
 };
 
+// Abstract base class for attached objects
+struct PROJECT_API AttachedProjectObject {
+   virtual ~AttachedProjectObject();
+};
+
 // Container of various objects associated with the project, which is
 // responsible for destroying them
 using AttachedProjectObjects = ClientData::Site<
-   AudacityProject, ClientData::Base, ClientData::SkipCopying, std::shared_ptr
+   AudacityProject, AttachedProjectObject, ClientData::SkipCopying,
+   std::shared_ptr
 >;
 
 ///\brief The top-level handle to an Audacity project.  It serves as a source

@@ -129,7 +129,7 @@ class SpectralDataDialog final : public wxDialogWrapper,
 };
 
 class AUDACITY_DLL_API SpectralDataDialogWorker final
-      : public ClientData::Base{
+      : public AttachedProjectObject {
 public:
    explicit SpectralDataDialogWorker( AudacityProject &project );
    ~SpectralDataDialogWorker();

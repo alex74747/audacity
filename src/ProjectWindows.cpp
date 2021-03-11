@@ -14,7 +14,7 @@
 #include <wx/frame.h>
 
 namespace {
-struct ProjectWindows final : ClientData::Base
+struct ProjectWindows final : AttachedProjectObject
 {
    static ProjectWindows &Get( AudacityProject &project );
    static const ProjectWindows &Get( const AudacityProject &project );

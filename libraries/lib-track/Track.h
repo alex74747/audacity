@@ -18,8 +18,8 @@
 #include <functional>
 #include <wx/longlong.h>
 
-#include "ClientData.h"
 #include "Observer.h"
+#include "Project.h"
 // TrackAttachment needs to be a complete type for the Windows build, though
 // not the others, so there is a nested include here:
 #include "TrackAttachment.h"
@@ -1284,7 +1284,7 @@ class TRACK_API TrackList final
    : public Observer::Publisher<TrackListEvent>
    , public ListOfTracks
    , public std::enable_shared_from_this<TrackList>
-   , public ClientData::Base
+   , public AttachedProjectObject
 {
    // privatize this, make you use Add instead:
    using ListOfTracks::push_back;

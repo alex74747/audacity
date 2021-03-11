@@ -191,7 +191,7 @@ namespace {
  Attached to each project, it receives track list events and maintains the
  cache of cumulative track view heights for use by TrackPanel.
  */
-struct TrackPositioner final : ClientData::Base
+struct TrackPositioner final : AttachedProjectObject
 {
    AudacityProject &mProject;
 
