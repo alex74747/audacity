@@ -51,6 +51,8 @@ class AUDACITY_DLL_API ProjectSettings final
    , private PrefsListener
 {
 public:
+   static ChoiceSetting TracksBehaviorsSolo;
+
    static ProjectSettings &Get( AudacityProject &project );
    static const ProjectSettings &Get( const AudacityProject &project );
    
