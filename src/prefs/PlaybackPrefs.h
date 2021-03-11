@@ -32,8 +32,6 @@ class PlaybackPrefs final : public PrefsPanel
    wxString HelpPageName() override;
    void PopulateOrExchange(ShuttleGui & S) override;
    
-   static bool GetUnpinnedScrubbingPreference();
-
  private:
    void Populate();
 };
