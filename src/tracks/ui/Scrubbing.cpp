@@ -26,7 +26,6 @@ Paul Licameli split from TrackPanel.cpp
 #include "Track.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "../../prefs/PlaybackPrefs.h"
 #include "../../prefs/TracksPrefs.h"
 #include "MenuHandle.h"
 
@@ -165,7 +164,7 @@ auto Scrubber::ScrubPollerThread::Entry() -> ExitCode
 bool Scrubber::ShouldScrubPinned()
 {
    return TracksPrefs::GetPinnedHeadPreference() &&
-      !PlaybackPrefs::GetUnpinnedScrubbingPreference();
+      !UnpinnedScrubbingPreference.Read();
 }
 
 class Scrubber::ScrubPoller : public wxTimer
@@ -1220,5 +1219,8 @@ void Scrubber::CheckMenuItems()
          cm.Check(item.name, (this->*test)());
    }
 }
+
+BoolSetting Scrubber::UnpinnedScrubbingPreference{
+   L"/AudioIO/UnpinnedScrubbing", true };
 
 #endif
