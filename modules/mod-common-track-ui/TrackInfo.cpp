@@ -36,6 +36,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "AllThemeResources.h"
 #include "Prefs.h"
 #include "Project.h"
+#include "ProjectSettings.h"
 #include "SyncLock.h"
 #include "Theme.h"
 #include "Track.h"
@@ -53,7 +54,7 @@ struct Settings : PrefsListener {
 
    void UpdatePrefs() override
    {
-      gSoloPref = TracksBehaviorsSolo.Read();
+      gSoloPref = ProjectSettings::TracksBehaviorsSolo.Read();
 
       // Calculation of best font size depends on language, so it should be redone in case
       // the language preference changed.

@@ -16,7 +16,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "Project.h"
 #include "QualitySettings.h"
 #include "NumericTextCtrl.h"
-#include "prefs/TracksBehaviorsPrefs.h"
 #include "XMLWriter.h"
 #include "XMLTagHandler.h"
 
@@ -214,3 +213,13 @@ static ProjectFileIORegistry::AttributeReaderEntries entries {
                  NumericConverter::BANDWIDTH, value.ToWString()));
    } },
 } };
+
+ChoiceSetting ProjectSettings::TracksBehaviorsSolo{
+   wxT("/GUI/Solo"),
+   {
+      ByColumns,
+      { XO("Simple"),  XO("Multi-track"), XO("None") },
+      { wxT("Simple"), wxT("Multi"),      wxT("None") }
+   },
+   0, // "Simple"
+};
