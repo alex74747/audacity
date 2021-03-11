@@ -20,17 +20,17 @@ around to NEW positions.
 
 *//**********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "Grabber.h"
 
 #include <wx/defs.h>
 #include <wx/dcclient.h>
 #include <wx/window.h>
 
-#include "../AColor.h"
-#include "../AllThemeResources.h"
-#include "../Internat.h"
-#include "../Theme.h"
+#include "AColor.h"
+#include "AllThemeResources.h"
+#include "Internat.h"
+#include "Theme.h"
 
 ////////////////////////////////////////////////////////////
 /// Methods for Grabber

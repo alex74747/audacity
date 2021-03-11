@@ -17,7 +17,7 @@
 #include "Audacity.h" // for USE_* macros
 #include "MixerToolBar.h"
 
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -37,7 +37,7 @@
 #include "Prefs.h"
 #include "ProjectManager.h"
 #include "widgets/ASlider.h"
-#include "widgets/Grabber.h"
+#include "Grabber.h"
 
 IMPLEMENT_CLASS(MixerToolBar, ToolBar);
 

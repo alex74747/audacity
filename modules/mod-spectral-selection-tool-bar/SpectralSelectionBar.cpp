@@ -23,7 +23,7 @@ frequency selection range.
 #include "Audacity.h"
 #include "SpectralSelectionBar.h"
 
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 #include <algorithm>
 

@@ -23,7 +23,7 @@
 #endif
 
 #include "TimeToolBar.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 #include "AudioIO.h"
 #include "Project.h"

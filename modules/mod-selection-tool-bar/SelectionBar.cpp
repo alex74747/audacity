@@ -23,7 +23,7 @@ selection range.
 #include "Audacity.h"
 #include "SelectionBar.h"
 
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>

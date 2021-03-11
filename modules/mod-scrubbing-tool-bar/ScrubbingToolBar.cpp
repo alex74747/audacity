@@ -15,7 +15,7 @@
 
 #include "Audacity.h"
 #include "ScrubbingToolBar.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>

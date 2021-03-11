@@ -16,7 +16,7 @@
 
 #include "Audacity.h"
 #include "TranscriptionToolBar.h"
-#include "toolbars/ToolManager.h"
+#include "ToolManager.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>

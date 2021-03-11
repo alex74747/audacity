@@ -13,15 +13,15 @@
 #ifndef __AUDACITY_TOOLBAR__
 #define __AUDACITY_TOOLBAR__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
 #include <functional>
 #include <vector>
 #include <wx/defs.h>
 
-#include "../Prefs.h"
-#include "../Theme.h"
-#include "../widgets/wxPanelWrapper.h" // to inherit
+#include "Prefs.h"
+#include "Theme.h"
+#include "widgets/wxPanelWrapper.h" // to inherit
 #include <wx/windowptr.h>
 
 class wxBoxSizer;
@@ -61,7 +61,7 @@ enum { ToolBarFloatMargin = 1 };
 
 class AudacityProject;
 
-class AUDACITY_DLL_API ToolBar /* not final */
+class TOOLBARS_API ToolBar /* not final */
 : public wxPanelWrapper
 , protected PrefsListener
 {
@@ -243,7 +243,7 @@ public:
    friend class ToolBarResizer;
 };
 
-struct AUDACITY_DLL_API RegisteredToolbarFactory {
+struct TOOLBARS_API RegisteredToolbarFactory {
    using Function = std::function< ToolBar::Holder( AudacityProject & ) >;
    using Functions = std::vector< Function >;
 

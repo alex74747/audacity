@@ -15,7 +15,7 @@
 #define __AUDACITY_CONTROL_TOOLBAR__
 
 #include "Audacity.h"
-#include "toolbars/ToolBar.h"
+#include "ToolBar.h"
 
 class wxBoxSizer;
 class wxCommandEvent;

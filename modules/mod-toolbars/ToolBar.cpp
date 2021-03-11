@@ -24,7 +24,7 @@ in which buttons can be placed.
 
 *//**********************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
+#include "Audacity.h" // for USE_* macros
 #include "ToolBar.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -44,14 +44,14 @@ in which buttons can be placed.
 
 #include "ToolDock.h"
 
-#include "../AllThemeResources.h"
-#include "../AColor.h"
-#include "../ImageManipulation.h"
-#include "../Project.h"
-#include "../commands/CommandManager.h"
-#include "../widgets/AButton.h"
-#include "../widgets/Grabber.h"
-#include "../Prefs.h"
+#include "AllThemeResources.h"
+#include "AColor.h"
+#include "ImageManipulation.h"
+#include "Project.h"
+#include "commands/CommandManager.h"
+#include "widgets/AButton.h"
+#include "Grabber.h"
+#include "Prefs.h"
 
 ////////////////////////////////////////////////////////////
 /// ToolBarResizer
