@@ -25,9 +25,9 @@
 #include "AudioIOExt.h"
 #include "FileNames.h"
 #include "Internat.h"
+#include "Languages.h"
 #include "Project.h"
 #include "ProjectFileIO.h"
-#include "prefs/GUIPrefs.h"
 #include "widgets/ErrorDialog.h"
 
 namespace CrashReport {
@@ -60,9 +60,9 @@ void Generate(wxDebugReport::Context ctx)
    
          if (ctx == wxDebugReport::Context_Current)
          {
-            auto saveLang = GUIPrefs::GetLangShort();
-            GUIPrefs::InitLang( wxT("en") );
-            auto cleanup = finally( [&]{ GUIPrefs::InitLang( saveLang ); } );
+            auto saveLang = GetLangShort();
+            InitLang( wxT("en") );
+            auto cleanup = finally( [&]{ InitLang( saveLang ); } );
       
             auto gAudioIO = AudioIOBase::Get();
             for (const auto &diagnostics : gAudioIO->GetAllDeviceInfo())

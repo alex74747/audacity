@@ -99,7 +99,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "FFT.h"
 #include "widgets/AudacityMessageBox.h"
 #include "prefs/DirectoriesPrefs.h"
-#include "prefs/GUIPrefs.h"
 #include "tracks/ui/Scrubbing.h"
 #include "widgets/FileConfig.h"
 #include "widgets/FileHistory.h"
@@ -199,7 +198,7 @@ void PopulatePreferences()
       }
    }
 
-   langCode = GUIPrefs::InitLang( langCode );
+   langCode = InitLang( langCode );
 
    // User requested that the preferences be completely reset
    if (resetPrefs)
@@ -1516,7 +1515,7 @@ bool AudacityApp::InitPart2()
 
    Bind(wxEVT_MENU_CLOSE, [=](wxMenuEvent &event)
    {
-      wxSetlocale(LC_NUMERIC, GUIPrefs::GetLocaleName());
+      wxSetlocale(LC_NUMERIC, GetLocaleName());
       event.Skip();
    });
 #endif
