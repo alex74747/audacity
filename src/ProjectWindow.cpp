@@ -1650,7 +1650,7 @@ void ProjectWindow::PlaybackScroller::OnTimer()
             /* fallthru */
          case Mode::Pinned:
             deltaX =
-               posX - width * TracksPrefs::GetPinnedHeadPositionPreference();
+               posX - width * GetPinnedHeadPositionPreference();
             break;
          case Mode::Right:
             deltaX = posX - width;        break;

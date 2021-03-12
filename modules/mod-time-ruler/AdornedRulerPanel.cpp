@@ -48,7 +48,6 @@
 #include "TrackPanelMouseEvent.h"
 #include "UIHandle.h"
 #include "ViewInfo.h"
-#include "prefs/TracksPrefs.h"
 #include "prefs/ThemePrefs.h"
 #include "ToolBar.h"
 #include "ToolManager.h"
@@ -872,7 +871,7 @@ wxCoord GetPlayHeadX( const AudacityProject *pProject )
    const auto &viewInfo = ViewInfo::Get( *pProject );
    auto width = viewInfo.GetTracksUsableWidth();
    return viewInfo.GetLeftOffset()
-      + width * TracksPrefs::GetPinnedHeadPositionPreference();
+      + width * GetPinnedHeadPositionPreference();
 }
 
 double GetPlayHeadFraction( const AudacityProject *pProject, wxCoord xx )
@@ -922,7 +921,7 @@ protected:
    {
       if (event.event.LeftDClick()) {
          // Restore default position on double click
-         TracksPrefs::SetPinnedHeadPositionPreference( 0.5, true );
+         SetPinnedHeadPositionPreference( 0.5, true );
       
          return RefreshCode::DrawOverlays |
             // Do not start a drag
@@ -932,7 +931,7 @@ protected:
       if (!event.event.LeftIsDown())
          return RefreshCode::Cancelled;
 
-      mOrigPreference = TracksPrefs::GetPinnedHeadPositionPreference();
+      mOrigPreference = GetPinnedHeadPositionPreference();
       return 0;
    }
 
@@ -941,7 +940,7 @@ protected:
    {
 
       auto value = GetPlayHeadFraction(pProject, event.event.m_x );
-      TracksPrefs::SetPinnedHeadPositionPreference( value );
+      SetPinnedHeadPositionPreference( value );
       return RefreshCode::DrawOverlays;
    }
 
@@ -965,13 +964,13 @@ protected:
       wxWindow *) override
    {
       auto value = GetPlayHeadFraction(pProject, event.event.m_x );
-      TracksPrefs::SetPinnedHeadPositionPreference( value, true );
+      SetPinnedHeadPositionPreference( value, true );
       return RefreshCode::DrawOverlays;
    }
 
    Result Cancel(AudacityProject *) override
    {
-      TracksPrefs::SetPinnedHeadPositionPreference( mOrigPreference );
+      SetPinnedHeadPositionPreference( mOrigPreference );
       return RefreshCode::DrawOverlays;
    }
    
@@ -2193,7 +2192,7 @@ void AdornedRulerPanel::UpdateButtonStates()
    {
       // The button always reflects the pinned head preference, even though
       // there is also a Playback preference that may overrule it for scrubbing
-      bool state = TracksPrefs::GetPinnedHeadPreference();
+      bool state = PinnedHeadPreference.Read();
       auto pinButton = static_cast<AButton*>(FindWindow(OnTogglePinnedStateID));
       if( !state )
          pinButton->PopUp();
@@ -2274,7 +2273,7 @@ void AdornedRulerPanel::ShowMenu(const wxPoint & pos)
 
    rulerMenu.AppendCheckItem(
       XXO("Pinned Play Head"), {},
-      { true, TracksPrefs::GetPinnedHeadPreference() }, OnTogglePinnedStateID );
+      { true, PinnedHeadPreference.Read() }, OnTogglePinnedStateID );
 
    BasicMenu::Handle{ &rulerMenu }.Popup(
       wxWidgetsWindowPlacement{ this },
@@ -2823,8 +2822,9 @@ void AdornedRulerPanel::CreateOverlays()
 
 void AdornedRulerPanel::TogglePinnedHead()
 {
-   bool value = !TracksPrefs::GetPinnedHeadPreference();
-   TracksPrefs::SetPinnedHeadPreference(value, true);
+   bool value = !PinnedHeadPreference.Read();
+   PinnedHeadPreference.Write(value);
+   gPrefs->Flush();
    ToolManager::ModifyAllProjectToolbarMenus();
 
    auto &project = *mProject;
@@ -2869,8 +2869,7 @@ AttachedItem sAttachment{
          // Switching of scrolling on and off is permitted
          // even during transport
          AlwaysEnabledFlag,
-         Options{}.CheckTest([](const AudacityProject&){
-            return TracksPrefs::GetPinnedHeadPreference(); } ) )
+         Options{}.CheckTest(PinnedHeadPreference) )
    )
 };
 

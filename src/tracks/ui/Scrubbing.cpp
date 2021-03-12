@@ -67,7 +67,7 @@ namespace {
       // with the time at the midline of the screen mapping to 0,
       // and the extremes to the maximum scrub speed.
 
-      auto partScreen = screen * TracksPrefs::GetPinnedHeadPositionPreference();
+      auto partScreen = screen * GetPinnedHeadPositionPreference();
       const double origin = viewInfo.h + partScreen;
       if (timeAtMouse >= origin)
          partScreen = screen - partScreen;
@@ -117,7 +117,7 @@ namespace {
       const double extreme = std::max(1.0, maxScrubSpeed * ARBITRARY_MULTIPLIER);
 
       // Width of visible track area, in time terms:
-      auto partScreen = screen * TracksPrefs::GetPinnedHeadPositionPreference();
+      auto partScreen = screen * GetPinnedHeadPositionPreference();
       const double origin = viewInfo.h + partScreen;
       if (timeAtMouse >= origin)
          partScreen = screen - partScreen;
@@ -163,7 +163,7 @@ auto Scrubber::ScrubPollerThread::Entry() -> ExitCode
 
 bool Scrubber::ShouldScrubPinned()
 {
-   return TracksPrefs::GetPinnedHeadPreference() &&
+   return PinnedHeadPreference.Read() &&
       !UnpinnedScrubbingPreference.Read();
 }
 
@@ -401,7 +401,7 @@ bool Scrubber::MaybeStartScrubbing(wxCoord xx)
                time0 = std::max(0.0, std::min(maxTime,
                   viewInfo.h +
                      (viewInfo.GetScreenEndTime() - viewInfo.h)
-                        * TracksPrefs::GetPinnedHeadPositionPreference()
+                        * GetPinnedHeadPositionPreference()
                ));
                time1 = time0 + delta;
             }
@@ -710,7 +710,7 @@ void Scrubber::ContinueScrubbingUI()
 
 bool Scrubber::IsTransportingPinned() const
 {
-   if (!TracksPrefs::GetPinnedHeadPreference())
+   if (!PinnedHeadPreference.Read())
       return false;
    return
      !(HasMark() &&
@@ -1224,3 +1224,21 @@ BoolSetting Scrubber::UnpinnedScrubbingPreference{
    L"/AudioIO/UnpinnedScrubbing", true };
 
 #endif
+
+BoolSetting PinnedHeadPreference{ L"/AudioIO/PinnedHead", false };
+DoubleSetting PinnedHeadPositionPreference{
+   L"/AudioIO/PinnedHeadPosition", 0.5 };
+
+double GetPinnedHeadPositionPreference()
+{
+   auto value = PinnedHeadPositionPreference.Read();
+   return std::max(0.0, std::min(1.0, value));
+}
+
+void SetPinnedHeadPositionPreference(double value, bool flush)
+{
+   value = std::max(0.0, std::min(1.0, value));
+   PinnedHeadPositionPreference.Write(value);
+   if(flush)
+      gPrefs->Flush();
+}
