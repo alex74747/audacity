@@ -363,12 +363,6 @@ wxString GUIPrefs::GetLangShort()
       return {};
 }
 
-int ShowClippingPrefsID()
-{
-   static int value = wxNewId();
-   return value;
-}
-
 namespace{
 PrefsPanel::Registration sAttachment{ "GUI",
    [](wxWindow *parent, wxWindowID winid, AudacityProject *)

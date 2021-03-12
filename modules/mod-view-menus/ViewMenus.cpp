@@ -8,6 +8,7 @@
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
 #include "Track.h"
+#include "TrackArtist.h"
 #include "TrackInfo.h"
 #include "TrackPanel.h"
 #include "UndoManager.h"
@@ -327,7 +328,7 @@ void OnShowClipping(const CommandContext &context)
    commandManager.Check(wxT("ShowClipping"), checked);
 
    wxTheApp->AddPendingEvent(wxCommandEvent{
-      EVT_PREFS_UPDATE, ShowClippingPrefsID() });
+      EVT_PREFS_UPDATE, TrackArtist::ShowClippingPrefsID() });
 
    trackPanel.Refresh(false);
 }

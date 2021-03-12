@@ -69,9 +69,6 @@ class AUDACITY_DLL_API GUIPrefs final : public PrefsPanel
    int mDefaultRangeIndex;
 };
 
-AUDACITY_DLL_API
-int ShowClippingPrefsID();
-
 extern AUDACITY_DLL_API ChoiceSetting
      GUIManualLocation
 ;
