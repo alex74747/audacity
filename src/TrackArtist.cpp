@@ -42,7 +42,6 @@ audio tracks.
 #include "TrackArtist.h"
 
 #include "AllThemeResources.h"
-#include "prefs/GUIPrefs.h"
 #include "SyncLock.h"
 #include "Theme.h"
 #include "TrackPanelDrawingContext.h"
@@ -114,6 +113,18 @@ void TrackArtist::SetColours( int iColorIndex)
          break;
 
    }
+}
+
+int TrackArtist::ShowClippingPrefsID()
+{
+   static int value = wxNewId();
+   return value;
+}
+
+int TrackArtist::ShowTrackNameInWaveformPrefsID()
+{
+   static int value = wxNewId();
+   return value;
 }
 
 void TrackArtist::UpdateSelectedPrefs( int id )
