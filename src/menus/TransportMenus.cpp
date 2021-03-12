@@ -22,7 +22,6 @@
 #include "UndoManager.h"
 #include "WaveClip.h"
 #include "../prefs/RecordingPrefs.h"
-#include "../prefs/TracksPrefs.h"
 #include "WaveTrack.h"
 #include "ViewInfo.h"
 #include "CommandContext.h"

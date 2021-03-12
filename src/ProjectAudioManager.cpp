@@ -36,7 +36,6 @@ Paul Licameli split from ProjectManager.cpp
 #include "UndoManager.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "prefs/TracksPrefs.h"
 #include "tracks/ui/Scrubbing.h"
 #include "TrackView.h"
 #include "MeterPanelBase.h"
