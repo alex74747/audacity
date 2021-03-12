@@ -26,10 +26,10 @@ Paul Licameli split from TrackPanel.cpp
 #include "widgets/PopupMenuTable.h"
 #include "Project.h"
 #include "ProjectHistory.h"
+#include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "RefreshCode.h"
 #include "Theme.h"
-#include "prefs/ThemePrefs.h"
 
 #include <mutex>
 #include <wx/app.h>

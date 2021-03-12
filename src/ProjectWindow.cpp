@@ -29,7 +29,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "ViewInfo.h"
 #include "WaveClip.h"
 #include "WaveTrack.h"
-#include "prefs/ThemePrefs.h"
 #include "prefs/TracksPrefs.h"
 #include "tracks/ui/Scrubbing.h"
 #include "TrackView.h"
@@ -47,6 +46,8 @@ wxDEFINE_EVENT( EVT_PROJECT_WINDOW_RESIZING, wxCommandEvent);
 // Custom event
 //
 DEFINE_EVENT_TYPE(EVT_TOOLBAR_UPDATED)
+
+wxDEFINE_EVENT(EVT_THEME_CHANGE, wxCommandEvent);
 
 // Returns the screen containing a rectangle, or -1 if none does.
 int ScreenContaining( wxRect & r ){

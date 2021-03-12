@@ -34,12 +34,11 @@ Provides:
 #include <wx/app.h>
 #include <wx/wxprec.h>
 #include "Prefs.h"
+#include "../ProjectWindow.h"
 #include "Theme.h"
 #include "ShuttleGui.h"
 #include "AColor.h"
 #include "BasicUI.h"
-
-wxDEFINE_EVENT(EVT_THEME_CHANGE, wxCommandEvent);
 
 enum eThemePrefsIds {
    idLoadThemeCache=7000,
