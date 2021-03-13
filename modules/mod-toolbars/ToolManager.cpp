@@ -58,7 +58,6 @@
 #include "ProjectManager.h"
 #include "ProjectWindow.h"
 #include "ProjectWindows.h"
-#include "prefs/ThemePrefs.h"
 #include "AButton.h"
 #include "ASlider.h"
 #include "MeterPanelBase.h"

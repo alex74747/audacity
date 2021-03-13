@@ -28,13 +28,12 @@ Provides:
 
 *//********************************************************************/
 
-
 #include "ThemePrefs.h"
 
 #include <wx/app.h>
 #include <wx/wxprec.h>
 #include "Prefs.h"
-#include "../ProjectWindow.h"
+#include "ProjectWindow.h"
 #include "Theme.h"
 #include "ShuttleGui.h"
 #include "AColor.h"

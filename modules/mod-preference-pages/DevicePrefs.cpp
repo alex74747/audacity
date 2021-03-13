@@ -22,7 +22,6 @@ other settings.
 
 *//********************************************************************/
 
-
 #include "DevicePrefs.h"
 #include "AudioIOBase.h"
 

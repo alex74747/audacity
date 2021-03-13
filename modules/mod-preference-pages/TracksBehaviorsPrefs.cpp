@@ -14,9 +14,8 @@
 
 *//*******************************************************************/
 
-
 #include "TracksBehaviorsPrefs.h"
-#include "../ProjectSettings.h"
+#include "ProjectSettings.h"
 #include "ViewInfo.h"
 
 #include "Prefs.h"

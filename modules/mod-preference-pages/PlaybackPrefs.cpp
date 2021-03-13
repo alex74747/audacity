@@ -18,7 +18,6 @@
 
 *//********************************************************************/
 
-
 #include "PlaybackPrefs.h"
 
 #include <wx/defs.h>
@@ -26,7 +25,7 @@
 
 #include "ShuttleGui.h"
 #include "Prefs.h"
-#include "../tracks/ui/Scrubbing.h"
+#include "tracks/ui/Scrubbing.h"
 
 PlaybackPrefs::PlaybackPrefs(wxWindow * parent, wxWindowID winid)
 :  PrefsPanel(parent, winid, XO("Playback"))

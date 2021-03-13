@@ -37,7 +37,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "TrackPanelMouseEvent.h"
 #include "TrackPanelResizeHandle.h"
 #include "ViewInfo.h"
-#include "prefs/TracksPrefs.h"
+#include "TracksPrefs.h"
 
 #include "TimeShiftHandle.h"
 #include "ButtonHandle.h"
@@ -1911,7 +1911,7 @@ DEFINE_ATTACHED_VIRTUAL_OVERRIDE(GetWaveTrackSyncLockPolicy) {
 
 // Additions to Tracks preferences page
 #include "ShuttleGui.h"
-#include "prefs/TracksPrefs.h"
+#include "TracksPrefs.h"
 namespace {
 void AddCollapse( ShuttleGui &S )
 {

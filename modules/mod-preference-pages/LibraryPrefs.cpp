@@ -16,7 +16,6 @@ MP3 and FFmpeg encoding libraries.
 
 *//*******************************************************************/
 
-
 #include "LibraryPrefs.h"
 
 #include "ShuttleGui.h"

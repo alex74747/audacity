@@ -9,6 +9,7 @@ list( APPEND SOURCES
    NoteTrack.h
 )
 set( LIBS
+   mod-preference-pages-interface
    Audacity
    PortAudio::PortAudio
    portsmf

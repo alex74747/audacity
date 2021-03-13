@@ -17,8 +17,8 @@ Paul Licameli
 #include "WaveTrack.h"
 
 #include "Decibels.h"
-#include "prefs/GUIPrefs.h"
-#include "prefs/TracksPrefs.h"
+#include "GUIPrefs.h"
+#include "TracksPrefs.h"
 
 #include <algorithm>
 

@@ -17,7 +17,6 @@
 
 *//*******************************************************************/
 
-
 #include "GUIPrefs.h"
 
 #include <wx/defs.h>
@@ -29,10 +28,10 @@
 #include "ShuttleGui.h"
 
 #include "Decibels.h"
+#include "prefs/GUISettings.h"
 
 #include "ThemePrefs.h"
 #include "AColor.h"
-#include "GUISettings.h"
 #include "HelpSystem.h"
 
 GUIPrefs::GUIPrefs(wxWindow * parent, wxWindowID winid)
@@ -249,3 +248,6 @@ PrefsPanel::Registration sAttachment{ "GUI",
    }
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

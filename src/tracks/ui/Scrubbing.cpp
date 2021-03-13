@@ -26,7 +26,6 @@ Paul Licameli split from TrackPanel.cpp
 #include "Track.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "../../prefs/TracksPrefs.h"
 #include "MenuHandle.h"
 
 #undef USE_TRANSCRIPTION_TOOLBAR

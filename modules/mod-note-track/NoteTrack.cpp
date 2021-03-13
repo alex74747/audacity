@@ -771,7 +771,7 @@ EnumSetting< bool > AllegroStyleSetting{
 };
 
 #include "ShuttleGui.h"
-#include "prefs/ImportExportPrefs.h"
+#include "ImportExportPrefs.h"
 namespace {
 void AddControls(ShuttleGui &S)
 {

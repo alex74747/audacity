@@ -28,6 +28,7 @@ set( SOURCES
    SpecPowerMeter.h
 )
 set( LIBRARIES
+   mod-preference-pages-interface
    mod-tags-ui-interface
    SndFile::sndfile
    libid3tag::libid3tag
