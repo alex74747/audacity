@@ -15,14 +15,14 @@
 #define __AUDACITY_TRACKSBEHAVIORS_PREFS__
 
 #include "Audacity.h"
-#include "PrefsPanel.h"
+#include "prefs/PrefsPanel.h"
 
 class ChoiceSetting;
 class ShuttleGui;
 
 #define TRACKS_BEHAVIORS_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Tracks Behaviors") }
 
-class AUDACITY_DLL_API TracksBehaviorsPrefs final : public PrefsPanel
+class PREFERENCE_PAGES_API TracksBehaviorsPrefs final : public PrefsPanel
 {
  public:
    TracksBehaviorsPrefs(wxWindow * parent, wxWindowID winid);

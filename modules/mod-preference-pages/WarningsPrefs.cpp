@@ -17,13 +17,13 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "WarningsPrefs.h"
 
 #include <wx/defs.h>
 
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

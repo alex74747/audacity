@@ -28,16 +28,16 @@ Provides:
 
 *//********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "ThemePrefs.h"
 
 #include <wx/app.h>
 #include <wx/wxprec.h>
-#include "../Prefs.h"
-#include "../ProjectWindow.h"
-#include "../Theme.h"
-#include "../ShuttleGui.h"
-#include "../AColor.h"
+#include "Prefs.h"
+#include "ProjectWindow.h"
+#include "Theme.h"
+#include "ShuttleGui.h"
+#include "AColor.h"
 
 enum eThemePrefsIds {
    idLoadThemeCache=7000,

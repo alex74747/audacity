@@ -18,15 +18,15 @@
 
 *//********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "PlaybackPrefs.h"
 
 #include <wx/defs.h>
 #include <wx/textctrl.h>
 
-#include "../ShuttleGui.h"
-#include "../Prefs.h"
-#include "../tracks/ui/Scrubbing.h"
+#include "ShuttleGui.h"
+#include "Prefs.h"
+#include "tracks/ui/Scrubbing.h"
 
 PlaybackPrefs::PlaybackPrefs(wxWindow * parent, wxWindowID winid)
 :  PrefsPanel(parent, winid, XO("Playback"))

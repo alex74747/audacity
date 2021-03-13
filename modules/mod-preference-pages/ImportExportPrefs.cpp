@@ -15,13 +15,12 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h" // for USE_* macros
 #include "ImportExportPrefs.h"
 
 #include <wx/defs.h>
 
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
 
 static const auto PathStart = wxT("ImportExportPreferences");
 

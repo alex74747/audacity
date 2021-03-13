@@ -12,12 +12,12 @@
 #ifndef __AUDACITY_RECORDING_PREFS__
 #define __AUDACITY_RECORDING_PREFS__
 
-#include "../Audacity.h"
+#include "Audacity.h"
 
 #include <wx/defs.h>
 
-#include "PrefsPanel.h"
-#include "../TransportUtilities.h"
+#include "prefs/PrefsPanel.h"
+#include "TransportUtilities.h"
 
 class wxTextCtrl;
 class ShuttleGui;

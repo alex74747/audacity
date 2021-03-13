@@ -17,24 +17,23 @@
 
 *//*******************************************************************/
 
-#include "../Audacity.h"
 #include "GUIPrefs.h"
 
 #include <wx/app.h>
 #include <wx/defs.h>
 
-#include "../FileNames.h"
-#include "../Languages.h"
-#include "../Theme.h"
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
+#include "FileNames.h"
+#include "Languages.h"
+#include "Theme.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
 
-#include "GUISettings.h"
+#include "prefs/GUISettings.h"
 
 #include "ThemePrefs.h"
-#include "../AColor.h"
-#include "../widgets/AudacityMessageBox.h"
-#include "../widgets/HelpSystem.h"
+#include "AColor.h"
+#include "widgets/AudacityMessageBox.h"
+#include "widgets/HelpSystem.h"
 
 GUIPrefs::GUIPrefs(wxWindow * parent, wxWindowID winid)
 /* i18n-hint: refers to Audacity's user interface settings */
@@ -252,3 +251,6 @@ PrefsPanel::Registration sAttachment{ "GUI",
    }
 };
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

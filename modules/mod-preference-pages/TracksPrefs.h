@@ -18,13 +18,13 @@
 #include "Audacity.h"
 #include <functional>
 #include <vector>
-#include "PrefsPanel.h"
+#include "prefs/PrefsPanel.h"
 
 class ShuttleGui;
 
 #define TRACKS_PREFS_PLUGIN_SYMBOL ComponentInterfaceSymbol{ XO("Tracks") }
 
-class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
+class PREFERENCE_PAGES_API TracksPrefs final : public PrefsPanel
 {
    struct PopulatorItem;
  public:
@@ -32,7 +32,7 @@ class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
    using Populator = std::function< void(ShuttleGui&) >;
 
    //! To be statically constructed, it registers additions to the Library preference page
-   struct AUDACITY_DLL_API RegisteredControls
+   struct PREFERENCE_PAGES_API RegisteredControls
       : public Registry::RegisteredItem<PopulatorItem>
    {
       RegisteredControls( const Identifier &id,
@@ -40,7 +40,7 @@ class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
          Populator populator,
          const Registry::Placement &placement = { wxEmptyString, {} } );
 
-      struct AUDACITY_DLL_API Init{ Init(); };
+      struct PREFERENCE_PAGES_API Init{ Init(); };
    };
 
    // Various preset zooming levels.
@@ -77,7 +77,7 @@ class AUDACITY_DLL_API TracksPrefs final : public PrefsPanel
    static ZoomPresets Zoom2Choice();
 
  private:
-   struct AUDACITY_DLL_API PopulatorItem final : Registry::SingleItem {
+   struct PREFERENCE_PAGES_API PopulatorItem final : Registry::SingleItem {
       static Registry::GroupItem &Registry();
    
       PopulatorItem(

@@ -32,14 +32,14 @@
 
 *//********************************************************************/
 
-#include "../Audacity.h"
+#include "Audacity.h"
 #include "MousePrefs.h"
 
 #include <wx/defs.h>
 #include <wx/listctrl.h>
 
-#include "../Prefs.h"
-#include "../ShuttleGui.h"
+#include "Prefs.h"
+#include "ShuttleGui.h"
 
 // The numbers of the columns of the mList.
 enum
