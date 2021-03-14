@@ -10,7 +10,6 @@
 #include "../SelectUtilities.h"
 #include "SyncLock.h"
 #include "TimeWarper.h"
-#include "../TrackPanel.h"
 #include "../TrackPanelAx.h"
 #include "UndoManager.h"
 #include "../UndoRedoMenu.h"
@@ -32,7 +31,7 @@ void OnUndo(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &undoManager = UndoManager::Get( project );
    auto &window = ProjectWindow::Get( project );
 
@@ -63,7 +62,7 @@ void OnRedo(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &undoManager = UndoManager::Get( project );
    auto &window = ProjectWindow::Get( project );
 

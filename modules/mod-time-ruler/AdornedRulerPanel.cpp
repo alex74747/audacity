@@ -29,7 +29,6 @@
 #include "AllThemeResources.h"
 #include "AudioIO.h"
 #include "BasicMenu.h"
-#include "CellularPanel.h"
 #include "../images/Cursors.h"
 #include "Grabber.h"
 #include "HitTestResult.h"

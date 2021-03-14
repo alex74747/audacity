@@ -14,7 +14,6 @@
 #include "ProjectWindows.h"
 #include "SelectUtilities.h"
 #include "SyncLock.h"
-#include "TrackPanel.h"
 #include "WaveTrack.h"
 #include "LabelTrack.h"
 #include "CommandContext.h"
@@ -23,6 +22,8 @@
 #include "SelectHandle.h"
 #include "WaveTrackView.h"
 #include "LabelTrackView.h"
+
+#include <wx/time.h>
 
 // private helper classes and functions
 namespace {
@@ -207,7 +208,7 @@ void MoveWhenAudioInactive
 (AudacityProject &project, double seekStep, TimeUnit timeUnit)
 {
    auto &viewInfo = ViewInfo::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &tracks = TrackList::Get( project );
    auto &ruler = AdornedRulerPanel::Get( project );
    const auto &settings = ProjectSettings::Get( project );
@@ -431,7 +432,7 @@ struct Handler
 
 void OnSelectAll(const CommandContext &context)
 {
-   auto& trackPanel = TrackPanel::Get(context.project);
+   auto& trackPanel = GetProjectPanel(context.project);
    auto& tracks = TrackList::Get(context.project);
    
    for (auto lt : tracks.Selected< LabelTrack >()) {
