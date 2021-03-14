@@ -142,17 +142,39 @@ void TrackView::DoSetMinimized(bool isMinimized)
    mMinimized = isMinimized;
 }
 
-std::shared_ptr<TrackVRulerControls> TrackView::GetVRulerControls()
+static AttachedTrackViewCells::RegisteredFactory
+sKey1{ [](auto&){return nullptr;} };
+
+TrackVRulerControls *TrackView::GetVRulerControls()
 {
-   if (!mpVRulerControls)
-      // create on demand
-      mpVRulerControls = DoGetVRulerControls();
-   return mpVRulerControls;
+   if (auto result = AttachedTrackViewCells::Find(sKey1))
+      return static_cast<TrackVRulerControls *>(result);
+
+   // Create on demand
+   auto sresult = DoGetVRulerControls();
+   auto result = sresult.get();
+   AttachedTrackViewCells::Assign(sKey1, std::move(sresult));
+   return result;
 }
 
-std::shared_ptr<const TrackVRulerControls> TrackView::GetVRulerControls() const
+const TrackVRulerControls *TrackView::GetVRulerControls() const
 {
    return const_cast< TrackView* >( this )->GetVRulerControls();
+}
+
+static AttachedTrackViewCells::RegisteredFactory
+sKey2{ [](auto&){return nullptr;} };
+
+TrackAffordanceControls *TrackView::GetAffordanceControls()
+{
+   if (auto result = AttachedTrackViewCells::Find(sKey2))
+      return static_cast<TrackAffordanceControls *>(result);
+
+   // Create on demand
+   auto sresult = DoGetAffordanceControls();
+   auto result = sresult.get();
+   AttachedTrackViewCells::Assign(sKey2, std::move(sresult));
+   return result;
 }
 
 void TrackView::DoSetY(int y)
@@ -201,7 +223,7 @@ std::shared_ptr<TrackVRulerControls> TrackView::DoGetVRulerControls()
    return std::make_shared<TrackVRulerControls>(shared_from_this());
 }
 
-std::shared_ptr<CommonTrackCell> TrackView::GetAffordanceControls()
+std::shared_ptr<TrackAffordanceControls> TrackView::DoGetAffordanceControls()
 {
    return {};
 }

@@ -111,4 +111,13 @@ private:
    std::weak_ptr< Track > mwTrack;
 };
 
+// fix this
+class TRACK_VIEW_API TrackAffordanceControls
+   : public CommonTrackCell
+   , public std::enable_shared_from_this<TrackAffordanceControls>
+{
+public:
+   using CommonTrackCell::CommonTrackCell;
+};
+
 #endif

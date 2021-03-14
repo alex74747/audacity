@@ -134,7 +134,7 @@ public:
 };
 
 WaveTrackAffordanceControls::WaveTrackAffordanceControls(const std::shared_ptr<Track>& pTrack)
-    : CommonTrackCell(pTrack), mClipNameFont(wxFont(wxFontInfo()))
+    : TrackAffordanceControls(pTrack), mClipNameFont(wxFont(wxFontInfo()))
 {
     if (auto trackList = pTrack->GetOwner())
     {
@@ -326,7 +326,7 @@ auto FindAffordance(WaveTrack &track)
 {
    auto &view = TrackView::Get( track );
    auto pAffordance = view.GetAffordanceControls();
-   return std::dynamic_pointer_cast<WaveTrackAffordanceControls>(
+   return dynamic_cast<WaveTrackAffordanceControls*>(
       pAffordance );
 }
 
@@ -549,7 +549,8 @@ unsigned WaveTrackAffordanceControls::OnAffordanceClick(const TrackPanelMouseEve
 
 std::shared_ptr<TextEditHelper> WaveTrackAffordanceControls::MakeTextEditHelper(const wxString& text)
 {
-    auto helper = std::make_shared<TextEditHelper>(shared_from_this(), text, mClipNameFont);
+    auto pThis = std::static_pointer_cast<WaveTrackAffordanceControls>(shared_from_this());
+    auto helper = std::make_shared<TextEditHelper>(pThis, text, mClipNameFont);
     helper->SetTextColor(theTheme.Colour(clrClipNameText));
     helper->SetTextSelectionColor(theTheme.Colour(clrClipNameTextSelection));
     return helper; 

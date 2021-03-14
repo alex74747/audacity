@@ -59,7 +59,7 @@ public:
 };
 
 NoteTrackAffordanceControls::NoteTrackAffordanceControls(const std::shared_ptr<Track>& pTrack)
-    : CommonTrackCell(pTrack)
+    : TrackAffordanceControls(pTrack)
 {
 
 }

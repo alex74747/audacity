@@ -14,14 +14,22 @@ Paul Licameli split from class Track
 #include <memory>
 #include "CommonTrackPanelCell.h" // to inherit
 #include "XMLAttributeValueView.h"
+#include "ClientData.h" // to inherit
 
 class Track;
 class TrackList;
 class TrackVRulerControls;
 class TrackPanelResizerCell;
 
+class TrackView;
+using AttachedTrackViewCells = ClientData::Site<
+   TrackView, TrackPanelCell, ClientData::SkipCopying,
+   std::shared_ptr
+>;
+
 class TRACK_VIEW_API TrackView /* not final */ : public CommonTrackCell
    , public std::enable_shared_from_this<TrackView>
+   , public AttachedTrackViewCells
 {
    TrackView( const TrackView& ) = delete;
    TrackView &operator=( const TrackView& ) = delete;
@@ -85,12 +93,11 @@ public:
 
    // Return another, associated TrackPanelCell object that implements the
    // mouse actions for the vertical ruler
-   std::shared_ptr<TrackVRulerControls> GetVRulerControls();
-   std::shared_ptr<const TrackVRulerControls> GetVRulerControls() const;
+   TrackVRulerControls *GetVRulerControls();
+   const TrackVRulerControls *GetVRulerControls() const;
 
-   // Returns cell that would be used at affordance area, by default returns nullptr,
-   // meaning that track has no such area.
-   virtual std::shared_ptr<CommonTrackCell> GetAffordanceControls();
+   // by default returns nullptr, meaning that track has no drag controls area
+   TrackAffordanceControls *GetAffordanceControls();
 
    void WriteXMLAttributes( XMLWriter & ) const override;
    bool HandleXMLAttribute(
@@ -128,7 +135,11 @@ protected:
    // memory management thereafter
    virtual std::shared_ptr<TrackVRulerControls> DoGetVRulerControls();
 
-   std::shared_ptr<TrackVRulerControls> mpVRulerControls;
+   // May return nullptr (which is default) if track does not need affordance area
+   /*! Default returns nullptr */
+    virtual std::shared_ptr<TrackAffordanceControls> DoGetAffordanceControls();
+
+   std::shared_ptr<CommonTrackCell> mpAffordanceCellControl;
 
 private:
    bool           mMinimized{ false };

@@ -1405,7 +1405,7 @@ unsigned WaveTrackView::CaptureKey(wxKeyEvent& event, ViewInfo& viewInfo, wxWind
       if (auto affordance = waveTrackView.GetAffordanceControls()) {
          result |= affordance->CaptureKey(event, viewInfo, pParent, project);
          if (!event.GetSkipped()) {
-            mKeyEventDelegate = affordance;
+            mKeyEventDelegate = affordance->shared_from_this();
             return result;
          }
       }
@@ -1486,8 +1486,8 @@ bool WaveTrackView::CutSelectedText(AudacityProject& project)
    for (auto channel : TrackList::Channels(FindTrack().get()))
    {
       auto& view = TrackView::Get(*channel);
-      if (auto affordance 
-         = std::dynamic_pointer_cast<WaveTrackAffordanceControls>(view.GetAffordanceControls()))
+      if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
+         view.GetAffordanceControls()))
       {
          if (affordance->OnTextCut(project))
             return true;
@@ -1501,8 +1501,8 @@ bool WaveTrackView::CopySelectedText(AudacityProject& project)
    for (auto channel : TrackList::Channels(FindTrack().get()))
    {
       auto& view = TrackView::Get(*channel);
-      if (auto affordance
-         = std::dynamic_pointer_cast<WaveTrackAffordanceControls>(view.GetAffordanceControls()))
+      if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
+         view.GetAffordanceControls()))
       {
          if (affordance->OnTextCopy(project))
             return true;
@@ -1541,8 +1541,8 @@ bool WaveTrackView::PasteText(AudacityProject& project)
    for (auto channel : TrackList::Channels(FindTrack().get()))
    {
       auto& view = TrackView::Get(*channel);
-      if (auto affordance
-         = std::dynamic_pointer_cast<WaveTrackAffordanceControls>(view.GetAffordanceControls()))
+      if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
+         view.GetAffordanceControls()))
       {
          if (affordance->OnTextPaste(project))
             return true;
@@ -1556,8 +1556,8 @@ bool WaveTrackView::SelectAllText(AudacityProject& project)
    for (auto channel : TrackList::Channels(FindTrack().get()))
    {
       auto& view = TrackView::Get(*channel);
-      if (auto affordance
-         = std::dynamic_pointer_cast<WaveTrackAffordanceControls>(view.GetAffordanceControls()))
+      if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
+         view.GetAffordanceControls()))
       {
          if (affordance->OnTextSelect(project))
             return true;
@@ -1579,7 +1579,7 @@ WaveTrackView::GetAllSubViews()
    return results;
 }
 
-std::shared_ptr<CommonTrackCell> WaveTrackView::GetAffordanceControls()
+std::shared_ptr<TrackAffordanceControls> WaveTrackView::DoGetAffordanceControls()
 {
     auto track = FindTrack();
     if (!track->IsAlignedWithLeader())
@@ -1600,7 +1600,7 @@ void WaveTrackView::DoSetMinimized( bool minimized )
    } );
 }
 
-std::shared_ptr<CommonTrackCell> WaveTrackView::DoGetAffordance(const std::shared_ptr<Track>& track)
+std::shared_ptr<TrackAffordanceControls> WaveTrackView::DoGetAffordance(const std::shared_ptr<Track>& track)
 {
     if (mpAffordanceCellControl == nullptr)
         mpAffordanceCellControl = std::make_shared<WaveTrackAffordanceControls>(track);
@@ -1868,7 +1868,8 @@ void WaveTrackView::Reparent( const std::shared_ptr<Track> &parent )
 
 std::weak_ptr<WaveClip> WaveTrackView::GetSelectedClip()
 {
-   if (auto affordance = std::dynamic_pointer_cast<WaveTrackAffordanceControls>(GetAffordanceControls()))
+   if (auto affordance =
+       static_cast<WaveTrackAffordanceControls*>(GetAffordanceControls()))
    {
       return affordance->GetSelectedClip();
    }
@@ -1880,7 +1881,7 @@ void WaveTrackView::BuildSubViews() const
    if ( WaveTrackSubViews::size() == 0 && WaveTrackSubViews::slots() > 0) {
       // On-demand steps that can't happen in the constructor
       auto pThis = const_cast<WaveTrackView*>( this );
-      pThis->BuildAll();
+      pThis->WaveTrackSubViews::BuildAll();
       bool minimized = GetMinimized();
       pThis->WaveTrackSubViews::ForEach( [&]( WaveTrackSubView &subView ){
          subView.DoSetMinimized( minimized );

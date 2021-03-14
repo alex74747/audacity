@@ -201,7 +201,7 @@ private:
    Refinement GetSubViews(const wxRect& rect) override;
 
 protected:
-   std::shared_ptr<CommonTrackCell> GetAffordanceControls() override;
+   std::shared_ptr<TrackAffordanceControls> DoGetAffordanceControls() override;
 
    void DoSetMinimized( bool minimized ) override;
 
@@ -214,9 +214,9 @@ protected:
    bool mMultiView{ false };
 
 private:
-   std::shared_ptr<CommonTrackCell> DoGetAffordance(const std::shared_ptr<Track>& track);
+   std::shared_ptr<TrackAffordanceControls> DoGetAffordance(const std::shared_ptr<Track>& track);
 
-   std::shared_ptr<CommonTrackCell> mpAffordanceCellControl;
+   std::shared_ptr<TrackAffordanceControls> mpAffordanceCellControl;
 
    std::weak_ptr<TrackPanelCell> mKeyEventDelegate;
 

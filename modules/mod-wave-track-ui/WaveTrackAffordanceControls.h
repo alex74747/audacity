@@ -31,9 +31,8 @@ class TrackList;
 //Handles clip movement, selection, navigation and
 //allow name change
 class AUDACITY_DLL_API WaveTrackAffordanceControls : 
-    public CommonTrackCell,
+    public TrackAffordanceControls,
     public TextEditDelegate,
-    public std::enable_shared_from_this<WaveTrackAffordanceControls>
 {
     std::weak_ptr<WaveClip> mFocusClip;
     std::weak_ptr<WaveTrackAffordanceHandle> mAffordanceHandle;
