@@ -12,7 +12,6 @@
 #include "ProjectWindow.h"
 #include "SelectUtilities.h"
 #include "TrackPanelAx.h"
-#include "TrackPanel.h"
 #include "TransportUtilities.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"

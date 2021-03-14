@@ -4,7 +4,6 @@
 #include "../Project.h"
 #include "../ProjectHistory.h"
 #include "../ProjectWindow.h"
-#include "../TrackPanel.h"
 #include "../TrackPanelAx.h"
 #include "../UndoManager.h"
 #include "../WaveTrack.h"
@@ -24,7 +23,7 @@ void OnUndo(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &undoManager = UndoManager::Get( project );
    auto &window = ProjectWindow::Get( project );
 
@@ -55,7 +54,7 @@ void OnRedo(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
+   auto &trackPanel = GetProjectPanel( project );
    auto &undoManager = UndoManager::Get( project );
    auto &window = ProjectWindow::Get( project );
 
