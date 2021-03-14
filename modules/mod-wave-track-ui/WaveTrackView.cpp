@@ -1418,7 +1418,7 @@ void WaveTrackView::BuildSubViews() const
    if ( WaveTrackSubViews::size() == 0 && WaveTrackSubViews::slots() > 0) {
       // On-demand steps that can't happen in the constructor
       auto pThis = const_cast<WaveTrackView*>( this );
-      pThis->BuildAll();
+      pThis->WaveTrackSubViews::BuildAll();
       bool minimized = GetMinimized();
       pThis->WaveTrackSubViews::ForEach( [&]( WaveTrackSubView &subView ){
          subView.DoSetMinimized( minimized );

@@ -13,14 +13,22 @@ Paul Licameli split from class Track
 
 #include <memory>
 #include "CommonTrackPanelCell.h" // to inherit
+#include "ClientData.h" // to inherit
 
 class Track;
 class TrackList;
 class TrackVRulerControls;
 class TrackPanelResizerCell;
 
+class TrackView;
+using AttachedTrackViewCells = ClientData::Site<
+   TrackView, TrackPanelCell, ClientData::SkipCopying,
+   std::shared_ptr
+>;
+
 class AUDACITY_DLL_API TrackView /* not final */ : public CommonTrackCell
    , public std::enable_shared_from_this<TrackView>
+   , public AttachedTrackViewCells
 {
    TrackView( const TrackView& ) = delete;
    TrackView &operator=( const TrackView& ) = delete;
@@ -61,8 +69,8 @@ public:
 
    // Return another, associated TrackPanelCell object that implements the
    // mouse actions for the vertical ruler
-   std::shared_ptr<TrackVRulerControls> GetVRulerControls();
-   std::shared_ptr<const TrackVRulerControls> GetVRulerControls() const;
+   TrackVRulerControls *GetVRulerControls();
+   const TrackVRulerControls *GetVRulerControls() const;
 
 
    void WriteXMLAttributes( XMLWriter & ) const override;
@@ -97,8 +105,6 @@ protected:
    //! Private factory to make appropriate object; class TrackView handles memory management thereafter
    /*! Default returns a stub implementation of VRuler controls */
    virtual std::shared_ptr<TrackVRulerControls> DoGetVRulerControls();
-
-   std::shared_ptr<TrackVRulerControls> mpVRulerControls;
 
 private:
    bool           mMinimized{ false };

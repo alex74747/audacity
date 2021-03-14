@@ -137,15 +137,22 @@ void TrackView::DoSetMinimized(bool isMinimized)
    mMinimized = isMinimized;
 }
 
-std::shared_ptr<TrackVRulerControls> TrackView::GetVRulerControls()
+static AttachedTrackViewCells::RegisteredFactory
+sKey{ [](auto&){return nullptr;} };
+
+TrackVRulerControls *TrackView::GetVRulerControls()
 {
-   if (!mpVRulerControls)
-      // create on demand
-      mpVRulerControls = DoGetVRulerControls();
-   return mpVRulerControls;
+   if (auto result = AttachedTrackViewCells::Find(sKey))
+      return static_cast<TrackVRulerControls *>(result);
+
+   // Create on demand
+   auto sresult = DoGetVRulerControls();
+   auto result = sresult.get();
+   AttachedTrackViewCells::Assign(sKey, std::move(sresult));
+   return result;
 }
 
-std::shared_ptr<const TrackVRulerControls> TrackView::GetVRulerControls() const
+const TrackVRulerControls *TrackView::GetVRulerControls() const
 {
    return const_cast< TrackView* >( this )->GetVRulerControls();
 }
