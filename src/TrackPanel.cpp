@@ -721,12 +721,6 @@ void TrackPanel::OnMouseEvent(wxMouseEvent & event)
    event.Skip();
 }
 
-double TrackPanel::GetMostRecentXPos()
-{
-   return mViewInfo->PositionToTime(
-      MostRecentXCoord(), mViewInfo->GetLeftOffset());
-}
-
 void TrackPanel::RefreshTrack(Track *trk, bool refreshbacking)
 {
    if (!trk)

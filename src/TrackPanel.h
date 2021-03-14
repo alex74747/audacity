@@ -91,8 +91,6 @@ class AUDACITY_DLL_API TrackPanel final
    void OnTrackListDeletion();
    void OnEnsureVisible(const TrackListEvent & event);
 
-   double GetMostRecentXPos();
-
    void OnSize( wxSizeEvent & );
    void OnIdle(wxIdleEvent & event);
    void OnTimer(wxTimerEvent& event);
