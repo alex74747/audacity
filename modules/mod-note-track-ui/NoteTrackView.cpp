@@ -67,10 +67,12 @@ DEFINE_ATTACHED_VIRTUAL_OVERRIDE(DoGetNoteTrackView) {
    };
 }
 
-std::shared_ptr<TrackVRulerControls> NoteTrackView::DoGetVRulerControls()
-{
-   return
-      std::make_shared<NoteTrackVRulerControls>( shared_from_this() );
+using DoGetNoteTrackVRulerControls =
+   DoGetVRulerControls::Override< NoteTrackView >;
+DEFINE_ATTACHED_VIRTUAL_OVERRIDE(DoGetNoteTrackVRulerControls) {
+   return [](NoteTrackView &view) {
+      return std::make_shared<NoteTrackVRulerControls>( view.shared_from_this() );
+   };
 }
 
 #define TIME_TO_X(t) (zoomInfo.TimeToPosition((t), rect.x))

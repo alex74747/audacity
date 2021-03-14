@@ -17,7 +17,6 @@ Paul Licameli split from class Track
 
 class Track;
 class TrackList;
-class TrackVRulerControls;
 class TrackPanelResizerCell;
 
 class TrackView;
@@ -67,12 +66,6 @@ public:
    void SetY(int y) { DoSetY( y ); }
    void SetHeight(int height);
 
-   // Return another, associated TrackPanelCell object that implements the
-   // mouse actions for the vertical ruler
-   TrackVRulerControls *GetVRulerControls();
-   const TrackVRulerControls *GetVRulerControls() const;
-
-
    void WriteXMLAttributes( XMLWriter & ) const override;
    bool HandleXMLAttribute( const wxChar *attr, const wxChar *value ) override;
 
@@ -101,10 +94,6 @@ protected:
    void DoSetY(int y);
 
    void DoSetHeight(int h);
-
-   //! Private factory to make appropriate object; class TrackView handles memory management thereafter
-   /*! Default returns a stub implementation of VRuler controls */
-   virtual std::shared_ptr<TrackVRulerControls> DoGetVRulerControls();
 
 private:
    bool           mMinimized{ false };

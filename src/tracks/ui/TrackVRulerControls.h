@@ -13,6 +13,7 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "../../Audacity.h"
 #include "CommonTrackPanelCell.h"
+#include "AttachedVirtualFunction.h"
 
 class Track;
 class TrackView;
@@ -64,5 +65,15 @@ protected:
 
    std::weak_ptr<TrackView> mwTrackView;
 };
+
+struct DoGetVRulerControlsTag;
+
+using DoGetVRulerControls =
+AttachedVirtualFunction<
+   DoGetVRulerControlsTag,
+   std::shared_ptr< TrackVRulerControls >,
+   TrackView
+>;
+DECLARE_EXPORTED_ATTACHED_VIRTUAL(AUDACITY_DLL_API, DoGetVRulerControls);
 
 #endif

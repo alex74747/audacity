@@ -10,7 +10,6 @@ Paul Licameli split from TrackPanel.cpp
 
 #include "TrackView.h"
 #include "../../Track.h"
-#include "TrackVRulerControls.h"
 #include "../../AColor.h"
 #include "../../TrackPanelDrawingContext.h"
 #include <wx/dc.h>
@@ -137,26 +136,6 @@ void TrackView::DoSetMinimized(bool isMinimized)
    mMinimized = isMinimized;
 }
 
-static AttachedTrackViewCells::RegisteredFactory
-sKey{ [](auto&){return nullptr;} };
-
-TrackVRulerControls *TrackView::GetVRulerControls()
-{
-   if (auto result = AttachedTrackViewCells::Find(sKey))
-      return static_cast<TrackVRulerControls *>(result);
-
-   // Create on demand
-   auto sresult = DoGetVRulerControls();
-   auto result = sresult.get();
-   AttachedTrackViewCells::Assign(sKey, std::move(sresult));
-   return result;
-}
-
-const TrackVRulerControls *TrackView::GetVRulerControls() const
-{
-   return const_cast< TrackView* >( this )->GetVRulerControls();
-}
-
 void TrackView::DoSetY(int y)
 {
    mY = y;
@@ -196,11 +175,6 @@ void TrackView::Draw(
       AColor::MediumTrackInfo(&dc, pTrack && pTrack->GetSelected() );
       dc.DrawRectangle(rect);
    }
-}
-
-std::shared_ptr<TrackVRulerControls> TrackView::DoGetVRulerControls()
-{
-   return std::make_shared<TrackVRulerControls>(shared_from_this());
 }
 
 int TrackView::GetMinimizedHeight() const

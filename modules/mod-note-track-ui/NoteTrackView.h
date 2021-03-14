@@ -23,8 +23,6 @@ public:
    NoteTrackView( const std::shared_ptr<Track> &pTrack );
    ~NoteTrackView() override;
 
-   std::shared_ptr<TrackVRulerControls> DoGetVRulerControls() override;
-
 private:
    std::vector<UIHandlePtr> DetailedHitTest
       (const TrackPanelMouseState &state,
