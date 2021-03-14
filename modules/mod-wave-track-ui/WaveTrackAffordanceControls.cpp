@@ -325,7 +325,7 @@ namespace {
 auto FindAffordance(WaveTrack &track)
 {
    auto &view = TrackView::Get( track );
-   auto pAffordance = view.GetAffordanceControls();
+   auto pAffordance = &TrackAffordanceControls::Get(view);
    return dynamic_cast<WaveTrackAffordanceControls*>(
       pAffordance );
 }

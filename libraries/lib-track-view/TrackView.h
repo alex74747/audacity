@@ -18,7 +18,6 @@ Paul Licameli split from class Track
 
 class Track;
 class TrackList;
-class TrackVRulerControls;
 class TrackPanelResizerCell;
 
 class TrackView;
@@ -91,14 +90,6 @@ public:
     */
    void SetExpandedHeight(int height);
 
-   // Return another, associated TrackPanelCell object that implements the
-   // mouse actions for the vertical ruler
-   TrackVRulerControls *GetVRulerControls();
-   const TrackVRulerControls *GetVRulerControls() const;
-
-   // by default returns nullptr, meaning that track has no drag controls area
-   TrackAffordanceControls *GetAffordanceControls();
-
    void WriteXMLAttributes( XMLWriter & ) const override;
    bool HandleXMLAttribute(
       const std::string_view& attr, const XMLAttributeValueView& valueView )
@@ -129,17 +120,6 @@ private:
    void DoSetY(int y);
 
    void DoSetHeight(int h);
-
-protected:
-   // Private factory to make appropriate object; class TrackView handles
-   // memory management thereafter
-   virtual std::shared_ptr<TrackVRulerControls> DoGetVRulerControls();
-
-   // May return nullptr (which is default) if track does not need affordance area
-   /*! Default returns nullptr */
-    virtual std::shared_ptr<TrackAffordanceControls> DoGetAffordanceControls();
-
-   std::shared_ptr<CommonTrackCell> mpAffordanceCellControl;
 
 private:
    bool           mMinimized{ false };

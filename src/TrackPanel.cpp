@@ -871,7 +871,7 @@ std::vector<int> FindAdjustedChannelHeights( Track &t )
       const auto height = view.GetHeight();
       totalHeight += height;
       oldHeights.push_back( height );
-      if (view.GetAffordanceControls())
+      if (DoGetAffordanceControls::Call(view))
          ++nAffordances;
    }
 
@@ -1407,8 +1407,7 @@ struct ChannelGroup final : TrackPanelGroup {
       for ( auto channel : channels )
       {
          auto &view = TrackView::Get( *channel );
-         if (auto affordance = view.GetAffordanceControls())
-         {
+         if (auto affordance = DoGetAffordanceControls::Call(view)) {
             auto panelRect = std::make_shared<EmptyPanelRect>(
                channel->shared_from_this(),
                channel->GetSelected() ? clrTrackInfoSelected : clrTrackInfo);
@@ -1453,7 +1452,7 @@ struct ChannelGroup final : TrackPanelGroup {
          {
             auto& view = TrackView::Get(*channel);
             auto height = *pHeight++;
-            if (auto affordance = view.GetAffordanceControls())
+            if (auto affordance = DoGetAffordanceControls::Call(view))
             {
                height += kAffordancesAreaHeight;
             }

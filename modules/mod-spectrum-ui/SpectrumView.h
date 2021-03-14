@@ -120,8 +120,6 @@ public:
 
    const Type &SubViewType() const override;
 
-   std::shared_ptr<TrackVRulerControls> DoGetVRulerControls() override;
-
    std::shared_ptr<SpectralData> GetSpectralData();
 
    static int mBrushRadius;

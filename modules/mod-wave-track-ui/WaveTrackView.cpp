@@ -1402,7 +1402,7 @@ unsigned WaveTrackView::CaptureKey(wxKeyEvent& event, ViewInfo& viewInfo, wxWind
             event.Skip(false);
       }
 
-      if (auto affordance = waveTrackView.GetAffordanceControls()) {
+      if (auto affordance = &TrackAffordanceControls::Get(waveTrackView)) {
          result |= affordance->CaptureKey(event, viewInfo, pParent, project);
          if (!event.GetSkipped()) {
             mKeyEventDelegate = affordance->shared_from_this();
@@ -1487,7 +1487,7 @@ bool WaveTrackView::CutSelectedText(AudacityProject& project)
    {
       auto& view = TrackView::Get(*channel);
       if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
-         view.GetAffordanceControls()))
+         DoGetAffordanceControls::Call(view).get()))
       {
          if (affordance->OnTextCut(project))
             return true;
@@ -1502,7 +1502,7 @@ bool WaveTrackView::CopySelectedText(AudacityProject& project)
    {
       auto& view = TrackView::Get(*channel);
       if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
-         view.GetAffordanceControls()))
+         DoGetAffordanceControls::Call(view).get()))
       {
          if (affordance->OnTextCopy(project))
             return true;
@@ -1542,7 +1542,7 @@ bool WaveTrackView::PasteText(AudacityProject& project)
    {
       auto& view = TrackView::Get(*channel);
       if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
-         view.GetAffordanceControls()))
+         DoGetAffordanceControls::Call(view).get()))
       {
          if (affordance->OnTextPaste(project))
             return true;
@@ -1557,7 +1557,7 @@ bool WaveTrackView::SelectAllText(AudacityProject& project)
    {
       auto& view = TrackView::Get(*channel);
       if (auto affordance = dynamic_cast<WaveTrackAffordanceControls*>(
-         view.GetAffordanceControls()))
+         DoGetAffordanceControls::Call(view).get()))
       {
          if (affordance->OnTextSelect(project))
             return true;
@@ -1579,16 +1579,6 @@ WaveTrackView::GetAllSubViews()
    return results;
 }
 
-std::shared_ptr<TrackAffordanceControls> WaveTrackView::DoGetAffordanceControls()
-{
-    auto track = FindTrack();
-    if (!track->IsAlignedWithLeader())
-    {
-        return DoGetAffordance(track);
-    }
-    return {};
-}
-
 void WaveTrackView::DoSetMinimized( bool minimized )
 {
    BuildSubViews();
@@ -1602,6 +1592,9 @@ void WaveTrackView::DoSetMinimized( bool minimized )
 
 std::shared_ptr<TrackAffordanceControls> WaveTrackView::DoGetAffordance(const std::shared_ptr<Track>& track)
 {
+   if (track->IsAlignedWithLeader())
+      return {};
+
     if (mpAffordanceCellControl == nullptr)
         mpAffordanceCellControl = std::make_shared<WaveTrackAffordanceControls>(track);
     return mpAffordanceCellControl;
@@ -1611,6 +1604,15 @@ using DoGetWaveTrackView = DoGetView::Override< WaveTrack >;
 DEFINE_ATTACHED_VIRTUAL_OVERRIDE(DoGetWaveTrackView) {
    return [](WaveTrack &track) {
       return std::make_shared<WaveTrackView>( track.SharedPointer() );
+   };
+}
+
+using DoGetWaveTrackAffordanceControls =
+   DoGetAffordanceControls::Override< WaveTrackView >;
+DEFINE_ATTACHED_VIRTUAL_OVERRIDE(DoGetWaveTrackAffordanceControls) {
+   return [](WaveTrackView &view) {
+      return std::make_shared<WaveTrackAffordanceControls>(
+         view.DoFindTrack() );
    };
 }
 
@@ -1862,14 +1864,17 @@ void WaveTrackView::Reparent( const std::shared_ptr<Track> &parent )
    WaveTrackSubViews::ForEach( [&parent](WaveTrackSubView &subView){
       subView.Reparent( parent );
    } );
-   if (mpAffordanceCellControl)
-      mpAffordanceCellControl->Reparent(parent);
+   if (auto affordance =
+       static_cast<WaveTrackAffordanceControls*>(
+         DoGetAffordanceControls::Call(*this).get()))
+      affordance->Reparent(parent);
 }
 
 std::weak_ptr<WaveClip> WaveTrackView::GetSelectedClip()
 {
    if (auto affordance =
-       static_cast<WaveTrackAffordanceControls*>(GetAffordanceControls()))
+       static_cast<WaveTrackAffordanceControls*>(
+         DoGetAffordanceControls::Call(*this).get()))
    {
       return affordance->GetSelectedClip();
    }
