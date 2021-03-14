@@ -48,6 +48,7 @@
 #include "ProjectManager.h"
 #include "ProjectRate.h"
 #include "Prefs.h"
+#include "RecordUtilities.h"
 #include "Track.h"
 #include "NumericTextCtrl.h"
 #include "HelpSystem.h"
@@ -495,7 +496,7 @@ int TimerRecordDialog::RunWaitDialog()
          return POST_TIMER_RECORD_CANCEL_WAIT;
       } else {
          // Record for specified time.
-         ProjectAudioManager::Get( mProject ).OnRecord(false);
+         RecordUtilities::OnRecord(mProject, false);
          bool bIsRecording = true;
 
          auto sPostAction = Verbatim(
@@ -1145,7 +1146,8 @@ void OnTimerRecord(const CommandContext &context)
    // all input channels and all of them have the same sampling rate.
    // Those checks will be later performed by recording function anyway,
    // but we want to warn the user about potential problems from the very start.
-   const auto selectedTracks{ GetPropertiesOfSelected(project) };
+   const auto selectedTracks{
+      RecordUtilities::GetPropertiesOfSelected(project) };
    const int rateOfSelected{ selectedTracks.rateOfSelected };
    const int numberOfSelected{ selectedTracks.numberOfSelected };
    const bool allSameRate{ selectedTracks.allSameRate };
@@ -1159,7 +1161,8 @@ void OnTimerRecord(const CommandContext &context)
       return;
    }
 
-   const auto existingTracks{ ProjectAudioManager::ChooseExistingRecordingTracks(project, true, rateOfSelected) };
+   const auto existingTracks = RecordUtilities::ChooseExistingRecordingTracks(
+      project, true, rateOfSelected);
    if (existingTracks.empty()) {
       if (numberOfSelected > 0 && rateOfSelected !=
           ProjectRate::Get(project).GetRate()) {

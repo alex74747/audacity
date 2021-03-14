@@ -104,46 +104,6 @@ void TransportUtilities::PlayPlayRegionAndWait(
    }
 }
 
-void TransportUtilities::RecordAndWait(
-   const CommandContext &context, bool altAppearance)
-{
-   auto &project = context.project;
-   auto &projectAudioManager = ProjectAudioManager::Get(project);
-
-   const auto &selectedRegion = ViewInfo::Get(project).selectedRegion;
-   double t0 = selectedRegion.t0();
-   double t1 = selectedRegion.t1();
-
-   projectAudioManager.OnRecord(altAppearance);
-
-   if (project.mBatchMode > 0 && t1 != t0) {
-      wxYieldIfNeeded();
-
-      /* i18n-hint: This title appears on a dialog that indicates the progress
-         in doing something.*/
-      ProgressDialog progress(XO("Progress"), XO("Recording"), pdlgHideCancelButton);
-      auto gAudioIO = AudioIO::Get();
-
-      while (projectAudioManager.Recording()) {
-         ProgressResult result = progress.Update(gAudioIO->GetStreamTime() - t0, t1 - t0);
-         if (result != ProgressResult::Success) {
-            projectAudioManager.Stop();
-            if (result != ProgressResult::Stopped) {
-               context.Error(wxT("Recording interrupted"));
-            }
-            break;
-         }
-
-         using namespace std::chrono;
-         std::this_thread::sleep_for(100ms);
-         wxYieldIfNeeded();
-      }
-
-      projectAudioManager.Stop();
-      wxYieldIfNeeded();
-   }
-}
-
 // Returns true if this project was stopped, otherwise false.
 // (it may though have stopped another project playing)
 bool TransportUtilities::DoStopPlaying(const CommandContext &context)

@@ -116,6 +116,8 @@ list( APPEND SOURCES
       ProjectSettings.h
       ProjectWindow.cpp
       ProjectWindow.h
+      RecordUtilities.cpp
+      RecordUtilities.h
       ReloadPreferences.cpp
       ReloadPreferences.h
       ScrubState.cpp
@@ -161,6 +163,7 @@ list( APPEND SOURCES
       menus/EditMenus.cpp
       menus/ExtraMenus.cpp
       menus/FileMenus.cpp
+      menus/RecordMenus.cpp
       menus/TransportMenus.cpp
 
       # Preferences

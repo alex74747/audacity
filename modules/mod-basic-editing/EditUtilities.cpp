@@ -16,6 +16,7 @@
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectRate.h"
+#include "ProjectWindows.h"
 #include "TimeWarper.h"
 #include "SelectUtilities.h"
 #include "SyncLock.h"
