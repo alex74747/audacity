@@ -25,6 +25,7 @@ UndoManager
 
 #include <wx/hashset.h>
 
+#include "BasicUI.h"
 #include "Clipboard.h"
 #include "Diags.h"
 #include "Project.h"
@@ -35,7 +36,6 @@ UndoManager
 #include "Diags.h"
 #include "Tags.h"
 #include "TransactionScope.h"
-#include "widgets/ProgressDialog.h"
 
 
 #include <unordered_set>
@@ -206,14 +206,14 @@ size_t UndoManager::EstimateRemovedBlocks(size_t begin, size_t end)
 
 void UndoManager::RemoveStates(size_t begin, size_t end)
 {
+   using namespace BasicUI;
    // Install a callback function that updates a progress indicator
    unsigned long long nToDelete = EstimateRemovedBlocks(begin, end),
       nDeleted = 0;
-   ProgressDialog dialog{ XO("Progress"), XO("Discarding undo/redo history"),
-      pdlgHideStopButton | pdlgHideCancelButton
-   };
+   auto dialog =
+      MakeProgress(XO("Progress"), XO("Discarding undo/redo history"), 0);
    auto callback = [&](const SampleBlock &){
-      dialog.Update(++nDeleted, nToDelete);
+      dialog->Poll(++nDeleted, nToDelete);
    };
    auto &trackFactory = WaveTrackFactory::Get( mProject );
    auto &pSampleBlockFactory = trackFactory.GetSampleBlockFactory();
