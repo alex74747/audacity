@@ -20,7 +20,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../NoteTrack.h"
 #include "ProjectHistory.h"
 #include "RefreshCode.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 
 #include "AColor.h"

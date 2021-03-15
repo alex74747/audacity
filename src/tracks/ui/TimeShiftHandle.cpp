@@ -21,7 +21,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../Snap.h"
 #include "SyncLock.h"
 #include "Track.h"
-#include "../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"
 #include "UndoManager.h"

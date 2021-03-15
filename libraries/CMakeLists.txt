@@ -45,6 +45,7 @@ set( LIBRARIES
    lib-clipboard
    lib-active-project
    lib-cellular-panel
+   lib-track-view
 )
 
 if ( ${_OPT}has_networking )

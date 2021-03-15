@@ -32,7 +32,7 @@
 
 #include "TrackPanelDrawingContext.h"
 
-#include "tracks/ui/TrackView.h"
+#include "TrackView.h"
 
 // Globals, so that we remember settings from session to session
 wxPrintData &gPrintData()

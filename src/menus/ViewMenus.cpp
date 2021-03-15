@@ -7,7 +7,7 @@
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
 #include "Track.h"
-#include "../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../TrackInfo.h"
 #include "../TrackPanel.h"
 #include "UndoManager.h"
@@ -16,7 +16,7 @@
 #include "CommandManager.h"
 #include "../prefs/GUIPrefs.h"
 #include "../prefs/TracksPrefs.h"
-#include "../tracks/ui/TrackView.h"
+#include "TrackView.h"
 
 #ifdef EXPERIMENTAL_EFFECTS_RACK
 #include "../effects/EffectUI.h"

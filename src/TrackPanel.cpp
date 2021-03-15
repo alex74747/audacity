@@ -50,7 +50,7 @@ is time to refresh some aspect of the screen.
 #include <wx/setup.h> // for wxUSE_* macros
 
 #include "AdornedRulerPanel.h"
-#include "tracks/ui/CommonTrackPanelCell.h"
+#include "CommonTrackPanelCell.h"
 #include "KeyboardCapture.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
@@ -81,9 +81,9 @@ is time to refresh some aspect of the screen.
 #include "TrackPanelResizerCell.h"
 #include "WaveTrack.h"
 
-#include "tracks/ui/TrackControls.h"
-#include "tracks/ui/TrackView.h"
-#include "tracks/ui/TrackVRulerControls.h"
+#include "TrackControls.h"
+#include "TrackView.h"
+#include "TrackVRulerControls.h"
 
 //This loads the appropriate set of cursors, depending on platform.
 #include "../images/Cursors.h"

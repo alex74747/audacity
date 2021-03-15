@@ -25,7 +25,7 @@ Edward Hui
 #include "../../SelectUtilities.h"
 #include "SelectionState.h"
 #include "../../SpectralDataManager.h"
-#include "../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../TrackPanelAx.h"
 #include "../../TrackPanel.h"
 #include "TrackPanelDrawingContext.h"

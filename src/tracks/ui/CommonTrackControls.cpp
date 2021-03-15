@@ -17,7 +17,7 @@ Paul Licameli split from TrackControls.cpp
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "ProjectWindows.h"
-#include "../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../TrackInfo.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"

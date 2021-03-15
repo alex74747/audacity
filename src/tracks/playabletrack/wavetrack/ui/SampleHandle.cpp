@@ -21,7 +21,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "ProjectHistory.h"
 #include "RefreshCode.h"
 #include "../../../../TrackArt.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"

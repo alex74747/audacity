@@ -20,7 +20,7 @@
 #include "CommandManager.h"
 #include "TrackPanelMouseEvent.h"
 #include "../../../../TrackArt.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelDrawingContext.h"
 #include "../../../../TrackPanelResizeHandle.h"
 #include "ViewInfo.h"

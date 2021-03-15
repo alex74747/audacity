@@ -211,8 +211,6 @@ list( APPEND SOURCES
       TimerRecordDialog.h
       TrackArt.cpp
       TrackArt.h
-      TrackArtist.cpp
-      TrackArtist.h
       TrackInfo.cpp
       TrackInfo.h
       TrackPanel.cpp
@@ -764,8 +762,6 @@ list( APPEND SOURCES
       tracks/ui/ButtonHandle.h
       tracks/ui/CommonTrackControls.cpp
       tracks/ui/CommonTrackControls.h
-      tracks/ui/CommonTrackPanelCell.cpp
-      tracks/ui/CommonTrackPanelCell.h
       tracks/ui/CommonTrackView.cpp
       tracks/ui/CommonTrackView.h
       tracks/ui/EditCursorOverlay.cpp
@@ -788,14 +784,8 @@ list( APPEND SOURCES
       tracks/ui/TimeShiftHandle.h
       tracks/ui/TrackButtonHandles.cpp
       tracks/ui/TrackButtonHandles.h
-      tracks/ui/TrackControls.cpp
-      tracks/ui/TrackControls.h
       tracks/ui/TrackSelectHandle.cpp
       tracks/ui/TrackSelectHandle.h
-      tracks/ui/TrackVRulerControls.cpp
-      tracks/ui/TrackVRulerControls.h
-      tracks/ui/TrackView.cpp
-      tracks/ui/TrackView.h
       tracks/ui/ZoomHandle.cpp
       tracks/ui/ZoomHandle.h
 
@@ -1215,7 +1205,7 @@ set( AUDACITY_LIBRARIES
    lib-common-command-flags-interface
    lib-clipboard-interface
    lib-active-project-interface
-   lib-cellular-panel-interface
+   lib-track-view-interface
 )
 
 if ( ${_OPT}has_networking )

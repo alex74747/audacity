@@ -29,7 +29,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "NumberScale.h"
 #include "../../../../ProjectCommandManager.h"
 #include "../../../../TrackArt.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelDrawingContext.h"
 #include "ViewInfo.h"
 #include "WaveClip.h"

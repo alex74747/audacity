@@ -13,7 +13,7 @@
 #include <wx/font.h>
 
 #include "Observer.h"
-#include "../../../ui/CommonTrackPanelCell.h"
+#include "CommonTrackPanelCell.h"
 #include "../../../ui/TextEditHelper.h"
 
 

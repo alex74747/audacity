@@ -32,7 +32,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "prefs/TracksPrefs.h"
 #include "toolbars/ToolManager.h"
 #include "tracks/ui/Scrubbing.h"
-#include "tracks/ui/TrackView.h"
+#include "TrackView.h"
 #include "wxPanelWrapper.h"
 #include "WindowAccessible.h"
 

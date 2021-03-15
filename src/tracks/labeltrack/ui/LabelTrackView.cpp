@@ -31,7 +31,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "SyncLock.h"
 #include "Theme.h"
 #include "../../../TrackArt.h"
-#include "../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../../TrackPanelAx.h"
 #include "../../../TrackPanel.h"
 #include "TrackPanelMouseEvent.h"

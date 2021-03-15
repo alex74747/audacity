@@ -18,7 +18,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackSliderHandles.h"
 
 #include "HitTestResult.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../../../TrackPanel.h"
 #include "TrackPanelMouseEvent.h"
 #include "../../../../NoteTrack.h"
@@ -323,7 +323,7 @@ DEFINE_ATTACHED_VIRTUAL_OVERRIDE(DoGetNoteTrackControls) {
    };
 }
 
-#include "../../../ui/TrackView.h"
+#include "TrackView.h"
 
 using GetDefaultNoteTrackHeight = GetDefaultTrackHeight::Override< NoteTrack >;
 DEFINE_ATTACHED_VIRTUAL_OVERRIDE(GetDefaultNoteTrackHeight) {

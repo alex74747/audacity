@@ -41,7 +41,7 @@ It forwards the actual work of doing the commands to the ScreenshotCommand.
 #include "ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "Prefs.h"
-#include "tracks/ui/TrackView.h"
+#include "TrackView.h"
 #include "HelpSystem.h"
 
 #include "ViewInfo.h"

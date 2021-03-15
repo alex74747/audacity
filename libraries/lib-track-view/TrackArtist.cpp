@@ -42,11 +42,12 @@ audio tracks.
 #include "TrackArtist.h"
 
 #include "AllThemeResources.h"
-#include "SyncLock.h"
 #include "Theme.h"
 #include "TrackPanelDrawingContext.h"
 
 #include "Decibels.h"
+
+#include <wx/utils.h>
 
 TrackArtist::TrackArtist( TrackPanel *parent_ )
    : parent( parent_ )

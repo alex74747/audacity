@@ -92,7 +92,7 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "Theme.h"
-#include "../TrackArtist.h"
+#include "TrackArtist.h"
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"

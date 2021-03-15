@@ -13,14 +13,14 @@ Paul Licameli split from TrackPanel.cpp
 #include "NoteTrackVZoomHandle.h"
 #include "NoteTrackDisplayData.h"
 
-#include "../../../ui/TrackVRulerControls.h"
+#include "TrackVRulerControls.h"
 
 #include "HitTestResult.h"
 #include "../../../../NoteTrack.h"
 #include "Project.h"
 #include "ProjectHistory.h"
 #include "RefreshCode.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "MenuHandle.h"
 #include "../../../../widgets/PopupMenuTable.h"

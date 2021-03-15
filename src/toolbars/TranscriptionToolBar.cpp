@@ -1062,4 +1062,3 @@ AttachedToolBarMenuItem sAttachment{
    TranscriptionBarID, wxT("ShowTranscriptionTB"), XXO("Pla&y-at-Speed Toolbar")
 };
 }
-

@@ -14,14 +14,14 @@
 
 #include "../../../ui/AffordanceHandle.h"
 #include "../../../ui/SelectHandle.h"
-#include "../../../ui/TrackView.h"
+#include "TrackView.h"
 #include "AllThemeResources.h"
 #include "AColor.h"
 #include "../../../../NoteTrack.h"
 #include "../../../../ProjectSettings.h"
 #include "ViewInfo.h"
 #include "../../../../TrackArt.h"
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
 #include "TrackPanelDrawingContext.h"
 

@@ -13,7 +13,7 @@
 #include "RefreshCode.h"
 
 
-#include "../../../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../../../Snap.h"
 #include "TrackPanelDrawingContext.h"
 #include "../../../images/Cursors.h"

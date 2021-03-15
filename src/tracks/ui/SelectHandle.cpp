@@ -27,7 +27,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../SelectUtilities.h"
 #include "SelectionState.h"
 #include "SyncLock.h"
-#include "../../TrackArtist.h"
+#include "TrackArtist.h"
 #include "../../TrackPanelAx.h"
 #include "../../TrackPanel.h"
 #include "TrackPanelDrawingContext.h"

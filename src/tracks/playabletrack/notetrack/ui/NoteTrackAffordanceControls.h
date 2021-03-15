@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../../../ui/CommonTrackPanelCell.h"
+#include "CommonTrackPanelCell.h"
 
 class AffordanceHandle;
 class SelectHandle;
