@@ -126,8 +126,6 @@ list( APPEND SOURCES
       PitchName.h
       PluginRegistrationDialog.cpp
       PluginRegistrationDialog.h
-      Printing.cpp
-      Printing.h
       Profiler.cpp
       Profiler.h
       ProjectAudioManager.cpp
