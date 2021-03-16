@@ -247,6 +247,8 @@ list( APPEND SOURCES
       TimeTrack.h
       Track.cpp
       Track.h
+      TrackArt.cpp
+      TrackArt.h
       TrackArtist.cpp
       TrackArtist.h
       TrackInfo.cpp
