@@ -173,8 +173,6 @@ list( APPEND SOURCES
       PluginManager.h
       Prefs.cpp
       Prefs.h
-      Printing.cpp
-      Printing.h
       Profiler.cpp
       Profiler.h
       Project.cpp
