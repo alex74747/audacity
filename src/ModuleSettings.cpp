@@ -83,6 +83,7 @@ static const std::unordered_set<wxString> &autoEnabledModules()
       "mod-basic-editing",
       "mod-toolbars",
       "mod-preference-pages",
+      "mod-track-panel",
    };
    return modules;
 }
