@@ -138,16 +138,9 @@ list( APPEND SOURCES
       SplashDialog.h
       SseMathFuncs.cpp
       SseMathFuncs.h
-      TrackPanel.cpp
-      TrackPanel.h
       TrackPanelAx.cpp
       TrackPanelAx.h
-      TrackPanelConstants.h
       TrackPanelListener.h
-      TrackPanelResizeHandle.cpp
-      TrackPanelResizeHandle.h
-      TrackPanelResizerCell.cpp
-      TrackPanelResizerCell.h
       TrackUtilities.cpp
       TrackUtilities.h
       TransportUtilities.cpp
@@ -187,8 +180,6 @@ list( APPEND SOURCES
 
       # Tracks UI
 
-      tracks/ui/BackgroundCell.cpp
-      tracks/ui/BackgroundCell.h
       tracks/ui/Scrubbing.cpp
       tracks/ui/Scrubbing.h
 

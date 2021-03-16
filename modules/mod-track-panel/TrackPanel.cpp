@@ -1713,3 +1713,6 @@ void TrackPanel::OnTrackFocusChange( wxCommandEvent &event )
       Refresh( false );
    }
 }
+
+#include "ModuleConstants.h"
+DEFINE_MODULE_ENTRIES

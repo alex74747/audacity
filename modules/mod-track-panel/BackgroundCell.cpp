@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "BackgroundCell.h"
 
 #include "AColor.h"
@@ -18,8 +17,8 @@ Paul Licameli split from TrackPanel.cpp
 #include "SelectionState.h"
 #include "Track.h"
 #include "TrackArtist.h"
-#include "../../TrackPanel.h"
-#include "../../TrackPanelConstants.h"
+#include "TrackPanel.h"
+#include "TrackPanelConstants.h"
 #include "TrackPanelDrawingContext.h"
 #include "TrackPanelMouseEvent.h"
 #include "UIHandle.h"

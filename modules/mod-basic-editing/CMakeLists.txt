@@ -3,5 +3,5 @@ list( APPEND SOURCES
    EditUtilities.h
 )
 audacity_module( mod-basic-editing "${SOURCES}"
-   "Audacity"
+   "mod-track-panel-interface;Audacity"
    "" "" )
