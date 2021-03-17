@@ -142,7 +142,7 @@ PopupMenuTable *NoteTrackControls::GetMenuExtension(Track *)
 }
 
 // drawing related
-#include "../../../../widgets/ASlider.h"
+#include "ASlider.h"
 #include "../../../../TrackInfo.h"
 #include "../../../../TrackPanelDrawingContext.h"
 #include "ViewInfo.h"

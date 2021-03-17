@@ -33,7 +33,7 @@
 #include "../ProjectAudioManager.h"
 #include "../ProjectSettings.h"
 #include "QualitySettings.h"
-#include "../SelectFile.h"
+#include "SelectFile.h"
 #include "../ShuttleAutomation.h"
 #include "ShuttleGui.h"
 #include "../SyncLock.h"
@@ -42,7 +42,7 @@
 #include "WaveTrack.h"
 #include "wxFileNameWrapper.h"
 #include "../widgets/ProgressDialog.h"
-#include "../widgets/NumericTextCtrl.h"
+#include "NumericTextCtrl.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/VetoDialogHook.h"
 

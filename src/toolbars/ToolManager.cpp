@@ -55,9 +55,9 @@
 #include "Project.h"
 #include "ProjectWindows.h"
 #include "prefs/ThemePrefs.h"
-#include "widgets/AButton.h"
-#include "widgets/ASlider.h"
-#include "widgets/MeterPanelBase.h"
+#include "AButton.h"
+#include "ASlider.h"
+#include "MeterPanelBase.h"
 #include "widgets/Grabber.h"
 
 ////////////////////////////////////////////////////////////

@@ -198,8 +198,6 @@ list( APPEND SOURCES
       ScrubState.h
       SelectUtilities.cpp
       SelectUtilities.h
-      SelectFile.cpp
-      SelectFile.h
       SelectionState.cpp
       SelectionState.h
       ShuttleAutomation.cpp
@@ -227,8 +225,6 @@ list( APPEND SOURCES
       Tags.h
       TagsEditor.cpp
       TagsEditor.h
-      TimeDialog.cpp
-      TimeDialog.h
       TimeTrack.cpp
       TimeTrack.h
       TimerRecordDialog.cpp
@@ -843,48 +839,28 @@ list( APPEND SOURCES
       tracks/ui/ZoomHandle.cpp
       tracks/ui/ZoomHandle.h
 
-      # ui helpers
-      ui/AccessibleLinksFormatter.h
-      ui/AccessibleLinksFormatter.cpp
-
       # Widgets
 
-      widgets/AButton.cpp
-      widgets/AButton.h
-      widgets/ASlider.cpp
-      widgets/ASlider.h
-      widgets/AttachableScrollBar.cpp
-      widgets/AttachableScrollBar.h
       widgets/AudacityMessageBox.cpp
       widgets/AudacityMessageBox.h
       widgets/BackedPanel.cpp
       widgets/BackedPanel.h
       widgets/ErrorDialog.cpp
       widgets/ErrorDialog.h
-      widgets/ExpandingToolBar.cpp
-      widgets/ExpandingToolBar.h
       widgets/FileHistory.cpp
       widgets/FileHistory.h
       widgets/Grabber.cpp
       widgets/Grabber.h
-      widgets/Grid.cpp
-      widgets/Grid.h
       widgets/HelpSystem.cpp
       widgets/HelpSystem.h
       widgets/HtmlWindow.cpp
       widgets/HtmlWindow.h
-      widgets/ImageRoll.cpp
-      widgets/ImageRoll.h
       widgets/KeyView.cpp
       widgets/KeyView.h
       widgets/MeterPanel.cpp
       widgets/MeterPanel.h
-      widgets/MeterPanelBase.cpp
-      widgets/MeterPanelBase.h
       widgets/MultiDialog.cpp
       widgets/MultiDialog.h
-      widgets/NumericTextCtrl.cpp
-      widgets/NumericTextCtrl.h
       widgets/Overlay.cpp
       widgets/Overlay.h
       widgets/OverlayPanel.cpp
@@ -893,8 +869,6 @@ list( APPEND SOURCES
       widgets/PopupMenuTable.h
       widgets/ProgressDialog.cpp
       widgets/ProgressDialog.h
-      widgets/Ruler.cpp
-      widgets/Ruler.h
       $<$<BOOL:${${_OPT}has_sentry_reporting}>:
          widgets/ErrorReportDialog.cpp
          widgets/ErrorReportDialog.h
@@ -904,12 +878,6 @@ list( APPEND SOURCES
       widgets/VetoDialogHook.h
       widgets/Warning.cpp
       widgets/Warning.h
-      widgets/auStaticText.cpp
-      widgets/auStaticText.h
-      widgets/numformatter.cpp
-      widgets/numformatter.h
-      widgets/valnum.cpp
-      widgets/valnum.h
       widgets/wxWidgetsBasicUI.cpp
       widgets/wxWidgetsBasicUI.h
 
@@ -1293,7 +1261,7 @@ set( AUDACITY_LIBRARIES
    lib-project-windows-interface
    lib-keyboard-capture-interface
    lib-project-file-io-interface
-   lib-menus-interface
+   lib-widgets-interface
 )
 
 if ( ${_OPT}has_networking )

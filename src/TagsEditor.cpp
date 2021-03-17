@@ -13,7 +13,7 @@
 #include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "widgets/AudacityMessageBox.h"
-#include "widgets/Grid.h"
+#include "Grid.h"
 #include "widgets/HelpSystem.h"
 #include "XMLFileReader.h"
 #include <wx/combobox.h>

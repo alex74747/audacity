@@ -64,7 +64,7 @@
 #include "../SelectUtilities.h"
 #include "Track.h"
 #include "ViewInfo.h"
-#include "../widgets/AButton.h"
+#include "AButton.h"
 #include "FileNames.h"
 
 #include "../tracks/ui/Scrubbing.h"

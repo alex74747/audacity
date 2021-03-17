@@ -27,9 +27,9 @@
 #include "Resample.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
-#include "../SyncLock.h"
-#include "../widgets/NumericTextCtrl.h"
-#include "../widgets/valnum.h"
+#include "SyncLock.h"
+#include "NumericTextCtrl.h"
+#include "valnum.h"
 
 #include "TimeWarper.h"
 #include "WaveClip.h"

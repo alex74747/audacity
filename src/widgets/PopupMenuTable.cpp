@@ -8,7 +8,6 @@ Paul Licameli split from TrackPanel.cpp
 
 **********************************************************************/
 
-
 #include "PopupMenuTable.h"
 #include "BasicMenu.h"
 #include "wxWidgetsWindowPlacement.h"

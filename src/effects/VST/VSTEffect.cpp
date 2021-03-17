@@ -81,12 +81,12 @@
 
 #include "FileNames.h"
 #include "PlatformCompatibility.h"
-#include "../../SelectFile.h"
+#include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "../../effects/Effect.h"
-#include "../../widgets/valnum.h"
+#include "valnum.h"
 #include "../../widgets/AudacityMessageBox.h"
-#include "../../widgets/NumericTextCtrl.h"
+#include "NumericTextCtrl.h"
 #include "XMLFileReader.h"
 
 #if wxUSE_ACCESSIBILITY

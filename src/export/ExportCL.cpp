@@ -31,7 +31,7 @@
 
 #include "Mix.h"
 #include "Prefs.h"
-#include "../SelectFile.h"
+#include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "../Tags.h"
 #include "Track.h"

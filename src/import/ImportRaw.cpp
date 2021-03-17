@@ -30,7 +30,7 @@ and sample size to help you importing data of an unknown format.
 #include "../FileFormats.h"
 #include "Prefs.h"
 #include "ProjectRate.h"
-#include "../SelectFile.h"
+#include "SelectFile.h"
 #include "ShuttleGui.h"
 #include "UserException.h"
 #include "WaveTrack.h"

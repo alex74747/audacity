@@ -42,11 +42,11 @@
 #include <wx/textctrl.h>
 #include <wx/tokenzr.h>
 
-#include "../../SelectFile.h"
+#include "SelectFile.h"
 #include "../../EffectHostInterface.h"
 #include "ShuttleGui.h"
 #include "../../widgets/AudacityMessageBox.h"
-#include "../../widgets/valnum.h"
+#include "valnum.h"
 #include "wxPanelWrapper.h"
 
 //

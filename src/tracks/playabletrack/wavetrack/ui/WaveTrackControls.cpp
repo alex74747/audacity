@@ -935,7 +935,7 @@ WaveTrackPopupMenuTable &GetWaveTrackMenuTable()
 }
 
 // drawing related
-#include "../../../../widgets/ASlider.h"
+#include "ASlider.h"
 #include "../../../../TrackInfo.h"
 #include "../../../../TrackPanelDrawingContext.h"
 #include "ViewInfo.h"

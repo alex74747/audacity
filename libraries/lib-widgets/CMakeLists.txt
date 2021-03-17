@@ -1,0 +1,49 @@
+set( SOURCES
+   AButton.cpp
+   AButton.h
+   AccessibleLinksFormatter.cpp
+   AccessibleLinksFormatter.h
+   ASlider.cpp
+   ASlider.h
+   AttachableScrollBar.cpp
+   AttachableScrollBar.h
+   ExpandingToolBar.cpp
+   ExpandingToolBar.h
+   Grid.cpp
+   Grid.h
+   ImageRoll.cpp
+   ImageRoll.h
+   MeterPanelBase.cpp
+   MeterPanelBase.h
+   NumericTextCtrl.cpp
+   NumericTextCtrl.h
+   Ruler.cpp
+   Ruler.h
+   SelectFile.cpp
+   SelectFile.h
+   TimeDialog.cpp
+   TimeDialog.h
+   auStaticText.cpp
+   auStaticText.h
+   numformatter.cpp
+   numformatter.h
+   valnum.cpp
+   valnum.h
+   wxWidgetsWindowPlacement.h
+   wxWidgetsWindowPlacement.cpp
+)
+set( LIBRARIES
+   lib-audio-devices-interface
+   lib-keyboard-capture-interface
+   lib-math-interface
+   lib-menus-interface
+   lib-screen-geometry-interface
+   lib-project-windows-interface
+   lib-shuttlegui-interface
+   lib-track-interface
+   PRIVATE
+   wxwidgets::wxwidgets
+)
+audacity_library( lib-widgets "${SOURCES}" "${LIBRARIES}"
+   "" ""
+)

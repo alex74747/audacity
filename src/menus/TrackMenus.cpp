@@ -28,7 +28,7 @@
 #include "../effects/EffectUI.h"
 #include "QualitySettings.h"
 #include "../tracks/playabletrack/wavetrack/ui/WaveTrackControls.h"
-#include "../widgets/ASlider.h"
+#include "ASlider.h"
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/ProgressDialog.h"
 

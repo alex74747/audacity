@@ -96,7 +96,7 @@
 #include "WaveClip.h"
 #include "ViewInfo.h"
 #include "WaveTrack.h"
-#include "../widgets/Ruler.h"
+#include "Ruler.h"
 #include "AudacityTextEntryDialog.h"
 #include "XMLFileReader.h"
 #include "AllThemeResources.h"

@@ -663,7 +663,7 @@ private:
 #include "../commands/AudacityCommand.h"
 #include "../commands/CommandContext.h"
 #include "../widgets/AudacityMessageBox.h"
-#include "../widgets/HelpSystem.h"
+#include "widgets/HelpSystem.h"
 
 #include <wx/bmpbuttn.h>
 #include <wx/checkbox.h>

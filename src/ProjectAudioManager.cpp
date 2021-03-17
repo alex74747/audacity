@@ -40,7 +40,7 @@ Paul Licameli split from ProjectManager.cpp
 #include "prefs/TracksPrefs.h"
 #include "tracks/ui/Scrubbing.h"
 #include "tracks/ui/TrackView.h"
-#include "widgets/MeterPanelBase.h"
+#include "MeterPanelBase.h"
 #include "widgets/AudacityMessageBox.h"
 
 

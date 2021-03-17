@@ -76,7 +76,6 @@ It handles initialization and termination by subclassing wxApp.
 #include "CrashReport.h" // for HAS_CRASH_REPORT
 #include "commands/CommandHandler.h"
 #include "commands/AppCommandEvent.h"
-#include "widgets/ASlider.h"
 #include "FFmpeg.h"
 #include "Journal.h"
 //#include "LangChoice.h"

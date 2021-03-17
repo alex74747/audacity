@@ -28,7 +28,7 @@
 #include "ShuttleGui.h"
 #include "Shuttle.h"
 #include "../widgets/AudacityMessageBox.h"
-#include "../widgets/valnum.h"
+#include "valnum.h"
 
 // Define keys, defaults, minimums, and maximums for the effect parameters
 //

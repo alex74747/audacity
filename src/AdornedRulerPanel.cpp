@@ -52,7 +52,7 @@
 #include "toolbars/ToolBar.h"
 #include "tracks/ui/Scrubbing.h"
 #include "tracks/ui/TrackView.h"
-#include "widgets/AButton.h"
+#include "AButton.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/Grabber.h"
 #include "wxWidgetsWindowPlacement.h"

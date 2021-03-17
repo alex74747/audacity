@@ -10,7 +10,7 @@
 #include "../ProjectManager.h"
 #include "ProjectWindows.h"
 #include "../ProjectWindow.h"
-#include "../SelectFile.h"
+#include "SelectFile.h"
 #include "../SelectUtilities.h"
 #include "../TrackPanel.h"
 #include "UndoManager.h"
