@@ -191,8 +191,6 @@ list( APPEND SOURCES
       ProjectFileIO.h
       ProjectFileManager.cpp
       ProjectFileManager.h
-      ProjectHistory.cpp
-      ProjectHistory.h
       ProjectManager.cpp
       ProjectManager.h
       ProjectSelectionManager.cpp
@@ -278,8 +276,6 @@ list( APPEND SOURCES
       TransportUtilities.h
       UIHandle.cpp
       UIHandle.h
-      UndoManager.cpp
-      UndoManager.h
       UndoRedoMenu.cpp
       UndoRedoMenu.h
       VoiceKey.cpp
@@ -1314,14 +1310,13 @@ set( AUDACITY_LIBRARIES
 # A sub-sequence of what is in libraries/CMakeLists.txt :
    lib-string-utils-interface
    lib-uuid-interface
-   lib-screen-geometry-interface
    lib-ffmpeg-support-interface
    lib-theme-resources-interface
-   lib-transactions-interface
    lib-module-manager-interface
    lib-audio-io-interface
    lib-wave-track-interface
    lib-shuttlegui-interface
+   lib-project-history-interface
 )
 
 if ( ${_OPT}has_networking )

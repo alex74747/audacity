@@ -26,7 +26,6 @@ UndoManager
 #include <wx/hashset.h>
 
 #include "Project.h"
-#include "Tags.h"
 #include "Track.h"
 #include "TransactionScope.h"
 //#include "NoteTrack.h"  // for Sonify* function declarations

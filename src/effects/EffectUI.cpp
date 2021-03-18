@@ -18,7 +18,7 @@
 #include "Effect.h"
 #include "EffectManager.h"
 #include "PluginManager.h"
-#include "../ProjectHistory.h"
+#include "ProjectHistory.h"
 #include "../ProjectWindowBase.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
@@ -31,7 +31,7 @@ static PluginID GetID(Effect &effect)
 
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
 
-#include "../UndoManager.h"
+#include "UndoManager.h"
 
 #include <wx/dcmemory.h>
 #include <wx/defs.h>

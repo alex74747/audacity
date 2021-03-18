@@ -31,6 +31,7 @@ set( LIBRARIES
    lib-wave-track
    lib-wx-wrappers
    lib-shuttlegui
+   lib-project-history
 )
 
 if ( ${_OPT}has_networking )
