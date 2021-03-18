@@ -6,6 +6,9 @@ Also a facade that hides details of the implementation of the project database.
 
 The main program can inject an implementation.  If this isn't done, then the
 object has no effect.
+
+Also part of the facade is an abstraction auto-saving of the state of the
+project.
 ]]
 
 set( SOURCES
