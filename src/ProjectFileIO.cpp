@@ -2712,3 +2712,16 @@ InvisibleTemporaryProject::~InvisibleTemporaryProject()
    mpProject.reset();
    try { wxTheApp->Yield(); } catch(...) {}
 }
+
+static struct Installer2{ Installer2() { TransactionScope::InstallAutoSave(
+   [](AudacityProject &project) {
+      auto &projectFileIO = ProjectFileIO::Get(project);
+      if ( !projectFileIO.AutoSave() )
+         throw SimpleMessageBoxException{
+            ExceptionType::Internal,
+            XO("Automatic database backup failed."),
+            XO("Warning"),
+            "Error:_Disk_full_or_not_writable"
+         };
+   }
+); } } installer2;

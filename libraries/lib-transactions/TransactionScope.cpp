@@ -12,6 +12,30 @@
 #include "InconsistencyException.h"
 #include <wx/log.h>
 
+namespace {
+TransactionScope::AutoSaveFunction &GetAutoSave()
+{
+   static TransactionScope::AutoSaveFunction theFunction;
+   return theFunction;
+}
+}
+
+auto TransactionScope::InstallAutoSave(
+   AutoSaveFunction function) -> AutoSaveFunction
+{
+   auto &theFunction = GetAutoSave();
+   auto result = theFunction;
+   theFunction = move(function);
+   return theFunction;
+}
+
+void TransactionScope::AutoSave(AudacityProject &project)
+{
+   auto &function = GetAutoSave();
+   if (function)
+      function(project);
+}
+
 TransactionScopeImpl::~TransactionScopeImpl() = default;
 
 TransactionScope::TransactionScope(
