@@ -23,13 +23,10 @@ Paul Licameli split from AudacityProject.cpp
 wxDEFINE_EVENT(EVT_PROJECT_SETTINGS_CHANGE, wxCommandEvent);
 
 namespace {
-   void Notify(
-      AudacityProject &project, ProjectSettings::EventCode code,
-      long previousValue )
+   void Notify( AudacityProject &project, ProjectSettings::EventCode code )
    {
       wxCommandEvent e{ EVT_PROJECT_SETTINGS_CHANGE };
       e.SetInt( static_cast<int>( code ) );
-      e.SetExtraLong( previousValue );
       project.ProcessEvent( e );
    }
 }
@@ -74,8 +71,6 @@ ProjectSettings::ProjectSettings(AudacityProject &project)
 , mSnapTo( gPrefs->Read(wxT("/SnapTo"), SNAP_OFF) )
 , mCurrentBrushRadius ( 5 )
 {
-   gPrefs->Read(wxT("/GUI/SyncLockTracks"), &mIsSyncLocked, false);
-
    bool multiToolActive = false;
    gPrefs->Read(wxT("/GUI/ToolBars/Tools/MultiToolActive"), &multiToolActive);
 
@@ -170,29 +165,10 @@ int ProjectSettings::GetSnapTo() const
    return mSnapTo;
 }
 
+// Move it to source file, to trigger event
 void ProjectSettings::SetTool(int tool) {
-   if (auto oldValue = mCurrentTool; oldValue != tool) {
-      mCurrentTool = tool;
-      Notify( mProject, ChangedTool, oldValue );
-   }
-}
-
-bool ProjectSettings::IsSyncLocked() const
-{
-#ifdef EXPERIMENTAL_SYNC_LOCK
-   return mIsSyncLocked;
-#else
-   return false;
-#endif
-}
-
-void ProjectSettings::SetSyncLock(bool flag)
-{
-   auto &project = mProject;
-   if (auto oldValue = mIsSyncLocked; flag != oldValue) {
-      mIsSyncLocked = flag;
-      Notify( project, ChangedSyncLock, oldValue );
-   }
+   mCurrentTool = tool;
+   Notify( mProject, ChangedTool );
 }
 
 static ProjectFileIORegistry::AttributeWriterEntry entry {

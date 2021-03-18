@@ -63,7 +63,6 @@ public:
    
    // Values retrievable from GetInt() of the event for settings change
    enum EventCode : int {
-      ChangedSyncLock,
       ChangedTool,
    };
 
@@ -78,9 +77,6 @@ public:
    bool GetShowId3Dialog() const { return mShowId3Dialog; } //lda
    void SetShowId3Dialog(bool flag) { mShowId3Dialog = flag; } //lda
 
-   bool IsSyncLocked() const;
-   void SetSyncLock(bool flag);
-   
    // Snap To
 
    void SetSnapTo(int snap);

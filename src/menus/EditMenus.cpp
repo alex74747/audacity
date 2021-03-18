@@ -398,10 +398,10 @@ void OnPaste(const CommandContext &context)
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
    auto& trackPanel = TrackPanel::Get(project);
-   const auto &settings = ProjectSettings::Get( project );
+   const auto &state = SyncLockState::Get( project );
    auto &window = ProjectWindow::Get( project );
 
-   auto isSyncLocked = settings.IsSyncLocked();
+   auto isSyncLocked = state.IsSyncLocked();
 
    // Handle text paste (into active label) first.
    if (DoPasteText(project))

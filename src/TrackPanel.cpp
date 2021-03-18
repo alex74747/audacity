@@ -60,6 +60,7 @@ is time to refresh some aspect of the screen.
 #include "ProjectSettings.h"
 #include "ProjectStatus.h"
 #include "ProjectWindow.h"
+#include "SyncLock.h"
 #include "Theme.h"
 #include "TrackArt.h"
 #include "TrackPanelMouseEvent.h"
@@ -311,7 +312,7 @@ TrackPanel::TrackPanel(wxWindow * parent, wxWindowID id,
 
    auto theProject = GetProject();
    theProject->Bind(
-      EVT_PROJECT_SETTINGS_CHANGE, &TrackPanel::OnProjectSettingsChange, this);
+      EVT_SYNC_LOCK_CHANGE, &TrackPanel::OnSyncLockChange, this);
    theProject->Bind(
       EVT_TRACK_FOCUS_CHANGE, &TrackPanel::OnTrackFocusChange, this );
 
@@ -445,16 +446,10 @@ void TrackPanel::OnTimer(wxTimerEvent& )
       mTimeCount = 0;
 }
 
-void TrackPanel::OnProjectSettingsChange( wxCommandEvent &event )
+void TrackPanel::OnSyncLockChange( SyncLockChangeEvent &event )
 {
    event.Skip();
-   switch ( static_cast<ProjectSettings::EventCode>( event.GetInt() ) ) {
-   case ProjectSettings::ChangedSyncLock:
-      Refresh(false);
-      break;
-   default:
-      break;
-   }
+   Refresh(false);
 }
 
 void TrackPanel::OnUndoReset( UndoRedoEvent &event )

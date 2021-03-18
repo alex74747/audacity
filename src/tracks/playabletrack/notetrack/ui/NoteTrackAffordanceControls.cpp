@@ -18,6 +18,7 @@
 #include "AllThemeResources.h"
 #include "AColor.h"
 #include "../../../../NoteTrack.h"
+#include "../../../../ProjectSettings.h"
 #include "ViewInfo.h"
 #include "../../../../TrackArt.h"
 #include "../../../../TrackArtist.h"
@@ -29,7 +30,7 @@
 
 #include "ProjectHistory.h"
 #include "../../../../SelectionState.h"
-#include "../../../../ProjectSettings.h"
+#include "../../../../SyncLock.h"
 #include "../../../../RefreshCode.h"
 #include "Theme.h"
 
@@ -46,7 +47,7 @@ public:
     UIHandle::Result SelectAt(const TrackPanelMouseEvent& event, AudacityProject* pProject) override
     {
         auto& viewInfo = ViewInfo::Get(*pProject);
-        const auto& settings = ProjectSettings::Get(*pProject);
+        const auto& settings = SyncLockState::Get(*pProject);
         const auto track = TrackList::Get(*pProject).Lock<Track>(GetTrack());
 
         SelectionState::SelectTrackLength(viewInfo, *track, settings.IsSyncLocked());

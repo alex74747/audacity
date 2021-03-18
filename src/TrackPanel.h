@@ -44,6 +44,7 @@ class TrackArtist;
 struct UndoRedoEvent;
 class Ruler;
 class AdornedRulerPanel;
+struct SyncLockChangeEvent;
 class LWSlider;
 
 class TrackPanelAx;
@@ -98,7 +99,7 @@ class AUDACITY_DLL_API TrackPanel final
    void OnSize( wxSizeEvent & );
    void OnIdle(wxIdleEvent & event);
    void OnTimer(wxTimerEvent& event);
-   void OnProjectSettingsChange(wxCommandEvent &event);
+   void OnSyncLockChange(SyncLockChangeEvent &event);
    void OnTrackFocusChange( wxCommandEvent &event );
 
    void OnUndoReset( UndoRedoEvent &event );
