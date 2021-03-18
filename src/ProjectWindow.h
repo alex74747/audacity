@@ -18,6 +18,7 @@ Paul Licameli split from AudacityProject.h
 #include "Observer.h"
 
 class Track;
+struct UndoRedoEvent;
 
 class wxScrollBar;
 class wxPanel;
@@ -173,9 +174,9 @@ public:
    void DoScroll();
    void OnScroll(wxScrollEvent & event);
    void OnToolBarUpdate(wxCommandEvent & event);
-   void OnUndoPushedModified( wxCommandEvent & );
-   void OnUndoRedo( wxCommandEvent & );
-   void OnUndoReset( wxCommandEvent & );
+   void OnUndoPushedModified( UndoRedoEvent & );
+   void OnUndoRedo( UndoRedoEvent & );
+   void OnUndoReset( UndoRedoEvent & );
 
    bool mbInitializingScrollbar{ false };
 
