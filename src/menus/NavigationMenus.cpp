@@ -7,7 +7,7 @@
 #include "../ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "Track.h"
-#include "../SelectionState.h"
+#include "SelectionState.h"
 #include "../TrackPanel.h"
 #include "../TrackPanelAx.h"
 #include "CommandContext.h"

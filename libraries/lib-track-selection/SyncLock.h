@@ -23,10 +23,10 @@ struct SyncLockChangeEvent : wxEvent{
 };
 
 // Sent to the project when certain settings change
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
+wxDECLARE_EXPORTED_EVENT(TRACK_SELECTION_API,
    EVT_SYNC_LOCK_CHANGE, SyncLockChangeEvent);
 
-class AUDACITY_DLL_API SyncLockState final
+class TRACK_SELECTION_API SyncLockState final
    : public AttachedProjectObject
 {
 public:
@@ -44,7 +44,7 @@ private:
    bool mIsSyncLocked{ false };
 };
 
-class AUDACITY_DLL_API SyncLock {
+class TRACK_SELECTION_API SyncLock {
 public:
    //! @return pTrack is not null, sync lock is on, and some member of its group is selected
    static bool IsSyncLockSelected( const Track *pTrack );
@@ -78,6 +78,6 @@ AttachedVirtualFunction<
    SyncLockPolicy,
    const Track
 >;
-DECLARE_EXPORTED_ATTACHED_VIRTUAL(AUDACITY_DLL_API, GetSyncLockPolicy);
+DECLARE_EXPORTED_ATTACHED_VIRTUAL(TRACK_SELECTION_API, GetSyncLockPolicy);
 
 #endif

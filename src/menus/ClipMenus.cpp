@@ -2,7 +2,7 @@
 #include "ProjectHistory.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
-#include "../SyncLock.h"
+#include "SyncLock.h"
 #include "../TrackPanelAx.h"
 #include "UndoManager.h"
 #include "WaveClip.h"

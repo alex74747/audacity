@@ -31,7 +31,7 @@
 #include "../LabelTrack.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
-#include "../SyncLock.h"
+#include "SyncLock.h"
 #include "WaveTrack.h"
 #include "NumericTextCtrl.h"
 #include "valnum.h"

@@ -192,8 +192,6 @@ list( APPEND SOURCES
       ScrubState.h
       SelectUtilities.cpp
       SelectUtilities.h
-      SelectionState.cpp
-      SelectionState.h
       ShuttleAutomation.cpp
       ShuttleAutomation.h
       ShuttleGetDefinition.cpp
@@ -213,8 +211,6 @@ list( APPEND SOURCES
       SplashDialog.h
       SseMathFuncs.cpp
       SseMathFuncs.h
-      SyncLock.cpp
-      SyncLock.h
       Tags.cpp
       Tags.h
       TagsEditor.cpp
@@ -1241,6 +1237,7 @@ set( AUDACITY_LIBRARIES
    lib-project-file-io-interface
    lib-command-manager-interface
    lib-preferences-dialog-interface
+   lib-track-selection-interface
 )
 
 if ( ${_OPT}has_networking )

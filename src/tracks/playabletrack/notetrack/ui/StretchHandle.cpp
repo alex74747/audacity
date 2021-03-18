@@ -22,7 +22,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "ProjectHistory.h"
 #include "../../../../ProjectSettings.h"
 #include "../../../../RefreshCode.h"
-#include "../../../../SyncLock.h"
+#include "SyncLock.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "UndoManager.h"
 #include "ViewInfo.h"

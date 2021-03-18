@@ -33,7 +33,7 @@
 #include "../ProjectSettings.h"
 #include "Shuttle.h"
 #include "ShuttleGui.h"
-#include "../SyncLock.h"
+#include "SyncLock.h"
 #include "WaveTrack.h"
 #include "valnum.h"
 #include "../widgets/AudacityMessageBox.h"

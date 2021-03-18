@@ -9,7 +9,7 @@
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
 #include "../SelectUtilities.h"
-#include "../SyncLock.h"
+#include "SyncLock.h"
 #include "../TrackPanelAx.h"
 #include "../TrackPanel.h"
 #include "ViewInfo.h"

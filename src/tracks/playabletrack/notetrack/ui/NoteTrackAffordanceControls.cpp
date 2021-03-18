@@ -29,8 +29,8 @@
 
 
 #include "ProjectHistory.h"
-#include "../../../../SelectionState.h"
-#include "../../../../SyncLock.h"
+#include "SelectionState.h"
+#include "SyncLock.h"
 #include "../../../../RefreshCode.h"
 #include "Theme.h"
 

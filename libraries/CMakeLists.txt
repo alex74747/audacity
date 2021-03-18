@@ -40,6 +40,7 @@ set( LIBRARIES
    lib-command-manager
    lib-help-system
    lib-preferences-dialog
+   lib-track-selection
 )
 
 if ( ${_OPT}has_networking )

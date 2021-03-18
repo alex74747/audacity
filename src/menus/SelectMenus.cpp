@@ -15,7 +15,7 @@
 #include "../ProjectWindow.h"
 #include "ProjectWindows.h"
 #include "../SelectUtilities.h"
-#include "../SyncLock.h"
+#include "SyncLock.h"
 #include "../TrackPanel.h"
 #include "WaveTrack.h"
 #include "../LabelTrack.h"
