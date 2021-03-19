@@ -112,8 +112,6 @@ list( APPEND SOURCES
       CellularPanel.h
       Clipboard.cpp
       Clipboard.h
-      CommonCommandFlags.cpp
-      CommonCommandFlags.h
       CrashReport.cpp
       CrashReport.h
       DefaultCommandOutputTargets.cpp
@@ -1235,9 +1233,8 @@ set( AUDACITY_LIBRARIES
    lib-project-windows-interface
    lib-keyboard-capture-interface
    lib-project-file-io-interface
-   lib-command-manager-interface
    lib-preferences-dialog-interface
-   lib-track-selection-interface
+   lib-common-command-flags-interface
 )
 
 if ( ${_OPT}has_networking )

@@ -7,7 +7,7 @@
 #include "../AboutDialog.h"
 #include "AllThemeResources.h"
 #include "AudioIOBase.h"
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "../CrashReport.h" // for HAS_CRASH_REPORT
 #include "FileNames.h"
 #include "HelpText.h"

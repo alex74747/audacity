@@ -27,7 +27,7 @@
 // Insert a menu item
 #include "CommandContext.h"
 #include "CommandManager.h"
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 
 namespace {
 const ReservedCommandFlag&

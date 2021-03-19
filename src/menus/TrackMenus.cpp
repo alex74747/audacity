@@ -1,4 +1,4 @@
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "../LabelTrack.h"
 #include "Menus.h"
 #include "MixAndRender.h"

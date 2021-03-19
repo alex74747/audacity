@@ -8,7 +8,7 @@
 // Only needed when using wxWidgets < 3.1.3
 #if defined(__WXMAC__) && !wxCHECK_VERSION(3,1,3)
 
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "../Menus.h"
 #include "../Project.h"
 #include "CommandContext.h"

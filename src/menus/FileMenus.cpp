@@ -1,4 +1,4 @@
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "FileNames.h"
 #include "../LabelTrack.h"
 #include "Prefs.h"

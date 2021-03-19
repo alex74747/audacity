@@ -1,4 +1,4 @@
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "ProjectHistory.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"

@@ -3,7 +3,7 @@
 #include "AudioIO.h"
 #include "../BatchProcessDialog.h"
 #include "../Benchmark.h"
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "Journal.h"
 #include "Menus.h"
 #include "PluginManager.h"

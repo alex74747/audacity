@@ -1,6 +1,6 @@
 
 
-#include "../CommonCommandFlags.h"
+#include "CommonCommandFlags.h"
 #include "Prefs.h"
 #include "Project.h"
 #include "ProjectHistory.h"
