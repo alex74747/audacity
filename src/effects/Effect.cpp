@@ -25,7 +25,7 @@
 #include <wx/defs.h>
 #include <wx/sizer.h>
 
-#include "../AudioIO.h"
+#include "AudioIO.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
 #include "../LabelTrack.h"
 #include "../MixAndRender.h"

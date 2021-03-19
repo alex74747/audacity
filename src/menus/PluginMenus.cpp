@@ -1,6 +1,6 @@
 
 
-#include "../AudioIO.h"
+#include "AudioIO.h"
 #include "../BatchProcessDialog.h"
 #include "../Benchmark.h"
 #include "../CommonCommandFlags.h"
@@ -22,7 +22,7 @@
 #include "../commands/CommandManager.h"
 #include "../effects/EffectManager.h"
 #include "../effects/EffectUI.h"
-#include "../effects/RealtimeEffectManager.h"
+#include "RealtimeEffectManager.h"
 #include "../prefs/EffectsPrefs.h"
 #include "../prefs/PrefsDialog.h"
 #include "../widgets/AudacityMessageBox.h"

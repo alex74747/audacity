@@ -66,7 +66,6 @@ time warp info and AudioIOListener and whether the playback is looped.
 
 *//*******************************************************************/
 
-
 #include "AudioIO.h"
 
 
@@ -98,7 +97,6 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "portmixer.h"
 #endif
 
-#include <wx/frame.h>
 #include <wx/wxcrtvararg.h>
 #include <wx/log.h>
 #include <wx/timer.h>
@@ -118,7 +116,7 @@ time warp info and AudioIOListener and whether the playback is looped.
 #include "Project.h"
 #include "TransactionScope.h"
 
-#include "effects/RealtimeEffectManager.h"
+#include "RealtimeEffectManager.h"
 #include "QualitySettings.h"
 #include "SampleTrack.h"
 #include "BasicUI.h"

@@ -34,7 +34,7 @@
 #include <wx/gbsizer.h>
 
 #include "AllThemeResources.h"
-#include "../ProjectAudioIO.h"
+#include "ProjectAudioIO.h"
 #include "../widgets/MeterPanel.h"
 
 IMPLEMENT_CLASS(MeterToolBar, ToolBar);

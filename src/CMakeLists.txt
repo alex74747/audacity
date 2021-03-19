@@ -100,11 +100,6 @@ list( APPEND SOURCES
       AudacityFileConfig.h
       AudacityHeaders.cpp
       AudacityHeaders.h
-      AudioIO.cpp
-      AudioIO.h
-      AudioIOExt.cpp
-      AudioIOExt.h
-      AudioIOListener.h
       AutoRecoveryDialog.cpp
       AutoRecoveryDialog.h
       BatchCommandDialog.cpp
@@ -186,16 +181,12 @@ list( APPEND SOURCES
       NoteTrack.h
       PitchName.cpp
       PitchName.h
-      PlaybackSchedule.cpp
-      PlaybackSchedule.h
       PluginRegistrationDialog.cpp
       PluginRegistrationDialog.h
       Printing.cpp
       Printing.h
       Profiler.cpp
       Profiler.h
-      ProjectAudioIO.cpp
-      ProjectAudioIO.h
       ProjectAudioManager.cpp
       ProjectAudioManager.h
       ProjectFileIO.cpp
@@ -219,8 +210,6 @@ list( APPEND SOURCES
       RefreshCode.h
       ProjectWindows.cpp
       ProjectWindows.h
-      RingBuffer.cpp
-      RingBuffer.h
       SampleBlock.cpp
       SampleBlock.h
       Screenshot.cpp
@@ -453,8 +442,6 @@ list( APPEND SOURCES
       effects/Paulstretch.h
       effects/Phaser.cpp
       effects/Phaser.h
-      effects/RealtimeEffectManager.cpp
-      effects/RealtimeEffectManager.h
       effects/Repair.cpp
       effects/Repair.h
       effects/Repeat.cpp
@@ -1091,7 +1078,6 @@ list( APPEND LIBRARIES
       wxwidgets::wxwidgets
       libmp3lame::libmp3lame
       SndFile::sndfile
-      PortAudio::PortAudio
       sqlite
       $<$<BOOL:${${_OPT}has_crashreports}>:crashreports>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag::libid3tag>
@@ -1363,12 +1349,11 @@ set( AUDACITY_LIBRARIES
    lib-string-utils-interface
    lib-uuid-interface
    lib-screen-geometry-interface
-   lib-project-rate-interface
    lib-ffmpeg-support-interface
    lib-theme-resources-interface
    lib-transactions-interface
-   lib-sample-track-interface
    lib-module-manager-interface
+   lib-audio-io-interface
 )
 
 if ( ${_OPT}has_networking )

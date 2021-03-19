@@ -27,6 +27,7 @@ set( LIBRARIES
    lib-transactions
    lib-sample-track
    lib-module-manager
+   lib-audio-io
 )
 
 if ( ${_OPT}has_networking )

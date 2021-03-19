@@ -13,8 +13,6 @@
 #ifndef __AUDACITY_AUDIO_IO__
 #define __AUDACITY_AUDIO_IO__
 
-
-
 #include "AudioIOBase.h" // to inherit
 #include "PlaybackSchedule.h" // member variable
 
@@ -109,7 +107,7 @@ int audacityAudioCallback(
 
 class AudioIOExt;
 
-class AUDACITY_DLL_API AudioIoCallback /* not final */
+class AUDIO_IO_API AudioIoCallback /* not final */
    : public AudioIOBase
 {
 public:
@@ -126,7 +124,7 @@ public:
 
    //! @name iteration over extensions, supporting range-for syntax
    //! @{
-   class AUDACITY_DLL_API AudioIOExtIterator {
+   class AUDIO_IO_API AudioIOExtIterator {
    public:
       using difference_type = ptrdiff_t;
       using value_type = AudioIOExt &;
@@ -360,7 +358,7 @@ private:
 
 struct PaStreamInfo;
 
-class AUDACITY_DLL_API AudioIO final
+class AUDIO_IO_API AudioIO final
    : public AudioIoCallback
    , public Observer::Publisher<AudioIOEvent>
 {

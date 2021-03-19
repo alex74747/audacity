@@ -261,8 +261,8 @@ protected:
    double mRate = 0;
 };
 
-struct AUDACITY_DLL_API PlaybackSchedule {
 
+struct AUDIO_IO_API PlaybackSchedule {
    /// Playback starts at offset of mT0, which is measured in seconds.
    double              mT0;
    /// Playback ends at offset of mT1, which is measured in seconds.  Note that mT1 may be less than mT0 during scrubbing.

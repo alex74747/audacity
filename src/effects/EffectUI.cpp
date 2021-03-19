@@ -652,7 +652,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "../../images/Effect.h"
-#include "../AudioIO.h"
+#include "AudioIO.h"
 #include "../CommonCommandFlags.h"
 #include "../Menus.h"
 #include "../prefs/GUISettings.h" // for RTL_WORKAROUND
