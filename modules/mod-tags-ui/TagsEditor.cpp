@@ -10,12 +10,13 @@
 
 #include "TagsEditor.h"
 
+#include "BasicUI.h"
 #include "ProjectWindows.h"
 #include "SelectFile.h"
 #include "ShuttleGui.h"
-#include "widgets/AudacityMessageBox.h"
 #include "Grid.h"
 #include "HelpSystem.h"
+#include "wxWidgetsWindowPlacement.h"
 #include "XMLFileReader.h"
 #include <wx/combobox.h>
 #include <wx/display.h>
@@ -573,9 +574,10 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
    wxFileName fn(FileNames::DataDir(), wxT("genres.txt"));
    wxFile f(fn.GetFullPath(), wxFile::write);
    if (!f.IsOpened() || !f.Write(tc->GetValue())) {
-      AudacityMessageBox(
+      using namespace BasicUI;
+      ShowMessageBox(
          XO("Unable to save genre file."),
-         XO("Reset Genres") );
+         MessageBoxOptions{}.Caption( XO("Reset Genres") ) );
       return;
    }
 
@@ -586,12 +588,15 @@ void TagsEditorDialog::OnEdit(wxCommandEvent & WXUNUSED(event))
 
 void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
 {
-   int id = AudacityMessageBox(
-      XO("Are you sure you want to reset the genre list to defaults?"),
-      XO("Reset Genres"),
-      wxYES_NO);
+   using namespace BasicUI;
 
-   if (id == wxNO) {
+   auto id = ShowMessageBox(
+      XO("Are you sure you want to reset the genre list to defaults?"),
+      MessageBoxOptions{}
+         .Caption( XO("Reset Genres") )
+         .ButtonStyle( Button::YesNo ) );
+
+   if (id == MessageBoxResult::No) {
       return;
    }
    mLocal.LoadDefaultGenres();
@@ -603,9 +608,9 @@ void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
                (!tf.Exists() && tf.Create());
 
    if (!open) {
-      AudacityMessageBox(
+      ShowMessageBox(
          XO("Unable to open genre file."),
-         XO("Reset Genres") );
+         MessageBoxOptions{}.Caption( XO("Reset Genres") ) );
       mLocal.LoadGenres();
       return;
    }
@@ -617,9 +622,9 @@ void TagsEditorDialog::OnReset(wxCommandEvent & WXUNUSED(event))
    }
 
    if (!tf.Write()) {
-      AudacityMessageBox(
+      ShowMessageBox(
          XO("Unable to save genre file."),
-         XO("Reset Genres") );
+         MessageBoxOptions{}.Caption( XO("Reset Genres") ) );
       mLocal.LoadGenres();
       return;
    }
@@ -660,11 +665,15 @@ void TagsEditorDialog::OnLoad(wxCommandEvent & WXUNUSED(event))
    XMLFileReader reader;
    if (!reader.Parse(&temp, fn)) {
       // Inform user of load failure
-      AudacityMessageBox(
+      using namespace BasicUI;
+      wxWidgetsWindowPlacement placement{ this };
+      ShowMessageBox(
          reader.GetErrorStr(),
-         XO("Error Loading Metadata"),
-         wxOK | wxCENTRE,
-         this);
+         MessageBoxOptions{}
+            .Caption( XO("Error Loading Metadata") )
+            .ButtonStyle( Button::Ok )
+            .Centered()
+            .Parent( &placement ) );
       return;
    }
 

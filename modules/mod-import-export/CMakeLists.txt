@@ -51,4 +51,3 @@ if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
       set( MIMETYPES "${MIMETYPES}" PARENT_SCOPE )
    endif()
 endif()
-
