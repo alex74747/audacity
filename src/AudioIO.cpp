@@ -1393,9 +1393,10 @@ void AudioIO::StopStream()
    // if it was already there.
    mUpdateMeters = false;
    while(mUpdatingMeters) {
-      ::wxSafeYield();
       using namespace std::chrono;
-      std::this_thread::sleep_for(50ms);
+      using namespace std::this_thread;
+      yield();
+      sleep_for(50ms);
    }
 
    // Turn off HW playthrough if PortMixer is being used
