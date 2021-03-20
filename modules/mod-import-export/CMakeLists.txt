@@ -32,6 +32,7 @@ set( LIBRARIES
    mod-tags-ui-interface
    SndFile::sndfile
    libid3tag::libid3tag
+   Audacity
 )
 audacity_module( mod-import-export "${SOURCES}" "${LIBRARIES}"
    "" "" )
@@ -50,3 +51,4 @@ if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
       set( MIMETYPES "${MIMETYPES}" PARENT_SCOPE )
    endif()
 endif()
+
