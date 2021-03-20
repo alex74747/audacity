@@ -35,6 +35,7 @@ other settings.
 
 #include "../../lib-src/portmidi/pm_common/portmidi.h"
 
+#include "NoteTrack.h"
 #include "Prefs.h"
 #include "ShuttleGui.h"
 #include "widgets/AudacityMessageBox.h"
@@ -85,9 +86,9 @@ void MidiIOPrefs::Populate()
    GetNamesAndLabels();
 
    // Get current setting for devices
-   mPlayDevice = gPrefs->Read(wxT("/MidiIO/PlaybackDevice"), wxT(""));
+   mPlayDevice = MidiPlaybackDevice.Read();
 #ifdef EXPERIMENTAL_MIDI_IN
-   mRecordDevice = gPrefs->Read(wxT("/MidiIO/RecordingDevice"), wxT(""));
+   mRecordDevice = MidiRecordingDevice.Read();
 #endif
 //   mRecordChannels = gPrefs->Read(wxT("/MidiIO/RecordChannels"), 2L);
 
@@ -270,18 +271,18 @@ bool MidiIOPrefs::Commit()
 
    info = (const PmDeviceInfo *) mPlay->GetClientData(mPlay->GetSelection());
    if (info) {
-      gPrefs->Write(wxT("/MidiIO/PlaybackDevice"),
-                    wxString::Format(wxT("%s: %s"),
-                                     wxString(wxSafeConvertMB2WX(info->interf)),
-                                     wxString(wxSafeConvertMB2WX(info->name))));
+      MidiPlaybackDevice.Write(
+         wxString::Format(wxT("%s: %s"),
+            wxString(wxSafeConvertMB2WX(info->interf)),
+            wxString(wxSafeConvertMB2WX(info->name))));
    }
 #ifdef EXPERIMENTAL_MIDI_IN
    info = (const PmDeviceInfo *) mRecord->GetClientData(mRecord->GetSelection());
    if (info) {
-      gPrefs->Write(wxT("/MidiIO/RecordingDevice"),
-                    wxString::Format(wxT("%s: %s"),
-                                     wxString(wxSafeConvertMB2WX(info->interf)),
-                                     wxString(wxSafeConvertMB2WX(info->name))));
+      MidiRecordingDevice.Write(
+         wxString::Format(wxT("%s: %s"),
+            wxString(wxSafeConvertMB2WX(info->interf)),
+            wxString(wxSafeConvertMB2WX(info->name))));
    }
 #endif
    return gPrefs->Flush();
