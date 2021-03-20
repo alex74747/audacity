@@ -10,7 +10,7 @@
 #include "Project.h"
 #include "ProjectAudioIO.h"
 #include "../ProjectAudioManager.h"
-#include "../ProjectFileIO.h"
+#include "ProjectFileIO.h"
 #include "ProjectHistory.h"
 #include "../ProjectManager.h"
 #include "ProjectRate.h"

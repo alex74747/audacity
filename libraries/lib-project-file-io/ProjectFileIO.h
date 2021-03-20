@@ -55,7 +55,7 @@ enum class ProjectFileIOMessage : int {
 
 ///\brief Object associated with a project that manages reading and writing
 /// of Audacity project file formats, and autosave
-class AUDACITY_DLL_API ProjectFileIO final
+class PROJECT_FILE_IO_API ProjectFileIO final
    : public AttachedProjectObject
    , public XMLTagHandler
    , private PrefsListener
@@ -72,8 +72,8 @@ public:
 
    explicit ProjectFileIO( AudacityProject &project );
 
-   ProjectFileIO( const ProjectFileIO & ) PROHIBITED;
-   ProjectFileIO &operator=( const ProjectFileIO & ) PROHIBITED;
+   ProjectFileIO( const ProjectFileIO & ) = delete;
+   ProjectFileIO &operator=( const ProjectFileIO & ) = delete;
    ~ProjectFileIO();
 
    const wxString &GetProjectTitle() const { return mTitle; }
@@ -317,7 +317,7 @@ private:
 };
 
 //! Makes a temporary project that doesn't display on the screen
-class AUDACITY_DLL_API InvisibleTemporaryProject
+class PROJECT_FILE_IO_API InvisibleTemporaryProject
 {
 public:
    InvisibleTemporaryProject();

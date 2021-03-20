@@ -34,6 +34,7 @@ set( LIBRARIES
    lib-project-history
    lib-project-windows
    lib-keyboard-capture
+   lib-project-file-io
 )
 
 if ( ${_OPT}has_networking )
