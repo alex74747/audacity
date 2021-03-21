@@ -20,6 +20,7 @@
 #include "NoteTrack.h"
 #include "ProjectSettings.h"
 #include "ViewInfo.h"
+#include "SyncLock.h"
 #include "TrackArt.h"
 #include "TrackArtist.h"
 #include "TrackPanelMouseEvent.h"
