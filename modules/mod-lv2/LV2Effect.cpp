@@ -42,11 +42,11 @@
 #include <wx/stattext.h>
 #include <wx/scrolwin.h>
 
+#include "BasicUI.h"
 #include "ConfigInterface.h"
 #include "EffectHostInterface.h"
 #include "ShuttleGui.h"
 #include "valnum.h"
-#include "widgets/AudacityMessageBox.h"
 #include "wxPanelWrapper.h"
 #include "NumericTextCtrl.h"
 
@@ -1527,7 +1527,7 @@ bool LV2Effect::PopulateUI(ShuttleGui &S)
    mMaster = InitInstance(mSampleRate);
    if (mMaster == NULL)
    {
-      AudacityMessageBox( XO("Couldn't instantiate effect") );
+      BasicUI::ShowMessageBox( XO("Couldn't instantiate effect") );
       return false;
    }
 
