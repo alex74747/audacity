@@ -42,6 +42,7 @@ set( LIBRARIES
    lib-preferences-dialog
    lib-track-selection
    lib-common-command-flags
+   lib-clipboard
 )
 
 if ( ${_OPT}has_networking )

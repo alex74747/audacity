@@ -1,5 +1,5 @@
 #include "AudioIO.h"
-#include "../Clipboard.h"
+#include "Clipboard.h"
 #include "CommonCommandFlags.h"
 #include "../LabelTrack.h"
 #include "Prefs.h"

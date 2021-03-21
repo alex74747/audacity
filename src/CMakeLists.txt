@@ -110,8 +110,6 @@ list( APPEND SOURCES
       Benchmark.h
       CellularPanel.cpp
       CellularPanel.h
-      Clipboard.cpp
-      Clipboard.h
       CrashReport.cpp
       CrashReport.h
       DefaultCommandOutputTargets.cpp
@@ -1235,6 +1233,7 @@ set( AUDACITY_LIBRARIES
    lib-project-file-io-interface
    lib-preferences-dialog-interface
    lib-common-command-flags-interface
+   lib-clipboard-interface
 )
 
 if ( ${_OPT}has_networking )

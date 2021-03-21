@@ -5,6 +5,7 @@ set( SOURCES
 set( LIBRARIES
    lib-audio-io-interface
    lib-command-manager-interface
+   lib-keyboard-capture-interface
    lib-project-history-interface
    lib-track-selection-interface
    lib-wave-track-interface
