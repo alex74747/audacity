@@ -189,6 +189,8 @@ class VSTEffect final : public wxEvtHandler,
    void OnTimer();
 
 private:
+   void ShowErrorMessageBox( const TranslatableString &message, bool saving );
+
    // Plugin loading and unloading
    bool Load();
    void Unload();
