@@ -19,7 +19,7 @@
 
 #include "CommandHandler.h"
 
-#include "../ActiveProject.h"
+#include "ActiveProject.h"
 #include "Project.h"
 #include "../ProjectWindow.h"
 #include "AppCommandEvent.h"

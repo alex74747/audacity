@@ -21,7 +21,7 @@ wxDEFINE_EVENT(EVT_PROJECT_ACTIVATION, wxCommandEvent);
 //This is a pointer to the currently-active project.
 static std::weak_ptr<AudacityProject> gActiveProject;
 
-AUDACITY_DLL_API std::weak_ptr<AudacityProject> GetActiveProject()
+std::weak_ptr<AudacityProject> GetActiveProject()
 {
    return gActiveProject;
 }

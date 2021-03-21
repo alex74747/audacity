@@ -43,6 +43,7 @@ set( LIBRARIES
    lib-track-selection
    lib-common-command-flags
    lib-clipboard
+   lib-active-project
 )
 
 if ( ${_OPT}has_networking )

@@ -83,8 +83,6 @@ set( USE_VST ${${_OPT}use_vst} CACHE INTERNAL "" )
 #
 list( APPEND SOURCES
    PRIVATE
-      ActiveProject.cpp
-      ActiveProject.h
       AboutDialog.cpp
       AboutDialog.h
       $<$<NOT:$<BOOL:${${_OPT}bundle_gplv3}>>:AboutDialogGPLv2Text.cpp>
@@ -1234,6 +1232,7 @@ set( AUDACITY_LIBRARIES
    lib-preferences-dialog-interface
    lib-common-command-flags-interface
    lib-clipboard-interface
+   lib-active-project-interface
 )
 
 if ( ${_OPT}has_networking )
