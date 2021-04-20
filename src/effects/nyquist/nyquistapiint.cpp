@@ -15,7 +15,7 @@ extern LVAL s_true;
 
 extern LVAL RSLT_sym;
 
-#include "nyquistapi.h"
+#include "NyquistAPI.h"
 
 /* xlc_aud_get_track_info -- interface to C routine getTrackInfo */
 /**/
