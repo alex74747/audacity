@@ -64,7 +64,7 @@ public:
 
 // Here is where Nyquist gets access to the current project.
 // This is set each time a Nyquist Effect is invoked.
-extern const AudacityProject *theNyquistProject;
+extern std::weak_ptr<const AudacityProject> theNyquistProject;
 
 
 class AUDACITY_DLL_API NyquistEffect final : public Effect

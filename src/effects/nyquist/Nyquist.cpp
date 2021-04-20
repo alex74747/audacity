@@ -117,7 +117,7 @@ void dprintf(const wchar_t *format, ...)
 }
 #endif
 
-const AudacityProject* theNyquistProject;
+std::weak_ptr<const AudacityProject> theNyquistProject;
 int NyquistEffect::mReentryCount = 0;
 
 enum
@@ -775,7 +775,7 @@ bool NyquistEffect::Process()
          (int) AllProjects{}.size());
       mProps += wxString::Format(wxT("(putprop '*PROJECT* \"%s\" 'NAME)\n"), EscapeString(project->GetProjectName()));
 
-      theNyquistProject = project;
+      theNyquistProject = project->shared_from_this();
 
       int numTracks = 0;
       int numWave = 0;

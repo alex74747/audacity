@@ -17,12 +17,16 @@
 #include "../../WaveClip.h"
 #include "../../WaveTrack.h"
 #include "../../LabelTrack.h"
+#include "../../Project.h"
 
 // To access project information, effect runner finds and shares project here:
-AudacityProject *audacityProject = NULL;
+std::weak_ptr<AudacityProject> audacityProject;
 void setNyquistProject(AudacityProject *p)
 {
-    audacityProject = p;
+    if (p)
+       audacityProject = p->shared_from_this();
+    else
+       audacityProject.reset();
 }
 
 LVAL properties(const Track *track)
@@ -102,6 +106,10 @@ LVAL properties(const Track *track)
 
 const Track *getTrackByNumber(FIXTYPE n)
 {
+    auto theNyquistProject = ::theNyquistProject.lock();
+    if (!theNyquistProject)
+       return nullptr;
+
     const TrackList &trackList = TrackList::Get(*theNyquistProject);
     auto range = trackList.Leaders();
 
@@ -115,6 +123,10 @@ const Track *getTrackByNumber(FIXTYPE n)
 
 const Track *getTrackByName(const char *name)
 {
+    auto theNyquistProject = ::theNyquistProject.lock();
+    if (!theNyquistProject)
+       return nullptr;
+
     const TrackList& trackList = TrackList::Get(*theNyquistProject);
     auto range = trackList.Leaders();
 
