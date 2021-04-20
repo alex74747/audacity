@@ -15,6 +15,7 @@
 #include "Nyquist.h"
 #include "NyquistAPI.h"
 #include "../../WaveClip.h"
+#include "../../WaveTrack.h"
 #include "../../LabelTrack.h"
 
 // To access project information, effect runner finds and shares project here:

@@ -782,15 +782,6 @@ LOCAL int nyx_is_labels(LVAL expr)
 }
 
 
-nyx_rval nyx_get_type()
-{
-    if (nyx_result_type == nyx_error) {
-        nyx_result_type = nyx_compute_type(nyx_result);
-    }
-    return nyx_result_type;
-}
-
-
 nyx_rval nyx_compute_type(LVAL expr)
 {
     nyx_rval ntype = nyx_error;
@@ -850,6 +841,15 @@ nyx_rval nyx_compute_type(LVAL expr)
 
    return ntype;
 }
+
+nyx_rval nyx_get_type()
+{
+    if (nyx_result_type == nyx_error) {
+        nyx_result_type = nyx_compute_type(nyx_result);
+    }
+    return nyx_result_type;
+}
+
 
 nyx_rval nyx_eval_expression(const char *expr_string)
 {

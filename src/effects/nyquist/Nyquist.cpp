@@ -97,7 +97,7 @@ effects from this one class.
 // DEBUG TODO: REMOVE THIS
 #include <stdio.h>
 #include <stdlib.h>
-#if defined(_DEBUG)
+#if 0 // defined(_DEBUG)
 #include <stdio.h>
 #include <stdlib.h>
 void dprintf(const wchar_t *format, ...)

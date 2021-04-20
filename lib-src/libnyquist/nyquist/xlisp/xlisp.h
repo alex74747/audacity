@@ -177,7 +177,11 @@ extern long ptrtoabs();
 #define NNODES 2000
 #define AFMT "%p"
 #define OFFTYPE long
-#define NIL (void *)0
+#ifdef __cplusplus
+   #define NIL nullptr
+#else
+   #define NIL (void *)0
+#endif
 /* #define SAVERESTORE */
 #include <sys/types.h>
 /* #if __BYTE_ORDER == __LITTLE_ENDIAN */
