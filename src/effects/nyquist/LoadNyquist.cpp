@@ -14,7 +14,6 @@
 
 #include <wx/log.h>
 
-#include "../../../lib-src/libnyquist/nyquist/xlisp/xlisp.h"
 #include "Nyquist.h"
 
 #include "../../FileNames.h"

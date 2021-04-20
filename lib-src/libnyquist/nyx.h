@@ -11,6 +11,9 @@
 #ifndef __NYX__
 #define __NYX__
 
+struct node;
+typedef struct node *LVAL;
+
 #ifdef __cplusplus
 extern "C"
 {
