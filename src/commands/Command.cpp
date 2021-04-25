@@ -140,6 +140,15 @@ bool ApplyAndSendResponse::Apply()
    // ApplyAndSendResponse IS a command.
    // It also HOLDS a command.
 
+   // Make very sure to send some status to the context before leaving!
+   // It may be needed to unblock progress in another thread.
+   wxString response = wxT( "\n" );
+   auto cleanup = finally([&]{
+      GuardedCall<void>([&]{
+         mCtx->Status(response, true);
+      });
+   });
+
    // Mostly its functions forward to the recipient.
    // However it uses its OWN context, not the one of 
    // the command it holds.
@@ -148,7 +157,6 @@ bool ApplyAndSendResponse::Apply()
       bool bResult = mCommand->Apply(*( mCtx.get()));
       return bResult; }
    );
-   wxString response = wxT( "\n" );
 
    // PRL: it's all right to send untranslated strings to this channel
    // I don't see _("") used with literal strings.
@@ -165,7 +173,6 @@ bool ApplyAndSendResponse::Apply()
    {
       response += wxT("Failed!");
    }
-   mCtx->Status(response, true);
    return result;
 }
 
