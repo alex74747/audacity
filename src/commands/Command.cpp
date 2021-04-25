@@ -110,7 +110,7 @@ bool ApplyAndSendResponse::SetParameter(const wxString &paramName,
 ApplyAndSendResponse::ApplyAndSendResponse(
    const OldStyleCommandPointer &cmd, std::unique_ptr<CommandOutputTargets> &target)
       : mCommand{ cmd },
-       mCtx( std::make_unique<CommandContext>( cmd->mProject, std::move(target) ) )
+       mCtx( std::make_unique<ExtendedCommandContext>( 0, cmd->mProject, std::move(target) ) )
 {
 }
 

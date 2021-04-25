@@ -24,6 +24,7 @@ class AudacityProject;
 class CommandContext;
 class CommandMessageTarget;
 class ComponentInterfaceSymbol;
+class ExtendedCommandContext;
 class Effect;
 class TrackList;
 class SelectedRegion;
@@ -87,7 +88,7 @@ public:
    /** Run a command given the plugin ID */
    // Returns true on success. 
    bool DoAudacityCommand(const PluginID & ID,
-                         const CommandContext &,
+                         const ExtendedCommandContext &,
                          wxWindow *parent,
                          bool shouldPrompt  = true );
 

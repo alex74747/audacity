@@ -96,6 +96,7 @@ void ProjectSelectionManager::AS_SetRate(double rate)
    auto &project = mProject;
    auto &settings = ProjectSettings::Get( project );
    settings.SetRate( rate );
+   // Modify undo state?
 
    SelectionBar::Get( project ).SetRate(rate);
 }

@@ -75,7 +75,7 @@ void EffectManager::UnregisterEffect(const PluginID & ID)
 }
 
 bool EffectManager::DoAudacityCommand(const PluginID & ID,
-                             const CommandContext &context,
+                             const ExtendedCommandContext &context,
                              wxWindow *parent,
                              bool shouldPrompt /* = true */)
 

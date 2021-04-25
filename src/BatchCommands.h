@@ -21,6 +21,7 @@
 class wxArrayString;
 class Effect;
 class CommandContext;
+class ExtendedCommandContext;
 class CommandManager;
 class AudacityProject;
 class wxArrayStringEx;
@@ -56,7 +57,7 @@ private:
 class MacroCommands final {
  public:
    static bool DoAudacityCommand(
-      const PluginID & ID, const CommandContext & context, unsigned flags );
+      const PluginID & ID, const ExtendedCommandContext & context, unsigned flags );
 
    // constructors and destructors
    MacroCommands( AudacityProject &project );
@@ -68,14 +69,14 @@ class MacroCommands final {
       const CommandContext & context, CommandFlag flags, bool alwaysEnabled);
    bool ApplyCommand( const TranslatableString &friendlyCommand,
       const CommandID & command, const wxString & params,
-      CommandContext const &context );
+      ExtendedCommandContext const &context );
    bool ApplyCommandInBatchMode( const TranslatableString &friendlyCommand,
       const CommandID & command, const wxString &params,
-      CommandContext const &context);
+      ExtendedCommandContext const &context);
    bool ApplyEffectCommand(
       const PluginID & ID, const TranslatableString &friendlyCommand,
       const CommandID & command,
-      const wxString & params, const CommandContext & Context);
+      const wxString & params, const ExtendedCommandContext & Context);
    bool ReportAndSkip( const TranslatableString & friendlyCommand, const wxString & params );
    void AbortBatch();
 

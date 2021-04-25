@@ -35,7 +35,7 @@ public:
    virtual ComponentInterfaceSymbol GetSymbol() = 0;
    virtual CommandSignature &GetSignature() = 0;
    virtual bool SetParameter(const wxString &paramName, const wxVariant &paramValue);
-   virtual bool Apply(const CommandContext &context) = 0;
+   virtual bool Apply(const ExtendedCommandContext &context) = 0;
 };
 
 using OldStyleCommandPointer = std::shared_ptr<OldStyleCommand>;
@@ -51,8 +51,7 @@ public:
    bool DoApply();
    ComponentInterfaceSymbol GetSymbol();
    bool SetParameter(const wxString &paramName, const wxVariant &paramValue);
-   std::unique_ptr<const CommandContext> mCtx;
-
+   std::unique_ptr<const ExtendedCommandContext> mCtx;
 };
 
 class AUDACITY_DLL_API CommandImplementation /* not final */

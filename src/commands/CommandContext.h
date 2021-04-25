@@ -55,4 +55,15 @@ public:
    int index;
    CommandParameter parameter;
 };
+
+class AUDACITY_DLL_API ExtendedCommandContext : public CommandContext {
+public:
+   ExtendedCommandContext( int,
+      AudacityProject &p, const std::shared_ptr<CommandOutputTargets> &target )
+      : CommandContext{ p, target }
+   {}
+   ExtendedCommandContext( int, const CommandContext &ctx )
+      : CommandContext{ ctx }
+   {}
+};
 #endif

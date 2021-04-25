@@ -139,6 +139,7 @@ bool SelectTimeCommand::Apply(const ExtendedCommandContext & context){
    }
 
    selectedRegion.setTimes( t0, t1 );
+   // Modify undo state?
    return true;
 }
 

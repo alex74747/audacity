@@ -81,6 +81,7 @@ bool SetProjectCommand::Apply(const ExtendedCommandContext & context)
    if( bHasRate && mRate >= 1 && mRate <= 1000000 )
    {
       auto &bar = SelectionBar::Get( project );
+      // Does this really change the project rate?
       bar.SetRate( mRate );
    }
 

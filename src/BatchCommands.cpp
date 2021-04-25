@@ -495,7 +495,7 @@ wxString MacroCommands::PromptForPresetFor(const CommandID & command, const wxSt
 /// At the moment flags are used only to indicate whether to prompt for
 /// parameters
 bool MacroCommands::DoAudacityCommand(
-   const PluginID & ID, const CommandContext & context, unsigned flags )
+   const PluginID & ID, const ExtendedCommandContext & context, unsigned flags )
 {
    auto &project = context.project;
    auto &window = ProjectWindow::Get( project );
@@ -536,7 +536,7 @@ bool MacroCommands::DoAudacityCommand(
 bool MacroCommands::ApplyEffectCommand(
    const PluginID & ID, const TranslatableString &friendlyCommand,
    const CommandID & command, const wxString & params,
-   const CommandContext & Context)
+   const ExtendedCommandContext & Context)
 {
    static_cast<void>(command);//compiler food.
 
@@ -627,7 +627,7 @@ bool MacroCommands::HandleTextualCommand( CommandManager &commandManager,
 
 bool MacroCommands::ApplyCommand( const TranslatableString &friendlyCommand,
    const CommandID & command, const wxString & params,
-   CommandContext const &context)
+   ExtendedCommandContext const &context)
 {
    // Test for an effect.
    const PluginID & ID =
@@ -651,7 +651,7 @@ bool MacroCommands::ApplyCommand( const TranslatableString &friendlyCommand,
 bool MacroCommands::ApplyCommandInBatchMode(
    const TranslatableString &friendlyCommand,
    const CommandID & command, const wxString &params,
-   CommandContext const &context)
+   ExtendedCommandContext const &context)
 {
    AudacityProject *project = &mProject;
    auto &settings = ProjectSettings::Get( *project );
@@ -765,13 +765,13 @@ bool MacroCommands::ApplyMacro(
          before = wxTimeSpan(0, 0, 0, wxGetUTCTimeMillis());
       }
       
-      struct InteractiveContext : CommandContext {
-         using CommandContext::CommandContext;
+      struct InteractiveContext : ExtendedCommandContext {
+         using ExtendedCommandContext::ExtendedCommandContext;
          void Status( const wxString &message, bool ) const override {
             // MacroCommands::ApplyCommand passes a message already translated
             AudacityMessageBox( Verbatim(message) );
          }
-      } context{ mProject };
+      } context{ 0, mProject };
 
       bool success = ApplyCommandInBatchMode(friendly, command, mParamsMacro[i], context);
 

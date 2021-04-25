@@ -60,6 +60,7 @@ bool BatchEvalCommand::Apply(const ExtendedCommandContext & context)
    {
       MacroCommands batch{ context.project };
       batch.ReadMacro(macroName);
+      // Another context is created inside:
       return batch.ApplyMacro(catalog);
    }
 

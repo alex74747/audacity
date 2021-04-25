@@ -116,7 +116,7 @@ class ScreenshotBigDialog final : public wxFrame,
    std::unique_ptr<ScreenFrameTimer> mTimer;
 
    std::unique_ptr<ScreenshotCommand> mCommand;
-   const CommandContext mContext;
+   const ExtendedCommandContext mContext;
 
    DECLARE_EVENT_TABLE()
 };
@@ -302,7 +302,7 @@ ScreenshotBigDialog::ScreenshotBigDialog(
 
            wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX)
    , mProject{ project }
-   , mContext( project )
+   , mContext( 0, project )
 {
    mDelayCheckBox = NULL;
    mDirectoryTextBox = NULL;

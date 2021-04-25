@@ -44,7 +44,7 @@ void CommandHandler::OnReceiveCommand(AppCommandEvent &event)
       // Then apply it to current application & project.  Note that the
       // command may change the context - for example, switching to a
       // different project.
-      CommandContext context{ *pProject };
+      ExtendedCommandContext context{ 0, *pProject };
       auto result = GuardedCall<bool>( [&] {
          return cmd->Apply( context );
       });

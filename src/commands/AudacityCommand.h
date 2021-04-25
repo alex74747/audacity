@@ -31,8 +31,7 @@ class ShuttleGui;
 
 class AudacityCommand;
 class AudacityProject;
-class CommandContext;
-using ExtendedCommandContext = CommandContext;
+class ExtendedCommandContext;
 class EffectUIHostInterface;
 class ProgressDialog;
 
@@ -80,7 +79,7 @@ class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
    virtual bool GetAutomationParameters(wxString & parms);
    virtual bool SetAutomationParameters(const wxString & parms);
 
-   bool DoAudacityCommand(wxWindow *parent, const CommandContext & context,bool shouldPrompt = true);
+   bool DoAudacityCommand(wxWindow *parent, const ExtendedCommandContext & context,bool shouldPrompt = true);
 
    // Nonvirtual
    // Display a message box, using effect's (translated) name as the prefix

@@ -636,7 +636,7 @@ void OnAudacityCommand(const CommandContext & ctx)
    // Not configured, so prompt user.
    MacroCommands::DoAudacityCommand(
       EffectManager::Get().GetEffectByIdentifier(ctx.parameter),
-      ctx, EffectManager::kNone);
+      ExtendedCommandContext{ 0, ctx }, EffectManager::kNone);
 }
 
 }; // struct Handler

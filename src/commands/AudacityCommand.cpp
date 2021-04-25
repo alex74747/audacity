@@ -180,7 +180,7 @@ bool AudacityCommand::SetAutomationParameters(const wxString & parms)
 }
 
 bool AudacityCommand::DoAudacityCommand(wxWindow *parent,
-                      const CommandContext & context,
+                      const ExtendedCommandContext & context,
                       bool shouldPrompt /* = true */)
 {
    // Note: Init may read parameters from preferences
