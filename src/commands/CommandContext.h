@@ -30,7 +30,7 @@ public:
 
    CommandContext(
       AudacityProject &p,
-      std::unique_ptr<CommandOutputTargets> target);
+      const std::shared_ptr<CommandOutputTargets> &target);
 
    ~CommandContext();
 
@@ -50,7 +50,7 @@ public:
    void AddItem(const double value    , const wxString &name = {} ) const;
 
    AudacityProject &project;
-   std::unique_ptr<CommandOutputTargets> pOutput;
+   std::shared_ptr<CommandOutputTargets> pOutput;
    const wxEvent *pEvt;
    int index;
    CommandParameter parameter;

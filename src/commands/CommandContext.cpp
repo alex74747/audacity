@@ -39,7 +39,7 @@ CommandContext::CommandContext(
    )
       : project{ p }
       // No target specified?  Use the special interactive one that pops up a dialog.
-      , pOutput( std::make_unique<InteractiveOutputTargets>() )
+      , pOutput( std::make_shared<InteractiveOutputTargets>() )
       , pEvt{ e }
       , index{ ii }
       , parameter{ param }
@@ -48,10 +48,10 @@ CommandContext::CommandContext(
    
 CommandContext::CommandContext(
       AudacityProject &p,
-      std::unique_ptr<CommandOutputTargets> target)
+      const std::shared_ptr<CommandOutputTargets> &target)
       : project{ p }
       // Revisit and use std_unique pointer for pOutput??
-      , pOutput( std::move( target) )
+      , pOutput( target )
       , pEvt{ nullptr }
       , index{ 0 }
       , parameter{ CommandParameter{}}
