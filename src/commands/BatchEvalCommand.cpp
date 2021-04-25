@@ -72,7 +72,7 @@ bool BatchEvalCommand::Apply(const CommandContext & context)
 
    // Create a Batch that will have just one command in it...
    MacroCommands Batch{ context.project };
-   bool bResult = Batch.ApplyCommandInBatchMode(friendly, cmdName, cmdParams, &context);
+   bool bResult = Batch.ApplyCommandInBatchMode(friendly, cmdName, cmdParams, context);
    // Relay messages, if any.
    wxString Message = Batch.GetMessage();
    if( !Message.empty() )

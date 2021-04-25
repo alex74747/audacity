@@ -68,10 +68,10 @@ class MacroCommands final {
       const CommandContext & context, CommandFlag flags, bool alwaysEnabled);
    bool ApplyCommand( const TranslatableString &friendlyCommand,
       const CommandID & command, const wxString & params,
-      CommandContext const * pContext=NULL );
+      CommandContext const &context );
    bool ApplyCommandInBatchMode( const TranslatableString &friendlyCommand,
       const CommandID & command, const wxString &params,
-      CommandContext const * pContext = NULL);
+      CommandContext const &context);
    bool ApplyEffectCommand(
       const PluginID & ID, const TranslatableString &friendlyCommand,
       const CommandID & command,

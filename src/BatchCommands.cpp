@@ -627,50 +627,31 @@ bool MacroCommands::HandleTextualCommand( CommandManager &commandManager,
 
 bool MacroCommands::ApplyCommand( const TranslatableString &friendlyCommand,
    const CommandID & command, const wxString & params,
-   CommandContext const * pContext)
+   CommandContext const &context)
 {
    // Test for an effect.
    const PluginID & ID =
       EffectManager::Get().GetEffectByIdentifier( command );
    if (!ID.empty())
    {
-      if( pContext )
-         return ApplyEffectCommand(
-            ID, friendlyCommand, command, params, *pContext);
-      const CommandContext context( mProject );
       return ApplyEffectCommand(
          ID, friendlyCommand, command, params, context);
    }
 
    AudacityProject *project = &mProject;
    auto &manager = CommandManager::Get( *project );
-   if( pContext ){
-      if( HandleTextualCommand(
-         manager, command, *pContext, AlwaysEnabledFlag, true ) )
-         return true;
-      pContext->Status( wxString::Format(
-         _("Your batch command of %s was not recognized."), friendlyCommand.Translation() ));
-      return false;
-   }
-   else
-   {
-      const CommandContext context(  mProject );
-      if( HandleTextualCommand(
-         manager, command, context, AlwaysEnabledFlag, true ) )
-         return true;
-   }
-
-   AudacityMessageBox(
-      XO("Your batch command of %s was not recognized.")
-         .Format( friendlyCommand ) );
-
+   if( HandleTextualCommand(
+      manager, command, context, AlwaysEnabledFlag, true ) )
+      return true;
+   context.Status( wxString::Format(
+      _("Your batch command of %s was not recognized."), friendlyCommand.Translation() ));
    return false;
 }
 
 bool MacroCommands::ApplyCommandInBatchMode(
    const TranslatableString &friendlyCommand,
    const CommandID & command, const wxString &params,
-   CommandContext const * pContext)
+   CommandContext const &context)
 {
    AudacityProject *project = &mProject;
    auto &settings = ProjectSettings::Get( *project );
@@ -685,7 +666,7 @@ bool MacroCommands::ApplyCommandInBatchMode(
       project->mBatchMode--;
    } );
 
-   return ApplyCommand( friendlyCommand, command, params, pContext );
+   return ApplyCommand( friendlyCommand, command, params, context );
 }
 
 static int MacroReentryCount = 0;
@@ -783,8 +764,16 @@ bool MacroCommands::ApplyMacro(
       if (trace) {
          before = wxTimeSpan(0, 0, 0, wxGetUTCTimeMillis());
       }
+      
+      struct InteractiveContext : CommandContext {
+         using CommandContext::CommandContext;
+         void Status( const wxString &message, bool ) const override {
+            // MacroCommands::ApplyCommand passes a message already translated
+            AudacityMessageBox( Verbatim(message) );
+         }
+      } context{ mProject };
 
-      bool success = ApplyCommandInBatchMode(friendly, command, mParamsMacro[i]);
+      bool success = ApplyCommandInBatchMode(friendly, command, mParamsMacro[i], context);
 
       if (trace) {
          auto after = wxTimeSpan(0, 0, 0, wxGetUTCTimeMillis());
