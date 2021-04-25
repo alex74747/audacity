@@ -35,7 +35,7 @@ public:
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_project");};
 
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
 public:
 

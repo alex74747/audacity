@@ -761,7 +761,7 @@ wxString ScreenshotCommand::WindowFileName(AudacityProject * proj, wxTopLevelWin
    return mFileName;
 }
 
-bool ScreenshotCommand::Apply(const CommandContext & context)
+bool ScreenshotCommand::Apply(const ExtendedCommandContext & context)
 {
    GetDerivedParams();
    //Don't reset the toolbars to a known state.

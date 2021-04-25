@@ -71,7 +71,7 @@ void SetProjectCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SetProjectCommand::Apply(const CommandContext & context)
+bool SetProjectCommand::Apply(const ExtendedCommandContext & context)
 {
    auto &project = context.project;
    auto &window = GetProjectFrame( project );

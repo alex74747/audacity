@@ -94,7 +94,7 @@ void SetTrackBase::PopulateOrExchange(ShuttleGui & S)
 #endif
 }
 
-bool SetTrackBase::Apply(const CommandContext & context  )
+bool SetTrackBase::Apply(const ExtendedCommandContext & context  )
 {
    long i = 0;// track counter
    long j = 0;// channel counter

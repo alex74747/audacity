@@ -42,7 +42,7 @@ void MessageCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool MessageCommand::Apply(const CommandContext & context){
+bool MessageCommand::Apply(const ExtendedCommandContext & context){
    context.Status( mMessage );
    return true;
 }

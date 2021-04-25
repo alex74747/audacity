@@ -32,6 +32,7 @@ class ShuttleGui;
 class AudacityCommand;
 class AudacityProject;
 class CommandContext;
+using ExtendedCommandContext = CommandContext;
 class EffectUIHostInterface;
 class ProgressDialog;
 
@@ -69,7 +70,7 @@ class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
    virtual bool IsBatchProcessing(){ return mIsBatch;}
    virtual void SetBatchProcessing(bool start){ mIsBatch = start;};
    
-   virtual bool Apply(const CommandContext & WXUNUSED(context) ) {return false;};
+   virtual bool Apply(const ExtendedCommandContext & ) = 0;
 
    bool ShowInterface(wxWindow *parent, bool forceModal = false);
    virtual void SetHostUI(EffectUIHostInterface * WXUNUSED(host)){;};

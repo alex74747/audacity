@@ -71,7 +71,7 @@ void HelpCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool HelpCommand::Apply(const CommandContext &context)
+bool HelpCommand::Apply(const ExtendedCommandContext &context)
 {
    if( mFormat == kJson )
       return ApplyInner( context );

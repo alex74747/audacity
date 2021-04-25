@@ -37,7 +37,7 @@ public:
    TranslatableString GetDescription() override {return XO("Opens a project.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#open_project");};
@@ -57,7 +57,7 @@ public:
    TranslatableString GetDescription() override {return XO("Saves a project.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#save_project");};
@@ -77,7 +77,7 @@ public:
    TranslatableString GetDescription() override {return XO("Saves a copy of current project.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#save_copy");};
@@ -95,7 +95,7 @@ public:
    TranslatableString GetDescription() override {return XO("Saves the log contents.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#save_log");};
@@ -113,7 +113,7 @@ public:
    TranslatableString GetDescription() override {return XO("Clears the log contents.");};
    bool DefineParams( ShuttleParams & S ) override;
    bool PromptUser(wxWindow *parent) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#Clear_log");};

@@ -45,7 +45,7 @@ public:
    { }
 
    virtual ~BatchEvalCommand();
-   bool Apply(const CommandContext &context) override;
+   bool Apply(const ExtendedCommandContext &context) override;
 };
 
 #endif /* End of include guard: __BATCHEVALCOMMAND__ */

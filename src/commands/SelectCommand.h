@@ -34,7 +34,7 @@ public:
    TranslatableString GetDescription() override {return XO("Selects a time range.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#select_time");};
@@ -60,7 +60,7 @@ public:
    TranslatableString GetDescription() override {return XO("Selects a frequency range.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#select_frequencies");};
@@ -83,7 +83,7 @@ public:
    TranslatableString GetDescription() override {return XO("Selects a range of tracks.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#select_tracks");};
 
@@ -116,7 +116,7 @@ public:
       mSelFreq.PopulateOrExchange(S);
       mSelTracks.PopulateOrExchange(S);
    };
-   bool Apply(const CommandContext & context) override {
+   bool Apply(const ExtendedCommandContext & context) override {
       return 
          mSelTime.Apply(context) &&  
          mSelFreq.Apply( context )&&

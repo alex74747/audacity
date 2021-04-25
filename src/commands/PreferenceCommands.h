@@ -36,7 +36,7 @@ public:
    TranslatableString GetDescription() override {return XO("Gets the value of a single preference.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#get_preference");};
@@ -56,7 +56,7 @@ public:
    TranslatableString GetDescription() override {return XO("Sets the value of a single preference.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_preference");};

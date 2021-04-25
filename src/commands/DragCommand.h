@@ -34,7 +34,7 @@ public:
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_II#move_mouse");};
 
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
 public:
    double mFromX;

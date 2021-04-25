@@ -52,7 +52,7 @@ void OpenProjectCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool OpenProjectCommand::Apply(const CommandContext & context){
+bool OpenProjectCommand::Apply(const ExtendedCommandContext & context){
 
    auto &projectFileIO = ProjectFileIO::Get(context.project);
 
@@ -98,7 +98,7 @@ void SaveProjectCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SaveProjectCommand::Apply(const CommandContext &context)
+bool SaveProjectCommand::Apply(const ExtendedCommandContext &context)
 {
    auto &projectFileManager = ProjectFileManager::Get( context.project );
    if ( mFileName.empty() )
@@ -128,7 +128,7 @@ void SaveCopyCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SaveCopyCommand::Apply(const CommandContext &context)
+bool SaveCopyCommand::Apply(const ExtendedCommandContext &context)
 {
    auto &projectFileManager = ProjectFileManager::Get( context.project );
    return projectFileManager.SaveCopy(mFileName);
@@ -156,7 +156,7 @@ void SaveLogCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SaveLogCommand::Apply(const CommandContext &context)
+bool SaveLogCommand::Apply(const ExtendedCommandContext &context)
 {
    auto logger = AudacityLogger::Get();
    return logger->SaveLog(mFileName);
@@ -177,7 +177,7 @@ bool ClearLogCommand::PromptUser(wxWindow *parent)
    return true;
 }
 
-bool ClearLogCommand::Apply(const CommandContext &context)
+bool ClearLogCommand::Apply(const ExtendedCommandContext &context)
 {
    auto logger = AudacityLogger::Get();
    return logger->ClearLog();

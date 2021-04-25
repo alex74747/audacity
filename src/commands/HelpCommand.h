@@ -34,7 +34,7 @@ public:
    TranslatableString GetDescription() override {return XO("Gives help on a command.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
    bool ApplyInner(const CommandContext & context);
 
    // AudacityCommand overrides
@@ -54,7 +54,7 @@ public:
    TranslatableString GetDescription() override {return XO("For comments in a macro.");};
    bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   bool Apply(const CommandContext & context) override {
+   bool Apply(const ExtendedCommandContext & context) override {
       return true;
    };
    // AudacityCommand overrides

@@ -67,7 +67,7 @@ void SetLabelCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SetLabelCommand::Apply(const CommandContext & context)
+bool SetLabelCommand::Apply(const ExtendedCommandContext & context)
 {
    // \todo we have similar code for finding the nth Label, Clip, Track etc.
    // this code could be put in subroutines/reduced.

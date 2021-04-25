@@ -120,7 +120,7 @@ void GetInfoCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool GetInfoCommand::Apply(const CommandContext &context)
+bool GetInfoCommand::Apply(const ExtendedCommandContext &context)
 {
    if( mFormat == kJson )
       return ApplyInner( context );

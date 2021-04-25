@@ -63,7 +63,7 @@ void GetTrackInfoCommand::PopulateOrExchange(ShuttleGui & S)
 
 
 
-bool GetTrackInfoCommand::Apply(const CommandContext &context)
+bool GetTrackInfoCommand::Apply(const ExtendedCommandContext &context)
 {
    return false;
 }

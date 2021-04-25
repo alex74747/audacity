@@ -85,7 +85,7 @@ void DragCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool DragCommand::Apply(const CommandContext & context)
+bool DragCommand::Apply(const ExtendedCommandContext & context)
 {
    // Defaults if no value...
    if( !bHasFromX )

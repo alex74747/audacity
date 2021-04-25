@@ -99,7 +99,7 @@ private:
    friend class ScreenshotBigDialog;
 
 public:
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
    void GetDerivedParams();
 
 private:

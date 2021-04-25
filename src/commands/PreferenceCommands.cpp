@@ -47,7 +47,7 @@ void GetPreferenceCommand::PopulateOrExchange(ShuttleGui & S)
 }
 
 
-bool GetPreferenceCommand::Apply(const CommandContext & context)
+bool GetPreferenceCommand::Apply(const ExtendedCommandContext & context)
 {
    wxString prefValue;
    if (!gPrefs->Read(mName, &prefValue))
@@ -82,7 +82,7 @@ void SetPreferenceCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SetPreferenceCommand::Apply(const CommandContext & context)
+bool SetPreferenceCommand::Apply(const ExtendedCommandContext & context)
 {
    bool bOK = gPrefs->Write(mName, mValue) && gPrefs->Flush();
    if( bOK && mbReload ){

@@ -34,7 +34,7 @@ public:
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Tools#get_track_info");};
 
-   bool Apply(const CommandContext &context ) override;
+   bool Apply(const ExtendedCommandContext &context ) override;
 public:
    int mInfoType;
 };

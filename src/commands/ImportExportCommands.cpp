@@ -49,7 +49,7 @@ void ImportCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool ImportCommand::Apply(const CommandContext & context)
+bool ImportCommand::Apply(const ExtendedCommandContext & context)
 {
    bool wasEmpty = TrackList::Get( context.project ).Any().empty();
    bool success = ProjectFileManager::Get( context.project )
@@ -90,7 +90,7 @@ void ExportCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool ExportCommand::Apply(const CommandContext & context)
+bool ExportCommand::Apply(const ExtendedCommandContext & context)
 {
    double t0, t1;
    auto &selectedRegion = ViewInfo::Get( context.project ).selectedRegion;

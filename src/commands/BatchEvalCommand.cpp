@@ -45,7 +45,7 @@ OldStyleCommandPointer BatchEvalCommandType::Create( AudacityProject *project,
    return std::make_shared<BatchEvalCommand>(*project, *this);
 }
 
-bool BatchEvalCommand::Apply(const CommandContext & context)
+bool BatchEvalCommand::Apply(const ExtendedCommandContext & context)
 {
    // Uh oh, I need to build a catalog, expensively
    // Maybe it can be built in one long-lived place and shared among command

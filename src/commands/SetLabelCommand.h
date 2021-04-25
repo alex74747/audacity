@@ -34,7 +34,7 @@ public:
    // AudacityCommand overrides
    wxString ManualPage() override {return wxT("Extra_Menu:_Scriptables_I#set_label");};
 
-   bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override;
 
 public:
    // zero-based index of the desired label, within the concatenation of the

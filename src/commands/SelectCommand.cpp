@@ -89,7 +89,7 @@ void SelectTimeCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SelectTimeCommand::Apply(const CommandContext & context){
+bool SelectTimeCommand::Apply(const ExtendedCommandContext & context){
    // Many commands need focus on track panel.
    // No harm in setting it with a scripted select.
    TrackPanel::Get( context.project ).SetFocus();
@@ -166,7 +166,7 @@ void SelectFrequenciesCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SelectFrequenciesCommand::Apply(const CommandContext & context){
+bool SelectFrequenciesCommand::Apply(const ExtendedCommandContext & context){
    if( !bHasBottom && !bHasTop )
       return true;
 
@@ -224,7 +224,7 @@ void SelectTracksCommand::PopulateOrExchange(ShuttleGui & S)
    S.EndMultiColumn();
 }
 
-bool SelectTracksCommand::Apply(const CommandContext &context)
+bool SelectTracksCommand::Apply(const ExtendedCommandContext &context)
 {
 
    // Count selection as a do-nothing effect.

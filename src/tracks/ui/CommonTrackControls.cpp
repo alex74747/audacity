@@ -200,7 +200,7 @@ public:
    //TranslatableString GetDescription() override {return XO("Sets the track name.");};
    //bool DefineParams( ShuttleParams & S ) override;
    void PopulateOrExchange(ShuttleGui & S) override;
-   //bool Apply(const CommandContext & context) override;
+   bool Apply(const ExtendedCommandContext & context) override { return false; }
 
    // Provide an override, if we want the help button.
    // wxString ManualPage() override {return wxT("");};
