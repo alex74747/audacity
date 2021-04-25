@@ -734,7 +734,6 @@ EffectUIHost::EffectUIHost(wxWindow *parent,
    
    mParent = parent;
    mEffect = effect;
-   mCommand = NULL;
    mClient = client;
    
    mProject = &project;
@@ -749,41 +748,6 @@ EffectUIHost::EffectUIHost(wxWindow *parent,
    mPlayPos = 0.0;
    mClient->SetHostUI(this);
 }
-
-EffectUIHost::EffectUIHost(wxWindow *parent,
-                           AudacityProject &project,
-                           AudacityCommand *command,
-                           EffectUIClientInterface *client)
-:  wxDialogWrapper(parent, wxID_ANY, XO("Some Command") /*command->GetName()*/,
-                   wxDefaultPosition, wxDefaultSize,
-                   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX)
-{
-#if defined(__WXMAC__)
-   // Make sure the effect window actually floats above the main window
-   [ [((NSView *)GetHandle()) window] setLevel:NSFloatingWindowLevel];
-#endif
-   
-   //SetName( command->GetName() );
-   SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
-   
-   mParent = parent;
-   mEffect = NULL;
-   mCommand = command;
-   mClient = client;
-   
-   mProject = &project;
-   
-   mInitialized = false;
-   mSupportsRealtime = false;
-   
-   mDisableTransport = false;
-   
-   mEnabled = true;
-   
-   mPlayPos = 0.0;
-   mClient->SetHostUI(this);
-}
-
 
 
 
@@ -809,8 +773,6 @@ bool EffectUIHost::TransferDataToWindow()
 {
    if( mEffect )
       return mEffect->TransferDataToWindow();
-   if( mCommand )
-      return mCommand->TransferDataToWindow();
    return false;
 }
 
@@ -818,8 +780,6 @@ bool EffectUIHost::TransferDataFromWindow()
 {
    if( mEffect)
       return mEffect->TransferDataFromWindow();
-   if( mCommand)
-      return mCommand->TransferDataFromWindow();
    return false;
 }
 
@@ -860,8 +820,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
 {
    mSupportsRealtime = mEffect && mEffect->SupportsRealtime();
    mIsGUI = mClient->IsGraphicalUI();
-   mIsBatch = (mEffect && mEffect->IsBatchProcessing()) ||
-      (mCommand && mCommand->IsBatchProcessing());
+   mIsBatch = (mEffect && mEffect->IsBatchProcessing());
 
    int margin = 0;
 #if defined(__WXMAC__)
@@ -1170,12 +1129,7 @@ void EffectUIHost::OnApply(wxCommandEvent & evt)
    {
       return;
    }
-   // This will take care of calling TransferDataFromWindow() for a command.
-   if (mCommand ){
-      wxString params;
-      mCommand->GetAutomationParameters( params );
-   }
-   
+
    if( mEffect )
       mEffect->mUIResultID = evt.GetId();
    
@@ -1203,11 +1157,6 @@ void EffectUIHost::OnApply(wxCommandEvent & evt)
       EffectUI::DoEffect(mEffect->GetID(), context,
          EffectManager::kConfigured);
    }
-
-   if( mCommand )
-      // PRL:  I don't like the global and would rather pass *mProject!
-      // But I am preserving old behavior
-      mCommand->Apply( CommandContext{ project } );
 }
 
 void EffectUIHost::DoCancel()

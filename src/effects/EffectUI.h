@@ -107,7 +107,6 @@ private:
 
 #include "../SelectedRegion.h"
 
-class AudacityCommand;
 class AudacityProject;
 class Effect;
 
@@ -122,10 +121,6 @@ public:
    EffectUIHost(wxWindow *parent,
                 AudacityProject &project,
                 Effect *effect,
-                EffectUIClientInterface *client);
-   EffectUIHost(wxWindow *parent,
-                AudacityProject &project,
-                AudacityCommand *command,
                 EffectUIClientInterface *client);
    virtual ~EffectUIHost();
 
@@ -176,7 +171,6 @@ private:
    AudacityProject *mProject;
    wxWindow *mParent;
    Effect *mEffect;
-   AudacityCommand * mCommand;
    EffectUIClientInterface *mClient;
 
    RegistryPaths mUserPresets;
