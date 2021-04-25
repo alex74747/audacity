@@ -35,39 +35,22 @@ public:
    virtual ComponentInterfaceSymbol GetSymbol() = 0;
    virtual CommandSignature &GetSignature() = 0;
    virtual bool SetParameter(const wxString &paramName, const wxVariant &paramValue);
-   virtual bool Apply()=0;
    virtual bool Apply(const CommandContext &context) = 0;
 };
 
 using OldStyleCommandPointer = std::shared_ptr<OldStyleCommand>;
 
-/// Command which wraps another command
-/// It ISA command and HAS a command.
-class DecoratedCommand /* not final */ : public OldStyleCommand
-{
-protected:
-   OldStyleCommandPointer mCommand;
-public:
-   DecoratedCommand(const OldStyleCommandPointer &cmd)
-      : OldStyleCommand{ cmd->mProject }, mCommand(cmd)
-   {
-      wxASSERT(cmd != NULL);
-   }
-   virtual ~DecoratedCommand();
-   ComponentInterfaceSymbol GetSymbol() override;
-   CommandSignature &GetSignature() override;
-   bool SetParameter(const wxString &paramName, const wxVariant &paramValue) override;
-};
-
 // Decorator command that performs the given command and then outputs a status
 // message according to the result
-class ApplyAndSendResponse : public DecoratedCommand
+class ApplyAndSendResponse final
 {
+   OldStyleCommandPointer mCommand;
 public:
    ApplyAndSendResponse(
       const OldStyleCommandPointer &cmd, std::unique_ptr<CommandOutputTargets> &target);
-   bool Apply() override;
-   bool Apply(const CommandContext &context) override;// Error to use this.
+   bool DoApply();
+   ComponentInterfaceSymbol GetSymbol();
+   bool SetParameter(const wxString &paramName, const wxVariant &paramValue);
    std::unique_ptr<const CommandContext> mCtx;
 
 };
@@ -112,14 +95,6 @@ public:
    /// Attempt to one of the command's parameters to a particular value.
    /// (Note: wxVariant is reference counted)
    bool SetParameter(const wxString &paramName, const wxVariant &paramValue) override;
-
-   // Subclasses should override the following:
-   // =========================================
-
-   /// Actually carry out the command. Return true if successful and false
-   /// otherwise.
-   bool Apply() override { return false;};// No longer supported.
-   bool Apply(const CommandContext &context) override;
 };
 
 #endif /* End of include guard: __COMMAND__ */

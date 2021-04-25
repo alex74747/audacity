@@ -9,7 +9,7 @@
 ******************************************************************//**
 
 \file Command.cpp
-\brief Contains definitions for Command, DecoratedCommand,
+\brief Contains definitions for Command,
 ApplyAndSendResponse, and CommandImplementation classes.  These are
 remnants of Dan Horgans external scripting commands.  We now use 
 AudacityCommand and a shuttle system.  This allows commands to be used
@@ -58,10 +58,6 @@ which is being removed.  These Commands were managed by CommandDirectory.
 \class OldStyleCommandPointer
 \brief OldStyleCommandPointer is a unique_ptr to an OldStyleCommand.
 
-\class DecoratedCommand
-\brief DecoratedCommand is a decorator for command.  It forwards functions 
-to the mCommand it holds.
-
 \class ApplyAndSendResponse
 \brief ApplyAndSendResponse is a DecoratoredCommand that performs the given 
 command and then outputs a status message according to the result.  It 
@@ -100,21 +96,12 @@ bool OldStyleCommand::SetParameter(const wxString & WXUNUSED(paramName),
    return false;
 }
 
-DecoratedCommand::~DecoratedCommand()
-{
-}
-
-ComponentInterfaceSymbol DecoratedCommand::GetSymbol()
+ComponentInterfaceSymbol ApplyAndSendResponse::GetSymbol()
 {
    return mCommand->GetSymbol();
 }
 
-CommandSignature &DecoratedCommand::GetSignature()
-{
-   return mCommand->GetSignature();
-}
-
-bool DecoratedCommand::SetParameter(const wxString &paramName,
+bool ApplyAndSendResponse::SetParameter(const wxString &paramName,
                                     const wxVariant &paramValue)
 {
    return mCommand->SetParameter(paramName, paramValue);
@@ -122,20 +109,13 @@ bool DecoratedCommand::SetParameter(const wxString &paramName,
 
 ApplyAndSendResponse::ApplyAndSendResponse(
    const OldStyleCommandPointer &cmd, std::unique_ptr<CommandOutputTargets> &target)
-      : DecoratedCommand(cmd),
+      : mCommand{ cmd },
        mCtx( std::make_unique<CommandContext>( cmd->mProject, std::move(target) ) )
 {
 }
 
 
-bool ApplyAndSendResponse::Apply(const CommandContext &WXUNUSED(context))
-{
-   wxLogMessage( "Context was passed in, but was ignored.  ApplyAndSendResponse has its own one");
-   return Apply();
-}
-
-
-bool ApplyAndSendResponse::Apply()
+bool ApplyAndSendResponse::DoApply()
 {
    // ApplyAndSendResponse IS a command.
    // It also HOLDS a command.
@@ -297,10 +277,3 @@ bool CommandImplementation::SetParameter(const wxString &paramName, const wxVari
 
    return true;
 }
-
-bool CommandImplementation::Apply(const CommandContext & WXUNUSED(context))
-{
-   return true;
-}
-
-

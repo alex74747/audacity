@@ -76,9 +76,9 @@ void CommandBuilder::Failure(const wxString &msg)
    mValid = false;
 }
 
-void CommandBuilder::Success(const OldStyleCommandPointer &cmd)
+void CommandBuilder::Success(const ResponderPtr &responder)
 {
-   mCommand = cmd;
+   mResponder = responder;
    mValid = true;
 }
 

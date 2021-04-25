@@ -18,6 +18,7 @@
 
 #include "../MemoryX.h"
 
+class ApplyAndSendResponse;
 class AudacityProject;
 class ResponseTarget;
 using ResponseTargetPointer = std::shared_ptr<ResponseTarget>;
@@ -30,14 +31,16 @@ class wxString;
 
 class CommandBuilder
 {
+      using ResponderPtr = std::shared_ptr<ApplyAndSendResponse>;
    private:
       bool mValid;
       ResponseTargetPointer mResponse;
       OldStyleCommandPointer mCommand;
+      ResponderPtr mResponder;
       wxString mError;
 
       void Failure(const wxString &msg = {});
-      void Success(const OldStyleCommandPointer &cmd);
+      void Success(const ResponderPtr &responder);
       void BuildCommand( AudacityProject *project,
          const wxString &cmdName, const wxString &cmdParams);
       void BuildCommand( AudacityProject *project, const wxString &cmdString);

@@ -39,7 +39,7 @@ class CommandOutputTargets;
 class CommandSignature;
 class wxString;
 
-class AUDACITY_DLL_API OldStyleCommandType : public AudacityCommand
+class AUDACITY_DLL_API OldStyleCommandType
 {
 private:
    ComponentInterfaceSymbol mSymbol;
@@ -48,7 +48,7 @@ private:
 public:
    OldStyleCommandType();
    virtual ~OldStyleCommandType();
-   ComponentInterfaceSymbol GetSymbol() override;
+   ComponentInterfaceSymbol GetSymbol();
    CommandSignature &GetSignature();
    wxString Describe(); // for debugging only ?
 
