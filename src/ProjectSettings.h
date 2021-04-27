@@ -36,7 +36,6 @@ enum {
    envelopeTool,
    drawTool,
    zoomTool,
-   slideTool,
    multiTool,
    numTools,
    
