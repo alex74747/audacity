@@ -239,7 +239,7 @@ struct ClipMoveState {
    }
 };
 
-class TimeShiftHandle final : public UIHandle
+class TimeShiftHandle : public UIHandle
 {
    TimeShiftHandle(const TimeShiftHandle&) = delete;
    static HitTestPreview HitPreview
@@ -253,6 +253,8 @@ public:
 
    bool IsGripHit() const { return mGripHit; }
    std::shared_ptr<Track> GetTrack() const = delete;
+
+   bool IsShiftingWholeTrack() const;
 
    // Try to move clips from one track to another, before also moving
    // by some horizontal amount, which may be slightly adjusted to fit the
@@ -292,7 +294,7 @@ public:
 
    bool StopsOnKeystroke() override { return true; }
 
-private:
+protected:
    // TrackPanelDrawable implementation
    void Draw(
       TrackPanelDrawingContext &context,
@@ -302,6 +304,7 @@ private:
       TrackPanelDrawingContext &,
       const wxRect &rect, const wxRect &panelRect, unsigned iPass ) override;
 
+private:
    wxRect mRect{};
 
    bool mDidSlideVertically{};

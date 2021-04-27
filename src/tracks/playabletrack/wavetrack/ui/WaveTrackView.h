@@ -17,7 +17,7 @@ namespace WaveTrackViewConstants{ enum Display : int; }
 struct WaveTrackSubViewType;
 
 class CutlineHandle;
-class TimeShiftHandle;
+class WaveClipTimeShiftHandle;
 class TranslatableString;
 class WaveTrack;
 class WaveTrackView;
@@ -52,7 +52,7 @@ private:
    std::weak_ptr<UIHandle> mAdjustHandle;
    std::weak_ptr<UIHandle> mRearrangeHandle;
    std::weak_ptr<CutlineHandle> mCutlineHandle;
-   std::weak_ptr<TimeShiftHandle> mWaveClipTimeShiftHandle;
+   std::weak_ptr<WaveClipTimeShiftHandle> mWaveClipTimeShiftHandle;
    std::weak_ptr<WaveTrackView> mwWaveTrackView;
 };
 

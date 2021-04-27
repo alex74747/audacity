@@ -34,11 +34,14 @@ TimeShiftHandle::TimeShiftHandle
    mClipMoveState.mCapturedTrack = pTrack;
 }
 
+bool TimeShiftHandle::IsShiftingWholeTrack() const
+{
+   return mClipMoveState.shifters.empty();
+}
+
 void TimeShiftHandle::Enter(bool, AudacityProject *)
 {
-#ifdef EXPERIMENTAL_TRACK_PANEL_HIGHLIGHTING
    mChangeHighlight = RefreshCode::RefreshCell;
-#endif
 }
 
 HitTestPreview TimeShiftHandle::HitPreview

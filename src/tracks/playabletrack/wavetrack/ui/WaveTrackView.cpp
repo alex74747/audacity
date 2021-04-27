@@ -37,6 +37,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../ui/TimeShiftHandle.h"
 #include "../../../ui/ButtonHandle.h"
 #include "../../../../TrackInfo.h"
+#include "../../../../Theme.h"
 
 namespace {
 
@@ -680,6 +681,36 @@ private:
 };
 }
 
+//! Define a subclass to extend the drawing behavior
+/*! Don't extend drawing behavior in the TimeShiftHandle class itself -- that would make undesirable
+ dependency on WaveTrack */
+class WaveClipTimeShiftHandle : public TimeShiftHandle
+{
+public:
+   WaveClipTimeShiftHandle(
+      const std::shared_ptr<WaveTrack> &pTrack,
+      WaveClip &clip);
+   void Draw(
+      TrackPanelDrawingContext &context,
+      const wxRect &rect, unsigned iPass ) override;
+   UIHandle::Result Click(
+      const TrackPanelMouseEvent &evt, AudacityProject *pProject) override
+   {
+      mClicked = true;
+      return TimeShiftHandle::Click(evt, pProject);
+   }
+
+private:
+   void DrawOne(TrackPanelDrawingContext &context, const wxRect &rect,
+      WaveClip &clip);
+
+   std::weak_ptr<WaveTrack> mpTrack;
+   // I need to store a pointer not reference to make the class assignable
+   // But the constructor requires a non-null clip, given by reference
+   WaveClip *mpClip;
+   bool mClicked{ false };
+};
+
 namespace {
 int TimeShiftZoneHeight(const wxRect &rect)
 {
@@ -695,7 +726,7 @@ int TimeShiftZoneHeight(const wxRect &rect)
 UIHandlePtr TimeShiftHitTest(
    const TrackPanelMouseState &state,
    const AudacityProject *pProject,
-   std::weak_ptr<TimeShiftHandle> &holder,
+   std::weak_ptr<WaveClipTimeShiftHandle> &holder,
    const std::shared_ptr<WaveTrack> &pTrack)
 {
    auto &viewInfo = ViewInfo::Get(*pProject);
@@ -705,7 +736,8 @@ UIHandlePtr TimeShiftHitTest(
       auto zoneHeight = TimeShiftZoneHeight(state.rect);
       auto yy = state.state.m_y - state.rect.GetTop();
       if (yy >= 0 && yy < zoneHeight) {
-         auto result = std::make_shared<TimeShiftHandle>( pTrack, false );
+         auto result =
+            std::make_shared<WaveClipTimeShiftHandle>( pTrack, *pClip );
          result = AssignUIHandlePtr(holder, result);
          return result;
       }
@@ -713,6 +745,63 @@ UIHandlePtr TimeShiftHitTest(
    // Missed
    return nullptr;
 }
+}
+
+WaveClipTimeShiftHandle::WaveClipTimeShiftHandle(const std::shared_ptr<WaveTrack> &pTrack, WaveClip &clip)
+   : TimeShiftHandle(pTrack, false)
+   , mpTrack{ pTrack }
+   , mpClip{ &clip }
+{
+}
+
+void WaveClipTimeShiftHandle::Draw( TrackPanelDrawingContext &context,
+   const wxRect &rect, unsigned iPass )
+{
+   if (iPass == TrackArtist::PassMargins) {
+      // Painted after the track
+      if(auto pTrack = mpTrack.lock()) {
+         bool whole = mClicked
+            // dragging
+            ? IsShiftingWholeTrack()
+            // or previewing
+            : context.lastState.ShiftDown();
+
+         wxDCPenChanger penChanger{ context.dc, *wxTRANSPARENT_PEN };
+   
+         // Get standard theme colour
+         auto colour = theTheme.Colour(clrSample);
+         // But make it semi transparent
+         colour.Set(colour.Red(), colour.Green(), colour.Blue(),
+            wxALPHA_OPAQUE / 2);
+         wxBrush brush{ colour };
+         wxDCBrushChanger brushChanger{ context.dc, brush };
+         for ( auto pClip : pTrack->GetClips() )
+            // Don't assume mpClip is safe to deference
+            if (whole || pClip.get() == mpClip)
+               DrawOne(context, rect, *pClip);
+      }
+   }
+   TimeShiftHandle::Draw(context, rect, iPass);
+}
+
+void WaveClipTimeShiftHandle::DrawOne(
+   TrackPanelDrawingContext &context, const wxRect &rect, WaveClip &clip)
+{
+   const auto artist = TrackArtist::Get( context );
+   const auto &zoomInfo = *artist->pZoomInfo;
+   auto leftOffset = zoomInfo.GetLeftOffset();
+   auto left = (int)zoomInfo.TimeToPosition(clip.GetStartTime(), leftOffset);
+   auto width =
+      (int)zoomInfo.TimeToPosition(clip.GetEndTime(), leftOffset) - left;
+   wxRect smallRect{
+      left,
+      rect.GetTop(),
+      width,
+      TimeShiftZoneHeight(rect)
+   };
+   smallRect.Intersect(rect);
+   if (!smallRect.IsEmpty())
+      context.dc.DrawRectangle(smallRect);
 }
 
 std::pair<
