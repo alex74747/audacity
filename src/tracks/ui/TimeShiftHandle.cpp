@@ -60,7 +60,8 @@ HitTestPreview TimeShiftHandle::HitPreview
       message,
       (unsafe
        ? &*disabledCursor
-       : &*slideCursor)
+       : &*slideCursor),
+      message
    };
 }
 
