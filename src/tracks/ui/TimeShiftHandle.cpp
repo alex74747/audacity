@@ -27,9 +27,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../ViewInfo.h"
 #include "../../../images/Cursors.h"
 
-TimeShiftHandle::TimeShiftHandle
-( const std::shared_ptr<Track> &pTrack, bool gripHit )
-   : mGripHit{ gripHit }
+TimeShiftHandle::TimeShiftHandle( const std::shared_ptr<Track> &pTrack )
 {
    mClipMoveState.mCapturedTrack = pTrack;
 }
@@ -66,37 +64,11 @@ HitTestPreview TimeShiftHandle::HitPreview
 }
 
 UIHandlePtr TimeShiftHandle::HitAnywhere
-(std::weak_ptr<TimeShiftHandle> &holder,
- const std::shared_ptr<Track> &pTrack, bool gripHit)
+(std::weak_ptr<TimeShiftHandle> &holder, const std::shared_ptr<Track> &pTrack)
 {
-   auto result = std::make_shared<TimeShiftHandle>( pTrack, gripHit );
+   auto result = std::make_shared<TimeShiftHandle>( pTrack );
    result = AssignUIHandlePtr(holder, result);
    return result;
-}
-
-UIHandlePtr TimeShiftHandle::HitTest
-(std::weak_ptr<TimeShiftHandle> &holder,
- const wxMouseState &state, const wxRect &rect,
- const std::shared_ptr<Track> &pTrack)
-{
-   /// method that tells us if the mouse event landed on a
-   /// time-slider that allows us to time shift the sequence.
-   /// (Those are the two "grips" drawn at left and right edges for multi tool mode.)
-
-   // Perhaps we should delegate this to TrackArtist as only TrackArtist
-   // knows what the real sizes are??
-
-   // The drag Handle width includes border, width and a little extra margin.
-   const int adjustedDragHandleWidth = 14;
-   // The hotspot for the cursor isn't at its centre.  Adjust for this.
-   const int hotspotOffset = 5;
-
-   // We are doing an approximate test here - is the mouse in the right or left border?
-   if (!(state.m_x + hotspotOffset < rect.x + adjustedDragHandleWidth ||
-       state.m_x + hotspotOffset >= rect.x + rect.width - adjustedDragHandleWidth))
-      return {};
-
-   return HitAnywhere( holder, pTrack, true );
 }
 
 TimeShiftHandle::~TimeShiftHandle()

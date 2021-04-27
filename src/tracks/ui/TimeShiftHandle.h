@@ -246,12 +246,10 @@ class TimeShiftHandle : public UIHandle
       (const AudacityProject *pProject, bool unsafe);
 
 public:
-   explicit TimeShiftHandle
-   ( const std::shared_ptr<Track> &pTrack, bool gripHit );
+   explicit TimeShiftHandle( const std::shared_ptr<Track> &pTrack );
 
    TimeShiftHandle &operator=(TimeShiftHandle&&) = default;
 
-   bool IsGripHit() const { return mGripHit; }
    std::shared_ptr<Track> GetTrack() const = delete;
 
    bool IsShiftingWholeTrack() const;
@@ -266,10 +264,6 @@ public:
 
    static UIHandlePtr HitAnywhere
       (std::weak_ptr<TimeShiftHandle> &holder,
-       const std::shared_ptr<Track> &pTrack, bool gripHit);
-   static UIHandlePtr HitTest
-      (std::weak_ptr<TimeShiftHandle> &holder,
-       const wxMouseState &state, const wxRect &rect,
        const std::shared_ptr<Track> &pTrack);
 
    virtual ~TimeShiftHandle();
@@ -319,7 +313,6 @@ private:
    std::shared_ptr<SnapManager> mSnapManager{};
 
    ClipMoveState mClipMoveState{};
-   bool mGripHit {};
 };
 
 #endif

@@ -67,11 +67,6 @@ std::vector<UIHandlePtr> WaveformView::DetailedHitTest(
             view.mEnvelopeHandle, st.state, st.rect,
             pProject, pTrack )))
             results.push_back(result);
-         if (NULL != (result = TimeShiftHandle::HitTest(
-            view.mTimeShiftHandle, st.state, st.rect, pTrack )))
-            // This is the hit test on the "grips" drawn left and
-            // right in Multi only
-            results.push_back(result);
          if (NULL != (result = SampleHandle::HitTest(
             view.mSampleHandle, st.state, st.rect,
             pProject, pTrack )))
@@ -903,64 +898,6 @@ void DrawClipWaveform(TrackPanelDrawingContext &context,
    params.DrawClipEdges( dc, rect );
 }
 
-void DrawTimeSlider( TrackPanelDrawingContext &context,
-                                  const wxRect & rect,
-                                  bool rightwards, bool highlight )
-{
-   auto &dc = context.dc;
-
-   const int border = 3; // 3 pixels all round.
-   const int width = 6; // width of the drag box.
-   const int taper = 6; // how much the box tapers by.
-   const int barSpacing = 4; // how far apart the bars are.
-   const int barWidth = 3;
-   const int xFlat = 3;
-
-   //Enough space to draw in?
-   if (rect.height <= ((taper+border + barSpacing) * 2)) {
-      return;
-   }
-   if (rect.width <= (width * 2 + border * 3)) {
-      return;
-   }
-
-   // The draggable box is tapered towards the direction you drag it.
-   int leftTaper  = rightwards ? 0 : 6;
-   int rightTaper = rightwards ? 6 : 0;
-
-   int xLeft = rightwards ? (rect.x + border - 2)
-                          : (rect.x + rect.width + 1 - (border + width));
-   int yTop  = rect.y + border;
-   int yBot  = rect.y + rect.height - border - 1;
-
-   AColor::Light(&dc, false, highlight);
-   AColor::Line(dc, xLeft,         yBot - leftTaper, xLeft,         yTop + leftTaper);
-   AColor::Line(dc, xLeft,         yTop + leftTaper, xLeft + xFlat, yTop);
-   AColor::Line(dc, xLeft + xFlat, yTop,             xLeft + width, yTop + rightTaper);
-
-   AColor::Dark(&dc, false, highlight);
-   AColor::Line(dc, xLeft + width,         yTop + rightTaper, xLeft + width,       yBot - rightTaper);
-   AColor::Line(dc, xLeft + width,         yBot - rightTaper, xLeft + width-xFlat, yBot);
-   AColor::Line(dc, xLeft + width - xFlat, yBot,              xLeft,               yBot - leftTaper);
-
-   int firstBar = yTop + taper + taper / 2;
-   int nBars    = (yBot - yTop - taper * 3) / barSpacing + 1;
-   xLeft += (width - barWidth + 1) / 2;
-   int yy;
-   int i;
-
-   AColor::Light(&dc, false, highlight);
-   for (i = 0;i < nBars; i++) {
-      yy = firstBar + barSpacing * i;
-      AColor::Line(dc, xLeft, yy, xLeft + barWidth, yy);
-   }
-   AColor::Dark(&dc, false, highlight);
-   for(i = 0;i < nBars; i++){
-      yy = firstBar + barSpacing * i + 1;
-      AColor::Line(dc, xLeft, yy, xLeft + barWidth, yy);
-   }
-}
-
 }
 
 // Header needed only for experimental drawing below
@@ -974,10 +911,8 @@ void WaveformView::DoDraw(TrackPanelDrawingContext &context,
    const auto artist = TrackArtist::Get( context );
 
    bool highlight = false;
-   bool gripHit = false;
 #ifdef EXPERIMENTAL_TRACK_PANEL_HIGHLIGHTING
    auto target = dynamic_cast<TimeShiftHandle*>(context.target.get());
-   gripHit = target && target->IsGripHit();
    highlight = target && target->GetTrack().get() == track;
 #endif
 
@@ -993,12 +928,6 @@ void WaveformView::DoDraw(TrackPanelDrawingContext &context,
                        dB, muted);
 
    DrawBoldBoundaries( context, track, rect );
-
-   const auto drawSliders = artist->drawSliders;
-   if (drawSliders) {
-      DrawTimeSlider( context, rect, true, highlight && gripHit );  // directed right
-      DrawTimeSlider( context, rect, false, highlight && gripHit ); // directed left
-   }
 }
 
 void WaveformView::Draw(

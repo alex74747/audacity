@@ -748,7 +748,7 @@ UIHandlePtr TimeShiftHitTest(
 }
 
 WaveClipTimeShiftHandle::WaveClipTimeShiftHandle(const std::shared_ptr<WaveTrack> &pTrack, WaveClip &clip)
-   : TimeShiftHandle(pTrack, false)
+   : TimeShiftHandle(pTrack)
    , mpTrack{ pTrack }
    , mpClip{ &clip }
 {
@@ -958,7 +958,7 @@ WaveTrackView::DoDetailedHitTest
       // (But this does not do the time shift constrained to the vertical only,
       //  which is what happens when you hold Ctrl in the Time Shift tool mode)
       result = TimeShiftHandle::HitAnywhere(
-         view.mTimeShiftHandle, pTrack, false);
+         view.mTimeShiftHandle, pTrack);
       if (result)
          results.push_back(result);
       return { true, results };

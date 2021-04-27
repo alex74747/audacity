@@ -55,7 +55,7 @@ std::vector<UIHandlePtr> CommonTrackView::HitTest
    // Sliding applies in more than one track type.
    if ( !isMultiTool && currentTool == slideTool ) {
       result = TimeShiftHandle::HitAnywhere(
-         mTimeShiftHandle, FindTrack(), false);
+         mTimeShiftHandle, FindTrack());
       if (result)
          results.push_back(result);
    }
