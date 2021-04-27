@@ -678,7 +678,41 @@ private:
    SubViewAdjuster mAdjuster;
    size_t mMySubView{};
 };
+}
 
+namespace {
+int TimeShiftZoneHeight(const wxRect &rect)
+{
+   auto clipHeight = rect.GetHeight();
+   // Parameters of the test:  some fraction of total height, not less than
+   // some minimum
+   constexpr int MinAffordance = 4, Num = 1, Denom = 10;
+   return std::min( clipHeight,
+      std::max( MinAffordance, clipHeight * Num / Denom ) );
+}
+
+//! Return TimeShift handle if the mouse is in the affordance area of some clip
+UIHandlePtr TimeShiftHitTest(
+   const TrackPanelMouseState &state,
+   const AudacityProject *pProject,
+   std::weak_ptr<TimeShiftHandle> &holder,
+   const std::shared_ptr<WaveTrack> &pTrack)
+{
+   auto &viewInfo = ViewInfo::Get(*pProject);
+   auto time = viewInfo.PositionToTime(state.state.m_x, state.rect.x);
+   if (auto pClip = pTrack->GetClipAtTime(time)) {
+      // We have a clip.  Is the pointer near enough the top?
+      auto zoneHeight = TimeShiftZoneHeight(state.rect);
+      auto yy = state.state.m_y - state.rect.GetTop();
+      if (yy >= 0 && yy < zoneHeight) {
+         auto result = std::make_shared<TimeShiftHandle>( pTrack, false );
+         result = AssignUIHandlePtr(holder, result);
+         return result;
+      }
+   }
+   // Missed
+   return nullptr;
+}
 }
 
 std::pair<
@@ -713,6 +747,11 @@ std::pair<
       mCutlineHandle, state.state, state.rect,
       pProject, wt ))
       // This overriding test applies in all tools
+      results.second.push_back(result);
+
+   // Time shift affordance as a low priority hit
+   if (auto result =
+       TimeShiftHitTest(state, pProject, mWaveClipTimeShiftHandle, wt))
       results.second.push_back(result);
 
    return results;

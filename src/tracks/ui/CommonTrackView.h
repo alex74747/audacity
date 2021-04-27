@@ -31,8 +31,6 @@ public:
       (const TrackPanelMouseState &, const AudacityProject *pProject)
       final override;
 
-   void TimeShiftHitTest();
-
    virtual int GetMinimizedHeight() const override;
 
 protected:
