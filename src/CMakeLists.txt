@@ -1061,6 +1061,7 @@ list( APPEND LIBRARIES
       libsoxr
       portaudio-v19
       sqlite
+      $<$<BOOL:${USE_BREAKPAD}>:crashreports>
       $<$<BOOL:${USE_FFMPEG}>:ffmpeg>
       $<$<BOOL:${USE_LIBID3TAG}>:libid3tag>
       $<$<BOOL:${USE_LIBFLAC}>:libflac>
@@ -1287,6 +1288,10 @@ else()
                           -P ${CMAKE_MODULE_PATH}/CopyLibs.cmake
       POST_BUILD
    )
+endif()
+
+if(CRASH_REPORT_URL)
+    list(APPEND DEFINES PRIVATE -DCRASH_REPORT_URL=${CRASH_REPORT_URL})
 endif()
 
 set_target_property_all( ${TARGET} RUNTIME_OUTPUT_NAME ${AUDACITY_NAME} )

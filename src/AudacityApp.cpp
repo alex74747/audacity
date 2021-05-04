@@ -123,6 +123,10 @@ It handles initialization and termination by subclassing wxApp.
 
 #include "import/Import.h"
 
+#if defined(USE_BREAKPAD)
+#include "BreakpadConfigurer.h"
+#endif
+
 #ifdef EXPERIMENTAL_SCOREALIGN
 #include "effects/ScoreAlignDialog.h"
 #endif
@@ -373,6 +377,35 @@ void PopulatePreferences()
    gPrefs->Flush();
 }
 
+#if defined(USE_BREAKPAD)
+void InitBreakpad()
+{
+    wxFileName databasePath;
+    databasePath.SetPath(wxStandardPaths::Get().GetUserLocalDataDir());
+    databasePath.AppendDir("crashreports");
+    databasePath.Mkdir(wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
+    
+    if(databasePath.DirExists())
+    {
+#if defined(WIN32)
+        wxFileName senderPath(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath(), "crashreporter.exe");
+#else
+        wxFileName senderPath(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath(), "crashreporter");
+#endif
+        
+        BreakpadConfigurer configurer;
+        configurer.setDatabasePathUTF8(databasePath.GetPath().ToUTF8().data())
+            .setSenderPathUTF8(senderPath.GetFullPath().ToUTF8().data())
+    #if defined(CRASH_REPORT_URL)
+            .setReportURL(CRASH_REPORT_URL)
+    #endif
+            .setParameters({
+                { "version", wxString(AUDACITY_VERSION_STRING).ToUTF8().data() }
+            })
+            .start();
+    }
+}
+#endif
 }
 
 static bool gInited = false;
@@ -1004,8 +1037,10 @@ bool AudacityApp::OnExceptionInMainLoop()
 
 AudacityApp::AudacityApp()
 {
+#if defined(USE_BREAKPAD)
+    InitBreakpad();
 // Do not capture crashes in debug builds
-#if !defined(_DEBUG)
+#elif !defined(_DEBUG)
 #if defined(HAS_CRASH_REPORT)
 #if defined(wxUSE_ON_FATAL_EXCEPTION) && wxUSE_ON_FATAL_EXCEPTION
    wxHandleFatalExceptions();

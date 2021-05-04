@@ -1,0 +1,384 @@
+#include <wx/cmdline.h>
+#include <wx/chartype.h>
+#include <wx/artprov.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
+
+#include <sstream>
+
+#include "CrashReportApp.h"
+
+#include "google_breakpad/processor/basic_source_line_resolver.h"
+#include "google_breakpad/processor/minidump_processor.h"
+#include "google_breakpad/processor/process_state.h"
+#include "google_breakpad/processor/minidump.h"
+#include "processor/stackwalk_common.h"
+
+#if defined(_WIN32)
+#include <locale>
+#include <codecvt>
+#include "client/windows/sender/crash_report_sender.h"
+namespace
+{
+    std::wstring ToPlatformString(const std::string& utf8)
+    {
+        return std::wstring_convert<std::codecvt_utf8<std::wstring::traits_type::char_type>, std::wstring::traits_type::char_type>().from_bytes(utf8);
+    }
+
+    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments)
+    {
+        std::map<std::wstring, std::wstring> files;
+        files[L"upload_file_minidump"] = minidumpPath.wc_str();
+
+        std::map<std::wstring, std::wstring> parameters;
+        for (auto& p : arguments)
+        {
+            parameters[ToPlatformString(p.first)] = ToPlatformString(p.second);
+        }
+
+        google_breakpad::CrashReportSender sender(L"");
+
+        auto result = sender.SendCrashReport(
+            ToPlatformString(url),
+            parameters,
+            files,
+            nullptr
+        );
+        return result == google_breakpad::RESULT_SUCCEEDED;
+    }
+}
+#else
+
+#include "common/linux/http_upload.h"
+
+namespace
+{
+    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments)
+    {
+        std::map<std::string, std::string> files;
+        files["upload_file_minidump"] = minidumpPath.ToStdString();
+
+        std::string response, error;
+        bool success = google_breakpad::HTTPUpload::SendRequest(
+            url,
+            arguments,
+            files,
+            std::string(),
+            std::string(),
+            std::string(),
+            &response,
+            NULL,
+            &error);
+            
+        return success;
+    }
+}
+
+#endif
+
+IMPLEMENT_APP(CrashReportApp);
+namespace
+{
+    std::map<std::string, std::string> parseArguments(const std::string& str)
+    {
+        int TOKEN_IDENTIFIER{ 0 };
+        constexpr int TOKEN_EQ{ 1 };
+        constexpr int TOKEN_COMMA{ 2 };
+        constexpr int TOKEN_VALUE{ 3 };
+
+        int i = 0;
+
+        std::string key;
+        int state = TOKEN_COMMA;
+        std::map<std::string, std::string> result;
+        while (true)
+        {
+            if (str[i] == 0)
+                break;
+            else if (isspace(str[i]))
+                ++i;
+            else if (isalpha(str[i]))
+            {
+                if (state != TOKEN_COMMA)
+                    throw std::logic_error("malformed parameters string: unexpected identifier");
+
+                int begin = i;
+                while (isalnum(str[i]))
+                    ++i;
+
+                key = str.substr(begin, i - begin);
+                state = TOKEN_IDENTIFIER;
+            }
+            else if (str[i] == '=')
+            {
+                if (state != TOKEN_IDENTIFIER)
+                    throw std::logic_error("malformed parameters string: unexpected '=' symbol");
+                ++i;
+                state = TOKEN_EQ;
+            }
+            else if (str[i] == '\"')
+            {
+                if (state != TOKEN_EQ)
+                    throw std::logic_error("malformed parameters string: unexpected '\"' symbol");
+
+                int begin = ++i;
+                while (true)
+                {
+                    if (str[i] == 0)
+                        throw std::logic_error("unterminated string literal");
+                    else if (str[i] == '\"')
+                    {
+                        if (i > begin)
+                            result[key] = str.substr(begin, i - begin);
+                        else
+                            result[key] = std::string();
+                        ++i;
+                        state = TOKEN_VALUE;
+                        break;
+                    }
+                    ++i;
+                }
+            }
+            else if (str[i] == ',')
+            {
+                if (state != TOKEN_VALUE)
+                    throw std::logic_error("malformed parameters string: unexpected ',' symbol");
+                state = TOKEN_COMMA;
+                ++i;
+            }
+            else
+                throw std::logic_error("malformed parameters string");
+        }
+        if (state != TOKEN_VALUE)
+            throw std::logic_error("malformed parameters string");
+
+        return result;
+    }
+
+    void PrintMinidump(google_breakpad::Minidump& minidump)
+    {
+        google_breakpad::BasicSourceLineResolver resolver;
+        google_breakpad::MinidumpProcessor minidumpProcessor(nullptr, &resolver);
+        google_breakpad::MinidumpThreadList::set_max_threads(std::numeric_limits<uint32_t>::max());
+        google_breakpad::MinidumpMemoryList::set_max_regions(std::numeric_limits<uint32_t>::max());
+        
+        google_breakpad::ProcessState processState;
+        
+        if (minidumpProcessor.Process(&minidump, &processState) != google_breakpad::PROCESS_OK)
+        {
+            printf("Failed to process minidump");
+        }
+        else
+        {
+            google_breakpad::PrintProcessState(processState, true, false, &resolver);
+        }
+    }
+
+    wxString MakeDumpString(google_breakpad::Minidump& minidump, const wxString& temp)
+    {
+#if _WIN32
+        auto stream = _wfreopen(temp.wc_str(), L"w+", stdout);
+#else
+        auto stream = freopen(temp.utf8_str().data(), "w+", stdout);
+#endif
+        if (stream == NULL)
+            throw std::runtime_error("Failed to print minidump: cannot open temp file");
+        PrintMinidump(minidump);
+        fflush(stdout);
+
+        auto length = ftell(stream);
+        std::vector<char> bytes(length);
+        fseek(stream, 0, SEEK_SET);
+        fread(&bytes[0], 1, length, stream);
+        fclose(stream);
+        
+#if _WIN32
+        _wremove(temp.wc_str());
+#else
+        remove(temp.utf8_str().data());
+#endif
+
+        return wxString::FromAscii(&bytes[0], bytes.size());
+    }
+
+    wxString MakeHeaderString(google_breakpad::Minidump& minidump)
+    {
+        if (auto exception = minidump.GetException())
+        {
+            if (auto rawException = exception->exception())
+            {
+                return wxString::Format(wxT("Exception code 0x%x"), rawException->exception_record.exception_code);
+            }
+            else
+            {
+                return wxT("Unknown exception");
+            }
+        }
+        else if (auto assertion = minidump.GetAssertion())
+        {
+            auto expression = assertion->expression();
+            if (!expression.empty())
+            {
+                return expression;
+            }
+            else
+            {
+                return wxT("Unknown assertion");
+            }
+        }
+        return wxT("Unknown error");
+    }
+
+    void ShowCrashReportFrame(const wxString& header, const wxString& dump, const std::function<bool()>& onSend)
+    {
+        auto frame = new wxFrame(
+            nullptr, 
+            wxID_ANY, 
+            wxT("Problem report for Audacity"), 
+            wxDefaultPosition, 
+            wxDefaultSize, 
+            wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)//disable frame resize
+        );
+        
+        auto mainLayout = new wxBoxSizer(wxVERTICAL);
+        
+        auto headerText = new wxStaticText(frame, wxID_ANY, header);
+        headerText->SetFont(wxFont(wxFontInfo().Bold()));
+
+        auto headerLayout = new wxBoxSizer(wxHORIZONTAL);
+        headerLayout->Add(new wxStaticBitmap(frame, wxID_ANY, wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX)));
+        headerLayout->AddSpacer(5);
+        headerLayout->Add(headerText, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
+
+        auto buttonsLayout = new wxBoxSizer(wxHORIZONTAL);
+        
+        if (onSend != nullptr)
+        {
+            auto okButton = new wxButton(frame, wxID_OK, wxT("Don't send"));
+            auto sendButton = new wxButton(frame, wxID_CANCEL, wxT("Send"));
+
+            okButton->Bind(wxEVT_BUTTON, [frame](wxCommandEvent&)
+                {
+                    frame->Close(true);
+                });
+            sendButton->Bind(wxEVT_BUTTON, [frame, onSend](wxCommandEvent&)
+                {
+                    if (onSend())
+                    {
+                        frame->Close(true);
+                    }
+                });
+
+            buttonsLayout->Add(okButton);
+            buttonsLayout->Add(sendButton);
+        }
+        else
+        {
+            auto okButton = new wxButton(frame, wxID_OK, wxT("OK"));
+            okButton->Bind(wxEVT_BUTTON, [frame](wxCommandEvent&)
+                {
+                    frame->Close(true);
+                });
+            buttonsLayout->Add(okButton);
+        }
+
+        mainLayout->Add(headerLayout, wxSizerFlags().Border(wxALL));
+        if (onSend != nullptr)
+        {
+            mainLayout->AddSpacer(5);
+            mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Click \"Send\" to submit report to Audacity. This information is collected anonymously.")), wxSizerFlags().Border(wxALL));
+        }
+        mainLayout->AddSpacer(10);
+        mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Problem details")), wxSizerFlags().Border(wxALL));
+        
+        auto dumpTextCtrl = new wxTextCtrl(frame, wxID_ANY, dump, wxDefaultPosition, wxSize(600, 300), wxTE_RICH | wxTE_READONLY | wxTE_MULTILINE | wxTE_DONTWRAP);
+        dumpTextCtrl->SetFont(wxFont(wxFontInfo().Family(wxFONTFAMILY_TELETYPE)));
+        dumpTextCtrl->ShowPosition(0);//scroll to top
+        mainLayout->Add(dumpTextCtrl, wxSizerFlags().Border(wxALL).Expand());
+
+        mainLayout->Add(buttonsLayout, wxSizerFlags().Border(wxALL).Align(wxALIGN_RIGHT));
+        frame->SetSizerAndFit(mainLayout);
+
+        frame->Show(true);
+    }
+}
+
+
+bool CrashReportApp::OnInit()
+{
+    if (!wxApp::OnInit())
+        return false;
+    if (mSilent)
+    {
+        if (!mURL.empty())
+            SendMinidump(mURL, mMinidumpPath, mArguments);
+    }
+    else
+    {
+        google_breakpad::Minidump minidump(mMinidumpPath.ToStdString(), false);
+        if (minidump.Read())
+        {
+            SetExitOnFrameDelete(true);
+
+            wxFileName temp(mMinidumpPath);
+            temp.SetExt("tmp");
+
+            auto header = MakeHeaderString(minidump);
+            auto dump = MakeDumpString(minidump, temp.GetFullPath());
+
+            if (mURL.empty())
+            {
+                ShowCrashReportFrame(header, dump, nullptr);
+            }
+            else
+            {
+                ShowCrashReportFrame(header, dump, [this]()
+                    {
+                        if (!SendMinidump(mURL, mMinidumpPath, mArguments))
+                        {
+                            wxMessageBox(wxT("Failed to send crash report"));
+                            return false;
+                        }
+                        return true;
+                    });
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+void CrashReportApp::OnInitCmdLine(wxCmdLineParser& parser)
+{
+    static const wxCmdLineEntryDesc cmdLineEntryDesc[] =
+    {
+         { wxCMD_LINE_SWITCH, "h", "help", "Display help on the command line parameters", wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+         { wxCMD_LINE_SWITCH, "s", "silent", "Send without displaying the confirmation dialog" },
+         { wxCMD_LINE_OPTION, "u", "url", "Crash report server URL", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+         { wxCMD_LINE_OPTION, "a", "args", "A set of arguments to send", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+         { wxCMD_LINE_PARAM,  NULL, NULL, "path to minidump file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY },
+         { wxCMD_LINE_NONE }
+    };
+
+    parser.SetDesc(cmdLineEntryDesc);
+    
+    wxApp::OnInitCmdLine(parser);
+}
+
+bool CrashReportApp::OnCmdLineParsed(wxCmdLineParser& parser)
+{
+    wxString url;
+    wxString arguments;
+    if (parser.Found("u", &url))
+    {
+        mURL = url.ToStdString();
+    }
+    if (parser.Found("a", &arguments))
+    {
+        mArguments = parseArguments(arguments.ToStdString());
+    }
+    mMinidumpPath = parser.GetParam(0);
+    mSilent = parser.Found("s");
+    
+    return wxApp::OnCmdLineParsed(parser);
+}
