@@ -14,24 +14,36 @@
 #include <atomic>
 #include <vector>
 
+#include "audacity/Types.h"
+
 class EffectProcessor;
+class Effect;
 
 class RealtimeEffectState
 {
 public:
-   explicit RealtimeEffectState( EffectProcessor &effect );
+   explicit RealtimeEffectState();
+   explicit RealtimeEffectState(const PluginID & id);
+   ~RealtimeEffectState();
 
-   EffectProcessor &GetEffect() const { return mEffect; }
+   void SetID(const PluginID & id);
+   EffectProcessor *GetEffect();
 
    bool Suspend();
    bool Resume() noexcept;
+
+   bool Initialize(double rate);
    bool AddProcessor(int group, unsigned chans, float rate);
+   bool ProcessStart();
    size_t Process(int group,
       unsigned chans, float **inbuf, float **outbuf, size_t numSamples);
+   bool ProcessEnd();
    bool IsActive() const noexcept;
+   bool Finalize();
 
 private:
-   EffectProcessor &mEffect;
+   PluginID mID;
+   std::unique_ptr<EffectProcessor> mEffect;
 
    std::vector<int> mGroupProcessor;
    int mCurrentProcessor;

@@ -133,6 +133,9 @@ public:
    /** Return an effect by its ID. */
    Effect *GetEffect(const PluginID & ID);
 
+   /** Create a new instance of an effect by its ID. */
+   std::unique_ptr<Effect> NewEffect(const PluginID & ID);
+
 private:
    AudacityCommand *GetAudacityCommand(const PluginID & ID);
 

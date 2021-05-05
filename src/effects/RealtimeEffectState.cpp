@@ -12,27 +12,88 @@
 
 #include "EffectInterface.h"
 
-RealtimeEffectState::RealtimeEffectState( EffectProcessor &effect )
-   : mEffect{ effect }
+#include "EffectManager.h"
+#include "Effect.h"
+
+#include <wx/log.h>
+
+RealtimeEffectState::RealtimeEffectState()
 {
+   mEffect.reset();
+}
+
+RealtimeEffectState::RealtimeEffectState(const PluginID & id)
+:  RealtimeEffectState()
+{
+   SetID(id);
+}
+
+RealtimeEffectState::~RealtimeEffectState() = default;
+
+void RealtimeEffectState::SetID(const PluginID & id)
+{
+   mID = id;
+}
+
+EffectProcessor *RealtimeEffectState::GetEffect()
+{
+   if (!mEffect)
+   {
+      mEffect = EffectManager::Get().NewEffect(mID);
+   }
+
+   return mEffect.get();
 }
 
 bool RealtimeEffectState::Suspend()
 {
-   auto result = mEffect.RealtimeSuspend();
-   if ( result ) {
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   auto result = effect->RealtimeSuspend();
+   if (result)
+   {
       mRealtimeSuspendCount++;
    }
+
    return result;
 }
 
 bool RealtimeEffectState::Resume() noexcept
 {
-   auto result = mEffect.RealtimeResume();
-   if ( result ) {
+   wxASSERT(mRealtimeSuspendCount >= 0);
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   auto result = effect->RealtimeResume();
+   if (result)
+   {
       mRealtimeSuspendCount--;
    }
+
    return result;
+}
+
+bool RealtimeEffectState::Initialize(double rate)
+{
+   wxLogDebug(wxT("State Initialize"));
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   effect->SetSampleRate(rate);
+
+   return effect->RealtimeInitialize();
 }
 
 // RealtimeAddProcessor and RealtimeProcess use the same method of
@@ -40,6 +101,12 @@ bool RealtimeEffectState::Resume() noexcept
 // be reflected in the other.
 bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
 {
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
    auto ichans = chans;
    auto ochans = chans;
    auto gchans = chans;
@@ -54,8 +121,8 @@ bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
    // Remember the processor starting index
    mGroupProcessor.push_back(mCurrentProcessor);
 
-   const auto numAudioIn = mEffect.GetAudioInCount();
-   const auto numAudioOut = mEffect.GetAudioOutCount();
+   const auto numAudioIn = effect->GetAudioInCount();
+   const auto numAudioOut = effect->GetAudioOutCount();
 
    // Call the client until we run out of input or output channels
    while (ichans > 0 && ochans > 0)
@@ -94,13 +161,26 @@ bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
       }
 
       // Add a NEW processor
-      mEffect.RealtimeAddProcessor(gchans, rate);
+      effect->RealtimeAddProcessor(gchans, rate);
 
       // Bump to next processor
       mCurrentProcessor++;
    }
 
    return true;
+}
+
+bool RealtimeEffectState::ProcessStart()
+{
+   wxLogDebug(wxT("State Start"));
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   return effect->RealtimeProcessStart();
 }
 
 // RealtimeAddProcessor and RealtimeProcess use the same method of
@@ -113,6 +193,13 @@ size_t RealtimeEffectState::Process(int group,
                                     size_t numSamples)
 {
    //
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
    // The caller passes the number of channels to process and specifies
    // the number of input and output buffers.  There will always be the
    // same number of output buffers as there are input buffers.
@@ -121,8 +208,8 @@ size_t RealtimeEffectState::Process(int group,
    // so if the number of channels we're currently processing are different
    // than what the effect expects, then we use a few methods of satisfying
    // the effects requirements.
-   const auto numAudioIn = mEffect.GetAudioInCount();
-   const auto numAudioOut = mEffect.GetAudioOutCount();
+   const auto numAudioIn = effect->GetAudioInCount();
+   const auto numAudioOut = effect->GetAudioOutCount();
 
    float **clientIn = (float **) alloca(numAudioIn * sizeof(float *));
    float **clientOut = (float **) alloca(numAudioOut * sizeof(float *));
@@ -201,11 +288,11 @@ size_t RealtimeEffectState::Process(int group,
 
       // Finally call the plugin to process the block
       len = 0;
-      const auto blockSize = mEffect.GetBlockSize();
+      const auto blockSize = effect->GetBlockSize();
       for (decltype(numSamples) block = 0; block < numSamples; block += blockSize)
       {
          auto cnt = std::min(numSamples - block, blockSize);
-         len += mEffect.RealtimeProcess(processor, clientIn, clientOut, cnt);
+         len += effect->RealtimeProcess(group, clientIn, clientOut, cnt);
 
          for (size_t i = 0 ; i < numAudioIn; i++)
          {
@@ -225,7 +312,33 @@ size_t RealtimeEffectState::Process(int group,
    return len;
 }
 
+bool RealtimeEffectState::ProcessEnd()
+{
+   wxLogDebug(wxT("State End"));
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   return effect->RealtimeProcessEnd();
+}
+
 bool RealtimeEffectState::IsActive() const noexcept
 {
    return mRealtimeSuspendCount == 0;
+}
+
+bool RealtimeEffectState::Finalize()
+{
+   wxLogDebug(wxT("State Finalize"));
+
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return false;
+   }
+
+   return effect->RealtimeFinalize();
 }
