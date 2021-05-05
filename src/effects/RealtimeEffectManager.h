@@ -103,11 +103,11 @@ public:
       }
 
       size_t Process( int group,
-         unsigned chans, float **buffers, size_t numSamples)
+         unsigned chans, float gain, float **buffers, size_t numSamples)
       {
          if (mpProject)
             return Get(*mpProject)
-               .RealtimeProcess(group, chans, buffers, numSamples);
+               .RealtimeProcess(group, chans, gain, buffers, numSamples);
          return numSamples; // consider them trivially processed
       }
 
@@ -117,7 +117,8 @@ public:
 
 private:
    void RealtimeProcessStart();
-   size_t RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples);
+   size_t RealtimeProcess( int group,
+      unsigned chans, float gain, float **buffers, size_t numSamples);
    void RealtimeProcessEnd() noexcept;
 
    RealtimeEffectManager(const RealtimeEffectManager&) = delete;

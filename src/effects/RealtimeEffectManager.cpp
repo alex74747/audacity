@@ -162,7 +162,7 @@ void RealtimeEffectManager::RealtimeProcessStart()
 //
 // This will be called in a different thread than the main GUI thread.
 //
-size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples)
+size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float gain, float **buffers, size_t numSamples)
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -188,6 +188,18 @@ size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float *
    {
       ibuf[i] = buffers[i];
       obuf[i] = (float *) alloca(numSamples * sizeof(float));
+   }
+
+   // Apply gain
+   if (gain != 1.0)
+   {
+      for (auto c = 0; c < chans; ++c)
+      {
+         for (auto s = 0; s < numSamples; ++s)
+         {
+            ibuf[c][s] *= gain;
+         }
+      }
    }
 
    // Now call each effect in the chain while swapping buffer pointers to feed the

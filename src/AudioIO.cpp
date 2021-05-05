@@ -2516,7 +2516,8 @@ bool AudioIoCallback::FillOutputBuffers(
       len = mMaxFramesOutput;
 
       if( !dropQuickly && selected )
-         len = scope.Process(group, chanCnt, tempBufs, len);
+         len = scope.Process(group,
+            chanCnt, chans[0]->GetGain(), tempBufs, len);
       group++;
 
       CallbackCheckCompletion(mCallbackReturn, len);
