@@ -21,6 +21,7 @@
 class AudacityProject;
 class EffectProcessor;
 class RealtimeEffectState;
+class Track;
 
 class AUDACITY_DLL_API RealtimeEffectManager final
    : public ClientData::Base
@@ -124,10 +125,13 @@ private:
    RealtimeEffectManager(const RealtimeEffectManager&) = delete;
    RealtimeEffectManager &operator=(const RealtimeEffectManager&) = delete;
 
+   // Visit the per-project states first, then any per-track states.
+   void VisitGroup(Track *leader,
+      std::function<void(RealtimeEffectState &state, bool bypassed)> func);
+
    AudacityProject &mProject;
 
    std::mutex mLock;
-   std::vector< std::unique_ptr<RealtimeEffectState> > mStates;
    Latency mLatency{ 0 };
    std::atomic<bool> mSuspended{ true };
    std::atomic<bool> mActive{ false };
