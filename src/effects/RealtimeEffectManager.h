@@ -4,8 +4,6 @@
  
  RealtimeEffectManager.h
  
- Paul Licameli split from EffectManager.h
- 
  **********************************************************************/
 
 #ifndef __AUDACITY_REALTIME_EFFECT_MANAGER__
@@ -17,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "audacity/Types.h" // for PluginID
 #include "ClientData.h"
 
 class AudacityProject;
@@ -24,12 +23,14 @@ class EffectProcessor;
 class RealtimeEffectState;
 class Track;
 
+class wxPoint;
+
 class AUDACITY_DLL_API RealtimeEffectManager final
    : public ClientData::Base
+   , public std::enable_shared_from_this<RealtimeEffectManager>
 {
 public:
    using Latency = std::chrono::microseconds;
-   using EffectArray = std::vector <EffectProcessor*> ;
 
    RealtimeEffectManager(AudacityProject &project);
    ~RealtimeEffectManager();
@@ -37,9 +38,11 @@ public:
    static RealtimeEffectManager & Get(AudacityProject &project);
    static const RealtimeEffectManager & Get(const AudacityProject &project);
 
-   // Realtime effect processing
+   bool IsBypassed(const Track &track);
+   void Bypass(Track &track, bool bypass);
+
    bool IsActive() const noexcept;
-   bool IsSuspended();
+   bool IsSuspended() const;
    void Initialize(double rate);
    void AddProcessor(Track *track, unsigned chans, float rate);
    void Finalize();
@@ -115,6 +118,11 @@ public:
       AudacityProject *mpProject = nullptr;
    };
 
+   void Show(AudacityProject &project);
+   void Show(Track &track, wxPoint pos);
+
+   AudacityProject &GetProject() { return mProject; }
+
 private:
    void ProcessStart();
    size_t Process(Track *track, float gain, float **buffers, size_t numSamps);
@@ -131,8 +139,12 @@ private:
 
    std::mutex mLock;
    Latency mLatency{ 0 };
+
+   double mRate;
+
    std::atomic<bool> mSuspended{ true };
    std::atomic<bool> mActive{ false };
+   std::atomic<bool> mProcessing{ false };
 
    std::vector<Track *> mGroupLeaders;
    std::unordered_map<Track *, int> mChans;

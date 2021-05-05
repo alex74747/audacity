@@ -1,5 +1,5 @@
 /**********************************************************************
-
+ 
   Audacity: A Digital Audio Editor
 
   @file RealtimeEffectState.cpp
@@ -11,7 +11,9 @@
 #include "RealtimeEffectState.h"
 
 #include "EffectInterface.h"
+#include "MemoryX.h"
 
+#include "PluginManager.h"
 #include "Effect.h"
 
 #include <wx/log.h>
@@ -19,6 +21,10 @@
 RealtimeEffectState::RealtimeEffectState()
 {
    mEffect.reset();
+
+   mInitialized = false;
+   mBypass = false;
+   mSuspendCount = 0;   // default to unsuspended
 }
 
 RealtimeEffectState::RealtimeEffectState(const PluginID & id)
@@ -44,6 +50,26 @@ EffectProcessor *RealtimeEffectState::GetEffect()
    return mEffect.get();
 }
 
+bool RealtimeEffectState::IsActive() const
+{
+   return !mBypass && mSuspendCount == 0;
+}
+
+bool RealtimeEffectState::IsBypassed()
+{
+   return mBypass;
+}
+
+void RealtimeEffectState::Bypass(bool Bypass)
+{
+   mBypass = Bypass;
+}
+
+bool RealtimeEffectState::IsSuspended()
+{
+   return mSuspendCount > 0;
+}
+
 bool RealtimeEffectState::Suspend()
 {
    auto effect = GetEffect();
@@ -55,7 +81,7 @@ bool RealtimeEffectState::Suspend()
    auto result = effect->RealtimeSuspend();
    if (result)
    {
-      mRealtimeSuspendCount++;
+      mSuspendCount++;
    }
 
    return result;
@@ -63,7 +89,7 @@ bool RealtimeEffectState::Suspend()
 
 bool RealtimeEffectState::Resume() noexcept
 {
-   wxASSERT(mRealtimeSuspendCount >= 0);
+   wxASSERT(mSuspendCount >= 0);
 
    auto effect = GetEffect();
    if (!effect)
@@ -74,7 +100,7 @@ bool RealtimeEffectState::Resume() noexcept
    auto result = effect->RealtimeResume();
    if (result)
    {
-      mRealtimeSuspendCount--;
+      mSuspendCount--;
    }
 
    return result;
@@ -315,11 +341,6 @@ bool RealtimeEffectState::ProcessEnd()
    return effect->RealtimeProcessEnd();
 }
 
-bool RealtimeEffectState::IsActive() const noexcept
-{
-   return mRealtimeSuspendCount == 0;
-}
-
 bool RealtimeEffectState::Finalize()
 {
    wxLogDebug(wxT("State Finalize"));
@@ -333,4 +354,15 @@ bool RealtimeEffectState::Finalize()
    }
 
    return effect->RealtimeFinalize();
+}
+
+void RealtimeEffectState::CloseEditor()
+{
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return;
+   }
+
+   effect->CloseInterface();
 }

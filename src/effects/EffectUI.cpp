@@ -21,8 +21,10 @@
 #include "../ProjectHistory.h"
 #include "../ProjectWindowBase.h"
 #include "../TrackPanelAx.h"
-#include "RealtimeEffectManager.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
+
+#include "Theme.h"
+#include "AllThemeResources.h"
 
 static PluginID GetID(Effect &effect)
 {
@@ -121,17 +123,16 @@ static const int kOptionsID = 20005;
 static const int kUserPresetsDummyID = 20006;
 static const int kDeletePresetDummyID = 20007;
 static const int kMenuID = 20100;
-static const int kEnableID = 20101;
-static const int kPlayID = 20102;
-static const int kRewindID = 20103;
-static const int kFFwdID = 20104;
-static const int kPlaybackID = 20105;
-static const int kCaptureID = 20106;
+static const int kPlayID = 20101;
+static const int kRewindID = 20102;
+static const int kFFwdID = 20103;
+static const int kPlaybackID = 20104;
+static const int kCaptureID = 20105;
 static const int kUserPresetsID = 21000;
 static const int kDeletePresetID = 22000;
 static const int kFactoryPresetsID = 23000;
 
-BEGIN_EVENT_TABLE(EffectUIHost, wxDialogWrapper)
+BEGIN_EVENT_TABLE(EffectUIHost, ThemedDialog)
 EVT_INIT_DIALOG(EffectUIHost::OnInitDialog)
 EVT_ERASE_BACKGROUND(EffectUIHost::OnErase)
 EVT_PAINT(EffectUIHost::OnPaint)
@@ -141,7 +142,6 @@ EVT_BUTTON(wxID_CANCEL, EffectUIHost::OnCancel)
 EVT_BUTTON(wxID_HELP, EffectUIHost::OnHelp)
 EVT_BUTTON(eDebugID, EffectUIHost::OnDebug)
 EVT_BUTTON(kMenuID, EffectUIHost::OnMenu)
-EVT_CHECKBOX(kEnableID, EffectUIHost::OnEnable)
 EVT_BUTTON(kPlayID, EffectUIHost::OnPlay)
 EVT_BUTTON(kRewindID, EffectUIHost::OnRewind)
 EVT_BUTTON(kFFwdID, EffectUIHost::OnFFwd)
@@ -159,33 +159,28 @@ EffectUIHost::EffectUIHost(wxWindow *parent,
    AudacityProject &project,
    Effect &effect,
    EffectUIClientInterface &client)
-:  wxDialogWrapper(parent, wxID_ANY, effect.GetName(),
-                   wxDefaultPosition, wxDefaultSize,
-                   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX)
-, mEffect{ effect }
+: mEffect{ effect }
 , mClient{ client }
 {
+   mParent = parent;
+   mProject = &project;
+
+   if (!ThemedDialog::Create(parent, wxID_ANY, effect.GetName(),
+      wxDefaultPosition, wxDefaultSize, wxRESIZE_BORDER))
+   {
+//      return false;
+   }
+
+   SetName(effect.GetName());
+
 #if defined(__WXMAC__)
    // Make sure the effect window actually floats above the main window
    [ [((NSView *)GetHandle()) window] setLevel:NSFloatingWindowLevel];
 #endif
    
-   SetName( effect.GetName() );
    SetExtraStyle(GetExtraStyle() | wxWS_EX_VALIDATE_RECURSIVELY);
    
-   mParent = parent;
-   mClient = client;
-   
-   mProject = &project;
-   
-   mInitialized = false;
-   mSupportsRealtime = false;
-   
-   mDisableTransport = false;
-   
-   mEnabled = true;
-   
-   mPlayPos = 0.0;
+//   return true;
 }
 
 EffectUIHost::~EffectUIHost()
@@ -218,6 +213,12 @@ int EffectUIHost::ShowModal()
    wxSizer *sz = mApplyBtn->GetContainingSizer();
    wxASSERT(mApplyBtn->GetParent()); // To justify safenew
    wxButton *apply = safenew wxButton(mApplyBtn->GetParent(), wxID_APPLY);
+//   if (mSupportsRealtime)
+   {
+      apply->SetForegroundColour(theTheme.Colour(clrTrackPanelText));
+      apply->SetBackgroundColour(theTheme.Colour(clrTrackInfo));
+      apply->ClearBackground();
+   }
    sz->Replace(mCloseBtn, apply);
    sz->Replace(mApplyBtn, mCloseBtn);
    sz->Layout();
@@ -233,7 +234,7 @@ int EffectUIHost::ShowModal()
    
    Layout();
    
-   return wxDialogWrapper::ShowModal();
+   return ThemedDialog::ShowModal();
 }
 
 // ============================================================================
@@ -244,7 +245,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
 {
    mSupportsRealtime = mEffect.SupportsRealtime();
    mIsGUI = mClient.IsGraphicalUI();
-   mIsBatch = mEffect.IsBatchProcessing();
+   mIsBatch = (mEffect.IsBatchProcessing());
 
    int margin = 0;
 #if defined(__WXMAC__)
@@ -261,6 +262,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
       false /* horizontal */,
       { -1, -1 } /* minimum size */
    };
+   S.SetThemed(true); //mSupportsRealtime);
    {
       S.SetBorder( margin );
 
@@ -361,14 +363,6 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
                   CreateBitmap(effect_ffwd_disabled_xpm, true, false));
                mFFwdBtn->SetBitmapPressed(CreateBitmap(effect_ffwd_xpm, false, true));
             }
-
-            S.AddSpace( 5, 5 );
-
-            mEnableCb = S.Id( kEnableID )
-               .Position(wxALIGN_CENTER | wxTOP | wxBOTTOM)
-               .Name(XO("Enable"))
-               .AddCheckBox( XXO("&Enable"), mEnabled );
-            //
          }
       }
    }
@@ -378,7 +372,7 @@ wxPanel *EffectUIHost::BuildButtonBar(wxWindow *parent)
    return bar;
 }
 
-bool EffectUIHost::Initialize()
+bool EffectUIHost::Populate(ShuttleGui &S)
 {
    {
       auto gAudioIO = AudioIO::Get();
@@ -390,7 +384,6 @@ bool EffectUIHost::Initialize()
    // Build a "host" dialog, framing a panel that the client fills in.
    // The frame includes buttons to preview, apply, load and save presets, etc.
    EffectPanel *w {};
-   ShuttleGui S{ this, eIsCreating };
    {
       S.StartHorizontalLay( wxEXPAND );
       {
@@ -404,6 +397,8 @@ bool EffectUIHost::Initialize()
 
          // Let the client add things to the panel
          ShuttleGui S1{ uw.get(), eIsCreating };
+         S1.SetThemed(S.IsThemed());
+
          if (!mClient.PopulateUI(S1))
          {
             return false;
@@ -507,10 +502,8 @@ void EffectUIHost::OnClose(wxCloseEvent & WXUNUSED(evt))
    
    Hide();
    
-   if (mNeedsResume)
-      Resume();
    mClient.CloseUI();
-
+   
    Destroy();
 #if wxDEBUG_LEVEL
    mClosed = true;
@@ -706,36 +699,6 @@ void EffectUIHost::OnMenu(wxCommandEvent & WXUNUSED(evt))
       wxWidgetsWindowPlacement{ btn },
       { r.GetLeft(), r.GetBottom() }
    );
-}
-
-void EffectUIHost::Resume()
-{
-   if (!mClient.ValidateUI()) {
-      // If we're previewing we should still be able to stop playback
-      // so don't disable transport buttons.
-      //   mEffect->EnableApply(false);   // currently this would also disable transport buttons.
-      // The preferred behaviour is currently undecided, so for now
-      // just disallow enabling until settings are valid.
-      mEnabled = false;
-      mEnableCb->SetValue(mEnabled);
-      return;
-   }
-}
-
-void EffectUIHost::OnEnable(wxCommandEvent & WXUNUSED(evt))
-{
-   mEnabled = mEnableCb->GetValue();
-   
-   if (mEnabled) {
-      Resume();
-      mNeedsResume = false;
-   }
-   else
-   {
-      mNeedsResume = true;
-   }
-   
-   UpdateControls();
 }
 
 void EffectUIHost::OnPlay(wxCommandEvent & WXUNUSED(evt))
@@ -1074,7 +1037,7 @@ void EffectUIHost::UpdateControls()
    {
       // Don't allow focus to get trapped
       wxWindow *focus = FindFocus();
-      if (focus == mRewindBtn || focus == mFFwdBtn || focus == mPlayBtn || focus == mEnableCb)
+      if (focus == mRewindBtn || focus == mFFwdBtn || focus == mPlayBtn)
       {
          mCloseBtn->SetFocus();
       }
@@ -1091,7 +1054,6 @@ void EffectUIHost::UpdateControls()
    {
       mRewindBtn->Enable(!(mCapturing || mDisableTransport));
       mFFwdBtn->Enable(!(mCapturing || mDisableTransport));
-      mEnableCb->Enable(!(mCapturing || mDisableTransport));
       
       wxBitmapButton *bb;
       
@@ -1169,6 +1131,8 @@ void EffectUIHost::InitializeRealtime()
          }
       });
       
+      mApplyBtn->Hide();
+
       mInitialized = true;
    }
 }
@@ -1195,14 +1159,8 @@ wxDialog *EffectUI::DialogFactory( wxWindow &parent, EffectHostInterface &host,
    if ( !project )
       return nullptr;
 
-   Destroy_ptr<EffectUIHost> dlg{
-      safenew EffectUIHost{ &parent, *project, *pEffect, client} };
-   
-   if (dlg->Initialize())
-   {
-      // release() is safe because parent will own it
-      return dlg.release();
-   }
+   Destroy_ptr<EffectUIHost> dlg(
+      safenew EffectUIHost(&parent, *project, *pEffect, client));
    
    return nullptr;
 };

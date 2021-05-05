@@ -112,7 +112,7 @@ bool RealtimeEffectRenderer::ProcessInitialize(sampleCount WXUNUSED(totalLen), C
    mManager = &RealtimeEffectManager::Get(*const_cast<AudacityProject *>(FindProject()));
    mManager->Initialize(mSampleRate);
    mManager->AddProcessor(mLeader, mNumChans, mSampleRate);
-   mManager->ProcessStart();
+//   mManager->ProcessStart(); // fix
 
    return true;
 }

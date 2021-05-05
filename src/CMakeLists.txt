@@ -459,6 +459,8 @@ list( APPEND SOURCES
       effects/RealtimeEffectRenderer.h
       effects/RealtimeEffectState.cpp
       effects/RealtimeEffectState.h
+      effects/RealtimeEffectUI.cpp
+      effects/RealtimeEffectUI.h
       effects/Repair.cpp
       effects/Repair.h
       effects/Repeat.cpp

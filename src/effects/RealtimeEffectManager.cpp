@@ -4,8 +4,6 @@
  
  RealtimeEffectManager.cpp
  
- Paul Licameli split from EffectManager.cpp
- 
  **********************************************************************/
 
 
@@ -19,7 +17,6 @@
 #include "Track.h"
 
 #include <atomic>
-#include <wx/time.h>
 
 #include <wx/log.h>
 
@@ -55,15 +52,25 @@ bool RealtimeEffectManager::IsActive() const noexcept
    return mActive;
 }
 
-bool RealtimeEffectManager::IsSuspended()
+bool RealtimeEffectManager::IsSuspended() const
 {
    return mSuspended;
 }
 
 void RealtimeEffectManager::Initialize(double rate)
 {
+   wxLogDebug(wxT("Initialize"));
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   wxASSERT(!mActive);
+   wxASSERT(!mSuspended);
+
    // The audio thread should not be running yet, but protect anyway
    SuspensionScope scope{ &mProject };
+
+   // Remember the rate
+   mRate = rate;
 
    // (Re)Set processor parameters
    mChans.clear();
@@ -73,16 +80,18 @@ void RealtimeEffectManager::Initialize(double rate)
    // RealtimeAdd/RemoveEffect() needs to know when we're active so it can
    // initialize newly added effects
    mActive = true;
-
-   // Tell each effect to get ready for action
-   VisitGroup(nullptr, [rate](RealtimeEffectState &state, bool){
-      state.Initialize(rate);
-   });
 }
 
 void RealtimeEffectManager::AddProcessor(Track *track, unsigned chans, float rate)
 {
    wxLogDebug(wxT("AddProcess"));
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   wxASSERT(mActive);
+   wxASSERT(!mSuspended);
+
+   SuspensionScope scope{ &mProject };
 
    auto leader = *track->GetOwner()->FindLeader(track);
    mGroupLeaders.push_back(leader);
@@ -97,13 +106,28 @@ void RealtimeEffectManager::AddProcessor(Track *track, unsigned chans, float rat
          state.AddProcessor(leader, chans, rate);
       }
    );
-
 }
 
 void RealtimeEffectManager::Finalize()
 {
+   wxLogDebug(wxT("Finalize"));
+
+   wxASSERT(mActive);
+   wxASSERT(!mProcessing);
+   wxASSERT(!mSuspended);
+
+   while (mProcessing.load())
+   {
+      wxMilliSleep(1);
+   }
+
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   wxASSERT(mActive);
+
    // Make sure nothing is going on
-   Suspend();
+   SuspensionScope scope{ &mProject };
 
    // It is now safe to clean up
    mLatency = std::chrono::microseconds(0);
@@ -136,37 +160,45 @@ void RealtimeEffectManager::Finalize()
 
 void RealtimeEffectManager::Suspend()
 {
-   // Protect...
-   std::lock_guard<std::mutex> guard(mLock);
-
+   wxLogDebug(wxT("Suspend"));
    // Already suspended...bail
    if (mSuspended)
+   {
       return;
+   }
 
    // Show that we aren't going to be doing anything
    mSuspended = true;
 
-   // And make sure the effects don't either
-   VisitGroup(nullptr, [](RealtimeEffectState &state, bool){
-      state.Suspend();
-   });
+   auto & masterList = RealtimeEffectList::Get(mProject);
+   masterList.Suspend();
+
+   for (auto leader : mGroupLeaders)
+   {
+      auto & trackList = RealtimeEffectList::Get(*leader);
+      trackList.Suspend();
+   }
 }
 
 void RealtimeEffectManager::Resume() noexcept
 {
-   // Protect...
-   std::lock_guard<std::mutex> guard(mLock);
-
+   wxLogDebug(wxT("Resume"));
    // Already running...bail
    if (!mSuspended)
+   {
       return;
+   }
+ 
+   auto & masterList = RealtimeEffectList::Get(mProject);
+   masterList.Resume();
 
-   // Tell the effects to get ready for more action
-   VisitGroup(nullptr, [](RealtimeEffectState &state, bool){
-      state.Resume();
-   });
+   for (auto leader : mGroupLeaders)
+   {
+      auto & trackList = RealtimeEffectList::Get(*leader);
+      trackList.Resume();
+   }
 
-   // And we should too
+   // Show that we aren't going to be doing anything
    mSuspended = false;
 }
 
@@ -175,18 +207,28 @@ void RealtimeEffectManager::Resume() noexcept
 //
 void RealtimeEffectManager::ProcessStart()
 {
+   wxLogDebug(wxT("ProcessStart"));
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
 
-   // Can be suspended because of the audio stream being paused or because effects
-   // have been suspended.
-   if (!mSuspended)
+   wxASSERT(mActive);
+   wxASSERT(!mProcessing);
+
+   SuspensionScope scope{ &mProject };
+
+   mCurrentGroup = 0;
+
+   for (auto leader : mGroupLeaders)
    {
-      VisitGroup(nullptr, [](RealtimeEffectState &state, bool bypassed){
-         if (!bypassed)
+      VisitGroup(leader,
+         [&](RealtimeEffectState &state, bool bypassed)
+         {
             state.ProcessStart();
-      });
+         }
+      );
    }
+
+   mProcessing = true;
 }
 
 //
@@ -201,11 +243,9 @@ size_t RealtimeEffectManager::Process(Track *track,
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
 
-   // Can be suspended because of the audio stream being paused or because effects
-   // have been suspended, so allow the samples to pass as-is.
-   if (mSuspended)
+   if (mSuspended || !mProcessing)
    {
-      return numSamps;
+      return 0;
    }
 
    auto numChans = mChans[track];
@@ -281,7 +321,7 @@ size_t RealtimeEffectManager::Process(Track *track,
    //
    // This is wrong...needs to handle tails
    //
-   return numSamps;
+   return called ? numSamps : 0;
 }
 
 //
@@ -289,18 +329,57 @@ size_t RealtimeEffectManager::Process(Track *track,
 //
 void RealtimeEffectManager::ProcessEnd() noexcept
 {
+   wxLogDebug(wxT("ProcessEnd"));
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
 
-   // Can be suspended because of the audio stream being paused or because effects
-   // have been suspended.
-   if (!mSuspended)
+   if (!mProcessing)
    {
-      VisitGroup(nullptr, [](RealtimeEffectState &state, bool bypassed){
-         if (!bypassed)
-            state.ProcessEnd();
-      });
+      return;
    }
+
+   SuspensionScope scope{ &mProject };
+
+   for (auto leader : mGroupLeaders)
+   {
+      VisitGroup(leader,
+         [&](RealtimeEffectState &state, bool bypassed)
+         {
+            state.ProcessEnd();
+         }
+      );
+   }
+
+   mProcessing = false;
+}
+
+
+void RealtimeEffectManager::Show(AudacityProject &project)
+{
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   auto & list = RealtimeEffectList::Get(project);
+   list.Show(this, XO("Master Effects"));
+}
+
+void RealtimeEffectManager::Show(Track &track, wxPoint pos)
+{
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   auto & list = RealtimeEffectList::Get(track);
+   list.Show(this, XO("%s Effects").Format(track.GetName()), pos);
+}
+
+bool RealtimeEffectManager::IsBypassed(const Track &track)
+{
+   return RealtimeEffectList::Get(track).IsBypassed();
+}
+
+void RealtimeEffectManager::Bypass(Track &track, bool bypass)
+{
+   RealtimeEffectList::Get(track).Bypass(bypass);
 }
 
 void RealtimeEffectManager::VisitGroup(Track *leader,

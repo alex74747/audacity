@@ -16,7 +16,7 @@
 
 #include "AColor.h"
 #include "AllThemeResources.h"
-#include "../PluginManager.h"
+#include "PluginManager.h"
 #include "../ProjectWindows.h"
 #include "../ShuttleGui.h"
 #include "Theme.h"
@@ -175,7 +175,8 @@ void RealtimeEffectUI::Add(RealtimeEffectState &state)
                       _("Move Down"), XO("Move effect down"),
                       move_down_xpm);
 
-   wxStaticText *text = safenew wxStaticText(GetParent(), ID_Name + mIDCounter, state.GetEffect()->GetName().Translation());
+   wxStaticText *text = safenew wxStaticText(GetParent(), ID_Name + mIDCounter,
+      state.GetEffect()->GetName().Translation());
    text->SetToolTip(_("Name of the effect"));
    text->SetForegroundColour(theTheme.Colour(clrTrackPanelText));
    mMainSizer->Add(text, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 1);

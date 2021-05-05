@@ -12,12 +12,11 @@
 #include "ViewInfo.h"
 #include "../commands/CommandContext.h"
 #include "../commands/CommandManager.h"
+#include "../effects/RealtimeEffectManager.h"
 #include "../prefs/GUIPrefs.h"
 #include "../prefs/TracksPrefs.h"
 #include "../tracks/ui/TrackView.h"
 
-
-#include <wx/app.h>
 #include <wx/scrolbar.h>
 
 // private helper classes and functions
@@ -349,6 +348,12 @@ void OnShowNameOverlay(const CommandContext &context)
    trackPanel.Refresh(false);
 }
 
+void OnMasterEffects( const CommandContext &context )
+{
+   auto & effectManager = RealtimeEffectManager::Get(context.project);
+   effectManager.Show(context.project);
+}
+
 // Not a menu item, but a listener for events
 void OnUndoPushed( wxCommandEvent &evt )
 {
@@ -454,7 +459,9 @@ BaseItemSharedPtr ViewMenu()
             Options{}.CheckTest( wxT("/GUI/ShowTrackNameInWaveform"), false ) ),
          Command( wxT("ShowClipping"), XXO("&Show Clipping (on/off)"),
             FN(OnShowClipping), AlwaysEnabledFlag,
-            Options{}.CheckTest( wxT("/GUI/ShowClipping"), false ) )
+            Options{}.CheckTest( wxT("/GUI/ShowClipping"), false ) ),
+         Command( wxT("ShowMasterEffects"), XXO("Master Effects..."),
+            FN(OnMasterEffects), AlwaysEnabledFlag)
       )
    ) ) };
    return menu;

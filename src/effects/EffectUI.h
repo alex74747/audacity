@@ -23,17 +23,20 @@ struct AudioIOEvent;
 
 #include "EffectInterface.h"
 #include "widgets/wxPanelWrapper.h" // to inherit
+#include "widgets/ThemedDialog.h"
 
 #include "SelectedRegion.h"
 
-class AudacityCommand;
+#include <wx/bitmap.h>
+
 class AudacityProject;
 class Effect;
 
 class wxCheckBox;
+class ShuttleGui;
 
 //
-class EffectUIHost final : public wxDialogWrapper
+class EffectUIHost final : public ThemedDialog
 {
 public:
    // constructors and destructors
@@ -48,7 +51,7 @@ public:
 
    int ShowModal() override;
 
-   bool Initialize();
+   bool Populate(ShuttleGui &S) override;
 
 private:
    wxPanel *BuildButtonBar( wxWindow *parent );
@@ -63,7 +66,6 @@ private:
    void OnHelp(wxCommandEvent & evt);
    void OnDebug(wxCommandEvent & evt);
    void OnMenu(wxCommandEvent & evt);
-   void OnEnable(wxCommandEvent & evt);
    void OnPlay(wxCommandEvent & evt);
    void OnRewind(wxCommandEvent & evt);
    void OnFFwd(wxCommandEvent & evt);
@@ -84,7 +86,6 @@ private:
 
    void InitializeRealtime();
    void CleanupRealtime();
-   void Resume();
 
 private:
    Observer::Subscription mSubscription;
@@ -95,8 +96,8 @@ private:
    EffectUIClientInterface &mClient;
 
    RegistryPaths mUserPresets;
-   bool mInitialized;
-   bool mSupportsRealtime;
+   bool mInitialized{ false };
+   bool mSupportsRealtime{ false };
    bool mIsGUI;
    bool mIsBatch;
 
@@ -106,9 +107,7 @@ private:
    wxButton *mPlayBtn;
    wxButton *mRewindBtn;
    wxButton *mFFwdBtn;
-   wxCheckBox *mEnableCb;
 
-   wxButton *mEnableToggleBtn;
    wxButton *mPlayToggleBtn;
 
    wxBitmap mPlayBM;
@@ -116,17 +115,14 @@ private:
    wxBitmap mStopBM;
    wxBitmap mStopDisabledBM;
 
-   bool mEnabled;
-
    bool mDisableTransport;
    bool mPlaying;
    bool mCapturing;
 
    SelectedRegion mRegion;
-   double mPlayPos;
+   double mPlayPos{ 0.0 };
 
    bool mDismissed{};
-   bool mNeedsResume{};
 
 #if wxDEBUG_LEVEL
    // Used only in an assertion
