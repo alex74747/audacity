@@ -156,6 +156,7 @@ void ShuttleGuiBase::Init(bool vertical, wxSize minSize)
    miPropSetByUser=-1;
    miSizerProp=0;
    mSizerDepth=-1;
+   mThemed=false;
 
    ResetId();
 
@@ -257,6 +258,7 @@ void ShuttleGuiBase::AddPrompt(const TranslatableString &Prompt, int wrapWidth)
    if (wrapWidth > 0)
       text->Wrap(wrapWidth);
    mpWind->SetName(wxStripMenuCodes(translated)); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    UpdateSizersCore( false, wxALL | wxALIGN_CENTRE_VERTICAL, true );
 }
 
@@ -275,6 +277,7 @@ void ShuttleGuiBase::AddUnits(const TranslatableString &Prompt, int wrapWidth)
    if (wrapWidth > 0)
       text->Wrap(wrapWidth);
    mpWind->SetName(translated); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    UpdateSizersCore( false, wxALL | wxALIGN_CENTRE_VERTICAL );
 }
 
@@ -292,6 +295,7 @@ void ShuttleGuiBase::AddTitle(const TranslatableString &Prompt, int wrapWidth)
    if (wrapWidth > 0)
       text->Wrap(wrapWidth);
    mpWind->SetName(translated); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    UpdateSizers();
 }
 
@@ -303,6 +307,7 @@ wxWindow* ShuttleGuiBase::AddWindow(wxWindow* pWindow, int PositionFlags)
       return pWindow;
    mpWind = pWindow;
    SetProportions( 0 );
+   InitTheme();
    UpdateSizersCore(false, PositionFlags | wxALL);
    return pWindow;
 }
@@ -334,6 +339,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBox( const TranslatableString &Prompt, bool
 #endif
       pCheckBox->SetName(wxT("\a"));      // non-empty string which screen readers do not read
    }
+   InitTheme();
    UpdateSizers();
    return pCheckBox;
 }
@@ -354,6 +360,7 @@ wxCheckBox * ShuttleGuiBase::AddCheckBoxOnRight( const TranslatableString &Promp
       GetStyle( 0 ));
    pCheckBox->SetValue(Selected);
    pCheckBox->SetName(Prompt.Stripped().Translation());
+   InitTheme();
    UpdateSizers();
    return pCheckBox;
 }
@@ -371,6 +378,7 @@ wxButton * ShuttleGuiBase::AddButton(
       GetStyle( 0 ) );
    mpWind->SetName(wxStripMenuCodes(translated));
    miProp=0;
+   InitTheme();
    UpdateSizersCore(false, PositionFlags | wxALL);
    if (setDefault)
       pBtn->SetDefault();
@@ -390,6 +398,7 @@ wxBitmapButton * ShuttleGuiBase::AddBitmapButton(
       wxColour( 246,246,243));
 //      wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
    miProp=0;
+   InitTheme();
    UpdateSizersCore(false, PositionFlags | wxALL);
    if (setDefault)
       pBtn->SetDefault();
@@ -427,6 +436,7 @@ wxChoice * ShuttleGuiBase::AddChoice( const TranslatableString &Prompt,
    if ( Selected >= 0 && Selected < (int)choices.size() )
       pChoice->SetSelection( Selected );
 
+   InitTheme();
    UpdateSizers();
    return pChoice;
 }
@@ -452,6 +462,7 @@ void ShuttleGuiBase::AddFixedText(
    if ( wrapWidth > 0 )
       text->Wrap( wrapWidth );
    mpWind->SetName(wxStripMenuCodes(translated)); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    if( bCenter )
    {
       miProp=1;
@@ -478,6 +489,7 @@ wxStaticText * ShuttleGuiBase::AddVariableText(
    if ( wrapWidth > 0 )
       text->Wrap( wrapWidth );
    mpWind->SetName(wxStripMenuCodes(translated)); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    if( bCenter )
    {
       miProp=1;
@@ -541,6 +553,7 @@ wxComboBox * ShuttleGuiBase::AddCombo(
       n, Choices, GetStyle( 0 ));
    mpWind->SetName(wxStripMenuCodes(translated));
 
+   InitTheme();
    UpdateSizers();
    return pCombo;
 }
@@ -561,6 +574,7 @@ wxRadioButton * ShuttleGuiBase::DoAddRadioButton(
    mpWind->SetName(wxStripMenuCodes(translated));
    if ( style )
       pRad->SetValue( true );
+   InitTheme();
    UpdateSizers();
    pRad->SetValue( selector == initValue );
    return pRad;
@@ -610,6 +624,7 @@ wxSlider * ShuttleGuiBase::AddSlider(
 #endif
    mpWind->SetName(wxStripMenuCodes(Prompt.Translation()));
    miProp=1;
+   InitTheme();
    UpdateSizers();
    return pSlider;
 }
@@ -632,6 +647,7 @@ wxSpinCtrl * ShuttleGuiBase::AddSpinCtrl(
       );
    mpWind->SetName(wxStripMenuCodes(translated));
    miProp=1;
+   InitTheme();
    UpdateSizers();
    return pSpinCtrl;
 }
@@ -668,6 +684,7 @@ wxTextCtrl * ShuttleGuiBase::AddTextBox(
    mpWind->SetAccessible(safenew WindowAccessible(mpWind));
 #endif
    mpWind->SetName(wxStripMenuCodes(translated));
+   InitTheme();
    UpdateSizers();
    return pTextCtrl;
 }
@@ -705,6 +722,7 @@ wxTextCtrl * ShuttleGuiBase::AddNumericTextBox(
    mpWind->SetAccessible(safenew WindowAccessible(mpWind));
 #endif
    mpWind->SetName(wxStripMenuCodes(translated));
+   InitTheme();
    UpdateSizers();
    return pTextCtrl;
 }
@@ -723,6 +741,7 @@ wxTextCtrl * ShuttleGuiBase::AddTextWindow(const wxString &Value)
    // so that name can be set on a standard control
    mpWind->SetAccessible(safenew WindowAccessible(mpWind));
 #endif
+   InitTheme();
    UpdateSizers();
    // Start off at start of window...
    pTextCtrl->SetInsertionPoint( 0 );
@@ -748,6 +767,7 @@ void ShuttleGuiBase::AddConstTextBox(
       translatedValue, wxDefaultPosition, wxDefaultSize,
       GetStyle( 0 ));
    mpWind->SetName(translatedValue); // fix for bug 577 (NVDA/Narrator screen readers do not read static text in dialogs)
+   InitTheme();
    UpdateSizers();
 }
 
@@ -762,6 +782,7 @@ wxListBox * ShuttleGuiBase::AddListBox(const wxArrayStringEx &choices)
       wxDefaultPosition, wxDefaultSize, choices, GetStyle(0));
    pListBox->SetMinSize( wxSize( 120,150 ));
    UpdateSizers();
+   InitTheme();
    return pListBox;
 }
 
@@ -777,6 +798,7 @@ wxGrid * ShuttleGuiBase::AddGrid()
       wxDefaultSize, GetStyle( wxWANTS_CHARS ));
    pGrid->SetMinSize( wxSize( 120, 150 ));
    UpdateSizers();
+   InitTheme();
    return pGrid;
 }
 
@@ -793,6 +815,7 @@ wxListCtrl * ShuttleGuiBase::AddListControl(
    mpWind = pListCtrl = safenew wxListCtrl(GetParent(), miId,
       wxDefaultPosition, wxDefaultSize, GetStyle( wxLC_ICON ));
    pListCtrl->SetMinSize( wxSize( 120,150 ));
+   InitTheme();
    UpdateSizers();
 
    DoInsertListColumns( pListCtrl, listControlStyles, columns );
@@ -814,6 +837,7 @@ wxListCtrl * ShuttleGuiBase::AddListControlReportMode(
       wxDefaultPosition, wxSize(230,120),//wxDefaultSize,
       GetStyle( wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxSUNKEN_BORDER ));
 //   pListCtrl->SetMinSize( wxSize( 120,150 ));
+   InitTheme();
    UpdateSizers();
 
    DoInsertListColumns( pListCtrl, listControlStyles, columns );
@@ -862,6 +886,7 @@ wxTreeCtrl * ShuttleGuiBase::AddTree()
    mpWind = pTreeCtrl = safenew wxTreeCtrl(GetParent(), miId, wxDefaultPosition, wxDefaultSize,
       GetStyle( wxTR_HAS_BUTTONS ));
    pTreeCtrl->SetMinSize( wxSize( 120,650 ));
+   InitTheme();
    UpdateSizers();
    return pTreeCtrl;
 }
@@ -877,6 +902,7 @@ void ShuttleGuiBase::AddIcon(wxBitmap *pBmp)
       wxDefaultPosition, wxDefaultSize, GetStyle( wxBU_AUTODRAW ) );
    pBtn->SetWindowStyle( wxBORDER_NONE  );
    pBtn->SetCanFocus(false);
+   InitTheme();
    UpdateSizersC();
 }
 
@@ -915,6 +941,7 @@ wxStaticBox * ShuttleGuiBase::StartStatic(const TranslatableString &Str, int iPr
       pBox,
       wxVERTICAL );
    miSizerProp = iProp;
+   InitTheme(pBox);
    UpdateSizers();
    mpParent = pBox;
    return pBox;
@@ -951,6 +978,7 @@ wxScrolledWindow * ShuttleGuiBase::StartScroller(int iStyle)
    pScroller->SetName(wxT("\a"));
    pScroller->SetLabel(wxT("\a"));
 
+   InitTheme();
    SetProportions( 1 );
    if( iStyle==2 )
    {
@@ -988,7 +1016,7 @@ void ShuttleGuiBase::EndScroller()
    mpParent = mpParent->GetParent();
 }
 
-wxPanel * ShuttleGuiBase::StartPanel(int iStyle)
+wxPanel * ShuttleGuiBase::StartPanel(int iStyle, int iBorder)
 {
    UseUpId();
    if( mShuttleMode != eIsCreating )
@@ -1006,7 +1034,8 @@ wxPanel * ShuttleGuiBase::StartPanel(int iStyle)
          );
    }
    SetProportions(0);
-   miBorder=2;
+   miBorder=iBorder;
+   InitTheme();
    UpdateSizers();  // adds window in to current sizer.
 
    // create a sizer within the window...
@@ -1033,6 +1062,7 @@ wxNotebook * ShuttleGuiBase::StartNotebook()
    mpWind = pNotebook = safenew wxNotebook(GetParent(),
       miId, wxDefaultPosition, wxDefaultSize, GetStyle( 0 ));
    SetProportions( 1 );
+   InitTheme();
    UpdateSizers();
    mpParent = pNotebook;
    return pNotebook;
@@ -1054,6 +1084,7 @@ wxSimplebook * ShuttleGuiBase::StartSimplebook()
    mpWind = pNotebook = safenew wxSimplebook(GetParent(),
       miId, wxDefaultPosition, wxDefaultSize, GetStyle( 0 ));
    SetProportions( 1 );
+   InitTheme();
    UpdateSizers();
    mpParent = pNotebook;
    return pNotebook;
@@ -2219,6 +2250,24 @@ long ShuttleGuiBase::GetStyle( long style )
    return style;
 }
 
+void ShuttleGuiBase::InitTheme(wxWindow *pWind)
+{
+   if( mThemed )
+   {
+      if( pWind == nullptr )
+      {
+         pWind = mpWind;
+      }
+
+      if( pWind )
+      {
+         pWind->SetForegroundColour(theTheme.Colour(clrTrackPanelText));
+         pWind->SetBackgroundColour(theTheme.Colour(clrTrackInfo));
+         pWind->ClearBackground();
+      }
+   }
+}
+
 // A rarely used helper function that sets a pointer
 // ONLY if the value it is to be set to is non NULL.
 void SetIfCreated( wxChoice * &Var, wxChoice * Val )
@@ -2284,7 +2333,7 @@ ShuttleGui & ShuttleGui::Optional( bool &bVar ){
 };
 
 
-std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wxWindow *extra)
+std::unique_ptr<wxSizer> ShuttleGui::CreateStdButtonSizer(wxWindow *parent, long buttons, wxWindow *extra)
 {
    wxASSERT(parent != NULL); // To justify safenew
 
@@ -2316,37 +2365,46 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
    if( buttons & eOkButton )
    {
       b = makeButton( wxID_OK );
+      InitTheme(b);
       b->SetDefault();
       bs->AddButton( b );
    }
 
    if( buttons & eCancelButton )
    {
-      bs->AddButton( makeButton( wxID_CANCEL ) );
+      b = makeButton( wxID_CANCEL );
+      InitTheme(b);
+      bs->AddButton( b );
    }
 
    if( buttons & eYesButton )
    {
       b = makeButton( wxID_YES );
+      InitTheme(b);
       b->SetDefault();
       bs->AddButton( b );
    }
 
    if( buttons & eNoButton )
    {
-      bs->AddButton( makeButton( wxID_NO ) );
+      b = makeButton( wxID_NO );
+      InitTheme(b);
+      bs->AddButton(b);
    }
 
    if( buttons & eApplyButton )
    {
       b = makeButton( wxID_APPLY );
+      InitTheme(b);
       b->SetDefault();
       bs->AddButton( b );
    }
 
    if( buttons & eCloseButton )
    {
-      bs->AddButton( makeButton( wxID_CANCEL, XO("&Close").Translation() ) );
+      b = makeButton( wxID_CANCEL, XO("&Close").Translation() );
+      InitTheme(b);
+      bs->AddButton(b);
    }
 
 #if defined(__WXMSW__)
@@ -2359,31 +2417,36 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
       b->SetToolTip( XO("Help").Translation() );
       b->SetLabel(XO("Help").Translation());       // for screen readers
       b->SetName( b->GetLabel() );
+      InitTheme(b);
       bs->AddButton( b );
    }
 #endif
 
    if (buttons & ePreviewButton)
    {
-      bs->Add( makeButton( ePreviewID, XO("&Preview").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+      b = makeButton( ePreviewID, XO("&Preview").Translation() );
+      InitTheme(b);
+      bs->Add(b, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
    }
    if (buttons & ePreviewDryButton)
    {
-      bs->Add( makeButton( ePreviewDryID, XO("Dry Previe&w").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+      b = makeButton( ePreviewDryID, XO("Dry Previe&w").Translation() );
+      InitTheme(b);
+      bs->Add(b, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
       bs->Add( 20, 0 );
    }
 
    if( buttons & eSettingsButton )
    {
-      bs->Add( makeButton( eSettingsID, XO("&Settings").Translation() ),
-         0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
+      b = makeButton( eSettingsID, XO("&Settings").Translation() );
+      InitTheme(b);
+      bs->Add(b, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin);
       bs->Add( 20, 0 );
    }
 
    if( extra )
    {
+      InitTheme(extra);
       bs->Add( extra, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
       bs->Add( 40, 0 );
    }
@@ -2410,6 +2473,7 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
    if( buttons & eDebugButton )
    {
       b = makeButton( eDebugID, XO("Debu&g").Translation() );
+      InitTheme(b);
       bs->Insert( ++lastLastSpacer, b, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, margin );
    }
 
@@ -2427,6 +2491,7 @@ std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wx
       // Replace standard Help button with smaller icon button.
       // bs->AddButton(safenew wxButton(parent, wxID_HELP));
       b = safenew wxBitmapButton(parent, wxID_HELP, theTheme.Bitmap( bmpHelpIcon ));
+      InitTheme(b);
       b->SetToolTip( XO("Help").Translation() );
       b->SetLabel(XO("Help").Translation());       // for screen readers
       b->SetName( b->GetLabel() );
