@@ -85,6 +85,8 @@ bool RealtimeEffectState::Initialize(double rate)
 {
    wxLogDebug(wxT("State Initialize"));
 
+   mGroups.clear();
+
    auto effect = GetEffect();
    if (!effect)
    {
@@ -99,8 +101,10 @@ bool RealtimeEffectState::Initialize(double rate)
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor index, so updates to one should
 // be reflected in the other.
-bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
+bool RealtimeEffectState::AddProcessor(Track *track, unsigned chans, float rate)
 {
+   wxLogDebug(wxT("State AddProcessor"));
+
    auto effect = GetEffect();
    if (!effect)
    {
@@ -111,18 +115,11 @@ bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
    auto ochans = chans;
    auto gchans = chans;
 
-   // Reset processor index
-   if (group == 0)
-   {
-      mCurrentProcessor = 0;
-      mGroupProcessor.clear();
-   }
-
-   // Remember the processor starting index
-   mGroupProcessor.push_back(mCurrentProcessor);
-
    const auto numAudioIn = effect->GetAudioInCount();
    const auto numAudioOut = effect->GetAudioOutCount();
+
+   auto group = mGroups.size();
+   mGroups.insert({track, group});
 
    // Call the client until we run out of input or output channels
    while (ichans > 0 && ochans > 0)
@@ -162,9 +159,6 @@ bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
 
       // Add a NEW processor
       effect->RealtimeAddProcessor(gchans, rate);
-
-      // Bump to next processor
-      mCurrentProcessor++;
    }
 
    return true;
@@ -186,19 +180,21 @@ bool RealtimeEffectState::ProcessStart()
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor group, so updates to one should
 // be reflected in the other.
-size_t RealtimeEffectState::Process(int group,
+size_t RealtimeEffectState::Process(Track *track,
                                     unsigned chans,
                                     float **inbuf,
                                     float **outbuf,
                                     size_t numSamples)
 {
-   //
+   wxLogDebug(wxT("State Process"));
 
    auto effect = GetEffect();
    if (!effect)
    {
       return false;
    }
+
+   auto group = mGroups[track];
 
    // The caller passes the number of channels to process and specifies
    // the number of input and output buffers.  There will always be the
@@ -220,8 +216,6 @@ size_t RealtimeEffectState::Process(int group,
    auto gchans = chans;
    unsigned indx = 0;
    unsigned ondx = 0;
-
-   int processor = mGroupProcessor[group];
 
    // Call the client until we run out of input or output channels
    while (ichans > 0 && ochans > 0)
@@ -304,9 +298,6 @@ size_t RealtimeEffectState::Process(int group,
             clientOut[i] += cnt;
          }
       }
-
-      // Bump to next processor
-      processor++;
    }
 
    return len;
@@ -333,6 +324,8 @@ bool RealtimeEffectState::IsActive() const noexcept
 bool RealtimeEffectState::Finalize()
 {
    wxLogDebug(wxT("State Finalize"));
+
+   mGroups.clear();
 
    auto effect = GetEffect();
    if (!effect)

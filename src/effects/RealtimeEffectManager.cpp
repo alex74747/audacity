@@ -16,9 +16,12 @@
 #include "EffectInterface.h"
 #include <memory>
 #include "Project.h"
+#include "Track.h"
 
 #include <atomic>
 #include <wx/time.h>
+
+#include <wx/log.h>
 
 static const AttachedProjectObjects::RegisteredFactory manager
 {
@@ -63,8 +66,9 @@ void RealtimeEffectManager::Initialize(double rate)
    SuspensionScope scope{ &mProject };
 
    // (Re)Set processor parameters
-   mRealtimeChans.clear();
-   mRealtimeRates.clear();
+   mChans.clear();
+   mRates.clear();
+   mGroupLeaders.clear();
 
    // RealtimeAdd/RemoveEffect() needs to know when we're active so it can
    // initialize newly added effects
@@ -76,14 +80,24 @@ void RealtimeEffectManager::Initialize(double rate)
    });
 }
 
-void RealtimeEffectManager::AddProcessor(int group, unsigned chans, float rate)
+void RealtimeEffectManager::AddProcessor(Track *track, unsigned chans, float rate)
 {
-   VisitGroup(nullptr, [&](RealtimeEffectState &state, bool){
-      state.AddProcessor(group, chans, rate);
-   });
+   wxLogDebug(wxT("AddProcess"));
 
-   mRealtimeChans.push_back(chans);
-   mRealtimeRates.push_back(rate);
+   auto leader = *track->GetOwner()->FindLeader(track);
+   mGroupLeaders.push_back(leader);
+   mChans.insert({leader, chans});
+   mRates.insert({leader, rate});
+
+   VisitGroup(leader,
+      [&](RealtimeEffectState & state, bool bypassed)
+      {
+         state.Initialize(rate);
+
+         state.AddProcessor(leader, chans, rate);
+      }
+   );
+
 }
 
 void RealtimeEffectManager::Finalize()
@@ -94,14 +108,27 @@ void RealtimeEffectManager::Finalize()
    // It is now safe to clean up
    mLatency = std::chrono::microseconds(0);
 
-   // Tell each effect to clean up as well
-   VisitGroup(nullptr, [](RealtimeEffectState &state, bool){
-      state.Finalize();
-   });
+   // Process master list
+   auto & states = RealtimeEffectList::Get(mProject).GetStates();
+   for (auto & state : states)
+   {
+      state->Finalize();
+   }
+
+   // And all track lists
+   for (auto leader : mGroupLeaders)
+   {
+      auto & states = RealtimeEffectList::Get(*leader).GetStates();
+      for (auto &state : states)
+      {
+         state->Finalize();
+      }
+   }
 
    // Reset processor parameters
-   mRealtimeChans.clear();
-   mRealtimeRates.clear();
+   mGroupLeaders.clear();
+   mChans.clear();
+   mRates.clear();
 
    // No longer active
    mActive = false;
@@ -165,8 +192,12 @@ void RealtimeEffectManager::ProcessStart()
 //
 // This will be called in a different thread than the main GUI thread.
 //
-size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, float **buffers, size_t numSamples)
+size_t RealtimeEffectManager::Process(Track *track,
+                                      float gain,
+                                      float **buffers,
+                                      size_t numSamps)
 {
+   wxLogDebug(wxT("Process"));
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
 
@@ -174,31 +205,35 @@ size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, flo
    // have been suspended, so allow the samples to pass as-is.
    if (mSuspended)
    {
-      return numSamples;
+      return numSamps;
    }
+
+   auto numChans = mChans[track];
 
    // Remember when we started so we can calculate the amount of latency we
    // are introducing
    auto start = std::chrono::steady_clock::now();
 
-   // Allocate the in/out buffer arrays
-   float **ibuf = (float **) alloca(chans * sizeof(float *));
-   float **obuf = (float **) alloca(chans * sizeof(float *));
+   // Allocate the in and out buffer arrays
+   float **ibuf = (float **) alloca(numChans * sizeof(float *));
+   float **obuf = (float **) alloca(numChans * sizeof(float *));
+
+   auto group = mCurrentGroup++;
 
    // And populate the input with the buffers we've been given while allocating
    // NEW output buffers
-   for (unsigned int i = 0; i < chans; i++)
+   for (unsigned int c = 0; c < numChans; ++c)
    {
-      ibuf[i] = buffers[i];
-      obuf[i] = (float *) alloca(numSamples * sizeof(float));
+      ibuf[c] = buffers[c];
+      obuf[c] = (float *) alloca(numSamps * sizeof(float));
    }
 
    // Apply gain
    if (gain != 1.0)
    {
-      for (auto c = 0; c < chans; ++c)
+      for (auto c = 0; c < numChans; ++c)
       {
-         for (auto s = 0; s < numSamples; ++s)
+         for (auto s = 0; s < numSamps; ++s)
          {
             ibuf[c][s] *= gain;
          }
@@ -207,22 +242,25 @@ size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, flo
 
    // Now call each effect in the chain while swapping buffer pointers to feed the
    // output of one effect as the input to the next effect
+   // Tracks how many processors were called
    size_t called = 0;
-   VisitGroup(nullptr, [&](RealtimeEffectState &state, bool bypassed){
-      if (!bypassed)
+   VisitGroup(track,
+      [&](RealtimeEffectState &state, bool bypassed)
       {
-         state.Process(group, chans, ibuf, obuf, numSamples);
+         if (bypassed)
+         {
+            return;
+         }
+
+         state.Process(track, numChans, ibuf, obuf, numSamps);
+
+         for (auto c = 0; c < numChans; ++c)
+         {
+            std::swap(ibuf[c], obuf[c]);
+         }
          called++;
       }
-
-      for (unsigned int j = 0; j < chans; j++)
-      {
-         float *temp;
-         temp = ibuf[j];
-         ibuf[j] = obuf[j];
-         obuf[j] = temp;
-      }
-   });
+   );
 
    // Once we're done, we might wind up with the last effect storing its results
    // in the temporary buffers.  If that's the case, we need to copy it over to
@@ -230,9 +268,9 @@ size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, flo
    // is odd.
    if (called & 1)
    {
-      for (unsigned int i = 0; i < chans; i++)
+      for (auto c = 0; c < numChans; ++c)
       {
-         memcpy(buffers[i], ibuf[i], numSamples * sizeof(float));
+         memcpy(buffers[c], ibuf[c], numSamps * sizeof(float));
       }
    }
 
@@ -243,7 +281,7 @@ size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, flo
    //
    // This is wrong...needs to handle tails
    //
-   return numSamples;
+   return numSamps;
 }
 
 //

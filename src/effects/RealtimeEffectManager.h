@@ -14,6 +14,7 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <unordered_map>
 #include <vector>
 
 #include "ClientData.h"
@@ -40,7 +41,7 @@ public:
    bool IsActive() const noexcept;
    bool IsSuspended();
    void Initialize(double rate);
-   void AddProcessor(int group, unsigned chans, float rate);
+   void AddProcessor(Track *track, unsigned chans, float rate);
    void Finalize();
    void Suspend();
    void Resume() noexcept;
@@ -103,13 +104,11 @@ public:
             Get(*mpProject).ProcessEnd();
       }
 
-      size_t Process( int group,
-         unsigned chans, float gain, float **buffers, size_t numSamples)
+      size_t Process(Track *track, float gain, float **buffers, size_t numSamps)
       {
          if (mpProject)
-            return Get(*mpProject)
-               .Process(group, chans, gain, buffers, numSamples);
-         return numSamples; // consider them trivially processed
+            return Get(*mpProject).Process(track, gain, buffers, numSamps);
+         return numSamps; // consider them trivially processed
       }
 
    private:
@@ -118,8 +117,7 @@ public:
 
 private:
    void ProcessStart();
-   size_t Process( int group,
-      unsigned chans, float gain, float **buffers, size_t numSamples);
+   size_t Process(Track *track, float gain, float **buffers, size_t numSamps);
    void ProcessEnd() noexcept;
 
    RealtimeEffectManager(const RealtimeEffectManager&) = delete;
@@ -135,8 +133,11 @@ private:
    Latency mLatency{ 0 };
    std::atomic<bool> mSuspended{ true };
    std::atomic<bool> mActive{ false };
-   std::vector<unsigned> mRealtimeChans;
-   std::vector<double> mRealtimeRates;
+
+   std::vector<Track *> mGroupLeaders;
+   std::unordered_map<Track *, int> mChans;
+   std::unordered_map<Track *, double> mRates;
+   int mCurrentGroup;
 };
 
 #endif
