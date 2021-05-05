@@ -1353,13 +1353,6 @@ void AudioIO::StopStream()
 
    wxMutexLocker locker(mSuspendAudioThread);
 
-   // No longer need effects processing
-   if (mNumPlaybackChannels > 0)
-   {
-      if (auto pOwningProject = mOwningProject.lock())
-         RealtimeEffectManager::Get(*pOwningProject).RealtimeFinalize();
-   }
-
    //
    // We got here in one of two ways:
    //
@@ -1424,6 +1417,14 @@ void AudioIO::StopStream()
       Pa_CloseStream( mPortStreamV19 );
 
       mPortStreamV19 = NULL;
+   }
+
+   // No longer need effects processing. This must be done after the stream is stopped
+   // to prevent the callback from being invoked after the effects are finalized.
+   if (mNumPlaybackChannels > 0)
+   {
+      if (auto pOwningProject = mOwningProject.lock())
+         RealtimeEffectManager::Get(*pOwningProject).RealtimeFinalize();
    }
 
    for( auto &ext : Extensions() )
@@ -1594,14 +1595,8 @@ void AudioIO::SetPaused(bool state)
    if (state != mPaused)
    {
       if (auto pOwningProject = mOwningProject.lock()) {
-         if (state)
-         {
-            RealtimeEffectManager::Get(*pOwningProject).RealtimeSuspend();
-         }
-         else
-         {
-            RealtimeEffectManager::Get(*pOwningProject).RealtimeResume();
-         }
+         auto & manager = RealtimeEffectManager::Get(*pOwningProject);
+         state ? manager.RealtimeSuspend() : manager.RealtimeResume();
       }
    }
 
@@ -2324,33 +2319,46 @@ void AudioIoCallback::AddToOutputChannel( unsigned int chan,
 {
    const auto numPlaybackChannels = mNumPlaybackChannels;
 
-   float gain = vt->GetChannelGain(chan);
-   if (drop || mForceFadeOut.load(std::memory_order_relaxed) || mPaused)
-      gain = 0.0;
+   auto left = 1.0f;
+   auto right = 1.0f;
+   auto pan = vt->GetPan();
+
+   if (pan < 0)
+      right = (pan + 1.0);
+   else if (pan > 0)
+      left = 1.0 - pan;
+
+   if ((chan % 2) == 0)
+      pan = left;
+   else
+      pan = right;
+
+//   if (drop || mForceFadeOut.load(std::memory_order_relaxed) || mPaused)
+  //    gain = 0.0;
 
    // Output volume emulation: possibly copy meter samples, then
    // apply volume, then copy to the output buffer
    if (outputMeterFloats != outputFloats)
       for ( unsigned i = 0; i < len; ++i)
          outputMeterFloats[numPlaybackChannels*i+chan] +=
-            gain*tempBuf[i];
+            pan*tempBuf[i];
 
    // DV: We use gain to emulate panning.
    // Let's keep the old behavior for panning.
-   gain *= ExpGain(mMixerOutputVol);
+   pan *= ExpGain(mMixerOutputVol);
 
    float oldGain = vt->GetOldChannelGain(chan);
-   if( gain != oldGain )
-      vt->SetOldChannelGain(chan, gain);
+   if( pan != oldGain )
+      vt->SetOldChannelGain(chan, pan);
    // if no microfades, jump in volume.
    if( !mbMicroFades )
-      oldGain =gain;
+      oldGain = pan;
    wxASSERT(len > 0);
 
    // Linear interpolate.
-   float deltaGain = (gain - oldGain) / len;
+   float deltaGain = (pan - oldGain) / len;
    for (unsigned i = 0; i < len; i++)
-      outputFloats[numPlaybackChannels*i+chan] += (oldGain + deltaGain * i) *tempBuf[i];
+      outputFloats[numPlaybackChannels*i+chan] += (oldGain + deltaGain * i) * tempBuf[i];
 };
 
 // Limit values to -1.0..+1.0
@@ -2404,7 +2412,9 @@ bool AudioIoCallback::FillOutputBuffers(
 
    // And these are larger structures....
    for (unsigned int c = 0; c < numPlaybackChannels; c++)
+   {
       tempBufs[c] = (float *) alloca(framesPerBuffer * sizeof(float));
+   }
    // ------ End of MEMORY ALLOCATION ---------------
 
 {
