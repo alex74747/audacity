@@ -66,6 +66,8 @@ class AUDACITY_DLL_API AudacityCommand /* not final */ : public wxEvtHandler,
    virtual bool Apply(const CommandContext & WXUNUSED(context) ) {return false;};
 
    bool ShowInterface(wxWindow *parent, bool forceModal = false);
+   void CloseInterface();
+   bool IsInterfaceShown();
 
    wxDialog *CreateUI(wxWindow *parent, AudacityCommand *client);
 

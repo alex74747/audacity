@@ -1068,6 +1068,11 @@ int NyquistEffect::ShowHostInterface(
    return res;
 }
 
+bool NyquistEffect::IsInterfaceShown()
+{
+   return false;
+}
+
 void NyquistEffect::PopulateOrExchange(ShuttleGui & S)
 {
    if (mIsPrompt)

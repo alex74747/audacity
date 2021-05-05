@@ -152,6 +152,7 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
 
    int ShowClientInterface(
       wxWindow &parent, wxDialog &dialog, bool forceModal = false) override;
+   bool IsInterfaceShown() override;
 
 
    // EffectUIClientInterface implementation

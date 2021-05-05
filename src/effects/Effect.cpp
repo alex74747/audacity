@@ -507,6 +507,21 @@ int Effect::ShowHostInterface(wxWindow &parent,
    return result;
 }
 
+bool Effect::IsInterfaceShown()
+{
+   if (!IsInteractive())
+   {
+      return false;
+   }
+
+   if (mClient)
+   {
+      return mClient->IsInterfaceShown();
+   }
+
+   return mUIDialog != nullptr;
+}
+
 bool Effect::GetAutomationParameters(CommandParameters & parms)
 {
    if (mClient)

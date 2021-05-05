@@ -1082,6 +1082,11 @@ int LadspaEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+bool LadspaEffect::IsInterfaceShown()
+{
+   return mDialog != nullptr;
+}
+
 bool LadspaEffect::GetAutomationParameters(CommandParameters & parms)
 {
    for (unsigned long p = 0; p < mData->PortCount; p++)

@@ -1615,6 +1615,11 @@ int VSTEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+bool VSTEffect::IsInterfaceShown()
+{
+   return mDialog != nullptr;
+}
+
 bool VSTEffect::GetAutomationParameters(CommandParameters & parms)
 {
    for (int i = 0; i < mAEffect->numParams; i++)

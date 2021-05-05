@@ -1448,6 +1448,11 @@ int AudioUnitEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+bool AudioUnitEffect::IsInterfaceShown()
+{
+   return mDialog != nullptr;
+}
+
 bool AudioUnitEffect::GetAutomationParameters(CommandParameters & parms)
 {
    OSStatus result;

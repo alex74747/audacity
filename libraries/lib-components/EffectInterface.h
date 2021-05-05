@@ -236,6 +236,8 @@ public:
    virtual bool RealtimeProcessStart() = 0;
    virtual size_t RealtimeProcess(int group, float **inBuf, float **outBuf, size_t numSamples) = 0;
    virtual bool RealtimeProcessEnd() noexcept = 0;
+
+   virtual bool IsInterfaceShown() = 0;
 };
 
 /*************************************************************************************//**
