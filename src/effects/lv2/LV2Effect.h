@@ -427,6 +427,8 @@ private:
                      uint32_t size,
                      uint32_t type);
 
+   LV2Wrapper *GetMaster();
+
 private:
  
    // Declare the global and local URI maps
