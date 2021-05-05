@@ -1455,6 +1455,17 @@ int LV2Effect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+void LV2Effect::CloseInterface()
+{
+   if (mDialog)
+   {
+      if (mDialog->Close(true))
+      {
+         mDialog = nullptr;
+      }
+   }
+}
+
 bool LV2Effect::IsInterfaceShown()
 {
    return mDialog != nullptr;

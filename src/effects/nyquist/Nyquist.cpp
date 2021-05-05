@@ -1068,6 +1068,10 @@ int NyquistEffect::ShowHostInterface(
    return res;
 }
 
+void NyquistEffect::CloseInterface()
+{
+}
+
 bool NyquistEffect::IsInterfaceShown()
 {
    return false;

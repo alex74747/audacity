@@ -318,6 +318,7 @@ public:
 
    int ShowClientInterface(
       wxWindow &parent, wxDialog &dialog, bool forceModal) override;
+   void CloseInterface() override;
    bool IsInterfaceShown() override;
 
    // EffectUIClientInterface implementation

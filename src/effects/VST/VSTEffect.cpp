@@ -1615,6 +1615,17 @@ int VSTEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+void VSTEffect::CloseInterface()
+{
+   if (mDialog)
+   {
+      if (mDialog->Close(true))
+      {
+         mDialog = nullptr;
+      }
+   }
+}
+
 bool VSTEffect::IsInterfaceShown()
 {
    return mDialog != nullptr;

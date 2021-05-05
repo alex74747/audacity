@@ -507,6 +507,25 @@ int Effect::ShowHostInterface(wxWindow &parent,
    return result;
 }
 
+void Effect::CloseInterface()
+{
+   if (!IsInteractive())
+   {
+      return;
+   }
+
+   if (mUIDialog)
+   {
+      if ( mUIDialog->Close(true) )
+         mUIDialog = nullptr;
+   }
+
+   if (mClient)
+   {
+      return mClient->CloseInterface();
+   }
+}
+
 bool Effect::IsInterfaceShown()
 {
    if (!IsInteractive())

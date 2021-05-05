@@ -1448,6 +1448,17 @@ int AudioUnitEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+void AudioUnitEffect::CloseInterface()
+{
+   if (mDialog)
+   {
+      if (mDialog->Close(true))
+      {
+         mDialog = nullptr;
+      }
+   }
+}
+
 bool AudioUnitEffect::IsInterfaceShown()
 {
    return mDialog != nullptr;

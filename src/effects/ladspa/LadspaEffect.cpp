@@ -1082,6 +1082,17 @@ int LadspaEffect::ShowClientInterface(
    return mDialog->ShowModal();
 }
 
+void LadspaEffect::CloseInterface()
+{
+   if (mDialog)
+   {
+      if (mDialog->Close(true))
+      {
+         mDialog = nullptr;
+      }
+   }
+}
+
 bool LadspaEffect::IsInterfaceShown()
 {
    return mDialog != nullptr;
