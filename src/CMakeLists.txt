@@ -912,6 +912,8 @@ list( APPEND SOURCES
       widgets/BackedPanel.h
       widgets/BasicMenu.cpp
       widgets/BasicMenu.h
+      widgets/ComboBox.cpp
+      widgets/ComboBox.h
       widgets/ErrorDialog.cpp
       widgets/ErrorDialog.h
       widgets/ExpandingToolBar.cpp
@@ -967,6 +969,8 @@ list( APPEND SOURCES
          widgets/ErrorReportDialog.cpp
          widgets/ErrorReportDialog.h
       >
+      widgets/ThemedDialog.cpp
+      widgets/ThemedDialog.h
       widgets/UnwritableLocationErrorDialog.cpp
       widgets/UnwritableLocationErrorDialog.h
       widgets/VetoDialogHook.cpp
