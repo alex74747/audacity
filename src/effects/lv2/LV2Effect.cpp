@@ -1065,10 +1065,7 @@ bool LV2Effect::ProcessInitialize(sampleCount WXUNUSED(totalLen), ChannelNames W
 bool LV2Effect::ProcessFinalize()
 {
    if (mProcess)
-   {
-      FreeInstance(mProcess);
-      mProcess = NULL;
-   }
+      mProcess.reset();
 
    return true;
 }
@@ -1190,10 +1187,6 @@ bool LV2Effect::RealtimeInitialize()
 
 bool LV2Effect::RealtimeFinalize()
 {
-   for (auto & slave : mSlaves)
-   {
-      FreeInstance(slave);
-   }
    mSlaves.clear();
 
    if (mActivated)
@@ -1215,15 +1208,16 @@ bool LV2Effect::RealtimeFinalize()
 
 bool LV2Effect::RealtimeAddProcessor(unsigned WXUNUSED(numChannels), float sampleRate)
 {
-   LV2Wrapper *slave = InitInstance(sampleRate);
+   auto slave = InitInstance(sampleRate);
    if (!slave)
    {
       return false;
    }
 
-   mSlaves.push_back(slave);
+   auto pSlave = slave.get();
+   mSlaves.push_back(std::move(slave));
 
-   lilv_instance_activate(slave->GetInstance());
+   lilv_instance_activate(pSlave->GetInstance());
    mActivated = true;
 
    return true;
@@ -1344,7 +1338,7 @@ size_t LV2Effect::RealtimeProcess(int group, float **inbuf, float **outbuf, size
       return 0;
    }
 
-   LV2Wrapper *slave = mSlaves[group];
+   LV2Wrapper *slave = mSlaves[group].get();
    LilvInstance *instance = slave->GetInstance();
 
    int i = 0;
@@ -1657,11 +1651,7 @@ bool LV2Effect::CloseUI()
       mSuilHost = NULL;
    }
 
-   if (mMaster)
-   {
-      FreeInstance(mMaster);
-      mMaster = NULL;
-   }
+   mMaster.reset();
 
    mUIHost = NULL;
    mParent = NULL;
@@ -1995,18 +1985,12 @@ bool LV2Effect::CheckOptions(const LilvNode *subject, const LilvNode *predicate,
    return supported;
 }
 
-LV2Wrapper *LV2Effect::InitInstance(float sampleRate)
+std::unique_ptr<LV2Wrapper> LV2Effect::InitInstance(float sampleRate)
 {
-   LV2Wrapper *wrapper = new LV2Wrapper(this);
-   if (wrapper == NULL)
-   {
-      return NULL;
-   }
-   
+   auto wrapper = std::make_unique<LV2Wrapper>(this);
    LilvInstance *instance = wrapper->Instantiate(mPlug, sampleRate, mFeatures);
    if (!instance)
    {
-      delete wrapper;
       return NULL;
    }
 
@@ -2059,11 +2043,6 @@ LV2Wrapper *LV2Effect::InitInstance(float sampleRate)
    }
 
    return wrapper;
-}
-
-void LV2Effect::FreeInstance(LV2Wrapper *wrapper)
-{
-   delete wrapper;
 }
 
 bool LV2Effect::BuildFancy()

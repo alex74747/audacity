@@ -15,6 +15,7 @@
 
 class wxArrayString;
 
+#include <memory>
 #include <vector>
 
 #include <wx/event.h> // to inherit
@@ -344,8 +345,7 @@ private:
    bool LoadParameters(const RegistryPath & group);
    bool SaveParameters(const RegistryPath & group);
 
-   LV2Wrapper *InitInstance(float sampleRate);
-   void FreeInstance(LV2Wrapper *wrapper);
+   std::unique_ptr<LV2Wrapper> InitInstance(float sampleRate);
 
    static uint32_t uri_to_id(LV2_URI_Map_Callback_Data callback_data,
                              const char *map,
@@ -489,9 +489,9 @@ private:
    bool mRolling;
    bool mActivated;
 
-   LV2Wrapper *mMaster;
-   LV2Wrapper *mProcess;
-   std::vector<LV2Wrapper *> mSlaves;
+   std::unique_ptr<LV2Wrapper> mMaster;
+   std::unique_ptr<LV2Wrapper> mProcess;
+   std::vector<std::unique_ptr<LV2Wrapper>> mSlaves;
 
    FloatBuffers mMasterIn, mMasterOut;
    size_t mNumSamples;
