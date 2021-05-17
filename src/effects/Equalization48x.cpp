@@ -146,8 +146,6 @@ MathCaps *EffectEqualization48x::GetMathCaps()
 
 void * malloc_simd(const size_t size)
 {
-   return nullptr;
-#if 0
 #if defined WIN32           // WIN32
     return _aligned_malloc(size, 16);
 #elif defined __linux__     // Linux
@@ -156,7 +154,6 @@ void * malloc_simd(const size_t size)
     return malloc(size);
 #else                       // other (use valloc for page-aligned memory)
     return valloc(size);
-#endif
 #endif
 }
 
