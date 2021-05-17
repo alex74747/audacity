@@ -569,19 +569,23 @@ private:
    friend class LV2EffectsModule;
 };
 
+struct lilv_string_deleter {
+   void operator () (char *p) { if (p) lilv_free(p); } };
+using lilv_string = std::unique_ptr< char, lilv_string_deleter >;
+
+struct lilv_node_deleter {
+   void operator () (LilvNode *p) { if (p) lilv_node_free(p); } };
+using lilv_node_ptr = std::unique_ptr< LilvNode, lilv_node_deleter >;
+
 inline wxString LilvString(const LilvNode *node)
 {
    return wxString::FromUTF8(lilv_node_as_string(node));
 };
 
-inline wxString LilvString(LilvNode *node, bool free)
+// This overload frees the node after making the string
+inline wxString LilvString(lilv_node_ptr node)
 {
-   wxString str = LilvString(node);
-   if (free)
-   {
-      lilv_node_free(node);
-   }
-
+   wxString str = LilvString(node.get());
    return str;
 };
 

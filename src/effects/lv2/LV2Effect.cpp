@@ -432,12 +432,12 @@ PluginPath LV2Effect::GetPath()
 
 ComponentInterfaceSymbol LV2Effect::GetSymbol()
 {
-   return LilvString(lilv_plugin_get_name(mPlug), true);
+   return LilvString(lilv_node_ptr{lilv_plugin_get_name(mPlug)});
 }
 
 VendorSymbol LV2Effect::GetVendor()
 {
-   wxString vendor = LilvString(lilv_plugin_get_author_name(mPlug), true);
+   wxString vendor = LilvString(lilv_node_ptr{lilv_plugin_get_author_name(mPlug)});
 
    if (vendor.empty())
    {
@@ -555,9 +555,10 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
 
    mExternalUIHost.ui_closed = LV2Effect::ui_closed;
 
-   LilvNode *pluginName = lilv_plugin_get_name(mPlug);
-   mExternalUIHost.plugin_human_id = lilv_node_as_string(pluginName);
-   lilv_node_free(pluginName);
+   {
+   lilv_node_ptr pluginName{ lilv_plugin_get_name(mPlug) };
+   mExternalUIHost.plugin_human_id = lilv_node_as_string(pluginName.get());
+   }
 
    AddFeature(LV2_UI__noUserResize, NULL);
    AddFeature(LV2_UI__fixedSize, NULL);
@@ -587,32 +588,34 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
       return false;
    }
 
-   auto minLength = lilv_world_get(gWorld, lilv_plugin_get_uri(mPlug), node_MinBlockLength, NULL);
+   {
+   lilv_node_ptr minLength{ lilv_world_get(gWorld, lilv_plugin_get_uri(mPlug), node_MinBlockLength, NULL) };
    if (minLength)
    {
-      if (lilv_node_is_int(minLength))
+      if (lilv_node_is_int(minLength.get()))
       {
-         int val = lilv_node_as_int(minLength);
+         int val = lilv_node_as_int(minLength.get());
          if (mMinBlockSize < val)
          {
             mMinBlockSize = val;
          }
       }
-      lilv_node_free(minLength);
+   }
    }
 
-   auto maxLength = lilv_world_get(gWorld, lilv_plugin_get_uri(mPlug), node_MaxBlockLength, NULL);
+   {
+   lilv_node_ptr maxLength{ lilv_world_get(gWorld, lilv_plugin_get_uri(mPlug), node_MaxBlockLength, NULL) };
    if (maxLength)
    {
-      if (lilv_node_is_int(maxLength))
+      if (lilv_node_is_int(maxLength.get()))
       {
-         int val = lilv_node_as_int(maxLength);
+         int val = lilv_node_as_int(maxLength.get());
          if (mMaxBlockSize > val)
          {
             mMaxBlockSize = val;
          }
       }
-      lilv_node_free(maxLength);
+   }
    }
 
    if (mMinBlockSize > mMaxBlockSize)
@@ -657,36 +660,40 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
 
       // Get the port name and symbol
       wxString symbol = LilvString(lilv_port_get_symbol(mPlug, port));
-      wxString name = LilvString(lilv_port_get_name(mPlug, port), true);
+      wxString name =
+         LilvString(lilv_node_ptr{lilv_port_get_name(mPlug, port)});
 
       // Get the group to which this port belongs or default to the main group
       wxString groupName = wxEmptyString;
-      LilvNode *group = lilv_port_get(mPlug, port, node_Group);
+      {
+      lilv_node_ptr group{ lilv_port_get(mPlug, port, node_Group) };
       if (group)
       {
-         groupName = LilvString(lilv_world_get(gWorld, group, node_Label, NULL), true);
+         groupName = LilvString(lilv_node_ptr{
+            lilv_world_get(gWorld, group.get(), node_Label, NULL)});
          if (groupName.empty())
          {
-            groupName = LilvString(lilv_world_get(gWorld, group, node_Name, NULL), true);
+            groupName = LilvString(lilv_node_ptr{
+               lilv_world_get(gWorld, group.get(), node_Name, NULL)});
          }
 
          if (groupName.empty())
          {
-            groupName = LilvString(group);
+            groupName = LilvString(group.get());
          }
 
-         lilv_node_free(group);
       }
       else
       {
          groupName = _("Effect Settings");
+      }
       }
 
       // Get the latency port
       uint32_t latencyIndex = lilv_plugin_get_latency_port_index(mPlug);
 
       // Get the ports designation (must be freed)
-      LilvNode *designation = lilv_port_get(mPlug, port, node_Designation);
+      lilv_node_ptr designation{ lilv_port_get(mPlug, port, node_Designation) };
 
       // Check for audio ports
       if (lilv_port_is_a(mPlug, port, node_AudioPort))
@@ -709,17 +716,17 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
          LV2ControlPortPtr controlPort = mControlPorts.back();
 
          // Get any unit descriptor
-         LilvNode *unit = lilv_port_get(mPlug, port, node_Unit);
+         {
+         lilv_node_ptr unit{ lilv_port_get(mPlug, port, node_Unit) };
          if (unit)
          {
             // Really should use lilv_world_get_symbol()
-            LilvNode *symbol = lilv_world_get_symbol(gWorld, unit);
+            lilv_node_ptr symbol{ lilv_world_get_symbol(gWorld, unit.get()) };
             if (symbol)
             {
-               controlPort->mUnits = LilvString(symbol);
-               lilv_node_free(symbol);
+               controlPort->mUnits = LilvString(symbol.get());
             }
-            lilv_node_free(unit);
+         }
          }
 
          // Get the scale points
@@ -806,18 +813,19 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
          std::shared_ptr<LV2AtomPort> atomPort = mAtomPorts.back();
 
          atomPort->mMinimumSize = 8192;
-         LilvNode *min = lilv_port_get(mPlug, port, node_MinimumSize);
+         {
+         lilv_node_ptr min{ lilv_port_get(mPlug, port, node_MinimumSize) };
          if (min)
          {
-            if (lilv_node_is_int(min))
+            if (lilv_node_is_int(min.get()))
             {
-               uint32_t val = lilv_node_as_int(min);
+               uint32_t val = lilv_node_as_int(min.get());
                if (atomPort->mMinimumSize < val)
                {
                   atomPort->mMinimumSize = val;
                }
             }
-            lilv_node_free(min);
+         }
          }
 
          atomPort->mBuffer.resize(atomPort->mMinimumSize);
@@ -835,7 +843,7 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
             (isInput ? mMidiIn : mMidiOut) += 1;
          }
 
-         bool isControl = lilv_node_equals(designation, node_Control);
+         bool isControl = lilv_node_equals(designation.get(), node_Control);
          if (isInput)
          {
             if (!mControlIn || isControl)
@@ -882,12 +890,6 @@ bool LV2Effect::SetHost(EffectHostInterface *host)
          {
             cvPort->mDef = cvPort->mMax;
          }
-      }
-
-      // Free the designation node
-      if (designation)
-      {
-         lilv_node_free(designation);
       }
    }
 
@@ -1723,13 +1725,13 @@ bool LV2Effect::LoadFactoryPreset(int id)
       return false;
    }
 
-   LilvNode *preset = lilv_new_uri(gWorld, mFactoryPresetUris[id].ToUTF8());
+   lilv_node_ptr preset{ lilv_new_uri(gWorld, mFactoryPresetUris[id].ToUTF8()) };
    if (!preset)
    {
       return false;
    }
 
-   LilvState *state = lilv_state_new_from_world(gWorld, &mURIDMapFeature, preset);
+   LilvState *state = lilv_state_new_from_world(gWorld, &mURIDMapFeature, preset.get());
    if (state)
    {
       lilv_state_restore(state, mMaster->GetInstance(), set_value_func, this, 0, NULL);
@@ -1738,8 +1740,6 @@ bool LV2Effect::LoadFactoryPreset(int id)
 
       TransferDataToWindow();
    }
-
-   lilv_node_free(preset);
 
    return state != NULL;
 }
@@ -2065,13 +2065,13 @@ bool LV2Effect::BuildFancy()
    LilvUIs *uis = lilv_plugin_get_uis(mPlug);
    if (uis)
    {
-      LilvNode *containerType = lilv_new_uri(gWorld, nativeType);
+      lilv_node_ptr containerType{ lilv_new_uri(gWorld, nativeType) };
       if (containerType)
       {
          LILV_FOREACH(uis, iter, uis)
          {
             ui = lilv_uis_get(uis, iter);
-            if (lilv_ui_is_supported(ui, suil_ui_supported, containerType, &uiType))
+            if (lilv_ui_is_supported(ui, suil_ui_supported, containerType.get(), &uiType))
             {
                break;
             }
@@ -2083,8 +2083,6 @@ bool LV2Effect::BuildFancy()
 
             ui = NULL;
          }
-
-         lilv_node_free(containerType);
       }
    }
 
@@ -2158,16 +2156,18 @@ bool LV2Effect::BuildFancy()
    }
 
 #if defined(__WXMSW__)
+   {
    // Plugins may have dependencies that need to be loaded from the same path
    // as the main DLL, so add this plugin's path to the DLL search order.
-   char *libPath = lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL);
-   wxString path = wxPathOnly(libPath);
+   lilv_string libPath{ lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL) };
+   wxString path = wxPathOnly(libPath.get());
    SetDllDirectory(path.c_str());
-   lilv_free(libPath);
+   }
 #endif
 
-   char *bundlePath = lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_bundle_uri(ui)), NULL);
-   char *binaryPath = lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL);
+   {
+   lilv_string bundlePath{ lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_bundle_uri(ui)), NULL) };
+   lilv_string binaryPath{ lilv_file_uri_parse(lilv_node_as_uri(lilv_ui_get_binary_uri(ui)), NULL) };
 
    mSuilInstance = suil_instance_new(mSuilHost,
                                      this,
@@ -2175,12 +2175,10 @@ bool LV2Effect::BuildFancy()
                                      lilv_node_as_uri(lilv_plugin_get_uri(mPlug)),
                                      lilv_node_as_uri(lilv_ui_get_uri(ui)),
                                      lilv_node_as_uri(uiType),
-                                     bundlePath,
-                                     binaryPath,
+                                     bundlePath.get(),
+                                     binaryPath.get(),
                                      reinterpret_cast<const LV2_Feature * const *>(mFeatures.data()));
-
-   lilv_free(binaryPath);
-   lilv_free(bundlePath);
+   }
    lilv_uis_free(uis);
 
    // Bail if the instance (no compatible UI) couldn't be created
@@ -3314,10 +3312,11 @@ LilvInstance *LV2Wrapper::Instantiate(const LilvPlugin *plugin,
    // as the main DLL, so add this plugin's path to the DLL search order.
    const LilvNode *const libNode = lilv_plugin_get_library_uri(plugin);
    const char *const libUri = lilv_node_as_uri(libNode);
-   char *libPath = lilv_file_uri_parse(libUri, NULL);
-   wxString path = wxPathOnly(libPath);
+   {
+   lilv_string libPath{ lilv_file_uri_parse(libUri, NULL) };
+   wxString path = wxPathOnly(libPath.get());
    SetDllDirectory(path.c_str());
-   lilv_free(libPath);
+   }
 #endif
 
    mInstance = lilv_plugin_instantiate(plugin,
