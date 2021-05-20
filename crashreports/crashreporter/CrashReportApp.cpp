@@ -31,7 +31,7 @@ namespace
         files[L"upload_file_minidump"] = minidumpPath.wc_str();
         if (!commentsFilePath.empty())
         {
-            files[L"comments.txt"] = commentsFilePath.wc_str();
+            files[wxFileName(commentsFilePath).GetFullName().wc_str()] = commentsFilePath.wc_str();
         }
 
         std::map<std::wstring, std::wstring> parameters;
