@@ -63,7 +63,7 @@ namespace
         files["upload_file_minidump"] = minidumpPath.ToStdString();
         if (!commentsFilePath.empty())
         {
-            files[L"comments.txt"] = commentsFilePath.ToStdString();
+            files["comments.txt"] = commentsFilePath.ToStdString();
         }
 
         std::string response, error;
