@@ -13,6 +13,7 @@ public:
     bool OnInit() override;
     void OnInitCmdLine(wxCmdLineParser& parser) override;
     bool OnCmdLineParsed(wxCmdLineParser& parser) override;
+
 };
 
 DECLARE_APP(CrashReportApp);

@@ -25,10 +25,14 @@ namespace
         return std::wstring_convert<std::codecvt_utf8<std::wstring::traits_type::char_type>, std::wstring::traits_type::char_type>().from_bytes(utf8);
     }
 
-    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments)
+    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments, const wxString& commentsFilePath)
     {
         std::map<std::wstring, std::wstring> files;
         files[L"upload_file_minidump"] = minidumpPath.wc_str();
+        if (!commentsFilePath.empty())
+        {
+            files[L"comments.txt"] = commentsFilePath.wc_str();
+        }
 
         std::map<std::wstring, std::wstring> parameters;
         for (auto& p : arguments)
@@ -53,10 +57,14 @@ namespace
 
 namespace
 {
-    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments)
+    bool SendMinidump(const std::string& url, const wxString& minidumpPath, const std::map<std::string, std::string>& arguments, const wxString& commentsFilePath)
     {
         std::map<std::string, std::string> files;
         files["upload_file_minidump"] = minidumpPath.ToStdString();
+        if (!commentsFilePath.empty())
+        {
+            files[L"comments.txt"] = commentsFilePath.ToStdString();
+        }
 
         std::string response, error;
         bool success = google_breakpad::HTTPUpload::SendRequest(
@@ -229,8 +237,10 @@ namespace
         return wxT("Unknown error");
     }
 
-    void ShowCrashReportFrame(const wxString& header, const wxString& dump, const std::function<bool()>& onSend)
+    void ShowCrashReportFrame(const wxString& header, const wxString& dump, const std::function<bool(const wxString& comment)>& onSend)
     {
+        static constexpr int MaxUserCommentLength = 2000;
+
         auto frame = new wxFrame(
             nullptr, 
             wxID_ANY, 
@@ -252,18 +262,25 @@ namespace
 
         auto buttonsLayout = new wxBoxSizer(wxHORIZONTAL);
         
+        wxTextCtrl* commentCtrl = nullptr;
         if (onSend != nullptr)
         {
-            auto okButton = new wxButton(frame, wxID_OK, wxT("Don't send"));
-            auto sendButton = new wxButton(frame, wxID_CANCEL, wxT("Send"));
+            commentCtrl = new wxTextCtrl(frame, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 100), wxTE_MULTILINE);
+            commentCtrl->SetMaxLength(MaxUserCommentLength);
+        }
+
+        if (onSend != nullptr)
+        {
+            auto okButton = new wxButton(frame, wxID_ANY, wxT("Don't send"));
+            auto sendButton = new wxButton(frame, wxID_ANY, wxT("Send"));
 
             okButton->Bind(wxEVT_BUTTON, [frame](wxCommandEvent&)
                 {
                     frame->Close(true);
                 });
-            sendButton->Bind(wxEVT_BUTTON, [frame, onSend](wxCommandEvent&)
-                {
-                    if (onSend())
+            sendButton->Bind(wxEVT_BUTTON, [frame, commentCtrl, onSend](wxCommandEvent&)
+                { 
+                    if (onSend(commentCtrl->GetValue()))
                     {
                         frame->Close(true);
                     }
@@ -291,10 +308,17 @@ namespace
         mainLayout->AddSpacer(10);
         mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Problem details")), wxSizerFlags().Border(wxALL));
         
-        auto dumpTextCtrl = new wxTextCtrl(frame, wxID_ANY, dump, wxDefaultPosition, wxSize(600, 300), wxTE_RICH | wxTE_READONLY | wxTE_MULTILINE | wxTE_DONTWRAP);
+        auto dumpTextCtrl = new wxTextCtrl(frame, wxID_ANY, dump, wxDefaultPosition, wxSize(500, 300), wxTE_RICH | wxTE_READONLY | wxTE_MULTILINE | wxTE_DONTWRAP);
         dumpTextCtrl->SetFont(wxFont(wxFontInfo().Family(wxFONTFAMILY_TELETYPE)));
         dumpTextCtrl->ShowPosition(0);//scroll to top
         mainLayout->Add(dumpTextCtrl, wxSizerFlags().Border(wxALL).Expand());
+
+        if (onSend != nullptr)
+        {
+            mainLayout->AddSpacer(10);
+            mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Comments")), wxSizerFlags().Border(wxALL));
+            mainLayout->Add(commentCtrl);
+        }
 
         mainLayout->Add(buttonsLayout, wxSizerFlags().Border(wxALL).Align(wxALIGN_RIGHT));
         frame->SetSizerAndFit(mainLayout);
@@ -311,7 +335,7 @@ bool CrashReportApp::OnInit()
     if (mSilent)
     {
         if (!mURL.empty())
-            SendMinidump(mURL, mMinidumpPath, mArguments);
+            SendMinidump(mURL, mMinidumpPath, mArguments, wxEmptyString);
     }
     else
     {
@@ -332,14 +356,32 @@ bool CrashReportApp::OnInit()
             }
             else
             {
-                ShowCrashReportFrame(header, dump, [this]()
+                ShowCrashReportFrame(header, dump, [this](const wxString& comments)
                     {
-                        if (!SendMinidump(mURL, mMinidumpPath, mArguments))
+                        wxString commentsFilePath;
+                        if (!comments.empty())
+                        {
+                            wxFileName temp(mMinidumpPath);
+                            temp.SetName(temp.GetName() + "-comments");
+                            temp.SetExt("txt");
+                            commentsFilePath = temp.GetFullPath();
+                            wxFile file;
+                            if (file.Open(commentsFilePath, wxFile::write))
+                            {
+                                file.Write(comments);
+                                file.Close();
+                            }
+                        }
+
+                        auto result = SendMinidump(mURL, mMinidumpPath, mArguments, commentsFilePath);
+                        if (!commentsFilePath.empty())
+                            wxRemoveFile(commentsFilePath);
+
+                        if (!result)
                         {
                             wxMessageBox(wxT("Failed to send crash report"));
-                            return false;
                         }
-                        return true;
+                        return result;
                     });
             }
             return true;
