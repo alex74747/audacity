@@ -318,7 +318,7 @@ namespace
         {
             mainLayout->AddSpacer(10);
             mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Comments")), wxSizerFlags().Border(wxALL));
-            mainLayout->Add(commentCtrl);
+            mainLayout->Add(commentCtrl, wxSizerFlags().Border(wxALL).Expand());
         }
 
         mainLayout->Add(buttonsLayout, wxSizerFlags().Border(wxALL).Align(wxALIGN_RIGHT));
