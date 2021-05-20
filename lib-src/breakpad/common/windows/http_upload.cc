@@ -366,14 +366,9 @@ namespace {
       return false;
     }
 
-    string filename_utf8 = WideToUTF8(filename);
-    if (filename_utf8.empty()) {
-      return false;
-    }
-
     request_body->append("Content-Disposition: form-data; "
         "name=\"" + file_part_name_utf8 + "\"; "
-        "filename=\"" + filename_utf8 + "\"\r\n");
+        "filename=\"" + file_part_name_utf8 + "\"\r\n");
     request_body->append("Content-Type: application/octet-stream\r\n");
     request_body->append("\r\n");
 
