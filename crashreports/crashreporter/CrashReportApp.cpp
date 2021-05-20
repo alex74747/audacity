@@ -249,6 +249,7 @@ namespace
             wxDefaultSize, 
             wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)//disable frame resize
         );
+        frame->SetOwnBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_FRAMEBK));
         
         auto mainLayout = new wxBoxSizer(wxVERTICAL);
         
