@@ -1,0 +1,223 @@
+;; Recreating audacity.pot using .h, .cpp and .mm files
+;; Adding nyquist files to audacity.pot
+;; Updating the .po files - Updating Project-Id-Version
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" af.po
+sed: 1: "af.po": command a expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ar.po
+sed: 1: "ar.po": command a expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" be.po
+sed: 1: "be.po": undefined label 'e.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" bg.po
+sed: 1: "bg.po": undefined label 'g.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" bn.po
+sed: 1: "bn.po": undefined label 'n.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" bs.po
+sed: 1: "bs.po": undefined label 's.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ca.po
+sed: 1: "ca.po": command c expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ca_ES@valencia.po
+sed: 1: "ca_ES@valencia.po": command c expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" co.po
+sed: 1: "co.po": command c expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" cs.po
+sed: 1: "cs.po": command c expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" cy.po
+sed: 1: "cy.po": command c expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" da.po
+sed: 1: "da.po": extra characters at the end of d command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" de.po
+sed: 1: "de.po": extra characters at the end of d command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" el.po
+sed: 1: "el.po": invalid command code e
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" es.po
+sed: 1: "es.po": invalid command code e
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" eu.po
+sed: 1: "eu.po": invalid command code e
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" eu_ES.po
+sed: 1: "eu_ES.po": invalid command code e
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" fa.po
+sed: 1: "fa.po": invalid command code f
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" fi.po
+sed: 1: "fi.po": invalid command code f
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" fr.po
+sed: 1: "fr.po": invalid command code f
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ga.po
+sed: 1: "ga.po": extra characters at the end of g command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" gl.po
+sed: 1: "gl.po": extra characters at the end of g command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" he.po
+sed: 1: "he.po": extra characters at the end of h command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" hi.po
+sed: 1: "hi.po": extra characters at the end of h command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" hr.po
+sed: 1: "hr.po": extra characters at the end of h command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" hu.po
+sed: 1: "hu.po": extra characters at the end of h command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" hy.po
+sed: 1: "hy.po": extra characters at the end of h command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" id.po
+sed: 1: "id.po": command i expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" it.po
+sed: 1: "it.po": command i expects \ followed by text
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ja.po
+sed: 1: "ja.po": invalid command code j
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ka.po
+sed: 1: "ka.po": invalid command code k
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" km.po
+sed: 1: "km.po": invalid command code k
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ko.po
+sed: 1: "ko.po": invalid command code k
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" lt.po
+sed: 1: "lt.po": extra characters at the end of l command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" mk.po
+sed: 1: "mk.po": invalid command code m
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" mr.po
+sed: 1: "mr.po": invalid command code m
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" my.po
+sed: 1: "my.po": invalid command code m
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" nb.po
+sed: 1: "nb.po": extra characters at the end of n command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" nl.po
+sed: 1: "nl.po": extra characters at the end of n command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" oc.po
+sed: 1: "oc.po": invalid command code o
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" pl.po
+sed: 1: "pl.po": extra characters at the end of p command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" pt_BR.po
+sed: 1: "pt_BR.po": extra characters at the end of p command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" pt_PT.po
+sed: 1: "pt_PT.po": extra characters at the end of p command
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ro.po
+sed: -i may not be used with stdin
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ru.po
+sed: -i may not be used with stdin
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" sk.po
+sed: 1: "sk.po": unterminated substitute pattern
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" sl.po
+sed: 1: "sl.po": unterminated substitute pattern
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" sr_RS.po
+sed: 1: "sr_RS.po": unterminated substitute pattern
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" sr_RS@latin.po
+sed: 1: "sr_RS@latin.po": unterminated substitute pattern
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" sv.po
+sed: 1: "sv.po": unterminated substitute pattern
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" ta.po
+sed: 1: "ta.po": undefined label 'a.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" tg.po
+sed: 1: "tg.po": undefined label 'g.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" tr.po
+sed: 1: "tr.po": undefined label 'r.po'
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" uk.po
+sed: 1: "uk.po": invalid command code u
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" vi.po
+sed: 1: "vi.po": invalid command code v
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" zh_CN.po
+sed: 1: "zh_CN.po": invalid command code z
+sed -i /^"Project-Id-Version:/c\"Project-Id-Version: audacity 3.0.3\n" zh_TW.po
+sed: 1: "zh_TW.po": invalid command code z
+;; Updating the .po files
+msgmerge --lang=af af.po audacity.pot -o af.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................ done.
+msgmerge --lang=ar ar.po audacity.pot -o ar.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=be be.po audacity.pot -o be.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................. done.
+msgmerge --lang=bg bg.po audacity.pot -o bg.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................. done.
+msgmerge --lang=bn bn.po audacity.pot -o bn.po
+......................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=bs bs.po audacity.pot -o bs.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................ done.
+msgmerge --lang=ca ca.po audacity.pot -o ca.po
+................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=ca_ES@valencia ca_ES@valencia.po audacity.pot -o ca_ES@valencia.po
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=co co.po audacity.pot -o co.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=cs cs.po audacity.pot -o cs.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=cy cy.po audacity.pot -o cy.po
+............................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=da da.po audacity.pot -o da.po
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=de de.po audacity.pot -o de.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=el el.po audacity.pot -o el.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=es es.po audacity.pot -o es.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=eu eu.po audacity.pot -o eu.po
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=eu_ES eu_ES.po audacity.pot -o eu_ES.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=fa fa.po audacity.pot -o fa.po
+............................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=fi fi.po audacity.pot -o fi.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+msgmerge --lang=fr fr.po audacity.pot -o fr.po
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................... done.
+;; Removing '#~|' (which confuse Windows version of msgcat)
+sed: 1: "af.po": command a expects \ followed by text
+sed: 1: "ar.po": command a expects \ followed by text
+sed: 1: "be.po": undefined label 'e.po'
+sed: 1: "bg.po": undefined label 'g.po'
+sed: 1: "bn.po": undefined label 'n.po'
+sed: 1: "bs.po": undefined label 's.po'
+sed: 1: "ca.po": command c expects \ followed by text
+sed: 1: "ca_ES@valencia.po": command c expects \ followed by text
+sed: 1: "co.po": command c expects \ followed by text
+sed: 1: "cs.po": command c expects \ followed by text
+sed: 1: "cy.po": command c expects \ followed by text
+sed: 1: "da.po": extra characters at the end of d command
+sed: 1: "de.po": extra characters at the end of d command
+sed: 1: "el.po": invalid command code e
+sed: 1: "es.po": invalid command code e
+sed: 1: "eu.po": invalid command code e
+sed: 1: "eu_ES.po": invalid command code e
+sed: 1: "fa.po": invalid command code f
+sed: 1: "fi.po": invalid command code f
+sed: 1: "fr.po": invalid command code f
+sed: 1: "ga.po": extra characters at the end of g command
+sed: 1: "gl.po": extra characters at the end of g command
+sed: 1: "he.po": extra characters at the end of h command
+sed: 1: "hi.po": extra characters at the end of h command
+sed: 1: "hr.po": extra characters at the end of h command
+sed: 1: "hu.po": extra characters at the end of h command
+sed: 1: "hy.po": extra characters at the end of h command
+sed: 1: "id.po": command i expects \ followed by text
+sed: 1: "it.po": command i expects \ followed by text
+sed: 1: "ja.po": invalid command code j
+sed: 1: "ka.po": invalid command code k
+sed: 1: "km.po": invalid command code k
+sed: 1: "ko.po": invalid command code k
+sed: 1: "lt.po": extra characters at the end of l command
+sed: 1: "mk.po": invalid command code m
+sed: 1: "mr.po": invalid command code m
+sed: 1: "my.po": invalid command code m
+sed: 1: "nb.po": extra characters at the end of n command
+sed: 1: "nl.po": extra characters at the end of n command
+sed: 1: "oc.po": invalid command code o
+sed: 1: "pl.po": extra characters at the end of p command
+sed: 1: "pt_BR.po": extra characters at the end of p command
+sed: 1: "pt_PT.po": extra characters at the end of p command
+sed: -i may not be used with stdin
+sed: -i may not be used with stdin
+sed: 1: "sk.po": unterminated substitute pattern
+sed: 1: "sl.po": unterminated substitute pattern
+sed: 1: "sr_RS.po": unterminated substitute pattern
+sed: 1: "sr_RS@latin.po": unterminated substitute pattern
+sed: 1: "sv.po": unterminated substitute pattern
+sed: 1: "ta.po": undefined label 'a.po'
+sed: 1: "tg.po": undefined label 'g.po'
+sed: 1: "tr.po": undefined label 'r.po'
+sed: 1: "uk.po": invalid command code u
+sed: 1: "vi.po": invalid command code v
+sed: 1: "zh_CN.po": invalid command code z
+sed: 1: "zh_TW.po": invalid command code z
+
+;;Translation updated
+
+"Project-Id-Version: audacity 3.0.3\n"
+"Report-Msgid-Bugs-To: audacity-translation@lists.sourceforge.net\n"
+"POT-Creation-Date: 2021-05-21 20:52-0400\n"
+   19673 audacity.pot
