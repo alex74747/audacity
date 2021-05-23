@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: audacity 3.0.3\n"
 "Report-Msgid-Bugs-To: audacity-translation@lists.sourceforge.net\n"
-"POT-Creation-Date: 2021-05-23 09:03-0400\n"
+"POT-Creation-Date: 2021-05-23 09:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,44 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid "Problem report for Audacity"
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid "Don't send"
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid "Send"
+msgstr ""
+
+#. i18n-hint: In most languages OK is to be translated as OK.  It appears on a button.
+#: crashreports/crashreporter/CrashReportApp.cpp src/AboutDialog.cpp
+#: src/Dependencies.cpp src/SplashDialog.cpp src/effects/nyquist/Nyquist.cpp
+#: src/widgets/MultiDialog.cpp
+msgid "OK"
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid ""
+"Click \"Send\" to submit report to Audacity. This information is collected "
+"anonymously."
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid "Problem details"
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp src/Tags.cpp
+#: src/prefs/MousePrefs.cpp
+msgid "Comments"
+msgstr ""
+
+#: crashreports/crashreporter/CrashReportApp.cpp
+msgid "Failed to send crash report"
+msgstr ""
 
 #: libraries/lib-strings/Internat.cpp
 msgid "Unable to determine"
@@ -513,12 +551,6 @@ msgstr ""
 #: src/AboutDialog.cpp
 #, c-format
 msgid "About %s"
-msgstr ""
-
-#. i18n-hint: In most languages OK is to be translated as OK.  It appears on a button.
-#: src/AboutDialog.cpp src/Dependencies.cpp src/SplashDialog.cpp
-#: src/effects/nyquist/Nyquist.cpp src/widgets/MultiDialog.cpp
-msgid "OK"
 msgstr ""
 
 #. i18n-hint: First and third %s will be the program's name,
@@ -4628,10 +4660,6 @@ msgstr ""
 
 #: src/Tags.cpp
 msgid "Genre"
-msgstr ""
-
-#: src/Tags.cpp src/prefs/MousePrefs.cpp
-msgid "Comments"
 msgstr ""
 
 #: src/Tags.cpp
