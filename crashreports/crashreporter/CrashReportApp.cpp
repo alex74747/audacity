@@ -244,7 +244,7 @@ namespace
         auto frame = new wxFrame(
             nullptr, 
             wxID_ANY, 
-            wxT("Problem report for Audacity"), 
+            _("Problem report for Audacity"),
             wxDefaultPosition, 
             wxDefaultSize, 
             wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)//disable frame resize
@@ -272,8 +272,8 @@ namespace
 
         if (onSend != nullptr)
         {
-            auto okButton = new wxButton(frame, wxID_ANY, wxT("Don't send"));
-            auto sendButton = new wxButton(frame, wxID_ANY, wxT("Send"));
+            auto okButton = new wxButton(frame, wxID_ANY, _("Don't send"));
+            auto sendButton = new wxButton(frame, wxID_ANY, _("Send"));
 
             okButton->Bind(wxEVT_BUTTON, [frame](wxCommandEvent&)
                 {
@@ -292,7 +292,7 @@ namespace
         }
         else
         {
-            auto okButton = new wxButton(frame, wxID_OK, wxT("OK"));
+            auto okButton = new wxButton(frame, wxID_OK, _("OK"));
             okButton->Bind(wxEVT_BUTTON, [frame](wxCommandEvent&)
                 {
                     frame->Close(true);
@@ -304,10 +304,10 @@ namespace
         if (onSend != nullptr)
         {
             mainLayout->AddSpacer(5);
-            mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Click \"Send\" to submit report to Audacity. This information is collected anonymously.")), wxSizerFlags().Border(wxALL));
+            mainLayout->Add(new wxStaticText(frame, wxID_ANY, _("Click \"Send\" to submit report to Audacity. This information is collected anonymously.")), wxSizerFlags().Border(wxALL));
         }
         mainLayout->AddSpacer(10);
-        mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Problem details")), wxSizerFlags().Border(wxALL));
+        mainLayout->Add(new wxStaticText(frame, wxID_ANY, _("Problem details")), wxSizerFlags().Border(wxALL));
         
         auto dumpTextCtrl = new wxTextCtrl(frame, wxID_ANY, dump, wxDefaultPosition, wxSize(500, 300), wxTE_RICH | wxTE_READONLY | wxTE_MULTILINE | wxTE_DONTWRAP);
         dumpTextCtrl->SetFont(wxFont(wxFontInfo().Family(wxFONTFAMILY_TELETYPE)));
@@ -317,7 +317,7 @@ namespace
         if (onSend != nullptr)
         {
             mainLayout->AddSpacer(10);
-            mainLayout->Add(new wxStaticText(frame, wxID_ANY, wxT("Comments")), wxSizerFlags().Border(wxALL));
+            mainLayout->Add(new wxStaticText(frame, wxID_ANY, _("Comments")), wxSizerFlags().Border(wxALL));
             mainLayout->Add(commentCtrl, wxSizerFlags().Border(wxALL).Expand());
         }
 
@@ -380,7 +380,7 @@ bool CrashReportApp::OnInit()
 
                         if (!result)
                         {
-                            wxMessageBox(wxT("Failed to send crash report"));
+                            wxMessageBox(_("Failed to send crash report"));
                         }
                         return result;
                     });
