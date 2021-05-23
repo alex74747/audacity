@@ -7,6 +7,8 @@
 #include <sstream>
 
 #include "CrashReportApp.h"
+#include "Languages.h"
+#include "wxArrayStringEx.h"
 
 #include "google_breakpad/processor/basic_source_line_resolver.h"
 #include "google_breakpad/processor/minidump_processor.h"
@@ -328,11 +330,27 @@ namespace
     }
 }
 
-
 bool CrashReportApp::OnInit()
 {
     if (!wxApp::OnInit())
         return false;
+
+    // Find the folder of the executable
+    const auto ProgPath =
+       wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
+    // From that define the search path for the audacity.mo files
+    FilePaths paths{
+#ifdef __WXMAC__
+       ProgPath + L"/../Resources",
+#else
+       // to do
+#endif
+    };
+
+    // Set up wxTranslation to use the system language
+    // (indicated by empty string)
+    Languages::SetLang( paths, {} );
+
     if (mSilent)
     {
         if (!mURL.empty())
