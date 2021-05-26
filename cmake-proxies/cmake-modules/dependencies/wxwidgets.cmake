@@ -1,43 +1,22 @@
+function( ensure_wxBase target )
+   if( NOT TARGET wxBase )
+      add_library( wxBase ALIAS "${target}")
+   endif()
+endfunction()
+
 if( ${_OPT}use_wxwidgets STREQUAL "system" ) 
     if( NOT TARGET wxwidgets::wxwidgets )
         add_library( wxwidgets::wxwidgets INTERFACE IMPORTED GLOBAL)
     endif()
-    
-    if( NOT TARGET wxwidgets::base )
-        add_library( wxwidgets::base ALIAS wxwidgets::wxwidgets )
-    endif()
 
-    if( NOT TARGET wxwidgets::core )
-        add_library( wxwidgets::core ALIAS wxwidgets::wxwidgets )
-    endif()
+    foreach( lib base core html xml xrc qa aui adv )
+       set( target "wxwidgets::${lib}" )
+       if( NOT TARGET ${target} )
+          add_library( ${target} ALIAS wxwidgets::wxwidgets )
+       endif()
+    endforeach()
 
-    if( NOT TARGET wxwidgets::html )
-        add_library( wxwidgets::html ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxwidgets::xml )
-        add_library( wxwidgets::xml ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxwidgets::xrc )
-        add_library( wxwidgets::xrc ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxwidgets::qa )
-        add_library( wxwidgets::qa ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxwidgets::aui )
-        add_library( wxwidgets::aui ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxwidgets::adv )
-        add_library( wxwidgets::adv ALIAS wxwidgets::wxwidgets )
-    endif()
-
-    if( NOT TARGET wxBase )
-        add_library( wxBase ALIAS wxwidgets::wxwidgets )
-    endif()
+    ensure_wxBase( wxwidgets::wxwidgets )
 
     if( NOT TARGET wxwidgets::wxwidgets )
         add_library( wxwidgets::wxwidgets ALIAS wxwidgets::wxwidgets )
@@ -86,7 +65,7 @@ if( ${_OPT}use_wxwidgets STREQUAL "system" )
     endif()
 else()
     set_target_properties(wxwidgets::base PROPERTIES IMPORTED_GLOBAL On)
-    add_library( wxBase ALIAS wxwidgets::base )
+    ensure_wxBase( wxwidgets::base )
 endif()
 
 if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
