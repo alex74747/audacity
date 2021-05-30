@@ -1810,7 +1810,9 @@ size_t WaveTrack::GetMaxBlockSize() const
    {
       // We really need the maximum block size, so create a
       // temporary sequence to get it.
-      maxblocksize = Sequence{ mpFactory, mFormat }.GetMaxBlockSize();
+      maxblocksize =
+         Sequence{ mpFactory, SampleFormats{mFormat, mFormat} }
+            .GetMaxBlockSize();
    }
 
    wxASSERT(maxblocksize > 0);
