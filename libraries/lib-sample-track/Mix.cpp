@@ -106,6 +106,7 @@ Mixer::Mixer(const SampleTrackConstArray &inputTracks,
    , mFormat{ outFormat }
    , mRate{ outRate }
 
+   , mEffectiveFormat{ floatSample }
    , mMayThrow{ mayThrow }
 {
    mHighQuality = highQuality;
@@ -192,7 +193,7 @@ Mixer::Mixer(const SampleTrackConstArray &inputTracks,
    mEnvValues.reinit(envLen);
 
    // Decide once at construction time
-   mNeedsDither = NeedsDither(inputTracks);
+   std::tie(mNeedsDither, mEffectiveFormat) = NeedsDither(inputTracks);
 }
 
 Mixer::~Mixer()
@@ -205,25 +206,28 @@ void Mixer::MakeResamplers()
       mResample[i] = std::make_unique<Resample>(mHighQuality, mMinFactor[i], mMaxFactor[i]);
 }
 
-bool Mixer::NeedsDither(const SampleTrackConstArray &inputTracks) const
+std::pair<bool, sampleFormat>
+Mixer::NeedsDither(const SampleTrackConstArray &inputTracks) const
 {
+   auto defaultAnswer = std::make_pair(true, mFormat);
    // Many possible disqualifiers for the avoidance of dither
    if (mbVariableRates)
       // We will call MixVariableRates(), so we need nontrivial resampling
-      return true;
+      return defaultAnswer;
 
+   auto widestEffectiveFormat = narrowestSampleFormat;
    for (const auto &pTrack : inputTracks) {
       auto &track = *pTrack;
       if (track.GetRate() != mRate)
          // Also leads to MixVariableRates(), needs nontrivial resampling
-         return true;
+         return defaultAnswer;
       if (mApplyTrackGains) {
          /// TODO: more-than-two-channels
          for (auto c : {0, 1}) {
             const auto gain = track.GetChannelGain(c);
             if (!(gain == 0.0 || gain == 1.0))
                // Fractional gain may be applied even in MixSameRate
-               return true;
+               return defaultAnswer;
          }
       }
 
@@ -233,15 +237,18 @@ bool Mixer::NeedsDither(const SampleTrackConstArray &inputTracks) const
       // construction, as when scrubbing.)
       if (!track.HasTrivialEnvelope())
          // Varying or non-unit gain may be applied even in MixSameRate
-         return true;
-      if (track.WidestEffectiveFormat() > mFormat)
+         return defaultAnswer;
+      auto effectiveFormat = track.WidestEffectiveFormat();
+      if (effectiveFormat > mFormat)
          // Real, not just nominal, precision loss would happen in at
          // least one clip
-         return true;
+         return defaultAnswer;
+      widestEffectiveFormat =
+         std::max(widestEffectiveFormat, effectiveFormat);
    }
 
    // We can avoid dither
-   return false;
+   return { false, widestEffectiveFormat };
 }
 
 void Mixer::Clear()
@@ -620,6 +627,11 @@ constSamplePtr Mixer::GetBuffer()
 constSamplePtr Mixer::GetBuffer(int channel)
 {
    return mBuffer[channel].ptr();
+}
+
+sampleFormat Mixer::EffectiveFormat() const
+{
+   return mEffectiveFormat;
 }
 
 double Mixer::MixGetCurrentTime()
