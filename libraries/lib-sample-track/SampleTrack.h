@@ -133,7 +133,12 @@ public:
     * @return true in case a block was flushed from memory to underlying DB
     */
    virtual bool Append(constSamplePtr buffer, sampleFormat format,
-               size_t len, unsigned int stride=1) = 0;
+      size_t len, unsigned int stride=1,
+      sampleFormat effectiveFormat = widestSampleFormat /*!<
+         New samples, if later narrowed, but to min(effectiveFormat, format) or more, need no dithering;
+         by default, ask for dither whenever narrowing at all
+      */
+   ) = 0;
 
    //! Flush must be called after last Append
    virtual void Flush() = 0;

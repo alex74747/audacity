@@ -234,7 +234,9 @@ private:
     *
     */
    bool Append(constSamplePtr buffer, sampleFormat format,
-               size_t len, unsigned int stride=1) override;
+      size_t len, unsigned int stride = 1,
+      sampleFormat effectiveFormat = widestSampleFormat) override;
+
    void Flush() override;
 
    ///Invalidates all clips' wavecaches.  Careful, This may not be threadsafe.
@@ -260,7 +262,12 @@ private:
       // contiguous range.
       sampleCount * pNumWithinClips = nullptr) const override;
    void Set(constSamplePtr buffer, sampleFormat format,
-                   sampleCount start, size_t len);
+      sampleCount start, size_t len,
+      sampleFormat effectiveFormat = widestSampleFormat /*!<
+         New samples, if later narrowed, but to min(effectiveFormat, format) or more, need no dithering;
+         by default, ask for dither whenever narrowing at all
+      */
+   );
 
    sampleFormat WidestEffectiveFormat() const override;
 
