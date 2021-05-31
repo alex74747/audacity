@@ -614,7 +614,8 @@ ProgressResult FFmpegImportFileHandle::WriteData(StreamContext *sc, const AVPack
       {
          iter2->get()->Append(
             reinterpret_cast<samplePtr>(data.data() + chn), sc->SampleFormat,
-            samplesPerChannel, sc->CodecContext->GetChannels());
+            samplesPerChannel, sc->CodecContext->GetChannels(),
+            sc->SampleFormat);
       }
    }
 
