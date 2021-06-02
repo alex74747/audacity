@@ -260,6 +260,32 @@ void TrackArtist::UpdatePrefs()
    SetColours(0);
 }
 
+const int TrackArt::ClipLabelHeight = 25;
+
+void TrackArt::DrawClipFrame(wxDC& dc, const wxRect& rect, const wxBrush& labelFillBrush, const wxString& title)
+{
+    static constexpr int ClipFrameRadius{ 10 };
+    auto labelRect = wxRect(rect.x, rect.y, rect.width, TrackArt::ClipLabelHeight);
+
+    dc.SetClippingRegion(labelRect);
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(labelFillBrush);
+    dc.DrawRoundedRectangle(wxRect(labelRect.x, labelRect.y, labelRect.width, labelRect.height + ClipFrameRadius), ClipFrameRadius);
+    if (!title.empty())
+    {
+        dc.DrawText(title, rect.x + ClipFrameRadius, rect.y + ClipFrameRadius);
+    }
+    
+    dc.DestroyClippingRegion();
+
+    dc.SetClippingRegion(rect);
+    dc.SetPen(*wxBLACK_PEN);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    dc.DrawRoundedRectangle(wxRect(rect.x, rect.y, rect.width, rect.height + ClipFrameRadius), ClipFrameRadius);
+    
+    dc.DestroyClippingRegion();
+}
+
 // Draws the sync-lock bitmap, tiled; always draws stationary relative to the DC
 //
 // AWD: now that the tiles don't link together, we're drawing a tilted grid, at

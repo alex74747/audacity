@@ -25,10 +25,15 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../../../TrackPanelDrawingContext.h"
 #include "../../../../TrackPanelMouseEvent.h"
 #include "../../../../ViewInfo.h"
+#include "../../../../TrackPanel.h"
 #include "../../../ui/SelectHandle.h"
+#include "../../../ui/TimeShiftHandle.h"
 #include "StretchHandle.h"
 
 #include <wx/dc.h>
+
+#define TIME_TO_X(t) (zoomInfo.TimeToPosition((t), rect.x))
+#define X_TO_TIME(xx) (zoomInfo.PositionToTime((xx), rect.x))
 
 NoteTrackView::NoteTrackView( const std::shared_ptr<Track> &pTrack )
    : CommonTrackView{ pTrack }
@@ -40,8 +45,8 @@ NoteTrackView::~NoteTrackView()
 }
 
 std::vector<UIHandlePtr> NoteTrackView::DetailedHitTest
-(const TrackPanelMouseState &WXUNUSED(state),
- const AudacityProject *WXUNUSED(pProject), int, bool )
+(const TrackPanelMouseState &state,
+ const AudacityProject *pProject, int, bool )
 {
    // Eligible for stretch?
    UIHandlePtr result;
@@ -54,6 +59,26 @@ std::vector<UIHandlePtr> NoteTrackView::DetailedHitTest
       results.push_back(result);
 #endif
 #endif
+   auto track = FindTrack();
+   const auto nt = std::static_pointer_cast<const NoteTrack>(
+       track->SubstitutePendingChangedTrack());
+
+   const auto rect = state.rect;
+
+   auto& trackPanel = TrackPanel::Get(*pProject);
+   auto& zoomInfo = *trackPanel.GetViewInfo();
+   auto left = TIME_TO_X(nt.get()->GetOffset());
+   auto right = TIME_TO_X(nt.get()->GetOffset() + nt.get()->GetSeq().get_real_dur());
+   auto headerRect = wxRect(left, rect.y, right - left, TrackArt::ClipLabelHeight);
+
+   auto px = state.state.m_x;
+   auto py = state.state.m_y;
+
+   if (px >= headerRect.GetLeft() && px <= headerRect.GetRight() &&
+       py >= headerRect.GetTop() && py <= headerRect.GetBottom())
+   {
+       results.push_back(TimeShiftHandle::HitAnywhere(mTimeShiftHandle, track, false));
+   }
 
    return results;
 }
@@ -71,9 +96,6 @@ std::shared_ptr<TrackVRulerControls> NoteTrackView::DoGetVRulerControls()
    return
       std::make_shared<NoteTrackVRulerControls>( shared_from_this() );
 }
-
-#define TIME_TO_X(t) (zoomInfo.TimeToPosition((t), rect.x))
-#define X_TO_TIME(xx) (zoomInfo.PositionToTime((xx), rect.x))
 
 namespace {
 
@@ -377,11 +399,6 @@ void DrawNoteTrack(TrackPanelDrawingContext &context,
    // out-of-bounds notes
    int numPitches = (rect.height) / data.GetPitchHeight(1);
    if (numPitches < 0) numPitches = 0; // cannot be negative
-
-#ifdef EXPERIMENTAL_NOTETRACK_OVERLAY
-   TrackArt::DrawBackgroundWithSelection(context, rect, track,
-         AColor::labelSelectedBrush, AColor::labelUnselectedBrush);
-#endif
 
    // Background comes in 4 colors, that are now themed.
    //   214, 214,214 -- unselected white keys
@@ -723,7 +740,22 @@ void NoteTrackView::Draw(
       const auto hasSolo = artist->hasSolo;
       muted = (hasSolo || nt->GetMute()) && !nt->GetSolo();
 #endif
+
+#ifdef EXPERIMENTAL_NOTETRACK_OVERLAY
+      TrackArt::DrawBackgroundWithSelection(context, rect, nt.get(), AColor::labelSelectedBrush, AColor::labelUnselectedBrush);
+      
+      
+      DrawNoteTrack(context, nt.get(), wxRect(rect.x, rect.y + TrackArt::ClipLabelHeight, rect.width, rect.height), muted);
+
+      const auto& zoomInfo = *artist->pZoomInfo;
+      auto left = TIME_TO_X(nt.get()->GetOffset());
+      auto right = TIME_TO_X(nt.get()->GetOffset() + nt.get()->GetSeq().get_real_dur());
+      auto clipRect = wxRect(left, rect.y, right - left, rect.height);
+
+      TrackArt::DrawClipFrame(context.dc, clipRect, AColor::lightBrush[1], nt->GetName());
+#else
       DrawNoteTrack( context, nt.get(), rect, muted );
+#endif
    }
    CommonTrackView::Draw( context, rect, iPass );
 }

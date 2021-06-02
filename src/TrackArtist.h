@@ -38,6 +38,11 @@ class ZoomInfo;
 
 namespace TrackArt {
 
+   extern const int ClipLabelHeight;
+
+   AUDACITY_DLL_API
+   void DrawClipFrame(wxDC& dc, const wxRect& rect, const wxBrush& labelFillBrush, const wxString& title = wxEmptyString);
+
    // Helper: draws the "sync-locked" watermark tiled to a rectangle
    AUDACITY_DLL_API
    void DrawSyncLockTiles(
