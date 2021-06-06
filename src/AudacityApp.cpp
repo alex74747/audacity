@@ -119,6 +119,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "update/UpdateManager.h"
 #include "widgets/wxWidgetsBasicUI.h"
 #include "LogWindow.h"
+#include "widgets/wxWidgetsWindowPlacement.h"
 
 #ifdef HAS_NETWORKING
 #include "NetworkManager.h"
@@ -1103,10 +1104,17 @@ bool AudacityApp::OnInit()
    // Ensure we have an event loop during initialization
    wxEventLoopGuarantor eventLoop;
 
-   // Inject basic GUI services behind the facade
+   // Inject basic GUI services behind the facades
    {
       static wxWidgetsBasicUI uiServices;
       (void)BasicUI::Install(&uiServices);
+
+      static WindowPlacementFactory::Scope scope {
+      [](AudacityProject &project)
+         -> std::unique_ptr<BasicUI::WindowPlacement> {
+         return std::make_unique<wxWidgetsWindowPlacement>(
+            &GetProjectFrame(project));
+      } };
    }
 
    // Fire up SQLite
