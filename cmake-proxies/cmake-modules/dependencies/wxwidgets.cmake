@@ -1,6 +1,45 @@
-function( ensure_wxBase target )
+function( ensure_wxBase )
    if( NOT TARGET wxBase )
-      add_library( wxBase ALIAS "${target}")
+      set( target wxwidgets::wxwidgets )
+      add_library( wxBase INTERFACE )
+      set( PROPERTIES
+         INTERFACE_INCLUDE_DIRECTORIES
+         INTERFACE_COMPILE_DEFINITIONS
+         INTERFACE_COMPILE_OPTIONS
+         INTERFACE_LINK_DIRECTORIES
+         INTERFACE_LINK_LIBRARIES
+      )
+      foreach( property ${PROPERTIES} )
+         get_target_property( value "${target}" "${property}" )
+         if( value )
+            set_target_properties( wxBase PROPERTIES "${property}" "${value}" )
+	 endif()
+      endforeach()
+      # wxBase exposes only the GUI-less subset of full wxWidgets
+      # Also prohibit use of some other headers by pre-defining their include guards
+      # wxUSE_GUI=0 doesn't exclude all of wxCore dependency, and the application
+      # object and event loops are in wxBase, but we want to exclude their use too
+      target_compile_definitions( wxBase INTERFACE
+         "wxUSE_GUI=0"
+       
+         # Don't use app.h
+         _WX_APP_H_BASE_
+      
+         # Don't use evtloop.h
+         _WX_EVTLOOP_H_
+      
+         # Don't use image.h
+         _WX_IMAGE_H
+      
+         # Don't use colour.h
+         _WX_COLOUR_H_BASE_
+      
+         # Don't use brush.h
+         _WX_BRUSH_H_BASE_
+       
+        # Don't use pen.h
+        _WX_PEN_H_BASE_
+      )
    endif()
 endfunction()
 
@@ -15,8 +54,6 @@ if( ${_OPT}use_wxwidgets STREQUAL "system" )
           add_library( ${target} ALIAS wxwidgets::wxwidgets )
        endif()
     endforeach()
-
-    ensure_wxBase( wxwidgets::wxwidgets )
 
     if( NOT TARGET wxwidgets::wxwidgets )
         add_library( wxwidgets::wxwidgets ALIAS wxwidgets::wxwidgets )
@@ -63,9 +100,11 @@ if( ${_OPT}use_wxwidgets STREQUAL "system" )
         set( gtk gtk+-4.0 )
         set( glib glib-2.0 )
     endif()
+
+    ensure_wxBase()
 else()
     set_target_properties(wxwidgets::base PROPERTIES IMPORTED_GLOBAL On)
-    ensure_wxBase( wxwidgets::base )
+    ensure_wxBase()
 endif()
 
 if( NOT CMAKE_SYSTEM_NAME MATCHES "Windows|Darwin" )
