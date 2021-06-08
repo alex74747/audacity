@@ -654,3 +654,21 @@ function( addlib dir name symbol required check )
    endif()
 endfunction()
 
+# A variadic function
+# For each property name following dst_target, assume it is list-valued, look
+# it up in src_target, and if it is present, append it to the corresponding
+# property value in dst_target (if defined there; or else just assign it)
+function( append_properties src_target dst_target )
+   foreach( property ${ARGN} )
+      get_target_property( srcvalues "${src_target}" "${property}" )
+      if( srcvalues )
+         get_target_property( dstvalues "${dst_target}" "${property}" )
+	 if( NOT dstvalues )
+	    set( dstvalues ) # make it really empty, not a -NOTFOUND value
+	 endif()
+	 list( APPEND dstvalues ${srcvalues} )
+	 set_target_properties( "${dst_target}"
+	    PROPERTIES "${property}" "${dstvalues}" )
+      endif()
+   endforeach()
+endfunction()
