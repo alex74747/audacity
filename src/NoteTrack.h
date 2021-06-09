@@ -222,8 +222,6 @@ public:
    static const float ZoomStep;
 
    int mVisibleChannels; // bit set of visible channels
-
-   std::weak_ptr<StretchHandle> mStretchHandle;
 };
 
 /// Data used to display a note track

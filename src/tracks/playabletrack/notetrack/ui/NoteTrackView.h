@@ -13,6 +13,8 @@ Paul Licameli split from class NoteTrack
 
 #include "../../../ui/CommonTrackView.h"
 
+class StretchHandle;
+
 class NoteTrackView final : public CommonTrackView
 {
    NoteTrackView( const NoteTrackView& ) = delete;
@@ -35,5 +37,7 @@ private:
    void Draw(
       TrackPanelDrawingContext &context,
       const wxRect &rect, unsigned iPass ) override;
+
+   std::weak_ptr<StretchHandle> mStretchHandle;
 };
 #endif

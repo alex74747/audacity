@@ -51,13 +51,14 @@ std::vector<UIHandlePtr> NoteTrackView::DetailedHitTest
    // Eligible for stretch?
    UIHandlePtr result;
    std::vector<UIHandlePtr> results;
-#ifdef USE_MIDI
-#ifdef EXPERIMENTAL_MIDI_STRETCHING
+   auto pTrack = std::static_pointer_cast<NoteTrack>(FindTrack());
+#if defined(USE_MIDI) && defined(EXPERIMENTAL_MIDI_STRETCHING)
    result = StretchHandle::HitTest(
-      mStretchHandle, state, pProject, Pointer<NoteTrack>(this) );
+      mStretchHandle, state, pProject, pTrack );
    if (result)
       results.push_back(result);
-#endif
+#else
+   state; pProject;
 #endif
    auto track = FindTrack();
    const auto nt = std::static_pointer_cast<const NoteTrack>(
