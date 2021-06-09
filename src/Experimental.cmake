@@ -128,7 +128,7 @@ set( EXPERIMENTAL_OPTIONS_LIST
    # a) Is broken on Linux (Bug 1646)
    # b) Crashes with Sync-Lock (Bug 1719)
    # c) Needs UI design review.
-   #MIDI_STRETCHING
+   MIDI_STRETCHING
 
    # USE_MIDI must be defined in order for SCOREALIGN to work
    #SCOREALIGN
