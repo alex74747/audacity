@@ -92,8 +92,7 @@ UIHandlePtr StretchHandle::HitTest
    wxInt64 rightSel = viewInfo.TimeToPosition(viewInfo.selectedRegion.t1(), rect.x);
    // Something is wrong if right edge comes before left edge
    wxASSERT(!(rightSel < leftSel));
-   if (!(leftSel <= state.m_x && state.m_x <= rightSel &&
-         distance < yTolerance))
+   if (!(leftSel <= state.m_x && state.m_x <= rightSel))
       return {};
 
    // find nearest beat to sel0, sel1
