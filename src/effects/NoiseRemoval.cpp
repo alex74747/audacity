@@ -113,12 +113,12 @@ EffectNoiseRemoval::~EffectNoiseRemoval()
 
 // ComponentInterface implementation
 
-ComponentInterfaceSymbol EffectNoiseRemoval::GetSymbol()
+ComponentInterfaceSymbol EffectNoiseRemoval::GetSymbol() const
 {
    return Symbol;
 }
 
-TranslatableString EffectNoiseRemoval::GetDescription()
+TranslatableString EffectNoiseRemoval::GetDescription() const
 {
    return XO("Removes constant background noise such as fans, tape noise, or hums");
 }

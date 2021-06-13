@@ -23,27 +23,27 @@ EffectType EffectHost::GetType()
    return mClient.GetType();
 }
 
-PluginPath EffectHost::GetPath()
+PluginPath EffectHost::GetPath() const
 {
    return mClient.GetPath();
 }
 
-ComponentInterfaceSymbol EffectHost::GetSymbol()
+ComponentInterfaceSymbol EffectHost::GetSymbol() const
 {
    return mClient.GetSymbol();
 }
 
-VendorSymbol EffectHost::GetVendor()
+VendorSymbol EffectHost::GetVendor() const
 {
    return mClient.GetVendor();
 }
 
-wxString EffectHost::GetVersion()
+wxString EffectHost::GetVersion() const
 {
    return mClient.GetVersion();
 }
 
-TranslatableString EffectHost::GetDescription()
+TranslatableString EffectHost::GetDescription() const
 {
    return mClient.GetDescription();
 }
