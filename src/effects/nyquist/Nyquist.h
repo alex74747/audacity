@@ -136,6 +136,9 @@ struct NyqProperties {
    bool              mDebugButton = true;
 };
 
+struct NyquistNameAndType {
+};
+
 class AUDACITY_DLL_API NyquistEffect final : public Effect
 {
 public:
