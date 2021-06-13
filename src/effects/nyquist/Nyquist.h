@@ -189,9 +189,10 @@ private:
    TranslatableString mInitError;
 };
 
+class NyquistEffect;
+
 //! Holds parameters and state for one processing of a Nyquist effect
-class AUDACITY_DLL_API NyquistContext {
-public:
+struct AUDACITY_DLL_API NyquistContext {
    NyquistContext(const TranslatableString &debugOutput,
       EffectType effectType, int version, double t0, double t1,
       const wxString &props, const wxString &perTrackProps);
@@ -208,7 +209,6 @@ public:
 
    void ClearBuffers();
    bool BeginTrack( WaveTrack *pTrack );
-   bool ProcessOne();
    void EndTrack( WaveTrack *pTrack );
    bool ProcessLoop();
 
@@ -216,6 +216,7 @@ public:
 
    const TranslatableString &DebugOutput() const { return mDebugOutput; } 
 private:
+
    static int StaticGetCallback(float *buffer, int channel,
                                 int64_t start, int64_t len, int64_t totlen,
                                 void *userdata);
@@ -234,7 +235,7 @@ private:
 
    std::exception_ptr mpException {};
    const wxString mProps;
-   const wxString mPerTrackProps;
+   wxString mPerTrackProps;
    unsigned          mCurNumChannels;
    unsigned          mCount{ 0 };
 
@@ -246,7 +247,9 @@ private:
    sampleCount       mCurLen;
 
    const EffectType mEffectType;
+   NyquistEffect *const mpEffect;
    const int mVersion;
+   const sampleCount mMaxLen;
 
    const double mT0, mT1;
 
@@ -335,6 +338,8 @@ private:
    static int mReentryCount;
    // NyquistEffect implementation
 
+   bool ProcessOne();
+
    void BuildPromptWindow(ShuttleGui & S);
    void BuildEffectWindow(ShuttleGui & S);
 
@@ -402,7 +407,6 @@ private:
    WaveTrack        *mOutputTrack[2];
 
    wxString          mProps;
-   wxString          mPerTrackProps;
 
    wxTextCtrl *mCommandText;
 
