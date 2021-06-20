@@ -736,17 +736,18 @@ EffectUIHostInterface *EffectManager::GetEffect(const PluginID & ID)
 
    // TODO: This is temporary and should be redone when all effects are converted
    if (auto iter = mEffects.find(ID); iter == mEffects.end()) {
-      std::shared_ptr<Effect> hostEffect;
+      std::shared_ptr<EffectHost> hostEffect;
       // This will instantiate the effect client if it hasn't already been done
       const auto instance = PluginManager::Get().GetInstance(ID);
 
       if (auto effect = dynamic_cast<EffectUIHostInterface *>(instance);
-          effect && effect->Startup(nullptr))
+          effect && effect->Startup())
          // Self-hosting or "legacy" effect objects
          return (mEffects[ID] = effect);
       else if (auto client = dynamic_cast<EffectUIClientInterface *>(instance);
-          client && (hostEffect = std::make_shared<Effect>())->Startup(client))
-         // plugin that inherits only EffectClientInterface needs a host
+          client &&
+         (hostEffect = std::make_shared<EffectHost>(*client))->Startup())
+         // plugin that inherits only EffectUIClientInterface needs a host
          return (mEffects[ID] =
             (mHostEffects[ID] = move(hostEffect)).get());
       else {

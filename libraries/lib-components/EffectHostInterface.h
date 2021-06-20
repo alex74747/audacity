@@ -58,7 +58,7 @@ using EffectDialogFactory = std::function<
 class TrackList;
 class WaveTrackFactory;
 class NotifyingSelectedRegion;
-class RealtimeEffectProcessor;
+class EffectProcessor;
 
 /*************************************************************************************//**
 
@@ -70,7 +70,8 @@ class COMPONENTS_API EffectUIHostInterface : public EffectHostInterface
 public:
    EffectUIHostInterface &operator=(EffectUIHostInterface&) = delete;
    virtual ~EffectUIHostInterface();
-   virtual RealtimeEffectProcessor &GetProcessor() = 0;
+   virtual EffectProcessor &GetProcessor() = 0;
+   virtual EffectUIClientInterface &GetClient() = 0;
 
    /*!
     @return 0 if destructive effect processing should not proceed (and there
@@ -96,7 +97,7 @@ public:
       // Prompt the user for input only if these arguments are both not null.
       wxWindow *pParent = nullptr,
       const EffectDialogFactory &dialogFactory = {} ) = 0;
-   virtual bool Startup(EffectUIClientInterface *client) = 0;
+   virtual bool Startup() = 0;
 
    virtual bool TransferDataToWindow() = 0;
    virtual bool TransferDataFromWindow() = 0;
