@@ -951,11 +951,6 @@ bool AudioUnitEffect::IsDefault()
    return false;
 }
 
-bool AudioUnitEffect::IsLegacy()
-{
-   return false;
-}
-
 bool AudioUnitEffect::SupportsRealtime()
 {
    return GetType() == EffectTypeProcess;

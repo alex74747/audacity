@@ -93,10 +93,6 @@ public:
    //! Whether the effect sorts "above the line" in the menus
    virtual bool IsDefault() = 0;
 
-   // This will go away when all Effects have been updated to the new
-   // interface.
-   virtual bool IsLegacy() = 0;
-
    //! Whether the effect supports realtime previewing (while audio is playing).
    virtual bool SupportsRealtime() = 0;
 

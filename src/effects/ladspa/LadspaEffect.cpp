@@ -706,11 +706,6 @@ bool LadspaEffect::IsDefault()
    return false;
 }
 
-bool LadspaEffect::IsLegacy()
-{
-   return false;
-}
-
 bool LadspaEffect::SupportsRealtime()
 {
    return GetType() != EffectTypeGenerate;
