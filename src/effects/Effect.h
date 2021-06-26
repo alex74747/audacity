@@ -492,8 +492,6 @@ public:
    const static wxString kFactoryPresetIdent;
    const static wxString kCurrentSettingsIdent;
    const static wxString kFactoryDefaultsIdent;
-
-   friend class EffectUIHost;
 };
 
 // FIXME:

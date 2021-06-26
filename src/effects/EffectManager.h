@@ -25,15 +25,14 @@ class AudacityProject;
 class CommandContext;
 class CommandMessageTarget;
 class ComponentInterfaceSymbol;
-class Effect;
 class TrackList;
 class SelectedRegion;
 class wxString;
 typedef wxString PluginID;
 
-using EffectMap = std::unordered_map<wxString, Effect *>;
+using EffectMap = std::unordered_map<wxString, EffectUIHostInterface *>;
 using AudacityCommandMap = std::unordered_map<wxString, AudacityCommand *>;
-using EffectOwnerMap = std::unordered_map< wxString, std::shared_ptr<Effect> >;
+using EffectOwnerMap = std::unordered_map< wxString, std::shared_ptr<EffectUIHostInterface> >;
 
 #if defined(EXPERIMENTAL_EFFECTS_RACK)
 class EffectRack;
@@ -77,8 +76,9 @@ public:
    virtual ~EffectManager();
 
    //! Here solely for the purpose of Nyquist Workbench until a better solution is devised.
-   /** Register an effect so it can be executed. */
-   const PluginID & RegisterEffect(std::unique_ptr<Effect> uEffect);
+   /** Register an effect so it can be executed.
+     uEffect is expected to be a self-hosting Nyquist effect */
+   const PluginID & RegisterEffect(std::unique_ptr<EffectUIHostInterface> uEffect);
    //! Used only by Nyquist Workbench module
    void UnregisterEffect(const PluginID & ID);
 
@@ -136,7 +136,7 @@ public:
    const PluginID & GetEffectByIdentifier(const CommandID & strTarget);
 
    /** Return an effect by its ID. */
-   Effect *GetEffect(const PluginID & ID);
+   EffectUIHostInterface *GetEffect(const PluginID & ID);
 
 private:
    AudacityCommand *GetAudacityCommand(const PluginID & ID);

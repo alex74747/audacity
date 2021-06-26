@@ -33,9 +33,9 @@ class wxPanel;
 class wxStaticText;
 
 class AudacityProject;
+class EffectUIHostInterface;
 
-class Effect;
-using EffectArray = std::vector<Effect*>;
+using EffectArray = std::vector<EffectUIHostInterface*>;
 
 class EffectRack final : public wxFrame
 {
@@ -43,7 +43,8 @@ public:
    EffectRack( AudacityProject &project );
    virtual ~EffectRack();
 
-   void Add(Effect *effect, bool active = false, bool favorite = false);
+   void Add(EffectUIHostInterface *effect,
+      bool active = false, bool favorite = false);
 
    static EffectRack &Get( AudacityProject &project );
 
@@ -113,7 +114,6 @@ private:
 
 class AudacityCommand;
 class AudacityProject;
-class Effect;
 
 class wxCheckBox;
 
@@ -124,7 +124,7 @@ public:
    // constructors and destructors
    EffectUIHost(wxWindow *parent,
                 AudacityProject &project,
-                Effect &effect,
+                EffectUIHostInterface &effect,
                 EffectUIClientInterface &client);
    virtual ~EffectUIHost();
 
@@ -174,7 +174,7 @@ private:
 private:
    AudacityProject *mProject;
    wxWindow *mParent;
-   Effect &mEffect;
+   EffectUIHostInterface &mEffect;
    EffectUIClientInterface &mClient;
 
    RegistryPaths mUserPresets;
@@ -224,7 +224,7 @@ class CommandContext;
 namespace  EffectUI {
 
    AUDACITY_DLL_API
-   wxDialog *DialogFactory( wxWindow &parent, EffectHostInterface &host,
+   wxDialog *DialogFactory( wxWindow &parent, EffectUIHostInterface &host,
       EffectUIClientInterface &client);
 
    /** Run an effect given the plugin ID */
