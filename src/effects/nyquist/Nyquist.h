@@ -36,6 +36,11 @@ enum NyqControlType
    NYQ_CTRL_FILE,
 };
 
+struct NyqValue {
+   wxString valStr;
+   double val = 0.0;
+};
+
 class NyqControl
 {
 public:
@@ -51,10 +56,8 @@ public:
    wxString label;
    std::vector<EnumValueSymbol> choices;
    FileNames::FileTypes fileTypes;
-   wxString valStr;
    wxString lowStr;
    wxString highStr;
-   double val;
    double low;
    double high;
    int ticks;
@@ -256,6 +259,7 @@ private:
 
    int               mVersion;   // Syntactic version of Nyquist plug-in (not to be confused with mReleaseVersion)
    std::vector<NyqControl>   mControls;
+   std::vector<NyqValue> mBindings; //!< in correspondence with mControls
 
    unsigned          mCurNumChannels;
    WaveTrack         *mCurTrack[2];
