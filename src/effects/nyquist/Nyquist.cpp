@@ -106,9 +106,6 @@ enum
    ID_FILE = 15000
 };
 
-// Protect Nyquist from selections greater than 2^31 samples (bug 439)
-#define NYQ_MAX_LEN (std::numeric_limits<long>::max())
-
 #define UNINITIALIZED_CONTROL ((double)99999999.99)
 
 static const wxChar *KEY_Command = wxT("Command");
@@ -140,40 +137,22 @@ NyquistEffect::NyquistEffect(const wxString &fName)
 {
    mOutputTrack[0] = mOutputTrack[1] = nullptr;
 
-   mAction = XO("Applying Nyquist Effect...");
    mIsPrompt = false;
    mExternal = false;
-   mCompiler = false;
-   mTrace = false;
    mRedirectOutput = false;
    mDebug = false;
-   mIsSal = false;
-   mOK = false;
-   mAuthor = XO("n/a");
-   mReleaseVersion = XO("n/a");
-   mCopyright = XO("n/a");
-
-   // set clip/split handling when applying over clip boundary.
-   mRestoreSplits = true;  // Default: Restore split lines.
-   mMergeClips = -1;       // Default (auto):  Merge if length remains unchanged.
-
-   mVersion = 4;
 
    mStop = false;
    mBreak = false;
    mCont = false;
-   mIsTool = false;
-
-   mMaxLen = NYQ_MAX_LEN;
 
    // Interactive Nyquist
    if (fName == NYQUIST_PROMPT_ID) {
-      mName = NYQUIST_PROMPT_NAME;
-      mType = EffectTypeTool;
-      mIsTool = true;
+      mProperties = NyqProperties{
+         NYQUIST_PROMPT_NAME, true, true, EffectTypeTool };
+      SetProperties();
       mPromptName = mName;
       mPromptType = mType;
-      mOK = true;
       mIsPrompt = true;
       return;
    }
@@ -181,18 +160,20 @@ NyquistEffect::NyquistEffect(const wxString &fName)
    if (fName == NYQUIST_WORKER_ID) {
       // Effect spawned from Nyquist Prompt
 /* i18n-hint: It is acceptable to translate this the same as for "Nyquist Prompt" */
-      mName = XO("Nyquist Worker");
+      mProperties = NyqProperties{ XO("Nyquist Worker") };
+      SetProperties();
       return;
    }
 
    mFileName = fName;
    // Use the file name verbatim as effect name.
    // This is only a default name, overridden if we find a $name line:
-   mName = Verbatim( mFileName.GetName() );
+   mProperties = NyqProperties{ Verbatim( mFileName.GetName() ) };
+   SetProperties();
    mFileModified = mFileName.GetModificationTime();
    ParseFile();
 
-   if (!mOK && mInitError.empty())
+   if (!mProperties.mOK && mInitError.empty())
       mInitError = XO("Ill-formed Nyquist plug-in header");
 }
 
@@ -225,26 +206,26 @@ VendorSymbol NyquistEffect::GetVendor() const
       return XO("Audacity");
    }
 
-   return mAuthor;
+   return mProperties.mAuthor;
 }
 
 wxString NyquistEffect::GetVersion() const
 {
    // Are Nyquist version strings really supposed to be translatable?
    // See commit a06e561 which used XO for at least one of them
-   return mReleaseVersion.Translation();
+   return mProperties.mReleaseVersion.Translation();
 }
 
 TranslatableString NyquistEffect::GetDescription() const
 {
-   return mCopyright;
+   return mProperties.mCopyright;
 }
 
 ManualPageID NyquistEffect::ManualPage()
 {
-      return mIsPrompt
-         ? wxString("Nyquist_Prompt")
-         : mManPage;
+   return mIsPrompt
+      ? wxString("Nyquist_Prompt")
+      : mProperties.mManPage;
 }
 
 FilePath NyquistEffect::HelpPage()
@@ -253,7 +234,8 @@ FilePath NyquistEffect::HelpPage()
    wxString fileName;
 
    for (size_t i = 0, cnt = paths.size(); i < cnt; i++) {
-      fileName = wxFileName(paths[i] + wxT("/") + mHelpFile).GetFullPath();
+      fileName = wxFileName(paths[i] + wxT("/")
+         + mProperties.mHelpFile).GetFullPath();
       if (wxFileExists(fileName)) {
          mHelpFileExists = true;
          return fileName;
@@ -627,7 +609,6 @@ bool NyquistEffect::Init()
       {
          SaveUserPreset(GetCurrentSettingsGroup());
 
-         mMaxLen = NYQ_MAX_LEN;
          ParseFile();
          mFileModified = mFileName.GetModificationTime();
 
@@ -649,6 +630,8 @@ static void RegisterFunctions();
 
 bool NyquistEffect::Process()
 {
+   const auto &properties = mProperties;
+
    // Check for reentrant Nyquist commands.
    // I'm choosing to mark skipped Nyquist commands as successful even though
    // they are skipped.  The reason is that when Nyquist calls out to a chain,
@@ -701,10 +684,10 @@ bool NyquistEffect::Process()
       : mOutputTracks->Selected< const WaveTrack >().size();
 
    mDebugOutput = {};
-   if (!mHelpFile.empty() && !mHelpFileExists) {
+   if (!properties.mHelpFile.empty() && !mHelpFileExists) {
       mDebugOutput = XO(
 "error: File \"%s\" specified in header but not found in plug-in path.\n")
-         .Format( mHelpFile );
+         .Format( properties.mHelpFile );
    }
 
    if (mVersion >= 4)
@@ -899,7 +882,7 @@ bool NyquistEffect::Process()
                return false;
             }
 
-            mCurLen = std::min(mCurLen, mMaxLen);
+            mCurLen = std::min(mCurLen, properties.mMaxLen);
          }
 
          mProgressIn = 0.0;
@@ -986,7 +969,8 @@ bool NyquistEffect::Process()
 finish:
 
    // Show debug window if trace set in plug-in header and something to show.
-   mDebug = (mTrace && !mDebugOutput.Translation().empty())? true : mDebug;
+   mDebug = mDebug ||
+      (properties.mTrace && !mDebugOutput.Translation().empty());
 
    if (mDebug && !mRedirectOutput) {
       NyquistOutputDialog dlog(mUIParent, -1,
@@ -1131,6 +1115,7 @@ bool NyquistEffect::TransferDataFromWindow()
 
 bool NyquistEffect::ProcessOne()
 {
+   const auto &properties = mProperties;
    mpException = {};
 
    nyx_rval rval;
@@ -1332,7 +1317,7 @@ bool NyquistEffect::ProcessOne()
       cmd += wxT("(setf s 0.25)\n");
    }
 
-   if (mDebug || mTrace) {
+   if (mDebug || properties.mTrace) {
       cmd += wxT("(setf *tracenable* T)\n");
       if (mExternal) {
          cmd += wxT("(setf *breakenable* T)\n");
@@ -1375,7 +1360,7 @@ bool NyquistEffect::ProcessOne()
       }
    }
 
-   if (mIsSal) {
+   if (properties.mIsSal) {
       wxString str = EscapeString(mCmd);
       // this is tricky: we need SAL to call main so that we can get a
       // SAL traceback in the event of an error (sal-compile catches the
@@ -1384,7 +1369,7 @@ bool NyquistEffect::ProcessOne()
       // error occurs, we will grab the value with a LISP expression
       str += wxT("\nset aud:result = main()\n");
 
-      if (mDebug || mTrace) {
+      if (mDebug || properties.mTrace) {
          // since we're about to evaluate SAL, remove LISP trace enable and
          // break enable (which stops SAL processing) and turn on SAL stack
          // trace
@@ -1393,7 +1378,7 @@ bool NyquistEffect::ProcessOne()
          cmd += wxT("(setf *sal-traceback* t)\n");
       }
 
-      if (mCompiler) {
+      if (properties.mCompiler) {
          cmd += wxT("(setf *sal-compiler-debug* t)\n");
       }
 
@@ -1428,7 +1413,7 @@ bool NyquistEffect::ProcessOne()
 
    // If we're not showing debug window, log errors and warnings:
    const auto output = mDebugOutput.Translation();
-   if (!output.empty() && !mDebug && !mTrace) {
+   if (!output.empty() && !mDebug && !properties.mTrace) {
       /* i18n-hint: An effect "returned" a message.*/
       wxLogMessage(wxT("\'%s\' returned:\n%s"),
          mName.Translation(), output);
@@ -1468,7 +1453,7 @@ bool NyquistEffect::ProcessOne()
    if (rval == nyx_error) {
       // Return value is not valid type.
       // Show error in debug window if trace enabled, otherwise log.
-      if (mTrace) {
+      if (properties.mTrace) {
          /* i18n-hint: "%s" is replaced by name of plug-in.*/
          mDebugOutput = XO("nyx_error returned from %s.\n")
             .Format( mName.empty() ? XO("plug-in") : mName )
@@ -1629,14 +1614,16 @@ bool NyquistEffect::ProcessOne()
          out = outputTrack[0].get();
       }
 
-      if (mMergeClips < 0) {
+      if (properties.mMergeClips < 0) {
          // Use sample counts to determine default behaviour - times will rarely be equal.
          bool bMergeClips = (out->TimeToLongSamples(mT0) + out->TimeToLongSamples(mOutputTime) ==
                                                                      out->TimeToLongSamples(mT1));
-         mCurTrack[i]->ClearAndPaste(mT0, mT1, out, mRestoreSplits, bMergeClips);
+         mCurTrack[i]->ClearAndPaste( mT0, mT1, out,
+            properties.mRestoreSplits, bMergeClips );
       }
       else {
-         mCurTrack[i]->ClearAndPaste(mT0, mT1, out, mRestoreSplits, mMergeClips != 0);
+         mCurTrack[i]->ClearAndPaste( mT0, mT1, out,
+            properties.mRestoreSplits, properties.mMergeClips != 0 );
       }
 
       // If we were first in the group adjust non-selected group tracks
@@ -1989,20 +1976,22 @@ bool NyquistEffect::Parse(
       return true;
    }
 
+   auto &properties = mProperties;
+
    // Consistency decision is for "plug-in" as the correct spelling
    // "plugin" (deprecated) is allowed as an undocumented convenience.
    if (len == 2 && tokens[0] == wxT("nyquist") &&
       (tokens[1] == wxT("plug-in") || tokens[1] == wxT("plugin"))) {
-      mOK = true;
+      properties.mOK = true;
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("type")) {
       wxString tok = tokens[1];
-      mIsTool = false;
+      properties.mIsTool = false;
       if (tok == wxT("tool")) {
-         mIsTool = true;
-         mType = EffectTypeTool;
+         properties.mIsTool = true;
+         properties.mType = EffectTypeTool;
          // we allow
          // ;type tool
          // ;type tool process
@@ -2015,17 +2004,17 @@ bool NyquistEffect::Parse(
       }
 
       if (tok == wxT("process")) {
-         mType = EffectTypeProcess;
+         properties.mType = EffectTypeProcess;
       }
       else if (tok == wxT("generate")) {
-         mType = EffectTypeGenerate;
+         properties.mType = EffectTypeGenerate;
       }
       else if (tok == wxT("analyze")) {
-         mType = EffectTypeAnalyze;
+         properties.mType = EffectTypeAnalyze;
       }
 
       if (len >= 3 && tokens[2] == wxT("spectral")) {;
-         mIsSpectral = true;
+         properties.mIsSpectral = true;
       }
       return true;
    }
@@ -2033,12 +2022,12 @@ bool NyquistEffect::Parse(
    if (len == 2 && tokens[0] == wxT("codetype")) {
       // This will stop ParseProgram() from doing a best guess as program type.
       if (tokens[1] == wxT("lisp")) {
-         mIsSal = false;
-         mFoundType = true;
+         properties.mIsSal = false;
+         properties.mFoundType = true;
       }
       else if (tokens[1] == wxT("sal")) {
-         mIsSal = true;
-         mFoundType = true;
+         properties.mIsSal = true;
+         properties.mFoundType = true;
       }
       return true;
    }
@@ -2048,16 +2037,16 @@ bool NyquistEffect::Parse(
          // "trace" sets *tracenable* (LISP) or *sal-traceback* (SAL)
          // and displays debug window IF there is anything to show.
          if (tokens[i] == wxT("trace")) {
-            mTrace = true;
+            properties.mTrace = true;
          }
          else if (tokens[i] == wxT("notrace")) {
-            mTrace = false;
+            properties.mTrace = false;
          }
          else if (tokens[i] == wxT("compiler")) {
-            mCompiler = true;
+            properties.mCompiler = true;
          }
          else if (tokens[i] == wxT("nocompiler")) {
-            mCompiler = false;
+            properties.mCompiler = false;
          }
       }
       return true;
@@ -2072,13 +2061,13 @@ bool NyquistEffect::Parse(
       tokens[1].ToLong(&v);
       if (v < 1 || v > 4) {
          // This is an unsupported plug-in version
-         mOK = false;
+         properties.mOK = false;
          mInitError = XO(
 "This version of Audacity does not support Nyquist plug-in version %ld")
             .Format( v );
          return true;
       }
-      mVersion = (int) v;
+      properties.mVersion = (int) v;
    }
 
    if (len >= 2 && tokens[0] == wxT("name")) {
@@ -2093,35 +2082,35 @@ bool NyquistEffect::Parse(
       // later looked up will lack the ... and will not be found.
       if (name.EndsWith(wxT("...")))
          name = name.RemoveLast(3);
-      mName = TranslatableString{ name, {} };
+      properties.mName = TranslatableString{ name, {} };
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("action")) {
-      mAction = TranslatableString{ UnQuote(tokens[1]), {} };
+      properties.mAction = TranslatableString{ UnQuote(tokens[1]), {} };
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("info")) {
-      mInfo = TranslatableString{ UnQuote(tokens[1]), {} };
+      properties.mInfo = TranslatableString{ UnQuote(tokens[1]), {} };
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("preview")) {
       if (tokens[1] == wxT("enabled") || tokens[1] == wxT("true")) {
-         mEnablePreview = true;
+         properties.mEnablePreview = true;
          SetLinearEffectFlag(false);
       }
       else if (tokens[1] == wxT("linear")) {
-         mEnablePreview = true;
+         properties.mEnablePreview = true;
          SetLinearEffectFlag(true);
       }
       else if (tokens[1] == wxT("selection")) {
-         mEnablePreview = true;
+         properties.mEnablePreview = true;
          SetPreviewFullSelectionFlag(true);
       }
       else if (tokens[1] == wxT("disabled") || tokens[1] == wxT("false")) {
-         mEnablePreview = false;
+         properties.mEnablePreview = false;
       }
       return true;
    }
@@ -2131,7 +2120,7 @@ bool NyquistEffect::Parse(
    if (len >= 2 && tokens[0] == wxT("maxlen")) {
       long long v; // Note that Nyquist may overflow at > 2^31 samples (bug 439)
       tokens[1].ToLongLong(&v);
-      mMaxLen = (sampleCount) v;
+      properties.mMaxLen = (sampleCount) v;
    }
 
 #if defined(EXPERIMENTAL_NYQUIST_SPLIT_CONTROL)
@@ -2139,7 +2128,7 @@ bool NyquistEffect::Parse(
       long v;
       // -1 = auto (default), 0 = don't merge clips, 1 = do merge clips
       tokens[1].ToLong(&v);
-      mMergeClips = v;
+      properties.mMergeClips = v;
       return true;
    }
 
@@ -2147,46 +2136,46 @@ bool NyquistEffect::Parse(
       long v;
       // Splits are restored by default. Set to 0 to prevent.
       tokens[1].ToLong(&v);
-      mRestoreSplits = !!v;
+      properties.mRestoreSplits = !!v;
       return true;
    }
 #endif
 
    if (len >= 2 && tokens[0] == wxT("author")) {
-      mAuthor = TranslatableString{ UnQuote(tokens[1]), {} };
+      properties.mAuthor = TranslatableString{ UnQuote(tokens[1]), {} };
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("release")) {
       // Value must be quoted if the release version string contains spaces.
-      mReleaseVersion =
+      properties.mReleaseVersion =
          TranslatableString{ UnQuote(tokens[1]), {} };
       return true;
    }
 
    if (len >= 2 && tokens[0] == wxT("copyright")) {
-      mCopyright = TranslatableString{ UnQuote(tokens[1]), {} };
+      properties.mCopyright = TranslatableString{ UnQuote(tokens[1]), {} };
       return true;
    }
 
    // Page name in Audacity development manual
    if (len >= 2 && tokens[0] == wxT("manpage")) {
       // do not translate
-      mManPage = UnQuote(tokens[1], false);
+      properties.mManPage = UnQuote(tokens[1], false);
       return true;
    }
 
    // Local Help file
    if (len >= 2 && tokens[0] == wxT("helpfile")) {
       // do not translate
-      mHelpFile = UnQuote(tokens[1], false);
+      properties.mHelpFile = UnQuote(tokens[1], false);
       return true;
    }
 
    // Debug button may be disabled for release plug-ins.
    if (len >= 2 && tokens[0] == wxT("debugbutton")) {
       if (tokens[1] == wxT("disabled") || tokens[1] == wxT("false")) {
-         mDebugButton = false;
+         properties.mDebugButton = false;
       }
       return true;
    }
@@ -2329,7 +2318,7 @@ bool NyquistEffect::Parse(
    // Deprecated
    if (len >= 2 && tokens[0] == wxT("categories")) {
       for (size_t i = 1; i < tokens.size(); ++i) {
-         mCategories.push_back(tokens[i]);
+         properties.mCategories.push_back(tokens[i]);
       }
    }
    return true;
@@ -2345,27 +2334,15 @@ bool NyquistEffect::ParseProgram(wxInputStream & stream)
 
    wxTextInputStream pgm(stream, wxT(" \t"), wxConvAuto());
 
+   auto &properties = mProperties;
+   properties = {};
    mCmd = wxT("");
    mCmd.Alloc(10000);
-   mIsSal = false;
    mControls.clear();
    mBindings.clear();
-   mCategories.clear();
-   mIsSpectral = false;
-   mManPage = wxEmptyString; // If not wxEmptyString, must be a page in the Audacity manual.
-   mHelpFile = wxEmptyString; // If not wxEmptyString, must be a valid HTML help file.
    mHelpFileExists = false;
    mDebug = false;
-   mTrace = false;
-   mDebugButton = true;    // Debug button enabled by default.
-   mEnablePreview = true;  // Preview button enabled by default.
 
-   // Bug 1934.
-   // All Nyquist plug-ins should have a ';type' field, but if they don't we default to
-   // being an Effect.
-   mType = EffectTypeProcess;
-
-   mFoundType = false;
    while (!stream.Eof() && stream.IsOk())
    {
       wxString line = pgm.ReadLine();
@@ -2394,23 +2371,26 @@ bool NyquistEffect::ParseProgram(wxInputStream & stream)
       }
       else
       {
-         if(!mFoundType && line.length() > 0) {
+         if (!properties.mFoundType && line.length() > 0) {
             if (line[0] == wxT('(') ||
                 (line[0] == wxT('#') && line.length() > 1 && line[1] == wxT('|')))
             {
-               mIsSal = false;
-               mFoundType = true;
+               properties.mIsSal = false;
+               properties.mFoundType = true;
             }
             else if (line.Upper().Find(wxT("RETURN")) != wxNOT_FOUND)
             {
-               mIsSal = true;
-               mFoundType = true;
+               properties.mIsSal = true;
+               properties.mFoundType = true;
             }
          }
          mCmd += line + wxT("\n");
       }
    }
-   if (!mFoundType && mIsPrompt)
+   
+   SetProperties();
+   
+   if (!properties.mFoundType && mIsPrompt)
    {
       /* i1n-hint: SAL and LISP are names for variant syntaxes for the
        Nyquist programming language.  Leave them, and 'return', untranslated. */
@@ -2443,6 +2423,21 @@ bool NyquistEffect::ParseCommand(const wxString & cmd)
    wxStringInputStream stream(cmd + wxT(" "));
 
    return ParseProgram(stream);
+}
+
+void NyquistEffect::SetProperties()
+{
+   // We would like to treat properties as immutable once parsed, but there
+   // is some legacy logic that needs to change certain properties after parse.
+   // Those are stored directly in the NyquistEffect object.
+   const auto &properties = mProperties;
+   mName = properties.mName;
+   mIsTool = properties.mIsTool;
+   mType = properties.mType;
+   mIsSpectral = properties.mIsSpectral;
+   mVersion = properties.mVersion;
+   mEnablePreview = properties.mEnablePreview;
+   mDebugButton = properties.mDebugButton;
 }
 
 int NyquistEffect::StaticGetCallback(float *buffer, int channel,
@@ -3007,7 +3002,7 @@ void NyquistEffect::BuildEffectWindow(ShuttleGui & S)
 
 bool NyquistEffect::IsOk()
 {
-   return mOK;
+   return mProperties.mOK;
 }
 
 static const FileNames::FileType

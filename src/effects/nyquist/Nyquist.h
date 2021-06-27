@@ -63,6 +63,78 @@ public:
    int ticks;
 };
 
+// Protect Nyquist from selections greater than 2^31 samples (bug 439)
+#define NYQ_MAX_LEN (std::numeric_limits<long>::max())
+
+//! Properties of a Nyquist program deduced at parsing time
+struct NyqProperties {
+   NyqProperties() = default;
+   explicit NyqProperties(TranslatableString name)
+      : mName{ std::move(name) }
+   {}
+   explicit NyqProperties(TranslatableString name,
+      bool ok, bool tool, EffectType type)
+      : mName{ std::move(name) }
+      , mOK{ ok }
+      , mIsTool{ tool }
+      , mType{ type }
+   {}
+
+   //! Name of the Effect (untranslated)
+   TranslatableString mName;
+   TranslatableString mAction = XO("Applying Nyquist Effect...");
+   TranslatableString mInfo;
+   TranslatableString mAuthor = XO("n/a");
+   TranslatableString mCopyright = XO("n/a");
+
+   //! ONLY use if a help page exists in the manual.
+   /*! If not wxEmptyString, must be a page in the Audacity manual. */
+   wxString          mManPage;
+   
+   //! If not wxEmptyString, must be a valid HTML help file.
+   wxString          mHelpFile;
+
+   //! Version number of the specific plug-in (not to be confused with mVersion)
+   /*! For shipped plug-ins this will be the same as the Audacity release version
+    when the plug-in was last modified. */
+   TranslatableString mReleaseVersion = XO("n/a");
+
+   wxArrayString     mCategories;
+
+   sampleCount       mMaxLen = NYQ_MAX_LEN;
+
+   bool              mOK = false;
+   bool              mIsTool = false;
+
+   // Bug 1934.
+   // All Nyquist plug-ins should have a ';type' field, but if they don't we default to
+   // being an Effect.
+   EffectType        mType = EffectTypeProcess;
+
+   bool              mIsSpectral = false;
+   bool              mIsSal = false;
+   bool              mFoundType = false; // not used after parsing
+
+   //! True when *tracenable* or *sal-traceback* are enabled
+   bool              mTrace = false;
+   bool              mCompiler = false;
+
+   /*! Syntactic version of Nyquist plug-in
+    (not to be confused with mReleaseVersion) */
+   int               mVersion = 4;
+
+   //! Preview button enabled by default.
+   bool              mEnablePreview = true;
+
+   //! Default (auto):  Merge if length remains unchanged.
+   int                mMergeClips = -1;
+
+   // Default: Restore split lines.
+   bool              mRestoreSplits = true;
+
+   //! Debug button enabled by default. Set to false to disable Debug button.
+   bool              mDebugButton = true;
+};
 
 class AUDACITY_DLL_API NyquistEffect final : public Effect
 {
@@ -183,6 +255,7 @@ private:
          size_t trimStart, size_t trimEnd);
    };
    bool Parse(Tokenizer &tokenizer, const wxString &line, bool eof, bool first);
+   void SetProperties();
 
    static TranslatableString UnQuoteMsgid(const wxString &s, bool allowParens = true,
                            wxString *pExtraString = nullptr);
@@ -214,41 +287,26 @@ private:
    bool              mBreak;
    bool              mCont;
 
-   bool              mFoundType;
-   bool              mCompiler;
-   bool              mTrace;   // True when *tracenable* or *sal-traceback* are enabled
-   bool              mIsSal;
    bool              mExternal;
-   bool              mIsSpectral;
-   bool              mIsTool;
+   bool              mIsSpectral = false;
+   bool              mIsTool = false;
    /** True if the code to execute is obtained interactively from the user via
     * the "Nyquist Effect Prompt", or "Nyquist Prompt", false for all other effects (lisp code read from
     * files)
     */
    bool              mIsPrompt;
-   bool              mOK;
    TranslatableString mInitError;
    wxString          mInputCmd; // history: exactly what the user typed
    wxString          mParameters; // The parameters of to be fed to a nested prompt
    wxString          mCmd;      // the command to be processed
    TranslatableString mName;   ///< Name of the Effect (untranslated)
    TranslatableString mPromptName; // If a prompt, we need to remember original name.
-   TranslatableString mAction;
-   TranslatableString mInfo;
-   TranslatableString mAuthor;
-   // Version number of the specific plug-in (not to be confused with mVersion)
-   // For shipped plug-ins this will be the same as the Audacity release version
-   // when the plug-in was last modified.
-   TranslatableString mReleaseVersion;
-   TranslatableString mCopyright;
-   wxString          mManPage;   // ONLY use if a help page exists in the manual.
-   wxString          mHelpFile;
    bool              mHelpFileExists;
-   EffectType        mType;
+   EffectType        mType = EffectTypeProcess;
    EffectType        mPromptType; // If a prompt, need to remember original type.
 
-   bool              mEnablePreview;
-   bool              mDebugButton;  // Set to false to disable Debug button.
+   bool              mEnablePreview = true;
+   bool              mDebugButton = true;
 
    bool              mDebug;        // When true, debug window is shown.
    bool              mRedirectOutput;
@@ -256,15 +314,15 @@ private:
    wxString          mDebugOutputStr;
    TranslatableString mDebugOutput;
 
-   int               mVersion;   // Syntactic version of Nyquist plug-in (not to be confused with mReleaseVersion)
+   int               mVersion;
    std::vector<NyqControl>   mControls;
    std::vector<NyqValue> mBindings; //!< in correspondence with mControls
+   NyqProperties mProperties;
 
    unsigned          mCurNumChannels;
    WaveTrack         *mCurTrack[2];
    sampleCount       mCurStart[2];
    sampleCount       mCurLen;
-   sampleCount       mMaxLen;
    int               mTrackIndex;
    bool              mFirstInGroup;
    double            mOutputTime;
@@ -282,13 +340,8 @@ private:
 
    WaveTrack        *mOutputTrack[2];
 
-   wxArrayString     mCategories;
-
    wxString          mProps;
    wxString          mPerTrackProps;
-
-   bool              mRestoreSplits;
-   int               mMergeClips;
 
    wxTextCtrl *mCommandText;
 
