@@ -296,6 +296,8 @@ bool NyquistEffect::IsDefault()
    return mIsPrompt;
 }
 
+static double GetCtrlValue(const wxString &s);
+
 // EffectProcessor implementation
 bool NyquistEffect::DefineParams( ShuttleParams & S )
 {
@@ -1856,7 +1858,7 @@ wxString NyquistEffect::UnQuote(const wxString &s, bool allowParens,
    return UnQuoteMsgid( s, allowParens, pExtraString ).Translation();
 }
 
-double NyquistEffect::GetCtrlValue(const wxString &s)
+double GetCtrlValue(const wxString &s)
 {
    /* For this to work correctly requires that the plug-in header is
     * parsed on each run so that the correct value for "half-srate" may
@@ -1972,6 +1974,8 @@ bool NyquistEffect::Tokenizer::Tokenize(
       return false;
    }
 }
+
+static void SetControlBounds(NyqControl &ctrl);
 
 bool NyquistEffect::Parse(
    Tokenizer &tzer, const wxString &line, bool eof, bool first)
@@ -2316,6 +2320,7 @@ bool NyquistEffect::Parse(
 
       if( ! make_iterator_range( mPresetNames ).contains( ctrl.var ) )
       {
+         SetControlBounds(ctrl);
          mControls.push_back(ctrl);
          mBindings.push_back(binding);
       }
@@ -2677,7 +2682,7 @@ bool NyquistEffect::TransferDataFromEffectWindow()
    }
 
    auto beginBinding = mBindings.begin(), pBinding = beginBinding;
-   for (auto &ctrl : mControls) {
+   for (const auto &ctrl : mControls) {
       size_t i = pBinding - beginBinding;
       auto &binding = *pBinding++;
 
@@ -2758,56 +2763,51 @@ bool NyquistEffect::TransferDataFromEffectWindow()
          binding.val = n->GetValue();
       }
 
-      if (ctrl.type == NYQ_CTRL_INT_TEXT && ctrl.lowStr.IsSameAs(wxT("nil"), false)) {
-         ctrl.low = INT_MIN;
-      }
-      else if ((ctrl.type == NYQ_CTRL_FLOAT_TEXT || ctrl.type == NYQ_CTRL_TIME) &&
-               ctrl.lowStr.IsSameAs(wxT("nil"), false))
-      {
-         ctrl.low = -(FLT_MAX);
-      }
-      else
-      {
-         ctrl.low = GetCtrlValue(ctrl.lowStr);
-      }
+      binding.val = std::clamp(binding.val, ctrl.low, ctrl.high);
+   }
+   
+   return true;
+}
 
-      if (ctrl.type == NYQ_CTRL_INT_TEXT && ctrl.highStr.IsSameAs(wxT("nil"), false)) {
-         ctrl.high = INT_MAX;
-      }
-      else if ((ctrl.type == NYQ_CTRL_FLOAT_TEXT || ctrl.type == NYQ_CTRL_TIME) &&
-               ctrl.highStr.IsSameAs(wxT("nil"), false))
-      {
-         ctrl.high = FLT_MAX;
-      }
-      else
-      {
-         ctrl.high = GetCtrlValue(ctrl.highStr);
-      }
-
-      if (ctrl.high < ctrl.low)
-      {
-         ctrl.high = ctrl.low + 1;
-      }
-
-      if (binding.val < ctrl.low)
-      {
-         binding.val = ctrl.low;
-      }
-
-      if (binding.val > ctrl.high)
-      {
-         binding.val = ctrl.high;
-      }
-
-      ctrl.ticks = 1000;
-      if (ctrl.type == NYQ_CTRL_INT &&
-          (ctrl.high - ctrl.low < ctrl.ticks))
-      {
-         ctrl.ticks = (int)(ctrl.high - ctrl.low);
-      }
+void SetControlBounds(NyqControl &ctrl)
+{
+   if (ctrl.type == NYQ_CTRL_INT_TEXT && ctrl.lowStr.IsSameAs(wxT("nil"), false)) {
+      ctrl.low = INT_MIN;
+   }
+   else if ((ctrl.type == NYQ_CTRL_FLOAT_TEXT || ctrl.type == NYQ_CTRL_TIME) &&
+            ctrl.lowStr.IsSameAs(wxT("nil"), false))
+   {
+      ctrl.low = -(FLT_MAX);
+   }
+   else
+   {
+      ctrl.low = GetCtrlValue(ctrl.lowStr);
    }
 
-   return true;
+   if (ctrl.type == NYQ_CTRL_INT_TEXT && ctrl.highStr.IsSameAs(wxT("nil"), false)) {
+      ctrl.high = INT_MAX;
+   }
+   else if ((ctrl.type == NYQ_CTRL_FLOAT_TEXT || ctrl.type == NYQ_CTRL_TIME) &&
+            ctrl.highStr.IsSameAs(wxT("nil"), false))
+   {
+      ctrl.high = FLT_MAX;
+   }
+   else
+   {
+      ctrl.high = GetCtrlValue(ctrl.highStr);
+   }
+
+   if (ctrl.high < ctrl.low)
+   {
+      ctrl.high = ctrl.low + 1;
+   }
+
+   ctrl.ticks = 1000;
+   if (ctrl.type == NYQ_CTRL_INT &&
+       (ctrl.high - ctrl.low < ctrl.ticks))
+   {
+      ctrl.ticks = (int)(ctrl.high - ctrl.low);
+   }
 }
 
 void NyquistEffect::BuildPromptWindow(ShuttleGui & S)

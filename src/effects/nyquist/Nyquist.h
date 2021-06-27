@@ -188,7 +188,6 @@ private:
                            wxString *pExtraString = nullptr);
    static wxString UnQuote(const wxString &s, bool allowParens = true,
                            wxString *pExtraString = nullptr);
-   double GetCtrlValue(const wxString &s);
 
    void OnLoad(wxCommandEvent & evt);
    void OnSave(wxCommandEvent & evt);
