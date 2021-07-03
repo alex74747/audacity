@@ -10,6 +10,7 @@ set( LIBRARIES
    lib-components
    lib-basic-ui
    lib-preferences
+   lib-math
 )
 
 if ( ${_OPT}has_networking )

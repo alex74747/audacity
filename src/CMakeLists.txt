@@ -131,14 +131,10 @@ list( APPEND SOURCES
       DeviceManager.h
       Diags.cpp
       Diags.h
-      Dither.cpp
-      Dither.h
       Envelope.cpp
       Envelope.h
       EnvelopeEditor.cpp
       EnvelopeEditor.h
-      FFT.cpp
-      FFT.h
       FFmpeg.cpp
       FFmpeg.h
       FileException.cpp
@@ -161,8 +157,6 @@ list( APPEND SOURCES
       ImageManipulation.h
       InconsistencyException.cpp
       InconsistencyException.h
-      InterpolateAudio.cpp
-      InterpolateAudio.h
       KeyboardCapture.cpp
       KeyboardCapture.h
       LabelDialog.cpp
@@ -179,8 +173,6 @@ list( APPEND SOURCES
       LyricsWindow.cpp
       LyricsWindow.h
       MacroMagic.h
-      Matrix.cpp
-      Matrix.h
       Menus.cpp
       Menus.h
       Mix.cpp
@@ -236,10 +228,6 @@ list( APPEND SOURCES
       ProjectWindow.h
       ProjectWindowBase.cpp
       ProjectWindowBase.h
-      RealFFTf.cpp
-      RealFFTf.h
-      RealFFTf48x.cpp
-      RealFFTf48x.h
       RefreshCode.h
       Registrar.h
       Registry.cpp
@@ -250,10 +238,6 @@ list( APPEND SOURCES
       RingBuffer.h
       SampleBlock.cpp
       SampleBlock.h
-      SampleCount.cpp
-      SampleCount.h
-      SampleFormat.cpp
-      SampleFormat.h
       Screenshot.cpp
       Screenshot.h
       SelectUtilities.cpp
@@ -276,8 +260,6 @@ list( APPEND SOURCES
       Snap.h
       SoundActivatedRecord.cpp
       SoundActivatedRecord.h
-      Spectrum.cpp
-      Spectrum.h
       SpectrumAnalyst.cpp
       SpectrumAnalyst.h
       SplashDialog.cpp
@@ -340,7 +322,6 @@ list( APPEND SOURCES
       WrappedType.h
       ZoomInfo.cpp
       ZoomInfo.h
-      float_cast.h
       wxFileNameWrapper.h
 
       # Commands
@@ -1360,8 +1341,8 @@ target_compile_definitions( ${TARGET} PRIVATE ${DEFINES} )
 target_compile_options( ${TARGET} PRIVATE ${OPTIONS} )
 target_include_directories( ${TARGET} PRIVATE ${INCLUDES} )
 target_link_options( ${TARGET} PRIVATE ${LDFLAGS} )
-target_link_libraries( ${TARGET} ${LIBRARIES} )
 target_link_libraries( ${TARGET} PUBLIC ${AUDACITY_LIBRARIES} )
+target_link_libraries( ${TARGET} ${LIBRARIES} )
 
 if( CMAKE_VERSION VERSION_GREATER_EQUAL "3.16" AND NOT CCACHE_PROGRAM )
    if( ${_OPT}use_pch )

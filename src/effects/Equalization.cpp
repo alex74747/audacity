@@ -93,7 +93,7 @@
 #include "../FileNames.h"
 #include "../Envelope.h"
 #include "../EnvelopeEditor.h"
-#include "../FFT.h"
+#include "FFT.h"
 #include "Prefs.h"
 #include "../Project.h"
 #include "../Theme.h"
@@ -105,7 +105,7 @@
 #include "../widgets/AudacityTextEntryDialog.h"
 #include "../xml/XMLFileReader.h"
 #include "../AllThemeResources.h"
-#include "../float_cast.h"
+#include "float_cast.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "../widgets/WindowAccessible.h"

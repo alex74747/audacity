@@ -23,6 +23,7 @@
 
 #include "sndfile.h"
 
+#include "Dither.h"
 #include "../FileFormats.h"
 #include "../Mix.h"
 #include "Prefs.h"
