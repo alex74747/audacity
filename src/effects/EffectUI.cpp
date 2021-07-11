@@ -20,6 +20,7 @@
 #include "../PluginManager.h"
 #include "../ProjectHistory.h"
 #include "../ProjectWindowBase.h"
+#include "ProjectWindows.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
 #include "widgets/wxWidgetsWindowPlacement.h"
@@ -48,8 +49,8 @@ static PluginID GetID(Effect &effect)
 #include <wx/tglbtn.h>
 
 #include "../commands/CommandContext.h"
-#include "../Prefs.h"
-#include "../Project.h"
+#include "Prefs.h"
+#include "Project.h"
 #include "../widgets/wxPanelWrapper.h"
 
 #include "../../images/EffectRack/EffectRack.h"
@@ -133,12 +134,12 @@ EffectRack::EffectRack( AudacityProject &project )
       {
          auto hs = std::make_unique<wxBoxSizer>(wxHORIZONTAL);
          wxASSERT(mPanel); // To justify safenew
-         hs->Add(safenew wxButton(mPanel, wxID_APPLY, _("&Apply")), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
+         hs->Add(safenew wxButton(mPanel, wxID_APPLY, _("&Apply")), 0,  wxALIGN_CENTER_VERTICAL);
          hs->AddStretchSpacer();
          mLatency = safenew wxStaticText(mPanel, wxID_ANY, _("Latency: 0"));
          hs->Add(mLatency, 0, wxALIGN_CENTER);
          hs->AddStretchSpacer();
-         hs->Add(safenew wxToggleButton(mPanel, wxID_CLEAR, _("&Bypass")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+         hs->Add(safenew wxToggleButton(mPanel, wxID_CLEAR, _("&Bypass")), 0,  wxALIGN_CENTER_VERTICAL);
          bs->Add(hs.release(), 0, wxEXPAND);
       }
       bs->Add(safenew wxStaticLine(mPanel, wxID_ANY), 0, wxEXPAND);
@@ -579,7 +580,7 @@ void EffectRack::UpdateActive()
 
 namespace
 {
-AudacityProject::AttachedWindows::RegisteredFactory sKey{
+AttachedWindows::RegisteredFactory sKey{
    []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
       auto result = safenew EffectRack( parent );
       result->CenterOnParent();
@@ -590,7 +591,7 @@ AudacityProject::AttachedWindows::RegisteredFactory sKey{
 
 EffectRack &EffectRack::Get( AudacityProject &project )
 {
-   return project.AttachedWindows::Get< EffectRack >( sKey );
+   return GetAttachedWindows(project).Get< EffectRack >( sKey );
 }
 
 #endif

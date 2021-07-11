@@ -19,6 +19,8 @@
 #include "Effect.h"
 #include "EffectUI.h"
 
+#include "SampleFormat.h"
+
 class wxButton;
 class wxSizer;
 class wxSlider;
@@ -29,7 +31,7 @@ class WaveTrack;
 class wxRadioButton;
 class wxTextCtrl;
 
-#include "../RealFFTf.h"
+#include "RealFFTf.h"
 
 class EffectNoiseRemoval final : public Effect
 {
