@@ -234,10 +234,7 @@ bool EffectManager::SupportsAutomation(const PluginID & ID)
 
 wxString EffectManager::GetEffectParameters(const PluginID & ID)
 {
-   Effect *effect = GetEffect(ID);
-   
-   if (effect)
-   {
+   if (auto effect = GetEffect(ID)) {
       wxString parms;
 
       effect->GetAutomationParametersAsString(parms);
@@ -274,10 +271,7 @@ wxString EffectManager::GetEffectParameters(const PluginID & ID)
 
 bool EffectManager::SetEffectParameters(const PluginID & ID, const wxString & params)
 {
-   Effect *effect = GetEffect(ID);
-   
-   if (effect)
-   {
+   if (auto effect = GetEffect(ID)) {
       CommandParameters eap(params);
 
       if (eap.HasEntry(wxT("Use Preset")))

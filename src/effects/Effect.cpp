@@ -134,6 +134,11 @@ EffectType Effect::GetType()
    return EffectTypeNone;
 }
 
+RealtimeEffectProcessor &Effect::GetProcessor()
+{
+   return mClient ? *mClient : *this;
+}
+
 PluginPath Effect::GetPath()
 {
    if (mClient)
