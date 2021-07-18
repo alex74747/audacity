@@ -99,6 +99,9 @@ public:
    bool DefineParams( ShuttleParams & S ) override;
    int SetLispVarsFromParameters(CommandParameters & parms, bool bTestOnly);
 
+   // EffectUIClientInterface implementaton
+   bool ValidateUI() override;
+
    // Effect implementation
 
    bool Init() override;

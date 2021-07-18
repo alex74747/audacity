@@ -15,7 +15,6 @@
 #include "EffectUI.h"
 
 #include "widgets/BasicMenu.h"
-#include "Effect.h"
 #include "EffectManager.h"
 #include "../PluginManager.h"
 #include "../ProjectHistory.h"
@@ -1169,10 +1168,18 @@ void EffectUIHost::OnCancel(wxCommandEvent & WXUNUSED(evt))
 
 void EffectUIHost::OnHelp(wxCommandEvent & WXUNUSED(event))
 {
-   if (mEffect.GetDefinition().GetFamily() == NYQUISTEFFECTS_FAMILY && (mEffect.GetDefinition().ManualPage().empty())) {
+   if (mEffect.GetDefinition().ManualPage().empty()) {
+      // No manual page, so use help page
+
+      const auto &helpPage = mEffect.GetDefinition().HelpPage();
+      // It was guaranteed in Initialize() that there is no help
+      // button when neither manual nor help page is specified, so this
+      // event handler it not reachable in that case.
+      wxASSERT(!helpPage.empty());
+
       // Old ShowHelp required when there is no on-line manual.
       // Always use default web browser to allow full-featured HTML pages.
-      HelpSystem::ShowHelp(FindWindow(wxID_HELP), mEffect.GetDefinition().HelpPage(), wxEmptyString, true, true);
+      HelpSystem::ShowHelp(FindWindow(wxID_HELP), helpPage, wxEmptyString, true, true);
    }
    else {
       // otherwise use the NEW ShowHelp

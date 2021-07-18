@@ -540,6 +540,11 @@ int NyquistEffect::SetLispVarsFromParameters(CommandParameters & parms, bool bTe
    return badCount;
 }
 
+bool NyquistEffect::ValidateUI()
+{
+   return true;
+}
+
 // Effect Implementation
 bool NyquistEffect::Init()
 {
