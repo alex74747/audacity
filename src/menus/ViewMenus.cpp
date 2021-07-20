@@ -330,8 +330,7 @@ void OnShowClipping(const CommandContext &context)
    gPrefs->Flush();
    commandManager.Check(wxT("ShowClipping"), checked);
 
-   wxTheApp->AddPendingEvent(wxCommandEvent{
-      EVT_PREFS_UPDATE, ShowClippingPrefsID() });
+   PrefsListener::Broadcast(ShowClippingPrefsID());
 
    trackPanel.Refresh(false);
 }
@@ -347,8 +346,7 @@ void OnShowNameOverlay(const CommandContext &context)
    gPrefs->Flush();
    commandManager.Check(wxT("ShowTrackNameInWaveform"), checked);
 
-   wxTheApp->AddPendingEvent(wxCommandEvent{
-      EVT_PREFS_UPDATE, ShowTrackNameInWaveformPrefsID() });
+   PrefsListener::Broadcast(ShowTrackNameInWaveformPrefsID());
 
    trackPanel.Refresh(false);
 }
