@@ -112,9 +112,6 @@ public:
 
    void Draw( TrackPanelDrawingContext &context, const wxRect & r ) const;
 
-   int GetSelectedIndex( AudacityProject &project ) const;
-   void SetSelectedIndex( int index );
-
    bool CutSelectedText( AudacityProject &project );
    bool CopySelectedText( AudacityProject &project );
    bool PasteSelectedText(
@@ -146,18 +143,13 @@ private:
 public:
    struct Flags {
       int mInitialCursorPos, mCurrentCursorPos;
-      Index mSelIndex{-1};
+      Index mNavigationIndex;
+      Index mTextEditIndex;
       wxString mUndoLabel;
    };
 
    void ResetFlags();
-   Flags SaveFlags() const
-   {
-      return {
-         mInitialCursorPos, mCurrentCursorPos, mSelIndex,
-         mUndoLabel
-      };
-   }
+   Flags SaveFlags() const;
    void RestoreFlags( const Flags& flags );
 
    static int OverATextBox( const LabelTrack &track, int xx, int yy );
@@ -189,7 +181,11 @@ public:
 private:
    void OnContextMenu( AudacityProject &project, wxCommandEvent & evt);
 
-   mutable Index mSelIndex{-1};  /// Keeps track of the currently selected label
+   /// Keeps track of the currently selected label (not same as selection region)
+   /// used for navigation between labels
+   mutable Index mNavigationIndex{ -1 };
+   /// Index of the current label text being edited
+   mutable Index mTextEditIndex{ -1 };
 
    mutable wxString mUndoLabel;
 
@@ -222,11 +218,19 @@ private:
 
 public:
    /// convert pixel coordinate to character position in text box
-   int FindCursorPosition(wxCoord xPos);
+   int FindCursorPosition(int labelIndex, wxCoord xPos);
    int GetCurrentCursorPosition() const { return mCurrentCursorPos; }
    void SetCurrentCursorPosition(int pos);
    int GetInitialCursorPosition() const { return mInitialCursorPos; }
-   void SetTextHighlight( int initialPosition, int currentPosition );
+
+   /// Sets the label with specified index for editing,
+   /// optionaly selection may be specified with [start, end]
+   void SetTextSelection(int labelIndex, int start = 1, int end = 1);
+   int GetTextEditIndex(AudacityProject& project) const;
+   void ResetTextSelection();
+
+   void SetNavigationIndex(int index);
+   int GetNavigationIndex(AudacityProject& project) const;
 
 private:
 
@@ -237,8 +241,7 @@ private:
 
    static void calculateFontHeight(wxDC & dc);
 
-public:
-   bool HasSelection( AudacityProject &project ) const;
+   bool IsValidIndex(const Index& index, AudacityProject& project) const;
 
 private:
    void RemoveSelectedText();

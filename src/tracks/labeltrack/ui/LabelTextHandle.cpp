@@ -70,11 +70,7 @@ LabelTextHandle::~LabelTextHandle()
 {
 }
 
-void LabelTextHandle::HandleTextClick(AudacityProject &
-#if defined(__WXGTK__) && (HAVE_GTK)
-                                                       project
-#endif
-                                                              ,
+void LabelTextHandle::HandleTextClick(AudacityProject &project,
    const wxMouseEvent & evt,
    const wxRect & r, const ZoomInfo &zoomInfo,
    NotifyingSelectedRegion &newSel)
@@ -89,7 +85,7 @@ void LabelTextHandle::HandleTextClick(AudacityProject &
    if (evt.ButtonDown())
    {
       const auto selIndex = LabelTrackView::OverATextBox( *pTrack, evt.m_x, evt.m_y );
-      view.SetSelectedIndex( selIndex );
+      view.SetTextSelection( selIndex );
       if ( selIndex != -1 ) {
          const auto &mLabels = pTrack->GetLabels();
          const auto &labelStruct = mLabels[ selIndex ];
@@ -97,7 +93,8 @@ void LabelTextHandle::HandleTextClick(AudacityProject &
 
          if (evt.LeftDown()) {
             // Find the NEW drag end
-            auto position = view.FindCursorPosition( evt.m_x );
+            auto position = view.FindCursorPosition(
+               view.GetTextEditIndex(project), evt.m_x );
 
             // Anchor shift-drag at the farther end of the previous highlight
             // that is farther from the click, on Mac, for consistency with
@@ -118,7 +115,7 @@ void LabelTextHandle::HandleTextClick(AudacityProject &
             else
                initial = position;
 
-            view.SetTextHighlight( initial, position );
+            view.SetTextSelection( initial, position );
             mRightDragging = false;
          }
          else
@@ -231,13 +228,13 @@ void LabelTextHandle::HandleTextDragRelease(
       if (!mRightDragging)
          // Update drag end
          view.SetCurrentCursorPosition(
-            view.FindCursorPosition( evt.m_x ) );
+            view.FindCursorPosition( view.GetTextEditIndex( project ), evt.m_x ) );
 
       return;
    }
 
    if (evt.RightUp()) {
-      const auto selIndex = view.GetSelectedIndex( project );
+      const auto selIndex = view.GetTextEditIndex( project );
       if ( selIndex != -1 &&
          LabelTrackView::OverTextBox(
             pTrack->GetLabel( selIndex ), evt.m_x, evt.m_y ) ) {
@@ -270,9 +267,9 @@ UIHandle::Result LabelTextHandle::Drag
 
          auto pView = pLT ? &LabelTrackView::Get( *pLT ) : nullptr;
          if (pLT &&
-            (pView->GetSelectedIndex( project ) != -1) &&
+            (pView->GetTextEditIndex( project ) != -1) &&
              LabelTrackView::OverTextBox(
-               pLT->GetLabel(pView->GetSelectedIndex( project )),
+               pLT->GetLabel(pView->GetTextEditIndex( project )),
                mLabelTrackStartXPos,
                mLabelTrackStartYPos))
             mLabelTrackStartYPos = -1;

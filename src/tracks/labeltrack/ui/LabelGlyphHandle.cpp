@@ -351,12 +351,12 @@ bool LabelGlyphHandle::HandleGlyphDragRelease
       }
 
       const auto &view = LabelTrackView::Get( *pTrack );
-      if( view.HasSelection( project ) )
+      auto navigationIndex = view.GetNavigationIndex(project);
+      if(navigationIndex != -1)
       {
-         auto selIndex = view.GetSelectedIndex( project );
          //Set the selection region to be equal to
          //the NEW size of the label.
-         newSel = mLabels[ selIndex ].selectedRegion;
+         newSel = mLabels[navigationIndex].selectedRegion;
       }
       pTrack->SortLabels();
    }
