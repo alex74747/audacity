@@ -66,6 +66,7 @@ public:
    // Values retrievable from GetInt() of the event for settings change
    enum EventCode : int {
       ChangedSyncLock,
+      ChangedTool
    };
 
    explicit ProjectSettings( AudacityProject &project );
@@ -89,8 +90,12 @@ public:
 
    // Current tool
 
-   void SetTool(int tool) { mCurrentTool = tool; }
+   void SetTool(int tool);
    int GetTool() const { return mCurrentTool; }
+
+   // Current brush radius
+   void SetBrushRadius(int brushRadius) { mCurrentBrushRadius = brushRadius; }
+   int GetBrushRadius() const { return mCurrentBrushRadius; }
 
    // Speed play
    double GetPlaySpeed() const {
@@ -139,6 +144,7 @@ private:
    int mSnapTo;
 
    int mCurrentTool;
+   int mCurrentBrushRadius;
    
    bool mTracksFitVerticallyZoomed{ false };  //lda
    bool mShowId3Dialog{ true }; //lda
