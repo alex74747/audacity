@@ -860,8 +860,7 @@ void LabelTrackView::Draw
          highlight = highlightTrack && target->GetLabelNum() == i;
 #endif
 
-         
-          dc.SetBrush(mNavigationIndex == i
+         dc.SetBrush(mNavigationIndex == i || (pHit && pHit->mMouseOverLabel == i)
             ? AColor::labelTextEditBrush : AColor::labelTextNormalBrush);
          DrawBar(dc, labelStruct, r);
 
@@ -1214,11 +1213,23 @@ void LabelTrackView::OverGlyph(
    //If not over a label, reset it
    hit.mMouseOverLabelLeft  = -1;
    hit.mMouseOverLabelRight = -1;
+   hit.mMouseOverLabel = -1;
    hit.mEdge = 0;
 
    const auto pTrack = &track;
    const auto &mLabels = pTrack->GetLabels();
    { int i = -1; for (const auto &labelStruct : mLabels) { ++i;
+      // give text box better priority for selecting
+      // reset selection state
+      if (OverTextBox(&labelStruct, x, y))
+      {
+         result = 0;
+         hit.mMouseOverLabel = -1;
+         hit.mMouseOverLabelLeft = -1;
+         hit.mMouseOverLabelRight = -1;
+         break;
+      }
+   
       //over left or right selection bound
       //Check right bound first, since it is drawn after left bound,
       //so give it precedence for matching/highlighting.
@@ -1249,13 +1260,12 @@ void LabelTrackView::OverGlyph(
             result |= 4;
          result |= 1;
       }
-
-      // give text box better priority for selecting
-      if(OverTextBox(&labelStruct, x, y))
+      else if (x >= labelStruct.x && x <= labelStruct.x1 &&
+         abs(y - (labelStruct.y + mTextHeight / 2)) < d1)
       {
-         result = 0;
+         hit.mMouseOverLabel = i;
+         result = 3;
       }
-
    }}
    hit.mEdge = result;
 }
@@ -2080,6 +2090,7 @@ void LabelTrackView::OnSelectionChange( LabelTrackEvent &e )
    if (!FindTrack()->GetSelected())
    {
        SetNavigationIndex(-1);
+       ResetTextSelection();
    }
 }
 
