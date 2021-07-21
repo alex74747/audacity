@@ -144,7 +144,6 @@ public:
    struct Flags {
       int mInitialCursorPos, mCurrentCursorPos;
       Index mSelIndex{-1};
-      bool mDrawCursor;
       wxString mUndoLabel;
    };
 
@@ -153,7 +152,7 @@ public:
    {
       return {
          mInitialCursorPos, mCurrentCursorPos, mSelIndex,
-         mDrawCursor, mUndoLabel
+         mUndoLabel
       };
    }
    void RestoreFlags( const Flags& flags );
@@ -202,8 +201,7 @@ private:
    mutable int mCurrentCursorPos;                  /// current cursor position
    mutable int mInitialCursorPos;                  /// initial cursor position
 
-   mutable bool mDrawCursor;                       /// flag to tell if drawing the
-                                                   /// cursor or not
+   
    int mRestoreFocus{-2};                          /// Restore focus to this track
                                                    /// when done editing
 

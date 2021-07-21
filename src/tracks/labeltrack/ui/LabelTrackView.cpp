@@ -150,7 +150,6 @@ void LabelTrackView::CopyTo( Track &track ) const
       pOther->mSelIndex = mSelIndex;
       pOther->mInitialCursorPos = mInitialCursorPos;
       pOther->mCurrentCursorPos = mCurrentCursorPos;
-      pOther->mDrawCursor = mDrawCursor;
       pOther->mUndoLabel = mUndoLabel;
    }
 }
@@ -218,7 +217,6 @@ void LabelTrackView::ResetFlags()
 {
    mInitialCursorPos = 1;
    mCurrentCursorPos = 1;
-   mDrawCursor = false;
 }
 
 void LabelTrackView::RestoreFlags( const Flags& flags )
@@ -226,7 +224,6 @@ void LabelTrackView::RestoreFlags( const Flags& flags )
    mInitialCursorPos = flags.mInitialCursorPos;
    mCurrentCursorPos = flags.mCurrentCursorPos;
    mSelIndex = flags.mSelIndex;
-   mDrawCursor = flags.mDrawCursor;
 }
 
 wxFont LabelTrackView::GetFont(const wxString &faceName, int size)
@@ -870,7 +867,7 @@ void LabelTrackView::Draw
    }}
 
    // Draw the cursor, if there is one.
-   if( mDrawCursor && HasSelection( project ) )
+   if(mInitialCursorPos == mCurrentCursorPos && HasSelection( project ) )
    {
       const auto &labelStruct = mLabels[mSelIndex];
       int xPos = labelStruct.xText;
@@ -976,7 +973,6 @@ void LabelTrackView::SetTextHighlight(
 {
    mInitialCursorPos = initialPosition;
    mCurrentCursorPos = currentPosition;
-   mDrawCursor = true;
 }
 
 void LabelTrackView::calculateFontHeight(wxDC & dc)
@@ -1688,9 +1684,6 @@ bool LabelTrackView::DoKeyDown(
       }
    }
 
-   // Make sure the caret is visible
-   mDrawCursor = true;
-
    return updated;
 }
 
@@ -1785,9 +1778,6 @@ bool LabelTrackView::DoChar(
    //moving cursor position forward
    mInitialCursorPos = ++mCurrentCursorPos;
    updated = true;
-
-   // Make sure the caret is visible
-   mDrawCursor = true;
 
    return updated;
 }
@@ -2003,17 +1993,6 @@ void LabelTrackView::OnLabelAdded( LabelTrackEvent &e )
 
    if( mRestoreFocus < 0 )
       mRestoreFocus = -2;
-
-   // Make sure the caret is visible
-   //
-   // LLL: The cursor will not be drawn when the first label
-   //      is added since mDrawCursor will be false.  Presumably,
-   //      if the user adds a label, then a cursor should be drawn
-   //      to indicate that typing is expected.
-   //
-   //      If the label is added during actions like import, then the
-   //      mDrawCursor flag will be reset once the action is complete.
-   mDrawCursor = true;
 }
 
 void LabelTrackView::OnLabelDeleted( LabelTrackEvent &e )
