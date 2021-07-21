@@ -1530,6 +1530,7 @@ bool LabelTrackView::DoKeyDown(
             {
                // ELSE no text in text box, so DELETE whole label.
                pTrack->DeleteLabel(mTextEditIndex);
+               ResetTextSelection();
             }
             mInitialCursorPos = mCurrentCursorPos;
             updated = true;
@@ -1564,6 +1565,7 @@ bool LabelTrackView::DoKeyDown(
             {
                // DELETE whole label if no text in text box
                pTrack->DeleteLabel(mTextEditIndex);
+               ResetTextSelection();
             }
             mInitialCursorPos = mCurrentCursorPos;
             updated = true;
@@ -1634,6 +1636,7 @@ bool LabelTrackView::DoKeyDown(
 
       case WXK_RETURN:
       case WXK_NUMPAD_ENTER:
+      case WXK_TAB:
          if (mRestoreFocus >= 0) {
             auto track = *TrackList::Get( project ).Any()
                .begin().advance(mRestoreFocus);
@@ -1642,24 +1645,8 @@ bool LabelTrackView::DoKeyDown(
             mRestoreFocus = -2;
          }
          SetNavigationIndex(mTextEditIndex);
+         ResetTextSelection();
          break;
-
-      case WXK_TAB:
-      case WXK_NUMPAD_TAB:
-         if (event.ShiftDown()) {
-               --mNavigationIndex;
-         } else {
-               ++mNavigationIndex;
-         }
-
-         mNavigationIndex = (mNavigationIndex + (int)mLabels.size()) % (int)mLabels.size();    // wrap round if necessary
-         {
-            const auto &newLabel = mLabels[mNavigationIndex];
-            //Set the selection region to be equal to the selection bounds of the tabbed-to label.
-            newSel = newLabel.selectedRegion;
-         }
-         break;
-
       case '\x10':   // OSX
       case WXK_MENU:
       case WXK_WINDOWS_MENU:
@@ -1681,22 +1668,36 @@ bool LabelTrackView::DoKeyDown(
       case WXK_NUMPAD_TAB:
          if (!mLabels.empty()) {
             int len = (int) mLabels.size();
-            if (event.ShiftDown()) {
-               mNavigationIndex = len - 1;
-               if (newSel.t0() > mLabels[0].getT0()) {
-                  while (mNavigationIndex >= 0 &&
-                         mLabels[mNavigationIndex].getT0() > newSel.t0()) {
-                     --mNavigationIndex;
-                  }
-               }
-            } else {
-               mNavigationIndex = 0;
-               if (newSel.t0() < mLabels[len - 1].getT0()) {
-                  while (mNavigationIndex < len &&
-                         mLabels[mNavigationIndex].getT0() < newSel.t0()) {
-                     ++mNavigationIndex;
-                  }
-               }
+            if (IsValidIndex(mNavigationIndex, project))
+            {
+                if (event.ShiftDown()) {
+                    --mNavigationIndex;
+                }
+                else {
+                    ++mNavigationIndex;
+                }
+                mNavigationIndex = (mNavigationIndex + (int)mLabels.size()) % (int)mLabels.size();    // wrap round if necessary
+            }
+            else
+            {
+                if (event.ShiftDown()) {
+                    mNavigationIndex = len - 1;
+                    if (newSel.t0() > mLabels[0].getT0()) {
+                        while (mNavigationIndex >= 0 &&
+                            mLabels[mNavigationIndex].getT0() > newSel.t0()) {
+                            --mNavigationIndex;
+                        }
+                    }
+                }
+                else {
+                    mNavigationIndex = 0;
+                    if (newSel.t0() < mLabels[len - 1].getT0()) {
+                        while (mNavigationIndex < len &&
+                            mLabels[mNavigationIndex].getT0() < newSel.t0()) {
+                            ++mNavigationIndex;
+                        }
+                    }
+                }
             }
 
             if (mNavigationIndex >= 0 && mNavigationIndex < len) {
@@ -1711,7 +1712,12 @@ bool LabelTrackView::DoKeyDown(
             }
          }
          break;
-
+      case WXK_RETURN:
+      case WXK_NUMPAD_ENTER:
+         if (IsValidIndex(mNavigationIndex, project)) {
+             SetTextSelection(mNavigationIndex);
+         }
+         break;
       default:
          if (!IsGoodLabelFirstKey(event)) {
             event.Skip();
@@ -1740,7 +1746,7 @@ bool LabelTrackView::DoChar(
    }
 
    // Only track true changes to the label
-   bool updated = false;
+   //bool updated = false;
 
    // Cache the character
    wxChar charCode = event.GetUnicodeKey();
@@ -1783,6 +1789,9 @@ bool LabelTrackView::DoChar(
       }
    }
 
+   if (!IsValidIndex(mTextEditIndex, project))
+      return false;
+
    //
    // Now we are definitely in a label; append the incoming character
    //
@@ -1813,9 +1822,8 @@ bool LabelTrackView::DoChar(
 
    //moving cursor position forward
    mInitialCursorPos = ++mCurrentCursorPos;
-   updated = true;
-
-   return updated;
+   
+   return true;
 }
 
 enum
