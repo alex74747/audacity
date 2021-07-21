@@ -1930,11 +1930,10 @@ void LabelTrackView::OnContextMenu(
 
    /// DELETE selected label
    case OnDeleteSelectedLabelID: {
-      int ndx = GetLabelIndex(selectedRegion.t0(), selectedRegion.t1());
-      if (ndx != -1)
+      if (IsValidIndex(mTextEditIndex, project))
       {
          const auto pTrack = FindLabelTrack();
-         pTrack->DeleteLabel(ndx);
+         pTrack->DeleteLabel(mTextEditIndex);
          ProjectHistory::Get( project ).PushState(XO("Deleted Label"),
                       XO("Label Edit"),
                       UndoPush::CONSOLIDATE);
@@ -1944,7 +1943,8 @@ void LabelTrackView::OnContextMenu(
 
    case OnEditSelectedLabelID: {
       // Bug #2571: See above
-      mEditIndex = GetLabelIndex(selectedRegion.t0(), selectedRegion.t1());
+      if (IsValidIndex(mTextEditIndex, project))
+         mEditIndex = mTextEditIndex;
    }
       break;
    }
