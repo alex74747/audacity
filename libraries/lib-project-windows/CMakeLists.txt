@@ -5,6 +5,7 @@ set( SOURCES
    ProjectWindows.h
 )
 set( LIBRARIES
+   lib-cellular-panel-interface
    lib-project-interface
    PRIVATE
    wxwidgets::wxwidgets

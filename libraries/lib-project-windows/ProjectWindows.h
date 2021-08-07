@@ -13,6 +13,7 @@
 #define __AUDACITY_PROJECT_WINDOWS__
 
 #include "ClientData.h"
+#include "CellularPanel.h"
 
 class AudacityProject;
 class wxFrame;
@@ -34,12 +35,12 @@ PROJECT_WINDOWS_API const wxFrame *FindProjectFrame( const AudacityProject *proj
 
 ///\brief Get the main sub-window of the project frame that displays track data
 // (as a wxWindow only, when you do not need to use the subclass TrackPanel)
-PROJECT_WINDOWS_API wxWindow &GetProjectPanel( AudacityProject &project );
-PROJECT_WINDOWS_API const wxWindow &GetProjectPanel(
+PROJECT_WINDOWS_API CellularPanel &GetProjectPanel( AudacityProject &project );
+PROJECT_WINDOWS_API const CellularPanel &GetProjectPanel(
    const AudacityProject &project );
 
 PROJECT_WINDOWS_API void SetProjectPanel(
-   AudacityProject &project, wxWindow &panel );
+   AudacityProject &project, CellularPanel &panel );
 PROJECT_WINDOWS_API void SetProjectFrame(
    AudacityProject &project, wxFrame &frame );
 

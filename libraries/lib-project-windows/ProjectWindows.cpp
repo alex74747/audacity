@@ -22,7 +22,7 @@ struct ProjectWindows final : AttachedProjectObject
       : mAttachedWindows{project}
    {}
 
-   wxWeakRef< wxWindow > mPanel{};
+   wxWeakRef< CellularPanel > mPanel{};
    wxWeakRef< wxFrame > mFrame{};
 
    AttachedWindows mAttachedWindows;
@@ -51,7 +51,7 @@ AttachedWindows::AttachedWindows(AudacityProject &project)
 
 AttachedWindows::~AttachedWindows() = default;
 
-wxWindow &GetProjectPanel( AudacityProject &project )
+CellularPanel &GetProjectPanel( AudacityProject &project )
 {
    auto ptr = ProjectWindows::Get(project).mPanel;
    if ( !ptr )
@@ -59,7 +59,7 @@ wxWindow &GetProjectPanel( AudacityProject &project )
    return *ptr;
 }
 
-const wxWindow &GetProjectPanel(
+const CellularPanel &GetProjectPanel(
    const AudacityProject &project )
 {
    auto ptr = ProjectWindows::Get(project).mPanel;
@@ -69,7 +69,7 @@ const wxWindow &GetProjectPanel(
 }
 
 void SetProjectPanel(
-   AudacityProject &project, wxWindow &panel )
+   AudacityProject &project, CellularPanel &panel )
 {
    ProjectWindows::Get(project).mPanel = &panel;
 }
