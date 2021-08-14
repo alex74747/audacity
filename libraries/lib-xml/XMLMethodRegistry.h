@@ -220,7 +220,12 @@ static XMLMethodRegistry &Get();
 /*! Typically follows the `using` declaration of an XMLMethodRegistry
    specialization; DECLSPEC is for linkage visibility */
 #define DECLARE_XML_METHOD_REGISTRY(DECLSPEC, Name) \
-   template<> auto DECLSPEC Name::Get() -> Name &;
+   template<> auto DECLSPEC Name::Get() -> Name &; \
+   /* startup code so that registry's lifetime includes all registrations: */ \
+   namespace{ struct Name ## Init{ \
+      Name ## Init() { (void)Name::Get(); } \
+   } Name ## Init ## _instance; }
+   
 
 /*! Typically in the companion .cpp file */
 #define DEFINE_XML_METHOD_REGISTRY(Name)  \
