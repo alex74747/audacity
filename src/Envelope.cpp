@@ -199,7 +199,7 @@ void Envelope::MoveDragPoint(double newWhen, double value)
    const double tt =
       std::max(limitLo, std::min(limitHi, newWhen));
 
-   // This might temporary violate the constraint that at most two
+   // This might temporarily violate the constraint that at most two
    // points share a time value.
    dragPoint.SetT(tt);
    dragPoint.SetVal( this, value );
@@ -283,23 +283,11 @@ void Envelope::CopyRange(const Envelope &orig, size_t begin, size_t end)
    }
 
    // Create the final point if it needs interpolated representation
-   // If the last point of e was exactly at t1, this effectively copies it too.
+   // If the last point of orig was exactly at mOffset + mTrackLen,
+   // this effectively copies it too.
    if (mTrackLen > 0 && i < len)
       AddPointAtEnd( mTrackLen, orig.GetValue(mOffset + mTrackLen));
 }
-
-#if 0
-/// Limit() limits a double value to a range.
-/// TODO: Move to a general utilities source file.
-static double Limit( double Lo, double Value, double Hi )
-{
-   if( Value < Lo )
-      return Lo;
-   if( Value > Hi )
-      return Hi;
-   return Value;
-}
-#endif
 
 bool Envelope::HandleXMLTag(const wxChar *tag, const wxChar **attrs)
 {
@@ -529,7 +517,7 @@ void Envelope::PasteEnvelope( double t0, const Envelope *e, double sampleDur )
 
    // Treat removable discontinuities
    // Right edge outward:
-   RemoveUnneededPoints( insertAt + otherSize + 1, true );
+   RemoveUnneededPoints( insertAt + otherSize + 1, true /*, false?*/ );
    // Right edge inward:
    RemoveUnneededPoints( insertAt + otherSize, false, false );
 
