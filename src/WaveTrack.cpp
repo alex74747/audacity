@@ -44,8 +44,6 @@ from the project that will own the track.
 
 #include "float_cast.h"
 
-#include "ActiveProject.h"
-
 #include "Envelope.h"
 #include "Sequence.h"
 
@@ -54,7 +52,6 @@ from the project that will own the track.
 
 #include "Prefs.h"
 
-#include "effects/RealtimeEffectManager.h"
 #include "TimeWarper.h"
 #include "QualitySettings.h"
 #include "prefs/SpectrogramSettings.h"
@@ -1921,6 +1918,10 @@ void WaveTrack::HandleXMLEndTag(const std::string_view&  WXUNUSED(tag))
 
 XMLTagHandler *WaveTrack::HandleXMLChild(const std::string_view& tag)
 {
+   if ( auto pChild = WaveTrackIORegistry::Get()
+          .CallObjectAccessor(tag, *this) )
+      return pChild;
+
    //
    // This is legacy code (1.2 and previous) and is not called for NEW projects!
    //
@@ -1952,12 +1953,6 @@ XMLTagHandler *WaveTrack::HandleXMLChild(const std::string_view& tag)
    if (tag == "waveclip")
       return CreateClip();
 
-   if (tag == "effects")
-   {
-      auto & manager = RealtimeEffectManager::Get(*GetOwner()->GetOwner());
-      return manager.ReadXML(const_cast<WaveTrack &>(*this));
-   }
-
    return NULL;
 }
 
@@ -1979,10 +1974,8 @@ void WaveTrack::WriteXML(XMLWriter &xmlFile) const
    {
       clip->WriteXML(xmlFile);
    }
-   if (auto pProject = GetActiveProject().lock()) {
-      auto & manager = RealtimeEffectManager::Get(*pProject);
-      manager.WriteXML(xmlFile, const_cast<WaveTrack &>(*this));
-   }
+
+   WaveTrackIORegistry::Get().CallWriters(*this, xmlFile);
 
    xmlFile.EndTag(wxT("wavetrack"));
 }
@@ -2869,3 +2862,5 @@ bool GetEditClipsCanMove()
    gPrefs->Read(wxT("/GUI/EditClipCanMove"), &editClipsCanMove, false);
    return editClipsCanMove;
 }
+
+DEFINE_XML_METHOD_REGISTRY( WaveTrackIORegistry );

@@ -11,6 +11,7 @@
 #include "RealtimeEffectList.h"
 #include "RealtimeEffectState.h"
 
+#include "ActiveProject.h"
 #include "EffectInterface.h"
 #include "EffectHostInterface.h"
 #include <memory>
@@ -537,11 +538,6 @@ XMLTagHandler *RealtimeEffectManager::ReadXML(AudacityProject &project)
    return &RealtimeEffectList::Get(project);
 }
 
-XMLTagHandler *RealtimeEffectManager::ReadXML(Track &track)
-{
-   return &RealtimeEffectList::Get(track);
-}
-
 void RealtimeEffectManager::WriteXML(
    XMLWriter &xmlFile, const AudacityProject &project) const
 {
@@ -570,3 +566,22 @@ auto RealtimeEffectManager::GetLatency() const -> Latency
 {
    return mLatency;
 }
+
+#include <WaveTrack.h>
+static WaveTrackIORegistry::ObjectReaderEntry accessor { "effects",
+   [](auto &track){
+      auto & manager =
+         RealtimeEffectManager::Get(*track.GetOwner()->GetOwner());
+      return &RealtimeEffectList::Get(track);
+   }
+};
+
+static WaveTrackIORegistry::ObjectWriterEntry writer
+{
+   [](auto &track, auto &xmlFile) {
+      if (auto pProject = GetActiveProject().lock()) {
+         auto & manager = RealtimeEffectManager::Get(*pProject);
+         manager.WriteXML(xmlFile, const_cast<WaveTrack &>(track));
+      }
+   }
+};
