@@ -621,26 +621,37 @@ void DrawClipSpectrum(TrackPanelDrawingContext &context,
       maybeSelected = maybeSelected || (xx == selectedX);
 
       // In case the xx matches the hop number, it will be used as iterator for frequency bins
+      std::set<int> *pSelectedBins = nullptr;
       std::set<int>::iterator freqBinIter;
-      int convertedHopNum = w0.as_long_long() / hopSize;
-      bool hitHopNum = (hopBinMap.find(convertedHopNum) != hopBinMap.end());
-      if(hitHopNum)
-         freqBinIter = hopBinMap[convertedHopNum].begin();
+      auto advanceFreqBinIter = [&](int nextBinRounded){
+         while (freqBinIter != pSelectedBins->end() &&
+         *freqBinIter < nextBinRounded)
+            ++freqBinIter;
+      };
 
+      int convertedHopNum = (w0.as_long_long() + hopSize / 2) / hopSize;
+      bool hitHopNum = (hopBinMap.find(convertedHopNum) != hopBinMap.end());
+      if(hitHopNum) {
+         pSelectedBins = &hopBinMap[convertedHopNum];
+         freqBinIter = pSelectedBins->begin();
+         advanceFreqBinIter(std::round(yyToFreqBin(0)));
+      }
+   
       for (int yy = 0; yy < hiddenMid.height; ++yy) {
          if(onBrushTool)
             maybeSelected = false;
          const float bin     = bins[yy];
          const float nextBin = bins[yy+1];
-         const int convertedFreqBin = yyToFreqBin(yy);
+         auto binRounded = std::round(yyToFreqBin(yy));
+         auto nextBinRounded = std::round(yyToFreqBin(yy + 1));
 
          if(hitHopNum
-            && convertedFreqBin == *freqBinIter
-            && freqBinIter != hopBinMap[convertedHopNum].end())
-         {
+            && freqBinIter != pSelectedBins->end()
+            && binRounded == *freqBinIter)
             maybeSelected = true;
-            freqBinIter++;
-         }
+
+         if (hitHopNum)
+            advanceFreqBinIter(nextBinRounded);
 
          // For spectral selection, determine what colour
          // set to use.  We use a darker selection if
