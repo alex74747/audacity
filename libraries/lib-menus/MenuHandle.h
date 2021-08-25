@@ -2,7 +2,7 @@
 
 Audacity: A Digital Audio Editor
 
-widgets/MenuHandle.h
+MenuHandle.h
 
 Paul Licameli
 
@@ -14,7 +14,7 @@ Paul Licameli
 #include <functional>
 #include <MemoryX.h>
 #include "Internat.h"
-#include "../commands/Keyboard.h"
+#include "Keyboard.h"
 #include <wx/weakref.h>
 
 class wxCommandEvent;
@@ -58,7 +58,7 @@ enum class MenuItemType {
 struct MenuItem;
 
 // Determines user-visible text on the menu button
-struct MenuItemLabel {
+struct MENUS_API MenuItemLabel {
    TranslatableString main;
    NormalizedKeyString accel;
 
@@ -110,7 +110,7 @@ it; also acts as a weak reference to a menu already inserted into the user
 interface, which may be rebuilt or visited with iterators.
 This is a cheaply copied or moved handle to a shared menu structure.
 ********************************************************************************/
-class MenuHandle
+class MENUS_API MenuHandle
 {
    class Menu;
 
@@ -266,7 +266,7 @@ build it; also acts as a weak reference to a menu bar already inserted into the
 user interface.
 This is a cheaply copied or moved handle to a shared menu bar structure.
 ********************************************************************************/
-class MenuBarHandle
+class MENUS_API MenuBarHandle
 {
    class MenuBar;
 

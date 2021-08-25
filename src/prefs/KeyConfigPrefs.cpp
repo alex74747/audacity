@@ -44,11 +44,11 @@ KeyConfigPrefs and MousePrefs use.
 
 #include "FileNames.h"
 
-#include "../widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "../widgets/KeyView.h"
 #include "../widgets/AudacityMessageBox.h"
-#include "../widgets/wxWidgetsWindowPlacement.h"
-#include "../widgets/MenuHandle.h"
+#include "wxWidgetsWindowPlacement.h"
+#include "MenuHandle.h"
 
 #if wxUSE_ACCESSIBILITY
 #include "WindowAccessible.h"

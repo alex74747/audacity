@@ -35,6 +35,7 @@ set( LIBRARIES
    lib-project-windows
    lib-keyboard-capture
    lib-project-file-io
+   lib-menus
 )
 
 if ( ${_OPT}has_networking )

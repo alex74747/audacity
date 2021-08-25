@@ -35,7 +35,7 @@ Paul Licameli split from WaveTrackView.cpp
 #include "../../../../prefs/SpectrogramSettings.h"
 #include "SampleTrackCache.h"
 #include "WaveTrackLocation.h"
-#include "../../../../widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #include <wx/dcmemory.h>
 #include <wx/graphics.h>

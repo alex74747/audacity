@@ -28,7 +28,7 @@
 #include "AColor.h"
 #include "AllThemeResources.h"
 #include "AudioIO.h"
-#include "widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "CellularPanel.h"
 #include "../images/Cursors.h"
 #include "HitTestResult.h"
@@ -55,8 +55,8 @@
 #include "widgets/AButton.h"
 #include "widgets/AudacityMessageBox.h"
 #include "widgets/Grabber.h"
-#include "widgets/wxWidgetsWindowPlacement.h"
-#include "widgets/MenuHandle.h"
+#include "wxWidgetsWindowPlacement.h"
+#include "MenuHandle.h"
 
 #include <wx/dcclient.h>
 

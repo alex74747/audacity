@@ -50,7 +50,7 @@ This class now lists
 #include "PluginManager.h"
 #include "../tracks/ui/TrackView.h"
 #include "ShuttleGui.h"
-#include "widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #include <wx/frame.h>
 #include <wx/log.h>

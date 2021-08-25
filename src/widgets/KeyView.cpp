@@ -22,7 +22,7 @@
 #include "AColor.h"
 #include "ShuttleGui.h"
 #include "../commands/CommandManager.h"
-#include "widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #include <wx/dc.h>
 

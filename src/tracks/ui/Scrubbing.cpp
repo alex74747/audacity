@@ -29,7 +29,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../prefs/PlaybackPrefs.h"
 #include "../../prefs/TracksPrefs.h"
 #include "../../toolbars/ToolManager.h"
-#include "../../widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #undef USE_TRANSCRIPTION_TOOLBAR
 

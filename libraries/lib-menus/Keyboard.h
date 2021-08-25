@@ -54,7 +54,7 @@ struct NormalizedKeyStringTag;
 using NormalizedKeyStringBase = TaggedIdentifier<NormalizedKeyStringTag, false>;
 
 // Holds an operating-system-neutral description of a key
-struct AUDACITY_DLL_API NormalizedKeyString : NormalizedKeyStringBase
+struct MENUS_API NormalizedKeyString : NormalizedKeyStringBase
 {
    NormalizedKeyString() = default;
    NormalizedKeyString( const wxString &key );
@@ -75,7 +75,7 @@ namespace std
       : hash< NormalizedKeyStringBase > {};
 }
 
-AUDACITY_DLL_API
+MENUS_API
 NormalizedKeyString KeyEventToKeyString(const wxKeyEvent & keyEvent);
 
 #endif

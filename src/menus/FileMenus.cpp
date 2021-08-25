@@ -26,7 +26,7 @@
 #include "../widgets/AudacityMessageBox.h"
 #include "../widgets/FileHistory.h"
 #include "wxPanelWrapper.h"
-#include "../widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #ifdef USE_MIDI
 #include "../import/ImportMIDI.h"

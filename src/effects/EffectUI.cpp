@@ -14,7 +14,7 @@
 
 #include "EffectUI.h"
 
-#include "widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "Effect.h"
 #include "EffectManager.h"
 #include "PluginManager.h"
@@ -22,8 +22,8 @@
 #include "ProjectWindowBase.h"
 #include "../TrackPanelAx.h"
 #include "RealtimeEffectManager.h"
-#include "widgets/wxWidgetsWindowPlacement.h"
-#include "widgets/MenuHandle.h"
+#include "wxWidgetsWindowPlacement.h"
+#include "MenuHandle.h"
 
 #include <wx/menu.h>
 

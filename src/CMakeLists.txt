@@ -313,8 +313,6 @@ list( APPEND SOURCES
       commands/HelpCommand.h
       commands/ImportExportCommands.cpp
       commands/ImportExportCommands.h
-      commands/Keyboard.cpp
-      commands/Keyboard.h
       commands/LoadCommands.cpp
       commands/LoadCommands.h
       commands/MessageCommand.cpp
@@ -861,8 +859,6 @@ list( APPEND SOURCES
       widgets/AudacityMessageBox.h
       widgets/BackedPanel.cpp
       widgets/BackedPanel.h
-      widgets/BasicMenu.cpp
-      widgets/BasicMenu.h
       widgets/ErrorDialog.cpp
       widgets/ErrorDialog.h
       widgets/ExpandingToolBar.cpp
@@ -881,8 +877,6 @@ list( APPEND SOURCES
       widgets/ImageRoll.h
       widgets/KeyView.cpp
       widgets/KeyView.h
-      widgets/MenuHandle.cpp
-      widgets/MenuHandle.h
       widgets/MeterPanel.cpp
       widgets/MeterPanel.h
       widgets/MeterPanelBase.cpp
@@ -918,8 +912,6 @@ list( APPEND SOURCES
       widgets/valnum.h
       widgets/wxWidgetsBasicUI.cpp
       widgets/wxWidgetsBasicUI.h
-      widgets/wxWidgetsWindowPlacement.cpp
-      widgets/wxWidgetsWindowPlacement.h
 
       # Update version
       $<$<BOOL:${${_OPT}has_updates_check}>:
@@ -1301,6 +1293,7 @@ set( AUDACITY_LIBRARIES
    lib-project-windows-interface
    lib-keyboard-capture-interface
    lib-project-file-io-interface
+   lib-menus-interface
 )
 
 if ( ${_OPT}has_networking )

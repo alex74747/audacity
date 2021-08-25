@@ -39,7 +39,7 @@
 #include "toolbars/ToolManager.h"
 #include "widgets/AudacityMessageBox.h"
 #include "BasicUI.h"
-#include "widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 #include <unordered_set>
 

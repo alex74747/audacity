@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include "../widgets/MenuHandle.h"
+#include "MenuHandle.h"
 #include "XMLTagHandler.h"
 
 #include <unordered_map>

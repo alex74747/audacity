@@ -14,7 +14,7 @@ Paul Licameli split from TrackPanel.cpp
 #include <wx/event.h>
 #include <wx/menu.h>
 
-#include "../../widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "BasicUI.h"
 #include "../../commands/CommandContext.h"
 #include "../../commands/CommandManager.h"
@@ -22,7 +22,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "../../RefreshCode.h"
 #include "../../TrackPanelMouseEvent.h"
 #include "ViewInfo.h"
-#include "../../widgets/wxWidgetsWindowPlacement.h"
+#include "wxWidgetsWindowPlacement.h"
 
 CommonTrackPanelCell::~CommonTrackPanelCell()
 {

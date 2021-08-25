@@ -100,7 +100,7 @@ CommandManager.  It holds the callback for one command.
 #include "../widgets/HelpSystem.h"
 
 
-#include "../widgets/MenuHandle.h"
+#include "MenuHandle.h"
 
 // On wxGTK, there may be many many many plugins, but the menus don't automatically
 // allow for scrolling, so we build sub-menus.  If the menu gets longer than

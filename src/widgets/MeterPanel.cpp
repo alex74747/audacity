@@ -56,7 +56,7 @@
 
 #include "AudioIO.h"
 #include "AColor.h"
-#include "../widgets/BasicMenu.h"
+#include "BasicMenu.h"
 #include "ImageManipulation.h"
 #include "Decibels.h"
 #include "Project.h"
@@ -66,8 +66,8 @@
 #include "Prefs.h"
 #include "ShuttleGui.h"
 #include "Theme.h"
-#include "../widgets/wxWidgetsWindowPlacement.h"
-#include "../widgets/MenuHandle.h"
+#include "wxWidgetsWindowPlacement.h"
+#include "MenuHandle.h"
 
 #include "AllThemeResources.h"
 #include "../widgets/valnum.h"
