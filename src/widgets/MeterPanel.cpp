@@ -780,19 +780,6 @@ void MeterPanel::OnMouse(wxMouseEvent &evt)
    if (evt.RightDown() ||
        (evt.ButtonDown() && InIcon(&evt)))
    {
-      wxMenu menu;
-      // Note: these should be kept in the same order as the enum
-      if (mIsInput) {
-         wxMenuItem *mi;
-         if (mMonitoring)
-            mi = menu.Append(OnMonitorID, _("Stop Monitoring"));
-         else
-            mi = menu.Append(OnMonitorID, _("Start Monitoring"));
-         mi->Enable(!mActive || mMonitoring);
-      }
-
-      menu.Append(OnPreferencesID, _("Options..."));
-
       if (evt.RightDown()) {
          ShowMenu(evt.GetPosition());
       }
