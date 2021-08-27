@@ -17,6 +17,7 @@ Paul Licameli
 #include <vector>
 #include "audacity/Types.h"
 #include "RealFFTf.h"
+#include "SampleCount.h"
 
 enum eWindowFunctions : int;
 
