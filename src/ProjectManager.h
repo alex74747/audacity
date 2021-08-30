@@ -113,6 +113,10 @@ public:
 
    static void SetClosingAll(bool closing);
 
+   // Causes this menu to reflect the contents of the global FileHistory,
+   // now and also whenever the history changes.
+   static void UseMenu(wxMenu *menu);
+
 private:
    void OnReconnectionFailure(wxCommandEvent & event);
    void OnCloseWindow(wxCloseEvent & event);
@@ -134,3 +138,4 @@ private:
 };
 
 #endif
+

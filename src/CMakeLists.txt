@@ -135,6 +135,8 @@ list( APPEND SOURCES
       FFmpeg.h
       FileFormats.cpp
       FileFormats.h
+      FileHistoryMenus.cpp
+      FileHistoryMenus.h
       FreqWindow.cpp
       FreqWindow.h
       HelpText.cpp

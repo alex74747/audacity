@@ -16,6 +16,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "AdornedRulerPanel.h"
 #include "AudioIO.h"
 #include "Clipboard.h"
+#include "FileHistoryMenus.h"
 #include "FileNames.h"
 #include "Menus.h"
 #include "ModuleManager.h"
@@ -1109,4 +1110,9 @@ int ProjectManager::GetEstimatedRecordingMinsLeftOnDisk(long lCaptureChannels) {
    // Convert to minutes before returning
    int iRecMins = (int)round(dRecTime / 60.0);
    return iRecMins;
+}
+
+void ProjectManager::UseMenu(wxMenu *menu)
+{
+   FileHistoryMenus::Instance().UseMenu(menu);
 }

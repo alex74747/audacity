@@ -82,6 +82,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "commands/CommandHandler.h"
 #include "commands/AppCommandEvent.h"
 #include "widgets/ASlider.h"
+#include "FileHistoryMenus.h"
 #include "FFmpeg.h"
 #include "Journal.h"
 //#include "LangChoice.h"
@@ -1524,7 +1525,7 @@ bool AudacityApp::InitPart2()
          wxMenuBar::MacSetCommonMenuBar(menuBar.release());
       }
 
-      FileHistoryMenus::Instance().UseMenu(recentMenu);
+      ProjectManager::UseMenu(recentMenu);
 
 #endif //__WXMAC__
       temporarywindow.Show(false);
