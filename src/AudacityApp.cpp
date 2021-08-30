@@ -1526,7 +1526,7 @@ bool AudacityApp::InitPart2()
          wxMenuBar::MacSetCommonMenuBar(menuBar.release());
       }
 
-      FileHistoryMenus::Instance().UseMenu(recentMenu);
+      ProjectManager::UseMenu(recentMenu);
 
 #endif //__WXMAC__
       temporarywindow.Show(false);

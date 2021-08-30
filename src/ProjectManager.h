@@ -116,6 +116,10 @@ public:
 
    static void SetClosingAll(bool closing);
 
+   // Causes this menu to reflect the contents of the global FileHistory,
+   // now and also whenever the history changes.
+   static void UseMenu(wxMenu *menu);
+
 private:
    void OnReconnectionFailure(wxCommandEvent & event);
    void OnCloseWindow(wxCloseEvent & event);
@@ -138,4 +142,32 @@ private:
    static bool sbSkipPromptingForSave;
 };
 
+#include "widgets/FileHistory.h"
+class FileHistoryMenus : public wxEvtHandler {
+private:
+   FileHistoryMenus();
+
+public:
+   static FileHistoryMenus &Instance();
+
+   // These constants define the range of IDs reserved by the global file history
+   enum {
+      ID_RECENT_CLEAR = 6100,
+      ID_RECENT_FIRST = 6101,
+      ID_RECENT_LAST  = ID_RECENT_FIRST + FileHistory::MAX_FILES - 1,
+   };
+
+   // Make the menu reflect the contents of the global FileHistory,
+   // now and also whenever the history changes.
+   void UseMenu(wxMenu *menu);
+   
+private:
+   void OnChangedHistory(wxEvent &evt);
+   void NotifyMenu(wxMenu *menu);
+   std::vector< wxWeakRef< wxMenu > > mMenus;
+
+   void Compress();
+};
+
 #endif
+
