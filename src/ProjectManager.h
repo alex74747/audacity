@@ -120,6 +120,14 @@ public:
    // now and also whenever the history changes.
    static void UseMenu(wxMenu *menu);
 
+   // Most Recently Used File support (for all platforms).
+   static void OnMRUClear(wxCommandEvent &event);
+   static void OnMRUFile(wxCommandEvent &event);
+   // Backend for above - returns true for success, false for failure
+   static bool MRUOpen(const FilePath &fileName);
+   // A wrapper of the above that does not throw
+   static bool SafeMRUOpen(const wxString &fileName);
+
 private:
    void OnReconnectionFailure(wxCommandEvent & event);
    void OnCloseWindow(wxCloseEvent & event);
@@ -149,13 +157,6 @@ private:
 
 public:
    static FileHistoryMenus &Instance();
-
-   // These constants define the range of IDs reserved by the global file history
-   enum {
-      ID_RECENT_CLEAR = 6100,
-      ID_RECENT_FIRST = 6101,
-      ID_RECENT_LAST  = ID_RECENT_FIRST + FileHistory::MAX_FILES - 1,
-   };
 
    // Make the menu reflect the contents of the global FileHistory,
    // now and also whenever the history changes.
