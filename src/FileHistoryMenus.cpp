@@ -10,6 +10,7 @@
 
 
 #include "FileHistoryMenus.h"
+#include "ProjectManager.h" // Cycle
 
 #include <wx/menu.h>
 
@@ -63,7 +64,9 @@ void FileHistoryMenus::NotifyMenu(wxMenu *menu)
    int i = 0;
    for (auto item : history) {
       item.Replace( "&", "&&" );
-      menu->Append(mIDBase + 1 + i++, item);
+      auto id = mIDBase + 1 + i++;
+      menu->Append(id, item);
+      menu->Bind(wxEVT_MENU, ProjectManager::OnMRUFile, id);
    }
 
    if (history.size() > 0) {
@@ -71,6 +74,7 @@ void FileHistoryMenus::NotifyMenu(wxMenu *menu)
    }
    menu->Append(mIDBase, _("&Clear"));
    menu->Enable(mIDBase, history.size() > 0);
+   menu->Bind(wxEVT_MENU, ProjectManager::OnMRUClear, mIDBase);
 }
 
 void FileHistoryMenus::Compress()
@@ -83,4 +87,3 @@ void FileHistoryMenus::Compress()
      end
    );
 }
-

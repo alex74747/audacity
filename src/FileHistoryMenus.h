@@ -14,19 +14,18 @@
 #include "widgets/FileHistory.h"
 #include "Observer.h"
 
+// These constants define the range of IDs reserved by the global file history
+enum {
+   ID_RECENT_CLEAR = 6100,
+   ID_RECENT_FIRST = 6101,
+};
+
 class FileHistoryMenus {
 private:
    FileHistoryMenus();
 
 public:
    static FileHistoryMenus &Instance();
-
-   // These constants define the range of IDs reserved by the global file history
-   enum {
-      ID_RECENT_CLEAR = 6100,
-      ID_RECENT_FIRST = 6101,
-      ID_RECENT_LAST  = ID_RECENT_FIRST + FileHistory::MAX_FILES - 1,
-   };
 
    // Make the menu reflect the contents of the global FileHistory,
    // now and also whenever the history changes.
@@ -39,6 +38,6 @@ private:
    Observer::Subscription mSubscription;
 
    void Compress();
-};
+} ;
 
 #endif
