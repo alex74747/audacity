@@ -13,6 +13,7 @@
 #define __AUDACITY_JOURNAL_OUTPUT__
 
 #include <initializer_list>
+#include <optional>
 
 class wxArrayString;
 class wxString;
@@ -35,6 +36,12 @@ namespace Journal
    void Output( const wxString &string );
    void Output( const wxArrayString &strings );
    void Output( std::initializer_list< const wxString > strings );
+
+   //\brief write the value as a string which can be parse by ParseInt
+   void OutputInt(int value);
+
+   //\return the integer in str (with no characters after), or nullopt
+   std::optional<int> ParseInt(const wxString &str);
 
    //\brief if recording, emit a comment in the output journal that will have
    // no effect on playback
