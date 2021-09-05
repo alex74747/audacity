@@ -59,6 +59,26 @@ void Output( std::initializer_list< const wxString > strings )
    return Output( wxArrayStringEx( strings ) );
 }
 
+void OutputInt(int value)
+{
+   if (IsRecording())
+      Output( std::to_wstring(value) );
+}
+
+std::optional<int> ParseInt(const wxString &str)
+{
+   try {
+      std::wstring wstr{ str.wc_str() };
+      size_t length = 0;
+      auto result = std::stoi(wstr, &length);
+      if (length == wstr.length())
+         return { result };
+   }
+   catch ( const std::exception& ) {
+   }
+   return std::nullopt;
+}
+
 void Comment( const wxString &string )
 {
    if ( IsRecording() )

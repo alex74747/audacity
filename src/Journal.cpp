@@ -263,24 +263,18 @@ int IfNotPlaying(
    if ( IsReplaying() ) {
       auto tokens = GetTokens();
       if ( tokens.size() == 1 ) {
-         try {
-            std::wstring str{ tokens[0].wc_str() };
-            size_t length = 0;
-            auto result = std::stoi(str, &length);
-            if (length == str.length()) {
-               if (IsRecording())
-                  Journal::Output( std::to_wstring(result) );
-               return result;
-            }
+         if ( auto parsed = ParseInt( tokens[0] ) ) {
+            auto result = *parsed;
+            OutputInt(result);
+            return result;
          }
-         catch ( const std::exception& ) {}
       }
       throw SyncException{};
    }
-    else {
+   else {
       auto result = action ? action() : 0;
       if ( IsRecording() )
-         Output( std::to_wstring( result ) );
+         OutputInt( result );
       return result;
    }
 }
