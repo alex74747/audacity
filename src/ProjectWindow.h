@@ -20,6 +20,7 @@ class Track;
 
 class wxScrollBar;
 class wxPanel;
+class wxPanelWrapper;
 
 class ProjectWindow;
 void InitProjectWindow( ProjectWindow &window );
@@ -52,8 +53,8 @@ public:
    void SetIsBeingDeleted() { mIsDeleting = true; }
 
    wxWindow *GetMainPage() { return mMainPage; }
-   wxPanel *GetMainPanel() { return mMainPanel; }
-   wxPanel *GetTopPanel() { return mTopPanel; }
+   wxPanel *GetMainPanel();
+   wxPanel *GetTopPanel();
 
    void UpdateStatusWidths();
 
@@ -178,9 +179,9 @@ public:
 private:
    wxRect mNormalizedWindowState;
 
-   wxPanel *mTopPanel{};
+   wxPanelWrapper *mTopPanel{};
    wxWindow * mMainPage{};
-   wxPanel * mMainPanel{};
+   wxPanelWrapper * mMainPanel{};
    wxScrollBar *mHsbar{};
    wxScrollBar *mVsbar{};
 
