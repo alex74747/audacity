@@ -15,7 +15,7 @@ Paul Licameli split from TrackPanel.cpp
 #include "ProjectSettings.h"
 #include "tracks/playabletrack/wavetrack/ui/SpectrumView.h"
 #include "../../UIHandle.h"
-#include "../../SelectedRegion.h"
+#include "SelectedRegion.h"
 
 class SelectionStateChanger;
 class SnapManager;

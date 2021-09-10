@@ -41,6 +41,7 @@
 #include "ProjectFileIO.h"
 #include "ProjectHistory.h"
 #include "ProjectSettings.h"
+#include "ProjectWindows.h"
 #include "ShuttleGui.h"
 #include "SpectralDataManager.h"
 #include "TrackPanel.h"
@@ -151,7 +152,7 @@ SpectralDataDialog::SpectralDataDialog(AudacityProject *parent)
    parent->Bind(EVT_UNDO_PURGE, &SpectralDataDialog::UpdateDisplay, this);
 }
 
-static const AudacityProject::AttachedWindows::RegisteredFactory key{
+static const AttachedWindows::RegisteredFactory key{
       []( AudacityProject &project ){
          return safenew SpectralDataDialog( &project );
       }
@@ -267,7 +268,7 @@ static const AudacityProject::AttachedObjects::RegisteredFactory sSpectralWorker
    }
 };
 
-AudacityProject::AttachedWindows::RegisteredFactory sSpectralDataDialogKey{
+AttachedWindows::RegisteredFactory sSpectralDataDialogKey{
       []( AudacityProject &parent ) -> wxWeakRef< wxWindow > {
          return safenew SpectralDataDialog( &parent );
       }
@@ -289,7 +290,7 @@ void SpectralDataDialogWorker::OnToolChanged(wxCommandEvent &evt)
    auto &projectSettings = ProjectSettings::Get( *mProject );
    if (evt.GetInt() == ProjectSettings::ChangedTool)
    {
-      auto &spectralDataDialog = (*mProject).AttachedWindows::Get( sSpectralDataDialogKey );
+      auto &spectralDataDialog = GetAttachedWindows(*mProject).Get( sSpectralDataDialogKey );
       spectralDataDialog.Show(projectSettings.GetTool() == ToolCodes::brushTool);
    }
 }
