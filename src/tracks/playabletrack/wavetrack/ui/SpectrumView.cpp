@@ -10,6 +10,7 @@ Paul Licameli split from WaveTrackView.cpp
 
 
 #include "SpectrumView.h"
+#include "SpectralData.h"
 
 #include "SpectralDataManager.h" // Cycle :-(
 #include "SpectrumCache.h"

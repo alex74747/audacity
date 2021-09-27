@@ -14,14 +14,16 @@
 *//*******************************************************************/
 
 #include "./SpectrumTransformer.h"
-#include "effects/Effect.h"
-#include "tracks/playabletrack/wavetrack/ui/SpectrumView.h"
+
+class AudacityProject;
+class SpectralData;
 
 class SpectralDataManager{
 public:
    SpectralDataManager();
    ~SpectralDataManager();
-   static bool ProcessTracks(AudacityProject &project);
+   static int ProcessTrack(AudacityProject &project,
+      WaveTrack& track, SpectralData &data);
    static int FindFrequencySnappingBin(WaveTrack *wt,
                                   long long startSC,
                                   int hopSize,
@@ -59,7 +61,7 @@ public:
       FloatVector mGains;
    };
 
-   bool Process(WaveTrack* wt, const std::shared_ptr<SpectralData> &sDataPtr);
+   bool Process(WaveTrack* wt, const SpectralData *sDataPtr);
    int ProcessSnapping(WaveTrack *wt, long long int startSC, int hopSize, size_t winSize,
                            double threshold, int targetFreqBin);
    std::vector<int> ProcessOvertones(WaveTrack *wt, long long int startSC, int hopSize, size_t winSize,
@@ -78,7 +80,7 @@ protected:
 
 private:
    bool ApplyEffectToSelection();
-   std::shared_ptr<SpectralData> mpSpectralData;
+   const SpectralData *mpSpectralData;
    int mWindowCount { 0 };
    double mSnapSamplingRate;
    double mSnapThreshold;

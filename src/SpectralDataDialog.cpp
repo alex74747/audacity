@@ -57,6 +57,7 @@
 #include "Theme.h"
 #include "TrackPanel.h"
 #include "WaveTrack.h"
+#include "tracks/playabletrack/wavetrack/ui/WaveTrackView.h"
 
 #include "commands/CommandManagerWindowClasses.h"
 #include "widgets/AudacityMessageBox.h"
@@ -316,6 +317,26 @@ void SpectralDataDialog::OnBrushButton(wxCommandEvent &event) {
    else
       // Don't stay up
       mBrushButton->SetValue(true);
+}
+
+static int ProcessTracks(AudacityProject &project) {
+   auto &tracks = TrackList::Get(project);
+   int applyCount = 0;
+   for ( auto wt : tracks.Any< WaveTrack >() ) {
+      auto &trackView = TrackView::Get(*wt);
+
+      if(auto waveTrackViewPtr = dynamic_cast<WaveTrackView*>(&trackView)){
+         for(const auto &subViewPtr : waveTrackViewPtr->GetAllSubViews()){
+            if(!subViewPtr->IsSpectral())
+               continue;
+            auto sView = std::static_pointer_cast<SpectrumView>(subViewPtr).get();
+            auto pSpectralData = sView->GetSpectralData();
+            SpectralDataManager::ProcessTrack(project, *wt, *pSpectralData);
+         }
+      }
+   }
+
+   return applyCount;
 }
 
 static const AudacityProject::AttachedObjects::RegisteredFactory sSpectralWorkerKey{

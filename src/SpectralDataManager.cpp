@@ -13,10 +13,12 @@
 
 *//*******************************************************************/
 
+#include "SpectralDataManager.h"
+
 #include <iostream>
 #include "FFT.h"
 #include "ProjectHistory.h"
-#include "SpectralDataManager.h"
+#include "tracks/playabletrack/wavetrack/ui/SpectralData.h"
 #include "WaveTrack.h"
 
 SpectralDataManager::SpectralDataManager()= default;
@@ -33,29 +35,16 @@ struct SpectralDataManager::Setting{
    bool mNeedOutput = true;
 };
 
-bool SpectralDataManager::ProcessTracks(AudacityProject &project){
-   auto &tracks = TrackList::Get(project);
+int SpectralDataManager::ProcessTrack( AudacityProject &project,
+   WaveTrack &track, SpectralData &spectralData){
    int applyCount = 0;
    Setting setting;
    Worker worker(setting);
 
-   for ( auto wt : tracks.Any< WaveTrack >() ) {
-      auto &trackView = TrackView::Get(*wt);
-
-      if(auto waveTrackViewPtr = dynamic_cast<WaveTrackView*>(&trackView)){
-         for(const auto &subViewPtr : waveTrackViewPtr->GetAllSubViews()){
-            if(!subViewPtr->IsSpectral())
-               continue;
-            auto sView = std::static_pointer_cast<SpectrumView>(subViewPtr).get();
-            auto pSpectralData = sView->GetSpectralData();
-
-            if(!pSpectralData->dataHistory.empty()){
-               worker.Process(wt, pSpectralData);
-               applyCount += static_cast<int>(pSpectralData->dataHistory.size());
-               pSpectralData->clearAllData();
-            }
-         }
-      }
+   if(!spectralData.dataHistory.empty()){
+      worker.Process(&track, &spectralData);
+      applyCount += static_cast<int>(spectralData.dataHistory.size());
+      spectralData.clearAllData();
    }
 
    if (applyCount) {
@@ -112,7 +101,7 @@ bool SpectralDataManager::Worker::DoFinish() {
 }
 
 bool SpectralDataManager::Worker::Process(WaveTrack* wt,
-                                          const std::shared_ptr<SpectralData>& pSpectralData)
+   const SpectralData *pSpectralData)
 {
    mpSpectralData = pSpectralData;
    const auto &hopSize = mpSpectralData->GetHopSize();
@@ -281,9 +270,12 @@ bool SpectralDataManager::Worker::ApplyEffectToSelection() {
 
    for(auto &spectralDataMap: mpSpectralData->dataHistory){
       // For all added frequency
-      for(const int &freqBin: spectralDataMap[mStartHopNum]){
-         record.mRealFFTs[freqBin] = 0;
-         record.mImagFFTs[freqBin] = 0;
+      if (auto iter = spectralDataMap.find(mStartHopNum);
+          iter != spectralDataMap.end()) {
+         for(const int &freqBin: iter->second){
+            record.mRealFFTs[freqBin] = 0;
+            record.mImagFFTs[freqBin] = 0;
+         }
       }
    }
 
