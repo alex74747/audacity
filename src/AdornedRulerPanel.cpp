@@ -2634,7 +2634,7 @@ void AdornedRulerPanel::ProcessUIHandleResult(
 {
    if (refreshResult & RefreshCode::RefreshAll)
       Refresh(); // Overlays will be repainted too
-   else if (refreshResult & RefreshCode::DrawOverlays)
+   if (refreshResult & RefreshCode::DrawOverlays)
       DrawBothOverlays(); // cheaper redrawing of guidelines only
 }
 
