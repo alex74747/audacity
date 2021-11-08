@@ -8,7 +8,7 @@ string.  It serves to "name" various things.
 CommandParameters, for write and reading key-value pairs to and from strings.
 ]]#
 
-list( APPEND SOURCES
+set( SOURCES
    ComponentInterface.cpp
    ComponentInterface.h
    ComponentInterfaceSymbol.h
