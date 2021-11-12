@@ -16,20 +16,27 @@
 #include <mutex>
 #include <vector>
 
+#include "ClientData.h"
+
+class AudacityProject;
 class EffectProcessor;
 class RealtimeEffectState;
 
 class AUDACITY_DLL_API RealtimeEffectManager final
+   : public ClientData::Base
 {
 public:
    using Latency = std::chrono::microseconds;
    using EffectArray = std::vector <EffectProcessor*> ;
 
-   /** Get the singleton instance of the RealtimeEffectManager. **/
-   static RealtimeEffectManager & Get();
+   RealtimeEffectManager(AudacityProject &project);
+   ~RealtimeEffectManager();
+
+   static RealtimeEffectManager & Get(AudacityProject &project);
+   static const RealtimeEffectManager & Get(const AudacityProject &project);
 
    // Realtime effect processing
-   bool RealtimeIsActive();
+   bool RealtimeIsActive() const;
    bool RealtimeIsSuspended();
    void RealtimeInitialize(double rate);
    void RealtimeAddProcessor(int group, unsigned chans, float rate);
@@ -41,63 +48,71 @@ public:
    //! Object whose lifetime encompasses one suspension of processing in one thread
    class SuspensionScope {
    public:
-      SuspensionScope()
+      explicit SuspensionScope(AudacityProject *pProject)
+         : mpProject{ pProject }
       {
-         Get().RealtimeSuspend();
+         if (mpProject)
+            Get(*mpProject).RealtimeSuspend();
       }
       SuspensionScope( SuspensionScope &&other )
       {
-         other.mMoved = true;
+         other.mpProject = nullptr;
       }
       SuspensionScope& operator=( SuspensionScope &&other )
       {
-         auto moved = other.mMoved;
-         other.mMoved = true;
-         mMoved = moved;
+         auto pProject = other.mpProject;
+         other.mpProject = nullptr;
+         mpProject = pProject;
          return *this;
       }
       ~SuspensionScope()
       {
-         if (!mMoved)
-            Get().RealtimeResume();
+         if (mpProject)
+            Get(*mpProject).RealtimeResume();
       }
 
    private:
-      bool mMoved{ false };
+      AudacityProject *mpProject = nullptr;
    };
 
    //! Object whose lifetime encompasses one block of processing in one thread
    class ProcessScope {
    public:
-      ProcessScope()
+      explicit ProcessScope(AudacityProject *pProject)
+         : mpProject{ pProject }
       {
-         Get().RealtimeProcessStart();
+         if (mpProject)
+            Get(*mpProject).RealtimeProcessStart();
       }
       ProcessScope( ProcessScope &&other )
+         : mpProject{ other.mpProject }
       {
-         other.mMoved = true;
+         other.mpProject = nullptr;
       }
       ProcessScope& operator=( ProcessScope &&other )
       {
-         auto moved = other.mMoved;
-         other.mMoved = true;
-         mMoved = moved;
+         auto pProject = other.mpProject;
+         other.mpProject = nullptr;
+         mpProject = pProject;
          return *this;
       }
       ~ProcessScope()
       {
-         if (!mMoved)
-            Get().RealtimeProcessEnd();
+         if (mpProject)
+            Get(*mpProject).RealtimeProcessEnd();
       }
 
       size_t Process( int group,
          unsigned chans, float **buffers, size_t numSamples)
       {
-         return Get().RealtimeProcess(group, chans, buffers, numSamples);
+         if (mpProject)
+            return Get(*mpProject)
+               .RealtimeProcess(group, chans, buffers, numSamples);
+         return numSamples; // consider them trivially processed
       }
 
    private:
-      bool mMoved{ false };
+      AudacityProject *mpProject = nullptr;
    };
 
 private:
@@ -105,10 +120,10 @@ private:
    size_t RealtimeProcess(int group, unsigned chans, float **buffers, size_t numSamples);
    void RealtimeProcessEnd() noexcept;
 
-   RealtimeEffectManager();
-   ~RealtimeEffectManager();
    RealtimeEffectManager(const RealtimeEffectManager&) = delete;
    RealtimeEffectManager &operator=(const RealtimeEffectManager&) = delete;
+
+   AudacityProject &mProject;
 
    std::mutex mLock;
    std::vector< std::unique_ptr<RealtimeEffectState> > mStates;
