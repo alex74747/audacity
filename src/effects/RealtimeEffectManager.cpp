@@ -47,17 +47,17 @@ RealtimeEffectManager::~RealtimeEffectManager()
 {
 }
 
-bool RealtimeEffectManager::RealtimeIsActive() const
+bool RealtimeEffectManager::IsActive() const noexcept
 {
    return mActive;
 }
 
-bool RealtimeEffectManager::RealtimeIsSuspended()
+bool RealtimeEffectManager::IsSuspended()
 {
    return mSuspended;
 }
 
-void RealtimeEffectManager::RealtimeInitialize(double rate)
+void RealtimeEffectManager::Initialize(double rate)
 {
    // The audio thread should not be running yet, but protect anyway
    SuspensionScope scope{ &mProject };
@@ -77,20 +77,20 @@ void RealtimeEffectManager::RealtimeInitialize(double rate)
    });
 }
 
-void RealtimeEffectManager::RealtimeAddProcessor(int group, unsigned chans, float rate)
+void RealtimeEffectManager::AddProcessor(int group, unsigned chans, float rate)
 {
    VisitGroup(nullptr, [&](RealtimeEffectState &state, bool){
-      state.RealtimeAddProcessor(group, chans, rate);
+      state.AddProcessor(group, chans, rate);
    });
 
    mRealtimeChans.push_back(chans);
    mRealtimeRates.push_back(rate);
 }
 
-void RealtimeEffectManager::RealtimeFinalize()
+void RealtimeEffectManager::Finalize()
 {
    // Make sure nothing is going on
-   RealtimeSuspend();
+   Suspend();
 
    // It is now safe to clean up
    mLatency = std::chrono::microseconds(0);
@@ -108,7 +108,7 @@ void RealtimeEffectManager::RealtimeFinalize()
    mActive = false;
 }
 
-void RealtimeEffectManager::RealtimeSuspend()
+void RealtimeEffectManager::Suspend()
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -122,11 +122,11 @@ void RealtimeEffectManager::RealtimeSuspend()
 
    // And make sure the effects don't either
    VisitGroup(nullptr, [](RealtimeEffectState &state, bool){
-      state.RealtimeSuspend();
+      state.Suspend();
    });
 }
 
-void RealtimeEffectManager::RealtimeResume() noexcept
+void RealtimeEffectManager::Resume() noexcept
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -137,7 +137,7 @@ void RealtimeEffectManager::RealtimeResume() noexcept
 
    // Tell the effects to get ready for more action
    VisitGroup(nullptr, [](RealtimeEffectState &state, bool){
-      state.RealtimeResume();
+      state.Resume();
    });
 
    // And we should too
@@ -147,7 +147,7 @@ void RealtimeEffectManager::RealtimeResume() noexcept
 //
 // This will be called in a different thread than the main GUI thread.
 //
-void RealtimeEffectManager::RealtimeProcessStart()
+void RealtimeEffectManager::ProcessStart()
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -166,7 +166,7 @@ void RealtimeEffectManager::RealtimeProcessStart()
 //
 // This will be called in a different thread than the main GUI thread.
 //
-size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float gain, float **buffers, size_t numSamples)
+size_t RealtimeEffectManager::Process(int group, unsigned chans, float gain, float **buffers, size_t numSamples)
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -212,7 +212,7 @@ size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float g
    VisitGroup(nullptr, [&](RealtimeEffectState &state, bool bypassed){
       if (!bypassed)
       {
-         state.RealtimeProcess(group, chans, ibuf, obuf, numSamples);
+         state.Process(group, chans, ibuf, obuf, numSamples);
          called++;
       }
 
@@ -250,7 +250,7 @@ size_t RealtimeEffectManager::RealtimeProcess(int group, unsigned chans, float g
 //
 // This will be called in a different thread than the main GUI thread.
 //
-void RealtimeEffectManager::RealtimeProcessEnd() noexcept
+void RealtimeEffectManager::ProcessEnd() noexcept
 {
    // Protect...
    std::lock_guard<std::mutex> guard(mLock);
@@ -277,7 +277,7 @@ void RealtimeEffectManager::VisitGroup(Track *leader,
      RealtimeEffectList::Get(*leader).Visit(func);
 }
 
-auto RealtimeEffectManager::GetRealtimeLatency() const -> Latency
+auto RealtimeEffectManager::GetLatency() const -> Latency
 {
    return mLatency;
 }

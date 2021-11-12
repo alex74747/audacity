@@ -17,7 +17,7 @@ RealtimeEffectState::RealtimeEffectState( EffectProcessor &effect )
 {
 }
 
-bool RealtimeEffectState::RealtimeSuspend()
+bool RealtimeEffectState::Suspend()
 {
    auto result = mEffect.RealtimeSuspend();
    if ( result ) {
@@ -26,7 +26,7 @@ bool RealtimeEffectState::RealtimeSuspend()
    return result;
 }
 
-bool RealtimeEffectState::RealtimeResume() noexcept
+bool RealtimeEffectState::Resume() noexcept
 {
    auto result = mEffect.RealtimeResume();
    if ( result ) {
@@ -38,7 +38,7 @@ bool RealtimeEffectState::RealtimeResume() noexcept
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor index, so updates to one should
 // be reflected in the other.
-bool RealtimeEffectState::RealtimeAddProcessor(int group, unsigned chans, float rate)
+bool RealtimeEffectState::AddProcessor(int group, unsigned chans, float rate)
 {
    auto ichans = chans;
    auto ochans = chans;
@@ -106,7 +106,7 @@ bool RealtimeEffectState::RealtimeAddProcessor(int group, unsigned chans, float 
 // RealtimeAddProcessor and RealtimeProcess use the same method of
 // determining the current processor group, so updates to one should
 // be reflected in the other.
-size_t RealtimeEffectState::RealtimeProcess(int group,
+size_t RealtimeEffectState::Process(int group,
                                     unsigned chans,
                                     float **inbuf,
                                     float **outbuf,
@@ -225,7 +225,7 @@ size_t RealtimeEffectState::RealtimeProcess(int group,
    return len;
 }
 
-bool RealtimeEffectState::IsRealtimeActive() const noexcept
+bool RealtimeEffectState::IsActive() const noexcept
 {
    return mRealtimeSuspendCount == 0;
 }

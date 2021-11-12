@@ -61,7 +61,7 @@ void RealtimeEffectList::Visit(
 {
    for (auto &state : mStates)
    {
-      func(*state, !state->IsRealtimeActive());
+      func(*state, !state->IsActive());
    }
 }
 

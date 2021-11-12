@@ -37,14 +37,14 @@ public:
    static const RealtimeEffectManager & Get(const AudacityProject &project);
 
    // Realtime effect processing
-   bool RealtimeIsActive() const;
-   bool RealtimeIsSuspended();
-   void RealtimeInitialize(double rate);
-   void RealtimeAddProcessor(int group, unsigned chans, float rate);
-   void RealtimeFinalize();
-   void RealtimeSuspend();
-   void RealtimeResume() noexcept;
-   Latency GetRealtimeLatency() const;
+   bool IsActive() const noexcept;
+   bool IsSuspended();
+   void Initialize(double rate);
+   void AddProcessor(int group, unsigned chans, float rate);
+   void Finalize();
+   void Suspend();
+   void Resume() noexcept;
+   Latency GetLatency() const;
 
    //! Object whose lifetime encompasses one suspension of processing in one thread
    class SuspensionScope {
@@ -53,7 +53,7 @@ public:
          : mpProject{ pProject }
       {
          if (mpProject)
-            Get(*mpProject).RealtimeSuspend();
+            Get(*mpProject).Suspend();
       }
       SuspensionScope( SuspensionScope &&other )
       {
@@ -69,7 +69,7 @@ public:
       ~SuspensionScope()
       {
          if (mpProject)
-            Get(*mpProject).RealtimeResume();
+            Get(*mpProject).Resume();
       }
 
    private:
@@ -83,7 +83,7 @@ public:
          : mpProject{ pProject }
       {
          if (mpProject)
-            Get(*mpProject).RealtimeProcessStart();
+            Get(*mpProject).ProcessStart();
       }
       ProcessScope( ProcessScope &&other )
          : mpProject{ other.mpProject }
@@ -100,7 +100,7 @@ public:
       ~ProcessScope()
       {
          if (mpProject)
-            Get(*mpProject).RealtimeProcessEnd();
+            Get(*mpProject).ProcessEnd();
       }
 
       size_t Process( int group,
@@ -108,7 +108,7 @@ public:
       {
          if (mpProject)
             return Get(*mpProject)
-               .RealtimeProcess(group, chans, gain, buffers, numSamples);
+               .Process(group, chans, gain, buffers, numSamples);
          return numSamples; // consider them trivially processed
       }
 
@@ -117,10 +117,10 @@ public:
    };
 
 private:
-   void RealtimeProcessStart();
-   size_t RealtimeProcess( int group,
+   void ProcessStart();
+   size_t Process( int group,
       unsigned chans, float gain, float **buffers, size_t numSamples);
-   void RealtimeProcessEnd() noexcept;
+   void ProcessEnd() noexcept;
 
    RealtimeEffectManager(const RealtimeEffectManager&) = delete;
    RealtimeEffectManager &operator=(const RealtimeEffectManager&) = delete;
