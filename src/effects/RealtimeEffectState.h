@@ -45,10 +45,6 @@ public:
    bool IsBypassed();
    void Bypass(bool Bypass);
 
-   bool IsSuspended();
-   bool Suspend();
-   bool Resume() noexcept;
-
    bool Initialize(double rate);
    bool AddProcessor(Track *track, unsigned chans, float rate);
    bool ProcessStart();
@@ -78,8 +74,6 @@ private:
    std::mutex mMutex;
 
    wxString mParameters;
-
-   std::atomic<int> mSuspendCount{ 1 };    // Effects are initially suspended
 };
 
 #endif // __AUDACITY_REALTIMEEFFECTSTATE_H__

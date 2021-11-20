@@ -25,7 +25,6 @@ RealtimeEffectState::RealtimeEffectState()
    mInitialized = false;
    mPre = false;
    mBypass = false;
-   mSuspendCount = 0;   // default to unsuspended
 }
 
 RealtimeEffectState::RealtimeEffectState(const PluginID & id)
@@ -63,7 +62,7 @@ void RealtimeEffectState::PreFade(bool pre)
 
 bool RealtimeEffectState::IsActive() const
 {
-   return !mBypass && mSuspendCount == 0;
+   return !mBypass;
 }
 
 bool RealtimeEffectState::IsBypassed()
@@ -74,47 +73,6 @@ bool RealtimeEffectState::IsBypassed()
 void RealtimeEffectState::Bypass(bool Bypass)
 {
    mBypass = Bypass;
-}
-
-bool RealtimeEffectState::IsSuspended()
-{
-   return mSuspendCount > 0;
-}
-
-bool RealtimeEffectState::Suspend()
-{
-   auto effect = GetEffect();
-   if (!effect)
-   {
-      return false;
-   }
-
-   auto result = effect->RealtimeSuspend();
-   if (result)
-   {
-      mSuspendCount++;
-   }
-
-   return result;
-}
-
-bool RealtimeEffectState::Resume() noexcept
-{
-   wxASSERT(mSuspendCount >= 0);
-
-   auto effect = GetEffect();
-   if (!effect)
-   {
-      return false;
-   }
-
-   auto result = effect->RealtimeResume();
-   if (result)
-   {
-      mSuspendCount--;
-   }
-
-   return result;
 }
 
 bool RealtimeEffectState::Initialize(double rate)
