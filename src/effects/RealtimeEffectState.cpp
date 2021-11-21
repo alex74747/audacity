@@ -12,7 +12,6 @@
 
 #include "EffectInterface.h"
 
-#include "EffectManager.h"
 #include "Effect.h"
 
 #include <wx/log.h>
@@ -39,7 +38,7 @@ EffectProcessor *RealtimeEffectState::GetEffect()
 {
    if (!mEffect)
    {
-      mEffect = EffectManager::Get().NewEffect(mID);
+      mEffect = Effect::NewEffect(mID);
    }
 
    return mEffect.get();

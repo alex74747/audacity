@@ -229,6 +229,8 @@ class AUDACITY_DLL_API Effect /* not final */ : public wxEvtHandler,
                   long style = DefaultMessageBoxStyle,
                   const TranslatableString& titleStr = {});
 
+   static std::unique_ptr<Effect> NewEffect(const PluginID &ID);
+
    static void IncEffectCounter(){ nEffectsDone++;};
 
  protected:

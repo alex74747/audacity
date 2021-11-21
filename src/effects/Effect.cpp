@@ -2278,3 +2278,27 @@ int Effect::MessageBox( const TranslatableString& message,
    return AudacityMessageBox( message, title, style, mUIParent );
 }
 
+std::unique_ptr<Effect> Effect::NewEffect(const PluginID & ID)
+{
+   // Must have a "valid" ID
+   if (ID.empty())
+   {
+      return NULL;
+   }
+
+   // This will instantiate the effect client if it hasn't already been done
+   EffectDefinitionInterface *ident =
+      dynamic_cast<EffectDefinitionInterface *>(PluginManager::Get().GetInstance(ID));
+
+   auto effect = std::make_unique<Effect>();
+   if (effect)
+   {
+      auto client = dynamic_cast<EffectUIClientInterface *>(ident);
+      if (client && effect->Startup(client))
+      {
+         return effect;
+      }
+   }
+
+   return nullptr;
+}
