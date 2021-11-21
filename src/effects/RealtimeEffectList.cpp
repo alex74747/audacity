@@ -24,6 +24,8 @@ RealtimeEffectList::RealtimeEffectList(bool deleteUI)
    mDeleteUI = deleteUI;
    mBypass = false;
    mSuspend = 0;
+   mPrefaders = 0;
+   mPostfaders = 0;
 }
 
 RealtimeEffectList::~RealtimeEffectList()
@@ -101,6 +103,32 @@ void RealtimeEffectList::Visit(
    {
       func(*state, IsBypassed() || !state->IsActive());
    }
+}
+
+void RealtimeEffectList::SetPrefade(RealtimeEffectState &state, bool prefade)
+{
+   state.PreFade(prefade);
+
+   if (state.IsPreFade())
+   {
+      mPrefaders++;
+      mPostfaders--;
+   }
+   else
+   {
+      mPostfaders++;
+      mPrefaders--;
+   }
+}
+
+bool RealtimeEffectList::HasPrefaders()
+{
+   return mPrefaders;
+}
+
+bool RealtimeEffectList::HasPostfaders()
+{
+   return mPostfaders;
 }
 
 RealtimeEffectState & RealtimeEffectList::AddState(const PluginID & id)
@@ -233,6 +261,15 @@ RealtimeEffectState *RealtimeEffectList::DoAdd(const PluginID &id)
 {
    mStates.emplace_back(std::make_unique<RealtimeEffectState>(id));
    auto & state = mStates.back();
+
+   if (state->IsPreFade())
+   {
+      mPrefaders++;
+   }
+   else
+   {
+      mPostfaders++;
+   }
 
    return state.get();
 }

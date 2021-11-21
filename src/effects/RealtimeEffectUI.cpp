@@ -46,6 +46,7 @@
 #define ID_Range     100
 #define ID_Power     (ID_Base + (COL_Power * ID_Range))
 #define ID_Editor    (ID_Base + (COL_Editor * ID_Range))
+#define ID_PrePost   (ID_Base + (COL_PrePost * ID_Range))
 #define ID_Up        (ID_Base + (COL_Up * ID_Range))
 #define ID_Down      (ID_Base + (COL_Down * ID_Range))
 #define ID_Remove    (ID_Base + (COL_Remove * ID_Range))
@@ -59,6 +60,7 @@ BEGIN_EVENT_TABLE(RealtimeEffectUI, ThemedDialog)
 
    EVT_COMMAND_RANGE(ID_Power,   ID_Power + ID_Range - 1,   wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnPower)
    EVT_COMMAND_RANGE(ID_Editor,  ID_Editor + ID_Range - 1,  wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnEditor)
+   EVT_COMMAND_RANGE(ID_PrePost, ID_PrePost + ID_Range - 1, wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnPrePost)
    EVT_COMMAND_RANGE(ID_Up,      ID_Up + ID_Range - 1,      wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnUp)
    EVT_COMMAND_RANGE(ID_Down,    ID_Down + ID_Range - 1,    wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnDown)
    EVT_COMMAND_RANGE(ID_Remove,  ID_Remove + ID_Range - 1,  wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnRemove)
@@ -179,6 +181,23 @@ void RealtimeEffectUI::Add(RealtimeEffectState &state)
                       _("Show/Hide Editor"), XO("Open/close effect editor"),
                       editor_xpm);
 
+   btn = CreateButton(ID_PrePost + mIDCounter,
+                      _("Post Fade"), XO("Apply effects post fader"),
+                      pre_fade_xpm, post_fade_xpm,
+                      true);
+   if (state.IsPreFade())
+   {
+      btn->PopUp();
+      btn->SetName(_("Pre Fade"));
+      btn->SetToolTip(XO("Apply effects pre fader"));
+   }
+   else
+   {
+      btn->PushDown();
+      btn->SetName(_("Post Fade"));
+      btn->SetToolTip(XO("Apply effects post fader"));
+   }
+
    btn = CreateButton(ID_Up + mIDCounter,
                       _("Move Up"), XO("Move effect up"),
                       move_up_xpm);
@@ -275,6 +294,26 @@ void RealtimeEffectUI::OnEditor(wxCommandEvent & evt)
    if (const auto effect = dynamic_cast<EffectUIHostInterface*>(
       mList.GetState(GetEffectIndex(btn)).GetEffect()))
       effect->ShowHostInterface(*GetParent(), EffectUI::DialogFactory, false);
+}
+
+void RealtimeEffectUI::OnPrePost(wxCommandEvent & evt)
+{
+   AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
+
+   auto & state = mList.GetState(GetEffectIndex(btn));
+
+   mList.SetPrefade(state, !btn->IsDown());
+
+   if (state.IsPreFade())
+   {
+      btn->SetName(_("Pre Fade"));
+      btn->SetToolTip(XO("Apply effects pre fader"));
+   }
+   else
+   {
+      btn->SetName(_("Post Fade"));
+      btn->SetToolTip(XO("Apply effects post fader"));
+   }
 }
 
 void RealtimeEffectUI::OnUp(wxCommandEvent & evt)

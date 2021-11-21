@@ -62,6 +62,7 @@ private:
 
    void OnPower(wxCommandEvent & evt);
    void OnEditor(wxCommandEvent & evt);
+   void OnPrePost(wxCommandEvent & evt);
    void OnUp(wxCommandEvent & evt);
    void OnDown(wxCommandEvent & evt);
    void OnRemove(wxCommandEvent & evt);

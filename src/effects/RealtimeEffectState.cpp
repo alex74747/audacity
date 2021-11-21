@@ -23,6 +23,7 @@ RealtimeEffectState::RealtimeEffectState()
    mEffect.reset();
 
    mInitialized = false;
+   mPre = false;
    mBypass = false;
    mSuspendCount = 0;   // default to unsuspended
 }
@@ -48,6 +49,16 @@ EffectProcessor *RealtimeEffectState::GetEffect()
    }
 
    return mEffect.get();
+}
+
+bool RealtimeEffectState::IsPreFade()
+{
+   return mPre;
+}
+
+void RealtimeEffectState::PreFade(bool pre)
+{
+   mPre = pre;
 }
 
 bool RealtimeEffectState::IsActive() const
@@ -399,6 +410,12 @@ bool RealtimeEffectState::HandleXMLTag(
             if (value.TryGet(bValue))
                Bypass(bValue);
          }
+         else if (attr == "prefader")
+         {
+            bool bValue;
+            if (value.TryGet(bValue))
+              PreFade(bValue != 0);
+         }
       }
 
       return true;
@@ -466,6 +483,7 @@ void RealtimeEffectState::WriteXML(XMLWriter &xmlFile)
    xmlFile.WriteAttr(wxT("id"), XMLWriter::XMLEsc(PluginManager::GetID(effect)));
    xmlFile.WriteAttr(wxT("version"), XMLWriter::XMLEsc(mEffect->GetVersion()));
    xmlFile.WriteAttr(wxT("Bypass"), mBypass);
+   xmlFile.WriteAttr(wxT("prefader"), mPre);
       
    CommandParameters cmdParms;
    if (effect->GetAutomationParameters(cmdParms))

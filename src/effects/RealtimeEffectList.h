@@ -57,6 +57,10 @@ public:
    void Visit(
       std::function<void(RealtimeEffectState &state, bool bypassed)> func);
 
+   void SetPrefade(RealtimeEffectState &state, bool prefade);
+   bool HasPrefaders();
+   bool HasPostfaders();
+
    RealtimeEffectState & AddState(const PluginID &id);
    void RemoveState(RealtimeEffectState &state);
    void Swap(int index1, int index2);
@@ -82,6 +86,9 @@ private:
 
    bool mBypass;
    int mSuspend;
+
+   int mPrefaders;
+   int mPostfaders;
 };
 
 #endif // __AUDACITY_REALTIMEEFFECTLIST_H__

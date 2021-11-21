@@ -267,11 +267,15 @@ size_t RealtimeEffectManager::Process(Track *track,
    // are introducing
    auto start = std::chrono::steady_clock::now();
 
-   // Allocate the in and out buffer arrays
+   // Allocate the in, out, and prefade buffer arrays
    float **ibuf = (float **) alloca(numChans * sizeof(float *));
    float **obuf = (float **) alloca(numChans * sizeof(float *));
+   float **pibuf = (float **) alloca(numChans * sizeof(float *));
+   float **pobuf = (float **) alloca(numChans * sizeof(float *));
 
    auto group = mCurrentGroup++;
+
+   auto prefade = HasPrefaders(group);
 
    // And populate the input with the buffers we've been given while allocating
    // NEW output buffers
@@ -279,6 +283,14 @@ size_t RealtimeEffectManager::Process(Track *track,
    {
       ibuf[c] = buffers[c];
       obuf[c] = (float *) alloca(numSamps * sizeof(float));
+
+      if (prefade)
+      {
+         pibuf[c] = (float *) alloca(numSamps * sizeof(float));
+         pobuf[c] = (float *) alloca(numSamps * sizeof(float));
+
+         memcpy(pibuf[c], buffers[c], numSamps * sizeof(float));
+      }
    }
 
    // Apply gain
@@ -297,34 +309,64 @@ size_t RealtimeEffectManager::Process(Track *track,
    // output of one effect as the input to the next effect
    // Tracks how many processors were called
    size_t called = 0;
-   VisitGroup(track,
-      [&](RealtimeEffectState &state, bool bypassed)
-      {
-         if (bypassed)
+   if (HasPostfaders(group))
+   {
+      VisitGroup(track,
+         [&](RealtimeEffectState &state, bool bypassed)
          {
-            return;
+            if (bypassed || state.IsPreFade())
+            {
+               return;
+            }
+
+            state.Process(track, numChans, ibuf, obuf, numSamps);
+
+            for (auto c = 0; c < numChans; ++c)
+            {
+               std::swap(ibuf[c], obuf[c]);
+            }
+            called++;
          }
+      );
 
-         state.Process(track, numChans, ibuf, obuf, numSamps);
-
+      // Once we're done, we might wind up with the last effect storing its results
+      // in the temporary buffers.  If that's the case, we need to copy it over to
+      // the caller's buffers.  This happens when the number of effects processed
+      // is odd.
+      if (called & 1)
+      {
          for (auto c = 0; c < numChans; ++c)
          {
-            std::swap(ibuf[c], obuf[c]);
+            memcpy(buffers[c], ibuf[c], numSamps * sizeof(float));
          }
-         called++;
       }
-   );
+   }
 
-   // Once we're done, we might wind up with the last effect storing its results
-   // in the temporary buffers.  If that's the case, we need to copy it over to
-   // the caller's buffers.  This happens when the number of effects processed
-   // is odd.
-   if (called & 1)
+   if (prefade)
    {
-      for (auto c = 0; c < numChans; ++c)
-      {
-         memcpy(buffers[c], ibuf[c], numSamps * sizeof(float));
-      }
+      VisitGroup(track,
+         [&](RealtimeEffectState &state, bool bypassed)
+         {
+            if (bypassed || !state.IsPreFade())
+            {
+               return;
+            }
+
+            state.Process(track, numChans, pibuf, pobuf, numSamps);
+
+            for (auto c = 0; c < numChans; ++c)
+            {
+               for (auto s = 0; s < numSamps; ++s)
+               {
+                  buffers[c][s] += pobuf[c][s];
+               }
+
+               std::swap(pibuf[c], pobuf[c]);
+            }
+
+            called++;
+         }
+      );
    }
 
    // Remember the latency
@@ -393,6 +435,18 @@ bool RealtimeEffectManager::IsBypassed(const Track &track)
 void RealtimeEffectManager::Bypass(Track &track, bool bypass)
 {
    RealtimeEffectList::Get(track).Bypass(bypass);
+}
+
+bool RealtimeEffectManager::HasPrefaders(int group)
+{
+   return RealtimeEffectList::Get(mProject).HasPrefaders() ||
+          RealtimeEffectList::Get(*mGroupLeaders[group]).HasPrefaders();
+}
+
+bool RealtimeEffectManager::HasPostfaders(int group)
+{
+   return RealtimeEffectList::Get(mProject).HasPostfaders() ||
+          RealtimeEffectList::Get(*mGroupLeaders[group]).HasPostfaders();
 }
 
 void RealtimeEffectManager::VisitGroup(Track *leader,

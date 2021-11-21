@@ -44,6 +44,9 @@ public:
    bool IsBypassed(const Track &track);
    void Bypass(Track &track, bool bypass);
 
+   bool HasPrefaders(int group);
+   bool HasPostfaders(int group);
+
    XMLTagHandler *ReadXML(AudacityProject &project);
    XMLTagHandler *ReadXML(Track &track);
    void WriteXML(XMLWriter &xmlFile, const AudacityProject &project) const;

@@ -37,6 +37,9 @@ public:
    void SetID(const PluginID & id);
    EffectProcessor *GetEffect();
 
+   bool IsPreFade();
+   void PreFade(bool pre);
+
    bool IsActive() const;
 
    bool IsBypassed();
@@ -69,6 +72,8 @@ private:
    std::unordered_map<Track *, int> mGroups;
 
    bool mBypass;
+
+   bool mPre;
 
    std::mutex mMutex;
 
