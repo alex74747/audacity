@@ -32,7 +32,6 @@ class Track;
 
 class RealtimeEffectList final
    : public TrackAttachment
-   , public std::enable_shared_from_this<RealtimeEffectList>
    , public XMLTagHandler
 {
    RealtimeEffectList(const RealtimeEffectList &) = delete;

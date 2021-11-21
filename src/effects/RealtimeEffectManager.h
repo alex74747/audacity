@@ -30,7 +30,6 @@ class wxPoint;
 
 class AUDACITY_DLL_API RealtimeEffectManager final
    : public ClientData::Base
-   , public std::enable_shared_from_this<RealtimeEffectManager>
 {
 public:
    using Latency = std::chrono::microseconds;
