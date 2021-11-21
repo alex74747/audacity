@@ -164,6 +164,71 @@ void RealtimeEffectList::Show(RealtimeEffectManager *manager,
    }
 }
 
+bool RealtimeEffectList::HandleXMLTag(
+   const std::string_view &tag, const AttributesList &attrs)
+{
+   if (tag == "effects")
+   {
+      mBypass = false;
+
+      for (auto pair : attrs) {
+         auto attr = pair.first;
+         auto value = pair.second;
+         if (attr == "bypass")
+         {
+            bool bValue;
+            if (value.TryGet(bValue))
+               Bypass(bValue);
+         }
+      }
+
+      return true;
+   }
+
+   return false;
+}
+
+void RealtimeEffectList::HandleXMLEndTag(const std::string_view &tag)
+{
+   if (tag == "effects")
+   {
+      // This shouldn't really be needed
+      if (mUI)
+      {
+         mUI->Rebuild();
+      }
+   }
+}
+
+XMLTagHandler *RealtimeEffectList::HandleXMLChild(const std::string_view &tag)
+{
+   if (tag == "effect")
+   {
+      return DoAdd();
+   }
+
+   return nullptr;
+}
+
+void RealtimeEffectList::WriteXML(XMLWriter &xmlFile) const
+{
+   if (mStates.size() == 0)
+   {
+      return;
+   }
+
+   xmlFile.StartTag(wxT("effects"));
+   xmlFile.WriteAttr(wxT("bypass"), mBypass);
+
+   for (const auto & state : mStates)
+   {
+      state->WriteXML(xmlFile);
+   }
+   
+   xmlFile.EndTag(wxT("effects"));
+}
+
+
 RealtimeEffectState *RealtimeEffectList::DoAdd(const PluginID &id)
 {
    mStates.emplace_back(std::make_unique<RealtimeEffectState>(id));

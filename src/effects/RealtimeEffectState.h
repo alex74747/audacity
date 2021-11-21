@@ -19,6 +19,7 @@
 #include <wx/defs.h>
 
 #include "audacity/Types.h"
+#include "XMLTagHandler.h"
 
 class EffectProcessor;
 class Effect;
@@ -26,7 +27,7 @@ class Track;
 
 class wxWindow;
 
-class RealtimeEffectState
+class RealtimeEffectState : public XMLTagHandler
 {  
 public:
    explicit RealtimeEffectState();
@@ -53,6 +54,12 @@ public:
    bool Finalize();
 
    void CloseEditor();
+
+   bool HandleXMLTag(
+      const std::string_view &tag, const AttributesList &attrs) override;
+   void HandleXMLEndTag(const std::string_view &tag) override;
+   XMLTagHandler *HandleXMLChild(const std::string_view &tag) override;
+   void WriteXML(XMLWriter &xmlFile);
 
 private:
    PluginID mID;

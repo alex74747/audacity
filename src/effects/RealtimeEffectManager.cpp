@@ -41,6 +41,16 @@ const RealtimeEffectManager &RealtimeEffectManager::Get(const AudacityProject &p
    return Get(const_cast<AudacityProject &>(project));
 }
 
+static ProjectFileIORegistry::ObjectReaderEntry registerFactory
+{
+   "effects",
+   [](AudacityProject &project)
+   {
+      auto & manager = RealtimeEffectManager::Get(project);
+      return manager.ReadXML(project);
+   }
+};
+
 RealtimeEffectManager::RealtimeEffectManager(AudacityProject &project)
    : mProject(project)
 {
@@ -467,6 +477,40 @@ void RealtimeEffectManager::RemoveState(RealtimeEffectList &states, RealtimeEffe
    // Allow RealtimeProcess() to, well, process 
    Resume();
 }
+
+XMLTagHandler *RealtimeEffectManager::ReadXML(AudacityProject &project)
+{
+   return &RealtimeEffectList::Get(project);
+}
+
+XMLTagHandler *RealtimeEffectManager::ReadXML(Track &track)
+{
+   return &RealtimeEffectList::Get(track);
+}
+
+void RealtimeEffectManager::WriteXML(
+   XMLWriter &xmlFile, const AudacityProject &project) const
+{
+   RealtimeEffectList::Get(project).WriteXML(xmlFile);
+}
+
+void RealtimeEffectManager::WriteXML(
+   XMLWriter &xmlFile, const Track &track) const
+{
+   RealtimeEffectList::Get(track).WriteXML(xmlFile);
+}
+
+void RealtimeEffectManager::WriteXML(
+   XMLWriter &xmlFile, const RealtimeEffectList &states) const
+{
+}
+
+static ProjectFileIORegistry::ObjectWriterEntry entry {
+[](const AudacityProject &project, XMLWriter &xmlFile){
+   auto &realtimeEffectManager = RealtimeEffectManager::Get(project);
+   realtimeEffectManager.WriteXML(xmlFile, project);
+}
+};
 
 auto RealtimeEffectManager::GetLatency() const -> Latency
 {

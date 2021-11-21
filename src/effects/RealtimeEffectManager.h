@@ -23,6 +23,8 @@ class EffectProcessor;
 class RealtimeEffectList;
 class RealtimeEffectState;
 class Track;
+class XMLTagHandler;
+class XMLWriter;
 
 class wxPoint;
 
@@ -41,6 +43,11 @@ public:
 
    bool IsBypassed(const Track &track);
    void Bypass(Track &track, bool bypass);
+
+   XMLTagHandler *ReadXML(AudacityProject &project);
+   XMLTagHandler *ReadXML(Track &track);
+   void WriteXML(XMLWriter &xmlFile, const AudacityProject &project) const;
+   void WriteXML(XMLWriter &xmlFile, const Track &track) const;
 
    bool IsActive() const noexcept;
    bool IsSuspended() const;
@@ -138,6 +145,8 @@ private:
    // Visit the per-project states first, then any per-track states.
    void VisitGroup(Track *leader,
       std::function<void(RealtimeEffectState &state, bool bypassed)> func);
+
+   void WriteXML(XMLWriter &xmlFile, const RealtimeEffectList &states) const;
 
    AudacityProject &mProject;
 

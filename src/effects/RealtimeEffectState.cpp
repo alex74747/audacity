@@ -366,3 +366,131 @@ void RealtimeEffectState::CloseEditor()
 
    effect->CloseInterface();
 }
+
+bool RealtimeEffectState::HandleXMLTag(
+   const std::string_view &tag, const AttributesList &attrs)
+{
+   if (tag == "effect")
+   {
+      mParameters.clear();
+      mEffect.reset();
+      mID.clear();
+
+      for (auto pair : attrs) {
+         auto attr = pair.first;
+         auto value = pair.second;
+
+         if (attr == "id")
+         {
+            mID = value.ToWString();
+
+            auto effect = GetEffect();
+            if (!effect)
+            {
+               // TODO - complain!!!!
+            }
+         }
+         else if (attr == "version")
+         {
+         }
+         else if (attr == "Bypass")
+         {
+            bool bValue;
+            if (value.TryGet(bValue))
+               Bypass(bValue);
+         }
+      }
+
+      return true;
+   }
+
+   if (tag == "parameters")
+   {
+      return true;
+   }
+
+   if (tag == "parameter")
+   {
+      wxString n;
+      wxString v;
+
+      for (auto pair : attrs) {
+         auto attr = pair.first;
+         auto value = pair.second;
+
+         if (attr == "name")
+         {
+            n = value.ToWString();
+         }
+         else if (attr == "value")
+         {
+            v = value.ToWString();
+         }
+      }
+
+      mParameters += wxString::Format(wxT("\"%s=%s\" "), n, v);
+
+      return true;
+   }
+
+   return false;
+}
+
+void RealtimeEffectState::HandleXMLEndTag(const std::string_view &tag)
+{
+   if (tag == "effect")
+   {
+      auto effect = GetEffect();
+      if (effect && !mParameters.empty())
+      {
+         CommandParameters parms(mParameters);
+         effect->SetAutomationParameters(parms);
+      }
+   }
+}
+
+XMLTagHandler *RealtimeEffectState::HandleXMLChild(const std::string_view &tag)
+{
+   return this;
+}
+
+void RealtimeEffectState::WriteXML(XMLWriter &xmlFile)
+{
+   auto effect = GetEffect();
+   if (!effect)
+   {
+      return;
+   }
+
+   xmlFile.StartTag(wxT("effect"));
+   xmlFile.WriteAttr(wxT("id"), XMLWriter::XMLEsc(PluginManager::GetID(effect)));
+   xmlFile.WriteAttr(wxT("version"), XMLWriter::XMLEsc(mEffect->GetVersion()));
+   xmlFile.WriteAttr(wxT("Bypass"), mBypass);
+      
+   CommandParameters cmdParms;
+   if (effect->GetAutomationParameters(cmdParms))
+   {
+      xmlFile.StartTag(wxT("parameters"));
+
+      wxString entryName;
+      long entryIndex;
+      bool entryKeepGoing;
+
+      entryKeepGoing = cmdParms.GetFirstEntry(entryName, entryIndex);
+      while (entryKeepGoing)
+      {
+         wxString entryValue = cmdParms.Read(entryName, "");
+
+         xmlFile.StartTag(wxT("parameter"));
+         xmlFile.WriteAttr(wxT("name"), XMLWriter::XMLEsc(entryName));
+         xmlFile.WriteAttr(wxT("value"), XMLWriter::XMLEsc(entryValue));
+         xmlFile.EndTag(wxT("parameter"));
+
+         entryKeepGoing = cmdParms.GetNextEntry(entryName, entryIndex);
+      }
+
+      xmlFile.EndTag(wxT("parameters"));
+   }
+
+   xmlFile.EndTag(wxT("effect"));
+}

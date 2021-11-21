@@ -44,6 +44,8 @@ from the project that will own the track.
 
 #include "float_cast.h"
 
+#include "ActiveProject.h"
+
 #include "Envelope.h"
 #include "Sequence.h"
 
@@ -52,6 +54,7 @@ from the project that will own the track.
 
 #include "Prefs.h"
 
+#include "effects/RealtimeEffectManager.h"
 #include "TimeWarper.h"
 #include "QualitySettings.h"
 #include "prefs/SpectrogramSettings.h"
@@ -1948,8 +1951,14 @@ XMLTagHandler *WaveTrack::HandleXMLChild(const std::string_view& tag)
    //
    if (tag == "waveclip")
       return CreateClip();
-   else
-      return NULL;
+
+   if (tag == "effects")
+   {
+      auto & manager = RealtimeEffectManager::Get(*GetOwner()->GetOwner());
+      return manager.ReadXML(const_cast<WaveTrack &>(*this));
+   }
+
+   return NULL;
 }
 
 void WaveTrack::WriteXML(XMLWriter &xmlFile) const
@@ -1969,6 +1978,10 @@ void WaveTrack::WriteXML(XMLWriter &xmlFile) const
    for (const auto &clip : mClips)
    {
       clip->WriteXML(xmlFile);
+   }
+   if (auto pProject = GetActiveProject().lock()) {
+      auto & manager = RealtimeEffectManager::Get(*pProject);
+      manager.WriteXML(xmlFile, const_cast<WaveTrack &>(*this));
    }
 
    xmlFile.EndTag(wxT("wavetrack"));

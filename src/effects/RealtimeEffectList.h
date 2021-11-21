@@ -18,6 +18,7 @@
 
 #include "audacity/Types.h" // for PluginID
 #include "TrackAttachment.h"
+#include "XMLTagHandler.h"
 
 class AudacityProject;
 class EffectClientInterface;
@@ -32,6 +33,7 @@ class Track;
 class RealtimeEffectList final
    : public TrackAttachment
    , public std::enable_shared_from_this<RealtimeEffectList>
+   , public XMLTagHandler
 {
    RealtimeEffectList(const RealtimeEffectList &) = delete;
    RealtimeEffectList &operator=(const RealtimeEffectList &) = delete;
@@ -64,6 +66,12 @@ public:
    RealtimeEffectState &GetState(size_t index);
 
    void Show(RealtimeEffectManager *manager, const TranslatableString &title, wxPoint pos = wxDefaultPosition);
+
+   bool HandleXMLTag(
+      const std::string_view &tag, const AttributesList &attrs) override;
+   void HandleXMLEndTag(const std::string_view &tag) override;
+   XMLTagHandler *HandleXMLChild(const std::string_view &tag) override;
+   void WriteXML(XMLWriter &xmlFile) const;
 
 private:
    RealtimeEffectState *DoAdd(const PluginID &id = {});
