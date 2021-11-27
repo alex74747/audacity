@@ -57,12 +57,14 @@ private:
 
    void OnTimer(wxTimerEvent & evt);
 
+   void OnAdd(wxCommandEvent & evt);
    void OnBypass(wxCommandEvent & evt);
 
    void OnPower(wxCommandEvent & evt);
    void OnEditor(wxCommandEvent & evt);
    void OnUp(wxCommandEvent & evt);
    void OnDown(wxCommandEvent & evt);
+   void OnRemove(wxCommandEvent & evt);
 
    // PrefsListener
    virtual void UpdatePrefs() override;

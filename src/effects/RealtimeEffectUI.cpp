@@ -39,6 +39,7 @@
 #define COL_Name     6
 #define NUMCOLS      7
 
+#define ID_Add       20001
 #define ID_Bypass    20002
 
 #define ID_Base      21000
@@ -47,17 +48,20 @@
 #define ID_Editor    (ID_Base + (COL_Editor * ID_Range))
 #define ID_Up        (ID_Base + (COL_Up * ID_Range))
 #define ID_Down      (ID_Base + (COL_Down * ID_Range))
+#define ID_Remove    (ID_Base + (COL_Remove * ID_Range))
 #define ID_Name      (ID_Base + (COL_Name * ID_Range))
 
 BEGIN_EVENT_TABLE(RealtimeEffectUI, ThemedDialog)
    EVT_TIMER(wxID_ANY, RealtimeEffectUI::OnTimer)
 
+   EVT_BUTTON(ID_Add, RealtimeEffectUI::OnAdd)
    EVT_BUTTON(ID_Bypass, RealtimeEffectUI::OnBypass)
 
    EVT_COMMAND_RANGE(ID_Power,   ID_Power + ID_Range - 1,   wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnPower)
    EVT_COMMAND_RANGE(ID_Editor,  ID_Editor + ID_Range - 1,  wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnEditor)
    EVT_COMMAND_RANGE(ID_Up,      ID_Up + ID_Range - 1,      wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnUp)
    EVT_COMMAND_RANGE(ID_Down,    ID_Down + ID_Range - 1,    wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnDown)
+   EVT_COMMAND_RANGE(ID_Remove,  ID_Remove + ID_Range - 1,  wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnRemove)
 END_EVENT_TABLE()
 
 RealtimeEffectUI::RealtimeEffectUI(RealtimeEffectManager *manager,
@@ -102,6 +106,14 @@ void RealtimeEffectUI::PopulateOrExchange(ShuttleGui &S)
          wxImage images[5];
 
          S.SetBorder(1);
+         CreateImages(images, add_xpm);
+         btn = safenew AButton(S.GetParent(), ID_Add, wxDefaultPosition, wxDefaultSize,
+                               images[0], images[1], images[2], images[3], images[4],
+                               false);
+         btn->SetName(_("Add"));
+         btn->SetToolTip(XO("Add effect to list"));
+         S.AddWindow(btn);
+
          CreateImages(images, bypass_xpm);
          mBypass = safenew AButton(S.GetParent(), ID_Bypass, wxDefaultPosition, wxDefaultSize,
                                images[0], images[1], images[3], images[3], images[4],
@@ -175,6 +187,12 @@ void RealtimeEffectUI::Add(RealtimeEffectState &state)
                       _("Move Down"), XO("Move effect down"),
                       move_down_xpm);
 
+   btn = CreateButton(ID_Remove + mIDCounter,
+                      _("Remove"), XO("Remove effect"),
+                      remove_xpm, nullptr,
+                      false,
+                      wxRIGHT);
+
    wxStaticText *text = safenew wxStaticText(GetParent(), ID_Name + mIDCounter,
       state.GetEffect()->GetName().Translation());
    text->SetToolTip(_("Name of the effect"));
@@ -208,6 +226,20 @@ void RealtimeEffectUI::OnTimer(wxTimerEvent & WXUNUSED(evt))
       mLatency->Refresh();
 
       mLastLatency = latency;
+   }
+}
+
+void RealtimeEffectUI::OnAdd(wxCommandEvent & evt)
+{
+   AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
+   btn->PopUp();
+
+   PluginID id;
+   Selector selector(this, id);
+
+   if (selector.ShowModal() != wxID_CANCEL && !id.empty())
+   {
+      Add(mManager->AddState(mList, id));
    }
 }
 
@@ -271,6 +303,50 @@ void RealtimeEffectUI::OnDown(wxCommandEvent & evt)
    }
 
    MoveRowUp(index + 1);
+}
+
+void RealtimeEffectUI::OnRemove(wxCommandEvent & evt)
+{
+   AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
+   btn->PopUp();
+
+   int index = GetEffectIndex(btn);
+   if (index < 0)
+   {
+      return;
+   }
+
+   auto & state = mList.GetState(index);
+   state.CloseEditor();
+   
+   mManager->RemoveState(mList, state);
+
+   if (mList.GetStates().size() == 0)
+   {
+      if (mTimer.IsRunning())
+      {
+         mTimer.Stop();
+      }
+   }
+
+   index *= NUMCOLS;
+
+   for (int i = 0; i < NUMCOLS; i++)
+   {
+      // Do not allow the AButtons to be deleted here since we'll be returning
+      // to the AButton mouse event handler. If we delete now, then we'll return
+      // to an invalid object. So, queue the window deletions until after this
+      // event has completed.
+      auto w = mMainSizer->GetItem(index)->GetWindow();
+      CallAfter([w]
+      {
+         w->Destroy();
+      });
+      mMainSizer->Remove(index);
+   }
+
+   mMainSizer->Layout();
+   Fit();
 }
 
 void RealtimeEffectUI::UpdatePrefs()

@@ -103,6 +103,27 @@ void RealtimeEffectList::Visit(
    }
 }
 
+RealtimeEffectState & RealtimeEffectList::AddState(const PluginID & id)
+{
+   return *DoAdd(id);
+}
+
+void RealtimeEffectList::RemoveState(RealtimeEffectState &state)
+{
+   auto end = mStates.end();
+   auto found = std::find_if(mStates.begin(), end,
+      [&](const std::unique_ptr<RealtimeEffectState> &item)
+      {
+         return item.get() == &state;
+      }
+   );
+
+   if (found != end)
+   {
+      mStates.erase(found);
+   }
+}
+
 void RealtimeEffectList::Swap(int index1, int index2)
 {
    std::swap(mStates[index1], mStates[index2]);
@@ -141,4 +162,12 @@ void RealtimeEffectList::Show(RealtimeEffectManager *manager,
          mUI->Move(pos);
       }
    }
+}
+
+RealtimeEffectState *RealtimeEffectList::DoAdd(const PluginID &id)
+{
+   mStates.emplace_back(std::make_unique<RealtimeEffectState>(id));
+   auto & state = mStates.back();
+
+   return state.get();
 }

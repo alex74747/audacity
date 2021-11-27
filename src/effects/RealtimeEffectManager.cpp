@@ -12,9 +12,12 @@
 #include "RealtimeEffectState.h"
 
 #include "EffectInterface.h"
+#include "EffectHostInterface.h"
 #include <memory>
 #include "Project.h"
+#include "../ProjectHistory.h"
 #include "Track.h"
+#include "UndoManager.h"
 
 #include <atomic>
 
@@ -391,6 +394,78 @@ void RealtimeEffectManager::VisitGroup(Track *leader,
    // Call the function for each effect on the track list
    if (leader)
      RealtimeEffectList::Get(*leader).Visit(func);
+}
+
+RealtimeEffectState &RealtimeEffectManager::AddState(RealtimeEffectList &states, const PluginID & id)
+{
+   wxLogDebug(wxT("AddState"));
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   // Block processing
+   Suspend();
+
+   auto & state = states.AddState(id);
+   
+   if (mActive)
+   {
+      state.Initialize(mRate);
+
+      for (auto &leader : mGroupLeaders)
+      {
+         auto chans = mChans[leader];
+         auto rate = mRates[leader];
+
+         state.AddProcessor(leader, chans, rate);
+      }
+   }
+
+   if (mProcessing)
+   {
+      state.ProcessStart();
+   }
+
+   ProjectHistory::Get(mProject).PushState(
+      XO("Added %s effect").Format(state.GetEffect()->GetName()),
+      XO("Added Effect"),
+      UndoPush::NONE
+   );
+
+   // Allow RealtimeProcess() to, well, process 
+   Resume();
+
+   return state;
+}
+
+void RealtimeEffectManager::RemoveState(RealtimeEffectList &states, RealtimeEffectState &state)
+{
+   wxLogDebug(wxT("RemoveState"));
+   // Protect...
+   std::lock_guard<std::mutex> guard(mLock);
+
+   // Block RealtimeProcess()
+   Suspend();
+
+   ProjectHistory::Get(mProject).PushState(
+      XO("Removed %s effect").Format(state.GetEffect()->GetName()),
+      XO("Removed Effect"),
+      UndoPush::NONE
+   );
+
+   if (mProcessing)
+   {
+      state.ProcessEnd();
+   }
+
+   if (mActive)
+   {
+      state.Finalize();
+   }
+
+   states.RemoveState(state);
+
+   // Allow RealtimeProcess() to, well, process 
+   Resume();
 }
 
 auto RealtimeEffectManager::GetLatency() const -> Latency

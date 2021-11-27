@@ -20,6 +20,7 @@
 
 class AudacityProject;
 class EffectProcessor;
+class RealtimeEffectList;
 class RealtimeEffectState;
 class Track;
 
@@ -122,6 +123,9 @@ public:
    void Show(Track &track, wxPoint pos);
 
    AudacityProject &GetProject() { return mProject; }
+
+   RealtimeEffectState & AddState(RealtimeEffectList &states, const PluginID & id);
+   void RemoveState(RealtimeEffectList &states, RealtimeEffectState &state);
 
 private:
    void ProcessStart();

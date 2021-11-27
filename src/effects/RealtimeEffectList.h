@@ -55,6 +55,8 @@ public:
    void Visit(
       std::function<void(RealtimeEffectState &state, bool bypassed)> func);
 
+   RealtimeEffectState & AddState(const PluginID &id);
+   void RemoveState(RealtimeEffectState &state);
    void Swap(int index1, int index2);
 
    using States = std::vector<std::unique_ptr<RealtimeEffectState>>;
@@ -63,6 +65,8 @@ public:
 
    void Show(RealtimeEffectManager *manager, const TranslatableString &title, wxPoint pos = wxDefaultPosition);
 
+private:
+   RealtimeEffectState *DoAdd(const PluginID &id = {});
 private:
    States mStates;
    RealtimeEffectUI *mUI;
