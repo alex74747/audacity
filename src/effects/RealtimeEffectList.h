@@ -10,6 +10,7 @@
 #define __AUDACITY_REALTIMEEFFECTLIST_H__
 
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <vector>
 
@@ -33,12 +34,13 @@ class Track;
 class RealtimeEffectList final
    : public TrackAttachment
    , public XMLTagHandler
+   , public std::enable_shared_from_this<RealtimeEffectList>
 {
    RealtimeEffectList(const RealtimeEffectList &) = delete;
    RealtimeEffectList &operator=(const RealtimeEffectList &) = delete;
 
 public:
-   RealtimeEffectList(bool deleteUI);
+   RealtimeEffectList();
    virtual ~RealtimeEffectList();
 
    static RealtimeEffectList &Get(AudacityProject &project);
@@ -72,7 +74,6 @@ public:
 
    bool HandleXMLTag(
       const std::string_view &tag, const AttributesList &attrs) override;
-   void HandleXMLEndTag(const std::string_view &tag) override;
    XMLTagHandler *HandleXMLChild(const std::string_view &tag) override;
    void WriteXML(XMLWriter &xmlFile) const;
 
@@ -81,7 +82,6 @@ private:
 private:
    States mStates;
    RealtimeEffectUI *mUI;
-   bool mDeleteUI;
 
    bool mBypass;
    int mSuspend;

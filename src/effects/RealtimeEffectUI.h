@@ -12,6 +12,7 @@
 #include "widgets/ThemedDialog.h" // to inherit
 #include "audacity/Types.h" // for PluginID
 
+#include <memory>
 #include <wx/timer.h>
 
 class AButton;
@@ -66,6 +67,8 @@ private:
    void OnUp(wxCommandEvent & evt);
    void OnDown(wxCommandEvent & evt);
    void OnRemove(wxCommandEvent & evt);
+
+   void OnIdle(wxIdleEvent &evt);
 
    // PrefsListener
    virtual void UpdatePrefs() override;
@@ -128,7 +131,7 @@ private:
    };
 
    RealtimeEffectManager *mManager;
-   RealtimeEffectList &mList;
+   const std::weak_ptr<RealtimeEffectList> mpList;
    TranslatableString mTitle;
 
    wxPanel *mTitleBar;
@@ -149,6 +152,8 @@ private:
 
    wxFlexGridSizer *mMainSizer;
    int mIDCounter;
+
+   bool mLastBypassed{ false };
 
    DECLARE_EVENT_TABLE()
 };

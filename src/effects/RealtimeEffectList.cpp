@@ -18,10 +18,9 @@
 
 #include <wx/time.h>
 
-RealtimeEffectList::RealtimeEffectList(bool deleteUI)
+RealtimeEffectList::RealtimeEffectList()
 {
    mUI = nullptr;
-   mDeleteUI = deleteUI;
    mBypass = false;
    mSuspend = 0;
    mPrefaders = 0;
@@ -30,17 +29,13 @@ RealtimeEffectList::RealtimeEffectList(bool deleteUI)
 
 RealtimeEffectList::~RealtimeEffectList()
 {
-   if (mDeleteUI && mUI)
-   {
-      delete mUI;
-   }
 }
 
 static const AttachedProjectObjects::RegisteredFactory masterEffects
 {
    [](AudacityProject &project)
    {
-      return std::make_shared<RealtimeEffectList>(false);
+      return std::make_shared<RealtimeEffectList>();
    }
 };
 
@@ -58,7 +53,7 @@ static const AttachedTrackObjects::RegisteredFactory trackEffects
 {
    [](Track &track)
    {
-      return std::make_shared<RealtimeEffectList>(true);
+      return std::make_shared<RealtimeEffectList>();
    }
 };
 
@@ -80,10 +75,6 @@ bool RealtimeEffectList::IsBypassed() const
 void RealtimeEffectList::Bypass(bool bypass)
 {
    mBypass = bypass;
-   if (mUI)
-   {
-      mUI->Rebuild();
-   }
 }
 
 void RealtimeEffectList::Suspend()
@@ -214,18 +205,6 @@ bool RealtimeEffectList::HandleXMLTag(
    }
 
    return false;
-}
-
-void RealtimeEffectList::HandleXMLEndTag(const std::string_view &tag)
-{
-   if (tag == "effects")
-   {
-      // This shouldn't really be needed
-      if (mUI)
-      {
-         mUI->Rebuild();
-      }
-   }
 }
 
 XMLTagHandler *RealtimeEffectList::HandleXMLChild(const std::string_view &tag)

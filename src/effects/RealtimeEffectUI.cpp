@@ -64,6 +64,8 @@ BEGIN_EVENT_TABLE(RealtimeEffectUI, ThemedDialog)
    EVT_COMMAND_RANGE(ID_Up,      ID_Up + ID_Range - 1,      wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnUp)
    EVT_COMMAND_RANGE(ID_Down,    ID_Down + ID_Range - 1,    wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnDown)
    EVT_COMMAND_RANGE(ID_Remove,  ID_Remove + ID_Range - 1,  wxEVT_COMMAND_BUTTON_CLICKED, RealtimeEffectUI::OnRemove)
+
+   EVT_IDLE(RealtimeEffectUI::OnIdle)
 END_EVENT_TABLE()
 
 RealtimeEffectUI::RealtimeEffectUI(RealtimeEffectManager *manager,
@@ -72,7 +74,7 @@ RealtimeEffectUI::RealtimeEffectUI(RealtimeEffectManager *manager,
 :  ThemedDialog(),
    mManager(manager),
    mTitle(title),   
-   mList(list)
+   mpList(list.shared_from_this())
 {
    mIDCounter = 0;
    mTimer.SetOwner(this);
@@ -99,6 +101,11 @@ bool RealtimeEffectUI::Populate(ShuttleGui &S)
 
 void RealtimeEffectUI::PopulateOrExchange(ShuttleGui &S)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    S.SetBorder(5);
    S.StartVerticalLay(wxEXPAND | wxLEFT | wxRIGHT, 1);
    {
@@ -153,6 +160,11 @@ void RealtimeEffectUI::PopulateOrExchange(ShuttleGui &S)
 
 void RealtimeEffectUI::Rebuild()
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    mList.IsBypassed() ? mBypass->PushDown() : mBypass->PopUp();
 
    mMainSizer->Clear(true);
@@ -250,6 +262,11 @@ void RealtimeEffectUI::OnTimer(wxTimerEvent & WXUNUSED(evt))
 
 void RealtimeEffectUI::OnAdd(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
    btn->PopUp();
 
@@ -264,6 +281,11 @@ void RealtimeEffectUI::OnAdd(wxCommandEvent & evt)
 
 void RealtimeEffectUI::OnBypass(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
 
    mList.Bypass(btn->IsDown());
@@ -273,6 +295,11 @@ void RealtimeEffectUI::OnBypass(wxCommandEvent & evt)
 
 void RealtimeEffectUI::OnPower(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
    auto powered = btn->IsDown();
 
@@ -282,6 +309,11 @@ void RealtimeEffectUI::OnPower(wxCommandEvent & evt)
 
 void RealtimeEffectUI::OnEditor(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
    btn->PopUp();
 
@@ -298,6 +330,11 @@ void RealtimeEffectUI::OnEditor(wxCommandEvent & evt)
 
 void RealtimeEffectUI::OnPrePost(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
 
    auto & state = mList.GetState(GetEffectIndex(btn));
@@ -346,6 +383,11 @@ void RealtimeEffectUI::OnDown(wxCommandEvent & evt)
 
 void RealtimeEffectUI::OnRemove(wxCommandEvent & evt)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    AButton *btn =  static_cast<AButton *>(evt.GetEventObject());
    btn->PopUp();
 
@@ -386,6 +428,19 @@ void RealtimeEffectUI::OnRemove(wxCommandEvent & evt)
 
    mMainSizer->Layout();
    Fit();
+}
+
+void RealtimeEffectUI::OnIdle(wxIdleEvent & evt)
+{
+   evt.Skip();
+   if (auto pList = mpList.lock()) {
+      if (mLastBypassed != pList->IsBypassed()) {
+         Rebuild();
+         mLastBypassed = !mLastBypassed;
+      }
+   }
+   else
+      Destroy();
 }
 
 void RealtimeEffectUI::UpdatePrefs()
@@ -519,6 +574,11 @@ int RealtimeEffectUI::GetEffectIndex(wxWindow *win)
 
 void RealtimeEffectUI::MoveRowUp(int row)
 {
+   auto pList = mpList.lock();
+   if (!pList)
+      return;
+   auto &mList = *pList;
+
    mList.Swap(row, row - 1);
 
    row *= NUMCOLS;
