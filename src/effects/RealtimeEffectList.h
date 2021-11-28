@@ -27,7 +27,6 @@ class Effect;
 
 class RealtimeEffectManager;
 class RealtimeEffectState;
-class RealtimeEffectUI;
 
 class Track;
 
@@ -70,8 +69,6 @@ public:
    States & GetStates();
    RealtimeEffectState &GetState(size_t index);
 
-   void Show(RealtimeEffectManager *manager, const TranslatableString &title, wxPoint pos = wxDefaultPosition);
-
    bool HandleXMLTag(
       const std::string_view &tag, const AttributesList &attrs) override;
    XMLTagHandler *HandleXMLChild(const std::string_view &tag) override;
@@ -81,7 +78,6 @@ private:
    RealtimeEffectState *DoAdd(const PluginID &id = {});
 private:
    States mStates;
-   RealtimeEffectUI *mUI;
 
    bool mBypass;
    int mSuspend;

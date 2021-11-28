@@ -9,8 +9,6 @@
 #include "RealtimeEffectList.h"
 #include "RealtimeEffectState.h"
 
-#include "RealtimeEffectUI.h"
-
 #include "EffectInterface.h"
 
 #include "Project.h"
@@ -20,7 +18,6 @@
 
 RealtimeEffectList::RealtimeEffectList()
 {
-   mUI = nullptr;
    mBypass = false;
    mSuspend = 0;
    mPrefaders = 0;
@@ -156,31 +153,6 @@ RealtimeEffectList::States & RealtimeEffectList::GetStates()
 RealtimeEffectState &RealtimeEffectList::GetState(size_t index)
 {
    return *mStates[index];
-}
-
-void RealtimeEffectList::Show(RealtimeEffectManager *manager,
-                              const TranslatableString &title,
-                              wxPoint pos /* = wxDefaultPosition */)
-{
-   bool existed = (mUI != nullptr);
-   if (!existed)
-   {
-      mUI = safenew RealtimeEffectUI(manager, title, *this);
-   }
-
-   if (mUI)
-   {
-      if (!existed)
-      {
-         mUI->CenterOnParent();
-      }
-
-      mUI->Show();
-      if (!existed && pos != wxDefaultPosition)
-      {
-         mUI->Move(pos);
-      }
-   }
 }
 
 bool RealtimeEffectList::HandleXMLTag(

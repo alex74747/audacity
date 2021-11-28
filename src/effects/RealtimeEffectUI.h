@@ -13,7 +13,9 @@
 #include "audacity/Types.h" // for PluginID
 
 #include <memory>
+#include <vector>
 #include <wx/timer.h>
+#include <wx/weakref.h>
 
 class AButton;
 class Grid;
@@ -32,11 +34,17 @@ public:
                     RealtimeEffectList &list);
    virtual ~RealtimeEffectUI();
 
+   static void ShowUI( RealtimeEffectList &list,
+      RealtimeEffectManager *manager,
+      const TranslatableString &title,
+      wxPoint pos = wxDefaultPosition);
+
    void Rebuild();
 
    void OnClose(wxCommandEvent & evt) override;
 
 private:
+   void Untrack();
    bool Populate(ShuttleGui &S) override;
    void PopulateOrExchange(ShuttleGui &S);
    void Add(RealtimeEffectState &state);
@@ -156,6 +164,7 @@ private:
    bool mLastBypassed{ false };
 
    DECLARE_EVENT_TABLE()
+   static std::vector<wxWeakRef<RealtimeEffectUI>> sDialogs;
 };
 
 #endif // __AUDACITY_REALTIMEEFFECTUI_H__

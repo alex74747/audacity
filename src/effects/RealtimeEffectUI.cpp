@@ -68,6 +68,8 @@ BEGIN_EVENT_TABLE(RealtimeEffectUI, ThemedDialog)
    EVT_IDLE(RealtimeEffectUI::OnIdle)
 END_EVENT_TABLE()
 
+std::vector<wxWeakRef<RealtimeEffectUI>> RealtimeEffectUI::sDialogs;
+
 RealtimeEffectUI::RealtimeEffectUI(RealtimeEffectManager *manager,
                                    const TranslatableString &title,
                                    RealtimeEffectList &list)
@@ -83,10 +85,13 @@ RealtimeEffectUI::RealtimeEffectUI(RealtimeEffectManager *manager,
           wxDefaultPosition, wxDefaultSize, wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT);
 
    CenterOnScreen();
+
+   sDialogs.push_back(this);
 }
 
 RealtimeEffectUI::~RealtimeEffectUI()
 {
+   Untrack();
 }
 
 bool RealtimeEffectUI::Populate(ShuttleGui &S)
@@ -156,6 +161,33 @@ void RealtimeEffectUI::PopulateOrExchange(ShuttleGui &S)
    Fit();
 
    Rebuild();
+}
+
+void RealtimeEffectUI::ShowUI( RealtimeEffectList &list,
+   RealtimeEffectManager *manager,
+   const TranslatableString &title,
+   wxPoint pos /* = wxDefaultPosition */)
+{
+   auto end = sDialogs.end(),
+      found = std::find_if(sDialogs.begin(), end, [&](auto &pDialog){
+         return pDialog && pDialog->mpList.lock().get() == &list;
+      });
+
+   bool existed = (found != end);
+   auto pDialog = existed ? found->get()
+      // This safenew for a nonmodal dialog with null parent is justified
+      // because the dialog will destroy itself in idle time after its
+      // RealtimeEffectList is destroyed.
+      : safenew RealtimeEffectUI(manager, title, list);
+
+   if (pDialog) {
+      if (!existed)
+         pDialog->CenterOnParent();
+
+      pDialog->Show();
+      if (!existed && pos != wxDefaultPosition)
+         pDialog->Move(pos);
+   }
 }
 
 void RealtimeEffectUI::Rebuild()
@@ -243,7 +275,14 @@ void RealtimeEffectUI::Add(RealtimeEffectState &state)
 
 void RealtimeEffectUI::OnClose(wxCommandEvent & evt)
 {
+   // Only hiding
    Show(false);
+}
+
+void RealtimeEffectUI::Untrack()
+{
+   auto end = sDialogs.end();
+   sDialogs.erase(std::remove(sDialogs.begin(), end, this), end);
 }
 
 void RealtimeEffectUI::OnTimer(wxTimerEvent & WXUNUSED(evt))
@@ -439,8 +478,10 @@ void RealtimeEffectUI::OnIdle(wxIdleEvent & evt)
          mLastBypassed = !mLastBypassed;
       }
    }
-   else
+   else {
+      Untrack();
       Destroy();
+   }
 }
 
 void RealtimeEffectUI::UpdatePrefs()
