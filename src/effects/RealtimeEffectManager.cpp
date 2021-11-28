@@ -10,7 +10,6 @@
 #include "RealtimeEffectManager.h"
 #include "RealtimeEffectList.h"
 #include "RealtimeEffectState.h"
-#include "RealtimeEffectUI.h"
 
 #include "ActiveProject.h"
 #include "EffectInterface.h"
@@ -408,26 +407,6 @@ void RealtimeEffectManager::ProcessEnd() noexcept
    }
 
    mProcessing = false;
-}
-
-
-void RealtimeEffectManager::Show(AudacityProject &project)
-{
-   // Protect...
-   std::lock_guard<std::mutex> guard(mLock);
-
-   auto & list = RealtimeEffectList::Get(project);
-   RealtimeEffectUI::ShowUI(list, this, XO("Master Effects"));
-}
-
-void RealtimeEffectManager::Show(Track &track, wxPoint pos)
-{
-   // Protect...
-   std::lock_guard<std::mutex> guard(mLock);
-
-   auto & list = RealtimeEffectList::Get(track);
-   RealtimeEffectUI::ShowUI(list, this,
-      XO("%s Effects").Format(track.GetName()), pos);
 }
 
 bool RealtimeEffectManager::IsBypassed(const Track &track)

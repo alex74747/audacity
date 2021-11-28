@@ -128,9 +128,6 @@ public:
       AudacityProject *mpProject = nullptr;
    };
 
-   void Show(AudacityProject &project);
-   void Show(Track &track, wxPoint pos);
-
    AudacityProject &GetProject() { return mProject; }
 
    RealtimeEffectState & AddState(RealtimeEffectList &states, const PluginID & id);

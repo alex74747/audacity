@@ -5,6 +5,9 @@
 #include "../ProjectHistory.h"
 #include "../ProjectSettings.h"
 #include "../ProjectWindow.h"
+#include "../effects/RealtimeEffectList.h"
+#include "../effects/RealtimeEffectManager.h"
+#include "../effects/RealtimeEffectUI.h"
 #include "Track.h"
 #include "../TrackInfo.h"
 #include "../TrackPanel.h"
@@ -350,8 +353,11 @@ void OnShowNameOverlay(const CommandContext &context)
 
 void OnMasterEffects( const CommandContext &context )
 {
-   auto & effectManager = RealtimeEffectManager::Get(context.project);
-   effectManager.Show(context.project);
+   auto &project = context.project;
+   auto & effectManager = RealtimeEffectManager::Get(project);
+   auto &list = RealtimeEffectList::Get(project);
+   auto &manager = RealtimeEffectManager::Get(project);
+   RealtimeEffectUI::ShowUI(list, &manager, XO("Master Effects"));
 }
 
 // Not a menu item, but a listener for events

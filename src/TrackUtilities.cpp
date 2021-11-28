@@ -13,6 +13,9 @@
 #include "ProjectHistory.h"
 #include "ProjectSettings.h"
 #include "ProjectWindow.h"
+#include "effects/RealtimeEffectList.h"
+#include "effects/RealtimeEffectManager.h"
+#include "effects/RealtimeEffectUI.h"
 #include "Track.h"
 #include "TrackPanelAx.h"
 #include "TrackPanel.h"
@@ -163,7 +166,11 @@ void DoTrackSolo(AudacityProject &project, Track *t, bool exclusive)
 
 void DoTrackEffects(AudacityProject &project, Track *t, wxPoint pos)
 {
-   RealtimeEffectManager::Get(project).Show(*t, pos);
+   auto &track = *t;
+   auto &list = RealtimeEffectList::Get(track);
+   auto &manager = RealtimeEffectManager::Get(project);
+   RealtimeEffectUI::ShowUI(list, &manager,
+      XO("%s Effects").Format(track.GetName()), pos);
 }
 
 void DoTrackBypass(AudacityProject &project, Track *t)
