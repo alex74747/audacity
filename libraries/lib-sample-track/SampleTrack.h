@@ -16,10 +16,21 @@ Paul Licameli split from WaveTrack.h
 #include "SampleFormat.h"
 #include "Track.h"
 
+class SampleTrack;
+
+using SampleTrackCaches = ClientData::Site<
+   SampleTrack,
+   ClientData::Cloneable< ClientData::UniquePtr >,
+   ClientData::DeepCopying
+>;
+
 class SAMPLE_TRACK_API SampleTrack /* not final */
    : public PlayableTrack
+   , public SampleTrackCaches
 {
 public:
+   using Caches = SampleTrackCaches;
+
    ~SampleTrack() override;
 
    const TypeInfo &GetTypeInfo() const override;
