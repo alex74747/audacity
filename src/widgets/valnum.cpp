@@ -27,7 +27,7 @@
 
 #include <wx/setup.h> // for wxUSE_* macros
 
-#include "AudacityMessageBox.h"
+#include "BasicUI.h"
 #include "Internat.h"
 
 #ifdef __BORLANDC__
@@ -45,6 +45,7 @@
 #include <wx/dataobj.h>
 
 #include "numformatter.h"
+#include "wxWidgetsWindowPlacement.h"
 
 // ============================================================================
 // NumValidatorBase implementation
@@ -101,11 +102,15 @@ bool NumValidatorBase::Validate(wxWindow *parent)
 
    if ( !res )
    {
-      AudacityMessageBox(
+      using namespace BasicUI;
+      wxWidgetsWindowPlacement placement{ parent };
+      ShowMessageBox(
          errmsg,
-         XO("Validation error"),
-         wxOK | wxICON_ERROR,
-         parent);
+         MessageBoxOptions{}
+            .Caption( XO("Validation error") )
+            .ButtonStyle( Button::Ok )
+            .IconStyle( Icon::Error )
+            .Parent( &placement ) );
       wxTextEntry *te = GetTextEntry();
       if ( te )
       {

@@ -8,10 +8,10 @@
  
  **********************************************************************/
 
+#include "BasicUI.h"
 #include "SelectFile.h"
 #include "FileNames.h"
 #include "FileDialog/FileDialog.h"
-#include "widgets/AudacityMessageBox.h"
 
 FilePath
 SelectFile(FileNames::Operation op,
@@ -56,7 +56,7 @@ char *VerifyFilename(const wxString &s, bool input)
       wxFileName ff(name);
       FileExtension ext;
       while ((char *) (const char *)name.mb_str() == NULL) {
-         AudacityMessageBox(
+         BasicUI::MessageBox(
             XO(
 "The specified filename could not be converted due to Unicode character use."));
 
