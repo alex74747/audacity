@@ -11,6 +11,7 @@
 #ifndef __AUDACITY_COMMAND_CONTEXT__
 #define __AUDACITY_COMMAND_CONTEXT__
 
+#include <functional>
 #include <memory>
 #include "Identifier.h"
 
@@ -31,8 +32,15 @@ struct TemporarySelection {
    Track *pTrack = nullptr;
 };
 
+using TargetsFactory = std::function<std::unique_ptr<CommandOutputTargets>()>;
+
 class AUDACITY_DLL_API CommandContext {
 public:
+   //! Replace the global TargetsFactory (returning the previous)
+   /*! @pre `newFactory != nullptr` */
+   static TargetsFactory SetTargetsFactory(TargetsFactory newFactory);
+
+   //! Construct CommandContext with targets given by the global factory
    CommandContext(
       AudacityProject &p
       , const wxEvent *e = nullptr
@@ -40,6 +48,7 @@ public:
       , const CommandParameter &param = CommandParameter{}
    );
 
+   //! Construct CommandContext with the given targets
    CommandContext(
       AudacityProject &p,
       std::unique_ptr<CommandOutputTargets> target);

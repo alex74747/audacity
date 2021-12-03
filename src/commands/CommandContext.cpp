@@ -30,6 +30,37 @@ messaging from a command back to its invoker.
 
 #include "CommandTargets.h"
 
+namespace {
+class NullOutputTargets : public CommandOutputTargets
+{
+public:
+   NullOutputTargets()
+   : CommandOutputTargets{
+      std::make_unique<NullProgressTarget>(),
+      std::make_shared<NullMessageTarget>(),
+      std::make_shared<NullMessageTarget>()
+   }
+   {}
+};
+
+TargetsFactory &GetFactory()
+{
+   static TargetsFactory factory{ []{
+      return std::make_unique<NullOutputTargets>();
+   } };
+   return factory;   
+}
+}
+
+TargetsFactory CommandContext::SetTargetsFactory(TargetsFactory newFactory)
+{
+   wxASSERT(newFactory);
+   auto &factory = GetFactory();
+   auto result = move(factory);
+   factory = move(newFactory);
+   return result;
+}
+
 CommandContext::CommandContext(
       AudacityProject &p
       , const wxEvent *e
@@ -38,7 +69,7 @@ CommandContext::CommandContext(
    )
       : project{ p }
       // No target specified?  Use the special interactive one that pops up a dialog.
-      , pOutput( std::make_unique<InteractiveOutputTargets>() )
+      , pOutput( GetFactory()() )
       , pEvt{ e }
       , index{ ii }
       , parameter{ param }

@@ -75,6 +75,7 @@ It handles initialization and termination by subclassing wxApp.
 #include "Clipboard.h"
 #include "CrashReport.h" // for HAS_CRASH_REPORT
 #include "commands/CommandHandler.h"
+#include "commands/CommandTargets.h"
 #include "commands/AppCommandEvent.h"
 #include "FFmpeg.h"
 #include "Journal.h"
@@ -1411,6 +1412,9 @@ bool AudacityApp::InitPart2()
    // start multiple instances, defeating the single instance checker.
 
    // Initialize the CommandHandler
+   CommandContext::SetTargetsFactory( []{
+      return std::make_unique<InteractiveOutputTargets>();
+   } );
    InitCommandHandler();
 
    // Initialize the ModuleManager, including loading found modules
