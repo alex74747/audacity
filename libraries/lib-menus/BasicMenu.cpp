@@ -9,10 +9,10 @@ Paul Licameli
 **********************************************************************/
 
 #include "BasicMenu.h"
-#include "Journal.h"
-#include "JournalOutput.h"
-#include "JournalRegistry.h"
-#include "JournalEvents.h"
+// #include "Journal.h" FIX
+// #include "JournalOutput.h"
+// #include "JournalRegistry.h"
+// #include "JournalEvents.h"
 #include "MemoryX.h"
 #include "MenuHandle.h"
 #include "wxWidgetsWindowPlacement.h"
@@ -103,6 +103,7 @@ struct Watcher : wxEventFilter
       wxEvtHandler::RemoveFilter( this );
    }
 
+   #if 0
    int FilterEvent( wxEvent &event ) override
    {
       using namespace Journal::Events;
@@ -133,13 +134,15 @@ struct Watcher : wxEventFilter
 
       return Event_Skip;
    }
+   #endif
 };
 
 void Watch()
 {
-   static Watcher instance;
+//   static Watcher instance;
 }
 
+#if 0
 // Add a callback for startup of journalling
 Journal::RegisteredInitializer initializer{ []{
    using namespace Journal;
@@ -202,6 +205,7 @@ void ReplayPopup( wxMenu *theMenu )
    // Replay did not find all as expected
    throw Journal::SyncException{};
 }
+#endif
 
 }
 
@@ -218,6 +222,7 @@ void Handle::Popup( const BasicUI::WindowPlacement &window, const Point &pos )
       sMenuStack.push_back( FindDescendants( *pMenu ) );
       auto cleanup = finally( []{ sMenuStack.pop_back(); } );
 
+#if 0
       if ( Journal::IsReplaying() )
          ReplayPopup( pMenu );
       else
@@ -226,6 +231,7 @@ void Handle::Popup( const BasicUI::WindowPlacement &window, const Point &pos )
       if ( !sHandledEvent )
          // Menu popped but no command was selected.  Record that.
          Journal::Output( JournalCode );
+#endif
    }
 }
 

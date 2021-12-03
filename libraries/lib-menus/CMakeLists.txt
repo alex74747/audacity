@@ -17,7 +17,7 @@ set( LIBRARIES
    lib-basic-ui-interface
    lib-utility-interface
    PRIVATE
-   wxBase
+   wxwidgets::wxwidgets
 )
 audacity_library( lib-menus "${SOURCES}" "${LIBRARIES}"
    "" ""

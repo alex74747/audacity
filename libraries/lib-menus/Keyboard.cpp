@@ -84,6 +84,7 @@ NormalizedKeyString KeyEventToKeyString(const wxKeyEvent & event)
 {
    wxString newStr;
 
+#if 0
    long key = event.GetKeyCode();
 
    if (event.ControlDown())
@@ -340,6 +341,7 @@ NormalizedKeyString KeyEventToKeyString(const wxKeyEvent & event)
          return {}; // Don't do anything if we don't recognize the key
       }
    }
+#endif
 
    return NormalizedKeyString{ newStr };
 }

@@ -26,7 +26,7 @@ class wxWindow;
 namespace Widgets {
 
 // Identifies menu items
-using MenuItemID = wxWindowID;
+using MenuItemID = int;//wxWindowID;
 constexpr MenuItemID InvalidMenuItemID = -1;
 
 // Describes actual or requested state of a menu item
