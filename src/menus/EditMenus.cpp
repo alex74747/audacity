@@ -169,7 +169,6 @@ void OnCut(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto &trackPanel = TrackPanel::Get( project );
    auto &selectedRegion = ViewInfo::Get( project ).selectedRegion;
    auto &ruler = AdornedRulerPanel::Get( project );
    auto &window = ProjectWindow::Get( project );
@@ -178,16 +177,6 @@ void OnCut(const CommandContext &context)
    for (const auto &pMethods: GetCopyPasteMethods())
       if (pMethods && pMethods->DoCut(project))
          return;
-
-   //Presumably, there might be not more than one track
-   //that expects text input
-   for (auto wt : tracks.Any<WaveTrack>()) {
-      auto& view = WaveTrackView::Get(*wt);
-      if (view.CutSelectedText(context.project)) {
-         trackPanel.Refresh(false);
-         return;
-      }
-   }
 
    auto &clipboard = Clipboard::Get();
    clipboard.Clear();
@@ -295,15 +284,6 @@ void OnCopy(const CommandContext &context)
       if (pMethods && pMethods->DoCopy(project))
          return;
 
-   //Presumably, there might be not more than one track
-   //that expects text input
-   for (auto wt : tracks.Any<WaveTrack>()) {
-      auto& view = WaveTrackView::Get(*wt);
-      if (view.CopySelectedText(context.project)) {
-         return;
-      }
-   }
-
    auto &clipboard = Clipboard::Get();
    clipboard.Clear();
 
@@ -352,7 +332,6 @@ void OnPaste(const CommandContext &context)
 {
    auto &project = context.project;
    auto &tracks = TrackList::Get( project );
-   auto& trackPanel = TrackPanel::Get(project);
    const auto &state = SyncLockState::Get( project );
    auto &window = ProjectWindow::Get( project );
 
@@ -362,16 +341,6 @@ void OnPaste(const CommandContext &context)
    for (const auto &pMethods: GetCopyPasteMethods())
       if (pMethods && pMethods->DoPaste(project))
          return;
-
-   //Presumably, there might be not more than one track
-   //that expects text input
-   for (auto wt : tracks.Any<WaveTrack>()) {
-      auto& view = WaveTrackView::Get(*wt);
-      if (view.PasteText(context.project)) {
-         trackPanel.Refresh(false);
-         return;
-      }
-   }
 
    // If nothing's selected, we just insert NEW tracks.
    if (DoPasteNothingSelected(project))

@@ -1932,3 +1932,84 @@ TracksPrefs::RegisteredControls regControl0{ wxT("Collapse"), 0u, AddCollapse };
 TracksPrefs::RegisteredControls regControl1{ wxT("Mode"), 1u, AddMode };
 
 }
+
+// Install cut-copy-paste hooks
+#include "EditUtilities.h"
+
+namespace {
+
+struct ClipNameCopyPasteMethods final : CopyPasteMethods {
+
+~ClipNameCopyPasteMethods() override = default;
+   
+// Handle text paste (into active label), if any. Return true if did paste.
+// (This was formerly the first part of overly-long OnPaste.)
+bool DoPaste(AudacityProject &project) override
+{
+   //Presumably, there might be not more than one track
+   //that expects text input
+   auto &tracks = TrackList::Get( project );
+   for (auto wt : tracks.Any<WaveTrack>()) {
+      auto& view = WaveTrackView::Get(*wt);
+      if (view.PasteText(project)) {
+         auto& trackPanel = TrackPanel::Get(project);
+         trackPanel.Refresh(false);
+         return true;
+      }
+   }
+   return false;
+}
+ 
+bool DoCut(AudacityProject &project) override
+{
+   //Presumably, there might be not more than one track
+   //that expects text input
+   auto &tracks = TrackList::Get(project);
+   for (auto wt : tracks.Any<WaveTrack>()) {
+      auto& view = WaveTrackView::Get(*wt);
+      if (view.CutSelectedText(project)) {
+         auto &trackPanel = TrackPanel::Get( project );
+         trackPanel.Refresh(false);
+         return true;
+      }
+   }
+   return false;
+}
+
+bool DoCopy(AudacityProject &project) override
+{
+   //Presumably, there might be not more than one track
+   //that expects text input
+   auto &tracks = TrackList::Get(project);
+   for (auto wt : tracks.Any<WaveTrack>()) {
+      auto& view = WaveTrackView::Get(*wt);
+      if (view.CopySelectedText(project)) {
+         return true;
+      }
+   }
+   return false;
+}
+
+bool Enable(const AudacityProject &project) override
+{
+   return false;
+
+#if 0
+   // TO DO
+   auto range = TrackList::Get( project ).Any<const WaveTrack>()
+      + [&](auto pTrack)
+         return HAS A TEXT EDIT HELPER
+         );
+      }
+   ;
+   return ( !range.empty() );
+#endif
+}
+
+};
+
+RegisterCopyPasteMethods regMethods{
+   std::make_unique<ClipNameCopyPasteMethods>()
+};
+
+}
