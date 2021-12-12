@@ -14,6 +14,8 @@ list( APPEND SOURCES
    ComponentInterfaceSymbol.h
    EffectAutomationParameters.cpp
    EffectAutomationParameters.h
+   EffectHostInterface.cpp
+   EffectHostInterface.h
    EffectInterface.cpp
    EffectInterface.h
    ModuleInterface.cpp

@@ -27,7 +27,7 @@ virtual (abstract) functions to get presets and actually apply the effect.  It u
 ConfigClientInterface to add Getters/setters for private and shared configs. 
 
 *******************************************************************************************/
-class AUDACITY_DLL_API EffectHostInterface
+class COMPONENTS_API EffectHostInterface
 {
 public:
    EffectHostInterface &operator=(EffectHostInterface&) = delete;
@@ -60,7 +60,7 @@ using EffectDialogFactory = std::function<
 \class EffectUIHostInterface
 @brief extends EffectHostInterface with UI-related services
 *******************************************************************************************/
-class AUDACITY_DLL_API EffectUIHostInterface : public EffectHostInterface
+class COMPONENTS_API EffectUIHostInterface : public EffectHostInterface
 {
 public:
    EffectUIHostInterface &operator=(EffectUIHostInterface&) = delete;

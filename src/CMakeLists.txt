@@ -108,8 +108,6 @@ list( APPEND SOURCES
       Diags.h
       DropTarget.cpp
       DropoutDetector.cpp
-      EffectHostInterface.cpp
-      EffectHostInterface.h
       EnvelopeEditor.cpp
       EnvelopeEditor.h
       FileFormats.cpp
