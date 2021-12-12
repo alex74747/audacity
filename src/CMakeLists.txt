@@ -129,8 +129,6 @@ list( APPEND SOURCES
       DBConnection.h
       Diags.cpp
       Diags.h
-      EffectHostInterface.cpp
-      EffectHostInterface.h
       EnvelopeEditor.cpp
       EnvelopeEditor.h
       FFmpeg.cpp
