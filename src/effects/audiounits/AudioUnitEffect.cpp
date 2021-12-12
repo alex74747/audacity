@@ -20,6 +20,7 @@
 #include "AudioUnitEffect.h"
 #include "../../ModuleManager.h"
 #include "SampleCount.h"
+#include "ConfigInterface.h"
 
 #include <wx/defs.h>
 #include <wx/base64.h>
