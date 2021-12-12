@@ -42,6 +42,7 @@
 #include <wx/stattext.h>
 #include <wx/scrolwin.h>
 
+#include "ConfigInterface.h"
 #include "EffectHostInterface.h"
 #include "ShuttleGui.h"
 #include "valnum.h"
