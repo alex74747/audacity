@@ -190,7 +190,7 @@ set( EXPERIMENTAL_OPTIONS_LIST
 
    # Paul Licameli (PRL) 28 Dec 2017
    # Easy drag-and-drop to add Nyquist, LADSPA, and VST plug-ins
-   #DRAG_DROP_PLUG_INS
+   DRAG_DROP_PLUG_INS
 
    # PRL 5 Jan 2018
    # Easy change of keystroke bindings for menu items
