@@ -309,7 +309,8 @@ unsigned LadspaEffectsModule::DiscoverPluginsAtPath(
       // dependent multi-threading bug in the Amplio2 library itself, in case the unload of the .dll
       // comes too soon after the load.  I saw the bug in Release builds but not Debug.
       // A sleep of even 1 ms was enough to fix the problem for me, but let's be even more generous.
-      ::wxMilliSleep(10);
+      using namespace chrono;
+      std::this_thread::sleep_for(10ms);
       lib.Unload();
    }
 #else
