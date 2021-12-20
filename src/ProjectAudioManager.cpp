@@ -310,7 +310,7 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
    double t1 = selectedRegion.t1();
    // SelectedRegion guarantees t0 <= t1, so we need another boolean argument
    // to indicate backwards play.
-   const bool newDefault = (mode == PlayMode::loopedPlay);
+   const bool looped = (mode == PlayMode::loopedPlay);
 
    if (backwards)
       std::swap(t0, t1);
@@ -351,7 +351,7 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
    double loopOffset = 0.0;
 
    if (t1 == t0) {
-      if (newDefault) {
+      if (looped) {
          const auto &selectedRegion = ViewInfo::Get( *p ).selectedRegion;
          // play selection if there is one, otherwise
          // set start of play region to project start,
@@ -428,7 +428,7 @@ int ProjectAudioManager::PlayPlayRegion(const SelectedRegion &selectedRegion,
       }
       else {
          double mixerLimit = t1;
-         if (newDefault) {
+         if (looped) {
             mixerLimit = latestEnd;
             if (pStartTime && *pStartTime >= t1)
                t1 = latestEnd;
@@ -1198,7 +1198,7 @@ DefaultPlayOptions( AudacityProject &project, bool newDefault )
       {
          return std::make_unique<NewDefaultPlaybackPolicy>( project,
             trackEndTime, loopEndTime,
-            options.loopEnabled, options.variableSpeed);
+            options.loopEnabled, options.variableSpeed, options.ignoreLooping);
       };
 
       // Start play from left edge of selection

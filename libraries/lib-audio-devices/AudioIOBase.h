@@ -75,6 +75,7 @@ struct AudioIOStartStreamOptions
    PolicyFactory policyFactory;
 
    bool loopEnabled{ false };
+   bool ignoreLooping{ false };
    bool variableSpeed{ false };
 };
 

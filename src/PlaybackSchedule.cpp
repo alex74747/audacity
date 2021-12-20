@@ -151,12 +151,13 @@ const PlaybackPolicy &PlaybackSchedule::GetPolicy() const
 
 NewDefaultPlaybackPolicy::NewDefaultPlaybackPolicy( AudacityProject &project,
    double trackEndTime, double loopEndTime,
-   bool loopEnabled, bool variableSpeed )
+   bool loopEnabled, bool variableSpeed, bool ignoreLooping )
    : mProject{ project }
    , mTrackEndTime{ trackEndTime }
    , mLoopEndTime{ loopEndTime }
    , mLoopEnabled{ loopEnabled }
    , mVariableSpeed{ variableSpeed }
+   , mIgnoreLooping{ ignoreLooping }
 {}
 
 NewDefaultPlaybackPolicy::~NewDefaultPlaybackPolicy() = default;
@@ -169,8 +170,9 @@ void NewDefaultPlaybackPolicy::Initialize(
    mMessageChannel.Write( { mLastPlaySpeed,
       schedule.mT0, mLoopEndTime, mLoopEnabled } );
 
-   ViewInfo::Get( mProject ).playRegion.Bind( EVT_PLAY_REGION_CHANGE,
-      &NewDefaultPlaybackPolicy::OnPlayRegionChange, this);
+   if (!mIgnoreLooping)
+      ViewInfo::Get( mProject ).playRegion.Bind( EVT_PLAY_REGION_CHANGE,
+         &NewDefaultPlaybackPolicy::OnPlayRegionChange, this);
    if (mVariableSpeed)
       mProject.Bind( EVT_PLAY_SPEED_CHANGE,
          &NewDefaultPlaybackPolicy::OnPlaySpeedChange, this);
@@ -295,8 +297,9 @@ bool NewDefaultPlaybackPolicy::RepositionPlayback(
    // that the loop region is non-empty and the play head is not far to its
    // right
    bool loopWasEnabled = !RevertToOldDefault(schedule);
-   mLoopEnabled = data.mLoopEnabled && !empty &&
-      schedule.mTimeQueue.GetLastTime() <= data.mT1 + allowance;
+   if (!mIgnoreLooping)
+      mLoopEnabled = data.mLoopEnabled && !empty &&
+         schedule.mTimeQueue.GetLastTime() <= data.mT1 + allowance;
 
    // Four cases:  looping transitions off, or transitions on, or stays on,
    // or stays off.
@@ -306,7 +309,8 @@ bool NewDefaultPlaybackPolicy::RepositionPlayback(
    // adjust the schedule...
    auto mine = std::tie(schedule.mT0, mLoopEndTime);
    auto theirs = std::tie(data.mT0, data.mT1);
-   if ( mLoopEnabled ? (mine != theirs) : loopWasEnabled ) {
+   if ( !mIgnoreLooping &&
+        ( mLoopEnabled ? (mine != theirs) : loopWasEnabled ) ) {
       kicked = true;
       if (!empty) {
          mine = theirs;
