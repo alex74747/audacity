@@ -35,7 +35,7 @@ Edward Hui
 #include "WaveTrack.h"
 #include "../../prefs/SpectrogramSettings.h"
 #include "../../../images/Cursors.h"
-#include "../playabletrack/wavetrack/ui/SpectralData.h"
+#include "../playabletrack/wavetrack/ui/SpectrumView.h"
 
 #include <cmath>
 #include <wx/event.h>
@@ -341,10 +341,12 @@ UIHandle::Result BrushHandle::Drag
          int bm = b0;
          if(mIsSmartSelection){
             // Correct the y coord (snap to highest energy freq. bin)
-            int resFreqBin = SpectralDataManager::FindFrequencySnappingBin(wt,
-                              h0 * hopSize, hopSize, mFreqSnappingRatio, bm);
-            if(resFreqBin != - 1)
-               bm = resFreqBin;
+            if(auto *sView = dynamic_cast<SpectrumView*>(pView.get())){
+               int resFreqBin = SpectralDataManager::FindFrequencySnappingBin(wt,
+                                 h0 * hopSize, hopSize, mFreqSnappingRatio, bm);
+               if(resFreqBin != - 1)
+                  bm = resFreqBin;
+            }
          }
 
          if(mIsOvertones){

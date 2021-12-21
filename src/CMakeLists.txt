@@ -774,7 +774,6 @@ list( APPEND SOURCES
       tracks/playabletrack/wavetrack/ui/GetWaveDisplay.h
       tracks/playabletrack/wavetrack/ui/SampleHandle.cpp
       tracks/playabletrack/wavetrack/ui/SampleHandle.h
-      tracks/playabletrack/wavetrack/ui/SpectralData.h
       tracks/playabletrack/wavetrack/ui/SpectrumCache.cpp
       tracks/playabletrack/wavetrack/ui/SpectrumCache.h
       tracks/playabletrack/wavetrack/ui/SpectrumVRulerControls.cpp
