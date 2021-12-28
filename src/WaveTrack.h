@@ -255,12 +255,12 @@ private:
 
    bool Get(samplePtr buffer, sampleFormat format,
       sampleCount start, size_t len,
-      fillFormat fill = fillZero,
-      bool mayThrow = true,
+      fillFormat fill = fillZero, bool mayThrow = true,
       // Report how many samples were copied from within clips, rather than
       // filled according to fillFormat; but these were not necessarily one
       // contiguous range.
-      sampleCount * pNumWithinClips = nullptr) const override;
+      size_t *pNumWithinClips = nullptr) const override;
+
    void Set(constSamplePtr buffer, sampleFormat format,
                    sampleCount start, size_t len);
 

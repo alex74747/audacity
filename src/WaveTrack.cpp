@@ -2106,14 +2106,14 @@ float WaveTrack::GetRMS(double t0, double t1, bool mayThrow) const
 
 bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
                     sampleCount start, size_t len, fillFormat fill,
-                    bool mayThrow, sampleCount * pNumWithinClips) const
+                    bool mayThrow, size_t *pNumWithinClips) const
 {
    // Simple optimization: When this buffer is completely contained within one clip,
    // don't clear anything (because we won't have to). Otherwise, just clear
    // everything to be on the safe side.
    bool doClear = true;
    bool result = true;
-   sampleCount samplesCopied = 0;
+   size_t samplesCopied = 0;
    for (const auto &clip: mClips)
    {
       if (start >= clip->GetPlayStartSample() && start+len <= clip->GetPlayEndSample())
@@ -2150,13 +2150,14 @@ bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
       if (clipEnd > start && clipStart < start+len)
       {
          // Clip sample region and Get/Put sample region overlap
-         auto samplesToCopy =
-            std::min( start+len - clipStart, clip->GetPlaySamplesCount() );
+         size_t samplesToCopy =
+            std::min( start+len - clipStart, clip->GetPlaySamplesCount() )
+               .as_size_t(); // ??
          auto startDelta = clipStart - start;
-         decltype(startDelta) inclipDelta = 0;
+         size_t inclipDelta = 0;
          if (startDelta < 0)
          {
-            inclipDelta = -startDelta; // make positive value
+            inclipDelta = (-startDelta).as_size_t(); // make positive value
             samplesToCopy -= inclipDelta;
             // samplesToCopy is now either len or
             //    (clipEnd - clipStart) - (start - clipStart)
@@ -2175,7 +2176,7 @@ bool WaveTrack::Get(samplePtr buffer, sampleFormat format,
                (samplePtr)(((char*)buffer) +
                            startDelta.as_size_t() *
                            SAMPLE_SIZE(format)),
-               format, inclipDelta, samplesToCopy.as_size_t(), mayThrow ))
+               format, inclipDelta, samplesToCopy, mayThrow ))
             result = false;
          else
             samplesCopied += samplesToCopy;
