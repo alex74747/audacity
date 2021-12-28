@@ -145,8 +145,7 @@ public:
    Handle( const Handle &other );
 
    //! There is no copy assignment
-//   Handle &operator =( const Handle &other ) = delete;
-   Handle &operator =( const Handle &other ) { return *this; }
+   Handle &operator =( const Handle &other ) = delete;
 
    //! Leave only a weak reference in other
    /*! Transfer the unshared ownership, if other had it */
