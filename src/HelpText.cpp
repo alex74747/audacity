@@ -24,6 +24,8 @@
 #include "AllThemeResources.h"
 #include "Theme.h"
 
+#include <wx/colour.h>
+
 #ifdef HAS_WHATS_NEW
 
 namespace
