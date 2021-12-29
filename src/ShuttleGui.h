@@ -594,7 +594,7 @@ class ViewInfo;
 
 #include <wx/defs.h>  // to get wxSB_HORIZONTAL
 
-// CreateStdButtonSizer defs...should probably move to widgets subdir
+// AddStandardButtons defs...should probably move to widgets subdir
 enum
 {
    eOkButton      = 0x0001,
@@ -621,10 +621,6 @@ enum
    ePreviewDryID  = wxID_LOWEST - 4,
    eCloseID       = wxID_CANCEL
 };
-
-AUDACITY_DLL_API std::unique_ptr<wxSizer> CreateStdButtonSizer( wxWindow *parent,
-                               long buttons = eOkButton | eCancelButton,
-                               wxWindow *extra = NULL );
 
 // ShuttleGui extends ShuttleGuiBase with Audacity specific extensions.
 class AUDACITY_DLL_API ShuttleGui /* not final */ : public ShuttleGuiBase

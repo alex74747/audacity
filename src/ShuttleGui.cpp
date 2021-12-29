@@ -2283,7 +2283,7 @@ ShuttleGui & ShuttleGui::Optional( bool &bVar ){
    return *this;
 };
 
-
+static
 std::unique_ptr<wxSizer> CreateStdButtonSizer(wxWindow *parent, long buttons, wxWindow *extra)
 {
    wxASSERT(parent != NULL); // To justify safenew
