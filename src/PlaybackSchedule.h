@@ -175,7 +175,10 @@ struct PlaybackSlice {
  */
 class PlaybackPolicy {
 public:
-   //! @section Called by the main thread
+   using Mixers = std::vector<std::unique_ptr<Mixer>>;
+
+   //! @name Called only by the main thread
+   //! @{
 
    virtual ~PlaybackPolicy() = 0;
 
@@ -196,8 +199,10 @@ public:
    };
    //! Provide hints for construction of playback RingBuffer objects
    virtual BufferTimes SuggestedBufferTimes(PlaybackSchedule &schedule);
+   //! @}
 
-   //! @section Called by the PortAudio callback thread
+   //! @name Called by the PortAudio callback thread
+   //! @{
 
    //! Whether repositioning commands are allowed during playback
    virtual bool AllowSeek( PlaybackSchedule &schedule );
@@ -212,8 +217,10 @@ public:
       @return the new value that will be set as the schedule's track time
     */
    virtual double OffsetTrackTime( PlaybackSchedule &schedule, double offset );
+   //! @}
 
-   //! @section Called by the AudioIO::TrackBufferExchange thread
+   //! @name Called by the AudioIO::TrackBufferExchange thread
+   //! @{
 
    //! How long to wait between calls to AudioIO::TrackBufferExchange
    virtual std::chrono::milliseconds
@@ -239,8 +246,6 @@ public:
       AdvancedTrackTime( PlaybackSchedule &schedule,
          double trackTime, size_t nSamples );
 
-   using Mixers = std::vector<std::unique_ptr<Mixer>>;
-
    //! AudioIO::FillPlayBuffers calls this to update its cursors into tracks for changes of position or speed
    /*!
     @return if true, AudioIO::FillPlayBuffers stops producing samples even if space remains
@@ -250,8 +255,7 @@ public:
       size_t frames, //!< how many samples were just now buffered for play
       size_t available //!< how many more samples may be buffered
    );
-
-   //! @section To be removed
+   //! @}
 
    virtual bool Looping( const PlaybackSchedule &schedule ) const;
 
@@ -292,7 +296,7 @@ struct AUDACITY_DLL_API PlaybackSchedule {
    const BoundedEnvelope *mEnvelope;
 
    //! A circular buffer
-   /*
+   /*!
     Holds track time values corresponding to every nth sample in the
     playback buffers, for the large n == TimeQueueGrainSize.
 
@@ -312,31 +316,39 @@ struct AUDACITY_DLL_API PlaybackSchedule {
    class TimeQueue {
    public:
 
-      //! @section called by main thread
-
+      //! @name Called only by the main thread
+      //! @{
       void Clear();
       void Resize(size_t size);
+      //! @}
 
-      //! @section Called by the AudioIO::TrackBufferExchange thread
+      //! @name Called by the AudioIO::TrackBufferExchange thread
+      //! @{
 
-      //! Enqueue track time value advanced by the slice according to `schedule`'s PlaybackPolicy
+      //! Enqueue track time values
+      /*! Time is advanced by `slice` according to `schedule`'s PlaybackPolicy
+       */
       void Producer( PlaybackSchedule &schedule, PlaybackSlice slice );
 
       //! Return the last time saved by Producer
       double GetLastTime() const;
 
       void SetLastTime(double time);
+      //! @}
 
-      //! @section called by PortAudio callback thread
+      //! @name Called by the PortAudio callback thread
+      //! @{
 
       //! Find the track time value `nSamples` after the last consumed sample
       double Consumer( size_t nSamples, double rate );
+      //! @}
 
-      //! @section called by any thread while producer and consumer are suspended
-
+      //! @name Called by any thread while producer and consumer are suspended
+      //! @{
       //! Empty the queue and reassign the last produced time
       /*! Assumes producer and consumer are suspended */
       void Prime( double time );
+      //! @}
 
    private:
       struct Record {
