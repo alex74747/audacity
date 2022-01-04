@@ -2906,12 +2906,8 @@ bool AudioIoCallback::AllTracksAlreadySilent()
 
 AudioIoCallback::AudioIoCallback()
 {
-   auto &factories = AudioIOExt::GetFactories();
-   for (auto &factory: factories)
-      if (auto pExt = factory(mPlaybackSchedule))
-         mAudioIOExt.push_back( move(pExt) );
+   AudioIOExtensions::Initialize(mPlaybackSchedule);
 }
-
 
 AudioIoCallback::~AudioIoCallback()
 {
@@ -3095,13 +3091,6 @@ void AudioIoCallback::CallbackCheckCompletion(
    for( auto &ext : Extensions() )
       ext.SignalOtherCompletion();
    callbackReturn = paComplete;
-}
-
-auto AudioIoCallback::AudioIOExtIterator::operator *() const -> AudioIOExt &
-{
-   // Down-cast and dereference are safe because only AudioIOCallback
-   // populates the array
-   return *static_cast<AudioIOExt*>(mIterator->get());
 }
 
 bool AudioIO::IsCapturing() const
