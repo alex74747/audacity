@@ -1851,13 +1851,63 @@ void AudioIO::FillPlayBuffers()
          frames, available );
    } while (available && !done);
 
-   /* The flushing of all the Puts to the RingBuffers is lifted out of the loop.
+   // Do any realtime effect processing, more efficiently in at most
+   // two buffers per track, after all the little slices have been written.
+   TransformPlayBuffers();
+
+   /* The flushing of all the Puts to the RingBuffers is lifted out of the
+    do-loop above, and also after transformation of the stream for realtime
+    effects.
+
     It's only here that a release is done on the atomic variable that
     indicates the readiness of sample data to the consumer.  That atomic
     also sychronizes the use of the TimeQueue.
     */
    for (size_t i = 0; i < std::max(size_t{1}, mPlaybackTracks.size()); ++i)
       mPlaybackBuffers[i]->Flush();
+}
+
+void AudioIO::TransformPlayBuffers()
+{
+   // Transform written but un-flushed samples in the RingBuffer in-place.
+
+   // TODO: more-than-two-channels
+   // Array of pointers to as many channels, as the maximum possible for a track
+   float* pointers[2];
+
+   auto & em = RealtimeEffectManager::Get();
+   em.RealtimeProcessStart();
+   int group = 0;
+   const auto numPlaybackTracks = mPlaybackTracks.size();
+   for (unsigned t = 0; t < numPlaybackTracks; ++t) {
+      const auto vt = mPlaybackTracks[t].get();
+      if ( !vt->IsLeader() )
+         continue;
+      // vt is mono, or is the first of its group of channels
+      if ( vt->IsSelected() ) {
+         const auto nChannels = TrackList::Channels(vt).size();
+         // Loop over the blocks of unflushed data, at most two
+         for (unsigned iBlock : {0, 1}) {
+            size_t len = 0;
+            for (size_t iChannel = 0; iChannel < nChannels; ++iChannel) {
+               const auto pair =
+                  mPlaybackBuffers[t + iChannel]->GetUnflushed(iBlock);
+               // Playback RingBuffers have float format: see AllocateBuffers
+               pointers[iChannel] = reinterpret_cast<float*>(pair.first);
+               // The lengths of corresponding unflushed blocks should be
+               // the same for all channels
+               if (len == 0)
+                  len = pair.second;
+               else
+                  assert(len == pair.second);
+            }
+            if (len)
+               em.RealtimeProcess(group, nChannels, &pointers[0], len);
+         }
+      }
+      ++group;
+   }
+   em.RealtimeProcessEnd();
 }
 
 void AudioIO::DrainRecordBuffers()
@@ -2401,11 +2451,6 @@ bool AudioIoCallback::FillOutputBuffers(
       tempBufs[c] = (float *) alloca(framesPerBuffer * sizeof(float));
    // ------ End of MEMORY ALLOCATION ---------------
 
-   auto & em = RealtimeEffectManager::Get();
-   em.RealtimeProcessStart();
-
-   bool selected = false;
-   int group = 0;
    int chanCnt = 0;
 
    // Choose a common size to take from all ring buffers
@@ -2445,7 +2490,6 @@ bool AudioIoCallback::FillOutputBuffers(
 
       if ( firstChannel )
       {
-         selected = vt->GetSelected();
          // IF mono THEN clear 'the other' channel.
          if ( lastChannel && (numPlaybackChannels>1)) {
             // TODO: more-than-two-channels
@@ -2499,9 +2543,8 @@ bool AudioIoCallback::FillOutputBuffers(
       // Last channel of a track seen now
       len = mMaxFramesOutput;
 
-      if( !dropQuickly && selected )
-         len = em.RealtimeProcess(group, chanCnt, tempBufs, len);
-      group++;
+      // Realtime effect transformation of the sound used to happen here
+      // but it is now done already on the producer side of the RingBuffer
 
       CallbackCheckCompletion(mCallbackReturn, len);
       if (dropQuickly) // no samples to process, they've been discarded
@@ -2546,7 +2589,6 @@ bool AudioIoCallback::FillOutputBuffers(
 
    // wxASSERT( maxLen == toGet );
 
-   em.RealtimeProcessEnd();
    mLastPlaybackTimeMillis = ::wxGetUTCTimeMillis();
 
    ClampBuffer( outputFloats, framesPerBuffer*numPlaybackChannels );
