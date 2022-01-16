@@ -150,7 +150,7 @@ const PlaybackPolicy &PlaybackSchedule::GetPolicy() const
    return const_cast<PlaybackSchedule&>(*this).GetPolicy();
 }
 
-NewDefaultPlaybackPolicy::NewDefaultPlaybackPolicy( AudacityProject &project,
+DefaultPlaybackPolicy::DefaultPlaybackPolicy( AudacityProject &project,
    double trackEndTime, double loopEndTime,
    bool loopEnabled, bool variableSpeed )
    : mProject{ project }
@@ -160,9 +160,9 @@ NewDefaultPlaybackPolicy::NewDefaultPlaybackPolicy( AudacityProject &project,
    , mVariableSpeed{ variableSpeed }
 {}
 
-NewDefaultPlaybackPolicy::~NewDefaultPlaybackPolicy() = default;
+DefaultPlaybackPolicy::~DefaultPlaybackPolicy() = default;
 
-void NewDefaultPlaybackPolicy::Initialize(
+void DefaultPlaybackPolicy::Initialize(
    PlaybackSchedule &schedule, double rate )
 {
    PlaybackPolicy::Initialize(schedule, rate);
@@ -177,7 +177,7 @@ void NewDefaultPlaybackPolicy::Initialize(
       mSpeedSubscription = ProjectAudioIO::Get(mProject).Subscribe(callback);
 }
 
-Mixer::WarpOptions NewDefaultPlaybackPolicy::MixerWarpOptions(
+Mixer::WarpOptions DefaultPlaybackPolicy::MixerWarpOptions(
    PlaybackSchedule &schedule)
 {
    if (mVariableSpeed)
@@ -188,7 +188,7 @@ Mixer::WarpOptions NewDefaultPlaybackPolicy::MixerWarpOptions(
 }
 
 PlaybackPolicy::BufferTimes
-NewDefaultPlaybackPolicy::SuggestedBufferTimes(PlaybackSchedule &)
+DefaultPlaybackPolicy::SuggestedBufferTimes(PlaybackSchedule &)
 {
    // Shorter times than in the default policy so that responses to changes of
    // loop region or speed slider don't lag too much
@@ -196,14 +196,14 @@ NewDefaultPlaybackPolicy::SuggestedBufferTimes(PlaybackSchedule &)
    return { 0.05s, 0.05s, 0.25s };
 }
 
-bool NewDefaultPlaybackPolicy::RevertToOldDefault(const PlaybackSchedule &schedule) const
+bool DefaultPlaybackPolicy::RevertToOldDefault(const PlaybackSchedule &schedule) const
 {
    return !mLoopEnabled ||
       // Even if loop is enabled, ignore it if right of looping region
       schedule.mTimeQueue.GetLastTime() > mLoopEndTime;
 }
 
-bool NewDefaultPlaybackPolicy::Done(
+bool DefaultPlaybackPolicy::Done(
    PlaybackSchedule &schedule, unsigned long outputFrames )
 {
    if (RevertToOldDefault(schedule)) {
@@ -216,7 +216,7 @@ bool NewDefaultPlaybackPolicy::Done(
 }
 
 PlaybackSlice
-NewDefaultPlaybackPolicy::GetPlaybackSlice(
+DefaultPlaybackPolicy::GetPlaybackSlice(
    PlaybackSchedule &schedule, size_t available)
 {
    // How many samples to produce for each channel.
@@ -255,7 +255,7 @@ NewDefaultPlaybackPolicy::GetPlaybackSlice(
    return { available, frames, toProduce };
 }
 
-std::pair<double, double> NewDefaultPlaybackPolicy::AdvancedTrackTime(
+std::pair<double, double> DefaultPlaybackPolicy::AdvancedTrackTime(
    PlaybackSchedule &schedule, double trackTime, size_t nSamples )
 {
    bool revert = RevertToOldDefault(schedule);
@@ -284,7 +284,7 @@ std::pair<double, double> NewDefaultPlaybackPolicy::AdvancedTrackTime(
    return { trackTime, trackTime };
 }
 
-bool NewDefaultPlaybackPolicy::RepositionPlayback(
+bool DefaultPlaybackPolicy::RepositionPlayback(
    PlaybackSchedule &schedule, const Mixers &playbackMixers,
    size_t frames, size_t available )
 {
@@ -381,12 +381,12 @@ bool NewDefaultPlaybackPolicy::RepositionPlayback(
    return false;
 }
 
-bool NewDefaultPlaybackPolicy::Looping( const PlaybackSchedule & ) const
+bool DefaultPlaybackPolicy::Looping( const PlaybackSchedule & ) const
 {
    return mLoopEnabled;
 }
 
-void NewDefaultPlaybackPolicy::WriteMessage()
+void DefaultPlaybackPolicy::WriteMessage()
 {
    const auto &region = ViewInfo::Get( mProject ).playRegion;
    mMessageChannel.Write( { GetPlaySpeed(),
@@ -394,7 +394,7 @@ void NewDefaultPlaybackPolicy::WriteMessage()
    } );
 }
 
-double NewDefaultPlaybackPolicy::GetPlaySpeed()
+double DefaultPlaybackPolicy::GetPlaySpeed()
 {
    return mVariableSpeed
       ? ProjectAudioIO::Get(mProject).GetPlaySpeed()

@@ -431,16 +431,16 @@ private:
    std::atomic<bool> mPolicyValid{ false };
 };
 
-class NewDefaultPlaybackPolicy final
+class DefaultPlaybackPolicy final
    : public PlaybackPolicy
    , public NonInterferingBase
    , public wxEvtHandler
 {
 public:
-   NewDefaultPlaybackPolicy( AudacityProject &project,
+   DefaultPlaybackPolicy( AudacityProject &project,
       double trackEndTime, double loopEndTime,
       bool loopEnabled, bool variableSpeed);
-   ~NewDefaultPlaybackPolicy() override;
+   ~DefaultPlaybackPolicy() override;
 
    void Initialize( PlaybackSchedule &schedule, double rate ) override;
 
