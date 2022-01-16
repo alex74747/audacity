@@ -45,6 +45,12 @@ const ProjectWindows &ProjectWindows::Get( const AudacityProject &project )
 }
 }
 
+AttachedWindows::AttachedWindows(AudacityProject &project)
+   : mProject{project}
+{}
+
+AttachedWindows::~AttachedWindows() = default;
+
 AUDACITY_DLL_API wxWindow &GetProjectPanel( AudacityProject &project )
 {
    auto ptr = ProjectWindows::Get(project).mPanel;

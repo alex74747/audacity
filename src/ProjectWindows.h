@@ -45,13 +45,13 @@ AUDACITY_DLL_API void SetProjectFrame(
 
 // Container of pointers to various windows associated with the project, which
 // is not responsible for destroying them -- wxWidgets handles that instead
-class AttachedWindows : public ClientData::Site<
-   AttachedWindows, wxWindow, ClientData::SkipCopying, ClientData::BarePtr
+class AUDACITY_DLL_API AttachedWindows : public ClientData::Site<
+   AttachedWindows, wxWindow, ClientData::SkipCopying, std::add_pointer_t
 >
 {
 public:
-   explicit AttachedWindows(AudacityProject &project)
-      : mProject{project} {}
+   explicit AttachedWindows(AudacityProject &project);
+   ~AttachedWindows();
    operator AudacityProject & () const { return mProject; }
 private:
    AudacityProject &mProject;
