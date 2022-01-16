@@ -24,8 +24,6 @@ class wxTimerEvent;
 class AudacityProject;
 struct AudioIOStartStreamOptions;
 
-struct ProjectStatusEvent;
-
 enum StatusBarField : int;
 
 ///\brief Object associated with a project for high-level management of the
