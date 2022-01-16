@@ -22,6 +22,7 @@ struct UndoRedoEvent;
 
 class wxScrollBar;
 class wxPanel;
+enum class ProjectFileIOMessage : int;
 
 class ProjectWindow;
 void InitProjectWindow( ProjectWindow &window );
@@ -177,10 +178,12 @@ public:
    void OnUndoPushedModified( UndoRedoEvent & );
    void OnUndoRedo( UndoRedoEvent & );
    void OnUndoReset( UndoRedoEvent & );
+   void OnProjectTitleChange(ProjectFileIOMessage);
 
    bool mbInitializingScrollbar{ false };
 
 private:
+   Observer::Subscription mTitleChangeSubcription;
    wxRect mNormalizedWindowState;
 
    wxPanel *mTopPanel{};

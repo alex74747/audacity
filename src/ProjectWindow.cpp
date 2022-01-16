@@ -18,6 +18,7 @@ Paul Licameli split from AudacityProject.cpp
 #include "Menus.h"
 #include "Project.h"
 #include "ProjectAudioIO.h"
+#include "ProjectFileIO.h"
 #include "ProjectWindows.h"
 #include "ProjectStatus.h"
 #include "RefreshCode.h"
@@ -662,6 +663,9 @@ ProjectWindow::ProjectWindow(wxWindow * parent, wxWindowID id,
    project.Bind( EVT_UNDO_RESET, &ProjectWindow::OnUndoReset, this );
 
    wxTheApp->Bind(EVT_THEME_CHANGE, &ProjectWindow::OnThemeChange, this);
+
+   mTitleChangeSubcription = ProjectFileIO::Get(project)
+      .Subscribe(*this, &ProjectWindow::OnProjectTitleChange);
 }
 
 ProjectWindow::~ProjectWindow()
@@ -1406,6 +1410,18 @@ void ProjectWindow::OnUndoReset( UndoRedoEvent &evt )
    evt.Skip();
    HandleResize();
    // RedrawProject();  // Should we do this here too?
+}
+
+void ProjectWindow::OnProjectTitleChange(ProjectFileIOMessage message)
+{
+   if (message == ProjectFileIOMessage::ProjectTitleChange) {
+      const auto &name = ProjectFileIO::Get(mProject).GetProjectTitle();
+      if (name != GetTitle())
+      {
+         SetTitle( name );
+         SetName(name); // to make the nvda screen reader read the correct title
+      }
+   }
 }
 
 void ProjectWindow::OnScroll(wxScrollEvent & WXUNUSED(event))

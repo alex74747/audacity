@@ -26,7 +26,6 @@ Paul Licameli split from AudacityProject.cpp
 #include "FileNames.h"
 #include "Project.h"
 #include "ProjectSerializer.h"
-#include "ProjectWindows.h"
 #include "FileNames.h"
 #include "SampleBlock.h"
 #include "TempDirectory.h"
@@ -1581,12 +1580,6 @@ void ProjectFileIO::UpdatePrefs()
 void ProjectFileIO::SetProjectTitle(int number)
 {
    auto &project = mProject;
-   auto pWindow = FindProjectFrame(&project);
-   if (!pWindow)
-   {
-      return;
-   }
-   auto &window = *pWindow;
    wxString name = project.GetProjectName();
 
    // If we are showing project numbers, then we also explicitly show "<untitled>" if there
@@ -1613,16 +1606,10 @@ void ProjectFileIO::SetProjectTitle(int number)
       name += _("(Recovered)");
    }
 
-   if (name != window.GetTitle())
-   {
-      window.SetTitle( name );
-      window.SetName(name);       // to make the nvda screen reader read the correct title
-
-      BasicUI::CallAfter( [wThis = weak_from_this()]{
-         if (auto pThis = wThis.lock())
-            pThis->Publish(ProjectFileIOMessage::ProjectTitleChange);
-      } );
-   }
+   BasicUI::CallAfter( [wThis = weak_from_this()]{
+      if (auto pThis = wThis.lock())
+         pThis->Publish(ProjectFileIOMessage::ProjectTitleChange);
+   } );
 }
 
 const FilePath &ProjectFileIO::GetFileName() const
