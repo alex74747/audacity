@@ -15,6 +15,7 @@ Paul Licameli split from ProjectManager.h
 #include <vector>
 
 #include "AudioIOListener.h" // to inherit
+#include "Observer.h"
 #include "Project.h"
 #include <wx/event.h> // to declare custom event type
 
@@ -38,6 +39,7 @@ enum class PlayMode : int {
 struct TransportTracks;
 
 enum StatusBarField : int;
+enum class ProjectFileIOMessage : int;
 
 struct RecordingDropoutEvent;
 wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API,
@@ -166,8 +168,9 @@ private:
    void OnCommitRecording() override;
    void OnSoundActivationThreshold() override;
 
-   void OnCheckpointFailure(wxCommandEvent &evt);
+   void OnCheckpointFailure(ProjectFileIOMessage);
 
+   Observer::Subscription mCheckpointFailureSubcription;
    AudacityProject &mProject;
 
    PlayMode mLastPlayMode{ PlayMode::normalPlay };

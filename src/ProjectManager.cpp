@@ -81,10 +81,10 @@ ProjectManager::ProjectManager( AudacityProject &project )
 {
    auto &window = ProjectWindow::Get( mProject );
    window.Bind( wxEVT_CLOSE_WINDOW, &ProjectManager::OnCloseWindow, this );
-   mSubscription = ProjectStatus::Get(mProject)
+   mProjectStatusSubscription = ProjectStatus::Get(mProject)
       .Subscribe(*this, &ProjectManager::OnStatusChange);
-   project.Bind( EVT_RECONNECTION_FAILURE,
-      &ProjectManager::OnReconnectionFailure, this );
+   mProjectFileIOSubscription = ProjectFileIO::Get(mProject)
+      .Subscribe(*this, &ProjectManager::OnReconnectionFailure);
 }
 
 ProjectManager::~ProjectManager() = default;
@@ -421,12 +421,10 @@ AudacityProject *ProjectManager::New()
    return p;
 }
 
-void ProjectManager::OnReconnectionFailure(wxCommandEvent & event)
+void ProjectManager::OnReconnectionFailure(ProjectFileIOMessage message)
 {
-   event.Skip();
-   wxTheApp->CallAfter([this]{
+   if (message == ProjectFileIOMessage::ReconnectionFailure)
       ProjectWindow::Get(mProject).Close(true);
-   });
 }
 
 static bool sbClosingAll = false;

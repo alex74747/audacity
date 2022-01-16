@@ -13,7 +13,6 @@ Paul Licameli split from AudacityProject.h
 
 #include <memory>
 
-#include <wx/event.h> // to inherit
 #include "Project.h"
 #include "Identifier.h"
 #include "Observer.h"
@@ -27,6 +26,7 @@ class AudacityProject;
 struct AudioIOStartStreamOptions;
 
 enum StatusBarField : int;
+enum class ProjectFileIOMessage : int;
 
 ///\brief Object associated with a project for high-level management of the
 /// project's lifetime, including creation, destruction, opening from file,
@@ -117,7 +117,7 @@ public:
    static void SetClosingAll(bool closing);
 
 private:
-   void OnReconnectionFailure(wxCommandEvent & event);
+   void OnReconnectionFailure(ProjectFileIOMessage);
    void OnCloseWindow(wxCloseEvent & event);
    void OnTimer(wxTimerEvent & event);
    void OnOpenAudioFile(wxCommandEvent & event);
@@ -130,7 +130,8 @@ private:
 
    std::unique_ptr<wxTimer> mTimer;
 
-   Observer::Subscription mSubscription;
+   Observer::Subscription mProjectStatusSubscription,
+      mProjectFileIOSubscription;
 
    DECLARE_EVENT_TABLE()
 
