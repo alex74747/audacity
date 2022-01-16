@@ -43,8 +43,6 @@
 
 #include <wx/windowptr.h>
 
-wxDEFINE_EVENT(EVT_MENU_UPDATE, wxCommandEvent);
-
 MenuCreator::MenuCreator()
 {
    mLastAnalyzerRegistration = repeattypenone;
@@ -608,8 +606,7 @@ void MenuManager::UpdateMenus( bool checkActive )
       (mWhatIfNoSelection == 0 ? flags2 : flags) // the "strict" flags
    );
 
-   wxCommandEvent evt{ EVT_MENU_UPDATE };
-   mProject.ProcessEvent( evt );
+   Publish({});
 }
 
 /// The following method moves to the previous track

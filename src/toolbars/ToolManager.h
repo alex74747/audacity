@@ -22,6 +22,7 @@
 
 #include "ClientData.h"
 #include "GlobalVariable.h"
+#include "Observer.h"
 #include "ToolDock.h"
 
 #include "../commands/CommandFunctors.h"
@@ -103,7 +104,7 @@ class AUDACITY_DLL_API ToolManager final
 
    ToolBar *Float( ToolBar *t, wxPoint & pos );
 
-   void OnMenuUpdate( wxCommandEvent &event );
+   void OnMenuUpdate(Observer::Message);
    void OnTimer( wxTimerEvent & event );
    void OnMouse( wxMouseEvent & event );
    void OnCaptureLost( wxMouseCaptureLostEvent & event );
@@ -119,6 +120,7 @@ class AUDACITY_DLL_API ToolManager final
    void WriteConfig();
    void Updated();
 
+   Observer::Subscription mMenuManagerSubscription;
    AudacityProject *mParent;
    wxWindowRef mLastFocus{};
 

@@ -15,6 +15,7 @@
 #include "Prefs.h"
 #include "Project.h"
 #include "commands/CommandFlag.h"
+#include "Observer.h"
 
 class wxArrayString;
 class wxCommandEvent;
@@ -32,10 +33,6 @@ typedef wxString MacroID;
 typedef wxArrayString PluginIDs;
 
 namespace Registry{ class Visitor; }
-
-// Event sent to the project when menus update (such as for changing enablement
-// of items)
-wxDECLARE_EXPORTED_EVENT(AUDACITY_DLL_API, EVT_MENU_UPDATE, wxCommandEvent);
 
 class AUDACITY_DLL_API MenuCreator
 {
@@ -73,9 +70,13 @@ public:
 
 struct ToolbarMenuVisitor;
 
+//! Sent when menus update (such as for changing enablement of items)
+struct MenuUpdateMessage : Observer::Message {};
+
 class AUDACITY_DLL_API MenuManager final
    : public MenuCreator
    , public AttachedProjectObject
+   , public Observer::Publisher<MenuUpdateMessage>
    , private PrefsListener
 {
 public:

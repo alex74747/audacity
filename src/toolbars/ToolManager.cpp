@@ -462,7 +462,8 @@ void ToolManager::CreateWindows()
 
    wxEvtHandler::AddFilter(this);
 
-   parent->Bind( EVT_MENU_UPDATE, &ToolManager::OnMenuUpdate, this );
+   mMenuManagerSubscription = MenuManager::Get(*mParent)
+      .Subscribe(*this, &ToolManager::OnMenuUpdate);
 }
 
 //
@@ -1334,9 +1335,8 @@ void ToolManager::OnCaptureLost( wxMouseCaptureLostEvent & event )
    OnMouse(e);
 }
 
-void ToolManager::OnMenuUpdate( wxCommandEvent &event )
+void ToolManager::OnMenuUpdate(Observer::Message)
 {
-   event.Skip();
    ModifyToolbarMenus( *mParent );
 }
 
